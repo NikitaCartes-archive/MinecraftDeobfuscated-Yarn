@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
@@ -46,7 +47,6 @@ public abstract class Particle {
 	public static double cameraX;
 	public static double cameraY;
 	public static double cameraZ;
-	public static Vec3d cameraRotation;
 
 	protected Particle(World world, double d, double e, double f) {
 		this.world = world;
@@ -119,9 +119,9 @@ public abstract class Particle {
 		}
 	}
 
-	public abstract void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k);
+	public abstract void buildGeometry(BufferBuilder bufferBuilder, class_4184 arg, float f, float g, float h, float i, float j, float k);
 
-	public abstract ParticleTextureSheet getTextureSheet();
+	public abstract ParticleTextureSheet method_18122();
 
 	public String toString() {
 		return this.getClass().getSimpleName()
@@ -206,7 +206,7 @@ public abstract class Particle {
 
 	protected int getColorMultiplier(float f) {
 		BlockPos blockPos = new BlockPos(this.posX, this.posY, this.posZ);
-		return this.world.isBlockLoaded(blockPos) ? this.world.getLightmapIndex(blockPos, 0) : 0;
+		return this.world.method_8591(blockPos) ? this.world.method_8313(blockPos, 0) : 0;
 	}
 
 	public boolean isAlive() {

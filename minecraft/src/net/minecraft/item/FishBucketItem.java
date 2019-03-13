@@ -31,19 +31,19 @@ public class FishBucketItem extends BucketItem {
 	}
 
 	@Override
-	public void onEmptied(World world, ItemStack itemStack, BlockPos blockPos) {
+	public void method_7728(World world, ItemStack itemStack, BlockPos blockPos) {
 		if (!world.isClient) {
-			this.spawnFish(world, itemStack, blockPos);
+			this.method_7824(world, itemStack, blockPos);
 		}
 	}
 
 	@Override
-	protected void playEmptyingSound(@Nullable PlayerEntity playerEntity, IWorld iWorld, BlockPos blockPos) {
-		iWorld.playSound(playerEntity, blockPos, SoundEvents.field_14912, SoundCategory.field_15254, 1.0F, 1.0F);
+	protected void method_7727(@Nullable PlayerEntity playerEntity, IWorld iWorld, BlockPos blockPos) {
+		iWorld.method_8396(playerEntity, blockPos, SoundEvents.field_14912, SoundCategory.field_15254, 1.0F, 1.0F);
 	}
 
-	private void spawnFish(World world, ItemStack itemStack, BlockPos blockPos) {
-		Entity entity = this.fishType.spawnFromItemStack(world, itemStack, null, blockPos, SpawnType.field_16473, true, false);
+	private void method_7824(World world, ItemStack itemStack, BlockPos blockPos) {
+		Entity entity = this.fishType.method_5894(world, itemStack, null, blockPos, SpawnType.field_16473, true, false);
 		if (entity != null) {
 			((FishEntity)entity).setFromBucket(true);
 		}
@@ -51,14 +51,14 @@ public class FishBucketItem extends BucketItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		if (this.fishType == EntityType.TROPICAL_FISH) {
-			CompoundTag compoundTag = itemStack.getTag();
+			CompoundTag compoundTag = itemStack.method_7969();
 			if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {
 				int i = compoundTag.getInt("BucketVariantTag");
 				TextFormat[] textFormats = new TextFormat[]{TextFormat.field_1056, TextFormat.field_1080};
-				String string = "color.minecraft." + TropicalFishEntity.getBaseDyeColor(i);
-				String string2 = "color.minecraft." + TropicalFishEntity.getPatternDyeColor(i);
+				String string = "color.minecraft." + TropicalFishEntity.method_6652(i);
+				String string2 = "color.minecraft." + TropicalFishEntity.method_6651(i);
 
 				for (int j = 0; j < TropicalFishEntity.COMMON_VARIANTS.length; j++) {
 					if (i == TropicalFishEntity.COMMON_VARIANTS[j]) {

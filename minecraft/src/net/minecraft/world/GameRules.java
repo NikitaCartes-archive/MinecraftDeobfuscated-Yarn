@@ -39,8 +39,8 @@ public class GameRules {
 		treeMap.put("reducedDebugInfo", new GameRules.Key("false", GameRules.Type.BOOLEAN, (minecraftServer, value) -> {
 			byte b = (byte)(value.getBoolean() ? 22 : 23);
 
-			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
-				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, b));
+			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.method_3760().getPlayerList()) {
+				serverPlayerEntity.field_13987.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, b));
 			}
 		}));
 		treeMap.put("spectatorsGenerateChunks", new GameRules.Key("true", GameRules.Type.BOOLEAN));
@@ -77,7 +77,7 @@ public class GameRules {
 		return value != null ? value.getInteger() : 0;
 	}
 
-	public CompoundTag serialize() {
+	public CompoundTag method_8358() {
 		CompoundTag compoundTag = new CompoundTag();
 
 		for (String string : this.rules.keySet()) {
@@ -88,7 +88,7 @@ public class GameRules {
 		return compoundTag;
 	}
 
-	public void deserialize(CompoundTag compoundTag) {
+	public void method_8357(CompoundTag compoundTag) {
 		for (String string : compoundTag.getKeys()) {
 			this.put(string, compoundTag.getString(string), null);
 		}

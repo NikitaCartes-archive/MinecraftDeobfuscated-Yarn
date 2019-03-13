@@ -51,7 +51,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	public void method_12133(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onClientSettings(this);
+		serverPlayPacketListener.method_12069(this);
 	}
 
 	public String getLanguage() {

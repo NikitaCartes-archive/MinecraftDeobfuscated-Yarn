@@ -34,7 +34,7 @@ public class ThornsEnchantment extends Enchantment {
 		ItemStack itemStack = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.field_9097, livingEntity);
 		if (method_8243(i, random)) {
 			if (entity != null) {
-				entity.damage(DamageSource.thorns(livingEntity), (float)method_8242(i, random));
+				entity.damage(DamageSource.method_5513(livingEntity), (float)method_8242(i, random));
 			}
 
 			if (!itemStack.isEmpty()) {

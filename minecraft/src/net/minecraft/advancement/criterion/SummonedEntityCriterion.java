@@ -16,12 +16,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("summoned_entity");
+	private static final Identifier field_9748 = new Identifier("summoned_entity");
 	private final Map<PlayerAdvancementTracker, SummonedEntityCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, SummonedEntityCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9748;
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.addCondition(conditionsContainer);
+		handler.method_9125(conditionsContainer);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 	) {
 		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
+			handler.method_9128(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -60,10 +60,10 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 		return new SummonedEntityCriterion.Conditions(entityPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity) {
+	public void method_9124(ServerPlayerEntity serverPlayerEntity, Entity entity) {
 		SummonedEntityCriterion.Handler handler = (SummonedEntityCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity, entity);
+			handler.method_9127(serverPlayerEntity, entity);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 		private final EntityPredicate entity;
 
 		public Conditions(EntityPredicate entityPredicate) {
-			super(SummonedEntityCriterion.ID);
+			super(SummonedEntityCriterion.field_9748);
 			this.entity = entityPredicate;
 		}
 
@@ -79,8 +79,8 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 			return new SummonedEntityCriterion.Conditions(builder.build());
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, Entity entity) {
-			return this.entity.test(serverPlayerEntity, entity);
+		public boolean method_9130(ServerPlayerEntity serverPlayerEntity, Entity entity) {
+			return this.entity.method_8914(serverPlayerEntity, entity);
 		}
 
 		@Override
@@ -92,30 +92,30 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker manager;
+		private final PlayerAdvancementTracker field_9751;
 		private final Set<Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+			this.field_9751 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void addCondition(Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer) {
+		public void method_9125(Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void removeCondition(Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer) {
+		public void method_9128(Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity) {
+		public void method_9127(ServerPlayerEntity serverPlayerEntity, Entity entity) {
 			List<Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverPlayerEntity, entity)) {
+				if (conditionsContainer.method_797().method_9130(serverPlayerEntity, entity)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions>>newArrayList();
 					}
@@ -126,7 +126,7 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<SummonedEntityCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9751);
 				}
 			}
 		}

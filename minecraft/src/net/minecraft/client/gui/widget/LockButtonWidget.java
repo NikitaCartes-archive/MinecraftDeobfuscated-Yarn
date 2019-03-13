@@ -3,10 +3,11 @@ package net.minecraft.client.gui.widget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.MinecraftClient;
 
 @Environment(EnvType.CLIENT)
-public abstract class LockButtonWidget extends ButtonWidget {
+public abstract class LockButtonWidget extends class_4185 {
 	private boolean locked;
 
 	public LockButtonWidget(int i, int j) {
@@ -23,7 +24,7 @@ public abstract class LockButtonWidget extends ButtonWidget {
 
 	@Override
 	public void drawButton(int i, int j, float f) {
-		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGET_TEX);
+		MinecraftClient.getInstance().method_1531().method_4618(class_4185.field_2072);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;
 		if (!this.enabled) {

@@ -9,6 +9,7 @@ import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4185;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.menu.EndCreditsScreen;
 import net.minecraft.client.gui.menu.LevelSelectScreen;
@@ -32,12 +33,12 @@ import net.minecraft.world.level.storage.LevelStorage;
 
 @Environment(EnvType.CLIENT)
 public class MainMenuScreen extends Screen {
-	public static final CubeMapRenderer panoramaCubeMap = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
-	private static final Identifier panoramaOverlay = new Identifier("textures/gui/title/background/panorama_overlay.png");
+	public static final CubeMapRenderer field_17774 = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
+	private static final Identifier field_17775 = new Identifier("textures/gui/title/background/panorama_overlay.png");
 	private final boolean field_17776;
 	private String splashText;
-	private ButtonWidget buttonOptions;
-	private ButtonWidget buttonResetDemo;
+	private class_4185 buttonOptions;
+	private class_4185 buttonResetDemo;
 	private final Object mutex = new Object();
 	public static final String OUTDATED_GL_TEXT = "Please click " + TextFormat.field_1073 + "here" + TextFormat.field_1070 + " for more information.";
 	private int warningTextWidth;
@@ -49,13 +50,13 @@ public class MainMenuScreen extends Screen {
 	private String warningTitle;
 	private String warningText = OUTDATED_GL_TEXT;
 	private String warningLink;
-	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
-	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
+	private static final Identifier field_2583 = new Identifier("textures/gui/title/minecraft.png");
+	private static final Identifier field_2594 = new Identifier("textures/gui/title/edition.png");
 	private boolean realmsNotificationsInitialized;
 	private Screen realmsNotificationGui;
 	private int copyrightTextWidth;
 	private int copyrightTextX;
-	private final RotatingCubeMapRenderer backgroundRenderer = new RotatingCubeMapRenderer(panoramaCubeMap);
+	private final RotatingCubeMapRenderer field_2585 = new RotatingCubeMapRenderer(field_17774);
 	private boolean doBackgroundFade;
 	private long backgroundFadeStart;
 
@@ -75,7 +76,7 @@ public class MainMenuScreen extends Screen {
 	}
 
 	private boolean areRealmsNotificationsEnabled() {
-		return this.client.options.realmsNotifications && this.realmsNotificationGui != null;
+		return this.client.field_1690.realmsNotifications && this.realmsNotificationGui != null;
 	}
 
 	@Override
@@ -87,10 +88,10 @@ public class MainMenuScreen extends Screen {
 
 	public static CompletableFuture<Void> method_18105(TextureManager textureManager, Executor executor) {
 		return CompletableFuture.allOf(
-			textureManager.method_18168(MINECRAFT_TITLE_TEXTURE, executor),
-			textureManager.method_18168(EDITION_TITLE_TEXTURE, executor),
-			textureManager.method_18168(panoramaOverlay, executor),
-			panoramaCubeMap.method_18143(textureManager, executor)
+			textureManager.method_18168(field_2583, executor),
+			textureManager.method_18168(field_2594, executor),
+			textureManager.method_18168(field_17775, executor),
+			field_17774.method_18143(textureManager, executor)
 		);
 	}
 
@@ -106,7 +107,7 @@ public class MainMenuScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.splashText = this.client.getSplashTextLoader().get();
+		this.splashText = this.client.method_18095().get();
 		this.copyrightTextWidth = this.fontRenderer.getStringWidth("Copyright Mojang AB. Do not distribute!");
 		this.copyrightTextX = this.screenWidth - this.copyrightTextWidth - 2;
 		int i = 24;
@@ -117,27 +118,27 @@ public class MainMenuScreen extends Screen {
 			this.initWidgetsNormal(j, 24);
 		}
 
-		this.buttonOptions = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options")) {
-			@Override
-			public void onPressed(double d, double e) {
-				MainMenuScreen.this.client.openScreen(new SettingsScreen(MainMenuScreen.this, MainMenuScreen.this.client.options));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit")) {
-			@Override
-			public void onPressed(double d, double e) {
-				MainMenuScreen.this.client.scheduleStop();
-			}
-		});
 		this.addButton(
 			new LanguageButtonWidget(this.screenWidth / 2 - 124, j + 72 + 12) {
 				@Override
-				public void onPressed(double d, double e) {
+				public void method_1826() {
 					MainMenuScreen.this.client
-						.openScreen(new LanguageSettingsScreen(MainMenuScreen.this, MainMenuScreen.this.client.options, MainMenuScreen.this.client.getLanguageManager()));
+						.method_1507(new LanguageSettingsScreen(MainMenuScreen.this, MainMenuScreen.this.client.field_1690, MainMenuScreen.this.client.method_1526()));
 				}
 			}
 		);
+		this.buttonOptions = this.addButton(new class_4185(this.screenWidth / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options")) {
+			@Override
+			public void method_1826() {
+				MainMenuScreen.this.client.method_1507(new SettingsScreen(MainMenuScreen.this, MainMenuScreen.this.client.field_1690));
+			}
+		});
+		this.addButton(new class_4185(this.screenWidth / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit")) {
+			@Override
+			public void method_1826() {
+				MainMenuScreen.this.client.scheduleStop();
+			}
+		});
 		synchronized (this.mutex) {
 			this.warningTitleWidth = this.fontRenderer.getStringWidth(this.warningTitle);
 			this.warningTextWidth = this.fontRenderer.getStringWidth(this.warningText);
@@ -149,7 +150,7 @@ public class MainMenuScreen extends Screen {
 		}
 
 		this.client.setConnectedToRealms(false);
-		if (this.client.options.realmsNotifications && !this.realmsNotificationsInitialized) {
+		if (this.client.field_1690.realmsNotifications && !this.realmsNotificationsInitialized) {
 			RealmsBridge realmsBridge = new RealmsBridge();
 			this.realmsNotificationGui = realmsBridge.getNotificationScreen(this);
 			this.realmsNotificationsInitialized = true;
@@ -161,42 +162,42 @@ public class MainMenuScreen extends Screen {
 	}
 
 	private void initWidgetsNormal(int i, int j) {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i, I18n.translate("menu.singleplayer")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, i, I18n.translate("menu.singleplayer")) {
 			@Override
-			public void onPressed(double d, double e) {
-				MainMenuScreen.this.client.openScreen(new LevelSelectScreen(MainMenuScreen.this));
+			public void method_1826() {
+				MainMenuScreen.this.client.method_1507(new LevelSelectScreen(MainMenuScreen.this));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i + j * 1, I18n.translate("menu.multiplayer")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, i + j * 1, I18n.translate("menu.multiplayer")) {
 			@Override
-			public void onPressed(double d, double e) {
-				MainMenuScreen.this.client.openScreen(new MultiplayerScreen(MainMenuScreen.this));
+			public void method_1826() {
+				MainMenuScreen.this.client.method_1507(new MultiplayerScreen(MainMenuScreen.this));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i + j * 2, I18n.translate("menu.online")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, i + j * 2, I18n.translate("menu.online")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				MainMenuScreen.this.switchToRealms();
 			}
 		});
 	}
 
 	private void initWidgetsDemo(int i, int j) {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i, I18n.translate("menu.playdemo")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, i, I18n.translate("menu.playdemo")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				MainMenuScreen.this.client.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.field_17704);
 			}
 		});
 		this.buttonResetDemo = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 100, i + j * 1, I18n.translate("menu.resetdemo")) {
+			new class_4185(this.screenWidth / 2 - 100, i + j * 1, I18n.translate("menu.resetdemo")) {
 				@Override
-				public void onPressed(double d, double e) {
+				public void method_1826() {
 					LevelStorage levelStorage = MainMenuScreen.this.client.getLevelStorage();
 					LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
 					if (levelProperties != null) {
 						MainMenuScreen.this.client
-							.openScreen(
+							.method_1507(
 								new YesNoScreen(
 									MainMenuScreen.this,
 									I18n.translate("selectWorld.deleteQuestion"),
@@ -227,15 +228,15 @@ public class MainMenuScreen extends Screen {
 		if (bl && i == 12) {
 			LevelStorage levelStorage = this.client.getLevelStorage();
 			levelStorage.deleteLevel("Demo_World");
-			this.client.openScreen(this);
+			this.client.method_1507(this);
 		} else if (i == 12) {
-			this.client.openScreen(this);
+			this.client.method_1507(this);
 		} else if (i == 13) {
 			if (bl) {
 				SystemUtil.getOperatingSystem().open(this.warningLink);
 			}
 
-			this.client.openScreen(this);
+			this.client.method_1507(this);
 		}
 	}
 
@@ -247,11 +248,11 @@ public class MainMenuScreen extends Screen {
 
 		float g = this.doBackgroundFade ? (float)(SystemUtil.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0F : 1.0F;
 		drawRect(0, 0, this.screenWidth, this.screenHeight, -1);
-		this.backgroundRenderer.render(f, MathHelper.clamp(g, 0.0F, 1.0F));
+		this.field_2585.render(f, MathHelper.clamp(g, 0.0F, 1.0F));
 		int k = 274;
 		int l = this.screenWidth / 2 - 137;
 		int m = 30;
-		this.client.getTextureManager().bindTexture(panoramaOverlay);
+		this.client.method_1531().method_4618(field_17775);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(g, 0.0F, 1.0F)) : 1.0F);
@@ -259,7 +260,7 @@ public class MainMenuScreen extends Screen {
 		float h = this.doBackgroundFade ? MathHelper.clamp(g - 1.0F, 0.0F, 1.0F) : 1.0F;
 		int n = MathHelper.ceil(h * 255.0F) << 24;
 		if ((n & -67108864) != 0) {
-			this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
+			this.client.method_1531().method_4618(field_2583);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, h);
 			if (this.field_17776) {
 				this.drawTexturedRect(l + 0, 30, 0, 0, 99, 44);
@@ -272,7 +273,7 @@ public class MainMenuScreen extends Screen {
 				this.drawTexturedRect(l + 155, 30, 0, 45, 155, 44);
 			}
 
-			this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
+			this.client.method_1531().method_4618(field_2594);
 			drawTexturedRect(l + 88, 67, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)(this.screenWidth / 2 + 90), 70.0F, 0.0F);
@@ -325,7 +326,7 @@ public class MainMenuScreen extends Screen {
 					&& e >= (double)this.warningAlignTop
 					&& e <= (double)this.warningAlignBottom) {
 					ConfirmChatLinkScreen confirmChatLinkScreen = new ConfirmChatLinkScreen(this, this.warningLink, 13, true);
-					this.client.openScreen(confirmChatLinkScreen);
+					this.client.method_1507(confirmChatLinkScreen);
 					return true;
 				}
 			}
@@ -337,7 +338,7 @@ public class MainMenuScreen extends Screen {
 					&& d < (double)(this.copyrightTextX + this.copyrightTextWidth)
 					&& e > (double)(this.screenHeight - 10)
 					&& e < (double)this.screenHeight) {
-					this.client.openScreen(new EndCreditsScreen(false, Runnables.doNothing()));
+					this.client.method_1507(new EndCreditsScreen(false, Runnables.doNothing()));
 				}
 
 				return false;

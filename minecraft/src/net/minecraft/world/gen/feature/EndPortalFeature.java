@@ -10,7 +10,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
-	public static final BlockPos ORIGIN = BlockPos.ORIGIN;
+	public static final BlockPos field_13600 = BlockPos.ORIGIN;
 	private final boolean open;
 
 	public EndPortalFeature(boolean bl) {
@@ -28,30 +28,30 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 			if (d <= 3.5) {
 				if (blockPos2.getY() < blockPos.getY()) {
 					if (d <= 2.5) {
-						this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
+						this.method_13153(iWorld, blockPos2, Blocks.field_9987.method_9564());
 					} else if (blockPos2.getY() < blockPos.getY()) {
-						this.setBlockState(iWorld, blockPos2, Blocks.field_10471.getDefaultState());
+						this.method_13153(iWorld, blockPos2, Blocks.field_10471.method_9564());
 					}
 				} else if (blockPos2.getY() > blockPos.getY()) {
-					this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+					this.method_13153(iWorld, blockPos2, Blocks.field_10124.method_9564());
 				} else if (d > 2.5) {
-					this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
+					this.method_13153(iWorld, blockPos2, Blocks.field_9987.method_9564());
 				} else if (this.open) {
-					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10027.getDefaultState());
+					this.method_13153(iWorld, new BlockPos(blockPos2), Blocks.field_10027.method_9564());
 				} else {
-					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10124.getDefaultState());
+					this.method_13153(iWorld, new BlockPos(blockPos2), Blocks.field_10124.method_9564());
 				}
 			}
 		}
 
 		for (int i = 0; i < 4; i++) {
-			this.setBlockState(iWorld, blockPos.up(i), Blocks.field_9987.getDefaultState());
+			this.method_13153(iWorld, blockPos.up(i), Blocks.field_9987.method_9564());
 		}
 
 		BlockPos blockPos3 = blockPos.up(2);
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			this.setBlockState(iWorld, blockPos3.offset(direction), Blocks.field_10099.getDefaultState().with(WallTorchBlock.FACING, direction));
+			this.method_13153(iWorld, blockPos3.method_10093(direction), Blocks.field_10099.method_9564().method_11657(WallTorchBlock.field_11731, direction));
 		}
 
 		return true;

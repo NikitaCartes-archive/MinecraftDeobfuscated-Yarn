@@ -25,6 +25,7 @@ import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +45,8 @@ public class ChunkBatcher {
 	private final BufferRenderer bufferRenderer = new BufferRenderer();
 	private final class_294 field_4441 = new class_294();
 	private final Queue<ChunkBatcher.ChunkUploadTask> pendingUploads = Queues.<ChunkBatcher.ChunkUploadTask>newPriorityQueue();
-	private final ChunkRenderWorker activeWorker;
+	private final ChunkRenderWorker field_4439;
+	private Vec3d field_18766 = Vec3d.ZERO;
 
 	public ChunkBatcher() {
 		int i = Math.max(1, (int)((double)Runtime.getRuntime().maxMemory() * 0.3) / 10485760);
@@ -66,13 +68,21 @@ public class ChunkBatcher {
 			this.availableBuffers.add(new BlockLayeredBufferBuilder());
 		}
 
-		this.activeWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
+		this.field_4439 = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
 	}
 
 	public String getDebugString() {
 		return this.workerThreads.isEmpty()
 			? String.format("pC: %03d, single-threaded", this.pendingChunks.size())
 			: String.format("pC: %03d, pU: %1d, aB: %1d", this.pendingChunks.size(), this.pendingUploads.size(), this.availableBuffers.size());
+	}
+
+	public void method_19419(Vec3d vec3d) {
+		this.field_18766 = vec3d;
+	}
+
+	public Vec3d method_19420() {
+		return this.field_18766;
 	}
 
 	public boolean method_3631(long l) {
@@ -85,7 +95,7 @@ public class ChunkBatcher {
 				ChunkRenderTask chunkRenderTask = (ChunkRenderTask)this.pendingChunks.poll();
 				if (chunkRenderTask != null) {
 					try {
-						this.activeWorker.runTask(chunkRenderTask);
+						this.field_4439.runTask(chunkRenderTask);
 						bl2 = true;
 					} catch (InterruptedException var8) {
 						LOGGER.warn("Skipped task due to interrupt");
@@ -133,7 +143,7 @@ public class ChunkBatcher {
 			ChunkRenderTask chunkRenderTask = chunkRenderer.method_3674();
 
 			try {
-				this.activeWorker.runTask(chunkRenderTask);
+				this.field_4439.runTask(chunkRenderTask);
 			} catch (InterruptedException var7) {
 			}
 
@@ -195,7 +205,7 @@ public class ChunkBatcher {
 	public ListenableFuture<Object> method_3635(
 		BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, ChunkRenderer chunkRenderer, ChunkRenderData chunkRenderData, double d
 	) {
-		if (MinecraftClient.getInstance().isMainThread()) {
+		if (MinecraftClient.getInstance().method_18854()) {
 			if (GLX.useVbo()) {
 				this.method_3621(bufferBuilder, chunkRenderer.getGlBuffer(blockRenderLayer.ordinal()));
 			} else {

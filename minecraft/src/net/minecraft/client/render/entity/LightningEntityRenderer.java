@@ -65,7 +65,7 @@ public class LightningEntityRenderer extends EntityRenderer<LightningEntity> {
 						q += (double)(random2.nextInt(31) - 15);
 					}
 
-					bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+					bufferBuilder.method_1328(5, VertexFormats.field_1576);
 					float u = 0.5F;
 					float v = 0.45F;
 					float w = 0.45F;

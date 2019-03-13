@@ -11,6 +11,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.menu.ErrorScreen;
 import net.minecraft.client.gui.menu.LevelSelectScreen;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
 import net.minecraft.world.level.storage.LevelSummary;
@@ -53,7 +54,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
 				LOGGER.error("Couldn't load level list", (Throwable)var7);
-				this.client.openScreen(new ErrorScreen(I18n.translate("selectWorld.unable_to_load"), var7.getMessage()));
+				this.client.method_1507(new ErrorScreen(I18n.translate("selectWorld.unable_to_load"), var7.getMessage()));
 				return;
 			}
 
@@ -79,9 +80,29 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 		return super.getEntryWidth() + 50;
 	}
 
+	@Override
+	protected boolean method_19352() {
+		return this.parent.method_19357() == this;
+	}
+
 	public void method_2751(int i) {
 		this.field_3236 = i;
 		this.parent.method_2746(this.method_2753());
+	}
+
+	@Override
+	protected void method_19351(int i) {
+		this.field_3236 = MathHelper.clamp(this.field_3236 + i, 0, this.getEntryCount() - 1);
+		if (this.method_2753() != null) {
+			this.method_19349(this.method_2753());
+		}
+
+		this.parent.method_2746(this.method_2753());
+	}
+
+	@Override
+	public boolean hasFocus() {
+		return true;
 	}
 
 	@Override
@@ -96,5 +117,13 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 
 	public LevelSelectScreen method_2752() {
 		return this.parent;
+	}
+
+	@Override
+	public void setHasFocus(boolean bl) {
+		if (bl && this.method_2753() == null && this.getEntryCount() > 0) {
+			this.field_3236 = 0;
+			this.parent.method_2746(this.method_2753());
+		}
 	}
 }

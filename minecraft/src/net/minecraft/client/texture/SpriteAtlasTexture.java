@@ -24,7 +24,6 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import org.apache.commons.io.IOUtils;
@@ -34,17 +33,17 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class SpriteAtlasTexture extends AbstractTexture implements TickableTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final Identifier BLOCK_ATLAS_TEX = new Identifier("textures/atlas/blocks.png");
-	public static final Identifier PARTICLE_ATLAS_TEX = new Identifier("textures/atlas/particles.png");
-	public static final Identifier PAINTING_ATLAS_TEX = new Identifier("textures/atlas/paintings.png");
-	public static final Identifier STATUS_EFFECT_ATLAS_TEX = new Identifier("textures/atlas/mob_effects.png");
+	public static final Identifier field_5275 = new Identifier("textures/atlas/blocks.png");
+	public static final Identifier field_17898 = new Identifier("textures/atlas/particles.png");
+	public static final Identifier field_18031 = new Identifier("textures/atlas/paintings.png");
+	public static final Identifier field_18229 = new Identifier("textures/atlas/mob_effects.png");
 	private final List<Sprite> animatedSprites = Lists.<Sprite>newArrayList();
 	private final Set<Identifier> spritesToLoad = Sets.<Identifier>newHashSet();
 	private final Map<Identifier, Sprite> sprites = Maps.<Identifier, Sprite>newHashMap();
 	private final String pathPrefix;
 	private final int maxTextureSize;
 	private int mipLevel;
-	private final Sprite missingSprite = MissingSprite.getMissingSprite();
+	private final Sprite field_5282 = MissingSprite.getMissingSprite();
 
 	public SpriteAtlasTexture(String string) {
 		this.pathPrefix = string;
@@ -52,7 +51,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 	}
 
 	@Override
-	public void load(ResourceManager resourceManager) throws IOException {
+	public void method_4625(ResourceManager resourceManager) throws IOException {
 	}
 
 	public void upload(SpriteAtlasTexture.Data data) {
@@ -63,13 +62,13 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		this.clear();
 
 		for (Sprite sprite : data.field_17903) {
-			this.sprites.put(sprite.getId(), sprite);
+			this.sprites.put(sprite.method_4598(), sprite);
 
 			try {
 				sprite.method_4584();
 			} catch (Throwable var7) {
 				CrashReport crashReport = CrashReport.create(var7, "Stitching texture atlas");
-				CrashReportSection crashReportSection = crashReport.addElement("Texture being stitched together");
+				CrashReportSection crashReportSection = crashReport.method_562("Texture being stitched together");
 				crashReportSection.add("Atlas path", this.pathPrefix);
 				crashReportSection.add("Sprite", sprite);
 				throw new CrashException(crashReport);
@@ -81,7 +80,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		}
 	}
 
-	public SpriteAtlasTexture.Data stitch(ResourceManager resourceManager, Iterable<Identifier> iterable, Profiler profiler) {
+	public SpriteAtlasTexture.Data method_18163(ResourceManager resourceManager, Iterable<Identifier> iterable, Profiler profiler) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		profiler.push("preparing");
 		iterable.forEach(identifier -> {
@@ -102,12 +101,17 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 			int l = Math.min(Integer.lowestOneBit(sprite.getWidth()), Integer.lowestOneBit(sprite.getHeight()));
 			if (l < k) {
 				LOGGER.warn(
-					"Texture {} with size {}x{} limits mip level from {} to {}", sprite.getId(), sprite.getWidth(), sprite.getHeight(), MathHelper.log2(k), MathHelper.log2(l)
+					"Texture {} with size {}x{} limits mip level from {} to {}",
+					sprite.method_4598(),
+					sprite.getWidth(),
+					sprite.getHeight(),
+					MathHelper.log2(k),
+					MathHelper.log2(l)
 				);
 				k = l;
 			}
 
-			textureStitcher.add(sprite);
+			textureStitcher.method_4553(sprite);
 		}
 
 		int m = Math.min(j, k);
@@ -118,9 +122,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		}
 
 		profiler.swap("mipmapping");
-		this.missingSprite.generateMipmaps(this.mipLevel);
+		this.field_5282.generateMipmaps(this.mipLevel);
 		profiler.swap("register");
-		textureStitcher.add(this.missingSprite);
+		textureStitcher.method_4553(this.field_5282);
 		profiler.swap("stitching");
 
 		try {
@@ -140,9 +144,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		ConcurrentLinkedQueue<Sprite> concurrentLinkedQueue = new ConcurrentLinkedQueue();
 
 		for (Identifier identifier : set) {
-			if (!this.missingSprite.getId().equals(identifier)) {
+			if (!this.field_5282.method_4598().equals(identifier)) {
 				list.add(CompletableFuture.runAsync(() -> {
-					Identifier identifier2 = this.getTexturePath(identifier);
+					Identifier identifier2 = this.method_4603(identifier);
 
 					Sprite sprite;
 					try {
@@ -151,7 +155,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 
 						try {
 							class_1050 lv = new class_1050(resource.toString(), resource.getInputStream());
-							AnimationResourceMetadata animationResourceMetadata = resource.getMetadata(AnimationResourceMetadata.READER);
+							AnimationResourceMetadata animationResourceMetadata = resource.getMetadata(AnimationResourceMetadata.field_5337);
 							sprite = new Sprite(identifier, lv, animationResourceMetadata);
 						} catch (Throwable var19) {
 							var7 = var19;
@@ -191,11 +195,11 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		List<CompletableFuture<?>> list = new ArrayList();
 
 		for (Sprite sprite : textureStitcher.getStitchedSprites()) {
-			if (sprite == this.missingSprite) {
+			if (sprite == this.field_5282) {
 				concurrentLinkedQueue.add(sprite);
 			} else {
 				list.add(CompletableFuture.runAsync(() -> {
-					if (this.loadSprite(resourceManager, sprite)) {
+					if (this.method_4604(resourceManager, sprite)) {
 						concurrentLinkedQueue.add(sprite);
 					}
 				}, SystemUtil.getServerWorkerExecutor()));
@@ -206,15 +210,15 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		return new ArrayList(concurrentLinkedQueue);
 	}
 
-	private boolean loadSprite(ResourceManager resourceManager, Sprite sprite) {
-		Identifier identifier = this.getTexturePath(sprite.getId());
+	private boolean method_4604(ResourceManager resourceManager, Sprite sprite) {
+		Identifier identifier = this.method_4603(sprite.method_4598());
 		Resource resource = null;
 
 		label45: {
 			boolean crashReport;
 			try {
 				resource = resourceManager.getResource(identifier);
-				sprite.load(resource, this.mipLevel + 1);
+				sprite.method_4576(resource, this.mipLevel + 1);
 				break label45;
 			} catch (RuntimeException var13) {
 				LOGGER.error("Unable to parse metadata from {}", identifier, var13);
@@ -234,21 +238,21 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 			return true;
 		} catch (Throwable var12) {
 			CrashReport crashReport = CrashReport.create(var12, "Applying mipmap");
-			CrashReportSection crashReportSection = crashReport.addElement("Sprite being mipmapped");
-			crashReportSection.add("Sprite name", (ICrashCallable<String>)(() -> sprite.getId().toString()));
-			crashReportSection.add("Sprite size", (ICrashCallable<String>)(() -> sprite.getWidth() + " x " + sprite.getHeight()));
-			crashReportSection.add("Sprite frames", (ICrashCallable<String>)(() -> sprite.method_4592() + " frames"));
+			CrashReportSection crashReportSection = crashReport.method_562("Sprite being mipmapped");
+			crashReportSection.method_577("Sprite name", () -> sprite.method_4598().toString());
+			crashReportSection.method_577("Sprite size", () -> sprite.getWidth() + " x " + sprite.getHeight());
+			crashReportSection.method_577("Sprite frames", () -> sprite.method_4592() + " frames");
 			crashReportSection.add("Mipmap levels", this.mipLevel);
 			throw new CrashException(crashReport);
 		}
 	}
 
-	private Identifier getTexturePath(Identifier identifier) {
+	private Identifier method_4603(Identifier identifier) {
 		return new Identifier(identifier.getNamespace(), String.format("%s/%s%s", this.pathPrefix, identifier.getPath(), ".png"));
 	}
 
-	public Sprite getSprite(String string) {
-		return this.getSprite(new Identifier(string));
+	public Sprite method_4607(String string) {
+		return this.method_4608(new Identifier(string));
 	}
 
 	public void updateAnimatedSprites() {
@@ -268,9 +272,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 		this.mipLevel = i;
 	}
 
-	public Sprite getSprite(Identifier identifier) {
+	public Sprite method_4608(Identifier identifier) {
 		Sprite sprite = (Sprite)this.sprites.get(identifier);
-		return sprite == null ? this.missingSprite : sprite;
+		return sprite == null ? this.field_5282 : sprite;
 	}
 
 	public void clear() {

@@ -53,7 +53,7 @@ public class PersistentStateManager {
 				if (file.exists()) {
 					persistentState = (PersistentState)supplier.get();
 					CompoundTag compoundTag = this.method_17923(string, SharedConstants.getGameVersion().getWorldVersion());
-					persistentState.fromTag(compoundTag.getCompound("data"));
+					persistentState.method_77(compoundTag.getCompound("data"));
 					this.loadedStates.put(string, persistentState);
 				}
 			} catch (Exception var6) {

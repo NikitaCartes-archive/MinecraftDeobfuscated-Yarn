@@ -17,7 +17,7 @@ public class class_1395 extends class_1394 {
 
 	@Nullable
 	@Override
-	protected Vec3d getWanderTarget() {
+	protected Vec3d method_6302() {
 		Vec3d vec3d = null;
 		if (this.owner.isInsideWater()) {
 			vec3d = class_1414.method_6378(this.owner, 15, 15);
@@ -27,7 +27,7 @@ public class class_1395 extends class_1394 {
 			vec3d = this.method_6314();
 		}
 
-		return vec3d == null ? super.getWanderTarget() : vec3d;
+		return vec3d == null ? super.method_6302() : vec3d;
 	}
 
 	@Nullable
@@ -45,9 +45,9 @@ public class class_1395 extends class_1394 {
 			MathHelper.floor(this.owner.z + 3.0)
 		)) {
 			if (!blockPos.equals(blockPos2)) {
-				Block block = this.owner.world.getBlockState(mutable2.set(blockPos2).setOffset(Direction.DOWN)).getBlock();
-				boolean bl = block instanceof LeavesBlock || block.matches(BlockTags.field_15475);
-				if (bl && this.owner.world.isAir(blockPos2) && this.owner.world.isAir(mutable.set(blockPos2).setOffset(Direction.UP))) {
+				Block block = this.owner.field_6002.method_8320(mutable2.method_10101(blockPos2).method_10098(Direction.DOWN)).getBlock();
+				boolean bl = block instanceof LeavesBlock || block.method_9525(BlockTags.field_15475);
+				if (bl && this.owner.field_6002.method_8623(blockPos2) && this.owner.field_6002.method_8623(mutable.method_10101(blockPos2).method_10098(Direction.UP))) {
 					return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 				}
 			}

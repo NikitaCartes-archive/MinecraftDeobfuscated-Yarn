@@ -14,39 +14,39 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class ConnectedPlantBlock extends Block {
-	private static final Direction[] FACINGS = Direction.values();
-	public static final BooleanProperty NORTH = Properties.NORTH_BOOL;
-	public static final BooleanProperty EAST = Properties.EAST_BOOL;
-	public static final BooleanProperty SOUTH = Properties.SOUTH_BOOL;
-	public static final BooleanProperty WEST = Properties.WEST_BOOL;
-	public static final BooleanProperty UP = Properties.UP_BOOL;
-	public static final BooleanProperty DOWN = Properties.DOWN_BOOL;
+	private static final Direction[] field_11334 = Direction.values();
+	public static final BooleanProperty field_11332 = Properties.field_12489;
+	public static final BooleanProperty field_11335 = Properties.field_12487;
+	public static final BooleanProperty field_11331 = Properties.field_12540;
+	public static final BooleanProperty field_11328 = Properties.field_12527;
+	public static final BooleanProperty field_11327 = Properties.field_12519;
+	public static final BooleanProperty field_11330 = Properties.field_12546;
 	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = SystemUtil.consume(Maps.newEnumMap(Direction.class), enumMap -> {
-		enumMap.put(Direction.NORTH, NORTH);
-		enumMap.put(Direction.EAST, EAST);
-		enumMap.put(Direction.SOUTH, SOUTH);
-		enumMap.put(Direction.WEST, WEST);
-		enumMap.put(Direction.UP, UP);
-		enumMap.put(Direction.DOWN, DOWN);
+		enumMap.put(Direction.NORTH, field_11332);
+		enumMap.put(Direction.EAST, field_11335);
+		enumMap.put(Direction.SOUTH, field_11331);
+		enumMap.put(Direction.WEST, field_11328);
+		enumMap.put(Direction.UP, field_11327);
+		enumMap.put(Direction.DOWN, field_11330);
 	});
-	protected final VoxelShape[] CONNECTIONS_TO_SHAPE;
+	protected final VoxelShape[] field_11333;
 
 	protected ConnectedPlantBlock(float f, Block.Settings settings) {
 		super(settings);
-		this.CONNECTIONS_TO_SHAPE = this.generateFacingsToShapeMap(f);
+		this.field_11333 = this.method_10370(f);
 	}
 
-	private VoxelShape[] generateFacingsToShapeMap(float f) {
+	private VoxelShape[] method_10370(float f) {
 		float g = 0.5F - f;
 		float h = 0.5F + f;
-		VoxelShape voxelShape = Block.createCuboidShape(
+		VoxelShape voxelShape = Block.method_9541(
 			(double)(g * 16.0F), (double)(g * 16.0F), (double)(g * 16.0F), (double)(h * 16.0F), (double)(h * 16.0F), (double)(h * 16.0F)
 		);
-		VoxelShape[] voxelShapes = new VoxelShape[FACINGS.length];
+		VoxelShape[] voxelShapes = new VoxelShape[field_11334.length];
 
-		for (int i = 0; i < FACINGS.length; i++) {
-			Direction direction = FACINGS[i];
-			voxelShapes[i] = VoxelShapes.cube(
+		for (int i = 0; i < field_11334.length; i++) {
+			Direction direction = field_11334[i];
+			voxelShapes[i] = VoxelShapes.method_1081(
 				0.5 + Math.min((double)(-f), (double)direction.getOffsetX() * 0.5),
 				0.5 + Math.min((double)(-f), (double)direction.getOffsetY() * 0.5),
 				0.5 + Math.min((double)(-f), (double)direction.getOffsetZ() * 0.5),
@@ -61,9 +61,9 @@ public class ConnectedPlantBlock extends Block {
 		for (int j = 0; j < 64; j++) {
 			VoxelShape voxelShape2 = voxelShape;
 
-			for (int k = 0; k < FACINGS.length; k++) {
+			for (int k = 0; k < field_11334.length; k++) {
 				if ((j & 1 << k) != 0) {
-					voxelShape2 = VoxelShapes.union(voxelShape2, voxelShapes[k]);
+					voxelShape2 = VoxelShapes.method_1084(voxelShape2, voxelShapes[k]);
 				}
 			}
 
@@ -74,20 +74,20 @@ public class ConnectedPlantBlock extends Block {
 	}
 
 	@Override
-	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return this.CONNECTIONS_TO_SHAPE[this.getConnectionMask(blockState)];
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return this.field_11333[this.method_10368(blockState)];
 	}
 
-	protected int getConnectionMask(BlockState blockState) {
+	protected int method_10368(BlockState blockState) {
 		int i = 0;
 
-		for (int j = 0; j < FACINGS.length; j++) {
-			if ((Boolean)blockState.get((Property)FACING_PROPERTIES.get(FACINGS[j]))) {
+		for (int j = 0; j < field_11334.length; j++) {
+			if ((Boolean)blockState.method_11654((Property)FACING_PROPERTIES.get(field_11334[j]))) {
 				i |= 1 << j;
 			}
 		}

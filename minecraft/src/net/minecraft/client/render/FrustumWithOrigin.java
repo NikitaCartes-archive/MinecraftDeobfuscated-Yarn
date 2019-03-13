@@ -6,17 +6,17 @@ import net.minecraft.util.math.BoundingBox;
 
 @Environment(EnvType.CLIENT)
 public class FrustumWithOrigin implements VisibleRegion {
-	private final Frustum frustum;
+	private final Frustum field_4504;
 	private double originX;
 	private double originY;
 	private double originZ;
 
 	public FrustumWithOrigin() {
-		this(GlMatrixFrustum.get());
+		this(GlMatrixFrustum.method_3696());
 	}
 
 	public FrustumWithOrigin(Frustum frustum) {
-		this.frustum = frustum;
+		this.field_4504 = frustum;
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class FrustumWithOrigin implements VisibleRegion {
 	}
 
 	public boolean intersects(double d, double e, double f, double g, double h, double i) {
-		return this.frustum.intersects(d - this.originX, e - this.originY, f - this.originZ, g - this.originX, h - this.originY, i - this.originZ);
+		return this.field_4504.intersects(d - this.originX, e - this.originY, f - this.originZ, g - this.originX, h - this.originY, i - this.originZ);
 	}
 
 	@Override

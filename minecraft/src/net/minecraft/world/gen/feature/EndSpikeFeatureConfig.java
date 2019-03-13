@@ -13,12 +13,12 @@ public class EndSpikeFeatureConfig implements FeatureConfig {
 	private final boolean crystalInvulnerable;
 	private final List<EndSpikeFeature.Spike> spikes;
 	@Nullable
-	private final BlockPos crystalBeamTarget;
+	private final BlockPos field_16206;
 
 	public EndSpikeFeatureConfig(boolean bl, List<EndSpikeFeature.Spike> list, @Nullable BlockPos blockPos) {
 		this.crystalInvulnerable = bl;
 		this.spikes = list;
-		this.crystalBeamTarget = blockPos;
+		this.field_16206 = blockPos;
 	}
 
 	@Override
@@ -32,10 +32,10 @@ public class EndSpikeFeatureConfig implements FeatureConfig {
 					dynamicOps.createString("spikes"),
 					dynamicOps.createList(this.spikes.stream().map(spike -> spike.serialize(dynamicOps).getValue())),
 					dynamicOps.createString("crystalBeamTarget"),
-					this.crystalBeamTarget == null
+					this.field_16206 == null
 						? dynamicOps.createList(Stream.empty())
 						: dynamicOps.createList(
-							IntStream.of(new int[]{this.crystalBeamTarget.getX(), this.crystalBeamTarget.getY(), this.crystalBeamTarget.getZ()}).mapToObj(dynamicOps::createInt)
+							IntStream.of(new int[]{this.field_16206.getX(), this.field_16206.getY(), this.field_16206.getZ()}).mapToObj(dynamicOps::createInt)
 						)
 				)
 			)
@@ -64,7 +64,7 @@ public class EndSpikeFeatureConfig implements FeatureConfig {
 	}
 
 	@Nullable
-	public BlockPos getPos() {
-		return this.crystalBeamTarget;
+	public BlockPos method_15884() {
+		return this.field_16206;
 	}
 }

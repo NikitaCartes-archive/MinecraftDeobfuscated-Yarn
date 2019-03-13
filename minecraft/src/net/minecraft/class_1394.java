@@ -19,12 +19,12 @@ public class class_1394 extends WanderAroundGoal {
 
 	@Nullable
 	@Override
-	protected Vec3d getWanderTarget() {
+	protected Vec3d method_6302() {
 		if (this.owner.isInsideWaterOrBubbleColumn()) {
 			Vec3d vec3d = class_1414.method_6378(this.owner, 15, 7);
-			return vec3d == null ? super.getWanderTarget() : vec3d;
+			return vec3d == null ? super.method_6302() : vec3d;
 		} else {
-			return this.owner.getRand().nextFloat() >= this.field_6626 ? class_1414.method_6378(this.owner, 10, 7) : super.getWanderTarget();
+			return this.owner.getRand().nextFloat() >= this.field_6626 ? class_1414.method_6378(this.owner, 10, 7) : super.method_6302();
 		}
 	}
 }

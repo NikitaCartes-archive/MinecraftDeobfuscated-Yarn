@@ -20,23 +20,23 @@ public class CraftingResultSlot extends Slot {
 	}
 
 	@Override
-	public boolean canInsert(ItemStack itemStack) {
+	public boolean method_7680(ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
-	public ItemStack takeStack(int i) {
+	public ItemStack method_7671(int i) {
 		if (this.hasStack()) {
-			this.field_7869 = this.field_7869 + Math.min(i, this.getStack().getAmount());
+			this.field_7869 = this.field_7869 + Math.min(i, this.method_7677().getAmount());
 		}
 
-		return super.takeStack(i);
+		return super.method_7671(i);
 	}
 
 	@Override
-	protected void onCrafted(ItemStack itemStack, int i) {
+	protected void method_7678(ItemStack itemStack, int i) {
 		this.field_7869 += i;
-		this.onCrafted(itemStack);
+		this.method_7669(itemStack);
 	}
 
 	@Override
@@ -45,9 +45,9 @@ public class CraftingResultSlot extends Slot {
 	}
 
 	@Override
-	protected void onCrafted(ItemStack itemStack) {
+	protected void method_7669(ItemStack itemStack) {
 		if (this.field_7869 > 0) {
-			itemStack.onCrafted(this.player.world, this.player, this.field_7869);
+			itemStack.method_7982(this.player.field_6002, this.player, this.field_7869);
 		}
 
 		if (this.inventory instanceof RecipeUnlocker) {
@@ -58,26 +58,28 @@ public class CraftingResultSlot extends Slot {
 	}
 
 	@Override
-	public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-		this.onCrafted(itemStack);
-		DefaultedList<ItemStack> defaultedList = playerEntity.world.getRecipeManager().method_8128(RecipeType.CRAFTING, this.craftingInv, playerEntity.world);
+	public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
+		this.method_7669(itemStack);
+		DefaultedList<ItemStack> defaultedList = playerEntity.field_6002
+			.getRecipeManager()
+			.method_8128(RecipeType.CRAFTING, this.craftingInv, playerEntity.field_6002);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack2 = this.craftingInv.getInvStack(i);
+			ItemStack itemStack2 = this.craftingInv.method_5438(i);
 			ItemStack itemStack3 = defaultedList.get(i);
 			if (!itemStack2.isEmpty()) {
-				this.craftingInv.takeInvStack(i, 1);
-				itemStack2 = this.craftingInv.getInvStack(i);
+				this.craftingInv.method_5434(i, 1);
+				itemStack2 = this.craftingInv.method_5438(i);
 			}
 
 			if (!itemStack3.isEmpty()) {
 				if (itemStack2.isEmpty()) {
-					this.craftingInv.setInvStack(i, itemStack3);
+					this.craftingInv.method_5447(i, itemStack3);
 				} else if (ItemStack.areEqualIgnoreTags(itemStack2, itemStack3) && ItemStack.areTagsEqual(itemStack2, itemStack3)) {
 					itemStack3.addAmount(itemStack2.getAmount());
-					this.craftingInv.setInvStack(i, itemStack3);
-				} else if (!this.player.inventory.insertStack(itemStack3)) {
-					this.player.dropItem(itemStack3, false);
+					this.craftingInv.method_5447(i, itemStack3);
+				} else if (!this.player.inventory.method_7394(itemStack3)) {
+					this.player.method_7328(itemStack3, false);
 				}
 			}
 		}

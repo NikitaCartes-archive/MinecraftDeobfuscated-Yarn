@@ -10,12 +10,11 @@ import java.util.Set;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
-import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class NeighborUpdateDebugRenderer implements DebugRenderer.DebugRenderer {
@@ -42,12 +41,12 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.DebugRenderer 
 	}
 
 	@Override
-	public void render(float f, long l) {
-		long m = this.field_4622.world.getTime();
-		PlayerEntity playerEntity = this.field_4622.player;
-		double d = MathHelper.lerp((double)f, playerEntity.prevRenderX, playerEntity.x);
-		double e = MathHelper.lerp((double)f, playerEntity.prevRenderY, playerEntity.y);
-		double g = MathHelper.lerp((double)f, playerEntity.prevRenderZ, playerEntity.z);
+	public void render(long l) {
+		long m = this.field_4622.field_1687.getTime();
+		class_4184 lv = this.field_4622.field_1773.method_19418();
+		double d = lv.method_19326().x;
+		double e = lv.method_19326().y;
+		double f = lv.method_19326().z;
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
@@ -56,7 +55,7 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.DebugRenderer 
 		GlStateManager.disableTexture();
 		GlStateManager.depthMask(false);
 		int i = 200;
-		double h = 0.0025;
+		double g = 0.0025;
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Map<BlockPos, Integer> map = Maps.<BlockPos, Integer>newHashMap();
 		Iterator<Entry<Long, Map<BlockPos, Integer>>> iterator = this.field_4623.entrySet().iterator();
@@ -78,7 +77,7 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.DebugRenderer 
 								.expand(0.002)
 								.contract(0.0025 * (double)n)
 								.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ())
-								.offset(-d, -e, -g),
+								.offset(-d, -e, -f),
 							1.0F,
 							1.0F,
 							1.0F,
@@ -93,7 +92,7 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.DebugRenderer 
 		for (Entry<BlockPos, Integer> entry : map.entrySet()) {
 			BlockPos blockPos2 = (BlockPos)entry.getKey();
 			Integer integer2 = (Integer)entry.getValue();
-			DebugRenderer.method_3711(String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), f, -1);
+			DebugRenderer.method_3711(String.valueOf(integer2), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ(), -1);
 		}
 
 		GlStateManager.depthMask(true);

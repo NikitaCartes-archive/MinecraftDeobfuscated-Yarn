@@ -2,8 +2,8 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -21,7 +21,7 @@ public abstract class BillboardParticle extends Particle {
 	}
 
 	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, class_4184 arg, float f, float g, float h, float i, float j, float k) {
 		float l = this.method_18132(f);
 		float m = this.getMinU();
 		float n = this.getMaxU();
@@ -42,9 +42,9 @@ public abstract class BillboardParticle extends Particle {
 		if (this.angle != 0.0F) {
 			float w = MathHelper.lerp(f, this.prevAngle, this.angle);
 			float x = MathHelper.cos(w * 0.5F);
-			float y = MathHelper.sin(w * 0.5F) * (float)cameraRotation.x;
-			float z = MathHelper.sin(w * 0.5F) * (float)cameraRotation.y;
-			float aa = MathHelper.sin(w * 0.5F) * (float)cameraRotation.z;
+			float y = (float)((double)MathHelper.sin(w * 0.5F) * arg.method_19335().x);
+			float z = (float)((double)MathHelper.sin(w * 0.5F) * arg.method_19335().y);
+			float aa = (float)((double)MathHelper.sin(w * 0.5F) * arg.method_19335().z);
 			Vec3d vec3d = new Vec3d((double)y, (double)z, (double)aa);
 
 			for (int ab = 0; ab < 4; ab++) {

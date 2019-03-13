@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 public class BufferRenderer {
 	public void draw(BufferBuilder bufferBuilder) {
 		if (bufferBuilder.getVertexCount() > 0) {
-			VertexFormat vertexFormat = bufferBuilder.getVertexFormat();
+			VertexFormat vertexFormat = bufferBuilder.method_1311();
 			int i = vertexFormat.getVertexSize();
 			ByteBuffer byteBuffer = bufferBuilder.getByteBuffer();
 			List<VertexFormatElement> list = vertexFormat.getElements();

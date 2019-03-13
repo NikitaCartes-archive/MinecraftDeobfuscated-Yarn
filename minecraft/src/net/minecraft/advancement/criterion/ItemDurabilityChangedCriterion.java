@@ -17,12 +17,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 
 public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityChangedCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("item_durability_changed");
+	private static final Identifier field_9633 = new Identifier("item_durability_changed");
 	private final Map<PlayerAdvancementTracker, ItemDurabilityChangedCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, ItemDurabilityChangedCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9633;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.addCondition(conditionsContainer);
+		handler.method_8963(conditionsContainer);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 	) {
 		ItemDurabilityChangedCriterion.Handler handler = (ItemDurabilityChangedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
+			handler.method_8966(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -63,21 +63,21 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 		return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, integer, integer2);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
+	public void method_8960(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
 		ItemDurabilityChangedCriterion.Handler handler = (ItemDurabilityChangedCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(itemStack, i);
+			handler.method_8965(itemStack, i);
 		}
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final ItemPredicate item;
+		private final ItemPredicate field_9637;
 		private final NumberRange.Integer durability;
 		private final NumberRange.Integer delta;
 
 		public Conditions(ItemPredicate itemPredicate, NumberRange.Integer integer, NumberRange.Integer integer2) {
-			super(ItemDurabilityChangedCriterion.ID);
-			this.item = itemPredicate;
+			super(ItemDurabilityChangedCriterion.field_9633);
+			this.field_9637 = itemPredicate;
 			this.durability = integer;
 			this.delta = integer2;
 		}
@@ -86,8 +86,8 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 			return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, integer, NumberRange.Integer.ANY);
 		}
 
-		public boolean matches(ItemStack itemStack, int i) {
-			if (!this.item.test(itemStack)) {
+		public boolean method_8968(ItemStack itemStack, int i) {
+			if (!this.field_9637.test(itemStack)) {
 				return false;
 			} else {
 				return !this.durability.test(itemStack.getDurability() - i) ? false : this.delta.test(itemStack.getDamage() - i);
@@ -97,7 +97,7 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.field_9637.serialize());
 			jsonObject.add("durability", this.durability.serialize());
 			jsonObject.add("delta", this.delta.serialize());
 			return jsonObject;
@@ -105,30 +105,30 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker manager;
+		private final PlayerAdvancementTracker field_9636;
 		private final Set<Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+			this.field_9636 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void addCondition(Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions> conditionsContainer) {
+		public void method_8963(Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void removeCondition(Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions> conditionsContainer) {
+		public void method_8966(Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ItemStack itemStack, int i) {
+		public void method_8965(ItemStack itemStack, int i) {
 			List<Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(itemStack, i)) {
+				if (conditionsContainer.method_797().method_8968(itemStack, i)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions>>newArrayList();
 					}
@@ -139,7 +139,7 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<ItemDurabilityChangedCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9636);
 				}
 			}
 		}

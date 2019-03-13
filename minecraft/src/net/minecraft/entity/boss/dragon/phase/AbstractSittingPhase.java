@@ -16,8 +16,8 @@ public abstract class AbstractSittingPhase extends AbstractPhase {
 
 	@Override
 	public float modifyDamageTaken(DamageSource damageSource, float f) {
-		if (damageSource.getSource() instanceof ProjectileEntity) {
-			damageSource.getSource().setOnFireFor(1);
+		if (damageSource.method_5526() instanceof ProjectileEntity) {
+			damageSource.method_5526().setOnFireFor(1);
 			return 0.0F;
 		} else {
 			return super.modifyDamageTaken(damageSource, f);

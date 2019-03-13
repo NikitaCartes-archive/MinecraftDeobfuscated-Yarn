@@ -33,16 +33,16 @@ public class TimeCommand {
 					ServerCommandManager.literal("query")
 						.then(
 							ServerCommandManager.literal("daytime")
-								.executes(commandContext -> method_13796(commandContext.getSource(), method_13787(commandContext.getSource().getWorld())))
+								.executes(commandContext -> method_13796(commandContext.getSource(), method_13787(commandContext.getSource().method_9225())))
 						)
 						.then(
 							ServerCommandManager.literal("gametime")
-								.executes(commandContext -> method_13796(commandContext.getSource(), (int)(commandContext.getSource().getWorld().getTime() % 2147483647L)))
+								.executes(commandContext -> method_13796(commandContext.getSource(), (int)(commandContext.getSource().method_9225().getTime() % 2147483647L)))
 						)
 						.then(
 							ServerCommandManager.literal("day")
 								.executes(
-									commandContext -> method_13796(commandContext.getSource(), (int)(commandContext.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L))
+									commandContext -> method_13796(commandContext.getSource(), (int)(commandContext.getSource().method_9225().getTimeOfDay() / 24000L % 2147483647L))
 								)
 						)
 				)
@@ -54,7 +54,7 @@ public class TimeCommand {
 	}
 
 	private static int method_13796(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.time.query", i), false);
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.time.query", i), false);
 		return i;
 	}
 
@@ -63,8 +63,8 @@ public class TimeCommand {
 			serverWorld.setTimeOfDay((long)i);
 		}
 
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.time.set", i), true);
-		return method_13787(serverCommandSource.getWorld());
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.time.set", i), true);
+		return method_13787(serverCommandSource.method_9225());
 	}
 
 	public static int method_13788(ServerCommandSource serverCommandSource, int i) {
@@ -72,8 +72,8 @@ public class TimeCommand {
 			serverWorld.setTimeOfDay(serverWorld.getTimeOfDay() + (long)i);
 		}
 
-		int j = method_13787(serverCommandSource.getWorld());
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.time.set", j), true);
+		int j = method_13787(serverCommandSource.method_9225());
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.time.set", j), true);
 		return j;
 	}
 }

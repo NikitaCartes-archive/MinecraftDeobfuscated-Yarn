@@ -901,7 +901,7 @@ public class GLX {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GL11.glLineWidth(4.0F);
-		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(1, VertexFormats.field_1576);
 		if (bl) {
 			bufferBuilder.vertex(0.0, 0.0, 0.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)i, 0.0, 0.0).color(0, 0, 0, 255).next();
@@ -919,7 +919,7 @@ public class GLX {
 
 		tessellator.draw();
 		GL11.glLineWidth(2.0F);
-		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(1, VertexFormats.field_1576);
 		if (bl) {
 			bufferBuilder.vertex(0.0, 0.0, 0.0).color(255, 0, 0, 255).next();
 			bufferBuilder.vertex((double)i, 0.0, 0.0).color(255, 0, 0, 255).next();

@@ -34,7 +34,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 				double j = f + this.dragon.getRand().nextGaussian() / 2.0;
 
 				for (int k = 0; k < 6; k++) {
-					this.dragon.world.addParticle(ParticleTypes.field_11216, g, h, j, -vec3d.x * 0.08F * (double)k, -vec3d.y * 0.6F, -vec3d.z * 0.08F * (double)k);
+					this.dragon.field_6002.method_8406(ParticleTypes.field_11216, g, h, j, -vec3d.x * 0.08F * (double)k, -vec3d.y * 0.6F, -vec3d.z * 0.08F * (double)k);
 				}
 
 				vec3d.rotateY((float) (Math.PI / 16));
@@ -47,9 +47,9 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 		this.field_7053++;
 		if (this.field_7053 >= 200) {
 			if (this.field_7052 >= 4) {
-				this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
+				this.dragon.method_6831().setPhase(PhaseType.TAKEOFF);
 			} else {
-				this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
+				this.dragon.method_6831().setPhase(PhaseType.SITTING_SCANNING);
 			}
 		} else if (this.field_7053 == 10) {
 			Vec3d vec3d = new Vec3d(this.dragon.partHead.x - this.dragon.x, 0.0, this.dragon.partHead.z - this.dragon.z).normalize();
@@ -59,18 +59,18 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			double g = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0F);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(d, g, e);
 
-			while (this.dragon.world.isAir(mutable)) {
+			while (this.dragon.field_6002.method_8623(mutable)) {
 				mutable.set(d, --g, e);
 			}
 
 			g = (double)(MathHelper.floor(g) + 1);
-			this.field_7051 = new AreaEffectCloudEntity(this.dragon.world, d, g, e);
-			this.field_7051.setOwner(this.dragon);
+			this.field_7051 = new AreaEffectCloudEntity(this.dragon.field_6002, d, g, e);
+			this.field_7051.method_5607(this.dragon);
 			this.field_7051.setRadius(5.0F);
 			this.field_7051.setDuration(200);
-			this.field_7051.setParticleType(ParticleTypes.field_11216);
+			this.field_7051.method_5608(ParticleTypes.field_11216);
 			this.field_7051.setPotionEffect(new StatusEffectInstance(StatusEffects.field_5921));
-			this.dragon.world.spawnEntity(this.field_7051);
+			this.dragon.field_6002.spawnEntity(this.field_7051);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 	}
 
 	@Override
-	public PhaseType<SittingFlamingPhase> getType() {
+	public PhaseType<SittingFlamingPhase> method_6849() {
 		return PhaseType.SITTING_FLAMING;
 	}
 

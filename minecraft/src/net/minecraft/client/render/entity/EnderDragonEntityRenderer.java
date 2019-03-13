@@ -16,14 +16,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEntity, DragonEntityModel> {
-	public static final Identifier CRYSTAL_BEAM = new Identifier("textures/entity/end_crystal/end_crystal_beam.png");
-	private static final Identifier EXPLOSION_TEX = new Identifier("textures/entity/enderdragon/dragon_exploding.png");
-	private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon.png");
+	public static final Identifier field_4668 = new Identifier("textures/entity/end_crystal/end_crystal_beam.png");
+	private static final Identifier field_4669 = new Identifier("textures/entity/enderdragon/dragon_exploding.png");
+	private static final Identifier field_4670 = new Identifier("textures/entity/enderdragon/dragon.png");
 
 	public EnderDragonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new DragonEntityModel(0.0F), 0.5F);
-		this.addFeature(new EnderDragonEyesFeatureRenderer(this));
-		this.addFeature(new EnderDragonDeathFeatureRenderer(this));
+		this.method_4046(new EnderDragonEyesFeatureRenderer(this));
+		this.method_4046(new EnderDragonDeathFeatureRenderer(this));
 	}
 
 	protected void method_3915(EnderDragonEntity enderDragonEntity, float f, float g, float h) {
@@ -49,7 +49,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 			GlStateManager.depthFunc(515);
 			GlStateManager.enableAlphaTest();
 			GlStateManager.alphaFunc(516, l);
-			this.bindTexture(EXPLOSION_TEX);
+			this.method_3924(field_4669);
 			this.model.method_17137(enderDragonEntity, f, g, h, i, j, k);
 			GlStateManager.alphaFunc(516, 0.1F);
 			GlStateManager.depthFunc(514);
@@ -73,7 +73,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 	public void method_3918(EnderDragonEntity enderDragonEntity, double d, double e, double f, float g, float h) {
 		super.method_4072(enderDragonEntity, d, e, f, g, h);
 		if (enderDragonEntity.field_7024 != null) {
-			this.bindTexture(CRYSTAL_BEAM);
+			this.method_3924(field_4668);
 			float i = MathHelper.sin(((float)enderDragonEntity.field_7024.age + h) * 0.2F) / 2.0F + 0.5F;
 			i = (i * i + i) * 0.2F;
 			method_3917(
@@ -109,7 +109,7 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 		GlStateManager.shadeModel(7425);
 		float t = 0.0F - ((float)k + g) * 0.01F;
 		float u = MathHelper.sqrt(o * o + p * p + q * q) / 32.0F - ((float)k + g) * 0.01F;
-		bufferBuilder.begin(5, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.method_1328(5, VertexFormats.field_1575);
 		int v = 8;
 
 		for (int w = 0; w <= 8; w++) {
@@ -128,6 +128,6 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 	}
 
 	protected Identifier method_3914(EnderDragonEntity enderDragonEntity) {
-		return SKIN;
+		return field_4670;
 	}
 }

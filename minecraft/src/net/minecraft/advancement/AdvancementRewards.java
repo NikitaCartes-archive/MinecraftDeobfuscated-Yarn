@@ -40,20 +40,20 @@ public class AdvancementRewards {
 		this.function = lazyContainer;
 	}
 
-	public void apply(ServerPlayerEntity serverPlayerEntity) {
+	public void method_748(ServerPlayerEntity serverPlayerEntity) {
 		serverPlayerEntity.addExperience(this.experience);
 		LootContext lootContext = new LootContext.Builder(serverPlayerEntity.getServerWorld())
-			.put(LootContextParameters.field_1226, serverPlayerEntity)
-			.put(LootContextParameters.field_1232, new BlockPos(serverPlayerEntity))
+			.method_312(LootContextParameters.field_1226, serverPlayerEntity)
+			.method_312(LootContextParameters.field_1232, new BlockPos(serverPlayerEntity))
 			.setRandom(serverPlayerEntity.getRand())
-			.build(LootContextTypes.ADVANCEMENT_REWARD);
+			.method_309(LootContextTypes.ADVANCEMENT_REWARD);
 		boolean bl = false;
 
 		for (Identifier identifier : this.loot) {
-			for (ItemStack itemStack : serverPlayerEntity.server.getLootManager().getSupplier(identifier).getDrops(lootContext)) {
-				if (serverPlayerEntity.giveItemStack(itemStack)) {
-					serverPlayerEntity.world
-						.playSound(
+			for (ItemStack itemStack : serverPlayerEntity.server.getLootManager().method_367(identifier).getDrops(lootContext)) {
+				if (serverPlayerEntity.method_7270(itemStack)) {
+					serverPlayerEntity.field_6002
+						.method_8465(
 							null,
 							serverPlayerEntity.x,
 							serverPlayerEntity.y,
@@ -65,7 +65,7 @@ public class AdvancementRewards {
 						);
 					bl = true;
 				} else {
-					ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
+					ItemEntity itemEntity = serverPlayerEntity.method_7328(itemStack, false);
 					if (itemEntity != null) {
 						itemEntity.resetPickupDelay();
 						itemEntity.setOwner(serverPlayerEntity.getUuid());
@@ -75,19 +75,17 @@ public class AdvancementRewards {
 		}
 
 		if (bl) {
-			serverPlayerEntity.containerPlayer.sendContentUpdates();
+			serverPlayerEntity.field_7498.sendContentUpdates();
 		}
 
 		if (this.recipes.length > 0) {
-			serverPlayerEntity.unlockRecipes(this.recipes);
+			serverPlayerEntity.method_7335(this.recipes);
 		}
 
 		MinecraftServer minecraftServer = serverPlayerEntity.server;
 		this.function
-			.get(minecraftServer.getCommandFunctionManager())
-			.ifPresent(
-				commandFunction -> minecraftServer.getCommandFunctionManager().execute(commandFunction, serverPlayerEntity.getCommandSource().withSilent().withLevel(2))
-			);
+			.method_9196(minecraftServer.method_3740())
+			.ifPresent(commandFunction -> minecraftServer.method_3740().execute(commandFunction, serverPlayerEntity.method_5671().withSilent().withLevel(2)));
 	}
 
 	public String toString() {
@@ -131,8 +129,8 @@ public class AdvancementRewards {
 				jsonObject.add("recipes", jsonArray);
 			}
 
-			if (this.function.getId() != null) {
-				jsonObject.addProperty("function", this.function.getId().toString());
+			if (this.function.method_9197() != null) {
+				jsonObject.addProperty("function", this.function.method_9197().toString());
 			}
 
 			return jsonObject;

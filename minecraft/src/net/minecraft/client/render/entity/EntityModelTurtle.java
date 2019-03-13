@@ -16,29 +16,29 @@ public class EntityModelTurtle<T extends TurtleEntity> extends QuadrupedEntityMo
 		super(12, f);
 		this.textureWidth = 128;
 		this.textureHeight = 64;
-		this.head = new Cuboid(this, 3, 0);
-		this.head.addBox(-3.0F, -1.0F, -3.0F, 6, 5, 6, 0.0F);
-		this.head.setRotationPoint(0.0F, 19.0F, -10.0F);
-		this.body = new Cuboid(this);
-		this.body.setTextureOffset(7, 37).addBox(-9.5F, 3.0F, -10.0F, 19, 20, 6, 0.0F);
-		this.body.setTextureOffset(31, 1).addBox(-5.5F, 3.0F, -13.0F, 11, 18, 3, 0.0F);
-		this.body.setRotationPoint(0.0F, 11.0F, -10.0F);
+		this.field_3535 = new Cuboid(this, 3, 0);
+		this.field_3535.addBox(-3.0F, -1.0F, -3.0F, 6, 5, 6, 0.0F);
+		this.field_3535.setRotationPoint(0.0F, 19.0F, -10.0F);
+		this.field_3538 = new Cuboid(this);
+		this.field_3538.setTextureOffset(7, 37).addBox(-9.5F, 3.0F, -10.0F, 19, 20, 6, 0.0F);
+		this.field_3538.setTextureOffset(31, 1).addBox(-5.5F, 3.0F, -13.0F, 11, 18, 3, 0.0F);
+		this.field_3538.setRotationPoint(0.0F, 11.0F, -10.0F);
 		this.field_3594 = new Cuboid(this);
 		this.field_3594.setTextureOffset(70, 33).addBox(-4.5F, 3.0F, -14.0F, 9, 18, 1, 0.0F);
 		this.field_3594.setRotationPoint(0.0F, 11.0F, -10.0F);
 		int i = 1;
-		this.leg1 = new Cuboid(this, 1, 23);
-		this.leg1.addBox(-2.0F, 0.0F, 0.0F, 4, 1, 10, 0.0F);
-		this.leg1.setRotationPoint(-3.5F, 22.0F, 11.0F);
-		this.leg2 = new Cuboid(this, 1, 12);
-		this.leg2.addBox(-2.0F, 0.0F, 0.0F, 4, 1, 10, 0.0F);
-		this.leg2.setRotationPoint(3.5F, 22.0F, 11.0F);
-		this.leg3 = new Cuboid(this, 27, 30);
-		this.leg3.addBox(-13.0F, 0.0F, -2.0F, 13, 1, 5, 0.0F);
-		this.leg3.setRotationPoint(-5.0F, 21.0F, -4.0F);
-		this.leg4 = new Cuboid(this, 27, 24);
-		this.leg4.addBox(0.0F, 0.0F, -2.0F, 13, 1, 5, 0.0F);
-		this.leg4.setRotationPoint(5.0F, 21.0F, -4.0F);
+		this.field_3536 = new Cuboid(this, 1, 23);
+		this.field_3536.addBox(-2.0F, 0.0F, 0.0F, 4, 1, 10, 0.0F);
+		this.field_3536.setRotationPoint(-3.5F, 22.0F, 11.0F);
+		this.field_3534 = new Cuboid(this, 1, 12);
+		this.field_3534.addBox(-2.0F, 0.0F, 0.0F, 4, 1, 10, 0.0F);
+		this.field_3534.setRotationPoint(3.5F, 22.0F, 11.0F);
+		this.field_3533 = new Cuboid(this, 27, 30);
+		this.field_3533.addBox(-13.0F, 0.0F, -2.0F, 13, 1, 5, 0.0F);
+		this.field_3533.setRotationPoint(-5.0F, 21.0F, -4.0F);
+		this.field_3539 = new Cuboid(this, 27, 24);
+		this.field_3539.addBox(0.0F, 0.0F, -2.0F, 13, 1, 5, 0.0F);
+		this.field_3539.setRotationPoint(5.0F, 21.0F, -4.0F);
 	}
 
 	public void method_17124(T turtleEntity, float f, float g, float h, float i, float j, float k) {
@@ -48,12 +48,12 @@ public class EntityModelTurtle<T extends TurtleEntity> extends QuadrupedEntityMo
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(0.16666667F, 0.16666667F, 0.16666667F);
 			GlStateManager.translatef(0.0F, 120.0F * k, 0.0F);
-			this.head.render(k);
-			this.body.render(k);
-			this.leg1.render(k);
-			this.leg2.render(k);
-			this.leg3.render(k);
-			this.leg4.render(k);
+			this.field_3535.render(k);
+			this.field_3538.render(k);
+			this.field_3536.render(k);
+			this.field_3534.render(k);
+			this.field_3533.render(k);
+			this.field_3539.render(k);
 			GlStateManager.popMatrix();
 		} else {
 			GlStateManager.pushMatrix();
@@ -61,14 +61,14 @@ public class EntityModelTurtle<T extends TurtleEntity> extends QuadrupedEntityMo
 				GlStateManager.translatef(0.0F, -0.08F, 0.0F);
 			}
 
-			this.head.render(k);
-			this.body.render(k);
+			this.field_3535.render(k);
+			this.field_3538.render(k);
 			GlStateManager.pushMatrix();
-			this.leg1.render(k);
-			this.leg2.render(k);
+			this.field_3536.render(k);
+			this.field_3534.render(k);
 			GlStateManager.popMatrix();
-			this.leg3.render(k);
-			this.leg4.render(k);
+			this.field_3533.render(k);
+			this.field_3539.render(k);
 			if (turtleEntity.getHasEgg()) {
 				this.field_3594.render(k);
 			}
@@ -79,29 +79,29 @@ public class EntityModelTurtle<T extends TurtleEntity> extends QuadrupedEntityMo
 
 	public void method_17125(T turtleEntity, float f, float g, float h, float i, float j, float k) {
 		super.setAngles(turtleEntity, f, g, h, i, j, k);
-		this.leg1.pitch = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
-		this.leg2.pitch = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
-		this.leg3.roll = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
-		this.leg4.roll = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
-		this.leg3.pitch = 0.0F;
-		this.leg4.pitch = 0.0F;
-		this.leg3.yaw = 0.0F;
-		this.leg4.yaw = 0.0F;
-		this.leg1.yaw = 0.0F;
-		this.leg2.yaw = 0.0F;
+		this.field_3536.pitch = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
+		this.field_3534.pitch = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
+		this.field_3533.roll = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
+		this.field_3539.roll = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
+		this.field_3533.pitch = 0.0F;
+		this.field_3539.pitch = 0.0F;
+		this.field_3533.yaw = 0.0F;
+		this.field_3539.yaw = 0.0F;
+		this.field_3536.yaw = 0.0F;
+		this.field_3534.yaw = 0.0F;
 		this.field_3594.pitch = (float) (Math.PI / 2);
 		if (!turtleEntity.isInsideWater() && turtleEntity.onGround) {
 			float l = turtleEntity.method_6695() ? 4.0F : 1.0F;
 			float m = turtleEntity.method_6695() ? 2.0F : 1.0F;
 			float n = 5.0F;
-			this.leg3.yaw = MathHelper.cos(l * f * 5.0F + (float) Math.PI) * 8.0F * g * m;
-			this.leg3.roll = 0.0F;
-			this.leg4.yaw = MathHelper.cos(l * f * 5.0F) * 8.0F * g * m;
-			this.leg4.roll = 0.0F;
-			this.leg1.yaw = MathHelper.cos(f * 5.0F + (float) Math.PI) * 3.0F * g;
-			this.leg1.pitch = 0.0F;
-			this.leg2.yaw = MathHelper.cos(f * 5.0F) * 3.0F * g;
-			this.leg2.pitch = 0.0F;
+			this.field_3533.yaw = MathHelper.cos(l * f * 5.0F + (float) Math.PI) * 8.0F * g * m;
+			this.field_3533.roll = 0.0F;
+			this.field_3539.yaw = MathHelper.cos(l * f * 5.0F) * 8.0F * g * m;
+			this.field_3539.roll = 0.0F;
+			this.field_3536.yaw = MathHelper.cos(f * 5.0F + (float) Math.PI) * 3.0F * g;
+			this.field_3536.pitch = 0.0F;
+			this.field_3534.yaw = MathHelper.cos(f * 5.0F) * 3.0F * g;
+			this.field_3534.pitch = 0.0F;
 		}
 	}
 }

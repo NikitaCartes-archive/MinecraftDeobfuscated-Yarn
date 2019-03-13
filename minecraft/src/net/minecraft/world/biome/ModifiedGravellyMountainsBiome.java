@@ -12,9 +12,9 @@ public final class ModifiedGravellyMountainsBiome extends Biome {
 	protected ModifiedGravellyMountainsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.GRAVELLY_MOUNTAIN, SurfaceBuilder.GRASS_CONFIG)
+				.method_8737(SurfaceBuilder.GRAVELLY_MOUNTAIN, SurfaceBuilder.field_15677)
 				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.EXTREME_HILLS)
+				.method_8738(Biome.Category.EXTREME_HILLS)
 				.depth(1.0F)
 				.scale(0.5F)
 				.temperature(0.2F)
@@ -23,8 +23,8 @@ public final class ModifiedGravellyMountainsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("wooded_mountains")
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

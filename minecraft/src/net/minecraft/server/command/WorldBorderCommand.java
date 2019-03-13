@@ -49,7 +49,7 @@ public class WorldBorderCommand {
 								.executes(
 									commandContext -> method_13854(
 											commandContext.getSource(),
-											commandContext.getSource().getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"),
+											commandContext.getSource().method_9225().method_8621().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"),
 											0L
 										)
 								)
@@ -58,8 +58,8 @@ public class WorldBorderCommand {
 										.executes(
 											commandContext -> method_13854(
 													commandContext.getSource(),
-													commandContext.getSource().getWorld().getWorldBorder().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"),
-													commandContext.getSource().getWorld().getWorldBorder().getTargetRemainingTime()
+													commandContext.getSource().method_9225().method_8621().getSize() + (double)FloatArgumentType.getFloat(commandContext, "distance"),
+													commandContext.getSource().method_9225().method_8621().getTargetRemainingTime()
 														+ (long)IntegerArgumentType.getInteger(commandContext, "time") * 1000L
 												)
 										)
@@ -129,62 +129,62 @@ public class WorldBorderCommand {
 	}
 
 	private static int method_13865(ServerCommandSource serverCommandSource, float f) throws CommandSyntaxException {
-		WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
+		WorldBorder worldBorder = serverCommandSource.method_9225().method_8621();
 		if (worldBorder.getSafeZone() == (double)f) {
 			throw DAMAGE_BUFFER_FAILED_EXCEPTION.create();
 		} else {
 			worldBorder.setSafeZone((double)f);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.worldborder.damage.buffer.success", String.format(Locale.ROOT, "%.2f", f)), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.worldborder.damage.buffer.success", String.format(Locale.ROOT, "%.2f", f)), true);
 			return (int)f;
 		}
 	}
 
 	private static int method_13863(ServerCommandSource serverCommandSource, float f) throws CommandSyntaxException {
-		WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
+		WorldBorder worldBorder = serverCommandSource.method_9225().method_8621();
 		if (worldBorder.getDamagePerBlock() == (double)f) {
 			throw DAMAGE_AMOUNT_FAILED_EXCEPTION.create();
 		} else {
 			worldBorder.setDamagePerBlock((double)f);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.worldborder.damage.amount.success", String.format(Locale.ROOT, "%.2f", f)), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.worldborder.damage.amount.success", String.format(Locale.ROOT, "%.2f", f)), true);
 			return (int)f;
 		}
 	}
 
 	private static int method_13856(ServerCommandSource serverCommandSource, int i) throws CommandSyntaxException {
-		WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
+		WorldBorder worldBorder = serverCommandSource.method_9225().method_8621();
 		if (worldBorder.getWarningTime() == i) {
 			throw WARNING_TIME_FAILED_EXCEPTION.create();
 		} else {
 			worldBorder.setWarningTime(i);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.worldborder.warning.time.success", i), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.worldborder.warning.time.success", i), true);
 			return i;
 		}
 	}
 
 	private static int method_13859(ServerCommandSource serverCommandSource, int i) throws CommandSyntaxException {
-		WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
+		WorldBorder worldBorder = serverCommandSource.method_9225().method_8621();
 		if (worldBorder.getWarningBlocks() == i) {
 			throw WARNING_DISTANCE_FAILED_EXCEPTION.create();
 		} else {
 			worldBorder.setWarningBlocks(i);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.worldborder.warning.distance.success", i), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.worldborder.warning.distance.success", i), true);
 			return i;
 		}
 	}
 
 	private static int method_13868(ServerCommandSource serverCommandSource) {
-		double d = serverCommandSource.getWorld().getWorldBorder().getSize();
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.worldborder.get", String.format(Locale.ROOT, "%.0f", d)), false);
+		double d = serverCommandSource.method_9225().method_8621().getSize();
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.worldborder.get", String.format(Locale.ROOT, "%.0f", d)), false);
 		return MathHelper.floor(d + 0.5);
 	}
 
 	private static int method_13869(ServerCommandSource serverCommandSource, Vec2f vec2f) throws CommandSyntaxException {
-		WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
+		WorldBorder worldBorder = serverCommandSource.method_9225().method_8621();
 		if (worldBorder.getCenterX() == (double)vec2f.x && worldBorder.getCenterZ() == (double)vec2f.y) {
 			throw CENTER_FAILED_EXCEPTION.create();
 		} else {
 			worldBorder.setCenter((double)vec2f.x, (double)vec2f.y);
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent("commands.worldborder.center.success", String.format(Locale.ROOT, "%.2f", vec2f.x), String.format("%.2f", vec2f.y)), true
 			);
 			return 0;
@@ -192,7 +192,7 @@ public class WorldBorderCommand {
 	}
 
 	private static int method_13854(ServerCommandSource serverCommandSource, double d, long l) throws CommandSyntaxException {
-		WorldBorder worldBorder = serverCommandSource.getWorld().getWorldBorder();
+		WorldBorder worldBorder = serverCommandSource.method_9225().method_8621();
 		double e = worldBorder.getSize();
 		if (e == d) {
 			throw SET_FAILED_NOCHANGE_EXCEPTION.create();
@@ -204,17 +204,17 @@ public class WorldBorderCommand {
 			if (l > 0L) {
 				worldBorder.interpolateSize(e, d, l);
 				if (d > e) {
-					serverCommandSource.sendFeedback(
+					serverCommandSource.method_9226(
 						new TranslatableTextComponent("commands.worldborder.set.grow", String.format(Locale.ROOT, "%.1f", d), Long.toString(l / 1000L)), true
 					);
 				} else {
-					serverCommandSource.sendFeedback(
+					serverCommandSource.method_9226(
 						new TranslatableTextComponent("commands.worldborder.set.shrink", String.format(Locale.ROOT, "%.1f", d), Long.toString(l / 1000L)), true
 					);
 				}
 			} else {
 				worldBorder.setSize(d);
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.worldborder.set.immediate", String.format(Locale.ROOT, "%.1f", d)), true);
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.worldborder.set.immediate", String.format(Locale.ROOT, "%.1f", d)), true);
 			}
 
 			return (int)(d - e);

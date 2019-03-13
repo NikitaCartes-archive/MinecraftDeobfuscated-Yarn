@@ -9,10 +9,10 @@ import net.minecraft.util.Lazy;
 
 @Environment(EnvType.CLIENT)
 public final class MissingSprite extends Sprite {
-	private static final Identifier MISSINGNO = new Identifier("missingno");
+	private static final Identifier field_5219 = new Identifier("missingno");
 	@Nullable
 	private static NativeImageBackedTexture TEXTURE;
-	private static final Lazy<NativeImage> IMAGE = new Lazy<>(() -> {
+	private static final Lazy<NativeImage> field_5221 = new Lazy<>(() -> {
 		NativeImage nativeImage = new NativeImage(16, 16, false);
 		int i = -16777216;
 		int j = -524040;
@@ -32,16 +32,16 @@ public final class MissingSprite extends Sprite {
 	});
 
 	private MissingSprite() {
-		super(MISSINGNO, 16, 16);
-		this.images = new NativeImage[]{IMAGE.get()};
+		super(field_5219, 16, 16);
+		this.images = new NativeImage[]{field_5221.get()};
 	}
 
 	public static MissingSprite getMissingSprite() {
 		return new MissingSprite();
 	}
 
-	public static Identifier getMissingSpriteId() {
-		return MISSINGNO;
+	public static Identifier method_4539() {
+		return field_5219;
 	}
 
 	@Override
@@ -50,13 +50,13 @@ public final class MissingSprite extends Sprite {
 			this.images[i].close();
 		}
 
-		this.images = new NativeImage[]{IMAGE.get()};
+		this.images = new NativeImage[]{field_5221.get()};
 	}
 
 	public static NativeImageBackedTexture getMissingSpriteTexture() {
 		if (TEXTURE == null) {
-			TEXTURE = new NativeImageBackedTexture(IMAGE.get());
-			MinecraftClient.getInstance().getTextureManager().registerTexture(MISSINGNO, TEXTURE);
+			TEXTURE = new NativeImageBackedTexture(field_5221.get());
+			MinecraftClient.getInstance().method_1531().method_4616(field_5219, TEXTURE);
 		}
 
 		return TEXTURE;

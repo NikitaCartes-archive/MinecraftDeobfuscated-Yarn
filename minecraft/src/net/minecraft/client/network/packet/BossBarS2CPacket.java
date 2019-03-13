@@ -27,7 +27,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	public BossBarS2CPacket(BossBarS2CPacket.Type type, BossBar bossBar) {
 		this.type = type;
 		this.uuid = bossBar.getUuid();
-		this.name = bossBar.getName();
+		this.name = bossBar.method_5414();
 		this.percent = bossBar.getPercent();
 		this.color = bossBar.getColor();
 		this.overlay = bossBar.getOverlay();
@@ -42,7 +42,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.type = packetByteBuf.readEnumConstant(BossBarS2CPacket.Type.class);
 		switch (this.type) {
 			case ADD:
-				this.name = packetByteBuf.readTextComponent();
+				this.name = packetByteBuf.method_10808();
 				this.percent = packetByteBuf.readFloat();
 				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
 				this.overlay = packetByteBuf.readEnumConstant(BossBar.Overlay.class);
@@ -54,7 +54,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 				this.percent = packetByteBuf.readFloat();
 				break;
 			case UPDATE_TITLE:
-				this.name = packetByteBuf.readTextComponent();
+				this.name = packetByteBuf.method_10808();
 				break;
 			case UPDATE_STYLE:
 				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
@@ -77,7 +77,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeEnumConstant(this.type);
 		switch (this.type) {
 			case ADD:
-				packetByteBuf.writeTextComponent(this.name);
+				packetByteBuf.method_10805(this.name);
 				packetByteBuf.writeFloat(this.percent);
 				packetByteBuf.writeEnumConstant(this.color);
 				packetByteBuf.writeEnumConstant(this.overlay);
@@ -89,7 +89,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 				packetByteBuf.writeFloat(this.percent);
 				break;
 			case UPDATE_TITLE:
-				packetByteBuf.writeTextComponent(this.name);
+				packetByteBuf.method_10805(this.name);
 				break;
 			case UPDATE_STYLE:
 				packetByteBuf.writeEnumConstant(this.color);
@@ -118,7 +118,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11330(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onBossBar(this);
+		clientPlayPacketListener.method_11078(this);
 	}
 
 	@Environment(EnvType.CLIENT)

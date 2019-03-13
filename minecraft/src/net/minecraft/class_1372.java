@@ -1,5 +1,6 @@
 package net.minecraft;
 
+import java.util.EnumSet;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -12,18 +13,18 @@ public class class_1372 extends Goal {
 
 	public class_1372(IronGolemEntity ironGolemEntity) {
 		this.field_6542 = ironGolemEntity;
-		this.setControlBits(3);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.field_6542.world.isDaylight()) {
+		if (!this.field_6542.field_6002.isDaylight()) {
 			return false;
 		} else if (this.field_6542.getRand().nextInt(8000) != 0) {
 			return false;
 		} else {
 			this.field_6544 = this.field_6542
-				.world
+				.field_6002
 				.method_18465(
 					VillagerEntity.class,
 					field_18089,
@@ -31,7 +32,7 @@ public class class_1372 extends Goal {
 					this.field_6542.x,
 					this.field_6542.y,
 					this.field_6542.z,
-					this.field_6542.getBoundingBox().expand(6.0, 2.0, 6.0)
+					this.field_6542.method_5829().expand(6.0, 2.0, 6.0)
 				);
 			return this.field_6544 != null;
 		}
@@ -56,7 +57,7 @@ public class class_1372 extends Goal {
 
 	@Override
 	public void tick() {
-		this.field_6542.getLookControl().lookAt(this.field_6544, 30.0F, 30.0F);
+		this.field_6542.method_5988().lookAt(this.field_6544, 30.0F, 30.0F);
 		this.field_6543--;
 	}
 }

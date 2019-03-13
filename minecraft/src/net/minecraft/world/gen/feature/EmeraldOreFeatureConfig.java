@@ -31,8 +31,8 @@ public class EmeraldOreFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> EmeraldOreFeatureConfig deserialize(Dynamic<T> dynamic) {
-		BlockState blockState = (BlockState)dynamic.get("target").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
-		BlockState blockState2 = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("target").map(BlockState::deserialize).orElse(Blocks.field_10124.method_9564());
+		BlockState blockState2 = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.method_9564());
 		return new EmeraldOreFeatureConfig(blockState, blockState2);
 	}
 }

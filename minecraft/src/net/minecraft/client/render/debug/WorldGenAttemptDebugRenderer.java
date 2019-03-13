@@ -5,15 +5,13 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.BlockView;
 
 @Environment(EnvType.CLIENT)
 public class WorldGenAttemptDebugRenderer implements DebugRenderer.DebugRenderer {
@@ -39,35 +37,33 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.DebugRenderer
 	}
 
 	@Override
-	public void render(float f, long l) {
-		PlayerEntity playerEntity = this.field_4634.player;
-		BlockView blockView = this.field_4634.world;
-		double d = MathHelper.lerp((double)f, playerEntity.prevRenderX, playerEntity.x);
-		double e = MathHelper.lerp((double)f, playerEntity.prevRenderY, playerEntity.y);
-		double g = MathHelper.lerp((double)f, playerEntity.prevRenderZ, playerEntity.z);
+	public void render(long l) {
+		class_4184 lv = this.field_4634.field_1773.method_19418();
+		double d = lv.method_19326().x;
+		double e = lv.method_19326().y;
+		double f = lv.method_19326().z;
 		GlStateManager.pushMatrix();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.disableTexture();
-		new BlockPos(playerEntity.x, 0.0, playerEntity.z);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(5, VertexFormats.field_1576);
 
 		for (int i = 0; i < this.field_4640.size(); i++) {
-			BlockPos blockPos2 = (BlockPos)this.field_4640.get(i);
+			BlockPos blockPos = (BlockPos)this.field_4640.get(i);
 			Float float_ = (Float)this.field_4635.get(i);
-			float h = float_ / 2.0F;
+			float g = float_ / 2.0F;
 			WorldRenderer.buildBox(
 				bufferBuilder,
-				(double)((float)blockPos2.getX() + 0.5F - h) - d,
-				(double)((float)blockPos2.getY() + 0.5F - h) - e,
-				(double)((float)blockPos2.getZ() + 0.5F - h) - g,
-				(double)((float)blockPos2.getX() + 0.5F + h) - d,
-				(double)((float)blockPos2.getY() + 0.5F + h) - e,
-				(double)((float)blockPos2.getZ() + 0.5F + h) - g,
+				(double)((float)blockPos.getX() + 0.5F - g) - d,
+				(double)((float)blockPos.getY() + 0.5F - g) - e,
+				(double)((float)blockPos.getZ() + 0.5F - g) - f,
+				(double)((float)blockPos.getX() + 0.5F + g) - d,
+				(double)((float)blockPos.getY() + 0.5F + g) - e,
+				(double)((float)blockPos.getZ() + 0.5F + g) - f,
 				(Float)this.field_4639.get(i),
 				(Float)this.field_4636.get(i),
 				(Float)this.field_4638.get(i),

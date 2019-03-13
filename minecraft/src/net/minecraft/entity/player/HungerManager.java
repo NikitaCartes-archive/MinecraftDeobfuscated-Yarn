@@ -2,8 +2,9 @@ package net.minecraft.entity.player;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4174;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.item.FoodItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.Difficulty;
@@ -24,12 +25,15 @@ public class HungerManager {
 		this.foodSaturationLevel = Math.min(this.foodSaturationLevel + (float)i * f * 2.0F, (float)this.foodLevel);
 	}
 
-	public void eat(FoodItem foodItem, ItemStack itemStack) {
-		this.add(foodItem.getHungerRestored(itemStack), foodItem.getSaturationModifier(itemStack));
+	public void method_7579(Item item, ItemStack itemStack) {
+		if (item.method_19263()) {
+			class_4174 lv = item.method_19264();
+			this.add(lv.method_19230(), lv.method_19231());
+		}
 	}
 
 	public void update(PlayerEntity playerEntity) {
-		Difficulty difficulty = playerEntity.world.getDifficulty();
+		Difficulty difficulty = playerEntity.field_6002.getDifficulty();
 		this.prevFoodLevel = this.foodLevel;
 		if (this.exhaustion > 4.0F) {
 			this.exhaustion -= 4.0F;
@@ -40,7 +44,7 @@ public class HungerManager {
 			}
 		}
 
-		boolean bl = playerEntity.world.getGameRules().getBoolean("naturalRegeneration");
+		boolean bl = playerEntity.field_6002.getGameRules().getBoolean("naturalRegeneration");
 		if (bl && this.foodSaturationLevel > 0.0F && playerEntity.canFoodHeal() && this.foodLevel >= 20) {
 			this.foodStarvationTimer++;
 			if (this.foodStarvationTimer >= 10) {
@@ -70,7 +74,7 @@ public class HungerManager {
 		}
 	}
 
-	public void deserialize(CompoundTag compoundTag) {
+	public void method_7584(CompoundTag compoundTag) {
 		if (compoundTag.containsKey("foodLevel", 99)) {
 			this.foodLevel = compoundTag.getInt("foodLevel");
 			this.foodStarvationTimer = compoundTag.getInt("foodTickTimer");
@@ -79,7 +83,7 @@ public class HungerManager {
 		}
 	}
 
-	public void serialize(CompoundTag compoundTag) {
+	public void method_7582(CompoundTag compoundTag) {
 		compoundTag.putInt("foodLevel", this.foodLevel);
 		compoundTag.putInt("foodTickTimer", this.foodStarvationTimer);
 		compoundTag.putFloat("foodSaturationLevel", this.foodSaturationLevel);

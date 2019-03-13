@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_336;
+import net.minecraft.class_4184;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -67,13 +68,13 @@ import net.minecraft.world.border.WorldBorder;
 
 @Environment(EnvType.CLIENT)
 public class InGameHud extends DrawableHelper {
-	private static final Identifier VIGNETTE_TEX = new Identifier("textures/misc/vignette.png");
-	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/widgets.png");
-	private static final Identifier PUMPKIN_BLUR = new Identifier("textures/misc/pumpkinblur.png");
+	private static final Identifier field_2020 = new Identifier("textures/misc/vignette.png");
+	private static final Identifier field_2028 = new Identifier("textures/gui/widgets.png");
+	private static final Identifier field_2019 = new Identifier("textures/misc/pumpkinblur.png");
 	private final Random random = new Random();
 	private final MinecraftClient client;
-	private final ItemRenderer itemRenderer;
-	private final ChatHud chatHud;
+	private final ItemRenderer field_2024;
+	private final ChatHud field_2021;
 	private int ticks;
 	private String overlayMessage = "";
 	private int overlayRemaining;
@@ -81,11 +82,11 @@ public class InGameHud extends DrawableHelper {
 	public float field_2013 = 1.0F;
 	private int heldItemTooltipFade;
 	private ItemStack currentStack = ItemStack.EMPTY;
-	private final DebugHud debugHud;
-	private final SubtitlesHud subtitlesHud;
-	private final SpectatorHud spectatorHud;
-	private final ScoreboardHud scoreboardHud;
-	private final BossBarHud bossBarHud;
+	private final DebugHud field_2026;
+	private final SubtitlesHud field_2027;
+	private final SpectatorHud field_2025;
+	private final ScoreboardHud field_2015;
+	private final BossBarHud field_2030;
 	private int titleTotalTicks;
 	private String title = "";
 	private String subtitle = "";
@@ -102,13 +103,13 @@ public class InGameHud extends DrawableHelper {
 
 	public InGameHud(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
-		this.itemRenderer = minecraftClient.getItemRenderer();
-		this.debugHud = new DebugHud(minecraftClient);
-		this.spectatorHud = new SpectatorHud(minecraftClient);
-		this.chatHud = new ChatHud(minecraftClient);
-		this.scoreboardHud = new ScoreboardHud(minecraftClient, this);
-		this.bossBarHud = new BossBarHud(minecraftClient);
-		this.subtitlesHud = new SubtitlesHud(minecraftClient);
+		this.field_2024 = minecraftClient.method_1480();
+		this.field_2026 = new DebugHud(minecraftClient);
+		this.field_2025 = new SpectatorHud(minecraftClient);
+		this.field_2021 = new ChatHud(minecraftClient);
+		this.field_2015 = new ScoreboardHud(minecraftClient, this);
+		this.field_2030 = new BossBarHud(minecraftClient);
+		this.field_2027 = new SubtitlesHud(minecraftClient);
 
 		for (ChatMessageType chatMessageType : ChatMessageType.values()) {
 			this.listeners.put(chatMessageType, Lists.newArrayList());
@@ -143,63 +144,63 @@ public class InGameHud extends DrawableHelper {
 			);
 		}
 
-		ItemStack itemStack = this.client.player.inventory.getArmorStack(3);
-		if (this.client.options.perspective == 0 && itemStack.getItem() == Blocks.field_10147.getItem()) {
+		ItemStack itemStack = this.client.field_1724.inventory.method_7372(3);
+		if (this.client.field_1690.perspective == 0 && itemStack.getItem() == Blocks.field_10147.getItem()) {
 			this.renderPumpkinOverlay();
 		}
 
-		if (!this.client.player.hasPotionEffect(StatusEffects.field_5916)) {
-			float g = MathHelper.lerp(f, this.client.player.field_3911, this.client.player.field_3929);
+		if (!this.client.field_1724.hasPotionEffect(StatusEffects.field_5916)) {
+			float g = MathHelper.lerp(f, this.client.field_1724.field_3911, this.client.field_1724.field_3929);
 			if (g > 0.0F) {
 				this.renderPortalOverlay(g);
 			}
 		}
 
-		if (this.client.interactionManager.getCurrentGameMode() == GameMode.field_9219) {
-			this.spectatorHud.draw(f);
-		} else if (!this.client.options.hudHidden) {
+		if (this.client.field_1761.getCurrentGameMode() == GameMode.field_9219) {
+			this.field_2025.draw(f);
+		} else if (!this.client.field_1690.hudHidden) {
 			this.renderHotbar(f);
 		}
 
-		if (!this.client.options.hudHidden) {
+		if (!this.client.field_1690.hudHidden) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(ICONS);
+			this.client.method_1531().method_4618(field_2053);
 			GlStateManager.enableBlend();
 			GlStateManager.enableAlphaTest();
-			this.renderCrosshair(f);
+			this.renderCrosshair();
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			this.client.getProfiler().push("bossHealth");
-			this.bossBarHud.draw();
+			this.field_2030.draw();
 			this.client.getProfiler().pop();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(ICONS);
-			if (this.client.interactionManager.hasStatusBars()) {
+			this.client.method_1531().method_4618(field_2053);
+			if (this.client.field_1761.hasStatusBars()) {
 				this.renderStatusBars();
 			}
 
 			this.drawMountHealth();
 			GlStateManager.disableBlend();
 			int i = this.scaledWidth / 2 - 91;
-			if (this.client.player.hasJumpingMount()) {
+			if (this.client.field_1724.hasJumpingMount()) {
 				this.renderMountJumpBar(i);
-			} else if (this.client.interactionManager.hasExperienceBar()) {
+			} else if (this.client.field_1761.hasExperienceBar()) {
 				this.renderExperienceBar(i);
 			}
 
-			if (this.client.options.heldItemTooltips && this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219) {
+			if (this.client.field_1690.heldItemTooltips && this.client.field_1761.getCurrentGameMode() != GameMode.field_9219) {
 				this.renderHeldItemTooltip();
-			} else if (this.client.player.isSpectator()) {
-				this.spectatorHud.draw();
+			} else if (this.client.field_1724.isSpectator()) {
+				this.field_2025.draw();
 			}
 		}
 
-		if (this.client.player.getSleepTimer() > 0) {
+		if (this.client.field_1724.getSleepTimer() > 0) {
 			this.client.getProfiler().push("sleep");
 			GlStateManager.disableDepthTest();
 			GlStateManager.disableAlphaTest();
-			float g = (float)this.client.player.getSleepTimer();
+			float g = (float)this.client.field_1724.getSleepTimer();
 			float h = g / 100.0F;
 			if (h > 1.0F) {
 				h = 1.0F - (g - 100.0F) / 10.0F;
@@ -218,11 +219,11 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		this.renderStatusEffectOverlay();
-		if (this.client.options.debugEnabled) {
-			this.debugHud.draw();
+		if (this.client.field_1690.debugEnabled) {
+			this.field_2026.draw();
 		}
 
-		if (!this.client.options.hudHidden) {
+		if (!this.client.field_1690.hudHidden) {
 			if (this.overlayRemaining > 0) {
 				this.client.getProfiler().push("overlayMessage");
 				float g = (float)this.overlayRemaining - f;
@@ -243,7 +244,9 @@ public class InGameHud extends DrawableHelper {
 						j = MathHelper.hsvToRgb(g / 50.0F, 0.7F, 0.6F) & 16777215;
 					}
 
-					textRenderer.draw(this.overlayMessage, (float)(-textRenderer.getStringWidth(this.overlayMessage) / 2), -4.0F, j + (k << 24 & 0xFF000000));
+					int l = k << 24 & 0xFF000000;
+					this.method_19346(textRenderer, -4, textRenderer.getStringWidth(this.overlayMessage));
+					textRenderer.draw(this.overlayMessage, (float)(-textRenderer.getStringWidth(this.overlayMessage) / 2), -4.0F, j | l);
 					GlStateManager.disableBlend();
 					GlStateManager.popMatrix();
 				}
@@ -256,8 +259,8 @@ public class InGameHud extends DrawableHelper {
 				float gx = (float)this.titleTotalTicks - f;
 				int kx = 255;
 				if (this.titleTotalTicks > this.titleFadeOutTicks + this.titleRemainTicks) {
-					float l = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - gx;
-					kx = (int)(l * 255.0F / (float)this.titleFadeInTicks);
+					float m = (float)(this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks) - gx;
+					kx = (int)(m * 255.0F / (float)this.titleFadeInTicks);
 				}
 
 				if (this.titleTotalTicks <= this.titleFadeOutTicks) {
@@ -275,12 +278,19 @@ public class InGameHud extends DrawableHelper {
 					GlStateManager.pushMatrix();
 					GlStateManager.scalef(4.0F, 4.0F, 4.0F);
 					int j = kx << 24 & 0xFF000000;
-					textRenderer.drawWithShadow(this.title, (float)(-textRenderer.getStringWidth(this.title) / 2), -10.0F, 16777215 | j);
+					int l = textRenderer.getStringWidth(this.title);
+					this.method_19346(textRenderer, -10, l);
+					textRenderer.drawWithShadow(this.title, (float)(-l / 2), -10.0F, 16777215 | j);
 					GlStateManager.popMatrix();
-					GlStateManager.pushMatrix();
-					GlStateManager.scalef(2.0F, 2.0F, 2.0F);
-					textRenderer.drawWithShadow(this.subtitle, (float)(-textRenderer.getStringWidth(this.subtitle) / 2), 5.0F, 16777215 | j);
-					GlStateManager.popMatrix();
+					if (!this.subtitle.isEmpty()) {
+						GlStateManager.pushMatrix();
+						GlStateManager.scalef(2.0F, 2.0F, 2.0F);
+						int n = textRenderer.getStringWidth(this.subtitle);
+						this.method_19346(textRenderer, 5, n);
+						textRenderer.drawWithShadow(this.subtitle, (float)(-n / 2), 5.0F, 16777215 | j);
+						GlStateManager.popMatrix();
+					}
+
 					GlStateManager.disableBlend();
 					GlStateManager.popMatrix();
 				}
@@ -288,14 +298,14 @@ public class InGameHud extends DrawableHelper {
 				this.client.getProfiler().pop();
 			}
 
-			this.subtitlesHud.draw();
-			Scoreboard scoreboard = this.client.world.getScoreboard();
+			this.field_2027.draw();
+			Scoreboard scoreboard = this.client.field_1687.method_8428();
 			ScoreboardObjective scoreboardObjective = null;
-			ScoreboardTeam scoreboardTeam = scoreboard.getPlayerTeam(this.client.player.getEntityName());
+			ScoreboardTeam scoreboardTeam = scoreboard.getPlayerTeam(this.client.field_1724.getEntityName());
 			if (scoreboardTeam != null) {
-				int m = scoreboardTeam.getColor().getId();
-				if (m >= 0) {
-					scoreboardObjective = scoreboard.getObjectiveForSlot(3 + m);
+				int l = scoreboardTeam.getColor().getId();
+				if (l >= 0) {
+					scoreboardObjective = scoreboard.getObjectiveForSlot(3 + l);
 				}
 			}
 
@@ -312,16 +322,16 @@ public class InGameHud extends DrawableHelper {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, (float)(this.scaledHeight - 48), 0.0F);
 			this.client.getProfiler().push("chat");
-			this.chatHud.draw(this.ticks);
+			this.field_2021.draw(this.ticks);
 			this.client.getProfiler().pop();
 			GlStateManager.popMatrix();
 			scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
-			if (!this.client.options.keyPlayerList.isPressed()
-				|| this.client.isInSingleplayer() && this.client.player.networkHandler.getScoreboardEntries().size() <= 1 && scoreboardObjective2 == null) {
-				this.scoreboardHud.method_1921(false);
+			if (!this.client.field_1690.keyPlayerList.isPressed()
+				|| this.client.isInSingleplayer() && this.client.field_1724.networkHandler.getScoreboardEntries().size() <= 1 && scoreboardObjective2 == null) {
+				this.field_2015.method_1921(false);
 			} else {
-				this.scoreboardHud.method_1921(true);
-				this.scoreboardHud.method_1919(this.scaledWidth, scoreboard, scoreboardObjective2);
+				this.field_2015.method_1921(true);
+				this.field_2015.method_1919(this.scaledWidth, scoreboard, scoreboardObjective2);
 			}
 		}
 
@@ -330,16 +340,21 @@ public class InGameHud extends DrawableHelper {
 		GlStateManager.enableAlphaTest();
 	}
 
-	private void renderCrosshair(float f) {
-		GameOptions gameOptions = this.client.options;
+	private void method_19346(TextRenderer textRenderer, int i, int j) {
+		int k = -j / 2;
+		drawRect(k - 2, i - 2, k + j + 2, i + 9 + 2, -16777216);
+	}
+
+	private void renderCrosshair() {
+		GameOptions gameOptions = this.client.field_1690;
 		if (gameOptions.perspective == 0) {
-			if (this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219 || this.shouldRenderSpectatorCrosshair(this.client.hitResult)) {
-				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
+			if (this.client.field_1761.getCurrentGameMode() != GameMode.field_9219 || this.shouldRenderSpectatorCrosshair(this.client.hitResult)) {
+				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.field_1724.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), this.zOffset);
-					Entity entity = this.client.getCameraEntity();
-					GlStateManager.rotatef(MathHelper.lerp(f, entity.prevPitch, entity.pitch), -1.0F, 0.0F, 0.0F);
-					GlStateManager.rotatef(MathHelper.lerp(f, entity.prevYaw, entity.yaw), 0.0F, 1.0F, 0.0F);
+					class_4184 lv = this.client.field_1773.method_19418();
+					GlStateManager.rotatef(lv.method_19329(), -1.0F, 0.0F, 0.0F);
+					GlStateManager.rotatef(lv.method_19330(), 0.0F, 1.0F, 0.0F);
 					GlStateManager.scalef(-1.0F, -1.0F, -1.0F);
 					GLX.renderCrosshair(10);
 					GlStateManager.popMatrix();
@@ -352,11 +367,11 @@ public class InGameHud extends DrawableHelper {
 					);
 					int i = 15;
 					this.drawTexturedRect((float)this.scaledWidth / 2.0F - 7.5F, (float)this.scaledHeight / 2.0F - 7.5F, 0, 0, 15, 15);
-					if (this.client.options.attackIndicator == AttackIndicator.field_18152) {
-						float g = this.client.player.method_7261(0.0F);
+					if (this.client.field_1690.attackIndicator == AttackIndicator.field_18152) {
+						float f = this.client.field_1724.method_7261(0.0F);
 						boolean bl = false;
-						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && g >= 1.0F) {
-							bl = this.client.player.method_7279() > 5.0F;
+						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 1.0F) {
+							bl = this.client.field_1724.method_7279() > 5.0F;
 							bl &= this.client.targetedEntity.isValid();
 						}
 
@@ -364,8 +379,8 @@ public class InGameHud extends DrawableHelper {
 						int k = this.scaledWidth / 2 - 8;
 						if (bl) {
 							this.drawTexturedRect(k, j, 68, 94, 16, 16);
-						} else if (g < 1.0F) {
-							int l = (int)(g * 17.0F);
+						} else if (f < 1.0F) {
+							int l = (int)(f * 17.0F);
 							this.drawTexturedRect(k, j, 36, 94, 16, 4);
 							this.drawTexturedRect(k, j, 52, 94, l, 4);
 						}
@@ -381,23 +396,23 @@ public class InGameHud extends DrawableHelper {
 		} else if (hitResult.getType() == HitResult.Type.ENTITY) {
 			return ((EntityHitResult)hitResult).getEntity() instanceof NameableContainerProvider;
 		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
-			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-			World world = this.client.world;
-			return world.getBlockState(blockPos).createContainerProvider(world, blockPos) != null;
+			BlockPos blockPos = ((BlockHitResult)hitResult).method_17777();
+			World world = this.client.field_1687;
+			return world.method_8320(blockPos).method_17526(world, blockPos) != null;
 		} else {
 			return false;
 		}
 	}
 
 	protected void renderStatusEffectOverlay() {
-		Collection<StatusEffectInstance> collection = this.client.player.getPotionEffects();
+		Collection<StatusEffectInstance> collection = this.client.field_1724.getPotionEffects();
 		if (!collection.isEmpty()) {
 			GlStateManager.enableBlend();
 			int i = 0;
 			int j = 0;
 			StatusEffectSpriteManager statusEffectSpriteManager = this.client.method_18505();
 			List<Runnable> list = Lists.<Runnable>newArrayListWithExpectedSize(collection.size());
-			this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
+			this.client.method_1531().method_4618(ContainerScreen.field_2801);
 
 			for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
@@ -436,12 +451,12 @@ public class InGameHud extends DrawableHelper {
 					float g = f;
 					list.add((Runnable)() -> {
 						GlStateManager.color4f(1.0F, 1.0F, 1.0F, g);
-						this.drawTexturedRect(n + 3, o + 3, sprite, 18, 18);
+						this.method_1790(n + 3, o + 3, sprite, 18, 18);
 					});
 				}
 			}
 
-			this.client.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+			this.client.method_1531().method_4618(SpriteAtlasTexture.field_18229);
 			list.forEach(Runnable::run);
 		}
 	}
@@ -450,8 +465,8 @@ public class InGameHud extends DrawableHelper {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
-			ItemStack itemStack = playerEntity.getOffHandStack();
+			this.client.method_1531().method_4618(field_2028);
+			ItemStack itemStack = playerEntity.method_6079();
 			OptionMainHand optionMainHand = playerEntity.getMainHand().getOpposite();
 			int i = this.scaledWidth / 2;
 			float g = this.zOffset;
@@ -479,7 +494,7 @@ public class InGameHud extends DrawableHelper {
 			for (int l = 0; l < 9; l++) {
 				int m = i - 90 + l * 20 + 2;
 				int n = this.scaledHeight - 16 - 3;
-				this.renderHotbarItem(m, n, f, playerEntity, playerEntity.inventory.main.get(l));
+				this.renderHotbarItem(m, n, f, playerEntity, playerEntity.inventory.field_7547.get(l));
 			}
 
 			if (!itemStack.isEmpty()) {
@@ -491,8 +506,8 @@ public class InGameHud extends DrawableHelper {
 				}
 			}
 
-			if (this.client.options.attackIndicator == AttackIndicator.field_18153) {
-				float h = this.client.player.method_7261(0.0F);
+			if (this.client.field_1690.attackIndicator == AttackIndicator.field_18153) {
+				float h = this.client.field_1724.method_7261(0.0F);
 				if (h < 1.0F) {
 					int m = this.scaledHeight - 20;
 					int n = i + 91 + 6;
@@ -500,7 +515,7 @@ public class InGameHud extends DrawableHelper {
 						n = i - 91 - 22;
 					}
 
-					this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
+					this.client.method_1531().method_4618(DrawableHelper.field_2053);
 					int o = (int)(h * 19.0F);
 					GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 					this.drawTexturedRect(n, m, 0, 94, 18, 18);
@@ -516,8 +531,8 @@ public class InGameHud extends DrawableHelper {
 
 	public void renderMountJumpBar(int i) {
 		this.client.getProfiler().push("jumpBar");
-		this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
-		float f = this.client.player.method_3151();
+		this.client.method_1531().method_4618(DrawableHelper.field_2053);
+		float f = this.client.field_1724.method_3151();
 		int j = 182;
 		int k = (int)(f * 183.0F);
 		int l = this.scaledHeight - 32 + 3;
@@ -531,11 +546,11 @@ public class InGameHud extends DrawableHelper {
 
 	public void renderExperienceBar(int i) {
 		this.client.getProfiler().push("expBar");
-		this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
-		int j = this.client.player.method_7349();
+		this.client.method_1531().method_4618(DrawableHelper.field_2053);
+		int j = this.client.field_1724.method_7349();
 		if (j > 0) {
 			int k = 182;
-			int l = (int)(this.client.player.experienceBarProgress * 183.0F);
+			int l = (int)(this.client.field_1724.experienceBarProgress * 183.0F);
 			int m = this.scaledHeight - 32 + 3;
 			this.drawTexturedRect(i, m, 0, 64, 182, 5);
 			if (l > 0) {
@@ -544,9 +559,9 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		this.client.getProfiler().pop();
-		if (this.client.player.experience > 0) {
+		if (this.client.field_1724.experience > 0) {
 			this.client.getProfiler().push("expLevel");
-			String string = "" + this.client.player.experience;
+			String string = "" + this.client.field_1724.experience;
 			int l = (this.scaledWidth - this.getFontRenderer().getStringWidth(string)) / 2;
 			int m = this.scaledHeight - 31 - 4;
 			this.getFontRenderer().draw(string, (float)(l + 1), (float)m, 0);
@@ -561,7 +576,7 @@ public class InGameHud extends DrawableHelper {
 	public void renderHeldItemTooltip() {
 		this.client.getProfiler().push("selectedItemName");
 		if (this.heldItemTooltipFade > 0 && !this.currentStack.isEmpty()) {
-			TextComponent textComponent = new StringTextComponent("").append(this.currentStack.getDisplayName()).applyFormat(this.currentStack.getRarity().formatting);
+			TextComponent textComponent = new StringTextComponent("").append(this.currentStack.method_7964()).applyFormat(this.currentStack.method_7932().field_8908);
 			if (this.currentStack.hasDisplayName()) {
 				textComponent.applyFormat(TextFormat.field_1056);
 			}
@@ -569,7 +584,7 @@ public class InGameHud extends DrawableHelper {
 			String string = textComponent.getFormattedText();
 			int i = (this.scaledWidth - this.getFontRenderer().getStringWidth(string)) / 2;
 			int j = this.scaledHeight - 59;
-			if (!this.client.interactionManager.hasStatusBars()) {
+			if (!this.client.field_1761.hasStatusBars()) {
 				j += 14;
 			}
 
@@ -584,6 +599,7 @@ public class InGameHud extends DrawableHelper {
 				GlStateManager.blendFuncSeparate(
 					GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 				);
+				drawRect(i - 2, j - 2, i + this.getFontRenderer().getStringWidth(string) + 2, j + 9 + 2, this.client.field_1690.method_19344(0));
 				this.getFontRenderer().drawWithShadow(string, (float)i, (float)j, 16777215 + (k << 24));
 				GlStateManager.disableBlend();
 				GlStateManager.popMatrix();
@@ -596,10 +612,10 @@ public class InGameHud extends DrawableHelper {
 	public void renderDemoTimer() {
 		this.client.getProfiler().push("demo");
 		String string;
-		if (this.client.world.getTime() >= 120500L) {
+		if (this.client.field_1687.getTime() >= 120500L) {
 			string = I18n.translate("demo.demoExpired");
 		} else {
-			string = I18n.translate("demo.remainingTime", ChatUtil.ticksToString((int)(120500L - this.client.world.getTime())));
+			string = I18n.translate("demo.remainingTime", ChatUtil.ticksToString((int)(120500L - this.client.field_1687.getTime())));
 		}
 
 		int i = this.getFontRenderer().getStringWidth(string);
@@ -608,7 +624,7 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	private void renderScoreboardSidebar(ScoreboardObjective scoreboardObjective) {
-		Scoreboard scoreboard = scoreboardObjective.getScoreboard();
+		Scoreboard scoreboard = scoreboardObjective.method_1117();
 		Collection<ScoreboardPlayerScore> collection = scoreboard.getAllPlayerScores(scoreboardObjective);
 		List<ScoreboardPlayerScore> list = (List<ScoreboardPlayerScore>)collection.stream()
 			.filter(scoreboardPlayerScore -> scoreboardPlayerScore.getPlayerName() != null && !scoreboardPlayerScore.getPlayerName().startsWith("#"))
@@ -619,7 +635,7 @@ public class InGameHud extends DrawableHelper {
 			collection = list;
 		}
 
-		String string = scoreboardObjective.getDisplayName().getFormattedText();
+		String string = scoreboardObjective.method_1114().getFormattedText();
 		int i = this.getFontRenderer().getStringWidth(string);
 		int j = i;
 
@@ -637,21 +653,23 @@ public class InGameHud extends DrawableHelper {
 		int m = 3;
 		int n = this.scaledWidth - j - 3;
 		int o = 0;
+		int p = this.client.field_1690.method_19345(0.3F);
+		int q = this.client.field_1690.method_19345(0.4F);
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore2 : collection) {
 			o++;
 			ScoreboardTeam scoreboardTeam2 = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
 			String string3 = ScoreboardTeam.method_1142(scoreboardTeam2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
 			String string4 = TextFormat.field_1061 + "" + scoreboardPlayerScore2.getScore();
-			int q = l - o * 9;
-			int r = this.scaledWidth - 3 + 2;
-			drawRect(n - 2, q, r, q + 9, 1342177280);
-			this.getFontRenderer().draw(string3, (float)n, (float)q, 553648127);
-			this.getFontRenderer().draw(string4, (float)(r - this.getFontRenderer().getStringWidth(string4)), (float)q, 553648127);
+			int s = l - o * 9;
+			int t = this.scaledWidth - 3 + 2;
+			drawRect(n - 2, s, t, s + 9, p);
+			this.getFontRenderer().draw(string3, (float)n, (float)s, 553648127);
+			this.getFontRenderer().draw(string4, (float)(t - this.getFontRenderer().getStringWidth(string4)), (float)s, 553648127);
 			if (o == collection.size()) {
-				drawRect(n - 2, q - 9 - 1, r, q - 1, 1610612736);
-				drawRect(n - 2, q - 1, r, q, 1342177280);
-				this.getFontRenderer().draw(string, (float)(n + j / 2 - i / 2), (float)(q - 9), 553648127);
+				drawRect(n - 2, s - 9 - 1, t, s - 1, q);
+				drawRect(n - 2, s - 1, t, s, p);
+				this.getFontRenderer().draw(string, (float)(n + j / 2 - i / 2), (float)(s - 9), 553648127);
 			}
 		}
 	}
@@ -717,9 +735,9 @@ public class InGameHud extends DrawableHelper {
 			this.field_2014 = i;
 			int j = this.field_2033;
 			this.random.setSeed((long)(this.ticks * 312871));
-			HungerManager hungerManager = playerEntity.getHungerManager();
+			HungerManager hungerManager = playerEntity.method_7344();
 			int k = hungerManager.getFoodLevel();
-			EntityAttributeInstance entityAttributeInstance = playerEntity.getAttributeInstance(EntityAttributes.MAX_HEALTH);
+			EntityAttributeInstance entityAttributeInstance = playerEntity.method_5996(EntityAttributes.MAX_HEALTH);
 			int m = this.scaledWidth / 2 - 91;
 			int n = this.scaledWidth / 2 + 91;
 			int o = this.scaledHeight - 39;
@@ -782,7 +800,7 @@ public class InGameHud extends DrawableHelper {
 				}
 
 				int ad = 0;
-				if (playerEntity.world.getLevelProperties().isHardcore()) {
+				if (playerEntity.field_6002.method_8401().isHardcore()) {
 					ad = 5;
 				}
 
@@ -830,7 +848,7 @@ public class InGameHud extends DrawableHelper {
 						acx = 13;
 					}
 
-					if (playerEntity.getHungerManager().getSaturationLevel() <= 0.0F && this.ticks % (k * 3 + 1) == 0) {
+					if (playerEntity.method_7344().getSaturationLevel() <= 0.0F && this.ticks % (k * 3 + 1) == 0) {
 						aax = o + (this.random.nextInt(3) - 1);
 					}
 
@@ -851,7 +869,7 @@ public class InGameHud extends DrawableHelper {
 			this.client.getProfiler().swap("air");
 			int zx = playerEntity.getBreath();
 			int aaxx = playerEntity.getMaxBreath();
-			if (playerEntity.isInFluid(FluidTags.field_15517) || zx < aaxx) {
+			if (playerEntity.method_5777(FluidTags.field_15517) || zx < aaxx) {
 				int abxx = this.method_1733(yxx) - 1;
 				t -= abxx * 10;
 				int acxx = MathHelper.ceil((double)(zx - 2) * 10.0 / (double)aaxx);
@@ -914,10 +932,10 @@ public class InGameHud extends DrawableHelper {
 		);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.disableAlphaTest();
-		this.client.getTextureManager().bindTexture(PUMPKIN_BLUR);
+		this.client.method_1531().method_4618(field_2019);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.method_1328(7, VertexFormats.field_1585);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0, 1.0).next();
 		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0, 1.0).next();
 		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
@@ -937,7 +955,7 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	private void renderVignetteOverlay(Entity entity) {
-		WorldBorder worldBorder = this.client.world.getWorldBorder();
+		WorldBorder worldBorder = this.client.field_1687.method_8621();
 		float f = (float)worldBorder.contains(entity);
 		double d = Math.min(
 			worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getTargetSize() - worldBorder.getSize())
@@ -960,10 +978,10 @@ public class InGameHud extends DrawableHelper {
 			GlStateManager.color4f(this.field_2013, this.field_2013, this.field_2013, 1.0F);
 		}
 
-		this.client.getTextureManager().bindTexture(VIGNETTE_TEX);
+		this.client.method_1531().method_4618(field_2020);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.method_1328(7, VertexFormats.field_1585);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture(0.0, 1.0).next();
 		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture(1.0, 1.0).next();
 		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture(1.0, 0.0).next();
@@ -991,15 +1009,15 @@ public class InGameHud extends DrawableHelper {
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, f);
-		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-		Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.field_10316.getDefaultState());
+		this.client.method_1531().method_4618(SpriteAtlasTexture.field_5275);
+		Sprite sprite = this.client.method_1541().getModels().method_3339(Blocks.field_10316.method_9564());
 		float g = sprite.getMinU();
 		float h = sprite.getMinV();
 		float i = sprite.getMaxU();
 		float j = sprite.getMaxV();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
+		bufferBuilder.method_1328(7, VertexFormats.field_1585);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).texture((double)g, (double)j).next();
 		bufferBuilder.vertex((double)this.scaledWidth, (double)this.scaledHeight, -90.0).texture((double)i, (double)j).next();
 		bufferBuilder.vertex((double)this.scaledWidth, 0.0, -90.0).texture((double)i, (double)h).next();
@@ -1022,12 +1040,12 @@ public class InGameHud extends DrawableHelper {
 				GlStateManager.translatef((float)(-(i + 8)), (float)(-(j + 12)), 0.0F);
 			}
 
-			this.itemRenderer.renderGuiItem(playerEntity, itemStack, i, j);
+			this.field_2024.renderGuiItem(playerEntity, itemStack, i, j);
 			if (g > 0.0F) {
 				GlStateManager.popMatrix();
 			}
 
-			this.itemRenderer.renderGuiItemOverlay(this.client.textRenderer, itemStack, i, j);
+			this.field_2024.renderGuiItemOverlay(this.client.field_1772, itemStack, i, j);
 		}
 	}
 
@@ -1050,13 +1068,13 @@ public class InGameHud extends DrawableHelper {
 			this.method_1731(entity);
 		}
 
-		if (this.client.player != null) {
-			ItemStack itemStack = this.client.player.inventory.getMainHandStack();
+		if (this.client.field_1724 != null) {
+			ItemStack itemStack = this.client.field_1724.inventory.method_7391();
 			if (itemStack.isEmpty()) {
 				this.heldItemTooltipFade = 0;
 			} else if (this.currentStack.isEmpty()
 				|| itemStack.getItem() != this.currentStack.getItem()
-				|| !itemStack.getDisplayName().equals(this.currentStack.getDisplayName())) {
+				|| !itemStack.method_7964().equals(this.currentStack.method_7964())) {
 				this.heldItemTooltipFade = 40;
 			} else if (this.heldItemTooltipFade > 0) {
 				this.heldItemTooltipFade--;
@@ -1105,18 +1123,18 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	public void setOverlayMessage(TextComponent textComponent, boolean bl) {
+	public void method_1758(TextComponent textComponent, boolean bl) {
 		this.setOverlayMessage(textComponent.getString(), bl);
 	}
 
-	public void addChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
+	public void method_1755(ChatMessageType chatMessageType, TextComponent textComponent) {
 		for (ClientChatListener clientChatListener : (List)this.listeners.get(chatMessageType)) {
-			clientChatListener.onChatMessage(chatMessageType, textComponent);
+			clientChatListener.method_1794(chatMessageType, textComponent);
 		}
 	}
 
-	public ChatHud getChatHud() {
-		return this.chatHud;
+	public ChatHud method_1743() {
+		return this.field_2021;
 	}
 
 	public int getTicks() {
@@ -1124,28 +1142,28 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	public TextRenderer getFontRenderer() {
-		return this.client.textRenderer;
+		return this.client.field_1772;
 	}
 
-	public SpectatorHud getSpectatorWidget() {
-		return this.spectatorHud;
+	public SpectatorHud method_1739() {
+		return this.field_2025;
 	}
 
-	public ScoreboardHud getScoreboardWidget() {
-		return this.scoreboardHud;
+	public ScoreboardHud method_1750() {
+		return this.field_2015;
 	}
 
 	public void clear() {
-		this.scoreboardHud.clear();
-		this.bossBarHud.clear();
-		this.client.getToastManager().clear();
+		this.field_2015.clear();
+		this.field_2030.clear();
+		this.client.method_1566().clear();
 	}
 
-	public BossBarHud getBossBarHud() {
-		return this.bossBarHud;
+	public BossBarHud method_1740() {
+		return this.field_2030;
 	}
 
 	public void resetDebugHudChunk() {
-		this.debugHud.resetChunk();
+		this.field_2026.resetChunk();
 	}
 }

@@ -187,7 +187,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	@Override
 	public Tag method_10606(int i, Tag tag) {
 		Tag tag2 = this.method_10534(i);
-		if (!this.setTag(i, tag)) {
+		if (!this.method_10535(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		} else {
 			return tag2;
@@ -196,14 +196,14 @@ public class ListTag extends AbstractListTag<Tag> {
 
 	@Override
 	public void method_10531(int i, Tag tag) {
-		if (!this.addTag(i, tag)) {
+		if (!this.method_10533(i, tag)) {
 			throw new UnsupportedOperationException(String.format("Trying to add tag of type %d to list of %d", tag.getType(), this.type));
 		}
 	}
 
 	@Override
-	public boolean setTag(int i, Tag tag) {
-		if (this.canAdd(tag)) {
+	public boolean method_10535(int i, Tag tag) {
+		if (this.method_10605(tag)) {
 			this.value.set(i, tag);
 			return true;
 		} else {
@@ -212,8 +212,8 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public boolean addTag(int i, Tag tag) {
-		if (this.canAdd(tag)) {
+	public boolean method_10533(int i, Tag tag) {
+		if (this.method_10605(tag)) {
 			this.value.add(i, tag);
 			return true;
 		} else {
@@ -221,7 +221,7 @@ public class ListTag extends AbstractListTag<Tag> {
 		}
 	}
 
-	private boolean canAdd(Tag tag) {
+	private boolean method_10605(Tag tag) {
 		if (tag.getType() == 0) {
 			return false;
 		} else if (this.type == 0) {
@@ -253,7 +253,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	}
 
 	@Override
-	public TextComponent toTextComponent(String string, int i) {
+	public TextComponent method_10710(String string, int i) {
 		if (this.isEmpty()) {
 			return new StringTextComponent("[]");
 		} else {
@@ -264,7 +264,7 @@ public class ListTag extends AbstractListTag<Tag> {
 
 			for (int j = 0; j < this.value.size(); j++) {
 				TextComponent textComponent2 = new StringTextComponent(Strings.repeat(string, i + 1));
-				textComponent2.append(((Tag)this.value.get(j)).toTextComponent(string, i + 1));
+				textComponent2.append(((Tag)this.value.get(j)).method_10710(string, i + 1));
 				if (j != this.value.size() - 1) {
 					textComponent2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
 				}

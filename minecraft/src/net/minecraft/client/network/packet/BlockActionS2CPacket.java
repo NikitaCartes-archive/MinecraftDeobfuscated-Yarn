@@ -43,7 +43,7 @@ public class BlockActionS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11297(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onBlockAction(this);
+		clientPlayPacketListener.method_11158(this);
 	}
 
 	@Environment(EnvType.CLIENT)

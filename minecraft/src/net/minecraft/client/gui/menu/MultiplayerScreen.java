@@ -5,9 +5,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.InputListener;
+import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.LocalScanProgressListEntry;
 import net.minecraft.client.gui.widget.LocalServerListEntry;
@@ -19,6 +18,7 @@ import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.sortme.ServerEntryNetworkPart;
+import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -29,9 +29,9 @@ public class MultiplayerScreen extends Screen {
 	private final Screen parent;
 	private ServerListWidget field_3043;
 	private ServerList field_3040;
-	private ButtonWidget field_3041;
-	private ButtonWidget field_3050;
-	private ButtonWidget field_3047;
+	private class_4185 field_3041;
+	private class_4185 field_3050;
+	private class_4185 field_3047;
 	private boolean field_3039;
 	private boolean field_3038;
 	private boolean field_3036;
@@ -44,11 +44,6 @@ public class MultiplayerScreen extends Screen {
 
 	public MultiplayerScreen(Screen screen) {
 		this.parent = screen;
-	}
-
-	@Override
-	public InputListener getFocused() {
-		return this.field_3043;
 	}
 
 	@Override
@@ -71,39 +66,62 @@ public class MultiplayerScreen extends Screen {
 			}
 
 			this.field_3043 = new ServerListWidget(this, this.client, this.screenWidth, this.screenHeight, 32, this.screenHeight - 64, 36);
-			this.field_3043.setUserServers(this.field_3040);
+			this.field_3043.method_2564(this.field_3040);
 		}
 
 		this.method_2540();
 	}
 
 	public void method_2540() {
+		this.listeners.add(this.field_3043);
+		this.field_3050 = this.addButton(new class_4185(this.screenWidth / 2 - 154, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.select")) {
+			@Override
+			public void method_1826() {
+				MultiplayerScreen.this.method_2536();
+			}
+		});
+		this.addButton(new class_4185(this.screenWidth / 2 - 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.direct")) {
+			@Override
+			public void method_1826() {
+				MultiplayerScreen.this.field_3035 = true;
+				MultiplayerScreen.this.field_3051 = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
+				MultiplayerScreen.this.client.method_1507(new DirectConnectServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
+			}
+		});
+		this.addButton(new class_4185(this.screenWidth / 2 + 4 + 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.add")) {
+			@Override
+			public void method_1826() {
+				MultiplayerScreen.this.field_3038 = true;
+				MultiplayerScreen.this.field_3051 = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
+				MultiplayerScreen.this.client.method_1507(new AddServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
+			}
+		});
 		this.field_3041 = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.edit")) {
+			new class_4185(this.screenWidth / 2 - 154, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.edit")) {
 				@Override
-				public void onPressed(double d, double e) {
+				public void method_1826() {
 					EntryListWidget.Entry<?> entry = MultiplayerScreen.this.field_3043.getIndex() < 0
 						? null
 						: (EntryListWidget.Entry)MultiplayerScreen.this.field_3043.getInputListeners().get(MultiplayerScreen.this.field_3043.getIndex());
 					MultiplayerScreen.this.field_3036 = true;
 					if (entry instanceof RemoteServerListEntry) {
-						ServerEntry serverEntry = ((RemoteServerListEntry)entry).getServerEntry();
+						ServerEntry serverEntry = ((RemoteServerListEntry)entry).method_2556();
 						MultiplayerScreen.this.field_3051 = new ServerEntry(serverEntry.name, serverEntry.address, false);
 						MultiplayerScreen.this.field_3051.copyFrom(serverEntry);
-						MultiplayerScreen.this.client.openScreen(new AddServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
+						MultiplayerScreen.this.client.method_1507(new AddServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
 					}
 				}
 			}
 		);
 		this.field_3047 = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 74, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.delete")) {
+			new class_4185(this.screenWidth / 2 - 74, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.delete")) {
 				@Override
-				public void onPressed(double d, double e) {
+				public void method_1826() {
 					EntryListWidget.Entry<?> entry = MultiplayerScreen.this.field_3043.getIndex() < 0
 						? null
 						: (EntryListWidget.Entry)MultiplayerScreen.this.field_3043.getInputListeners().get(MultiplayerScreen.this.field_3043.getIndex());
 					if (entry instanceof RemoteServerListEntry) {
-						String string = ((RemoteServerListEntry)entry).getServerEntry().name;
+						String string = ((RemoteServerListEntry)entry).method_2556().name;
 						if (string != null) {
 							MultiplayerScreen.this.field_3039 = true;
 							String string2 = I18n.translate("selectServer.deleteQuestion");
@@ -111,47 +129,24 @@ public class MultiplayerScreen extends Screen {
 							String string4 = I18n.translate("selectServer.deleteButton");
 							String string5 = I18n.translate("gui.cancel");
 							YesNoScreen yesNoScreen = new YesNoScreen(MultiplayerScreen.this, string2, string3, string4, string5, MultiplayerScreen.this.field_3043.getIndex());
-							MultiplayerScreen.this.client.openScreen(yesNoScreen);
+							MultiplayerScreen.this.client.method_1507(yesNoScreen);
 						}
 					}
 				}
 			}
 		);
-		this.field_3050 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.select")) {
+		this.addButton(new class_4185(this.screenWidth / 2 + 4, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.refresh")) {
 			@Override
-			public void onPressed(double d, double e) {
-				MultiplayerScreen.this.method_2536();
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.direct")) {
-			@Override
-			public void onPressed(double d, double e) {
-				MultiplayerScreen.this.field_3035 = true;
-				MultiplayerScreen.this.field_3051 = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
-				MultiplayerScreen.this.client.openScreen(new DirectConnectServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.add")) {
-			@Override
-			public void onPressed(double d, double e) {
-				MultiplayerScreen.this.field_3038 = true;
-				MultiplayerScreen.this.field_3051 = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
-				MultiplayerScreen.this.client.openScreen(new AddServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.refresh")) {
-			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				MultiplayerScreen.this.method_2534();
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 76, this.screenHeight - 28, 75, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new class_4185(this.screenWidth / 2 + 4 + 76, this.screenHeight - 28, 75, 20, I18n.translate("gui.cancel")) {
 			@Override
-			public void onPressed(double d, double e) {
-				MultiplayerScreen.this.client.openScreen(MultiplayerScreen.this.parent);
+			public void method_1826() {
+				MultiplayerScreen.this.client.method_1507(MultiplayerScreen.this.parent);
 			}
 		});
-		this.listeners.add(this.field_3043);
 		this.setIndex(this.field_3043.getIndex());
 	}
 
@@ -179,7 +174,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	private void method_2534() {
-		this.client.openScreen(new MultiplayerScreen(this.parent));
+		this.client.method_1507(new MultiplayerScreen(this.parent));
 	}
 
 	@Override
@@ -193,16 +188,16 @@ public class MultiplayerScreen extends Screen {
 				this.field_3040.remove(this.field_3043.getIndex());
 				this.field_3040.saveFile();
 				this.field_3043.setIndex(-1);
-				this.field_3043.setUserServers(this.field_3040);
+				this.field_3043.method_2564(this.field_3040);
 			}
 
-			this.client.openScreen(this);
+			this.client.method_1507(this);
 		} else if (this.field_3035) {
 			this.field_3035 = false;
 			if (bl) {
 				this.method_2548(this.field_3051);
 			} else {
-				this.client.openScreen(this);
+				this.client.method_1507(this);
 			}
 		} else if (this.field_3038) {
 			this.field_3038 = false;
@@ -210,93 +205,40 @@ public class MultiplayerScreen extends Screen {
 				this.field_3040.add(this.field_3051);
 				this.field_3040.saveFile();
 				this.field_3043.setIndex(-1);
-				this.field_3043.setUserServers(this.field_3040);
+				this.field_3043.method_2564(this.field_3040);
 			}
 
-			this.client.openScreen(this);
+			this.client.method_1507(this);
 		} else if (this.field_3036) {
 			this.field_3036 = false;
 			if (bl && entry instanceof RemoteServerListEntry) {
-				ServerEntry serverEntry = ((RemoteServerListEntry)entry).getServerEntry();
+				ServerEntry serverEntry = ((RemoteServerListEntry)entry).method_2556();
 				serverEntry.name = this.field_3051.name;
 				serverEntry.address = this.field_3051.address;
 				serverEntry.copyFrom(this.field_3051);
 				this.field_3040.saveFile();
-				this.field_3043.setUserServers(this.field_3040);
+				this.field_3043.method_2564(this.field_3040);
 			}
 
-			this.client.openScreen(this);
+			this.client.method_1507(this);
 		}
 	}
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		int l = this.field_3043.getIndex();
-		EntryListWidget.Entry<?> entry = l < 0 ? null : (EntryListWidget.Entry)this.field_3043.getInputListeners().get(l);
-		if (i == 294) {
-			this.method_2534();
+		if (super.keyPressed(i, j, k)) {
 			return true;
 		} else {
-			if (l >= 0) {
-				if (i == 265) {
-					if (isShiftPressed()) {
-						if (l > 0 && entry instanceof RemoteServerListEntry) {
-							this.field_3040.swapEntries(l, l - 1);
-							this.setIndex(this.field_3043.getIndex() - 1);
-							this.field_3043.scroll(-this.field_3043.getEntryHeight());
-							this.field_3043.setUserServers(this.field_3040);
-						}
-					} else if (l > 0) {
-						this.setIndex(this.field_3043.getIndex() - 1);
-						this.field_3043.scroll(-this.field_3043.getEntryHeight());
-						if (this.field_3043.getInputListeners().get(this.field_3043.getIndex()) instanceof LocalScanProgressListEntry) {
-							if (this.field_3043.getIndex() > 0) {
-								this.setIndex(this.field_3043.getInputListeners().size() - 1);
-								this.field_3043.scroll(-this.field_3043.getEntryHeight());
-							} else {
-								this.setIndex(-1);
-							}
-						}
-					} else {
-						this.setIndex(-1);
-					}
-
-					return true;
-				}
-
-				if (i == 264) {
-					if (isShiftPressed()) {
-						if (l < this.field_3040.size() - 1) {
-							this.field_3040.swapEntries(l, l + 1);
-							this.setIndex(l + 1);
-							this.field_3043.scroll(this.field_3043.getEntryHeight());
-							this.field_3043.setUserServers(this.field_3040);
-						}
-					} else if (l < this.field_3043.getInputListeners().size()) {
-						this.setIndex(this.field_3043.getIndex() + 1);
-						this.field_3043.scroll(this.field_3043.getEntryHeight());
-						if (this.field_3043.getInputListeners().get(this.field_3043.getIndex()) instanceof LocalScanProgressListEntry) {
-							if (this.field_3043.getIndex() < this.field_3043.getInputListeners().size() - 1) {
-								this.setIndex(this.field_3043.getInputListeners().size() + 1);
-								this.field_3043.scroll(this.field_3043.getEntryHeight());
-							} else {
-								this.setIndex(-1);
-							}
-						}
-					} else {
-						this.setIndex(-1);
-					}
-
-					return true;
-				}
-
-				if (i == 257 || i == 335) {
-					this.method_2536();
-					return true;
-				}
+			int l = this.field_3043.getIndex();
+			if (i == 294) {
+				this.method_2534();
+				return true;
+			} else if (l < 0 || i != 257 && i != 335) {
+				return false;
+			} else {
+				this.method_2536();
+				return true;
 			}
-
-			return super.keyPressed(i, j, k);
 		}
 	}
 
@@ -317,15 +259,15 @@ public class MultiplayerScreen extends Screen {
 			? null
 			: (EntryListWidget.Entry)this.field_3043.getInputListeners().get(this.field_3043.getIndex());
 		if (entry instanceof RemoteServerListEntry) {
-			this.method_2548(((RemoteServerListEntry)entry).getServerEntry());
+			this.method_2548(((RemoteServerListEntry)entry).method_2556());
 		} else if (entry instanceof LocalServerListEntry) {
-			LanServerEntry lanServerEntry = ((LocalServerListEntry)entry).getLanServerEntry();
+			LanServerEntry lanServerEntry = ((LocalServerListEntry)entry).method_2559();
 			this.method_2548(new ServerEntry(lanServerEntry.getMotd(), lanServerEntry.getAddressPort(), true));
 		}
 	}
 
 	private void method_2548(ServerEntry serverEntry) {
-		this.client.openScreen(new ServerConnectingScreen(this, this.client, serverEntry));
+		this.client.method_1507(new ServerConnectingScreen(this, this.client, serverEntry));
 	}
 
 	public void setIndex(int i) {
@@ -370,7 +312,7 @@ public class MultiplayerScreen extends Screen {
 			this.setIndex(j);
 		}
 
-		this.field_3043.setUserServers(this.field_3040);
+		this.field_3043.method_2564(this.field_3040);
 	}
 
 	public void method_2553(RemoteServerListEntry remoteServerListEntry, int i, boolean bl) {
@@ -380,6 +322,11 @@ public class MultiplayerScreen extends Screen {
 			this.setIndex(j);
 		}
 
-		this.field_3043.setUserServers(this.field_3040);
+		this.field_3043.method_2564(this.field_3040);
+	}
+
+	public void method_19414(int i) {
+		this.setIndex(MathHelper.clamp(this.field_3043.getIndex() + i, 0, this.field_3043.getInputListeners().size() - 1));
+		this.field_3043.scroll(this.field_3043.getEntryHeight() * i);
 	}
 }

@@ -46,7 +46,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7492(HitResult hitResult) {
 		LivingEntity livingEntity = this.getOwner();
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
@@ -54,17 +54,17 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 				return;
 			}
 
-			entity.damage(DamageSource.thrownProjectile(this, livingEntity), 0.0F);
+			entity.damage(DamageSource.method_5524(this, livingEntity), 0.0F);
 		}
 
 		if (hitResult.getType() == HitResult.Type.BLOCK) {
-			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
-			BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+			BlockPos blockPos = ((BlockHitResult)hitResult).method_17777();
+			BlockEntity blockEntity = this.field_6002.method_8321(blockPos);
 			if (blockEntity instanceof EndGatewayBlockEntity) {
 				EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)blockEntity;
 				if (livingEntity != null) {
 					if (livingEntity instanceof ServerPlayerEntity) {
-						Criterions.ENTER_BLOCK.method_8885((ServerPlayerEntity)livingEntity, this.world.getBlockState(blockPos));
+						Criterions.ENTER_BLOCK.method_8885((ServerPlayerEntity)livingEntity, this.field_6002.method_8320(blockPos));
 					}
 
 					endGatewayBlockEntity.tryTeleportingEntity(livingEntity);
@@ -78,21 +78,21 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 		}
 
 		for (int i = 0; i < 32; i++) {
-			this.world
-				.addParticle(
+			this.field_6002
+				.method_8406(
 					ParticleTypes.field_11214, this.x, this.y + this.random.nextDouble() * 2.0, this.z, this.random.nextGaussian(), 0.0, this.random.nextGaussian()
 				);
 		}
 
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			if (livingEntity instanceof ServerPlayerEntity) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
-				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
-					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning")) {
-						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
+				if (serverPlayerEntity.field_13987.getConnection().isOpen() && serverPlayerEntity.field_6002 == this.field_6002 && !serverPlayerEntity.isSleeping()) {
+					if (this.random.nextFloat() < 0.05F && this.field_6002.getGameRules().getBoolean("doMobSpawning")) {
+						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.method_5883(this.field_6002);
 						endermiteEntity.method_7022(true);
 						endermiteEntity.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
-						this.world.spawnEntity(endermiteEntity);
+						this.field_6002.spawnEntity(endermiteEntity);
 					}
 
 					if (livingEntity.hasVehicle()) {
@@ -124,11 +124,11 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 
 	@Nullable
 	@Override
-	public Entity changeDimension(DimensionType dimensionType) {
-		if (this.owner.dimension != dimensionType) {
+	public Entity method_5731(DimensionType dimensionType) {
+		if (this.owner.field_6026 != dimensionType) {
 			this.owner = null;
 		}
 
-		return super.changeDimension(dimensionType);
+		return super.method_5731(dimensionType);
 	}
 }

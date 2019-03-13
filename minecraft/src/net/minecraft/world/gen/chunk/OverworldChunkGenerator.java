@@ -27,26 +27,26 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 			}
 		}
 	});
-	private final OctavePerlinNoiseSampler noiseSampler;
+	private final OctavePerlinNoiseSampler field_16583;
 	private final boolean amplified;
-	private final PhantomSpawner phantomSpawner = new PhantomSpawner();
-	private final PillagerSpawner pillagerSpawner = new PillagerSpawner();
+	private final PhantomSpawner field_13245 = new PhantomSpawner();
+	private final PillagerSpawner field_16650 = new PillagerSpawner();
 
 	public OverworldChunkGenerator(IWorld iWorld, BiomeSource biomeSource, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
 		super(iWorld, biomeSource, 4, 8, 256, overworldChunkGeneratorConfig, true);
-		this.random.consume(2620);
-		this.noiseSampler = new OctavePerlinNoiseSampler(this.random, 16);
-		this.amplified = iWorld.getLevelProperties().getGeneratorType() == LevelGeneratorType.AMPLIFIED;
+		this.field_16577.consume(2620);
+		this.field_16583 = new OctavePerlinNoiseSampler(this.field_16577, 16);
+		this.amplified = iWorld.method_8401().getGeneratorType() == LevelGeneratorType.AMPLIFIED;
 	}
 
 	@Override
-	public void populateEntities(ChunkRegion chunkRegion) {
+	public void method_12107(ChunkRegion chunkRegion) {
 		int i = chunkRegion.getCenterChunkX();
 		int j = chunkRegion.getCenterChunkZ();
-		Biome biome = chunkRegion.getChunk(i, j).getBiomeArray()[0];
+		Biome biome = chunkRegion.method_8392(i, j).getBiomeArray()[0];
 		ChunkRandom chunkRandom = new ChunkRandom();
 		chunkRandom.setSeed(chunkRegion.getSeed(), i << 4, j << 4);
-		SpawnHelper.populateEntities(chunkRegion, biome, i, j, chunkRandom);
+		SpawnHelper.method_8661(chunkRegion, biome, i, j, chunkRandom);
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	}
 
 	private double method_16414(int i, int j) {
-		double d = this.noiseSampler.sample((double)(i * 200), 10.0, (double)(j * 200), 1.0, 0.0, true) / 8000.0;
+		double d = this.field_16583.sample((double)(i * 200), 10.0, (double)(j * 200), 1.0, 0.0, true) / 8000.0;
 		if (d < 0.0) {
 			d = -d * 0.3;
 		}
@@ -131,32 +131,32 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory entityCategory, BlockPos blockPos) {
-		if (Feature.SWAMP_HUT.method_14029(this.world, blockPos)) {
+	public List<Biome.SpawnEntry> method_12113(EntityCategory entityCategory, BlockPos blockPos) {
+		if (Feature.field_13520.method_14029(this.world, blockPos)) {
 			if (entityCategory == EntityCategory.field_6302) {
-				return Feature.SWAMP_HUT.getMonsterSpawns();
+				return Feature.field_13520.getMonsterSpawns();
 			}
 
 			if (entityCategory == EntityCategory.field_6294) {
-				return Feature.SWAMP_HUT.getCreatureSpawns();
+				return Feature.field_13520.getCreatureSpawns();
 			}
 		} else if (entityCategory == EntityCategory.field_6302) {
-			if (Feature.PILLAGER_OUTPOST.isApproximatelyInsideStructure(this.world, blockPos)) {
-				return Feature.PILLAGER_OUTPOST.getMonsterSpawns();
+			if (Feature.field_16655.method_14023(this.world, blockPos)) {
+				return Feature.field_16655.getMonsterSpawns();
 			}
 
-			if (Feature.OCEAN_MONUMENT.isApproximatelyInsideStructure(this.world, blockPos)) {
-				return Feature.OCEAN_MONUMENT.getMonsterSpawns();
+			if (Feature.field_13588.method_14023(this.world, blockPos)) {
+				return Feature.field_13588.getMonsterSpawns();
 			}
 		}
 
-		return super.getEntitySpawnList(entityCategory, blockPos);
+		return super.method_12113(entityCategory, blockPos);
 	}
 
 	@Override
 	public void spawnEntities(World world, boolean bl, boolean bl2) {
-		this.phantomSpawner.spawn(world, bl, bl2);
-		this.pillagerSpawner.spawn(world, bl, bl2);
+		this.field_13245.spawn(world, bl, bl2);
+		this.field_16650.spawn(world, bl, bl2);
 	}
 
 	@Override

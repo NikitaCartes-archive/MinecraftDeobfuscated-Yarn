@@ -24,24 +24,28 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class TripwireHookBlock extends Block {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty field_11671 = Properties.POWERED;
-	public static final BooleanProperty field_11669 = Properties.ATTACHED;
-	protected static final VoxelShape field_11665 = Block.createCuboidShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
-	protected static final VoxelShape field_11668 = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 10.0, 6.0);
-	protected static final VoxelShape field_11670 = Block.createCuboidShape(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
-	protected static final VoxelShape field_11667 = Block.createCuboidShape(0.0, 0.0, 5.0, 6.0, 10.0, 11.0);
+	public static final DirectionProperty field_11666 = HorizontalFacingBlock.field_11177;
+	public static final BooleanProperty field_11671 = Properties.field_12484;
+	public static final BooleanProperty field_11669 = Properties.field_12493;
+	protected static final VoxelShape field_11665 = Block.method_9541(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
+	protected static final VoxelShape field_11668 = Block.method_9541(5.0, 0.0, 0.0, 11.0, 10.0, 6.0);
+	protected static final VoxelShape field_11670 = Block.method_9541(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
+	protected static final VoxelShape field_11667 = Block.method_9541(0.0, 0.0, 5.0, 6.0, 10.0, 11.0);
 
 	public TripwireHookBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_11671, Boolean.valueOf(false)).with(field_11669, Boolean.valueOf(false))
+		this.method_9590(
+			this.field_10647
+				.method_11664()
+				.method_11657(field_11666, Direction.NORTH)
+				.method_11657(field_11671, Boolean.valueOf(false))
+				.method_11657(field_11669, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		switch ((Direction)blockState.get(FACING)) {
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		switch ((Direction)blockState.method_11654(field_11666)) {
 			case EAST:
 			default:
 				return field_11667;
@@ -55,39 +59,37 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = blockState.get(FACING);
-		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		Direction direction = blockState.method_11654(field_11666);
+		BlockPos blockPos2 = blockPos.method_10093(direction.getOpposite());
+		BlockState blockState2 = viewableWorld.method_8320(blockPos2);
 		boolean bl = method_9581(blockState2.getBlock());
 		return !bl
 			&& direction.getAxis().isHorizontal()
-			&& Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction)
+			&& Block.method_9501(blockState2.method_11628(viewableWorld, blockPos2), direction)
 			&& !blockState2.emitsRedstonePower();
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		return direction.getOpposite() == blockState.method_11654(field_11666) && !blockState.method_11591(iWorld, blockPos)
+			? Blocks.field_10124.method_9564()
+			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.getDefaultState().with(field_11671, Boolean.valueOf(false)).with(field_11669, Boolean.valueOf(false));
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		Direction[] directions = itemPlacementContext.getPlacementFacings();
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = this.method_9564().method_11657(field_11671, Boolean.valueOf(false)).method_11657(field_11669, Boolean.valueOf(false));
+		ViewableWorld viewableWorld = itemPlacementContext.method_8045();
+		BlockPos blockPos = itemPlacementContext.method_8037();
+		Direction[] directions = itemPlacementContext.method_7718();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
-				blockState = blockState.with(FACING, direction2);
-				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
+				blockState = blockState.method_11657(field_11666, direction2);
+				if (blockState.method_11591(viewableWorld, blockPos)) {
 					return blockState;
 				}
 			}
@@ -97,24 +99,24 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+	public void method_9567(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
 		this.method_10776(world, blockPos, blockState, false, false, -1, null);
 	}
 
 	public void method_10776(World world, BlockPos blockPos, BlockState blockState, boolean bl, boolean bl2, int i, @Nullable BlockState blockState2) {
-		Direction direction = blockState.get(FACING);
-		boolean bl3 = (Boolean)blockState.get(field_11669);
-		boolean bl4 = (Boolean)blockState.get(field_11671);
+		Direction direction = blockState.method_11654(field_11666);
+		boolean bl3 = (Boolean)blockState.method_11654(field_11669);
+		boolean bl4 = (Boolean)blockState.method_11654(field_11671);
 		boolean bl5 = !bl;
 		boolean bl6 = false;
 		int j = 0;
 		BlockState[] blockStates = new BlockState[42];
 
 		for (int k = 1; k < 42; k++) {
-			BlockPos blockPos2 = blockPos.offset(direction, k);
-			BlockState blockState3 = world.getBlockState(blockPos2);
+			BlockPos blockPos2 = blockPos.method_10079(direction, k);
+			BlockState blockState3 = world.method_8320(blockPos2);
 			if (blockState3.getBlock() == Blocks.field_10348) {
-				if (blockState3.get(FACING) == direction.getOpposite()) {
+				if (blockState3.method_11654(field_11666) == direction.getOpposite()) {
 					j = k;
 				}
 				break;
@@ -128,12 +130,12 @@ public class TripwireHookBlock extends Block {
 					blockState3 = MoreObjects.firstNonNull(blockState2, blockState3);
 				}
 
-				boolean bl7 = !(Boolean)blockState3.get(TripwireBlock.DISARMED);
-				boolean bl8 = (Boolean)blockState3.get(TripwireBlock.POWERED);
+				boolean bl7 = !(Boolean)blockState3.method_11654(TripwireBlock.field_11679);
+				boolean bl8 = (Boolean)blockState3.method_11654(TripwireBlock.field_11680);
 				bl6 |= bl7 && bl8;
 				blockStates[k] = blockState3;
 				if (k == i) {
-					world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+					world.method_8397().method_8676(blockPos, this, this.getTickRate(world));
 					bl5 &= bl7;
 				}
 			}
@@ -141,18 +143,18 @@ public class TripwireHookBlock extends Block {
 
 		bl5 &= j > 1;
 		bl6 &= bl5;
-		BlockState blockState4 = this.getDefaultState().with(field_11669, Boolean.valueOf(bl5)).with(field_11671, Boolean.valueOf(bl6));
+		BlockState blockState4 = this.method_9564().method_11657(field_11669, Boolean.valueOf(bl5)).method_11657(field_11671, Boolean.valueOf(bl6));
 		if (j > 0) {
-			BlockPos blockPos2x = blockPos.offset(direction, j);
+			BlockPos blockPos2x = blockPos.method_10079(direction, j);
 			Direction direction2 = direction.getOpposite();
-			world.setBlockState(blockPos2x, blockState4.with(FACING, direction2), 3);
+			world.method_8652(blockPos2x, blockState4.method_11657(field_11666, direction2), 3);
 			this.method_10775(world, blockPos2x, direction2);
 			this.method_10777(world, blockPos2x, bl5, bl6, bl3, bl4);
 		}
 
 		this.method_10777(world, blockPos, bl5, bl6, bl3, bl4);
 		if (!bl) {
-			world.setBlockState(blockPos, blockState4.with(FACING, direction), 3);
+			world.method_8652(blockPos, blockState4.method_11657(field_11666, direction), 3);
 			if (bl2) {
 				this.method_10775(world, blockPos, direction);
 			}
@@ -160,11 +162,11 @@ public class TripwireHookBlock extends Block {
 
 		if (bl3 != bl5) {
 			for (int l = 1; l < j; l++) {
-				BlockPos blockPos3 = blockPos.offset(direction, l);
+				BlockPos blockPos3 = blockPos.method_10079(direction, l);
 				BlockState blockState5 = blockStates[l];
 				if (blockState5 != null) {
-					world.setBlockState(blockPos3, blockState5.with(field_11669, Boolean.valueOf(bl5)), 3);
-					if (!world.getBlockState(blockPos3).isAir()) {
+					world.method_8652(blockPos3, blockState5.method_11657(field_11669, Boolean.valueOf(bl5)), 3);
+					if (!world.method_8320(blockPos3).isAir()) {
 					}
 				}
 			}
@@ -172,61 +174,61 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		this.method_10776(world, blockPos, blockState, false, true, -1, null);
 	}
 
 	private void method_10777(World world, BlockPos blockPos, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
 		if (bl2 && !bl4) {
-			world.playSound(null, blockPos, SoundEvents.field_14674, SoundCategory.field_15245, 0.4F, 0.6F);
+			world.method_8396(null, blockPos, SoundEvents.field_14674, SoundCategory.field_15245, 0.4F, 0.6F);
 		} else if (!bl2 && bl4) {
-			world.playSound(null, blockPos, SoundEvents.field_14787, SoundCategory.field_15245, 0.4F, 0.5F);
+			world.method_8396(null, blockPos, SoundEvents.field_14787, SoundCategory.field_15245, 0.4F, 0.5F);
 		} else if (bl && !bl3) {
-			world.playSound(null, blockPos, SoundEvents.field_14859, SoundCategory.field_15245, 0.4F, 0.7F);
+			world.method_8396(null, blockPos, SoundEvents.field_14859, SoundCategory.field_15245, 0.4F, 0.7F);
 		} else if (!bl && bl3) {
-			world.playSound(null, blockPos, SoundEvents.field_14595, SoundCategory.field_15245, 0.4F, 1.2F / (world.random.nextFloat() * 0.2F + 0.9F));
+			world.method_8396(null, blockPos, SoundEvents.field_14595, SoundCategory.field_15245, 0.4F, 1.2F / (world.random.nextFloat() * 0.2F + 0.9F));
 		}
 	}
 
 	private void method_10775(World world, BlockPos blockPos, Direction direction) {
-		world.updateNeighborsAlways(blockPos, this);
-		world.updateNeighborsAlways(blockPos.offset(direction.getOpposite()), this);
+		world.method_8452(blockPos, this);
+		world.method_8452(blockPos.method_10093(direction.getOpposite()), this);
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!bl && blockState.getBlock() != blockState2.getBlock()) {
-			boolean bl2 = (Boolean)blockState.get(field_11669);
-			boolean bl3 = (Boolean)blockState.get(field_11671);
+			boolean bl2 = (Boolean)blockState.method_11654(field_11669);
+			boolean bl3 = (Boolean)blockState.method_11654(field_11671);
 			if (bl2 || bl3) {
 				this.method_10776(world, blockPos, blockState, true, false, -1, null);
 			}
 
 			if (bl3) {
-				world.updateNeighborsAlways(blockPos, this);
-				world.updateNeighborsAlways(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite()), this);
+				world.method_8452(blockPos, this);
+				world.method_8452(blockPos.method_10093(((Direction)blockState.method_11654(field_11666)).getOpposite()), this);
 			}
 
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+			super.method_9536(blockState, world, blockPos, blockState2, bl);
 		}
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.get(field_11671) ? 15 : 0;
+	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return blockState.method_11654(field_11671) ? 15 : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		if (!(Boolean)blockState.get(field_11671)) {
+	public int method_9603(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		if (!(Boolean)blockState.method_11654(field_11671)) {
 			return 0;
 		} else {
-			return blockState.get(FACING) == direction ? 15 : 0;
+			return blockState.method_11654(field_11666) == direction ? 15 : 0;
 		}
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState blockState) {
+	public boolean method_9506(BlockState blockState) {
 		return true;
 	}
 
@@ -236,17 +238,17 @@ public class TripwireHookBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
+	public BlockState method_9598(BlockState blockState, Rotation rotation) {
+		return blockState.method_11657(field_11666, rotation.method_10503(blockState.method_11654(field_11666)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
+	public BlockState method_9569(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.method_10345(blockState.method_11654(field_11666)));
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, field_11671, field_11669);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_11666, field_11671, field_11669);
 	}
 }

@@ -2,19 +2,19 @@ package net.minecraft.entity.data;
 
 public class TrackedData<T> {
 	private final int id;
-	private final TrackedDataHandler<T> dataType;
+	private final TrackedDataHandler<T> field_13307;
 
 	public TrackedData(int i, TrackedDataHandler<T> trackedDataHandler) {
 		this.id = i;
-		this.dataType = trackedDataHandler;
+		this.field_13307 = trackedDataHandler;
 	}
 
 	public int getId() {
 		return this.id;
 	}
 
-	public TrackedDataHandler<T> getType() {
-		return this.dataType;
+	public TrackedDataHandler<T> method_12712() {
+		return this.field_13307;
 	}
 
 	public boolean equals(Object object) {

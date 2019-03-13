@@ -21,8 +21,8 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 
 	public ScoreboardObjectiveUpdateS2CPacket(ScoreboardObjective scoreboardObjective, int i) {
 		this.name = scoreboardObjective.getName();
-		this.displayName = scoreboardObjective.getDisplayName();
-		this.type = scoreboardObjective.getCriterionType();
+		this.displayName = scoreboardObjective.method_1114();
+		this.type = scoreboardObjective.method_1118();
 		this.mode = i;
 	}
 
@@ -31,7 +31,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		this.name = packetByteBuf.readString(16);
 		this.mode = packetByteBuf.readByte();
 		if (this.mode == 0 || this.mode == 2) {
-			this.displayName = packetByteBuf.readTextComponent();
+			this.displayName = packetByteBuf.method_10808();
 			this.type = packetByteBuf.readEnumConstant(ScoreboardCriterion.Type.class);
 		}
 	}
@@ -41,13 +41,13 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		packetByteBuf.writeString(this.name);
 		packetByteBuf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
-			packetByteBuf.writeTextComponent(this.displayName);
+			packetByteBuf.method_10805(this.displayName);
 			packetByteBuf.writeEnumConstant(this.type);
 		}
 	}
 
 	public void method_11838(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onScoreboardObjectiveUpdate(this);
+		clientPlayPacketListener.method_11144(this);
 	}
 
 	@Environment(EnvType.CLIENT)

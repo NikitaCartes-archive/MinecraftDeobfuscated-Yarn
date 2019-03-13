@@ -21,7 +21,7 @@ public class ExplosionEmitterParticle extends NoRenderParticle {
 			double d = this.posX + (this.random.nextDouble() - this.random.nextDouble()) * 4.0;
 			double e = this.posY + (this.random.nextDouble() - this.random.nextDouble()) * 4.0;
 			double f = this.posZ + (this.random.nextDouble() - this.random.nextDouble()) * 4.0;
-			this.world.addParticle(ParticleTypes.field_11236, d, e, f, (double)((float)this.age_ / (float)this.maxAge_), 0.0, 0.0);
+			this.world.method_8406(ParticleTypes.field_11236, d, e, f, (double)((float)this.age_ / (float)this.maxAge_), 0.0, 0.0);
 		}
 
 		this.age_++;

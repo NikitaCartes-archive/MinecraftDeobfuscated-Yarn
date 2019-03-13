@@ -20,12 +20,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("fishing_rod_hooked");
+	private static final Identifier field_9617 = new Identifier("fishing_rod_hooked");
 	private final Map<PlayerAdvancementTracker, FishingRodHookedCriterion.class_2059> field_9618 = Maps.<PlayerAdvancementTracker, FishingRodHookedCriterion.class_2059>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9617;
 	}
 
 	@Override
@@ -74,38 +74,38 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final ItemPredicate rod;
+		private final ItemPredicate field_9621;
 		private final EntityPredicate entity;
-		private final ItemPredicate item;
+		private final ItemPredicate field_9623;
 
 		public Conditions(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
-			super(FishingRodHookedCriterion.ID);
-			this.rod = itemPredicate;
+			super(FishingRodHookedCriterion.field_9617);
+			this.field_9621 = itemPredicate;
 			this.entity = entityPredicate;
-			this.item = itemPredicate2;
+			this.field_9623 = itemPredicate2;
 		}
 
-		public static FishingRodHookedCriterion.Conditions create(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
+		public static FishingRodHookedCriterion.Conditions method_8947(ItemPredicate itemPredicate, EntityPredicate entityPredicate, ItemPredicate itemPredicate2) {
 			return new FishingRodHookedCriterion.Conditions(itemPredicate, entityPredicate, itemPredicate2);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
-			if (!this.rod.test(itemStack)) {
+		public boolean method_8946(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
+			if (!this.field_9621.test(itemStack)) {
 				return false;
-			} else if (!this.entity.test(serverPlayerEntity, fishHookEntity.hookedEntity)) {
+			} else if (!this.entity.method_8914(serverPlayerEntity, fishHookEntity.hookedEntity)) {
 				return false;
 			} else {
-				if (this.item != ItemPredicate.ANY) {
+				if (this.field_9623 != ItemPredicate.ANY) {
 					boolean bl = false;
 					if (fishHookEntity.hookedEntity instanceof ItemEntity) {
 						ItemEntity itemEntity = (ItemEntity)fishHookEntity.hookedEntity;
-						if (this.item.test(itemEntity.getStack())) {
+						if (this.field_9623.test(itemEntity.method_6983())) {
 							bl = true;
 						}
 					}
 
 					for (ItemStack itemStack2 : collection) {
-						if (this.item.test(itemStack2)) {
+						if (this.field_9623.test(itemStack2)) {
 							bl = true;
 							break;
 						}
@@ -123,9 +123,9 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("rod", this.rod.serialize());
+			jsonObject.add("rod", this.field_9621.serialize());
 			jsonObject.add("entity", this.entity.serialize());
-			jsonObject.add("item", this.item.serialize());
+			jsonObject.add("item", this.field_9623.serialize());
 			return jsonObject;
 		}
 	}
@@ -154,7 +154,7 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 			List<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer : this.field_9619) {
-				if (conditionsContainer.getConditions().matches(serverPlayerEntity, itemStack, fishHookEntity, collection)) {
+				if (conditionsContainer.method_797().method_8946(serverPlayerEntity, itemStack, fishHookEntity, collection)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>>newArrayList();
 					}

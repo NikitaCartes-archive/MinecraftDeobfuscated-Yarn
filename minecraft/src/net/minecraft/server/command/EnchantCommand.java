@@ -72,19 +72,19 @@ public class EnchantCommand {
 			for (Entity entity : collection) {
 				if (entity instanceof LivingEntity) {
 					LivingEntity livingEntity = (LivingEntity)entity;
-					ItemStack itemStack = livingEntity.getMainHandStack();
+					ItemStack itemStack = livingEntity.method_6047();
 					if (!itemStack.isEmpty()) {
 						if (enchantment.isAcceptableItem(itemStack) && EnchantmentHelper.contains(EnchantmentHelper.getEnchantments(itemStack).keySet(), enchantment)) {
-							itemStack.addEnchantment(enchantment, i);
+							itemStack.method_7978(enchantment, i);
 							j++;
 						} else if (collection.size() == 1) {
-							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().getTranslatedNameTrimmed(itemStack).getString());
+							throw FAILED_INCOMPATIBLE_EXCEPTION.create(itemStack.getItem().method_7864(itemStack).getString());
 						}
 					} else if (collection.size() == 1) {
-						throw FAILED_ITEMLESS_EXCEPTION.create(livingEntity.getName().getString());
+						throw FAILED_ITEMLESS_EXCEPTION.create(livingEntity.method_5477().getString());
 					}
 				} else if (collection.size() == 1) {
-					throw FAILED_ENTITY_EXCEPTION.create(entity.getName().getString());
+					throw FAILED_ENTITY_EXCEPTION.create(entity.method_5477().getString());
 				}
 			}
 
@@ -92,14 +92,11 @@ public class EnchantCommand {
 				throw FAILED_EXCEPTION.create();
 			} else {
 				if (collection.size() == 1) {
-					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent("commands.enchant.success.single", enchantment.getTextComponent(i), ((Entity)collection.iterator().next()).getDisplayName()),
-						true
+					serverCommandSource.method_9226(
+						new TranslatableTextComponent("commands.enchant.success.single", enchantment.method_8179(i), ((Entity)collection.iterator().next()).method_5476()), true
 					);
 				} else {
-					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent("commands.enchant.success.multiple", enchantment.getTextComponent(i), collection.size()), true
-					);
+					serverCommandSource.method_9226(new TranslatableTextComponent("commands.enchant.success.multiple", enchantment.method_8179(i), collection.size()), true);
 				}
 
 				return j;

@@ -9,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, ParrotEntityModel> {
-	public static final Identifier[] TEXTURES = new Identifier[]{
+	public static final Identifier[] field_4754 = new Identifier[]{
 		new Identifier("textures/entity/parrot/parrot_red_blue.png"),
 		new Identifier("textures/entity/parrot/parrot_blue.png"),
 		new Identifier("textures/entity/parrot/parrot_green.png"),
@@ -22,7 +22,7 @@ public class ParrotEntityRenderer extends MobEntityRenderer<ParrotEntity, Parrot
 	}
 
 	protected Identifier method_4080(ParrotEntity parrotEntity) {
-		return TEXTURES[parrotEntity.getVariant()];
+		return field_4754[parrotEntity.getVariant()];
 	}
 
 	public float method_4081(ParrotEntity parrotEntity, float f) {

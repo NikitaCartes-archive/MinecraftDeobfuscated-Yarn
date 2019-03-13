@@ -9,7 +9,6 @@ import net.minecraft.container.MerchantContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.TextComponent;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public interface Trader {
@@ -18,27 +17,31 @@ public interface Trader {
 	@Nullable
 	PlayerEntity getCurrentCustomer();
 
-	TraderRecipeList getRecipes();
+	TraderRecipeList method_8264();
 
 	@Environment(EnvType.CLIENT)
-	void setServerRecipes(@Nullable TraderRecipeList traderRecipeList);
+	void method_8261(@Nullable TraderRecipeList traderRecipeList);
 
-	void useRecipe(TraderRecipe traderRecipe);
+	void method_8262(TraderRecipe traderRecipe);
 
 	void onSellingItem(ItemStack itemStack);
 
-	World getTraderWorld();
+	World method_8260();
 
-	BlockPos getTraderPos();
+	int method_19269();
 
-	default void sendRecipes(PlayerEntity playerEntity, TextComponent textComponent) {
+	void method_19271(int i);
+
+	boolean method_19270();
+
+	default void method_17449(PlayerEntity playerEntity, TextComponent textComponent, int i) {
 		OptionalInt optionalInt = playerEntity.openContainer(
-			new ClientDummyContainerProvider((i, playerInventory, playerEntityx) -> new MerchantContainer(i, playerInventory, this), textComponent)
+			new ClientDummyContainerProvider((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), textComponent)
 		);
 		if (optionalInt.isPresent()) {
-			TraderRecipeList traderRecipeList = this.getRecipes();
+			TraderRecipeList traderRecipeList = this.method_8264();
 			if (!traderRecipeList.isEmpty()) {
-				playerEntity.sendVillagerRecipes(optionalInt.getAsInt(), traderRecipeList);
+				playerEntity.method_17354(optionalInt.getAsInt(), traderRecipeList, i, this.method_19269(), this.method_19270());
 			}
 		}
 	}

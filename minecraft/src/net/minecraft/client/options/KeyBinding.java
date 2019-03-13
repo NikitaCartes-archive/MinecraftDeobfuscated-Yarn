@@ -50,7 +50,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
 	public static void updatePressedStates() {
 		for (KeyBinding keyBinding : keysById.values()) {
-			if (keyBinding.keyCode.getCategory() == InputUtil.Type.field_1668 && keyBinding.keyCode.getKeyCode() != InputUtil.UNKNOWN_KEYCODE.getKeyCode()) {
+			if (keyBinding.keyCode.method_1442() == InputUtil.Type.field_1668 && keyBinding.keyCode.getKeyCode() != InputUtil.UNKNOWN_KEYCODE.getKeyCode()) {
 				keyBinding.pressed = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), keyBinding.keyCode.getKeyCode());
 			}
 		}
@@ -139,19 +139,19 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
 	public boolean matchesKey(int i, int j) {
 		return i == InputUtil.UNKNOWN_KEYCODE.getKeyCode()
-			? this.keyCode.getCategory() == InputUtil.Type.field_1671 && this.keyCode.getKeyCode() == j
-			: this.keyCode.getCategory() == InputUtil.Type.field_1668 && this.keyCode.getKeyCode() == i;
+			? this.keyCode.method_1442() == InputUtil.Type.field_1671 && this.keyCode.getKeyCode() == j
+			: this.keyCode.method_1442() == InputUtil.Type.field_1668 && this.keyCode.getKeyCode() == i;
 	}
 
 	public boolean matchesMouse(int i) {
-		return this.keyCode.getCategory() == InputUtil.Type.field_1672 && this.keyCode.getKeyCode() == i;
+		return this.keyCode.method_1442() == InputUtil.Type.field_1672 && this.keyCode.getKeyCode() == i;
 	}
 
 	public String getLocalizedName() {
 		String string = this.keyCode.getName();
 		int i = this.keyCode.getKeyCode();
 		String string2 = null;
-		switch (this.keyCode.getCategory()) {
+		switch (this.keyCode.method_1442()) {
 			case field_1668:
 				string2 = InputUtil.getKeycodeName(i);
 				break;

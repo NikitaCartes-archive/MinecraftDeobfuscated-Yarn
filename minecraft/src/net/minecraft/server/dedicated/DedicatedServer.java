@@ -1,7 +1,7 @@
 package net.minecraft.server.dedicated;
 
 public interface DedicatedServer {
-	ServerPropertiesHandler getProperties();
+	ServerPropertiesHandler method_16705();
 
 	String getHostname();
 

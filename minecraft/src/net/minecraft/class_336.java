@@ -16,7 +16,7 @@ public class class_336 implements ClientChatListener {
 	}
 
 	@Override
-	public void onChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
-		this.client.inGameHud.setOverlayMessage(textComponent, false);
+	public void method_1794(ChatMessageType chatMessageType, TextComponent textComponent) {
+		this.client.field_1705.method_1758(textComponent, false);
 	}
 }

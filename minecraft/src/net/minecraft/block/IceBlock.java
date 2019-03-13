@@ -23,41 +23,41 @@ public class IceBlock extends TransparentBlock {
 	}
 
 	@Override
-	public void afterBreak(
+	public void method_9556(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
+		super.method_9556(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
 		if (EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
-			if (world.dimension.doesWaterVaporize()) {
-				world.clearBlockState(blockPos);
+			if (world.field_9247.doesWaterVaporize()) {
+				world.method_8650(blockPos);
 				return;
 			}
 
-			Material material = world.getBlockState(blockPos.down()).getMaterial();
+			Material material = world.method_8320(blockPos.down()).method_11620();
 			if (material.suffocates() || material.isLiquid()) {
-				world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());
+				world.method_8501(blockPos, Blocks.field_10382.method_9564());
 			}
 		}
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11 - blockState.getLightSubtracted(world, blockPos)) {
-			this.melt(blockState, world, blockPos);
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (world.method_8314(LightType.BLOCK, blockPos) > 11 - blockState.method_11581(world, blockPos)) {
+			this.method_10275(blockState, world, blockPos);
 		}
 	}
 
-	protected void melt(BlockState blockState, World world, BlockPos blockPos) {
-		if (world.dimension.doesWaterVaporize()) {
-			world.clearBlockState(blockPos);
+	protected void method_10275(BlockState blockState, World world, BlockPos blockPos) {
+		if (world.field_9247.doesWaterVaporize()) {
+			world.method_8650(blockPos);
 		} else {
-			world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());
-			world.updateNeighbor(blockPos, Blocks.field_10382, blockPos);
+			world.method_8501(blockPos, Blocks.field_10382.method_9564());
+			world.method_8492(blockPos, Blocks.field_10382, blockPos);
 		}
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState blockState) {
+	public PistonBehavior method_9527(BlockState blockState) {
 		return PistonBehavior.field_15974;
 	}
 }

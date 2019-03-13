@@ -76,7 +76,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 			this.ids = new IntArrayList(this.stackArray.length);
 
 			for (ItemStack itemStack : this.stackArray) {
-				this.ids.add(RecipeFinder.getItemId(itemStack));
+				this.ids.add(RecipeFinder.method_7408(itemStack));
 			}
 
 			this.ids.sort(IntComparators.NATURAL_COMPARATOR);
@@ -85,7 +85,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return this.ids;
 	}
 
-	public void write(PacketByteBuf packetByteBuf) {
+	public void method_8088(PacketByteBuf packetByteBuf) {
 		this.createStackArray();
 		packetByteBuf.writeVarInt(this.stackArray.length);
 
@@ -117,7 +117,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return ingredient.entries.length == 0 ? EMPTY : ingredient;
 	}
 
-	public static Ingredient ofItems(ItemProvider... itemProviders) {
+	public static Ingredient method_8091(ItemProvider... itemProviders) {
 		return ofEntries(Arrays.stream(itemProviders).map(itemProvider -> new Ingredient.StackEntry(new ItemStack(itemProvider))));
 	}
 
@@ -126,11 +126,11 @@ public final class Ingredient implements Predicate<ItemStack> {
 		return ofEntries(Arrays.stream(itemStacks).map(itemStack -> new Ingredient.StackEntry(itemStack)));
 	}
 
-	public static Ingredient fromTag(Tag<Item> tag) {
+	public static Ingredient method_8106(Tag<Item> tag) {
 		return ofEntries(Stream.of(new Ingredient.TagEntry(tag)));
 	}
 
-	public static Ingredient fromPacket(PacketByteBuf packetByteBuf) {
+	public static Ingredient method_8086(PacketByteBuf packetByteBuf) {
 		int i = packetByteBuf.readVarInt();
 		return ofEntries(Stream.generate(() -> new Ingredient.StackEntry(packetByteBuf.readItemStack())).limit((long)i));
 	}
@@ -139,29 +139,29 @@ public final class Ingredient implements Predicate<ItemStack> {
 		if (jsonElement == null || jsonElement.isJsonNull()) {
 			throw new JsonSyntaxException("Item cannot be null");
 		} else if (jsonElement.isJsonObject()) {
-			return ofEntries(Stream.of(entryFromJson(jsonElement.getAsJsonObject())));
+			return ofEntries(Stream.of(method_8107(jsonElement.getAsJsonObject())));
 		} else if (jsonElement.isJsonArray()) {
 			JsonArray jsonArray = jsonElement.getAsJsonArray();
 			if (jsonArray.size() == 0) {
 				throw new JsonSyntaxException("Item array cannot be empty, at least one item must be defined");
 			} else {
-				return ofEntries(StreamSupport.stream(jsonArray.spliterator(), false).map(jsonElementx -> entryFromJson(JsonHelper.asObject(jsonElementx, "item"))));
+				return ofEntries(StreamSupport.stream(jsonArray.spliterator(), false).map(jsonElementx -> method_8107(JsonHelper.asObject(jsonElementx, "item"))));
 			}
 		} else {
 			throw new JsonSyntaxException("Expected item to be object or array of objects");
 		}
 	}
 
-	public static Ingredient.Entry entryFromJson(JsonObject jsonObject) {
+	public static Ingredient.Entry method_8107(JsonObject jsonObject) {
 		if (jsonObject.has("item") && jsonObject.has("tag")) {
 			throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
 		} else if (jsonObject.has("item")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
-			Item item = (Item)Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
+			Item item = (Item)Registry.ITEM.method_17966(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
 			return new Ingredient.StackEntry(new ItemStack(item));
 		} else if (jsonObject.has("tag")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-			Tag<Item> tag = ItemTags.getContainer().get(identifier);
+			Tag<Item> tag = ItemTags.method_15106().get(identifier);
 			if (tag == null) {
 				throw new JsonSyntaxException("Unknown item tag '" + identifier + "'");
 			} else {
@@ -193,23 +193,23 @@ public final class Ingredient implements Predicate<ItemStack> {
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("item", Registry.ITEM.getId(this.stack.getItem()).toString());
+			jsonObject.addProperty("item", Registry.ITEM.method_10221(this.stack.getItem()).toString());
 			return jsonObject;
 		}
 	}
 
 	static class TagEntry implements Ingredient.Entry {
-		private final Tag<Item> tag;
+		private final Tag<Item> field_9022;
 
 		private TagEntry(Tag<Item> tag) {
-			this.tag = tag;
+			this.field_9022 = tag;
 		}
 
 		@Override
 		public Collection<ItemStack> getStacks() {
 			List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
-			for (Item item : this.tag.values()) {
+			for (Item item : this.field_9022.values()) {
 				list.add(new ItemStack(item));
 			}
 
@@ -219,7 +219,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("tag", this.tag.getId().toString());
+			jsonObject.addProperty("tag", this.field_9022.getId().toString());
 			return jsonObject;
 		}
 	}

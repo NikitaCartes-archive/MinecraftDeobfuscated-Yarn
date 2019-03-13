@@ -35,7 +35,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public class SnowmanEntity extends GolemEntity implements RangedAttacker {
-	private static final TrackedData<Byte> SNOWMAN_FLAGS = DataTracker.registerData(SnowmanEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Byte> field_6873 = DataTracker.registerData(SnowmanEntity.class, TrackedDataHandlerRegistry.BYTE);
 
 	public SnowmanEntity(EntityType<? extends SnowmanEntity> entityType, World world) {
 		super(entityType, world);
@@ -43,35 +43,35 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(1, new ProjectileAttackGoal(this, 1.25, 20, 10.0F));
-		this.goalSelector.add(2, new class_1394(this, 1.0, 1.0000001E-5F));
-		this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
-		this.goalSelector.add(4, new LookAroundGoal(this));
-		this.targetSelector.add(1, new FollowTargetGoal(this, MobEntity.class, 10, true, false, livingEntity -> livingEntity instanceof Monster));
+		this.field_6201.add(1, new ProjectileAttackGoal(this, 1.25, 20, 10.0F));
+		this.field_6201.add(2, new class_1394(this, 1.0, 1.0000001E-5F));
+		this.field_6201.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.field_6201.add(4, new LookAroundGoal(this));
+		this.field_6185.add(1, new FollowTargetGoal(this, MobEntity.class, 10, true, false, livingEntity -> livingEntity instanceof Monster));
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(4.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
+		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(4.0);
+		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(SNOWMAN_FLAGS, (byte)16);
+		this.field_6011.startTracking(field_6873, (byte)16);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putBoolean("Pumpkin", this.hasPumpkin());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		if (compoundTag.containsKey("Pumpkin")) {
 			this.setHasPumpkin(compoundTag.getBoolean("Pumpkin"));
 		}
@@ -80,7 +80,7 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			int i = MathHelper.floor(this.x);
 			int j = MathHelper.floor(this.y);
 			int k = MathHelper.floor(this.z);
@@ -88,25 +88,25 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 				this.damage(DamageSource.DROWN, 1.0F);
 			}
 
-			if (this.world.getBiome(new BlockPos(i, 0, k)).getTemperature(new BlockPos(i, j, k)) > 1.0F) {
+			if (this.field_6002.method_8310(new BlockPos(i, 0, k)).method_8707(new BlockPos(i, j, k)) > 1.0F) {
 				this.damage(DamageSource.ON_FIRE, 1.0F);
 			}
 
-			if (!this.world.getGameRules().getBoolean("mobGriefing")) {
+			if (!this.field_6002.getGameRules().getBoolean("mobGriefing")) {
 				return;
 			}
 
-			BlockState blockState = Blocks.field_10477.getDefaultState();
+			BlockState blockState = Blocks.field_10477.method_9564();
 
 			for (int l = 0; l < 4; l++) {
 				i = MathHelper.floor(this.x + (double)((float)(l % 2 * 2 - 1) * 0.25F));
 				j = MathHelper.floor(this.y);
 				k = MathHelper.floor(this.z + (double)((float)(l / 2 % 2 * 2 - 1) * 0.25F));
 				BlockPos blockPos = new BlockPos(i, j, k);
-				if (this.world.getBlockState(blockPos).isAir()
-					&& this.world.getBiome(blockPos).getTemperature(blockPos) < 0.8F
-					&& blockState.canPlaceAt(this.world, blockPos)) {
-					this.world.setBlockState(blockPos, blockState);
+				if (this.field_6002.method_8320(blockPos).isAir()
+					&& this.field_6002.method_8310(blockPos).method_8707(blockPos) < 0.8F
+					&& blockState.method_11591(this.field_6002, blockPos)) {
+					this.field_6002.method_8501(blockPos, blockState);
 				}
 			}
 		}
@@ -114,61 +114,61 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		SnowballEntity snowballEntity = new SnowballEntity(this.world, this);
+		SnowballEntity snowballEntity = new SnowballEntity(this.field_6002, this);
 		double d = livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 1.1F;
 		double e = livingEntity.x - this.x;
 		double g = d - snowballEntity.y;
 		double h = livingEntity.z - this.z;
 		float i = MathHelper.sqrt(e * e + h * h) * 0.2F;
 		snowballEntity.setVelocity(e, g + (double)i, h, 1.6F, 12.0F);
-		this.playSound(SoundEvents.field_14745, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
-		this.world.spawnEntity(snowballEntity);
+		this.method_5783(SoundEvents.field_14745, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
+		this.field_6002.spawnEntity(snowballEntity);
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
 		return 1.7F;
 	}
 
 	@Override
-	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8868 && this.hasPumpkin() && !this.world.isClient) {
+	protected boolean method_5992(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
+		if (itemStack.getItem() == Items.field_8868 && this.hasPumpkin() && !this.field_6002.isClient) {
 			this.setHasPumpkin(false);
 			itemStack.applyDamage(1, playerEntity);
 		}
 
-		return super.interactMob(playerEntity, hand);
+		return super.method_5992(playerEntity, hand);
 	}
 
 	public boolean hasPumpkin() {
-		return (this.dataTracker.get(SNOWMAN_FLAGS) & 16) != 0;
+		return (this.field_6011.get(field_6873) & 16) != 0;
 	}
 
 	public void setHasPumpkin(boolean bl) {
-		byte b = this.dataTracker.get(SNOWMAN_FLAGS);
+		byte b = this.field_6011.get(field_6873);
 		if (bl) {
-			this.dataTracker.set(SNOWMAN_FLAGS, (byte)(b | 16));
+			this.field_6011.set(field_6873, (byte)(b | 16));
 		} else {
-			this.dataTracker.set(SNOWMAN_FLAGS, (byte)(b & -17));
+			this.field_6011.set(field_6873, (byte)(b & -17));
 		}
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return SoundEvents.field_14655;
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_14830;
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_14594;
 	}
 

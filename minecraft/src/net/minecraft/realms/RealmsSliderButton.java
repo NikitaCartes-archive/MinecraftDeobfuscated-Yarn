@@ -1,28 +1,25 @@
 package net.minecraft.realms;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.class_4186;
+import net.minecraft.class_4188;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class RealmsSliderButton extends RealmsButton {
-	public double value = 1.0;
-	public boolean sliding;
+public abstract class RealmsSliderButton extends class_4186<class_4188> {
+	protected static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
+	private final int field_18804;
+	private final class_4188 proxy;
 	private final double minValue;
 	private final double maxValue;
-	private int steps;
 
-	public RealmsSliderButton(int i, int j, int k, int l, int m, int n) {
-		this(i, j, k, l, n, 0, 1.0, (double)m);
-	}
-
-	public RealmsSliderButton(int i, int j, int k, int l, int m, int n, double d, double e) {
-		super(i, j, k, l, 20, "");
+	public RealmsSliderButton(int i, int j, int k, int l, int m, double d, double e) {
+		this.field_18804 = i;
 		this.minValue = d;
 		this.maxValue = e;
-		this.value = this.toPct((double)n);
+		this.proxy = new class_4188(this, j, k, l, 20, this.toPct((double)m));
 		this.getProxy().setText(this.getMessage());
 	}
 
@@ -39,54 +36,54 @@ public abstract class RealmsSliderButton extends RealmsButton {
 	}
 
 	public double clamp(double d) {
-		d = this.clampSteps(d);
 		return MathHelper.clamp(d, this.minValue, this.maxValue);
 	}
 
-	protected double clampSteps(double d) {
-		if (this.steps > 0) {
-			d = (double)((long)this.steps * Math.round(d / (double)this.steps));
-		}
-
-		return d;
-	}
-
-	@Override
 	public int getYImage(boolean bl) {
 		return 0;
 	}
 
-	@Override
-	public void renderBg(int i, int j) {
-		if (this.sliding) {
-			this.value = (double)((float)(i - (this.getProxy().x + 4)) / (float)(this.getProxy().getWidth() - 8));
-			this.value = MathHelper.clamp(this.value, 0.0, 1.0);
-			double d = this.toValue(this.value);
-			this.clicked(d);
-			this.value = this.toPct(d);
-			this.getProxy().setText(this.getMessage());
-		}
-
-		MinecraftClient.getInstance().getTextureManager().bindTexture(WIDGETS_LOCATION);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.blit(this.getProxy().x + (int)(this.value * (double)(this.getProxy().getWidth() - 8)), this.getProxy().y, 0, 66, 4, 20);
-		this.blit(this.getProxy().x + (int)(this.value * (double)(this.getProxy().getWidth() - 8)) + 4, this.getProxy().y, 196, 66, 4, 20);
-	}
-
-	@Override
 	public void onClick(double d, double e) {
-		this.value = (d - (double)(this.getProxy().x + 4)) / (double)(this.getProxy().getWidth() - 8);
-		this.value = MathHelper.clamp(this.value, 0.0, 1.0);
-		this.clicked(this.toValue(this.value));
-		this.getProxy().setText(this.getMessage());
-		this.sliding = true;
 	}
 
-	public void clicked(double d) {
-	}
-
-	@Override
 	public void onRelease(double d, double e) {
-		this.sliding = false;
+	}
+
+	public class_4188 getProxy() {
+		return this.proxy;
+	}
+
+	public double getValue() {
+		return this.proxy.method_19363();
+	}
+
+	public void setValue(double d) {
+		this.proxy.method_19361(d);
+	}
+
+	public int method_19462() {
+		return this.field_18804;
+	}
+
+	public void setMessage(String string) {
+		this.proxy.setText(string);
+	}
+
+	public int getWidth() {
+		return this.proxy.getWidth();
+	}
+
+	public int getHeight() {
+		return this.proxy.method_19365();
+	}
+
+	public int method_19463() {
+		return this.proxy.method_19362();
+	}
+
+	public abstract void applyValue();
+
+	public void updateMessage() {
+		this.proxy.setText(this.getMessage());
 	}
 }

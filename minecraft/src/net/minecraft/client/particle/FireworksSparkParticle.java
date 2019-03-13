@@ -4,9 +4,9 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_4002;
+import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.entity.Entity;
 import net.minecraft.item.FireworkItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -31,7 +31,7 @@ public class FireworksSparkParticle {
 
 		public Particle method_3025(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			FireworksSparkParticle.class_680 lv = new FireworksSparkParticle.class_680(
-				world, d, e, f, g, h, i, MinecraftClient.getInstance().particleManager, this.field_17811
+				world, d, e, f, g, h, i, MinecraftClient.getInstance().field_1713, this.field_17811
 			);
 			lv.setColorAlpha(0.99F);
 			return lv;
@@ -61,14 +61,14 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public ParticleTextureSheet getTextureSheet() {
+		public ParticleTextureSheet method_18122() {
 			return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
 		}
 
 		@Override
-		public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
+		public void buildGeometry(BufferBuilder bufferBuilder, class_4184 arg, float f, float g, float h, float i, float j, float k) {
 			this.setColorAlpha(0.6F - ((float)this.age + f - 1.0F) * 0.25F * 0.5F);
-			super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
+			super.buildGeometry(bufferBuilder, arg, f, g, h, i, j, k);
 		}
 
 		@Override
@@ -107,9 +107,9 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public void buildGeometry(BufferBuilder bufferBuilder, Entity entity, float f, float g, float h, float i, float j, float k) {
+		public void buildGeometry(BufferBuilder bufferBuilder, class_4184 arg, float f, float g, float h, float i, float j, float k) {
 			if (!this.field_3803 || this.age < this.maxAge / 3 || (this.age + this.maxAge) / 3 % 2 == 0) {
-				super.buildGeometry(bufferBuilder, entity, f, g, h, i, j, k);
+				super.buildGeometry(bufferBuilder, arg, f, g, h, i, j, k);
 			}
 		}
 
@@ -139,8 +139,8 @@ public class FireworksSparkParticle {
 	@Environment(EnvType.CLIENT)
 	public static class create extends NoRenderParticle {
 		private int age;
-		private final ParticleManager particleManager;
-		private ListTag explosions;
+		private final ParticleManager field_3805;
+		private ListTag field_3806;
 		private boolean flicker;
 
 		public create(World world, double d, double e, double f, double g, double h, double i, ParticleManager particleManager, @Nullable CompoundTag compoundTag) {
@@ -148,17 +148,17 @@ public class FireworksSparkParticle {
 			this.velocityX = g;
 			this.velocityY = h;
 			this.velocityZ = i;
-			this.particleManager = particleManager;
+			this.field_3805 = particleManager;
 			this.maxAge = 8;
 			if (compoundTag != null) {
-				this.explosions = compoundTag.getList("Explosions", 10);
-				if (this.explosions.isEmpty()) {
-					this.explosions = null;
+				this.field_3806 = compoundTag.method_10554("Explosions", 10);
+				if (this.field_3806.isEmpty()) {
+					this.field_3806 = null;
 				} else {
-					this.maxAge = this.explosions.size() * 2 - 1;
+					this.maxAge = this.field_3806.size() * 2 - 1;
 
-					for (int j = 0; j < this.explosions.size(); j++) {
-						CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
+					for (int j = 0; j < this.field_3806.size(); j++) {
+						CompoundTag compoundTag2 = this.field_3806.getCompoundTag(j);
 						if (compoundTag2.getBoolean("Flicker")) {
 							this.flicker = true;
 							this.maxAge += 15;
@@ -171,14 +171,14 @@ public class FireworksSparkParticle {
 
 		@Override
 		public void update() {
-			if (this.age == 0 && this.explosions != null) {
+			if (this.age == 0 && this.field_3806 != null) {
 				boolean bl = this.method_3029();
 				boolean bl2 = false;
-				if (this.explosions.size() >= 3) {
+				if (this.field_3806.size() >= 3) {
 					bl2 = true;
 				} else {
-					for (int i = 0; i < this.explosions.size(); i++) {
-						CompoundTag compoundTag = this.explosions.getCompoundTag(i);
+					for (int i = 0; i < this.field_3806.size(); i++) {
+						CompoundTag compoundTag = this.field_3806.getCompoundTag(i);
 						if (FireworkItem.Type.fromId(compoundTag.getByte("Type")) == FireworkItem.Type.field_7977) {
 							bl2 = true;
 							break;
@@ -193,12 +193,12 @@ public class FireworksSparkParticle {
 					soundEvent = bl ? SoundEvents.field_15090 : SoundEvents.field_14917;
 				}
 
-				this.world.playSound(this.posX, this.posY, this.posZ, soundEvent, SoundCategory.field_15256, 20.0F, 0.95F + this.random.nextFloat() * 0.1F, true);
+				this.world.method_8486(this.posX, this.posY, this.posZ, soundEvent, SoundCategory.field_15256, 20.0F, 0.95F + this.random.nextFloat() * 0.1F, true);
 			}
 
-			if (this.age % 2 == 0 && this.explosions != null && this.age / 2 < this.explosions.size()) {
+			if (this.age % 2 == 0 && this.field_3806 != null && this.age / 2 < this.field_3806.size()) {
 				int j = this.age / 2;
-				CompoundTag compoundTag2 = this.explosions.getCompoundTag(j);
+				CompoundTag compoundTag2 = this.field_3806.getCompoundTag(j);
 				FireworkItem.Type type = FireworkItem.Type.fromId(compoundTag2.getByte("Type"));
 				boolean bl3 = compoundTag2.getBoolean("Trail");
 				boolean bl4 = compoundTag2.getBoolean("Flicker");
@@ -255,7 +255,7 @@ public class FireworksSparkParticle {
 				float f = (float)((k & 0xFF0000) >> 16) / 255.0F;
 				float g = (float)((k & 0xFF00) >> 8) / 255.0F;
 				float h = (float)((k & 0xFF) >> 0) / 255.0F;
-				Particle particle = this.particleManager.addParticle(ParticleTypes.field_17909, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
+				Particle particle = this.field_3805.method_3056(ParticleTypes.field_17909, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
 				particle.setColor(f, g, h);
 			}
 
@@ -264,7 +264,7 @@ public class FireworksSparkParticle {
 				if (this.flicker) {
 					boolean blx = this.method_3029();
 					SoundEvent soundEvent2 = blx ? SoundEvents.field_14882 : SoundEvents.field_14800;
-					this.world.playSound(this.posX, this.posY, this.posZ, soundEvent2, SoundCategory.field_15256, 20.0F, 0.9F + this.random.nextFloat() * 0.15F, true);
+					this.world.method_8486(this.posX, this.posY, this.posZ, soundEvent2, SoundCategory.field_15256, 20.0F, 0.9F + this.random.nextFloat() * 0.15F, true);
 				}
 
 				this.markDead();
@@ -273,11 +273,11 @@ public class FireworksSparkParticle {
 
 		private boolean method_3029() {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			return minecraftClient.getCameraEntity() == null || !(minecraftClient.getCameraEntity().squaredDistanceTo(this.posX, this.posY, this.posZ) < 256.0);
+			return minecraftClient.field_1773.method_19418().method_19326().squaredDistanceTo(this.posX, this.posY, this.posZ) >= 256.0;
 		}
 
 		private void method_3030(double d, double e, double f, double g, double h, double i, int[] is, int[] js, boolean bl, boolean bl2) {
-			FireworksSparkParticle.class_680 lv = (FireworksSparkParticle.class_680)this.particleManager.addParticle(ParticleTypes.field_11248, d, e, f, g, h, i);
+			FireworksSparkParticle.class_680 lv = (FireworksSparkParticle.class_680)this.field_3805.method_3056(ParticleTypes.field_11248, d, e, f, g, h, i);
 			lv.method_3027(bl);
 			lv.method_3026(bl2);
 			lv.setColorAlpha(0.99F);

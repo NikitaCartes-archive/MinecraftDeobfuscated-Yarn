@@ -28,14 +28,14 @@ public class EntityPredicate {
 		null
 	);
 	public static final EntityPredicate[] EMPTY = new EntityPredicate[0];
-	private final EntityTypePredicate type;
+	private final EntityTypePredicate field_9595;
 	private final DistancePredicate distance;
-	private final LocationPredicate location;
-	private final EntityEffectPredicate effects;
-	private final NbtPredicate nbt;
+	private final LocationPredicate field_9596;
+	private final EntityEffectPredicate field_9594;
+	private final NbtPredicate field_9600;
 	private final EntityFlagsPredicate flags;
 	private final EntityEquipmentPredicate equipment;
-	private final Identifier catType;
+	private final Identifier field_16317;
 
 	private EntityPredicate(
 		EntityTypePredicate entityTypePredicate,
@@ -47,39 +47,41 @@ public class EntityPredicate {
 		EntityEquipmentPredicate entityEquipmentPredicate,
 		@Nullable Identifier identifier
 	) {
-		this.type = entityTypePredicate;
+		this.field_9595 = entityTypePredicate;
 		this.distance = distancePredicate;
-		this.location = locationPredicate;
-		this.effects = entityEffectPredicate;
-		this.nbt = nbtPredicate;
+		this.field_9596 = locationPredicate;
+		this.field_9594 = entityEffectPredicate;
+		this.field_9600 = nbtPredicate;
 		this.flags = entityFlagsPredicate;
 		this.equipment = entityEquipmentPredicate;
-		this.catType = identifier;
+		this.field_16317 = identifier;
 	}
 
-	public boolean test(ServerPlayerEntity serverPlayerEntity, @Nullable Entity entity) {
-		return this.test(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), entity);
+	public boolean method_8914(ServerPlayerEntity serverPlayerEntity, @Nullable Entity entity) {
+		return this.method_8909(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), entity);
 	}
 
-	public boolean test(ServerWorld serverWorld, Vec3d vec3d, @Nullable Entity entity) {
+	public boolean method_8909(ServerWorld serverWorld, Vec3d vec3d, @Nullable Entity entity) {
 		if (this == ANY) {
 			return true;
 		} else if (entity == null) {
 			return false;
-		} else if (!this.type.matches(entity.getType())) {
+		} else if (!this.field_9595.matches(entity.method_5864())) {
 			return false;
 		} else if (!this.distance.test(vec3d.x, vec3d.y, vec3d.z, entity.x, entity.y, entity.z)) {
 			return false;
-		} else if (!this.location.test(serverWorld, entity.x, entity.y, entity.z)) {
+		} else if (!this.field_9596.method_9018(serverWorld, entity.x, entity.y, entity.z)) {
 			return false;
-		} else if (!this.effects.test(entity)) {
+		} else if (!this.field_9594.test(entity)) {
 			return false;
-		} else if (!this.nbt.test(entity)) {
+		} else if (!this.field_9600.test(entity)) {
 			return false;
 		} else if (!this.flags.test(entity)) {
 			return false;
 		} else {
-			return !this.equipment.test(entity) ? false : this.catType == null || entity instanceof CatEntity && ((CatEntity)entity).method_16092().equals(this.catType);
+			return !this.equipment.test(entity)
+				? false
+				: this.field_16317 == null || entity instanceof CatEntity && ((CatEntity)entity).method_16092().equals(this.field_16317);
 		}
 	}
 
@@ -95,14 +97,14 @@ public class EntityPredicate {
 			EntityEquipmentPredicate entityEquipmentPredicate = EntityEquipmentPredicate.deserialize(jsonObject.get("equipment"));
 			Identifier identifier = jsonObject.has("catType") ? new Identifier(JsonHelper.getString(jsonObject, "catType")) : null;
 			return new EntityPredicate.Builder()
-				.type(entityTypePredicate)
+				.method_8917(entityTypePredicate)
 				.distance(distancePredicate)
-				.location(locationPredicate)
-				.effects(entityEffectPredicate)
-				.nbt(nbtPredicate)
+				.method_8918(locationPredicate)
+				.method_8923(entityEffectPredicate)
+				.method_8915(nbtPredicate)
 				.flags(entityFlagsPredicate)
 				.equipment(entityEquipmentPredicate)
-				.catType(identifier)
+				.method_16112(identifier)
 				.build();
 		} else {
 			return ANY;
@@ -129,15 +131,15 @@ public class EntityPredicate {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("type", this.type.toJson());
+			jsonObject.add("type", this.field_9595.toJson());
 			jsonObject.add("distance", this.distance.serialize());
-			jsonObject.add("location", this.location.serialize());
-			jsonObject.add("effects", this.effects.serialize());
-			jsonObject.add("nbt", this.nbt.serialize());
+			jsonObject.add("location", this.field_9596.serialize());
+			jsonObject.add("effects", this.field_9594.serialize());
+			jsonObject.add("nbt", this.field_9600.serialize());
 			jsonObject.add("flags", this.flags.serialize());
 			jsonObject.add("equipment", this.equipment.serialize());
-			if (this.catType != null) {
-				jsonObject.addProperty("catType", this.catType.toString());
+			if (this.field_16317 != null) {
+				jsonObject.addProperty("catType", this.field_16317.toString());
 			}
 
 			return jsonObject;
@@ -162,37 +164,37 @@ public class EntityPredicate {
 	}
 
 	public static class Builder {
-		private EntityTypePredicate type = EntityTypePredicate.ANY;
+		private EntityTypePredicate field_9607 = EntityTypePredicate.ANY;
 		private DistancePredicate distance = DistancePredicate.ANY;
-		private LocationPredicate location = LocationPredicate.ANY;
-		private EntityEffectPredicate effects = EntityEffectPredicate.EMPTY;
-		private NbtPredicate nbt = NbtPredicate.ANY;
+		private LocationPredicate field_9604 = LocationPredicate.ANY;
+		private EntityEffectPredicate field_9605 = EntityEffectPredicate.EMPTY;
+		private NbtPredicate field_9603 = NbtPredicate.ANY;
 		private EntityFlagsPredicate flags = EntityFlagsPredicate.ANY;
 		private EntityEquipmentPredicate equipment = EntityEquipmentPredicate.ANY;
 		@Nullable
-		private Identifier catType;
+		private Identifier field_16318;
 
 		public static EntityPredicate.Builder create() {
 			return new EntityPredicate.Builder();
 		}
 
 		public EntityPredicate.Builder type(EntityType<?> entityType) {
-			this.type = EntityTypePredicate.create(entityType);
+			this.field_9607 = EntityTypePredicate.create(entityType);
 			return this;
 		}
 
-		public EntityPredicate.Builder type(Tag<EntityType<?>> tag) {
-			this.type = EntityTypePredicate.create(tag);
+		public EntityPredicate.Builder method_8922(Tag<EntityType<?>> tag) {
+			this.field_9607 = EntityTypePredicate.method_8926(tag);
 			return this;
 		}
 
-		public EntityPredicate.Builder type(Identifier identifier) {
-			this.catType = identifier;
+		public EntityPredicate.Builder method_16113(Identifier identifier) {
+			this.field_16318 = identifier;
 			return this;
 		}
 
-		public EntityPredicate.Builder type(EntityTypePredicate entityTypePredicate) {
-			this.type = entityTypePredicate;
+		public EntityPredicate.Builder method_8917(EntityTypePredicate entityTypePredicate) {
+			this.field_9607 = entityTypePredicate;
 			return this;
 		}
 
@@ -201,18 +203,18 @@ public class EntityPredicate {
 			return this;
 		}
 
-		public EntityPredicate.Builder location(LocationPredicate locationPredicate) {
-			this.location = locationPredicate;
+		public EntityPredicate.Builder method_8918(LocationPredicate locationPredicate) {
+			this.field_9604 = locationPredicate;
 			return this;
 		}
 
-		public EntityPredicate.Builder effects(EntityEffectPredicate entityEffectPredicate) {
-			this.effects = entityEffectPredicate;
+		public EntityPredicate.Builder method_8923(EntityEffectPredicate entityEffectPredicate) {
+			this.field_9605 = entityEffectPredicate;
 			return this;
 		}
 
-		public EntityPredicate.Builder nbt(NbtPredicate nbtPredicate) {
-			this.nbt = nbtPredicate;
+		public EntityPredicate.Builder method_8915(NbtPredicate nbtPredicate) {
+			this.field_9603 = nbtPredicate;
 			return this;
 		}
 
@@ -226,13 +228,13 @@ public class EntityPredicate {
 			return this;
 		}
 
-		public EntityPredicate.Builder catType(@Nullable Identifier identifier) {
-			this.catType = identifier;
+		public EntityPredicate.Builder method_16112(@Nullable Identifier identifier) {
+			this.field_16318 = identifier;
 			return this;
 		}
 
 		public EntityPredicate build() {
-			return new EntityPredicate(this.type, this.distance, this.location, this.effects, this.nbt, this.flags, this.equipment, this.catType);
+			return new EntityPredicate(this.field_9607, this.distance, this.field_9604, this.field_9605, this.field_9603, this.flags, this.equipment, this.field_16318);
 		}
 	}
 }

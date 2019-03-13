@@ -19,8 +19,8 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 
 	public void method_17162(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		boolean bl = livingEntity.getMainHand() == OptionMainHand.field_6183;
-		ItemStack itemStack = bl ? livingEntity.getOffHandStack() : livingEntity.getMainHandStack();
-		ItemStack itemStack2 = bl ? livingEntity.getMainHandStack() : livingEntity.getOffHandStack();
+		ItemStack itemStack = bl ? livingEntity.method_6079() : livingEntity.method_6047();
+		ItemStack itemStack2 = bl ? livingEntity.method_6047() : livingEntity.method_6079();
 		if (!itemStack.isEmpty() || !itemStack2.isEmpty()) {
 			GlStateManager.pushMatrix();
 			if (this.getModel().isChild) {
@@ -47,7 +47,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 			boolean bl = optionMainHand == OptionMainHand.field_6182;
 			GlStateManager.translatef((float)(bl ? -1 : 1) / 16.0F, 0.125F, -0.625F);
-			MinecraftClient.getInstance().getFirstPersonRenderer().renderItemFromSide(livingEntity, itemStack, type, bl);
+			MinecraftClient.getInstance().method_1489().method_3234(livingEntity, itemStack, type, bl);
 			GlStateManager.popMatrix();
 		}
 	}

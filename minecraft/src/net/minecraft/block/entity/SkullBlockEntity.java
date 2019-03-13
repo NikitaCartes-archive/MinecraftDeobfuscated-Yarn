@@ -20,15 +20,15 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	private GameProfile owner;
 	private int ticksPowered;
 	private boolean isPowered;
-	private static UserCache userCache;
+	private static UserCache field_12089;
 	private static MinecraftSessionService sessionService;
 
 	public SkullBlockEntity() {
 		super(BlockEntityType.SKULL);
 	}
 
-	public static void setUserCache(UserCache userCache) {
-		SkullBlockEntity.userCache = userCache;
+	public static void method_11337(UserCache userCache) {
+		field_12089 = userCache;
 	}
 
 	public static void setSessionService(MinecraftSessionService minecraftSessionService) {
@@ -36,20 +36,20 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
+	public CompoundTag method_11007(CompoundTag compoundTag) {
+		super.method_11007(compoundTag);
 		if (this.owner != null) {
 			CompoundTag compoundTag2 = new CompoundTag();
 			TagHelper.serializeProfile(compoundTag2, this.owner);
-			compoundTag.put("Owner", compoundTag2);
+			compoundTag.method_10566("Owner", compoundTag2);
 		}
 
 		return compoundTag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void method_11014(CompoundTag compoundTag) {
+		super.method_11014(compoundTag);
 		if (compoundTag.containsKey("Owner", 10)) {
 			this.setOwnerAndType(TagHelper.deserializeProfile(compoundTag.getCompound("Owner")));
 		} else if (compoundTag.containsKey("ExtraType", 8)) {
@@ -62,9 +62,9 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 
 	@Override
 	public void tick() {
-		Block block = this.getCachedState().getBlock();
+		Block block = this.method_11010().getBlock();
 		if (block == Blocks.field_10337 || block == Blocks.field_10472) {
-			if (this.world.isReceivingRedstonePower(this.pos)) {
+			if (this.world.method_8479(this.field_11867)) {
 				this.isPowered = true;
 				this.ticksPowered++;
 			} else {
@@ -86,13 +86,13 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 4, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.field_11867, 4, this.method_16887());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.toTag(new CompoundTag());
+	public CompoundTag method_16887() {
+		return this.method_11007(new CompoundTag());
 	}
 
 	public void setOwnerAndType(@Nullable GameProfile gameProfile) {
@@ -109,8 +109,8 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 		if (gameProfile != null && !ChatUtil.isEmpty(gameProfile.getName())) {
 			if (gameProfile.isComplete() && gameProfile.getProperties().containsKey("textures")) {
 				return gameProfile;
-			} else if (userCache != null && sessionService != null) {
-				GameProfile gameProfile2 = userCache.findByName(gameProfile.getName());
+			} else if (field_12089 != null && sessionService != null) {
+				GameProfile gameProfile2 = field_12089.findByName(gameProfile.getName());
 				if (gameProfile2 == null) {
 					return gameProfile;
 				} else {

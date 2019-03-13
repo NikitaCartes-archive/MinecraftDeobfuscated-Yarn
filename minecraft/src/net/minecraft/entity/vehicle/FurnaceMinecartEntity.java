@@ -22,11 +22,11 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class FurnaceMinecartEntity extends AbstractMinecartEntity {
-	private static final TrackedData<Boolean> LIT = DataTracker.registerData(FurnaceMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> field_7740 = DataTracker.registerData(FurnaceMinecartEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int fuel;
 	public double pushX;
 	public double pushZ;
-	private static final Ingredient field_7738 = Ingredient.ofItems(Items.field_8713, Items.field_8665);
+	private static final Ingredient field_7738 = Ingredient.method_8091(Items.field_8713, Items.field_8665);
 
 	public FurnaceMinecartEntity(EntityType<? extends FurnaceMinecartEntity> entityType, World world) {
 		super(entityType, world);
@@ -44,7 +44,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(LIT, false);
+		this.field_6011.startTracking(field_7740, false);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 
 		this.setLit(this.fuel > 0);
 		if (this.isLit() && this.random.nextInt(4) == 0) {
-			this.world.addParticle(ParticleTypes.field_11237, this.x, this.y + 0.8, this.z, 0.0, 0.0, 0.0);
+			this.field_6002.method_8406(ParticleTypes.field_11237, this.x, this.y + 0.8, this.z, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -73,8 +73,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (!damageSource.isExplosive() && this.world.getGameRules().getBoolean("doEntityDrops")) {
-			this.dropItem(Blocks.field_10181);
+		if (!damageSource.isExplosive() && this.field_6002.getGameRules().getBoolean("doEntityDrops")) {
+			this.method_5706(Blocks.field_10181);
 		}
 	}
 
@@ -82,8 +82,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	protected void method_7513(BlockPos blockPos, BlockState blockState) {
 		super.method_7513(blockPos, blockState);
 		double d = this.pushX * this.pushX + this.pushZ * this.pushZ;
-		Vec3d vec3d = this.getVelocity();
-		if (d > 1.0E-4 && squaredHorizontalLength(vec3d) > 0.001) {
+		Vec3d vec3d = this.method_18798();
+		if (d > 1.0E-4 && method_17996(vec3d) > 0.001) {
 			d = (double)MathHelper.sqrt(d);
 			this.pushX /= d;
 			this.pushZ /= d;
@@ -105,17 +105,17 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 			d = (double)MathHelper.sqrt(d);
 			this.pushX /= d;
 			this.pushZ /= d;
-			this.setVelocity(this.getVelocity().multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ));
+			this.method_18799(this.method_18798().multiply(0.8, 0.0, 0.8).add(this.pushX, 0.0, this.pushZ));
 		} else {
-			this.setVelocity(this.getVelocity().multiply(0.98, 0.0, 0.98));
+			this.method_18799(this.method_18798().multiply(0.98, 0.0, 0.98));
 		}
 
 		super.method_7525();
 	}
 
 	@Override
-	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean method_5688(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
 		if (field_7738.method_8093(itemStack) && this.fuel + 3600 <= 32000) {
 			if (!playerEntity.abilities.creativeMode) {
 				itemStack.subtractAmount(1);
@@ -130,31 +130,34 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	protected void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putDouble("PushX", this.pushX);
 		compoundTag.putDouble("PushZ", this.pushZ);
 		compoundTag.putShort("Fuel", (short)this.fuel);
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	protected void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		this.pushX = compoundTag.getDouble("PushX");
 		this.pushZ = compoundTag.getDouble("PushZ");
 		this.fuel = compoundTag.getShort("Fuel");
 	}
 
 	protected boolean isLit() {
-		return this.dataTracker.get(LIT);
+		return this.field_6011.get(field_7740);
 	}
 
 	protected void setLit(boolean bl) {
-		this.dataTracker.set(LIT, bl);
+		this.field_6011.set(field_7740, bl);
 	}
 
 	@Override
-	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10181.getDefaultState().with(FurnaceBlock.FACING, Direction.NORTH).with(FurnaceBlock.LIT, Boolean.valueOf(this.isLit()));
+	public BlockState method_7517() {
+		return Blocks.field_10181
+			.method_9564()
+			.method_11657(FurnaceBlock.field_11104, Direction.NORTH)
+			.method_11657(FurnaceBlock.field_11105, Boolean.valueOf(this.isLit()));
 	}
 }

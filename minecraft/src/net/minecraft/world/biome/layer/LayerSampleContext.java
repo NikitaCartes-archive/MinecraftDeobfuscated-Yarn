@@ -3,14 +3,14 @@ package net.minecraft.world.biome.layer;
 public interface LayerSampleContext<R extends LayerSampler> extends LayerRandomnessSource {
 	void initSeed(long l, long m);
 
-	R createSampler(LayerOperator layerOperator);
+	R method_15831(LayerOperator layerOperator);
 
-	default R createSampler(LayerOperator layerOperator, R layerSampler) {
-		return this.createSampler(layerOperator);
+	default R method_15832(LayerOperator layerOperator, R layerSampler) {
+		return this.method_15831(layerOperator);
 	}
 
-	default R createSampler(LayerOperator layerOperator, R layerSampler, R layerSampler2) {
-		return this.createSampler(layerOperator);
+	default R method_15828(LayerOperator layerOperator, R layerSampler, R layerSampler2) {
+		return this.method_15831(layerOperator);
 	}
 
 	default int choose(int i, int j) {

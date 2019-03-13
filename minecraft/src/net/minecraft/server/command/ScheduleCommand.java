@@ -45,22 +45,16 @@ public class ScheduleCommand {
 		if (i == 0) {
 			throw SAME_TICK_EXCEPTION.create();
 		} else {
-			long l = serverCommandSource.getWorld().getTime() + (long)i;
+			long l = serverCommandSource.method_9225().getTime() + (long)i;
 			either.ifLeft(commandFunction -> {
-					Identifier identifier = commandFunction.getId();
-					serverCommandSource.getWorld().getLevelProperties().getScheduledEvents().replaceEvent(identifier.toString(), l, new FunctionTimerCallback(identifier));
-					serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.schedule.created.function", identifier, i, l), true);
-				})
-				.ifRight(
-					tag -> {
-						Identifier identifier = tag.getId();
-						serverCommandSource.getWorld()
-							.getLevelProperties()
-							.getScheduledEvents()
-							.replaceEvent("#" + identifier.toString(), l, new FunctionTagTimerCallback(identifier));
-						serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.schedule.created.tag", identifier, i, l), true);
-					}
-				);
+				Identifier identifier = commandFunction.method_9194();
+				serverCommandSource.method_9225().method_8401().method_143().replaceEvent(identifier.toString(), l, new FunctionTimerCallback(identifier));
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.schedule.created.function", identifier, i, l), true);
+			}).ifRight(tag -> {
+				Identifier identifier = tag.getId();
+				serverCommandSource.method_9225().method_8401().method_143().replaceEvent("#" + identifier.toString(), l, new FunctionTagTimerCallback(identifier));
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.schedule.created.tag", identifier, i, l), true);
+			});
 			return (int)Math.floorMod(l, 2147483647L);
 		}
 	}

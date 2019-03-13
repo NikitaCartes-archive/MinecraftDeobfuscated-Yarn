@@ -35,7 +35,7 @@ public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketList
 	}
 
 	public void method_12547(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onPlayerInteractBlock(this);
+		serverPlayPacketListener.method_12046(this);
 	}
 
 	public Hand getHand() {

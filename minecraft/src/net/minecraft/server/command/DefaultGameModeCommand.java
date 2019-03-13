@@ -26,15 +26,15 @@ public class DefaultGameModeCommand {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		minecraftServer.setDefaultGameMode(gameMode);
 		if (minecraftServer.shouldForceGameMode()) {
-			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.getPlayerManager().getPlayerList()) {
-				if (serverPlayerEntity.interactionManager.getGameMode() != gameMode) {
-					serverPlayerEntity.setGameMode(gameMode);
+			for (ServerPlayerEntity serverPlayerEntity : minecraftServer.method_3760().getPlayerList()) {
+				if (serverPlayerEntity.field_13974.getGameMode() != gameMode) {
+					serverPlayerEntity.method_7336(gameMode);
 					i++;
 				}
 			}
 		}
 
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.defaultgamemode.success", gameMode.getTextComponent()), true);
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.defaultgamemode.success", gameMode.method_8383()), true);
 		return i;
 	}
 }

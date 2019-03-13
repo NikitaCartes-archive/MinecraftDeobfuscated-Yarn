@@ -14,25 +14,25 @@ import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
 public class ModelVariant implements ModelRotationContainer {
-	private final Identifier location;
-	private final net.minecraft.client.render.model.ModelRotation rotation;
+	private final Identifier field_4326;
+	private final net.minecraft.client.render.model.ModelRotation field_4328;
 	private final boolean uvLock;
 	private final int weight;
 
 	public ModelVariant(Identifier identifier, net.minecraft.client.render.model.ModelRotation modelRotation, boolean bl, int i) {
-		this.location = identifier;
-		this.rotation = modelRotation;
+		this.field_4326 = identifier;
+		this.field_4328 = modelRotation;
 		this.uvLock = bl;
 		this.weight = i;
 	}
 
-	public Identifier getLocation() {
-		return this.location;
+	public Identifier method_3510() {
+		return this.field_4326;
 	}
 
 	@Override
 	public net.minecraft.client.render.model.ModelRotation getRotation() {
-		return this.rotation;
+		return this.field_4328;
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class ModelVariant implements ModelRotationContainer {
 	}
 
 	public String toString() {
-		return "Variant{modelLocation=" + this.location + ", rotation=" + this.rotation + ", uvLock=" + this.uvLock + ", weight=" + this.weight + '}';
+		return "Variant{modelLocation=" + this.field_4326 + ", rotation=" + this.field_4328 + ", uvLock=" + this.uvLock + ", weight=" + this.weight + '}';
 	}
 
 	public boolean equals(Object object) {
@@ -55,16 +55,16 @@ public class ModelVariant implements ModelRotationContainer {
 			return false;
 		} else {
 			ModelVariant modelVariant = (ModelVariant)object;
-			return this.location.equals(modelVariant.location)
-				&& this.rotation == modelVariant.rotation
+			return this.field_4326.equals(modelVariant.field_4326)
+				&& this.field_4328 == modelVariant.field_4328
 				&& this.uvLock == modelVariant.uvLock
 				&& this.weight == modelVariant.weight;
 		}
 	}
 
 	public int hashCode() {
-		int i = this.location.hashCode();
-		i = 31 * i + this.rotation.hashCode();
+		int i = this.field_4326.hashCode();
+		i = 31 * i + this.field_4328.hashCode();
 		i = 31 * i + Boolean.valueOf(this.uvLock).hashCode();
 		return 31 * i + this.weight;
 	}
@@ -73,8 +73,8 @@ public class ModelVariant implements ModelRotationContainer {
 	public static class Deserializer implements JsonDeserializer<ModelVariant> {
 		public ModelVariant method_3513(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			Identifier identifier = this.deserializeModel(jsonObject);
-			net.minecraft.client.render.model.ModelRotation modelRotation = this.deserializeRotation(jsonObject);
+			Identifier identifier = this.method_3514(jsonObject);
+			net.minecraft.client.render.model.ModelRotation modelRotation = this.method_3515(jsonObject);
 			boolean bl = this.deserializeUvLock(jsonObject);
 			int i = this.deserializeWeight(jsonObject);
 			return new ModelVariant(identifier, modelRotation, bl, i);
@@ -84,7 +84,7 @@ public class ModelVariant implements ModelRotationContainer {
 			return JsonHelper.getBoolean(jsonObject, "uvlock", false);
 		}
 
-		protected net.minecraft.client.render.model.ModelRotation deserializeRotation(JsonObject jsonObject) {
+		protected net.minecraft.client.render.model.ModelRotation method_3515(JsonObject jsonObject) {
 			int i = JsonHelper.getInt(jsonObject, "x", 0);
 			int j = JsonHelper.getInt(jsonObject, "y", 0);
 			net.minecraft.client.render.model.ModelRotation modelRotation = net.minecraft.client.render.model.ModelRotation.get(i, j);
@@ -95,7 +95,7 @@ public class ModelVariant implements ModelRotationContainer {
 			}
 		}
 
-		protected Identifier deserializeModel(JsonObject jsonObject) {
+		protected Identifier method_3514(JsonObject jsonObject) {
 			return new Identifier(JsonHelper.getString(jsonObject, "model"));
 		}
 

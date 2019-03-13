@@ -27,14 +27,14 @@ public class ServerCommandOutput implements CommandOutput {
 	}
 
 	public ServerCommandSource method_14700() {
-		ServerWorld serverWorld = this.server.getWorld(DimensionType.field_13072);
+		ServerWorld serverWorld = this.server.method_3847(DimensionType.field_13072);
 		return new ServerCommandSource(
-			this, new Vec3d(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Recon", new StringTextComponent("Rcon"), this.server, null
+			this, new Vec3d(serverWorld.method_8395()), Vec2f.ZERO, serverWorld, 4, "Recon", new StringTextComponent("Rcon"), this.server, null
 		);
 	}
 
 	@Override
-	public void appendCommandFeedback(TextComponent textComponent) {
+	public void method_9203(TextComponent textComponent) {
 		this.buffer.append(textComponent.getString());
 	}
 

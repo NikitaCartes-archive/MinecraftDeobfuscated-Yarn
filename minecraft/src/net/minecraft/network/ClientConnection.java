@@ -54,22 +54,22 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	public static final Marker MARKER_NETWORK = MarkerManager.getMarker("NETWORK");
 	public static final Marker MARKER_NETWORK_PACKETS = MarkerManager.getMarker("NETWORK_PACKETS", MARKER_NETWORK);
 	public static final AttributeKey<NetworkState> ATTR_KEY_PROTOCOL = AttributeKey.valueOf("protocol");
-	public static final Lazy<NioEventLoopGroup> CLIENT_IO_GROUP = new Lazy<>(
+	public static final Lazy<NioEventLoopGroup> field_11650 = new Lazy<>(
 		() -> new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Client IO #%d").setDaemon(true).build())
 	);
-	public static final Lazy<EpollEventLoopGroup> CLIENT_IO_GROUP_EPOLL = new Lazy<>(
+	public static final Lazy<EpollEventLoopGroup> field_11657 = new Lazy<>(
 		() -> new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Client IO #%d").setDaemon(true).build())
 	);
-	public static final Lazy<DefaultEventLoopGroup> CLIENT_IO_GROUP_LOCAL = new Lazy<>(
+	public static final Lazy<DefaultEventLoopGroup> field_11649 = new Lazy<>(
 		() -> new DefaultEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Client IO #%d").setDaemon(true).build())
 	);
-	private final NetworkSide side;
+	private final NetworkSide field_11643;
 	private final Queue<ClientConnection.class_2536> field_11644 = Queues.<ClientConnection.class_2536>newConcurrentLinkedQueue();
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private Channel channel;
 	private SocketAddress address;
-	private PacketListener packetListener;
-	private TextComponent disconnectReason;
+	private PacketListener field_11652;
+	private TextComponent field_11660;
 	private boolean encrypted;
 	private boolean disconnected;
 	private int packetsReceivedCounter;
@@ -80,7 +80,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	private boolean field_11640;
 
 	public ClientConnection(NetworkSide networkSide) {
-		this.side = networkSide;
+		this.field_11643 = networkSide;
 	}
 
 	@Override
@@ -90,13 +90,13 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.address = this.channel.remoteAddress();
 
 		try {
-			this.setState(NetworkState.HANDSHAKE);
+			this.method_10750(NetworkState.HANDSHAKE);
 		} catch (Throwable var3) {
 			LOGGER.fatal(var3);
 		}
 	}
 
-	public void setState(NetworkState networkState) {
+	public void method_10750(NetworkState networkState) {
 		this.channel.attr(ATTR_KEY_PROTOCOL).set(networkState);
 		this.channel.config().setAutoRead(true);
 		LOGGER.debug("Enabled auto read");
@@ -104,7 +104,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	@Override
 	public void channelInactive(ChannelHandlerContext channelHandlerContext) throws Exception {
-		this.disconnect(new TranslatableTextComponent("disconnect.endOfStream"));
+		this.method_10747(new TranslatableTextComponent("disconnect.endOfStream"));
 	}
 
 	@Override
@@ -117,16 +117,16 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 			if (this.channel.isOpen()) {
 				if (throwable instanceof TimeoutException) {
 					LOGGER.debug("Timeout", throwable);
-					this.disconnect(new TranslatableTextComponent("disconnect.timeout"));
+					this.method_10747(new TranslatableTextComponent("disconnect.timeout"));
 				} else {
 					TextComponent textComponent = new TranslatableTextComponent("disconnect.genericReason", "Internal Exception: " + throwable);
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", throwable);
-						this.sendPacket(new DisconnectS2CPacket(textComponent), future -> this.disconnect(textComponent));
+						this.method_10752(new DisconnectS2CPacket(textComponent), future -> this.method_10747(textComponent));
 						this.disableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", throwable);
-						this.disconnect(textComponent);
+						this.method_10747(textComponent);
 					}
 				}
 			}
@@ -136,7 +136,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	protected void method_10770(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
 		if (this.channel.isOpen()) {
 			try {
-				method_10759(packet, this.packetListener);
+				method_10759(packet, this.field_11652);
 			} catch (OffThreadException var4) {
 			}
 
@@ -148,17 +148,17 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		packet.apply((T)packetListener);
 	}
 
-	public void setPacketListener(PacketListener packetListener) {
+	public void method_10763(PacketListener packetListener) {
 		Validate.notNull(packetListener, "packetListener");
 		LOGGER.debug("Set listener of {} to {}", this, packetListener);
-		this.packetListener = packetListener;
+		this.field_11652 = packetListener;
 	}
 
-	public void sendPacket(Packet<?> packet) {
-		this.sendPacket(packet, null);
+	public void method_10743(Packet<?> packet) {
+		this.method_10752(packet, null);
 	}
 
-	public void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+	public void method_10752(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
 		if (this.isOpen()) {
 			this.method_10751();
 			this.method_10764(packet, genericFutureListener);
@@ -174,7 +174,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	private void method_10764(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
-		NetworkState networkState = NetworkState.getPacketHandlerState(packet);
+		NetworkState networkState = NetworkState.method_10786(packet);
 		NetworkState networkState2 = this.channel.attr(ATTR_KEY_PROTOCOL).get();
 		this.packetsSentCounter++;
 		if (networkState2 != networkState) {
@@ -184,7 +184,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 		if (this.channel.eventLoop().inEventLoop()) {
 			if (networkState != networkState2) {
-				this.setState(networkState);
+				this.method_10750(networkState);
 			}
 
 			ChannelFuture channelFuture = this.channel.writeAndFlush(packet);
@@ -196,7 +196,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		} else {
 			this.channel.eventLoop().execute(() -> {
 				if (networkState != networkState2) {
-					this.setState(networkState);
+					this.method_10750(networkState);
 				}
 
 				ChannelFuture channelFuturex = this.channel.writeAndFlush(packet);
@@ -226,12 +226,12 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 
 	public void tick() {
 		this.method_10751();
-		if (this.packetListener instanceof ServerLoginNetworkHandler) {
-			((ServerLoginNetworkHandler)this.packetListener).method_18785();
+		if (this.field_11652 instanceof ServerLoginNetworkHandler) {
+			((ServerLoginNetworkHandler)this.field_11652).method_18785();
 		}
 
-		if (this.packetListener instanceof ServerPlayNetworkHandler) {
-			((ServerPlayNetworkHandler)this.packetListener).method_18784();
+		if (this.field_11652 instanceof ServerPlayNetworkHandler) {
+			((ServerPlayNetworkHandler)this.field_11652).method_18784();
 		}
 
 		if (this.channel != null) {
@@ -250,10 +250,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.address;
 	}
 
-	public void disconnect(TextComponent textComponent) {
+	public void method_10747(TextComponent textComponent) {
 		if (this.channel.isOpen()) {
 			this.channel.close().awaitUninterruptibly();
-			this.disconnectReason = textComponent;
+			this.field_11660 = textComponent;
 		}
 	}
 
@@ -268,10 +268,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		Lazy<? extends EventLoopGroup> lazy;
 		if (Epoll.isAvailable() && bl) {
 			class_ = EpollSocketChannel.class;
-			lazy = CLIENT_IO_GROUP_EPOLL;
+			lazy = field_11657;
 		} else {
 			class_ = NioSocketChannel.class;
-			lazy = CLIENT_IO_GROUP;
+			lazy = field_11650;
 		}
 
 		new Bootstrap()
@@ -304,7 +304,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	@Environment(EnvType.CLIENT)
 	public static ClientConnection connect(SocketAddress socketAddress) {
 		final ClientConnection clientConnection = new ClientConnection(NetworkSide.CLIENT);
-		new Bootstrap().group(CLIENT_IO_GROUP_LOCAL.get()).handler(new ChannelInitializer<Channel>() {
+		new Bootstrap().group(field_11649.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {
 				channel.pipeline().addLast("packet_handler", clientConnection);
@@ -332,13 +332,13 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.channel == null;
 	}
 
-	public PacketListener getPacketListener() {
-		return this.packetListener;
+	public PacketListener method_10744() {
+		return this.field_11652;
 	}
 
 	@Nullable
-	public TextComponent getDisconnectReason() {
-		return this.disconnectReason;
+	public TextComponent method_10748() {
+		return this.field_11660;
 	}
 
 	public void disableAutoRead() {
@@ -375,10 +375,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 				LOGGER.warn("handleDisconnection() called twice");
 			} else {
 				this.disconnected = true;
-				if (this.getDisconnectReason() != null) {
-					this.getPacketListener().onDisconnected(this.getDisconnectReason());
-				} else if (this.getPacketListener() != null) {
-					this.getPacketListener().onDisconnected(new TranslatableTextComponent("multiplayer.disconnect.generic"));
+				if (this.method_10748() != null) {
+					this.method_10744().method_10839(this.method_10748());
+				} else if (this.method_10744() != null) {
+					this.method_10744().method_10839(new TranslatableTextComponent("multiplayer.disconnect.generic"));
 				}
 			}
 		}

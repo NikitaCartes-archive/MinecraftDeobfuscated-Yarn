@@ -37,7 +37,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 
 		for (int s = n; s <= n + q; s++) {
 			for (int t = p; t <= p + q; t++) {
-				if (o <= iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
+				if (o <= iWorld.method_8589(Heightmap.Type.OCEAN_FLOOR_WG, s, t)) {
 					return this.generateVeinPart(iWorld, random, oreFeatureConfig, d, e, h, j, l, m, n, o, p, q, r);
 				}
 			}
@@ -126,8 +126,8 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 										if (!bitSet.get(an)) {
 											bitSet.set(an);
 											mutable.set(ah, aj, al);
-											if (oreFeatureConfig.target.getCondition().test(iWorld.getBlockState(mutable))) {
-												iWorld.setBlockState(mutable, oreFeatureConfig.state, 2);
+											if (oreFeatureConfig.target.getCondition().test(iWorld.method_8320(mutable))) {
+												iWorld.method_8652(mutable, oreFeatureConfig.state, 2);
 												o++;
 											}
 										}

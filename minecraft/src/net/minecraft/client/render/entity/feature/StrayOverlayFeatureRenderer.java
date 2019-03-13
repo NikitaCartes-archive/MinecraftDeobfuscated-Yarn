@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class StrayOverlayFeatureRenderer<T extends LivingEntity & RangedAttacker, M extends EntityModel<T>> extends FeatureRenderer<T, M> {
-	private static final Identifier SKIN = new Identifier("textures/entity/skeleton/stray_overlay.png");
+	private static final Identifier field_4907 = new Identifier("textures/entity/skeleton/stray_overlay.png");
 	private final StrayEntityModel<T> model = new StrayEntityModel<>(0.25F, true);
 
 	public StrayOverlayFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
@@ -22,7 +22,7 @@ public class StrayOverlayFeatureRenderer<T extends LivingEntity & RangedAttacker
 		this.getModel().method_17081(this.model);
 		this.model.method_17086(livingEntity, f, g, h);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.bindTexture(SKIN);
+		this.method_17164(field_4907);
 		this.model.method_17088(livingEntity, f, g, i, j, k, l);
 	}
 

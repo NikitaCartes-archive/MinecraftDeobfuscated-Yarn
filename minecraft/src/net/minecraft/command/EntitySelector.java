@@ -109,7 +109,7 @@ public class EntitySelector {
 		if (!this.includesEntities) {
 			return this.getPlayers(serverCommandSource);
 		} else if (this.playerName != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().method_3760().getPlayer(this.playerName);
 			return (List<? extends Entity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.newArrayList(serverPlayerEntity));
 		} else if (this.entityId != null) {
 			for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
@@ -121,7 +121,7 @@ public class EntitySelector {
 
 			return Collections.emptyList();
 		} else {
-			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.getPosition());
+			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.method_9222());
 			Predicate<Entity> predicate = this.getPositionPredicate(vec3d);
 			if (this.field_10828) {
 				return (List<? extends Entity>)(serverCommandSource.getEntity() != null && predicate.test(serverCommandSource.getEntity())
@@ -130,7 +130,7 @@ public class EntitySelector {
 			} else {
 				List<Entity> list = Lists.<Entity>newArrayList();
 				if (this.method_9821()) {
-					this.method_9823(list, serverCommandSource.getWorld(), vec3d, predicate);
+					this.method_9823(list, serverCommandSource.method_9225(), vec3d, predicate);
 				} else {
 					for (ServerWorld serverWorld2 : serverCommandSource.getMinecraftServer().getWorlds()) {
 						this.method_9823(list, serverWorld2, vec3d, predicate);
@@ -144,13 +144,13 @@ public class EntitySelector {
 
 	private void method_9823(List<Entity> list, ServerWorld serverWorld, Vec3d vec3d, Predicate<Entity> predicate) {
 		if (this.box != null) {
-			list.addAll(serverWorld.method_18023(this.type, this.box.offset(vec3d), predicate));
+			list.addAll(serverWorld.method_18023(this.type, this.box.method_997(vec3d), predicate));
 		} else {
 			list.addAll(serverWorld.method_18198(this.type, predicate));
 		}
 	}
 
-	public ServerPlayerEntity getPlayer(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+	public ServerPlayerEntity method_9811(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		this.check(serverCommandSource);
 		List<ServerPlayerEntity> list = this.getPlayers(serverCommandSource);
 		if (list.size() != 1) {
@@ -163,13 +163,13 @@ public class EntitySelector {
 	public List<ServerPlayerEntity> getPlayers(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		this.check(serverCommandSource);
 		if (this.playerName != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().method_3760().getPlayer(this.playerName);
 			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
 		} else if (this.entityId != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.entityId);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().method_3760().getPlayer(this.entityId);
 			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
 		} else {
-			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.getPosition());
+			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.method_9222());
 			Predicate<Entity> predicate = this.getPositionPredicate(vec3d);
 			if (this.field_10828) {
 				if (serverCommandSource.getEntity() instanceof ServerPlayerEntity) {
@@ -183,11 +183,11 @@ public class EntitySelector {
 			} else {
 				List<ServerPlayerEntity> list;
 				if (this.method_9821()) {
-					list = serverCommandSource.getWorld().method_18766(predicate::test);
+					list = serverCommandSource.method_9225().method_18766(predicate::test);
 				} else {
 					list = Lists.<ServerPlayerEntity>newArrayList();
 
-					for (ServerPlayerEntity serverPlayerEntity3 : serverCommandSource.getMinecraftServer().getPlayerManager().getPlayerList()) {
+					for (ServerPlayerEntity serverPlayerEntity3 : serverCommandSource.getMinecraftServer().method_3760().getPlayerList()) {
 						if (predicate.test(serverPlayerEntity3)) {
 							list.add(serverPlayerEntity3);
 						}
@@ -202,12 +202,12 @@ public class EntitySelector {
 	private Predicate<Entity> getPositionPredicate(Vec3d vec3d) {
 		Predicate<Entity> predicate = this.basePredicate;
 		if (this.box != null) {
-			BoundingBox boundingBox = this.box.offset(vec3d);
-			predicate = predicate.and(entity -> boundingBox.intersects(entity.getBoundingBox()));
+			BoundingBox boundingBox = this.box.method_997(vec3d);
+			predicate = predicate.and(entity -> boundingBox.intersects(entity.method_5829()));
 		}
 
 		if (!this.distance.isDummy()) {
-			predicate = predicate.and(entity -> this.distance.matchesSquared(entity.squaredDistanceTo(vec3d)));
+			predicate = predicate.and(entity -> this.distance.matchesSquared(entity.method_5707(vec3d)));
 		}
 
 		return predicate;
@@ -221,7 +221,7 @@ public class EntitySelector {
 		return list.subList(0, Math.min(this.count, list.size()));
 	}
 
-	public static TextComponent getNames(List<? extends Entity> list) {
-		return TextFormatter.join(list, Entity::getDisplayName);
+	public static TextComponent method_9822(List<? extends Entity> list) {
+		return TextFormatter.join(list, Entity::method_5476);
 	}
 }

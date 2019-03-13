@@ -10,12 +10,12 @@ public class RedstoneBlock extends Block {
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState blockState) {
+	public boolean method_9506(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+	public int method_9524(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return 15;
 	}
 }

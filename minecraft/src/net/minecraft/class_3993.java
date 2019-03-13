@@ -34,15 +34,15 @@ public class class_3993<T extends MobEntity> extends Goal {
 
 	@Override
 	public void start() {
-		this.field_17755.setEquippedStack(EquipmentSlot.HAND_MAIN, this.field_17756.copy());
+		this.field_17755.method_5673(EquipmentSlot.HAND_MAIN, this.field_17756.copy());
 		this.field_17755.setCurrentHand(Hand.MAIN);
 	}
 
 	@Override
 	public void onRemove() {
-		this.field_17755.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+		this.field_17755.method_5673(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
 		if (this.field_18280 != null) {
-			this.field_17755.playSound(this.field_18280, 1.0F, this.field_17755.getRand().nextFloat() * 0.2F + 0.9F);
+			this.field_17755.method_5783(this.field_18280, 1.0F, this.field_17755.getRand().nextFloat() * 0.2F + 0.9F);
 		}
 	}
 }

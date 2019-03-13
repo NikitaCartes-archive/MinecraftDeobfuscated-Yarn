@@ -18,12 +18,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("player_hurt_entity");
+	private static final Identifier field_9732 = new Identifier("player_hurt_entity");
 	private final Map<PlayerAdvancementTracker, PlayerHurtEntityCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, PlayerHurtEntityCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9732;
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.addCondition(conditionsContainer);
+		handler.method_9099(conditionsContainer);
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 	) {
 		PlayerHurtEntityCriterion.Handler handler = (PlayerHurtEntityCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
+			handler.method_9102(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -63,10 +63,10 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 		return new PlayerHurtEntityCriterion.Conditions(damagePredicate, entityPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
+	public void method_9097(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
 		PlayerHurtEntityCriterion.Handler handler = (PlayerHurtEntityCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity, entity, damageSource, f, g, bl);
+			handler.method_9101(serverPlayerEntity, entity, damageSource, f, g, bl);
 		}
 	}
 
@@ -75,7 +75,7 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 		private final EntityPredicate entity;
 
 		public Conditions(DamagePredicate damagePredicate, EntityPredicate entityPredicate) {
-			super(PlayerHurtEntityCriterion.ID);
+			super(PlayerHurtEntityCriterion.field_9732);
 			this.damage = damagePredicate;
 			this.entity = entityPredicate;
 		}
@@ -84,8 +84,8 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 			return new PlayerHurtEntityCriterion.Conditions(builder.build(), EntityPredicate.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
-			return !this.damage.test(serverPlayerEntity, damageSource, f, g, bl) ? false : this.entity.test(serverPlayerEntity, entity);
+		public boolean method_9104(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
+			return !this.damage.method_8838(serverPlayerEntity, damageSource, f, g, bl) ? false : this.entity.method_8914(serverPlayerEntity, entity);
 		}
 
 		@Override
@@ -98,30 +98,30 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker manager;
+		private final PlayerAdvancementTracker field_9735;
 		private final Set<Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+			this.field_9735 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void addCondition(Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer) {
+		public void method_9099(Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void removeCondition(Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer) {
+		public void method_9102(Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
+		public void method_9101(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource, float f, float g, boolean bl) {
 			List<Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverPlayerEntity, entity, damageSource, f, g, bl)) {
+				if (conditionsContainer.method_797().method_9104(serverPlayerEntity, entity, damageSource, f, g, bl)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions>>newArrayList();
 					}
@@ -132,7 +132,7 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<PlayerHurtEntityCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9735);
 				}
 			}
 		}

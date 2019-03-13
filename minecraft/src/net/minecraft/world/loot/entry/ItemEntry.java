@@ -27,7 +27,7 @@ public class ItemEntry extends LeafEntry {
 		consumer.accept(new ItemStack(this.item));
 	}
 
-	public static LeafEntry.Builder<?> builder(ItemProvider itemProvider) {
+	public static LeafEntry.Builder<?> method_411(ItemProvider itemProvider) {
 		return create((i, j, lootConditions, lootFunctions) -> new ItemEntry(itemProvider.getItem(), i, j, lootConditions, lootFunctions));
 	}
 
@@ -38,7 +38,7 @@ public class ItemEntry extends LeafEntry {
 
 		public void method_412(JsonObject jsonObject, ItemEntry itemEntry, JsonSerializationContext jsonSerializationContext) {
 			super.method_442(jsonObject, itemEntry, jsonSerializationContext);
-			Identifier identifier = Registry.ITEM.getId(itemEntry.item);
+			Identifier identifier = Registry.ITEM.method_10221(itemEntry.item);
 			if (identifier == null) {
 				throw new IllegalArgumentException("Can't serialize unknown item " + itemEntry.item);
 			} else {

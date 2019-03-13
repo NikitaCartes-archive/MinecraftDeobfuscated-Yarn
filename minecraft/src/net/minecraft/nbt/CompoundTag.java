@@ -21,7 +21,6 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,7 +33,7 @@ public class CompoundTag implements Tag {
 	public void write(DataOutput dataOutput) throws IOException {
 		for (String string : this.tags.keySet()) {
 			Tag tag = (Tag)this.tags.get(string);
-			write(string, tag, dataOutput);
+			method_10555(string, tag, dataOutput);
 		}
 
 		dataOutput.writeByte(0);
@@ -49,10 +48,10 @@ public class CompoundTag implements Tag {
 			this.tags.clear();
 
 			byte b;
-			while ((b = readByte(dataInput, positionTracker)) != 0) {
-				String string = readString(dataInput, positionTracker);
+			while ((b = method_10542(dataInput, positionTracker)) != 0) {
+				String string = method_10552(dataInput, positionTracker);
 				positionTracker.add((long)(224 + 16 * string.length()));
-				Tag tag = createTag(b, string, dataInput, i + 1, positionTracker);
+				Tag tag = method_10581(b, string, dataInput, i + 1, positionTracker);
 				if (this.tags.put(string, tag) != null) {
 					positionTracker.add(288L);
 				}
@@ -74,7 +73,7 @@ public class CompoundTag implements Tag {
 	}
 
 	@Nullable
-	public Tag put(String string, Tag tag) {
+	public Tag method_10566(String string, Tag tag) {
 		return (Tag)this.tags.put(string, tag);
 	}
 
@@ -144,7 +143,7 @@ public class CompoundTag implements Tag {
 	}
 
 	@Nullable
-	public Tag getTag(String string) {
+	public Tag method_10580(String string) {
 		return (Tag)this.tags.get(string);
 	}
 
@@ -291,7 +290,7 @@ public class CompoundTag implements Tag {
 		return new CompoundTag();
 	}
 
-	public ListTag getList(String string, int i) {
+	public ListTag method_10554(String string, int i) {
 		try {
 			if (this.getType(string) == 9) {
 				ListTag listTag = (ListTag)this.tags.get(string);
@@ -343,9 +342,9 @@ public class CompoundTag implements Tag {
 
 	private CrashReport createCrashReport(String string, int i, ClassCastException classCastException) {
 		CrashReport crashReport = CrashReport.create(classCastException, "Reading NBT data");
-		CrashReportSection crashReportSection = crashReport.addElement("Corrupt NBT tag", 1);
-		crashReportSection.add("Tag type found", (ICrashCallable<String>)(() -> TYPES[((Tag)this.tags.get(string)).getType()]));
-		crashReportSection.add("Tag type expected", (ICrashCallable<String>)(() -> TYPES[i]));
+		CrashReportSection crashReportSection = crashReport.method_556("Corrupt NBT tag", 1);
+		crashReportSection.method_577("Tag type found", () -> TYPES[((Tag)this.tags.get(string)).getType()]);
+		crashReportSection.method_577("Tag type expected", () -> TYPES[i]);
 		crashReportSection.add("Tag name", string);
 		return crashReport;
 	}
@@ -354,7 +353,7 @@ public class CompoundTag implements Tag {
 		CompoundTag compoundTag = new CompoundTag();
 
 		for (String string : this.tags.keySet()) {
-			compoundTag.put(string, ((Tag)this.tags.get(string)).copy());
+			compoundTag.method_10566(string, ((Tag)this.tags.get(string)).copy());
 		}
 
 		return compoundTag;
@@ -368,7 +367,7 @@ public class CompoundTag implements Tag {
 		return this.tags.hashCode();
 	}
 
-	private static void write(String string, Tag tag, DataOutput dataOutput) throws IOException {
+	private static void method_10555(String string, Tag tag, DataOutput dataOutput) throws IOException {
 		dataOutput.writeByte(tag.getType());
 		if (tag.getType() != 0) {
 			dataOutput.writeUTF(string);
@@ -376,15 +375,15 @@ public class CompoundTag implements Tag {
 		}
 	}
 
-	private static byte readByte(DataInput dataInput, PositionTracker positionTracker) throws IOException {
+	private static byte method_10542(DataInput dataInput, PositionTracker positionTracker) throws IOException {
 		return dataInput.readByte();
 	}
 
-	private static String readString(DataInput dataInput, PositionTracker positionTracker) throws IOException {
+	private static String method_10552(DataInput dataInput, PositionTracker positionTracker) throws IOException {
 		return dataInput.readUTF();
 	}
 
-	static Tag createTag(byte b, String string, DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+	static Tag method_10581(byte b, String string, DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 		Tag tag = Tag.createTag(b);
 
 		try {
@@ -392,7 +391,7 @@ public class CompoundTag implements Tag {
 			return tag;
 		} catch (IOException var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Loading NBT data");
-			CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
+			CrashReportSection crashReportSection = crashReport.method_562("NBT Tag");
 			crashReportSection.add("Tag name", string);
 			crashReportSection.add("Tag type", b);
 			throw new CrashException(crashReport);
@@ -407,10 +406,10 @@ public class CompoundTag implements Tag {
 					CompoundTag compoundTag2 = this.getCompound(string);
 					compoundTag2.copyFrom((CompoundTag)tag);
 				} else {
-					this.put(string, tag.copy());
+					this.method_10566(string, tag.copy());
 				}
 			} else {
-				this.put(string, tag.copy());
+				this.method_10566(string, tag.copy());
 			}
 		}
 
@@ -421,7 +420,7 @@ public class CompoundTag implements Tag {
 		return PATTERN.matcher(string).matches() ? string : StringTag.escape(string);
 	}
 
-	protected static TextComponent prettyPrintTagKey(String string) {
+	protected static TextComponent method_10557(String string) {
 		if (PATTERN.matcher(string).matches()) {
 			return new StringTextComponent(string).applyFormat(AQUA);
 		} else {
@@ -433,7 +432,7 @@ public class CompoundTag implements Tag {
 	}
 
 	@Override
-	public TextComponent toTextComponent(String string, int i) {
+	public TextComponent method_10710(String string, int i) {
 		if (this.tags.isEmpty()) {
 			return new StringTextComponent("{}");
 		} else {
@@ -454,10 +453,10 @@ public class CompoundTag implements Tag {
 			while (iterator.hasNext()) {
 				String string2 = (String)iterator.next();
 				TextComponent textComponent2 = new StringTextComponent(Strings.repeat(string, i + 1))
-					.append(prettyPrintTagKey(string2))
+					.append(method_10557(string2))
 					.append(String.valueOf(':'))
 					.append(" ")
-					.append(((Tag)this.tags.get(string2)).toTextComponent(string, i + 1));
+					.append(((Tag)this.tags.get(string2)).method_10710(string, i + 1));
 				if (iterator.hasNext()) {
 					textComponent2.append(String.valueOf(',')).append(string.isEmpty() ? " " : "\n");
 				}

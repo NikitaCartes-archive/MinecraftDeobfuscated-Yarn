@@ -8,5 +8,5 @@ public interface PlayerSaveHandler {
 	void savePlayerData(PlayerEntity playerEntity);
 
 	@Nullable
-	CompoundTag loadPlayerData(PlayerEntity playerEntity);
+	CompoundTag method_261(PlayerEntity playerEntity);
 }

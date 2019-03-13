@@ -24,7 +24,7 @@ public class DolphinLookControl extends LookControl {
 			this.entity.pitch = this.method_6229(this.entity.pitch, i, this.field_6358);
 			this.entity.headYaw = this.method_6229(this.entity.headYaw, h, this.field_6359);
 		} else {
-			if (this.entity.getNavigation().isIdle()) {
+			if (this.entity.method_5942().isIdle()) {
 				this.entity.pitch = this.method_6229(this.entity.pitch, 0.0F, 5.0F);
 			}
 

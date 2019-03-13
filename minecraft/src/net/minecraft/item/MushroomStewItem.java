@@ -3,14 +3,14 @@ package net.minecraft.item;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.world.World;
 
-public class MushroomStewItem extends FoodItem {
-	public MushroomStewItem(int i, Item.Settings settings) {
-		super(i, 0.6F, false, settings);
+public class MushroomStewItem extends Item {
+	public MushroomStewItem(Item.Settings settings) {
+		super(settings);
 	}
 
 	@Override
-	public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
-		super.onItemFinishedUsing(itemStack, world, livingEntity);
+	public ItemStack method_7861(ItemStack itemStack, World world, LivingEntity livingEntity) {
+		super.method_7861(itemStack, world, livingEntity);
 		return new ItemStack(Items.field_8428);
 	}
 }

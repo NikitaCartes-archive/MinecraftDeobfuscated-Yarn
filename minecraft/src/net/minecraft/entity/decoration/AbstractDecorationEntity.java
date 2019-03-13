@@ -26,9 +26,9 @@ import org.apache.commons.lang3.Validate;
 public abstract class AbstractDecorationEntity extends Entity {
 	protected static final Predicate<Entity> PREDICATE = entity -> entity instanceof AbstractDecorationEntity;
 	private int field_7097;
-	protected BlockPos blockPos;
+	protected BlockPos field_7100;
 	@Nullable
-	public Direction facing;
+	public Direction field_7099;
 
 	protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world) {
 		super(entityType, world);
@@ -36,34 +36,34 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	protected AbstractDecorationEntity(EntityType<? extends AbstractDecorationEntity> entityType, World world, BlockPos blockPos) {
 		this(entityType, world);
-		this.blockPos = blockPos;
+		this.field_7100 = blockPos;
 	}
 
 	@Override
 	protected void initDataTracker() {
 	}
 
-	protected void setFacing(Direction direction) {
+	protected void method_6892(Direction direction) {
 		Validate.notNull(direction);
 		Validate.isTrue(direction.getAxis().isHorizontal());
-		this.facing = direction;
-		this.yaw = (float)(this.facing.getHorizontal() * 90);
+		this.field_7099 = direction;
+		this.yaw = (float)(this.field_7099.getHorizontal() * 90);
 		this.prevYaw = this.yaw;
 		this.method_6895();
 	}
 
 	protected void method_6895() {
-		if (this.facing != null) {
-			double d = (double)this.blockPos.getX() + 0.5;
-			double e = (double)this.blockPos.getY() + 0.5;
-			double f = (double)this.blockPos.getZ() + 0.5;
+		if (this.field_7099 != null) {
+			double d = (double)this.field_7100.getX() + 0.5;
+			double e = (double)this.field_7100.getY() + 0.5;
+			double f = (double)this.field_7100.getZ() + 0.5;
 			double g = 0.46875;
 			double h = this.method_6893(this.getWidthPixels());
 			double i = this.method_6893(this.getHeightPixels());
-			d -= (double)this.facing.getOffsetX() * 0.46875;
-			f -= (double)this.facing.getOffsetZ() * 0.46875;
+			d -= (double)this.field_7099.getOffsetX() * 0.46875;
+			f -= (double)this.field_7099.getOffsetZ() * 0.46875;
 			e += i;
-			Direction direction = this.facing.rotateYCounterclockwise();
+			Direction direction = this.field_7099.rotateYCounterclockwise();
 			d += h * (double)direction.getOffsetX();
 			f += h * (double)direction.getOffsetZ();
 			this.x = d;
@@ -72,7 +72,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 			double j = (double)this.getWidthPixels();
 			double k = (double)this.getHeightPixels();
 			double l = (double)this.getWidthPixels();
-			if (this.facing.getAxis() == Direction.Axis.Z) {
+			if (this.field_7099.getAxis() == Direction.Axis.Z) {
 				l = 1.0;
 			} else {
 				j = 1.0;
@@ -81,7 +81,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 			j /= 32.0;
 			k /= 32.0;
 			l /= 32.0;
-			this.setBoundingBox(new BoundingBox(d - j, e - k, f - l, d + j, e + k, f + l));
+			this.method_5857(new BoundingBox(d - j, e - k, f - l, d + j, e + k, f + l));
 		}
 	}
 
@@ -94,7 +94,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
-		if (this.field_7097++ == 100 && !this.world.isClient) {
+		if (this.field_7097++ == 100 && !this.field_6002.isClient) {
 			this.field_7097 = 0;
 			if (!this.invalid && !this.method_6888()) {
 				this.invalidate();
@@ -104,28 +104,28 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	public boolean method_6888() {
-		if (!this.world.method_17892(this)) {
+		if (!this.field_6002.method_17892(this)) {
 			return false;
 		} else {
 			int i = Math.max(1, this.getWidthPixels() / 16);
 			int j = Math.max(1, this.getHeightPixels() / 16);
-			BlockPos blockPos = this.blockPos.offset(this.facing.getOpposite());
-			Direction direction = this.facing.rotateYCounterclockwise();
+			BlockPos blockPos = this.field_7100.method_10093(this.field_7099.getOpposite());
+			Direction direction = this.field_7099.rotateYCounterclockwise();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int k = 0; k < i; k++) {
 				for (int l = 0; l < j; l++) {
 					int m = (i - 1) / -2;
 					int n = (j - 1) / -2;
-					mutable.set(blockPos).setOffset(direction, k + m).setOffset(Direction.UP, l + n);
-					BlockState blockState = this.world.getBlockState(mutable);
-					if (!blockState.getMaterial().method_15799() && !AbstractRedstoneGateBlock.method_9999(blockState)) {
+					mutable.method_10101(blockPos).method_10104(direction, k + m).method_10104(Direction.UP, l + n);
+					BlockState blockState = this.field_6002.method_8320(mutable);
+					if (!blockState.method_11620().method_15799() && !AbstractRedstoneGateBlock.method_9999(blockState)) {
 						return false;
 					}
 				}
 			}
 
-			return this.world.getEntities(this, this.getBoundingBox(), PREDICATE).isEmpty();
+			return this.field_6002.method_8333(this, this.method_5829(), PREDICATE).isEmpty();
 		}
 	}
 
@@ -136,12 +136,12 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public boolean method_5698(Entity entity) {
-		return entity instanceof PlayerEntity ? this.damage(DamageSource.player((PlayerEntity)entity), 0.0F) : false;
+		return entity instanceof PlayerEntity ? this.damage(DamageSource.method_5532((PlayerEntity)entity), 0.0F) : false;
 	}
 
 	@Override
-	public Direction getHorizontalFacing() {
-		return this.facing;
+	public Direction method_5735() {
+		return this.field_7099;
 	}
 
 	@Override
@@ -149,10 +149,10 @@ public abstract class AbstractDecorationEntity extends Entity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			if (!this.invalid && !this.world.isClient) {
+			if (!this.invalid && !this.field_6002.isClient) {
 				this.invalidate();
 				this.scheduleVelocityUpdate();
-				this.copyEntityData(damageSource.getAttacker());
+				this.copyEntityData(damageSource.method_5529());
 			}
 
 			return true;
@@ -160,8 +160,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void move(MovementType movementType, Vec3d vec3d) {
-		if (!this.world.isClient && !this.invalid && vec3d.lengthSquared() > 0.0) {
+	public void method_5784(MovementType movementType, Vec3d vec3d) {
+		if (!this.field_6002.isClient && !this.invalid && vec3d.lengthSquared() > 0.0) {
 			this.invalidate();
 			this.copyEntityData(null);
 		}
@@ -169,25 +169,25 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public void addVelocity(double d, double e, double f) {
-		if (!this.world.isClient && !this.invalid && d * d + e * e + f * f > 0.0) {
+		if (!this.field_6002.isClient && !this.invalid && d * d + e * e + f * f > 0.0) {
 			this.invalidate();
 			this.copyEntityData(null);
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.putByte("Facing", (byte)this.facing.getHorizontal());
-		BlockPos blockPos = this.getDecorationBlockPos();
+	public void method_5652(CompoundTag compoundTag) {
+		compoundTag.putByte("Facing", (byte)this.field_7099.getHorizontal());
+		BlockPos blockPos = this.method_6896();
 		compoundTag.putInt("TileX", blockPos.getX());
 		compoundTag.putInt("TileY", blockPos.getY());
 		compoundTag.putInt("TileZ", blockPos.getZ());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.blockPos = new BlockPos(compoundTag.getInt("TileX"), compoundTag.getInt("TileY"), compoundTag.getInt("TileZ"));
-		this.setFacing(Direction.fromHorizontal(compoundTag.getByte("Facing")));
+	public void method_5749(CompoundTag compoundTag) {
+		this.field_7100 = new BlockPos(compoundTag.getInt("TileX"), compoundTag.getInt("TileY"), compoundTag.getInt("TileZ"));
+		this.method_6892(Direction.fromHorizontal(compoundTag.getByte("Facing")));
 	}
 
 	public abstract int getWidthPixels();
@@ -199,16 +199,16 @@ public abstract class AbstractDecorationEntity extends Entity {
 	public abstract void method_6894();
 
 	@Override
-	public ItemEntity dropStack(ItemStack itemStack, float f) {
+	public ItemEntity method_5699(ItemStack itemStack, float f) {
 		ItemEntity itemEntity = new ItemEntity(
-			this.world,
-			this.x + (double)((float)this.facing.getOffsetX() * 0.15F),
+			this.field_6002,
+			this.x + (double)((float)this.field_7099.getOffsetX() * 0.15F),
 			this.y + (double)f,
-			this.z + (double)((float)this.facing.getOffsetZ() * 0.15F),
+			this.z + (double)((float)this.field_7099.getOffsetZ() * 0.15F),
 			itemStack
 		);
 		itemEntity.setToDefaultPickupDelay();
-		this.world.spawnEntity(itemEntity);
+		this.field_6002.spawnEntity(itemEntity);
 		return itemEntity;
 	}
 
@@ -219,27 +219,27 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public void setPosition(double d, double e, double f) {
-		this.blockPos = new BlockPos(d, e, f);
+		this.field_7100 = new BlockPos(d, e, f);
 		this.method_6895();
 		this.velocityDirty = true;
 	}
 
-	public BlockPos getDecorationBlockPos() {
-		return this.blockPos;
+	public BlockPos method_6896() {
+		return this.field_7100;
 	}
 
 	@Override
-	public float applyRotation(Rotation rotation) {
-		if (this.facing != null && this.facing.getAxis() != Direction.Axis.Y) {
+	public float method_5832(Rotation rotation) {
+		if (this.field_7099 != null && this.field_7099.getAxis() != Direction.Axis.Y) {
 			switch (rotation) {
 				case ROT_180:
-					this.facing = this.facing.getOpposite();
+					this.field_7099 = this.field_7099.getOpposite();
 					break;
 				case ROT_270:
-					this.facing = this.facing.rotateYCounterclockwise();
+					this.field_7099 = this.field_7099.rotateYCounterclockwise();
 					break;
 				case ROT_90:
-					this.facing = this.facing.rotateYClockwise();
+					this.field_7099 = this.field_7099.rotateYClockwise();
 			}
 		}
 
@@ -257,12 +257,12 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public float applyMirror(Mirror mirror) {
-		return this.applyRotation(mirror.getRotation(this.facing));
+	public float method_5763(Mirror mirror) {
+		return this.method_5832(mirror.method_10345(this.field_7099));
 	}
 
 	@Override
-	public void onStruckByLightning(LightningEntity lightningEntity) {
+	public void method_5800(LightningEntity lightningEntity) {
 	}
 
 	@Override

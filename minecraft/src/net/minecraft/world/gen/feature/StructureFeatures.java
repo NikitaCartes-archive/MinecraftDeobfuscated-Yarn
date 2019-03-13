@@ -20,21 +20,21 @@ import org.apache.logging.log4j.Logger;
 
 public class StructureFeatures {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final StructureFeature<?> MINESHAFT = register("Mineshaft", Feature.MINESHAFT);
-	public static final StructureFeature<?> PILLAGER_OUTPOST = register("Pillager_Outpost", Feature.PILLAGER_OUTPOST);
-	public static final StructureFeature<?> FORTRESS = register("Fortress", Feature.NETHER_BRIDGE);
-	public static final StructureFeature<?> STRONGHOLD = register("Stronghold", Feature.STRONGHOLD);
-	public static final StructureFeature<?> JUNGLE_PYRAMID = register("Jungle_Pyramid", Feature.JUNGLE_TEMPLE);
-	public static final StructureFeature<?> OCEAN_RUIN = register("Ocean_Ruin", Feature.OCEAN_RUIN);
-	public static final StructureFeature<?> DESERT_PYRAMID = register("Desert_Pyramid", Feature.DESERT_PYRAMID);
-	public static final StructureFeature<?> IGLOO = register("Igloo", Feature.IGLOO);
-	public static final StructureFeature<?> SWAMP_HUT = register("Swamp_Hut", Feature.SWAMP_HUT);
-	public static final StructureFeature<?> MONUMENT = register("Monument", Feature.OCEAN_MONUMENT);
-	public static final StructureFeature<?> END_CITY = register("EndCity", Feature.END_CITY);
-	public static final StructureFeature<?> MANSION = register("Mansion", Feature.WOODLAND_MANSION);
-	public static final StructureFeature<?> BURIED_TREASURE = register("Buried_Treasure", Feature.BURIED_TREASURE);
-	public static final StructureFeature<?> SHIPWRECK = register("Shipwreck", Feature.SHIPWRECK);
-	public static final StructureFeature<?> VILLAGE = register("Village", Feature.VILLAGE);
+	public static final StructureFeature<?> MINESHAFT = register("Mineshaft", Feature.field_13547);
+	public static final StructureFeature<?> PILLAGER_OUTPOST = register("Pillager_Outpost", Feature.field_16655);
+	public static final StructureFeature<?> FORTRESS = register("Fortress", Feature.field_13569);
+	public static final StructureFeature<?> STRONGHOLD = register("Stronghold", Feature.field_13565);
+	public static final StructureFeature<?> JUNGLE_PYRAMID = register("Jungle_Pyramid", Feature.field_13586);
+	public static final StructureFeature<?> OCEAN_RUIN = register("Ocean_Ruin", Feature.field_13536);
+	public static final StructureFeature<?> DESERT_PYRAMID = register("Desert_Pyramid", Feature.field_13515);
+	public static final StructureFeature<?> IGLOO = register("Igloo", Feature.field_13527);
+	public static final StructureFeature<?> SWAMP_HUT = register("Swamp_Hut", Feature.field_13520);
+	public static final StructureFeature<?> MONUMENT = register("Monument", Feature.field_13588);
+	public static final StructureFeature<?> END_CITY = register("EndCity", Feature.field_13553);
+	public static final StructureFeature<?> MANSION = register("Mansion", Feature.field_13528);
+	public static final StructureFeature<?> BURIED_TREASURE = register("Buried_Treasure", Feature.field_13538);
+	public static final StructureFeature<?> SHIPWRECK = register("Shipwreck", Feature.field_13589);
+	public static final StructureFeature<?> VILLAGE = register("Village", Feature.field_13587);
 
 	private static StructureFeature<?> register(String string, StructureFeature<?> structureFeature) {
 		return Registry.register(Registry.STRUCTURE_FEATURE, string.toLowerCase(Locale.ROOT), structureFeature);
@@ -44,14 +44,14 @@ public class StructureFeatures {
 	}
 
 	@Nullable
-	public static StructureStart readStructureStart(
+	public static StructureStart method_14842(
 		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BiomeSource biomeSource, CompoundTag compoundTag
 	) {
 		String string = compoundTag.getString("id");
 		if ("INVALID".equals(string)) {
 			return StructureStart.DEFAULT;
 		} else {
-			StructureFeature<?> structureFeature = Registry.STRUCTURE_FEATURE.get(new Identifier(string.toLowerCase(Locale.ROOT)));
+			StructureFeature<?> structureFeature = Registry.STRUCTURE_FEATURE.method_10223(new Identifier(string.toLowerCase(Locale.ROOT)));
 			if (structureFeature == null) {
 				LOGGER.error("Unknown feature id: {}", string);
 				return null;
@@ -59,12 +59,12 @@ public class StructureFeatures {
 				int i = compoundTag.getInt("ChunkX");
 				int j = compoundTag.getInt("ChunkZ");
 				Biome biome = compoundTag.containsKey("biome")
-					? Registry.BIOME.get(new Identifier(compoundTag.getString("biome")))
-					: biomeSource.getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+					? Registry.BIOME.method_10223(new Identifier(compoundTag.getString("biome")))
+					: biomeSource.method_8758(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
 				MutableIntBoundingBox mutableIntBoundingBox = compoundTag.containsKey("BB")
 					? new MutableIntBoundingBox(compoundTag.getIntArray("BB"))
 					: MutableIntBoundingBox.empty();
-				ListTag listTag = compoundTag.getList("Children", 10);
+				ListTag listTag = compoundTag.method_10554("Children", 10);
 
 				try {
 					StructureStart structureStart = structureFeature.getStructureStartFactory()
@@ -73,7 +73,7 @@ public class StructureFeatures {
 					for (int k = 0; k < listTag.size(); k++) {
 						CompoundTag compoundTag2 = listTag.getCompoundTag(k);
 						String string2 = compoundTag2.getString("id");
-						StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(new Identifier(string2.toLowerCase(Locale.ROOT)));
+						StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.method_10223(new Identifier(string2.toLowerCase(Locale.ROOT)));
 						if (structurePieceType == null) {
 							LOGGER.error("Unknown structure piece id: {}", string2);
 						} else {

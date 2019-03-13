@@ -23,52 +23,52 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 	long getSeed();
 
 	default float method_8391() {
-		return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
+		return Dimension.MOON_PHASE_TO_SIZE[this.method_8597().getMoonPhase(this.method_8401().getTimeOfDay())];
 	}
 
 	default float getSkyAngle(float f) {
-		return this.getDimension().getSkyAngle(this.getLevelProperties().getTimeOfDay(), f);
+		return this.method_8597().getSkyAngle(this.method_8401().getTimeOfDay(), f);
 	}
 
 	@Environment(EnvType.CLIENT)
 	default int getMoonPhase() {
-		return this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay());
+		return this.method_8597().getMoonPhase(this.method_8401().getTimeOfDay());
 	}
 
-	TickScheduler<Block> getBlockTickScheduler();
+	TickScheduler<Block> method_8397();
 
-	TickScheduler<Fluid> getFluidTickScheduler();
+	TickScheduler<Fluid> method_8405();
 
 	World getWorld();
 
-	LevelProperties getLevelProperties();
+	LevelProperties method_8401();
 
-	LocalDifficulty getLocalDifficulty(BlockPos blockPos);
+	LocalDifficulty method_8404(BlockPos blockPos);
 
 	default Difficulty getDifficulty() {
-		return this.getLevelProperties().getDifficulty();
+		return this.method_8401().getDifficulty();
 	}
 
-	ChunkManager getChunkManager();
+	ChunkManager method_8398();
 
 	@Override
 	default boolean isChunkLoaded(int i, int j) {
-		return this.getChunkManager().isChunkLoaded(i, j);
+		return this.method_8398().isChunkLoaded(i, j);
 	}
 
 	Random getRandom();
 
-	void updateNeighbors(BlockPos blockPos, Block block);
+	void method_8408(BlockPos blockPos, Block block);
 
-	BlockPos getSpawnPos();
+	BlockPos method_8395();
 
-	void playSound(@Nullable PlayerEntity playerEntity, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g);
+	void method_8396(@Nullable PlayerEntity playerEntity, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g);
 
-	void addParticle(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i);
+	void method_8406(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i);
 
 	@Override
-	default Stream<VoxelShape> getCollidingEntityBoundingBoxesForEntity(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
-		return EntityView.super.getCollidingEntityBoundingBoxesForEntity(entity, voxelShape, set);
+	default Stream<VoxelShape> method_8334(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+		return EntityView.super.method_8334(entity, voxelShape, set);
 	}
 
 	@Override

@@ -26,7 +26,7 @@ public class TeammsgCommand {
 			ServerCommandManager.literal("teammsg")
 				.then(
 					ServerCommandManager.argument("message", MessageArgumentType.create())
-						.executes(commandContext -> execute(commandContext.getSource(), MessageArgumentType.getMessageArgument(commandContext, "message")))
+						.executes(commandContext -> execute(commandContext.getSource(), MessageArgumentType.method_9339(commandContext, "message")))
 				)
 		);
 		commandDispatcher.register(ServerCommandManager.literal("tm").redirect(literalCommandNode));
@@ -34,7 +34,7 @@ public class TeammsgCommand {
 
 	private static int execute(ServerCommandSource serverCommandSource, TextComponent textComponent) throws CommandSyntaxException {
 		Entity entity = serverCommandSource.getEntityOrThrow();
-		ScoreboardTeam scoreboardTeam = (ScoreboardTeam)entity.getScoreboardTeam();
+		ScoreboardTeam scoreboardTeam = (ScoreboardTeam)entity.method_5781();
 		if (scoreboardTeam == null) {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
@@ -46,16 +46,16 @@ public class TeammsgCommand {
 				textComponent3.modifyStyle(consumer);
 			}
 
-			List<ServerPlayerEntity> list = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayerList();
+			List<ServerPlayerEntity> list = serverCommandSource.getMinecraftServer().method_3760().getPlayerList();
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {
 				if (serverPlayerEntity == entity) {
-					serverPlayerEntity.appendCommandFeedback(
-						new TranslatableTextComponent("chat.type.team.sent", textComponent2, serverCommandSource.getDisplayName(), textComponent.copy())
+					serverPlayerEntity.method_9203(
+						new TranslatableTextComponent("chat.type.team.sent", textComponent2, serverCommandSource.method_9223(), textComponent.copy())
 					);
-				} else if (serverPlayerEntity.getScoreboardTeam() == scoreboardTeam) {
-					serverPlayerEntity.appendCommandFeedback(
-						new TranslatableTextComponent("chat.type.team.text", textComponent2, serverCommandSource.getDisplayName(), textComponent.copy())
+				} else if (serverPlayerEntity.method_5781() == scoreboardTeam) {
+					serverPlayerEntity.method_9203(
+						new TranslatableTextComponent("chat.type.team.text", textComponent2, serverCommandSource.method_9223(), textComponent.copy())
 					);
 				}
 			}

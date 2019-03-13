@@ -19,42 +19,42 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
 public interface EntityView {
-	List<Entity> getEntities(@Nullable Entity entity, BoundingBox boundingBox, @Nullable Predicate<? super Entity> predicate);
+	List<Entity> method_8333(@Nullable Entity entity, BoundingBox boundingBox, @Nullable Predicate<? super Entity> predicate);
 
 	<T extends Entity> List<T> method_8390(Class<? extends T> class_, BoundingBox boundingBox, @Nullable Predicate<? super T> predicate);
 
 	List<? extends PlayerEntity> getPlayers();
 
-	default List<Entity> getVisibleEntities(@Nullable Entity entity, BoundingBox boundingBox) {
-		return this.getEntities(entity, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
+	default List<Entity> method_8335(@Nullable Entity entity, BoundingBox boundingBox) {
+		return this.method_8333(entity, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
 	default boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
 		return voxelShape.isEmpty()
 			? true
-			: this.getVisibleEntities(entity, voxelShape.getBoundingBox())
+			: this.method_8335(entity, voxelShape.getBoundingBox())
 				.stream()
 				.filter(entity2 -> !entity2.invalid && entity2.field_6033 && (entity == null || !entity2.method_5794(entity)))
-				.noneMatch(entityx -> VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(entityx.getBoundingBox()), BooleanBiFunction.AND));
+				.noneMatch(entityx -> VoxelShapes.method_1074(voxelShape, VoxelShapes.method_1078(entityx.method_5829()), BooleanBiFunction.AND));
 	}
 
 	default <T extends Entity> List<T> method_18467(Class<? extends T> class_, BoundingBox boundingBox) {
 		return this.method_8390(class_, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default Stream<VoxelShape> getCollidingEntityBoundingBoxesForEntity(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+	default Stream<VoxelShape> method_8334(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
 		if (voxelShape.isEmpty()) {
 			return Stream.empty();
 		} else {
 			BoundingBox boundingBox = voxelShape.getBoundingBox();
-			return this.getVisibleEntities(entity, boundingBox.expand(0.25))
+			return this.method_8335(entity, boundingBox.expand(0.25))
 				.stream()
 				.filter(entity2 -> !set.contains(entity2) && (entity == null || !entity.method_5794(entity2)))
 				.flatMap(
 					entity2 -> Stream.of(entity2.method_5827(), entity == null ? null : entity.method_5708(entity2))
 							.filter(Objects::nonNull)
 							.filter(boundingBox2 -> boundingBox2.intersects(boundingBox))
-							.map(VoxelShapes::cube)
+							.map(VoxelShapes::method_1078)
 				);
 		}
 	}
@@ -182,18 +182,6 @@ public interface EntityView {
 		}
 
 		return list2;
-	}
-
-	@Nullable
-	default PlayerEntity method_18469(String string) {
-		for (int i = 0; i < this.getPlayers().size(); i++) {
-			PlayerEntity playerEntity = (PlayerEntity)this.getPlayers().get(i);
-			if (string.equals(playerEntity.getName().getString())) {
-				return playerEntity;
-			}
-		}
-
-		return null;
 	}
 
 	@Nullable

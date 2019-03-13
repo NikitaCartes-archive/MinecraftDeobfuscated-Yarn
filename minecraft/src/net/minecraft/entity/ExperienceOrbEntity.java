@@ -73,27 +73,27 @@ public class ExperienceOrbEntity extends Entity {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
-		if (this.isInFluid(FluidTags.field_15517)) {
+		if (this.method_5777(FluidTags.field_15517)) {
 			this.method_5921();
 		} else if (!this.isUnaffectedByGravity()) {
-			this.setVelocity(this.getVelocity().add(0.0, -0.03, 0.0));
+			this.method_18799(this.method_18798().add(0.0, -0.03, 0.0));
 		}
 
-		if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
+		if (this.field_6002.method_8316(new BlockPos(this)).method_15767(FluidTags.field_15518)) {
 			this.setVelocity(
 				(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 			);
-			this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+			this.method_5783(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 		}
 
-		if (!this.world.method_18026(this.getBoundingBox())) {
-			this.method_5632(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+		if (!this.field_6002.method_18026(this.method_5829())) {
+			this.method_5632(this.x, (this.method_5829().minY + this.method_5829().maxY) / 2.0, this.z);
 		}
 
 		double d = 8.0;
 		if (this.field_6160 < this.field_6165 - 20 + this.getEntityId() % 100) {
 			if (this.field_6162 == null || this.field_6162.squaredDistanceTo(this) > 64.0) {
-				this.field_6162 = this.world.method_18460(this, 8.0);
+				this.field_6162 = this.field_6002.method_18460(this, 8.0);
 			}
 
 			this.field_6160 = this.field_6165;
@@ -110,19 +110,19 @@ public class ExperienceOrbEntity extends Entity {
 			double e = vec3d.lengthSquared();
 			if (e < 64.0) {
 				double f = 1.0 - Math.sqrt(e) / 8.0;
-				this.setVelocity(this.getVelocity().add(vec3d.normalize().multiply(f * f * 0.1)));
+				this.method_18799(this.method_18798().add(vec3d.normalize().multiply(f * f * 0.1)));
 			}
 		}
 
-		this.move(MovementType.field_6308, this.getVelocity());
+		this.method_5784(MovementType.field_6308, this.method_18798());
 		float g = 0.98F;
 		if (this.onGround) {
-			g = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
+			g = this.field_6002.method_8320(new BlockPos(this.x, this.method_5829().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
 		}
 
-		this.setVelocity(this.getVelocity().multiply((double)g, 0.98, (double)g));
+		this.method_18799(this.method_18798().multiply((double)g, 0.98, (double)g));
 		if (this.onGround) {
-			this.setVelocity(this.getVelocity().multiply(1.0, -0.9, 1.0));
+			this.method_18799(this.method_18798().multiply(1.0, -0.9, 1.0));
 		}
 
 		this.field_6165++;
@@ -133,7 +133,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	private void method_5921() {
-		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d = this.method_18798();
 		this.setVelocity(vec3d.x * 0.99F, Math.min(vec3d.y + 5.0E-4F, 0.06F), vec3d.z * 0.99F);
 	}
 
@@ -162,22 +162,22 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
+	public void method_5652(CompoundTag compoundTag) {
 		compoundTag.putShort("Health", (short)this.health);
 		compoundTag.putShort("Age", (short)this.xpAge);
 		compoundTag.putShort("Value", (short)this.amount);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
+	public void method_5749(CompoundTag compoundTag) {
 		this.health = compoundTag.getShort("Health");
 		this.xpAge = compoundTag.getShort("Age");
 		this.amount = compoundTag.getShort("Value");
 	}
 
 	@Override
-	public void onPlayerCollision(PlayerEntity playerEntity) {
-		if (!this.world.isClient) {
+	public void method_5694(PlayerEntity playerEntity) {
+		if (!this.field_6002.isClient) {
 			if (this.field_6163 == 0 && playerEntity.field_7504 == 0) {
 				playerEntity.field_7504 = 2;
 				playerEntity.pickUpEntity(this, 1);
@@ -264,7 +264,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<?> method_18002() {
 		return new ExperienceOrbSpawnS2CPacket(this);
 	}
 }

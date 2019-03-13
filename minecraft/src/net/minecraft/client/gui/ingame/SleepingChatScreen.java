@@ -2,7 +2,7 @@ package net.minecraft.client.gui.ingame;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.class_4185;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.server.network.packet.ClientCommandC2SPacket;
@@ -12,9 +12,9 @@ public class SleepingChatScreen extends ChatScreen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 40, I18n.translate("multiplayer.stopSleeping")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight - 40, I18n.translate("multiplayer.stopSleeping")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				SleepingChatScreen.this.stopSleeping();
 			}
 		});
@@ -32,11 +32,11 @@ public class SleepingChatScreen extends ChatScreen {
 		} else if (i == 257 || i == 335) {
 			String string = this.chatField.getText().trim();
 			if (!string.isEmpty()) {
-				this.client.player.sendChatMessage(string);
+				this.client.field_1724.sendChatMessage(string);
 			}
 
 			this.chatField.setText("");
-			this.client.inGameHud.getChatHud().method_1820();
+			this.client.field_1705.method_1743().method_1820();
 			return true;
 		}
 
@@ -44,7 +44,7 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	private void stopSleeping() {
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
-		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.client.player, ClientCommandC2SPacket.Mode.field_12986));
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.field_1724.networkHandler;
+		clientPlayNetworkHandler.method_2883(new ClientCommandC2SPacket(this.client.field_1724, ClientCommandC2SPacket.Mode.field_12986));
 	}
 }

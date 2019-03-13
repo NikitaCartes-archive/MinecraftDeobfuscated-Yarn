@@ -15,11 +15,11 @@ public abstract class SimpleDecorator<DC extends DecoratorConfig> extends Decora
 	}
 
 	@Override
-	public final Stream<BlockPos> getPositions(
+	public final Stream<BlockPos> method_14452(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DC decoratorConfig, BlockPos blockPos
 	) {
-		return this.getPositions(random, decoratorConfig, blockPos);
+		return this.method_15941(random, decoratorConfig, blockPos);
 	}
 
-	protected abstract Stream<BlockPos> getPositions(Random random, DC decoratorConfig, BlockPos blockPos);
+	protected abstract Stream<BlockPos> method_15941(Random random, DC decoratorConfig, BlockPos blockPos);
 }

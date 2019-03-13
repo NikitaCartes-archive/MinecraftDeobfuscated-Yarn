@@ -20,8 +20,8 @@ public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
 		BlockPos blockPos,
 		EmeraldOreFeatureConfig emeraldOreFeatureConfig
 	) {
-		if (iWorld.getBlockState(blockPos).getBlock() == emeraldOreFeatureConfig.target.getBlock()) {
-			iWorld.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);
+		if (iWorld.method_8320(blockPos).getBlock() == emeraldOreFeatureConfig.target.getBlock()) {
+			iWorld.method_8652(blockPos, emeraldOreFeatureConfig.state, 2);
 		}
 
 		return true;

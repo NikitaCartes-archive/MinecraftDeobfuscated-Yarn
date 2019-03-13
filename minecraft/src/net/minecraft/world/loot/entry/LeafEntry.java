@@ -27,7 +27,7 @@ import org.apache.commons.lang3.ArrayUtils;
 public abstract class LeafEntry extends LootEntry {
 	protected final int weight;
 	protected final int quality;
-	protected final LootFunction[] functions;
+	protected final LootFunction[] field_996;
 	private final BiFunction<ItemStack, LootContext, ItemStack> compiledFunctions;
 	private final LootChoice choice = new LeafEntry.Choice() {
 		@Override
@@ -40,16 +40,16 @@ public abstract class LeafEntry extends LootEntry {
 		super(lootConditions);
 		this.weight = i;
 		this.quality = j;
-		this.functions = lootFunctions;
+		this.field_996 = lootFunctions;
 		this.compiledFunctions = LootFunctions.join(lootFunctions);
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		super.check(lootTableReporter, function, set, lootContextType);
+	public void method_415(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		super.method_415(lootTableReporter, function, set, lootContextType);
 
-		for (int i = 0; i < this.functions.length; i++) {
-			this.functions[i].check(lootTableReporter.makeChild(".functions[" + i + "]"), function, set, lootContextType);
+		for (int i = 0; i < this.field_996.length; i++) {
+			this.field_996[i].method_292(lootTableReporter.makeChild(".functions[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
@@ -82,7 +82,7 @@ public abstract class LeafEntry extends LootEntry {
 
 		@Override
 		public LootEntry build() {
-			return this.factory.build(this.weight, this.quality, this.getConditions(), this.getFunctions());
+			return this.factory.build(this.weight, this.quality, this.method_420(), this.method_439());
 		}
 	}
 
@@ -96,7 +96,7 @@ public abstract class LeafEntry extends LootEntry {
 			return this.getThisBuilder();
 		}
 
-		protected LootFunction[] getFunctions() {
+		protected LootFunction[] method_439() {
 			return (LootFunction[])this.functions.toArray(new LootFunction[0]);
 		}
 
@@ -140,8 +140,8 @@ public abstract class LeafEntry extends LootEntry {
 				jsonObject.addProperty("quality", leafEntry.quality);
 			}
 
-			if (!ArrayUtils.isEmpty((Object[])leafEntry.functions)) {
-				jsonObject.add("functions", jsonSerializationContext.serialize(leafEntry.functions));
+			if (!ArrayUtils.isEmpty((Object[])leafEntry.field_996)) {
+				jsonObject.add("functions", jsonSerializationContext.serialize(leafEntry.field_996));
 			}
 		}
 

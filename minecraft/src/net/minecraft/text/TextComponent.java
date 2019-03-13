@@ -28,9 +28,9 @@ import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import net.minecraft.util.SystemUtil;
 
 public interface TextComponent extends Message, Iterable<TextComponent> {
-	TextComponent setStyle(Style style);
+	TextComponent method_10862(Style style);
 
-	Style getStyle();
+	Style method_10866();
 
 	default TextComponent append(String string) {
 		return this.append(new StringTextComponent(string));
@@ -73,7 +73,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 			TextComponent textComponent = (TextComponent)iterator.next();
 			String string2 = textComponent.getText();
 			if (!string2.isEmpty()) {
-				String string3 = textComponent.getStyle().getFormatString();
+				String string3 = textComponent.method_10866().getFormatString();
 				if (!string3.equals(string)) {
 					if (!string.isEmpty()) {
 						stringBuilder.append(TextFormat.field_1070);
@@ -110,7 +110,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 
 	default TextComponent copy() {
 		TextComponent textComponent = this.copyShallow();
-		textComponent.setStyle(this.getStyle().clone());
+		textComponent.method_10862(this.method_10866().clone());
 
 		for (TextComponent textComponent2 : this.getChildren()) {
 			textComponent.append(textComponent2.copy());
@@ -120,7 +120,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 	}
 
 	default TextComponent modifyStyle(Consumer<Style> consumer) {
-		consumer.accept(this.getStyle());
+		consumer.accept(this.method_10866());
 		return this;
 	}
 
@@ -133,7 +133,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 	}
 
 	default TextComponent applyFormat(TextFormat textFormat) {
-		Style style = this.getStyle();
+		Style style = this.method_10866();
 		if (textFormat.isColor()) {
 			style.setColor(textFormat);
 		}
@@ -162,7 +162,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 
 	static TextComponent copyWithoutChildren(TextComponent textComponent) {
 		TextComponent textComponent2 = textComponent.copyShallow();
-		textComponent2.setStyle(textComponent.getStyle().copy());
+		textComponent2.method_10862(textComponent.method_10866().copy());
 		return textComponent2;
 	}
 
@@ -232,7 +232,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 							objects[i] = this.method_10871(jsonArray.get(i), type, jsonDeserializationContext);
 							if (objects[i] instanceof StringTextComponent) {
 								StringTextComponent stringTextComponent = (StringTextComponent)objects[i];
-								if (stringTextComponent.getStyle().isEmpty() && stringTextComponent.getChildren().isEmpty()) {
+								if (stringTextComponent.method_10866().isEmpty() && stringTextComponent.getChildren().isEmpty()) {
 									objects[i] = stringTextComponent.getTextField();
 								}
 							}
@@ -285,7 +285,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 					}
 				}
 
-				textComponent.setStyle(jsonDeserializationContext.deserialize(jsonElement, Style.class));
+				textComponent.method_10862(jsonDeserializationContext.deserialize(jsonElement, Style.class));
 				return textComponent;
 			}
 		}
@@ -303,8 +303,8 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 
 		public JsonElement method_10874(TextComponent textComponent, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
-			if (!textComponent.getStyle().isEmpty()) {
-				this.method_10875(textComponent.getStyle(), jsonObject, jsonSerializationContext);
+			if (!textComponent.method_10866().isEmpty()) {
+				this.method_10875(textComponent.method_10866(), jsonObject, jsonSerializationContext);
 			}
 
 			if (!textComponent.getChildren().isEmpty()) {

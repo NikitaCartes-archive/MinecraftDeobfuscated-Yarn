@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -13,7 +14,6 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
@@ -24,7 +24,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 	private final Map<Integer, Path> field_4616 = Maps.<Integer, Path>newHashMap();
 	private final Map<Integer, Float> field_4617 = Maps.<Integer, Float>newHashMap();
 	private final Map<Integer, Long> field_4615 = Maps.<Integer, Long>newHashMap();
-	private PlayerEntity field_4618;
+	private class_4184 field_4618;
 	private double field_4621;
 	private double field_4620;
 	private double field_4619;
@@ -40,13 +40,13 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 	}
 
 	@Override
-	public void render(float f, long l) {
+	public void render(long l) {
 		if (!this.field_4616.isEmpty()) {
 			long m = SystemUtil.getMeasuringTimeMs();
-			this.field_4618 = this.client.player;
-			this.field_4621 = MathHelper.lerp((double)f, this.field_4618.prevRenderX, this.field_4618.x);
-			this.field_4620 = MathHelper.lerp((double)f, this.field_4618.prevRenderY, this.field_4618.y);
-			this.field_4619 = MathHelper.lerp((double)f, this.field_4618.prevRenderZ, this.field_4618.z);
+			this.field_4618 = this.client.field_1773.method_19418();
+			this.field_4621 = this.field_4618.method_19326().x;
+			this.field_4620 = this.field_4618.method_19326().y;
+			this.field_4619 = this.field_4618.method_19326().z;
 			GlStateManager.pushMatrix();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
@@ -58,8 +58,8 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 
 			for (Integer integer : this.field_4616.keySet()) {
 				Path path = (Path)this.field_4616.get(integer);
-				float g = (Float)this.field_4617.get(integer);
-				this.method_3868(f, path);
+				float f = (Float)this.field_4617.get(integer);
+				this.method_3868(path);
 				PathNode pathNode = path.method_48();
 				if (!(this.method_3867(pathNode) > 40.0F)) {
 					WorldRenderer.drawBox(
@@ -81,21 +81,21 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 					for (int i = 0; i < path.getLength(); i++) {
 						PathNode pathNode2 = path.getNode(i);
 						if (!(this.method_3867(pathNode2) > 40.0F)) {
-							float h = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
-							float j = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
+							float g = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
+							float h = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
 							WorldRenderer.drawBox(
 								new BoundingBox(
-										(double)((float)pathNode2.x + 0.5F - g),
+										(double)((float)pathNode2.x + 0.5F - f),
 										(double)((float)pathNode2.y + 0.01F * (float)i),
-										(double)((float)pathNode2.z + 0.5F - g),
-										(double)((float)pathNode2.x + 0.5F + g),
+										(double)((float)pathNode2.z + 0.5F - f),
+										(double)((float)pathNode2.x + 0.5F + f),
 										(double)((float)pathNode2.y + 0.25F + 0.01F * (float)i),
-										(double)((float)pathNode2.z + 0.5F + g)
+										(double)((float)pathNode2.z + 0.5F + f)
 									)
 									.offset(-this.field_4621, -this.field_4620, -this.field_4619),
-								h,
+								g,
 								0.0F,
-								j,
+								h,
 								0.5F
 							);
 						}
@@ -108,11 +108,9 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 
 				for (PathNode pathNode2 : path.method_37()) {
 					if (!(this.method_3867(pathNode2) > 40.0F)) {
+						DebugRenderer.method_3714(String.format("%s", pathNode2.type), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
 						DebugRenderer.method_3714(
-							String.format("%s", pathNode2.type), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, f, -65536
-						);
-						DebugRenderer.method_3714(
-							String.format(Locale.ROOT, "%.2f", pathNode2.field_43), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, f, -65536
+							String.format(Locale.ROOT, "%.2f", pathNode2.field_43), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536
 						);
 					}
 				}
@@ -120,25 +118,20 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 				for (PathNode pathNode2x : path.method_43()) {
 					if (!(this.method_3867(pathNode2x) > 40.0F)) {
 						DebugRenderer.method_3714(
-							String.format("%s", pathNode2x.type), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.75, (double)pathNode2x.z + 0.5, f, -16776961
+							String.format("%s", pathNode2x.type), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.75, (double)pathNode2x.z + 0.5, -16776961
 						);
 						DebugRenderer.method_3714(
-							String.format(Locale.ROOT, "%.2f", pathNode2x.field_43),
-							(double)pathNode2x.x + 0.5,
-							(double)pathNode2x.y + 0.25,
-							(double)pathNode2x.z + 0.5,
-							f,
-							-16776961
+							String.format(Locale.ROOT, "%.2f", pathNode2x.field_43), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.25, (double)pathNode2x.z + 0.5, -16776961
 						);
 					}
 				}
 
-				for (int k = 0; k < path.getLength(); k++) {
-					PathNode pathNode = path.getNode(k);
+				for (int j = 0; j < path.getLength(); j++) {
+					PathNode pathNode = path.getNode(j);
 					if (!(this.method_3867(pathNode) > 40.0F)) {
-						DebugRenderer.method_3714(String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, f, -1);
+						DebugRenderer.method_3714(String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
 						DebugRenderer.method_3714(
-							String.format(Locale.ROOT, "%.2f", pathNode.field_43), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, f, -1
+							String.format(Locale.ROOT, "%.2f", pathNode.field_43), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1
 						);
 					}
 				}
@@ -157,16 +150,16 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 		}
 	}
 
-	public void method_3868(float f, Path path) {
+	public void method_3868(Path path) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(3, VertexFormats.field_1576);
 
 		for (int i = 0; i < path.getLength(); i++) {
 			PathNode pathNode = path.getNode(i);
 			if (!(this.method_3867(pathNode) > 40.0F)) {
-				float g = (float)i / (float)path.getLength() * 0.33F;
-				int j = i == 0 ? 0 : MathHelper.hsvToRgb(g, 0.9F, 0.9F);
+				float f = (float)i / (float)path.getLength() * 0.33F;
+				int j = i == 0 ? 0 : MathHelper.hsvToRgb(f, 0.9F, 0.9F);
 				int k = j >> 16 & 0xFF;
 				int l = j >> 8 & 0xFF;
 				int m = j & 0xFF;
@@ -181,7 +174,9 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 
 	private float method_3867(PathNode pathNode) {
 		return (float)(
-			Math.abs((double)pathNode.x - this.field_4618.x) + Math.abs((double)pathNode.y - this.field_4618.y) + Math.abs((double)pathNode.z - this.field_4618.z)
+			Math.abs((double)pathNode.x - this.field_4618.method_19326().x)
+				+ Math.abs((double)pathNode.y - this.field_4618.method_19326().y)
+				+ Math.abs((double)pathNode.z - this.field_4618.method_19326().z)
 		);
 	}
 }

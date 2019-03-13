@@ -22,15 +22,16 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.paulscode.LibraryLWJGL3;
 import net.minecraft.client.options.GameOptions;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,7 +49,7 @@ public class SoundManager {
 	private static final Marker MARKER = MarkerManager.getMarker("SOUNDS");
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<Identifier> unknownSounds = Sets.<Identifier>newHashSet();
-	private final SoundLoader loader;
+	private final SoundLoader field_5552;
 	private final GameOptions settings;
 	private SoundManager.System system;
 	private boolean initialized;
@@ -64,7 +65,7 @@ public class SoundManager {
 	private final List<Sound> field_5551 = Lists.<Sound>newArrayList();
 
 	public SoundManager(SoundLoader soundLoader, GameOptions gameOptions) {
-		this.loader = soundLoader;
+		this.field_5552 = soundLoader;
 		this.settings = gameOptions;
 
 		try {
@@ -80,8 +81,8 @@ public class SoundManager {
 
 		for (SoundEvent soundEvent : Registry.SOUND_EVENT) {
 			Identifier identifier = soundEvent.getId();
-			if (this.loader.get(identifier) == null) {
-				LOGGER.warn("Missing sound for event: {}", Registry.SOUND_EVENT.getId(soundEvent));
+			if (this.field_5552.method_4869(identifier) == null) {
+				LOGGER.warn("Missing sound for event: {}", Registry.SOUND_EVENT.method_10221(soundEvent));
 				unknownSounds.add(identifier);
 			}
 		}
@@ -121,7 +122,7 @@ public class SoundManager {
 					});
 					this.system = new SoundManager.System();
 					this.initialized = true;
-					this.system.setMasterVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
+					this.system.setMasterVolume(this.settings.method_1630(SoundCategory.field_15250));
 					Iterator<Sound> iterator = this.field_5551.iterator();
 
 					while (iterator.hasNext()) {
@@ -136,17 +137,17 @@ public class SoundManager {
 				thread.start();
 			} catch (RuntimeException var2) {
 				LOGGER.error(MARKER, "Error starting SoundSystem. Turning off sounds & music", (Throwable)var2);
-				this.settings.setSoundVolume(SoundCategory.field_15250, 0.0F);
+				this.settings.method_1624(SoundCategory.field_15250, 0.0F);
 				this.settings.write();
 			}
 		}
 	}
 
-	private float getSoundVolume(SoundCategory soundCategory) {
-		return soundCategory != null && soundCategory != SoundCategory.field_15250 ? this.settings.getSoundVolume(soundCategory) : 1.0F;
+	private float method_4850(SoundCategory soundCategory) {
+		return soundCategory != null && soundCategory != SoundCategory.field_15250 ? this.settings.method_1630(soundCategory) : 1.0F;
 	}
 
-	public void updateSoundVolume(SoundCategory soundCategory, float f) {
+	public void method_4844(SoundCategory soundCategory, float f) {
 		if (this.initialized) {
 			if (soundCategory == SoundCategory.field_15250) {
 				this.system.setMasterVolume(f);
@@ -187,11 +188,11 @@ public class SoundManager {
 		}
 	}
 
-	public void registerListener(ListenerSoundInstance listenerSoundInstance) {
+	public void method_4855(ListenerSoundInstance listenerSoundInstance) {
 		this.listeners.add(listenerSoundInstance);
 	}
 
-	public void unregisterListener(ListenerSoundInstance listenerSoundInstance) {
+	public void method_4847(ListenerSoundInstance listenerSoundInstance) {
 		this.listeners.remove(listenerSoundInstance);
 	}
 
@@ -216,7 +217,7 @@ public class SoundManager {
 			Entry<String, SoundInstance> entry = (Entry<String, SoundInstance>)iterator.next();
 			String string = (String)entry.getKey();
 			SoundInstance soundInstance = (SoundInstance)entry.getValue();
-			float f = this.settings.getSoundVolume(soundInstance.getCategory());
+			float f = this.settings.method_1630(soundInstance.method_4774());
 			if (f <= 0.0F) {
 				this.stop(soundInstance);
 			}
@@ -235,7 +236,7 @@ public class SoundManager {
 					this.field_5554.remove(string);
 
 					try {
-						this.playingSoundsByCategory.remove(soundInstance.getCategory(), string);
+						this.playingSoundsByCategory.remove(soundInstance.method_4774(), string);
 					} catch (RuntimeException var9) {
 					}
 
@@ -282,8 +283,8 @@ public class SoundManager {
 
 	public void play(SoundInstance soundInstance) {
 		if (this.initialized) {
-			WeightedSoundSet weightedSoundSet = soundInstance.getAccess(this.loader);
-			Identifier identifier = soundInstance.getId();
+			WeightedSoundSet weightedSoundSet = soundInstance.method_4783(this.field_5552);
+			Identifier identifier = soundInstance.method_4775();
 			if (weightedSoundSet == null) {
 				if (unknownSounds.add(identifier)) {
 					LOGGER.warn(MARKER, "Unable to play unknown soundEvent: {}", identifier);
@@ -291,7 +292,7 @@ public class SoundManager {
 			} else {
 				if (!this.listeners.isEmpty()) {
 					for (ListenerSoundInstance listenerSoundInstance : this.listeners) {
-						listenerSoundInstance.onSoundPlayed(soundInstance, weightedSoundSet);
+						listenerSoundInstance.method_4884(soundInstance, weightedSoundSet);
 					}
 				}
 
@@ -310,21 +311,21 @@ public class SoundManager {
 							g *= f;
 						}
 
-						SoundCategory soundCategory = soundInstance.getCategory();
+						SoundCategory soundCategory = soundInstance.method_4774();
 						float h = this.getAdjustedVolume(soundInstance);
 						float i = this.getAdjustedPitch(soundInstance);
 						if (h == 0.0F && !soundInstance.method_4785()) {
-							LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound.getIdentifier());
+							LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound.method_4767());
 						} else {
 							boolean bl = soundInstance.isRepeatable() && soundInstance.getRepeatDelay() == 0;
 							String string = MathHelper.randomUuid(ThreadLocalRandom.current()).toString();
-							Identifier identifier2 = sound.getLocation();
+							Identifier identifier2 = sound.method_4766();
 							if (sound.isStreamed()) {
 								this.system
 									.newStreamingSource(
 										soundInstance.method_4787(),
 										string,
-										getSoundURL(identifier2),
+										method_4834(identifier2),
 										identifier2.toString(),
 										bl,
 										soundInstance.getX(),
@@ -338,7 +339,7 @@ public class SoundManager {
 									.newSource(
 										soundInstance.method_4787(),
 										string,
-										getSoundURL(identifier2),
+										method_4834(identifier2),
 										identifier2.toString(),
 										bl,
 										soundInstance.getX(),
@@ -349,7 +350,7 @@ public class SoundManager {
 									);
 							}
 
-							LOGGER.debug(MARKER, "Playing sound {} for event {} as channel {}", sound.getIdentifier(), identifier, string);
+							LOGGER.debug(MARKER, "Playing sound {} for event {} as channel {}", sound.method_4767(), identifier, string);
 							this.system.setPitch(string, i);
 							this.system.setVolume(string, h);
 							this.system.play(string);
@@ -371,9 +372,9 @@ public class SoundManager {
 	}
 
 	private void method_4836(Sound sound) {
-		Identifier identifier = sound.getLocation();
+		Identifier identifier = sound.method_4766();
 		LOGGER.info(MARKER, "Preloading sound {}", identifier);
-		this.system.loadSound(getSoundURL(identifier), identifier.toString());
+		this.system.loadSound(method_4834(identifier), identifier.toString());
 	}
 
 	private float getAdjustedPitch(SoundInstance soundInstance) {
@@ -381,7 +382,7 @@ public class SoundManager {
 	}
 
 	private float getAdjustedVolume(SoundInstance soundInstance) {
-		return MathHelper.clamp(soundInstance.getVolume() * this.getSoundVolume(soundInstance.getCategory()), 0.0F, 1.0F);
+		return MathHelper.clamp(soundInstance.getVolume() * this.method_4850(soundInstance.method_4774()), 0.0F, 1.0F);
 	}
 
 	public void pause() {
@@ -409,7 +410,7 @@ public class SoundManager {
 		this.field_5566.put(soundInstance, this.ticks + i);
 	}
 
-	private static URL getSoundURL(Identifier identifier) {
+	private static URL method_4834(Identifier identifier) {
 		String string = String.format("%s:%s:%s", "mcsounddomain", identifier.getNamespace(), identifier.getPath());
 		URLStreamHandler uRLStreamHandler = new URLStreamHandler() {
 			protected URLConnection openConnection(URL uRL) {
@@ -418,7 +419,7 @@ public class SoundManager {
 					}
 
 					public InputStream getInputStream() throws IOException {
-						return MinecraftClient.getInstance().getResourceManager().getResource(identifier).getInputStream();
+						return MinecraftClient.getInstance().method_1478().getResource(identifier).getInputStream();
 					}
 				};
 			}
@@ -431,35 +432,25 @@ public class SoundManager {
 		}
 	}
 
-	public void updateListenerPosition(PlayerEntity playerEntity, float f) {
-		if (this.initialized && playerEntity != null) {
-			float g = MathHelper.lerp(f, playerEntity.prevPitch, playerEntity.pitch);
-			float h = MathHelper.lerp(f, playerEntity.prevYaw, playerEntity.yaw);
-			double d = MathHelper.lerp((double)f, playerEntity.prevX, playerEntity.x);
-			double e = MathHelper.lerp((double)f, playerEntity.prevY, playerEntity.y) + (double)playerEntity.getStandingEyeHeight();
-			double i = MathHelper.lerp((double)f, playerEntity.prevZ, playerEntity.z);
-			float j = MathHelper.cos((h + 90.0F) * (float) (Math.PI / 180.0));
-			float k = MathHelper.sin((h + 90.0F) * (float) (Math.PI / 180.0));
-			float l = MathHelper.cos(-g * (float) (Math.PI / 180.0));
-			float m = MathHelper.sin(-g * (float) (Math.PI / 180.0));
-			float n = MathHelper.cos((-g + 90.0F) * (float) (Math.PI / 180.0));
-			float o = MathHelper.sin((-g + 90.0F) * (float) (Math.PI / 180.0));
-			float p = j * l;
-			float r = k * l;
-			float s = j * n;
-			float u = k * n;
-			this.system.setListenerPosition((float)d, (float)e, (float)i);
-			this.system.setListenerOrientation(p, m, r, s, o, u);
+	public void updateListenerPosition(class_4184 arg) {
+		if (this.initialized && arg.method_19332()) {
+			double d = arg.method_19326().x;
+			double e = arg.method_19326().y;
+			double f = arg.method_19326().z;
+			Vec3d vec3d = arg.method_19335();
+			Vec3d vec3d2 = arg.method_19336();
+			this.system.setListenerPosition((float)d, (float)e, (float)f);
+			this.system.setListenerOrientation((float)vec3d.x, (float)vec3d.y, (float)vec3d.z, (float)vec3d2.x, (float)vec3d2.y, (float)vec3d2.z);
 		}
 	}
 
-	public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
+	public void method_4838(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
 		if (soundCategory != null) {
 			for (String string : this.playingSoundsByCategory.get(soundCategory)) {
 				SoundInstance soundInstance = (SoundInstance)this.playingSounds.get(string);
 				if (identifier == null) {
 					this.stop(soundInstance);
-				} else if (soundInstance.getId().equals(identifier)) {
+				} else if (soundInstance.method_4775().equals(identifier)) {
 					this.stop(soundInstance);
 				}
 			}
@@ -467,7 +458,7 @@ public class SoundManager {
 			this.stopAll();
 		} else {
 			for (SoundInstance soundInstance2 : this.playingSounds.values()) {
-				if (soundInstance2.getId().equals(identifier)) {
+				if (soundInstance2.method_4775().equals(identifier)) {
 					this.stop(soundInstance2);
 				}
 			}

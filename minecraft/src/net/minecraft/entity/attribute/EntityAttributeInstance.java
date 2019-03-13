@@ -17,14 +17,14 @@ public interface EntityAttributeInstance {
 
 	Collection<EntityAttributeModifier> getModifiers();
 
-	boolean hasModifier(EntityAttributeModifier entityAttributeModifier);
+	boolean method_6196(EntityAttributeModifier entityAttributeModifier);
 
 	@Nullable
-	EntityAttributeModifier getModifier(UUID uUID);
+	EntityAttributeModifier method_6199(UUID uUID);
 
-	void addModifier(EntityAttributeModifier entityAttributeModifier);
+	void method_6197(EntityAttributeModifier entityAttributeModifier);
 
-	void removeModifier(EntityAttributeModifier entityAttributeModifier);
+	void method_6202(EntityAttributeModifier entityAttributeModifier);
 
 	void removeModifier(UUID uUID);
 

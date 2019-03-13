@@ -1,5 +1,6 @@
 package net.minecraft;
 
+import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntity;
@@ -13,8 +14,8 @@ public class class_1371 extends Goal {
 
 	public class_1371(MobEntity mobEntity) {
 		this.field_6541 = mobEntity;
-		this.field_6538 = mobEntity.world;
-		this.setControlBits(3);
+		this.field_6538 = mobEntity.field_6002;
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 	}
 
 	@Override
@@ -33,21 +34,21 @@ public class class_1371 extends Goal {
 		if (!this.field_6539.isValid()) {
 			return false;
 		} else {
-			return this.field_6541.squaredDistanceTo(this.field_6539) > 225.0 ? false : !this.field_6541.getNavigation().isIdle() || this.canStart();
+			return this.field_6541.squaredDistanceTo(this.field_6539) > 225.0 ? false : !this.field_6541.method_5942().isIdle() || this.canStart();
 		}
 	}
 
 	@Override
 	public void onRemove() {
 		this.field_6539 = null;
-		this.field_6541.getNavigation().stop();
+		this.field_6541.method_5942().stop();
 	}
 
 	@Override
 	public void tick() {
-		this.field_6541.getLookControl().lookAt(this.field_6539, 30.0F, 30.0F);
+		this.field_6541.method_5988().lookAt(this.field_6539, 30.0F, 30.0F);
 		double d = (double)(this.field_6541.getWidth() * 2.0F * this.field_6541.getWidth() * 2.0F);
-		double e = this.field_6541.squaredDistanceTo(this.field_6539.x, this.field_6539.getBoundingBox().minY, this.field_6539.z);
+		double e = this.field_6541.squaredDistanceTo(this.field_6539.x, this.field_6539.method_5829().minY, this.field_6539.z);
 		double f = 0.8;
 		if (e > d && e < 16.0) {
 			f = 1.33;
@@ -55,7 +56,7 @@ public class class_1371 extends Goal {
 			f = 0.6;
 		}
 
-		this.field_6541.getNavigation().startMovingTo(this.field_6539, f);
+		this.field_6541.method_5942().startMovingTo(this.field_6539, f);
 		this.field_6540 = Math.max(this.field_6540 - 1, 0);
 		if (!(e > d)) {
 			if (this.field_6540 <= 0) {

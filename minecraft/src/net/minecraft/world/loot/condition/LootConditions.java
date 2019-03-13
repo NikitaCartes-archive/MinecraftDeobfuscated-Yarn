@@ -20,7 +20,7 @@ public class LootConditions {
 	private static final Map<Class<? extends LootCondition>, LootCondition.Factory<?>> byClass = Maps.<Class<? extends LootCondition>, LootCondition.Factory<?>>newHashMap();
 
 	public static <T extends LootCondition> void register(LootCondition.Factory<? extends T> factory) {
-		Identifier identifier = factory.getId();
+		Identifier identifier = factory.method_894();
 		Class<T> class_ = (Class<T>)factory.getConditionClass();
 		if (byId.containsKey(identifier)) {
 			throw new IllegalArgumentException("Can't re-register item condition name " + identifier);
@@ -32,7 +32,7 @@ public class LootConditions {
 		}
 	}
 
-	public static LootCondition.Factory<?> get(Identifier identifier) {
+	public static LootCondition.Factory<?> method_922(Identifier identifier) {
 		LootCondition.Factory<?> factory = (LootCondition.Factory<?>)byId.get(identifier);
 		if (factory == null) {
 			throw new IllegalArgumentException("Unknown loot item condition '" + identifier + "'");
@@ -116,7 +116,7 @@ public class LootConditions {
 
 			LootCondition.Factory<?> factory;
 			try {
-				factory = LootConditions.get(identifier);
+				factory = LootConditions.method_922(identifier);
 			} catch (IllegalArgumentException var8) {
 				throw new JsonSyntaxException("Unknown condition '" + identifier + "'");
 			}
@@ -127,7 +127,7 @@ public class LootConditions {
 		public JsonElement method_931(LootCondition lootCondition, Type type, JsonSerializationContext jsonSerializationContext) {
 			LootCondition.Factory<LootCondition> factory = LootConditions.getFactory(lootCondition);
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("condition", factory.getId().toString());
+			jsonObject.addProperty("condition", factory.method_894().toString());
 			factory.toJson(jsonObject, lootCondition, jsonSerializationContext);
 			return jsonObject;
 		}

@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import net.minecraft.class_4051;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -25,7 +26,7 @@ public class LookAtEntityGoal extends Goal {
 		this.targetType = class_;
 		this.range = f;
 		this.chance = g;
-		this.setControlBits(2);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18406));
 		if (class_ == PlayerEntity.class) {
 			this.field_18087 = new class_4051()
 				.method_18418((double)f)
@@ -49,11 +50,11 @@ public class LookAtEntityGoal extends Goal {
 
 			if (this.targetType == PlayerEntity.class) {
 				this.target = this.owner
-					.world
+					.field_6002
 					.method_18463(this.field_18087, this.owner, this.owner.x, this.owner.y + (double)this.owner.getStandingEyeHeight(), this.owner.z);
 			} else {
 				this.target = this.owner
-					.world
+					.field_6002
 					.method_18465(
 						this.targetType,
 						this.field_18087,
@@ -61,7 +62,7 @@ public class LookAtEntityGoal extends Goal {
 						this.owner.x,
 						this.owner.y + (double)this.owner.getStandingEyeHeight(),
 						this.owner.z,
-						this.owner.getBoundingBox().expand((double)this.range, 3.0, (double)this.range)
+						this.owner.method_5829().expand((double)this.range, 3.0, (double)this.range)
 					);
 			}
 
@@ -91,7 +92,7 @@ public class LookAtEntityGoal extends Goal {
 	@Override
 	public void tick() {
 		this.owner
-			.getLookControl()
+			.method_5988()
 			.lookAt(
 				this.target.x, this.target.y + (double)this.target.getStandingEyeHeight(), this.target.z, (float)this.owner.method_5986(), (float)this.owner.method_5978()
 			);

@@ -16,7 +16,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 
 public abstract class PassiveEntity extends MobEntityWithAi {
-	private static final TrackedData<Boolean> CHILD = DataTracker.registerData(PassiveEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> field_5949 = DataTracker.registerData(PassiveEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	protected int breedingAge;
 	protected int field_5948;
 	protected int field_5947;
@@ -32,18 +32,18 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
 		Item item = itemStack.getItem();
-		if (item instanceof SpawnEggItem && ((SpawnEggItem)item).method_8018(itemStack.getTag(), this.getType())) {
-			if (!this.world.isClient) {
+		if (item instanceof SpawnEggItem && ((SpawnEggItem)item).method_8018(itemStack.method_7969(), this.method_5864())) {
+			if (!this.field_6002.isClient) {
 				PassiveEntity passiveEntity = this.createChild(this);
 				if (passiveEntity != null) {
 					passiveEntity.setBreedingAge(-24000);
 					passiveEntity.setPositionAndAngles(this.x, this.y, this.z, 0.0F, 0.0F);
-					this.world.spawnEntity(passiveEntity);
+					this.field_6002.spawnEntity(passiveEntity);
 					if (itemStack.hasDisplayName()) {
-						passiveEntity.setCustomName(itemStack.getDisplayName());
+						passiveEntity.method_5665(itemStack.method_7964());
 					}
 
 					this.method_18249(playerEntity, passiveEntity);
@@ -62,12 +62,12 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(CHILD, false);
+		this.field_6011.startTracking(field_5949, false);
 	}
 
 	public int getBreedingAge() {
-		if (this.world.isClient) {
-			return this.dataTracker.get(CHILD) ? -1 : 1;
+		if (this.field_6002.isClient) {
+			return this.field_6011.get(field_5949) ? -1 : 1;
 		} else {
 			return this.breedingAge;
 		}
@@ -78,9 +78,6 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		j += i * 20;
 		if (j > 0) {
 			j = 0;
-			if (j < 0) {
-				this.method_5619();
-			}
 		}
 
 		int l = j - j;
@@ -102,41 +99,45 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	public void setBreedingAge(int i) {
+		int j = this.breedingAge;
 		this.breedingAge = i;
-		this.dataTracker.set(CHILD, i < 0);
+		if (j < 0 && i >= 0 || j >= 0 && i < 0) {
+			this.field_6011.set(field_5949, i < 0);
+			this.method_5619();
+		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putInt("Age", this.getBreedingAge());
 		compoundTag.putInt("ForcedAge", this.field_5948);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		this.setBreedingAge(compoundTag.getInt("Age"));
 		this.field_5948 = compoundTag.getInt("ForcedAge");
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (CHILD.equals(trackedData)) {
+	public void method_5674(TrackedData<?> trackedData) {
+		if (field_5949.equals(trackedData)) {
 			this.refreshSize();
 		}
 
-		super.onTrackedDataSet(trackedData);
+		super.method_5674(trackedData);
 	}
 
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			if (this.field_5947 > 0) {
 				if (this.field_5947 % 4 == 0) {
-					this.world
-						.addParticle(
+					this.field_6002
+						.method_8406(
 							ParticleTypes.field_11211,
 							this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 							this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
@@ -153,9 +154,6 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 			int i = this.getBreedingAge();
 			if (i < 0) {
 				this.setBreedingAge(++i);
-				if (i == 0) {
-					this.method_5619();
-				}
 			} else if (i > 0) {
 				this.setBreedingAge(--i);
 			}

@@ -16,30 +16,32 @@ public class CoralWallFanBlock extends DeadCoralWallFanBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
-		this.checkLivingConditions(blockState, world, blockPos);
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+		this.method_9430(blockState, world, blockPos);
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!isInWater(blockState, world, blockPos)) {
-			world.setBlockState(blockPos, this.deadCoralBlock.getDefaultState().with(WATERLOGGED, Boolean.valueOf(false)).with(FACING, blockState.get(FACING)), 2);
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!method_9431(blockState, world, blockPos)) {
+			world.method_8652(
+				blockPos,
+				this.deadCoralBlock.method_9564().method_11657(field_9940, Boolean.valueOf(false)).method_11657(field_9933, blockState.method_11654(field_9933)),
+				2
+			);
 		}
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		if (direction.getOpposite() == blockState.method_11654(field_9933) && !blockState.method_11591(iWorld, blockPos)) {
+			return Blocks.field_10124.method_9564();
 		} else {
-			if ((Boolean)blockState.get(WATERLOGGED)) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+			if ((Boolean)blockState.method_11654(field_9940)) {
+				iWorld.method_8405().method_8676(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			}
 
-			this.checkLivingConditions(blockState, iWorld, blockPos);
-			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			this.method_9430(blockState, iWorld, blockPos);
+			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 }

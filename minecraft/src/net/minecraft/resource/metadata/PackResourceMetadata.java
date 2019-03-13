@@ -3,7 +3,7 @@ package net.minecraft.resource.metadata;
 import net.minecraft.text.TextComponent;
 
 public class PackResourceMetadata {
-	public static final PackResourceMetadataReader READER = new PackResourceMetadataReader();
+	public static final PackResourceMetadataReader field_14202 = new PackResourceMetadataReader();
 	private final TextComponent description;
 	private final int packFormat;
 

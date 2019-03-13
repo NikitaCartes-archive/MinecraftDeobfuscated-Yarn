@@ -20,8 +20,8 @@ public class DamageSourcePredicate {
 	private final Boolean isFire;
 	private final Boolean isMagic;
 	private final Boolean isLightning;
-	private final EntityPredicate directEntity;
-	private final EntityPredicate sourceEntity;
+	private final EntityPredicate field_9534;
+	private final EntityPredicate field_9539;
 
 	public DamageSourcePredicate(
 		@Nullable Boolean boolean_,
@@ -43,15 +43,15 @@ public class DamageSourcePredicate {
 		this.isFire = boolean6;
 		this.isMagic = boolean7;
 		this.isLightning = boolean8;
-		this.directEntity = entityPredicate;
-		this.sourceEntity = entityPredicate2;
+		this.field_9534 = entityPredicate;
+		this.field_9539 = entityPredicate2;
 	}
 
-	public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource) {
-		return this.test(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), damageSource);
+	public boolean method_8847(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource) {
+		return this.method_8845(serverPlayerEntity.getServerWorld(), new Vec3d(serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z), damageSource);
 	}
 
-	public boolean test(ServerWorld serverWorld, Vec3d vec3d, DamageSource damageSource) {
+	public boolean method_8845(ServerWorld serverWorld, Vec3d vec3d, DamageSource damageSource) {
 		if (this == EMPTY) {
 			return true;
 		} else if (this.isProjectile != null && this.isProjectile != damageSource.isProjectile()) {
@@ -71,9 +71,9 @@ public class DamageSourcePredicate {
 		} else if (this.isLightning != null && this.isLightning != (damageSource == DamageSource.LIGHTNING_BOLT)) {
 			return false;
 		} else {
-			return !this.directEntity.test(serverWorld, vec3d, damageSource.getSource())
+			return !this.field_9534.method_8909(serverWorld, vec3d, damageSource.method_5526())
 				? false
-				: this.sourceEntity.test(serverWorld, vec3d, damageSource.getAttacker());
+				: this.field_9539.method_8909(serverWorld, vec3d, damageSource.method_5529());
 		}
 	}
 
@@ -114,8 +114,8 @@ public class DamageSourcePredicate {
 			this.addProperty(jsonObject, "is_fire", this.isFire);
 			this.addProperty(jsonObject, "is_magic", this.isMagic);
 			this.addProperty(jsonObject, "is_lightning", this.isLightning);
-			jsonObject.add("direct_entity", this.directEntity.serialize());
-			jsonObject.add("source_entity", this.sourceEntity.serialize());
+			jsonObject.add("direct_entity", this.field_9534.serialize());
+			jsonObject.add("source_entity", this.field_9539.serialize());
 			return jsonObject;
 		}
 	}
@@ -135,8 +135,8 @@ public class DamageSourcePredicate {
 		private Boolean isFire;
 		private Boolean isMagic;
 		private Boolean isLightning;
-		private EntityPredicate directEntity = EntityPredicate.ANY;
-		private EntityPredicate sourceEntity = EntityPredicate.ANY;
+		private EntityPredicate field_9544 = EntityPredicate.ANY;
+		private EntityPredicate field_9545 = EntityPredicate.ANY;
 
 		public static DamageSourcePredicate.Builder create() {
 			return new DamageSourcePredicate.Builder();
@@ -152,8 +152,8 @@ public class DamageSourcePredicate {
 			return this;
 		}
 
-		public DamageSourcePredicate.Builder directEntity(EntityPredicate.Builder builder) {
-			this.directEntity = builder.build();
+		public DamageSourcePredicate.Builder method_8854(EntityPredicate.Builder builder) {
+			this.field_9544 = builder.build();
 			return this;
 		}
 
@@ -167,8 +167,8 @@ public class DamageSourcePredicate {
 				this.isFire,
 				this.isMagic,
 				this.isLightning,
-				this.directEntity,
-				this.sourceEntity
+				this.field_9544,
+				this.field_9545
 			);
 		}
 	}

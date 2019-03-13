@@ -14,12 +14,12 @@ public class EntityEquipmentPredicate {
 	public static final EntityEquipmentPredicate ANY = new EntityEquipmentPredicate(
 		ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY
 	);
-	private final ItemPredicate head;
-	private final ItemPredicate chest;
-	private final ItemPredicate legs;
-	private final ItemPredicate feet;
-	private final ItemPredicate mainhand;
-	private final ItemPredicate offhand;
+	private final ItemPredicate field_16483;
+	private final ItemPredicate field_16487;
+	private final ItemPredicate field_16488;
+	private final ItemPredicate field_16489;
+	private final ItemPredicate field_16486;
+	private final ItemPredicate field_16484;
 
 	public EntityEquipmentPredicate(
 		ItemPredicate itemPredicate,
@@ -29,12 +29,12 @@ public class EntityEquipmentPredicate {
 		ItemPredicate itemPredicate5,
 		ItemPredicate itemPredicate6
 	) {
-		this.head = itemPredicate;
-		this.chest = itemPredicate2;
-		this.legs = itemPredicate3;
-		this.feet = itemPredicate4;
-		this.mainhand = itemPredicate5;
-		this.offhand = itemPredicate6;
+		this.field_16483 = itemPredicate;
+		this.field_16487 = itemPredicate2;
+		this.field_16488 = itemPredicate3;
+		this.field_16489 = itemPredicate4;
+		this.field_16486 = itemPredicate5;
+		this.field_16484 = itemPredicate6;
 	}
 
 	public boolean test(@Nullable Entity entity) {
@@ -44,18 +44,18 @@ public class EntityEquipmentPredicate {
 			return false;
 		} else {
 			LivingEntity livingEntity = (LivingEntity)entity;
-			if (!this.head.test(livingEntity.getEquippedStack(EquipmentSlot.HEAD))) {
+			if (!this.field_16483.test(livingEntity.method_6118(EquipmentSlot.HEAD))) {
 				return false;
-			} else if (!this.chest.test(livingEntity.getEquippedStack(EquipmentSlot.CHEST))) {
+			} else if (!this.field_16487.test(livingEntity.method_6118(EquipmentSlot.CHEST))) {
 				return false;
-			} else if (!this.legs.test(livingEntity.getEquippedStack(EquipmentSlot.LEGS))) {
+			} else if (!this.field_16488.test(livingEntity.method_6118(EquipmentSlot.LEGS))) {
 				return false;
-			} else if (!this.feet.test(livingEntity.getEquippedStack(EquipmentSlot.FEET))) {
+			} else if (!this.field_16489.test(livingEntity.method_6118(EquipmentSlot.FEET))) {
 				return false;
 			} else {
-				return !this.mainhand.test(livingEntity.getEquippedStack(EquipmentSlot.HAND_MAIN))
+				return !this.field_16486.test(livingEntity.method_6118(EquipmentSlot.HAND_MAIN))
 					? false
-					: this.offhand.test(livingEntity.getEquippedStack(EquipmentSlot.HAND_OFF));
+					: this.field_16484.test(livingEntity.method_6118(EquipmentSlot.HAND_OFF));
 			}
 		}
 	}
@@ -80,12 +80,12 @@ public class EntityEquipmentPredicate {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("head", this.head.serialize());
-			jsonObject.add("chest", this.chest.serialize());
-			jsonObject.add("legs", this.legs.serialize());
-			jsonObject.add("feet", this.feet.serialize());
-			jsonObject.add("mainhand", this.mainhand.serialize());
-			jsonObject.add("offhand", this.offhand.serialize());
+			jsonObject.add("head", this.field_16483.serialize());
+			jsonObject.add("chest", this.field_16487.serialize());
+			jsonObject.add("legs", this.field_16488.serialize());
+			jsonObject.add("feet", this.field_16489.serialize());
+			jsonObject.add("mainhand", this.field_16486.serialize());
+			jsonObject.add("offhand", this.field_16484.serialize());
 			return jsonObject;
 		}
 	}

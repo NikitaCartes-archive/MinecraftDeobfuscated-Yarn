@@ -53,7 +53,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	public void method_11922(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEntityPosition(this);
+		clientPlayPacketListener.method_11086(this);
 	}
 
 	@Environment(EnvType.CLIENT)

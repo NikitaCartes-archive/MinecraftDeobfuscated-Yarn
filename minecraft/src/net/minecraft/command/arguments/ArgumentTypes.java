@@ -78,7 +78,7 @@ public class ArgumentTypes {
 	}
 
 	@Nullable
-	private static ArgumentTypes.Entry<?> byId(Identifier identifier) {
+	private static ArgumentTypes.Entry<?> method_10018(Identifier identifier) {
 		return (ArgumentTypes.Entry<?>)idMap.get(identifier);
 	}
 
@@ -87,26 +87,26 @@ public class ArgumentTypes {
 		return (ArgumentTypes.Entry<?>)classMap.get(argumentType.getClass());
 	}
 
-	public static <T extends ArgumentType<?>> void toPacket(PacketByteBuf packetByteBuf, T argumentType) {
+	public static <T extends ArgumentType<?>> void method_10019(PacketByteBuf packetByteBuf, T argumentType) {
 		ArgumentTypes.Entry<T> entry = (ArgumentTypes.Entry<T>)byClass(argumentType);
 		if (entry == null) {
 			LOGGER.error("Could not serialize {} ({}) - will not be sent to client!", argumentType, argumentType.getClass());
-			packetByteBuf.writeIdentifier(new Identifier(""));
+			packetByteBuf.method_10812(new Identifier(""));
 		} else {
-			packetByteBuf.writeIdentifier(entry.id);
-			entry.serializer.toPacket(argumentType, packetByteBuf);
+			packetByteBuf.method_10812(entry.field_10925);
+			entry.serializer.method_10007(argumentType, packetByteBuf);
 		}
 	}
 
 	@Nullable
-	public static ArgumentType<?> fromPacket(PacketByteBuf packetByteBuf) {
-		Identifier identifier = packetByteBuf.readIdentifier();
-		ArgumentTypes.Entry<?> entry = byId(identifier);
+	public static ArgumentType<?> method_10014(PacketByteBuf packetByteBuf) {
+		Identifier identifier = packetByteBuf.method_10810();
+		ArgumentTypes.Entry<?> entry = method_10018(identifier);
 		if (entry == null) {
 			LOGGER.error("Could not deserialize {}", identifier);
 			return null;
 		} else {
-			return entry.serializer.fromPacket(packetByteBuf);
+			return entry.serializer.method_10005(packetByteBuf);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class ArgumentTypes {
 			jsonObject.addProperty("type", "unknown");
 		} else {
 			jsonObject.addProperty("type", "argument");
-			jsonObject.addProperty("parser", entry.id.toString());
+			jsonObject.addProperty("parser", entry.field_10925.toString());
 			JsonObject jsonObject2 = new JsonObject();
 			entry.serializer.toJson(argumentType, jsonObject2);
 			if (jsonObject2.size() > 0) {
@@ -172,12 +172,12 @@ public class ArgumentTypes {
 	static class Entry<T extends ArgumentType<?>> {
 		public final Class<T> argClass;
 		public final ArgumentSerializer<T> serializer;
-		public final Identifier id;
+		public final Identifier field_10925;
 
 		private Entry(Class<T> class_, ArgumentSerializer<T> argumentSerializer, Identifier identifier) {
 			this.argClass = class_;
 			this.serializer = argumentSerializer;
-			this.id = identifier;
+			this.field_10925 = identifier;
 		}
 	}
 }

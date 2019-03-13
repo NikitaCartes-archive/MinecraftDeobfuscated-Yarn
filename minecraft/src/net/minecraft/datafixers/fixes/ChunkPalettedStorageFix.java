@@ -403,7 +403,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 		return dynamic.get("Properties").get(string).asString("");
 	}
 
-	public static int addTo(Int2ObjectBiMap<Dynamic<?>> int2ObjectBiMap, Dynamic<?> dynamic) {
+	public static int method_15616(Int2ObjectBiMap<Dynamic<?>> int2ObjectBiMap, Dynamic<?> dynamic) {
 		int i = int2ObjectBiMap.getId(dynamic);
 		if (i == -1) {
 			i = int2ObjectBiMap.add(dynamic);
@@ -880,7 +880,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 	}
 
 	static class Section {
-		private final Int2ObjectBiMap<Dynamic<?>> paletteMap = new Int2ObjectBiMap<>(32);
+		private final Int2ObjectBiMap<Dynamic<?>> field_15882 = new Int2ObjectBiMap<>(32);
 		private Dynamic<?> paletteData;
 		private final Dynamic<?> section;
 		private final boolean hasBlocks;
@@ -899,7 +899,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 
 		public Dynamic<?> getBlock(int i) {
 			if (i >= 0 && i <= 4095) {
-				Dynamic<?> dynamic = this.paletteMap.get(this.states[i]);
+				Dynamic<?> dynamic = this.field_15882.get(this.states[i]);
 				return dynamic == null ? ChunkPalettedStorageFix.air : dynamic;
 			} else {
 				return ChunkPalettedStorageFix.air;
@@ -911,7 +911,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 				this.paletteData = this.paletteData.merge("%%FILTER_ME%%".equals(ChunkPalettedStorageFix.getName(dynamic)) ? ChunkPalettedStorageFix.air : dynamic);
 			}
 
-			this.states[i] = ChunkPalettedStorageFix.addTo(this.paletteMap, dynamic);
+			this.states[i] = ChunkPalettedStorageFix.method_15616(this.field_15882, dynamic);
 		}
 
 		public int visit(int i) {
@@ -930,7 +930,7 @@ public class ChunkPalettedStorageFix extends DataFix {
 					.map(byteBufferx -> new ChunkPalettedStorageFix.ChunkNibbleArray(DataFixUtils.toArray(byteBufferx)))
 					.orElseGet(ChunkPalettedStorageFix.ChunkNibbleArray::new);
 				this.seenStates.add(ChunkPalettedStorageFix.air);
-				ChunkPalettedStorageFix.addTo(this.paletteMap, ChunkPalettedStorageFix.air);
+				ChunkPalettedStorageFix.method_15616(this.field_15882, ChunkPalettedStorageFix.air);
 				this.paletteData = this.paletteData.merge(ChunkPalettedStorageFix.air);
 
 				for (int j = 0; j < 4096; j++) {

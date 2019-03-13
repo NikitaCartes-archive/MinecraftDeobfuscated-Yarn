@@ -76,7 +76,7 @@ public class ModelTransformation {
 		this.fixed = transformation8;
 	}
 
-	public void applyGl(ModelTransformation.Type type) {
+	public void method_3500(ModelTransformation.Type type) {
 		applyGl(this.getTransformation(type), false);
 	}
 

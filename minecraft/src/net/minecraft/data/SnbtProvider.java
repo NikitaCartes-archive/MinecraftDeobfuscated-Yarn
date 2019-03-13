@@ -23,7 +23,7 @@ public class SnbtProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void method_10319(DataCache dataCache) throws IOException {
 		Path path = this.root.getOutput();
 
 		for (Path path2 : this.root.getInputs()) {

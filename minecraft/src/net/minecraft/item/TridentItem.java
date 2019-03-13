@@ -30,38 +30,38 @@ import net.minecraft.world.World;
 public class TridentItem extends Item {
 	public TridentItem(Item.Settings settings) {
 		super(settings);
-		this.addProperty(
+		this.method_7863(
 			new Identifier("throwing"),
-			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.method_6030() == itemStack ? 1.0F : 0.0F
 		);
 	}
 
 	@Override
-	public boolean beforeBlockBreak(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean method_7885(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		return !playerEntity.isCreative();
 	}
 
 	@Override
-	public UseAction getUseAction(ItemStack itemStack) {
+	public UseAction method_7853(ItemStack itemStack) {
 		return UseAction.field_8951;
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack itemStack) {
+	public int method_7881(ItemStack itemStack) {
 		return 72000;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack itemStack) {
+	public boolean method_7886(ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
-	public void onItemStopUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
+	public void method_7840(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
 		if (livingEntity instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)livingEntity;
-			int j = this.getMaxUseTime(itemStack) - i;
+			int j = this.method_7881(itemStack) - i;
 			if (j >= 10) {
 				int k = EnchantmentHelper.getRiptide(itemStack);
 				if (k <= 0 || playerEntity.isInsideWaterOrRain()) {
@@ -75,14 +75,14 @@ public class TridentItem extends Item {
 							}
 
 							world.spawnEntity(tridentEntity);
-							world.playSoundFromEntity(null, tridentEntity, SoundEvents.field_15001, SoundCategory.field_15248, 1.0F, 1.0F);
+							world.method_8449(null, tridentEntity, SoundEvents.field_15001, SoundCategory.field_15248, 1.0F, 1.0F);
 							if (!playerEntity.abilities.creativeMode) {
-								playerEntity.inventory.removeOne(itemStack);
+								playerEntity.inventory.method_7378(itemStack);
 							}
 						}
 					}
 
-					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+					playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
 					if (k > 0) {
 						float f = playerEntity.yaw;
 						float g = playerEntity.pitch;
@@ -98,7 +98,7 @@ public class TridentItem extends Item {
 						playerEntity.method_6018(20);
 						if (playerEntity.onGround) {
 							float p = 1.1999999F;
-							playerEntity.move(MovementType.field_6308, new Vec3d(0.0, 1.1999999F, 0.0));
+							playerEntity.method_5784(MovementType.field_6308, new Vec3d(0.0, 1.1999999F, 0.0));
 						}
 
 						SoundEvent soundEvent;
@@ -110,7 +110,7 @@ public class TridentItem extends Item {
 							soundEvent = SoundEvents.field_14606;
 						}
 
-						world.playSoundFromEntity(null, playerEntity, soundEvent, SoundCategory.field_15248, 1.0F, 1.0F);
+						world.method_8449(null, playerEntity, soundEvent, SoundCategory.field_15248, 1.0F, 1.0F);
 					}
 				}
 			}
@@ -118,8 +118,8 @@ public class TridentItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
 		if (itemStack.getDamage() >= itemStack.getDurability()) {
 			return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 		} else if (EnchantmentHelper.getRiptide(itemStack) > 0 && !playerEntity.isInsideWaterOrRain()) {
@@ -131,14 +131,14 @@ public class TridentItem extends Item {
 	}
 
 	@Override
-	public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
+	public boolean method_7873(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
 		itemStack.applyDamage(1, livingEntity2);
 		return true;
 	}
 
 	@Override
-	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
-		if ((double)blockState.getHardness(world, blockPos) != 0.0) {
+	public boolean method_7879(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+		if ((double)blockState.method_11579(world, blockPos) != 0.0) {
 			itemStack.applyDamage(2, livingEntity);
 		}
 

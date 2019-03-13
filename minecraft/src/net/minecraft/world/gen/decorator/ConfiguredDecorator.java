@@ -14,7 +14,7 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
 public class ConfiguredDecorator<DC extends DecoratorConfig> {
-	public final Decorator<DC> decorator;
+	public final Decorator<DC> field_14115;
 	public final DC config;
 
 	public ConfiguredDecorator(Decorator<DC> decorator, Dynamic<?> dynamic) {
@@ -22,14 +22,14 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
 	}
 
 	public ConfiguredDecorator(Decorator<DC> decorator, DC decoratorConfig) {
-		this.decorator = decorator;
+		this.field_14115 = decorator;
 		this.config = decoratorConfig;
 	}
 
-	public <FC extends FeatureConfig> boolean generate(
+	public <FC extends FeatureConfig> boolean method_14358(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, ConfiguredFeature<FC> configuredFeature
 	) {
-		return this.decorator.generate(iWorld, chunkGenerator, random, blockPos, this.config, configuredFeature);
+		return this.field_14115.method_15927(iWorld, chunkGenerator, random, blockPos, this.config, configuredFeature);
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
@@ -38,7 +38,7 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("name"),
-					dynamicOps.createString(Registry.DECORATOR.getId(this.decorator).toString()),
+					dynamicOps.createString(Registry.DECORATOR.method_10221(this.field_14115).toString()),
 					dynamicOps.createString("config"),
 					this.config.serialize(dynamicOps).getValue()
 				)
@@ -48,7 +48,7 @@ public class ConfiguredDecorator<DC extends DecoratorConfig> {
 
 	public static <T> ConfiguredDecorator<?> deserialize(Dynamic<T> dynamic) {
 		Decorator<? extends DecoratorConfig> decorator = (Decorator<? extends DecoratorConfig>)Registry.DECORATOR
-			.get(new Identifier(dynamic.get("name").asString("")));
+			.method_10223(new Identifier(dynamic.get("name").asString("")));
 		return new ConfiguredDecorator<>(decorator, dynamic.get("config").orElseEmptyMap());
 	}
 }

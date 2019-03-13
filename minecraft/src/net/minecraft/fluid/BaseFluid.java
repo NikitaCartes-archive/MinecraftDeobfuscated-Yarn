@@ -32,8 +32,8 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class BaseFluid extends Fluid {
-	public static final BooleanProperty FALLING = Properties.FALLING;
-	public static final IntegerProperty LEVEL = Properties.FLUID_LEVEL;
+	public static final BooleanProperty FALLING = Properties.field_12480;
+	public static final IntegerProperty LEVEL = Properties.field_12490;
 	private static final ThreadLocal<Object2ByteLinkedOpenHashMap<Block.NeighborGroup>> field_15901 = ThreadLocal.withInitial(() -> {
 		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap = new Object2ByteLinkedOpenHashMap<Block.NeighborGroup>(200) {
 			@Override
@@ -47,7 +47,7 @@ public abstract class BaseFluid extends Fluid {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
-		builder.with(FALLING);
+		builder.method_11667(FALLING);
 	}
 
 	@Override
@@ -59,23 +59,23 @@ public abstract class BaseFluid extends Fluid {
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
 			for (Direction direction : Direction.Type.HORIZONTAL) {
 				pooledMutable.method_10114(blockPos).method_10118(direction);
-				FluidState fluidState2 = blockView.getFluidState(pooledMutable);
+				FluidState fluidState2 = blockView.method_8316(pooledMutable);
 				if (this.method_15748(fluidState2)) {
-					float f = fluidState2.getHeight(blockView, pooledMutable);
+					float f = fluidState2.method_15763(blockView, pooledMutable);
 					float g = 0.0F;
 					if (f == 0.0F) {
-						if (!blockView.getBlockState(pooledMutable).getMaterial().suffocates()) {
+						if (!blockView.method_8320(pooledMutable).method_11620().suffocates()) {
 							BlockPos blockPos2 = pooledMutable.down();
-							FluidState fluidState3 = blockView.getFluidState(blockPos2);
+							FluidState fluidState3 = blockView.method_8316(blockPos2);
 							if (this.method_15748(fluidState3)) {
-								f = fluidState3.getHeight(blockView, blockPos2);
+								f = fluidState3.method_15763(blockView, blockPos2);
 								if (f > 0.0F) {
-									g = fluidState.getHeight(blockView, blockPos) - (f - 0.8888889F);
+									g = fluidState.method_15763(blockView, blockPos) - (f - 0.8888889F);
 								}
 							}
 						}
 					} else if (f > 0.0F) {
-						g = fluidState.getHeight(blockView, blockPos) - f;
+						g = fluidState.method_15763(blockView, blockPos) - f;
 					}
 
 					if (g != 0.0F) {
@@ -86,7 +86,7 @@ public abstract class BaseFluid extends Fluid {
 			}
 
 			Vec3d vec3d = new Vec3d(d, 0.0, e);
-			if ((Boolean)fluidState.get(FALLING)) {
+			if ((Boolean)fluidState.method_11654(FALLING)) {
 				for (Direction direction2 : Direction.Type.HORIZONTAL) {
 					pooledMutable.method_10114(blockPos).method_10118(direction2);
 					if (this.method_15749(blockView, pooledMutable, direction2) || this.method_15749(blockView, pooledMutable.up(), direction2)) {
@@ -107,28 +107,28 @@ public abstract class BaseFluid extends Fluid {
 	}
 
 	protected boolean method_15749(BlockView blockView, BlockPos blockPos, Direction direction) {
-		BlockState blockState = blockView.getBlockState(blockPos);
+		BlockState blockState = blockView.method_8320(blockPos);
 		Block block = blockState.getBlock();
-		FluidState fluidState = blockView.getFluidState(blockPos);
+		FluidState fluidState = blockView.method_8316(blockPos);
 		if (fluidState.getFluid().matchesType(this)) {
 			return false;
 		} else if (direction == Direction.UP) {
 			return true;
-		} else if (blockState.getMaterial() == Material.ICE) {
+		} else if (blockState.method_11620() == Material.ICE) {
 			return false;
 		} else {
 			boolean bl = Block.method_9581(block) || block instanceof StairsBlock;
-			return !bl && Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction);
+			return !bl && Block.method_9501(blockState.method_11628(blockView, blockPos), direction);
 		}
 	}
 
 	protected void method_15725(IWorld iWorld, BlockPos blockPos, FluidState fluidState) {
 		if (!fluidState.isEmpty()) {
-			BlockState blockState = iWorld.getBlockState(blockPos);
+			BlockState blockState = iWorld.method_8320(blockPos);
 			BlockPos blockPos2 = blockPos.down();
-			BlockState blockState2 = iWorld.getBlockState(blockPos2);
+			BlockState blockState2 = iWorld.method_8320(blockPos2);
 			FluidState fluidState2 = this.method_15727(iWorld, blockPos2, blockState2);
-			if (this.method_15738(iWorld, blockPos, blockState, Direction.DOWN, blockPos2, blockState2, iWorld.getFluidState(blockPos2), fluidState2.getFluid())) {
+			if (this.method_15738(iWorld, blockPos, blockState, Direction.DOWN, blockPos2, blockState2, iWorld.method_8316(blockPos2), fluidState2.getFluid())) {
 				this.method_15745(iWorld, blockPos2, blockState2, Direction.DOWN, fluidState2);
 				if (this.method_15740(iWorld, blockPos) >= 3) {
 					this.method_15744(iWorld, blockPos, fluidState, blockState);
@@ -141,7 +141,7 @@ public abstract class BaseFluid extends Fluid {
 
 	private void method_15744(IWorld iWorld, BlockPos blockPos, FluidState fluidState, BlockState blockState) {
 		int i = fluidState.getLevel() - this.method_15739(iWorld);
-		if ((Boolean)fluidState.get(FALLING)) {
+		if ((Boolean)fluidState.method_11654(FALLING)) {
 			i = 7;
 		}
 
@@ -151,9 +151,9 @@ public abstract class BaseFluid extends Fluid {
 			for (Entry<Direction, FluidState> entry : map.entrySet()) {
 				Direction direction = (Direction)entry.getKey();
 				FluidState fluidState2 = (FluidState)entry.getValue();
-				BlockPos blockPos2 = blockPos.offset(direction);
-				BlockState blockState2 = iWorld.getBlockState(blockPos2);
-				if (this.method_15738(iWorld, blockPos, blockState, direction, blockPos2, blockState2, iWorld.getFluidState(blockPos2), fluidState2.getFluid())) {
+				BlockPos blockPos2 = blockPos.method_10093(direction);
+				BlockState blockState2 = iWorld.method_8320(blockPos2);
+				if (this.method_15738(iWorld, blockPos, blockState, direction, blockPos2, blockState2, iWorld.method_8316(blockPos2), fluidState2.getFluid())) {
 					this.method_15745(iWorld, blockPos2, blockState2, direction, fluidState2);
 				}
 			}
@@ -165,9 +165,9 @@ public abstract class BaseFluid extends Fluid {
 		int j = 0;
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.offset(direction);
-			BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-			FluidState fluidState = blockState2.getFluidState();
+			BlockPos blockPos2 = blockPos.method_10093(direction);
+			BlockState blockState2 = viewableWorld.method_8320(blockPos2);
+			FluidState fluidState = blockState2.method_11618();
 			if (fluidState.getFluid().matchesType(this) && this.method_15732(direction, viewableWorld, blockPos, blockState, blockPos2, blockState2)) {
 				if (fluidState.isStill()) {
 					j++;
@@ -178,23 +178,23 @@ public abstract class BaseFluid extends Fluid {
 		}
 
 		if (this.method_15737() && j >= 2) {
-			BlockState blockState3 = viewableWorld.getBlockState(blockPos.down());
-			FluidState fluidState2 = blockState3.getFluidState();
-			if (blockState3.getMaterial().method_15799() || this.method_15752(fluidState2)) {
-				return this.getState(false);
+			BlockState blockState3 = viewableWorld.method_8320(blockPos.down());
+			FluidState fluidState2 = blockState3.method_11618();
+			if (blockState3.method_11620().method_15799() || this.method_15752(fluidState2)) {
+				return this.method_15729(false);
 			}
 		}
 
 		BlockPos blockPos3 = blockPos.up();
-		BlockState blockState4 = viewableWorld.getBlockState(blockPos3);
-		FluidState fluidState3 = blockState4.getFluidState();
+		BlockState blockState4 = viewableWorld.method_8320(blockPos3);
+		FluidState fluidState3 = blockState4.method_11618();
 		if (!fluidState3.isEmpty()
 			&& fluidState3.getFluid().matchesType(this)
 			&& this.method_15732(Direction.UP, viewableWorld, blockPos, blockState, blockPos3, blockState4)) {
-			return this.getFlowing(8, true);
+			return this.method_15728(8, true);
 		} else {
 			int k = i - this.method_15739(viewableWorld);
-			return k <= 0 ? Fluids.EMPTY.getDefaultState() : this.getFlowing(k, false);
+			return k <= 0 ? Fluids.EMPTY.method_15785() : this.method_15728(k, false);
 		}
 	}
 
@@ -217,8 +217,8 @@ public abstract class BaseFluid extends Fluid {
 			neighborGroup = null;
 		}
 
-		VoxelShape voxelShape = blockState.getCollisionShape(blockView, blockPos);
-		VoxelShape voxelShape2 = blockState2.getCollisionShape(blockView, blockPos2);
+		VoxelShape voxelShape = blockState.method_11628(blockView, blockPos);
+		VoxelShape voxelShape2 = blockState2.method_11628(blockView, blockPos2);
 		boolean bl = !VoxelShapes.method_1080(voxelShape, voxelShape2, direction);
 		if (object2ByteLinkedOpenHashMap != null) {
 			if (object2ByteLinkedOpenHashMap.size() == 200) {
@@ -231,29 +231,29 @@ public abstract class BaseFluid extends Fluid {
 		return bl;
 	}
 
-	public abstract Fluid getFlowing();
+	public abstract Fluid method_15750();
 
-	public FluidState getFlowing(int i, boolean bl) {
-		return this.getFlowing().getDefaultState().with(LEVEL, Integer.valueOf(i)).with(FALLING, Boolean.valueOf(bl));
+	public FluidState method_15728(int i, boolean bl) {
+		return this.method_15750().method_15785().method_11657(LEVEL, Integer.valueOf(i)).method_11657(FALLING, Boolean.valueOf(bl));
 	}
 
-	public abstract Fluid getStill();
+	public abstract Fluid method_15751();
 
-	public FluidState getState(boolean bl) {
-		return this.getStill().getDefaultState().with(FALLING, Boolean.valueOf(bl));
+	public FluidState method_15729(boolean bl) {
+		return this.method_15751().method_15785().method_11657(FALLING, Boolean.valueOf(bl));
 	}
 
 	protected abstract boolean method_15737();
 
 	protected void method_15745(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
 		if (blockState.getBlock() instanceof FluidFillable) {
-			((FluidFillable)blockState.getBlock()).tryFillWithFluid(iWorld, blockPos, blockState, fluidState);
+			((FluidFillable)blockState.getBlock()).method_10311(iWorld, blockPos, blockState, fluidState);
 		} else {
 			if (!blockState.isAir()) {
 				this.method_15730(iWorld, blockPos, blockState);
 			}
 
-			iWorld.setBlockState(blockPos, fluidState.getBlockState(), 3);
+			iWorld.method_8652(blockPos, fluidState.getBlockState(), 3);
 		}
 	}
 
@@ -279,19 +279,19 @@ public abstract class BaseFluid extends Fluid {
 
 		for (Direction direction2 : Direction.Type.HORIZONTAL) {
 			if (direction2 != direction) {
-				BlockPos blockPos3 = blockPos.offset(direction2);
+				BlockPos blockPos3 = blockPos.method_10093(direction2);
 				short s = method_15747(blockPos2, blockPos3);
 				Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, ix -> {
-					BlockState blockStatex = viewableWorld.getBlockState(blockPos3);
-					return Pair.of(blockStatex, blockStatex.getFluidState());
+					BlockState blockStatex = viewableWorld.method_8320(blockPos3);
+					return Pair.of(blockStatex, blockStatex.method_11618());
 				});
 				BlockState blockState2 = pair.getFirst();
 				FluidState fluidState = pair.getSecond();
-				if (this.method_15746(viewableWorld, this.getFlowing(), blockPos, blockState, direction2, blockPos3, blockState2, fluidState)) {
+				if (this.method_15746(viewableWorld, this.method_15750(), blockPos, blockState, direction2, blockPos3, blockState2, fluidState)) {
 					boolean bl = short2BooleanMap.computeIfAbsent(s, ix -> {
 						BlockPos blockPos2x = blockPos3.down();
-						BlockState blockState2x = viewableWorld.getBlockState(blockPos2x);
-						return this.method_15736(viewableWorld, this.getFlowing(), blockPos3, blockState2, blockPos2x, blockState2x);
+						BlockState blockState2x = viewableWorld.method_8320(blockPos2x);
+						return this.method_15736(viewableWorld, this.method_15750(), blockPos3, blockState2, blockPos2x, blockState2x);
 					});
 					if (bl) {
 						return i;
@@ -314,7 +314,7 @@ public abstract class BaseFluid extends Fluid {
 		if (!this.method_15732(Direction.DOWN, blockView, blockPos, blockState, blockPos2, blockState2)) {
 			return false;
 		} else {
-			return blockState2.getFluidState().getFluid().matchesType(this) ? true : this.method_15754(blockView, blockPos2, blockState2, fluid);
+			return blockState2.method_11618().getFluid().matchesType(this) ? true : this.method_15754(blockView, blockPos2, blockState2, fluid);
 		}
 	}
 
@@ -343,8 +343,8 @@ public abstract class BaseFluid extends Fluid {
 		int i = 0;
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.offset(direction);
-			FluidState fluidState = viewableWorld.getFluidState(blockPos2);
+			BlockPos blockPos2 = blockPos.method_10093(direction);
+			FluidState fluidState = viewableWorld.method_8316(blockPos2);
 			if (this.method_15752(fluidState)) {
 				i++;
 			}
@@ -360,11 +360,11 @@ public abstract class BaseFluid extends Fluid {
 		Short2BooleanMap short2BooleanMap = new Short2BooleanOpenHashMap();
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.offset(direction);
+			BlockPos blockPos2 = blockPos.method_10093(direction);
 			short s = method_15747(blockPos, blockPos2);
 			Pair<BlockState, FluidState> pair = short2ObjectMap.computeIfAbsent(s, ix -> {
-				BlockState blockStatex = viewableWorld.getBlockState(blockPos2);
-				return Pair.of(blockStatex, blockStatex.getFluidState());
+				BlockState blockStatex = viewableWorld.method_8320(blockPos2);
+				return Pair.of(blockStatex, blockStatex.method_11618());
 			});
 			BlockState blockState2 = pair.getFirst();
 			FluidState fluidState = pair.getSecond();
@@ -372,8 +372,8 @@ public abstract class BaseFluid extends Fluid {
 			if (this.method_15746(viewableWorld, fluidState2.getFluid(), blockPos, blockState, direction, blockPos2, blockState2, fluidState)) {
 				BlockPos blockPos3 = blockPos2.down();
 				boolean bl = short2BooleanMap.computeIfAbsent(s, ix -> {
-					BlockState blockState2x = viewableWorld.getBlockState(blockPos3);
-					return this.method_15736(viewableWorld, this.getFlowing(), blockPos2, blockState2, blockPos3, blockState2x);
+					BlockState blockState2x = viewableWorld.method_8320(blockPos3);
+					return this.method_15736(viewableWorld, this.method_15750(), blockPos2, blockState2, blockPos3, blockState2x);
 				});
 				int j;
 				if (bl) {
@@ -399,13 +399,13 @@ public abstract class BaseFluid extends Fluid {
 	private boolean method_15754(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
 		Block block = blockState.getBlock();
 		if (block instanceof FluidFillable) {
-			return ((FluidFillable)block).canFillWithFluid(blockView, blockPos, blockState, fluid);
+			return ((FluidFillable)block).method_10310(blockView, blockPos, blockState, fluid);
 		} else if (!(block instanceof DoorBlock)
-			&& !block.matches(BlockTags.field_15500)
+			&& !block.method_9525(BlockTags.field_15500)
 			&& block != Blocks.field_9983
 			&& block != Blocks.field_10424
 			&& block != Blocks.field_10422) {
-			Material material = blockState.getMaterial();
+			Material material = blockState.method_11620();
 			return material != Material.PORTAL && material != Material.STRUCTURE_VOID && material != Material.UNDERWATER_PLANT && material != Material.SEAGRASS
 				? !material.suffocates()
 				: false;
@@ -436,19 +436,19 @@ public abstract class BaseFluid extends Fluid {
 	}
 
 	@Override
-	public void onScheduledTick(World world, BlockPos blockPos, FluidState fluidState) {
+	public void method_15778(World world, BlockPos blockPos, FluidState fluidState) {
 		if (!fluidState.isStill()) {
-			FluidState fluidState2 = this.method_15727(world, blockPos, world.getBlockState(blockPos));
+			FluidState fluidState2 = this.method_15727(world, blockPos, world.method_8320(blockPos));
 			int i = this.method_15753(world, blockPos, fluidState, fluidState2);
 			if (fluidState2.isEmpty()) {
 				fluidState = fluidState2;
-				world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
+				world.method_8652(blockPos, Blocks.field_10124.method_9564(), 3);
 			} else if (!fluidState2.equals(fluidState)) {
 				fluidState = fluidState2;
 				BlockState blockState = fluidState2.getBlockState();
-				world.setBlockState(blockPos, blockState, 2);
-				world.getFluidTickScheduler().schedule(blockPos, fluidState2.getFluid(), i);
-				world.updateNeighborsAlways(blockPos, blockState.getBlock());
+				world.method_8652(blockPos, blockState, 2);
+				world.method_8405().method_8676(blockPos, fluidState2.getFluid(), i);
+				world.method_8452(blockPos, blockState.getBlock());
 			}
 		}
 
@@ -456,23 +456,23 @@ public abstract class BaseFluid extends Fluid {
 	}
 
 	protected static int method_15741(FluidState fluidState) {
-		return fluidState.isStill() ? 0 : 8 - Math.min(fluidState.getLevel(), 8) + (fluidState.get(FALLING) ? 8 : 0);
+		return fluidState.isStill() ? 0 : 8 - Math.min(fluidState.getLevel(), 8) + (fluidState.method_11654(FALLING) ? 8 : 0);
 	}
 
-	private static boolean isFluidAboveEqual(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return fluidState.getFluid().matchesType(blockView.getFluidState(blockPos.up()).getFluid());
-	}
-
-	@Override
-	public float getHeight(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return isFluidAboveEqual(fluidState, blockView, blockPos) ? 1.0F : (float)fluidState.getLevel() / 9.0F;
+	private static boolean method_17774(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+		return fluidState.getFluid().matchesType(blockView.method_8316(blockPos.up()).getFluid());
 	}
 
 	@Override
-	public VoxelShape getShape(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return fluidState.getLevel() == 9 && isFluidAboveEqual(fluidState, blockView, blockPos)
-			? VoxelShapes.fullCube()
+	public float method_15788(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+		return method_17774(fluidState, blockView, blockPos) ? 1.0F : (float)fluidState.getLevel() / 9.0F;
+	}
+
+	@Override
+	public VoxelShape method_17775(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+		return fluidState.getLevel() == 9 && method_17774(fluidState, blockView, blockPos)
+			? VoxelShapes.method_1077()
 			: (VoxelShape)this.shapeCache
-				.computeIfAbsent(fluidState, fluidStatex -> VoxelShapes.cube(0.0, 0.0, 0.0, 1.0, (double)fluidStatex.getHeight(blockView, blockPos), 1.0));
+				.computeIfAbsent(fluidState, fluidStatex -> VoxelShapes.method_1081(0.0, 0.0, 0.0, 1.0, (double)fluidStatex.method_15763(blockView, blockPos), 1.0));
 	}
 }

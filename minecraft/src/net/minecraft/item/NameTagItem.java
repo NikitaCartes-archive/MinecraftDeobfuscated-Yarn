@@ -11,14 +11,17 @@ public class NameTagItem extends Item {
 	}
 
 	@Override
-	public boolean interactWithEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+	public boolean method_7847(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
 		if (itemStack.hasDisplayName() && !(livingEntity instanceof PlayerEntity)) {
-			livingEntity.setCustomName(itemStack.getDisplayName());
-			if (livingEntity instanceof MobEntity) {
-				((MobEntity)livingEntity).setPersistent();
+			if (livingEntity.isValid()) {
+				livingEntity.method_5665(itemStack.method_7964());
+				if (livingEntity instanceof MobEntity) {
+					((MobEntity)livingEntity).setPersistent();
+				}
+
+				itemStack.subtractAmount(1);
 			}
 
-			itemStack.subtractAmount(1);
 			return true;
 		} else {
 			return false;

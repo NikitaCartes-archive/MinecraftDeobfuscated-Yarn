@@ -20,12 +20,13 @@ import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.TheEndDimension;
+import net.minecraft.world.explosion.Explosion;
 
 public class EnderCrystalEntity extends Entity {
-	private static final TrackedData<Optional<BlockPos>> BEAM_TARGET = DataTracker.registerData(
+	private static final TrackedData<Optional<BlockPos>> field_7033 = DataTracker.registerData(
 		EnderCrystalEntity.class, TrackedDataHandlerRegistry.OPTIONA_BLOCK_POS
 	);
-	private static final TrackedData<Boolean> SHOW_BOTTOM = DataTracker.registerData(EnderCrystalEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> field_7035 = DataTracker.registerData(EnderCrystalEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	public int field_7034;
 
 	public EnderCrystalEntity(EntityType<? extends EnderCrystalEntity> entityType, World world) {
@@ -46,8 +47,8 @@ public class EnderCrystalEntity extends Entity {
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(BEAM_TARGET, Optional.empty());
-		this.getDataTracker().startTracking(SHOW_BOTTOM, true);
+		this.method_5841().startTracking(field_7033, Optional.empty());
+		this.method_5841().startTracking(field_7035, true);
 	}
 
 	@Override
@@ -56,27 +57,27 @@ public class EnderCrystalEntity extends Entity {
 		this.prevY = this.y;
 		this.prevZ = this.z;
 		this.field_7034++;
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			BlockPos blockPos = new BlockPos(this);
-			if (this.world.dimension instanceof TheEndDimension && this.world.getBlockState(blockPos).isAir()) {
-				this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
+			if (this.field_6002.field_9247 instanceof TheEndDimension && this.field_6002.method_8320(blockPos).isAir()) {
+				this.field_6002.method_8501(blockPos, Blocks.field_10036.method_9564());
 			}
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		if (this.getBeamTarget() != null) {
-			compoundTag.put("BeamTarget", TagHelper.serializeBlockPos(this.getBeamTarget()));
+	protected void method_5652(CompoundTag compoundTag) {
+		if (this.method_6838() != null) {
+			compoundTag.method_10566("BeamTarget", TagHelper.serializeBlockPos(this.method_6838()));
 		}
 
 		compoundTag.putBoolean("ShowBottom", this.method_6836());
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+	protected void method_5749(CompoundTag compoundTag) {
 		if (compoundTag.containsKey("BeamTarget", 10)) {
-			this.setBeamTarget(TagHelper.deserializeBlockPos(compoundTag.getCompound("BeamTarget")));
+			this.method_6837(TagHelper.deserializeBlockPos(compoundTag.getCompound("BeamTarget")));
 		}
 
 		if (compoundTag.containsKey("ShowBottom", 1)) {
@@ -93,14 +94,14 @@ public class EnderCrystalEntity extends Entity {
 	public boolean damage(DamageSource damageSource, float f) {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
-		} else if (damageSource.getAttacker() instanceof EnderDragonEntity) {
+		} else if (damageSource.method_5529() instanceof EnderDragonEntity) {
 			return false;
 		} else {
-			if (!this.invalid && !this.world.isClient) {
+			if (!this.invalid && !this.field_6002.isClient) {
 				this.invalidate();
-				if (!this.world.isClient) {
+				if (!this.field_6002.isClient) {
 					if (!damageSource.isExplosive()) {
-						this.world.createExplosion(null, this.x, this.y, this.z, 6.0F, true);
+						this.field_6002.createExplosion(null, this.x, this.y, this.z, 6.0F, Explosion.class_4179.field_18687);
 					}
 
 					this.crystalDestroyed(damageSource);
@@ -118,8 +119,8 @@ public class EnderCrystalEntity extends Entity {
 	}
 
 	private void crystalDestroyed(DamageSource damageSource) {
-		if (this.world.dimension instanceof TheEndDimension) {
-			TheEndDimension theEndDimension = (TheEndDimension)this.world.dimension;
+		if (this.field_6002.field_9247 instanceof TheEndDimension) {
+			TheEndDimension theEndDimension = (TheEndDimension)this.field_6002.field_9247;
 			EnderDragonFight enderDragonFight = theEndDimension.method_12513();
 			if (enderDragonFight != null) {
 				enderDragonFight.crystalDestroyed(this, damageSource);
@@ -127,31 +128,31 @@ public class EnderCrystalEntity extends Entity {
 		}
 	}
 
-	public void setBeamTarget(@Nullable BlockPos blockPos) {
-		this.getDataTracker().set(BEAM_TARGET, Optional.ofNullable(blockPos));
+	public void method_6837(@Nullable BlockPos blockPos) {
+		this.method_5841().set(field_7033, Optional.ofNullable(blockPos));
 	}
 
 	@Nullable
-	public BlockPos getBeamTarget() {
-		return (BlockPos)this.getDataTracker().get(BEAM_TARGET).orElse(null);
+	public BlockPos method_6838() {
+		return (BlockPos)this.method_5841().get(field_7033).orElse(null);
 	}
 
 	public void setShowBottom(boolean bl) {
-		this.getDataTracker().set(SHOW_BOTTOM, bl);
+		this.method_5841().set(field_7035, bl);
 	}
 
 	public boolean method_6836() {
-		return this.getDataTracker().get(SHOW_BOTTOM);
+		return this.method_5841().get(field_7035);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
-		return super.shouldRenderAtDistance(d) || this.getBeamTarget() != null;
+		return super.shouldRenderAtDistance(d) || this.method_6838() != null;
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<?> method_18002() {
 		return new EntitySpawnS2CPacket(this);
 	}
 }

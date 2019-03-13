@@ -25,22 +25,22 @@ public class KnowledgeBookItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		CompoundTag compoundTag = itemStack.getTag();
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
+		CompoundTag compoundTag = itemStack.method_7969();
 		if (!playerEntity.abilities.creativeMode) {
-			playerEntity.setStackInHand(hand, ItemStack.EMPTY);
+			playerEntity.method_6122(hand, ItemStack.EMPTY);
 		}
 
 		if (compoundTag != null && compoundTag.containsKey("Recipes", 9)) {
 			if (!world.isClient) {
-				ListTag listTag = compoundTag.getList("Recipes", 8);
+				ListTag listTag = compoundTag.method_10554("Recipes", 8);
 				List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 				RecipeManager recipeManager = world.getServer().getRecipeManager();
 
 				for (int i = 0; i < listTag.size(); i++) {
 					String string = listTag.getString(i);
-					Optional<? extends Recipe<?>> optional = recipeManager.get(new Identifier(string));
+					Optional<? extends Recipe<?>> optional = recipeManager.method_8130(new Identifier(string));
 					if (!optional.isPresent()) {
 						LOGGER.error("Invalid recipe: {}", string);
 						return new TypedActionResult<>(ActionResult.field_5814, itemStack);
@@ -50,7 +50,7 @@ public class KnowledgeBookItem extends Item {
 				}
 
 				playerEntity.unlockRecipes(list);
-				playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+				playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
 			}
 
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack);

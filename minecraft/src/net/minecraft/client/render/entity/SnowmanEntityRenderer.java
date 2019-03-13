@@ -13,7 +13,7 @@ public class SnowmanEntityRenderer extends MobEntityRenderer<SnowmanEntity, Snow
 
 	public SnowmanEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SnowmanEntityModel<>(), 0.5F);
-		this.addFeature(new SnowmanPumpkinFeatureRenderer(this));
+		this.method_4046(new SnowmanPumpkinFeatureRenderer(this));
 	}
 
 	protected Identifier method_4122(SnowmanEntity snowmanEntity) {

@@ -14,10 +14,10 @@ public class LocalScanProgressListEntry extends ServerListWidget.Entry {
 	public void draw(int i, int j, int k, int l, boolean bl, float f) {
 		int m = this.getY() + j / 2 - 9 / 2;
 		this.client
-			.textRenderer
+			.field_1772
 			.draw(
 				I18n.translate("lanServer.scanning"),
-				(float)(this.client.currentScreen.screenWidth / 2 - this.client.textRenderer.getStringWidth(I18n.translate("lanServer.scanning")) / 2),
+				(float)(this.client.field_1755.screenWidth / 2 - this.client.field_1772.getStringWidth(I18n.translate("lanServer.scanning")) / 2),
 				(float)m,
 				16777215
 			);
@@ -36,7 +36,7 @@ public class LocalScanProgressListEntry extends ServerListWidget.Entry {
 		}
 
 		this.client
-			.textRenderer
-			.draw(string, (float)(this.client.currentScreen.screenWidth / 2 - this.client.textRenderer.getStringWidth(string) / 2), (float)(m + 9), 8421504);
+			.field_1772
+			.draw(string, (float)(this.client.field_1755.screenWidth / 2 - this.client.field_1772.getStringWidth(string) / 2), (float)(m + 9), 8421504);
 	}
 }

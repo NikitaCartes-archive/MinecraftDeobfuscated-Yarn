@@ -20,7 +20,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 		if (craftingInventory.getWidth() == 3 && craftingInventory.getHeight() == 3) {
 			for (int i = 0; i < craftingInventory.getWidth(); i++) {
 				for (int j = 0; j < craftingInventory.getHeight(); j++) {
-					ItemStack itemStack = craftingInventory.getInvStack(i + j * craftingInventory.getWidth());
+					ItemStack itemStack = craftingInventory.method_5438(i + j * craftingInventory.getWidth());
 					if (itemStack.isEmpty()) {
 						return false;
 					}
@@ -43,7 +43,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack method_17740(CraftingInventory craftingInventory) {
-		ItemStack itemStack = craftingInventory.getInvStack(1 + craftingInventory.getWidth());
+		ItemStack itemStack = craftingInventory.method_5438(1 + craftingInventory.getWidth());
 		if (itemStack.getItem() != Items.field_8150) {
 			return ItemStack.EMPTY;
 		} else {
@@ -61,7 +61,7 @@ public class TippedArrowRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.TIPPED_ARROW;
+	public RecipeSerializer<?> method_8119() {
+		return RecipeSerializer.field_9037;
 	}
 }

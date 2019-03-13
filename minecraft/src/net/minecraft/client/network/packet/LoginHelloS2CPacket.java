@@ -38,7 +38,7 @@ public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	}
 
 	public void method_12612(ClientLoginPacketListener clientLoginPacketListener) {
-		clientLoginPacketListener.onHello(this);
+		clientLoginPacketListener.method_12587(this);
 	}
 
 	@Environment(EnvType.CLIENT)

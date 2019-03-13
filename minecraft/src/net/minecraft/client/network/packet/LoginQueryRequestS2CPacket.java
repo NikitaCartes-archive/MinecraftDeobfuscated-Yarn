@@ -10,13 +10,13 @@ import net.minecraft.util.PacketByteBuf;
 
 public class LoginQueryRequestS2CPacket implements Packet<ClientLoginPacketListener> {
 	private int queryId;
-	private Identifier channel;
+	private Identifier field_13187;
 	private PacketByteBuf payload;
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.queryId = packetByteBuf.readVarInt();
-		this.channel = packetByteBuf.readIdentifier();
+		this.field_13187 = packetByteBuf.method_10810();
 		int i = packetByteBuf.readableBytes();
 		if (i >= 0 && i <= 1048576) {
 			this.payload = new PacketByteBuf(packetByteBuf.readBytes(i));
@@ -28,12 +28,12 @@ public class LoginQueryRequestS2CPacket implements Packet<ClientLoginPacketListe
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeVarInt(this.queryId);
-		packetByteBuf.writeIdentifier(this.channel);
+		packetByteBuf.method_10812(this.field_13187);
 		packetByteBuf.writeBytes(this.payload.copy());
 	}
 
 	public void method_12591(ClientLoginPacketListener clientLoginPacketListener) {
-		clientLoginPacketListener.onQueryRequest(this);
+		clientLoginPacketListener.method_12586(this);
 	}
 
 	@Environment(EnvType.CLIENT)

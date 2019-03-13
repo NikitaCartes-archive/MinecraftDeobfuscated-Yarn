@@ -9,9 +9,10 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 
 public class PrimedTntEntity extends Entity {
-	private static final TrackedData<Integer> FUSE = DataTracker.registerData(PrimedTntEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> field_7197 = DataTracker.registerData(PrimedTntEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	@Nullable
 	private LivingEntity causingEntity;
 	private int fuseTimer = 80;
@@ -36,7 +37,7 @@ public class PrimedTntEntity extends Entity {
 
 	@Override
 	protected void initDataTracker() {
-		this.dataTracker.startTracking(FUSE, 80);
+		this.field_6011.startTracking(field_7197, 80);
 	}
 
 	@Override
@@ -55,39 +56,39 @@ public class PrimedTntEntity extends Entity {
 		this.prevY = this.y;
 		this.prevZ = this.z;
 		if (!this.isUnaffectedByGravity()) {
-			this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
+			this.method_18799(this.method_18798().add(0.0, -0.04, 0.0));
 		}
 
-		this.move(MovementType.field_6308, this.getVelocity());
-		this.setVelocity(this.getVelocity().multiply(0.98));
+		this.method_5784(MovementType.field_6308, this.method_18798());
+		this.method_18799(this.method_18798().multiply(0.98));
 		if (this.onGround) {
-			this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
+			this.method_18799(this.method_18798().multiply(0.7, -0.5, 0.7));
 		}
 
 		this.fuseTimer--;
 		if (this.fuseTimer <= 0) {
 			this.invalidate();
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				this.explode();
 			}
 		} else {
 			this.method_5713();
-			this.world.addParticle(ParticleTypes.field_11251, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
+			this.field_6002.method_8406(ParticleTypes.field_11251, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 		}
 	}
 
 	private void explode() {
 		float f = 4.0F;
-		this.world.createExplosion(this, this.x, this.y + (double)(this.getHeight() / 16.0F), this.z, 4.0F, true);
+		this.field_6002.createExplosion(this, this.x, this.y + (double)(this.getHeight() / 16.0F), this.z, 4.0F, Explosion.class_4179.field_18686);
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+	protected void method_5652(CompoundTag compoundTag) {
 		compoundTag.putShort("Fuse", (short)this.getFuseTimer());
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+	protected void method_5749(CompoundTag compoundTag) {
 		this.setFuse(compoundTag.getShort("Fuse"));
 	}
 
@@ -97,24 +98,24 @@ public class PrimedTntEntity extends Entity {
 	}
 
 	@Override
-	protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float method_18378(EntityPose entityPose, EntitySize entitySize) {
 		return 0.0F;
 	}
 
 	public void setFuse(int i) {
-		this.dataTracker.set(FUSE, i);
+		this.field_6011.set(field_7197, i);
 		this.fuseTimer = i;
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (FUSE.equals(trackedData)) {
+	public void method_5674(TrackedData<?> trackedData) {
+		if (field_7197.equals(trackedData)) {
 			this.fuseTimer = this.getFuse();
 		}
 	}
 
 	public int getFuse() {
-		return this.dataTracker.get(FUSE);
+		return this.field_6011.get(field_7197);
 	}
 
 	public int getFuseTimer() {
@@ -122,7 +123,7 @@ public class PrimedTntEntity extends Entity {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<?> method_18002() {
 		return new EntitySpawnS2CPacket(this);
 	}
 }

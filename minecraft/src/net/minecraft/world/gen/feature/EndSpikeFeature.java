@@ -51,7 +51,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		}
 
 		for (EndSpikeFeature.Spike spike : list) {
-			if (spike.isInChunk(blockPos)) {
+			if (spike.method_13962(blockPos)) {
 				this.generateSpike(iWorld, random, endSpikeFeatureConfig, spike);
 			}
 		}
@@ -67,9 +67,9 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		)) {
 			if (blockPos.squaredDistanceTo((double)spike.getCenterX(), (double)blockPos.getY(), (double)spike.getCenterZ()) <= (double)(i * i + 1)
 				&& blockPos.getY() < spike.getHeight()) {
-				this.setBlockState(iWorld, blockPos, Blocks.field_10540.getDefaultState());
+				this.method_13153(iWorld, blockPos, Blocks.field_10540.method_9564());
 			} else if (blockPos.getY() > 65) {
-				this.setBlockState(iWorld, blockPos, Blocks.field_10124.getDefaultState());
+				this.method_13153(iWorld, blockPos, Blocks.field_10124.method_9564());
 			}
 		}
 
@@ -89,26 +89,26 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 							boolean bl4 = m == -2 || m == 2 || bl3;
 							boolean bl5 = n == -2 || n == 2 || bl3;
 							BlockState blockState = Blocks.field_10576
-								.getDefaultState()
-								.with(PaneBlock.NORTH, Boolean.valueOf(bl4 && n != -2))
-								.with(PaneBlock.SOUTH, Boolean.valueOf(bl4 && n != 2))
-								.with(PaneBlock.WEST, Boolean.valueOf(bl5 && m != -2))
-								.with(PaneBlock.EAST, Boolean.valueOf(bl5 && m != 2));
-							this.setBlockState(iWorld, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
+								.method_9564()
+								.method_11657(PaneBlock.field_10905, Boolean.valueOf(bl4 && n != -2))
+								.method_11657(PaneBlock.field_10904, Boolean.valueOf(bl4 && n != 2))
+								.method_11657(PaneBlock.field_10903, Boolean.valueOf(bl5 && m != -2))
+								.method_11657(PaneBlock.field_10907, Boolean.valueOf(bl5 && m != 2));
+							this.method_13153(iWorld, mutable.set(spike.getCenterX() + m, spike.getHeight() + o, spike.getCenterZ() + n), blockState);
 						}
 					}
 				}
 			}
 		}
 
-		EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.create(iWorld.getWorld());
-		enderCrystalEntity.setBeamTarget(endSpikeFeatureConfig.getPos());
+		EnderCrystalEntity enderCrystalEntity = EntityType.END_CRYSTAL.method_5883(iWorld.getWorld());
+		enderCrystalEntity.method_6837(endSpikeFeatureConfig.method_15884());
 		enderCrystalEntity.setInvulnerable(endSpikeFeatureConfig.isCrystalInvulerable());
 		enderCrystalEntity.setPositionAndAngles(
 			(double)((float)spike.getCenterX() + 0.5F), (double)(spike.getHeight() + 1), (double)((float)spike.getCenterZ() + 0.5F), random.nextFloat() * 360.0F, 0.0F
 		);
 		iWorld.spawnEntity(enderCrystalEntity);
-		this.setBlockState(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.field_9987.getDefaultState());
+		this.method_13153(iWorld, new BlockPos(spike.getCenterX(), spike.getHeight(), spike.getCenterZ()), Blocks.field_9987.method_9564());
 	}
 
 	public static class Spike {
@@ -117,7 +117,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		private final int radius;
 		private final int height;
 		private final boolean guarded;
-		private final BoundingBox boundingBox;
+		private final BoundingBox field_13835;
 
 		public Spike(int i, int j, int k, int l, boolean bl) {
 			this.centerX = i;
@@ -125,10 +125,10 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			this.radius = k;
 			this.height = l;
 			this.guarded = bl;
-			this.boundingBox = new BoundingBox((double)(i - k), 0.0, (double)(j - k), (double)(i + k), 256.0, (double)(j + k));
+			this.field_13835 = new BoundingBox((double)(i - k), 0.0, (double)(j - k), (double)(i + k), 256.0, (double)(j + k));
 		}
 
-		public boolean isInChunk(BlockPos blockPos) {
+		public boolean method_13962(BlockPos blockPos) {
 			return blockPos.getX() >> 4 == this.centerX >> 4 && blockPos.getZ() >> 4 == this.centerZ >> 4;
 		}
 
@@ -152,8 +152,8 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			return this.guarded;
 		}
 
-		public BoundingBox getBoundingBox() {
-			return this.boundingBox;
+		public BoundingBox method_13968() {
+			return this.field_13835;
 		}
 
 		<T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {

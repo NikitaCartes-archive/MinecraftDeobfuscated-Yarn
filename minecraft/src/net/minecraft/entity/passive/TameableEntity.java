@@ -24,8 +24,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 public abstract class TameableEntity extends AnimalEntity {
-	protected static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.BYTE);
-	protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
+	protected static final TrackedData<Byte> field_6322 = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.BYTE);
+	protected static final TrackedData<Optional<UUID>> field_6320 = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	protected class_1386 field_6321;
 
 	protected TameableEntity(EntityType<? extends TameableEntity> entityType, World world) {
@@ -36,13 +36,13 @@ public abstract class TameableEntity extends AnimalEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(TAMEABLE_FLAGS, (byte)0);
-		this.dataTracker.startTracking(OWNER_UUID, Optional.empty());
+		this.field_6011.startTracking(field_6322, (byte)0);
+		this.field_6011.startTracking(field_6320, Optional.empty());
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		if (this.method_6139() == null) {
 			compoundTag.putString("OwnerUUID", "");
 		} else {
@@ -53,8 +53,8 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		String string;
 		if (compoundTag.containsKey("OwnerUUID", 8)) {
 			string = compoundTag.getString("OwnerUUID");
@@ -80,7 +80,7 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
+	public boolean method_5931(PlayerEntity playerEntity) {
 		return !this.isLeashed();
 	}
 
@@ -94,8 +94,8 @@ public abstract class TameableEntity extends AnimalEntity {
 			double d = this.random.nextGaussian() * 0.02;
 			double e = this.random.nextGaussian() * 0.02;
 			double f = this.random.nextGaussian() * 0.02;
-			this.world
-				.addParticle(
+			this.field_6002
+				.method_8406(
 					particleParameters,
 					this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 					this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
@@ -120,15 +120,15 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	public boolean isTamed() {
-		return (this.dataTracker.get(TAMEABLE_FLAGS) & 4) != 0;
+		return (this.field_6011.get(field_6322) & 4) != 0;
 	}
 
 	public void setTamed(boolean bl) {
-		byte b = this.dataTracker.get(TAMEABLE_FLAGS);
+		byte b = this.field_6011.get(field_6322);
 		if (bl) {
-			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 4));
+			this.field_6011.set(field_6322, (byte)(b | 4));
 		} else {
-			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -5));
+			this.field_6011.set(field_6322, (byte)(b & -5));
 		}
 
 		this.onTamedChanged();
@@ -138,32 +138,32 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	public boolean isSitting() {
-		return (this.dataTracker.get(TAMEABLE_FLAGS) & 1) != 0;
+		return (this.field_6011.get(field_6322) & 1) != 0;
 	}
 
 	public void setSitting(boolean bl) {
-		byte b = this.dataTracker.get(TAMEABLE_FLAGS);
+		byte b = this.field_6011.get(field_6322);
 		if (bl) {
-			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b | 1));
+			this.field_6011.set(field_6322, (byte)(b | 1));
 		} else {
-			this.dataTracker.set(TAMEABLE_FLAGS, (byte)(b & -2));
+			this.field_6011.set(field_6322, (byte)(b & -2));
 		}
 	}
 
 	@Nullable
 	public UUID method_6139() {
-		return (UUID)this.dataTracker.get(OWNER_UUID).orElse(null);
+		return (UUID)this.field_6011.get(field_6320).orElse(null);
 	}
 
 	public void setOwnerUuid(@Nullable UUID uUID) {
-		this.dataTracker.set(OWNER_UUID, Optional.ofNullable(uUID));
+		this.field_6011.set(field_6320, Optional.ofNullable(uUID));
 	}
 
 	public void method_6170(PlayerEntity playerEntity) {
 		this.setTamed(true);
 		this.setOwnerUuid(playerEntity.getUuid());
 		if (playerEntity instanceof ServerPlayerEntity) {
-			Criterions.TAME_ANIMAL.handle((ServerPlayerEntity)playerEntity, this);
+			Criterions.TAME_ANIMAL.method_9132((ServerPlayerEntity)playerEntity, this);
 		}
 	}
 
@@ -171,7 +171,7 @@ public abstract class TameableEntity extends AnimalEntity {
 	public LivingEntity getOwner() {
 		try {
 			UUID uUID = this.method_6139();
-			return uUID == null ? null : this.world.method_18470(uUID);
+			return uUID == null ? null : this.field_6002.method_18470(uUID);
 		} catch (IllegalArgumentException var2) {
 			return null;
 		}
@@ -195,15 +195,15 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public AbstractScoreboardTeam getScoreboardTeam() {
+	public AbstractScoreboardTeam method_5781() {
 		if (this.isTamed()) {
 			LivingEntity livingEntity = this.getOwner();
 			if (livingEntity != null) {
-				return livingEntity.getScoreboardTeam();
+				return livingEntity.method_5781();
 			}
 		}
 
-		return super.getScoreboardTeam();
+		return super.method_5781();
 	}
 
 	@Override
@@ -224,8 +224,8 @@ public abstract class TameableEntity extends AnimalEntity {
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		if (!this.world.isClient && this.world.getGameRules().getBoolean("showDeathMessages") && this.getOwner() instanceof ServerPlayerEntity) {
-			this.getOwner().appendCommandFeedback(this.getDamageTracker().getDeathMessage());
+		if (!this.field_6002.isClient && this.field_6002.getGameRules().getBoolean("showDeathMessages") && this.getOwner() instanceof ServerPlayerEntity) {
+			this.getOwner().method_9203(this.getDamageTracker().method_5548());
 		}
 
 		super.onDeath(damageSource);

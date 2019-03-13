@@ -19,19 +19,19 @@ public class BeaconBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity method_10123(BlockView blockView) {
 		return new BeaconBlockEntity();
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
 				playerEntity.openContainer((BeaconBlockEntity)blockEntity);
-				playerEntity.increaseStat(Stats.field_15416);
+				playerEntity.method_7281(Stats.field_15416);
 			}
 
 			return true;
@@ -39,21 +39,21 @@ public class BeaconBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean method_9521(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType method_9604(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+	public void method_9567(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
 		if (itemStack.hasDisplayName()) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
-				((BeaconBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((BeaconBlockEntity)blockEntity).method_10936(itemStack.method_7964());
 			}
 		}
 	}
@@ -63,21 +63,21 @@ public class BeaconBlock extends BlockWithEntity {
 		return BlockRenderLayer.CUTOUT;
 	}
 
-	public static void onStainedGlassAdded(World world, BlockPos blockPos) {
+	public static void method_9463(World world, BlockPos blockPos) {
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
 			for (int i = blockPos.getY() - 1; i >= 0; i--) {
 				BlockPos blockPos2 = new BlockPos(blockPos.getX(), i, blockPos.getZ());
-				if (!world.isSkyVisible(blockPos2)) {
+				if (!world.method_8311(blockPos2)) {
 					break;
 				}
 
-				BlockState blockState = world.getBlockState(blockPos2);
+				BlockState blockState = world.method_8320(blockPos2);
 				if (blockState.getBlock() == Blocks.field_10327) {
 					world.getServer().execute(() -> {
-						BlockEntity blockEntity = world.getBlockEntity(blockPos2);
+						BlockEntity blockEntity = world.method_8321(blockPos2);
 						if (blockEntity instanceof BeaconBlockEntity) {
 							((BeaconBlockEntity)blockEntity).update();
-							world.addBlockAction(blockPos2, Blocks.field_10327, 1, 0);
+							world.method_8427(blockPos2, Blocks.field_10327, 1, 0);
 						}
 					});
 				}

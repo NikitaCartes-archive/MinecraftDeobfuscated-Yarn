@@ -16,16 +16,16 @@ public interface ResourcePack extends Closeable {
 	@Environment(EnvType.CLIENT)
 	InputStream openRoot(String string) throws IOException;
 
-	InputStream open(ResourceType resourceType, Identifier identifier) throws IOException;
+	InputStream method_14405(ResourceType resourceType, Identifier identifier) throws IOException;
 
-	Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate);
+	Collection<Identifier> method_14408(ResourceType resourceType, String string, int i, Predicate<String> predicate);
 
-	boolean contains(ResourceType resourceType, Identifier identifier);
+	boolean method_14411(ResourceType resourceType, Identifier identifier);
 
-	Set<String> getNamespaces(ResourceType resourceType);
+	Set<String> method_14406(ResourceType resourceType);
 
 	@Nullable
-	<T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException;
+	<T> T method_14407(ResourceMetadataReader<T> resourceMetadataReader) throws IOException;
 
 	String getName();
 }

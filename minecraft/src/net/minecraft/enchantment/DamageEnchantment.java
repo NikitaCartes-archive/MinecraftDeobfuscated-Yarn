@@ -56,7 +56,7 @@ public class DamageEnchantment extends Enchantment {
 	public void onTargetDamaged(LivingEntity livingEntity, Entity entity, int i) {
 		if (entity instanceof LivingEntity) {
 			LivingEntity livingEntity2 = (LivingEntity)entity;
-			if (this.typeIndex == 2 && livingEntity2.getGroup() == EntityGroup.ARTHROPOD) {
+			if (this.typeIndex == 2 && livingEntity2.method_6046() == EntityGroup.ARTHROPOD) {
 				int j = 20 + livingEntity.getRand().nextInt(10 * i);
 				livingEntity2.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5909, j, 3));
 			}

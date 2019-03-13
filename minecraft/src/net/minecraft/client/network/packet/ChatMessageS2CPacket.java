@@ -27,18 +27,18 @@ public class ChatMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.message = packetByteBuf.readTextComponent();
+		this.message = packetByteBuf.method_10808();
 		this.location = ChatMessageType.byId(packetByteBuf.readByte());
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeTextComponent(this.message);
+		packetByteBuf.method_10805(this.message);
 		packetByteBuf.writeByte(this.location.getId());
 	}
 
 	public void method_11386(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onChatMessage(this);
+		clientPlayPacketListener.method_11121(this);
 	}
 
 	@Environment(EnvType.CLIENT)

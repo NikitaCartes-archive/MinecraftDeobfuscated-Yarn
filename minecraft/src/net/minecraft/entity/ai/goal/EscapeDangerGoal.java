@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import javax.annotation.Nullable;
 import net.minecraft.class_1414;
 import net.minecraft.entity.Entity;
@@ -19,7 +20,7 @@ public class EscapeDangerGoal extends Goal {
 	public EscapeDangerGoal(MobEntityWithAi mobEntityWithAi, double d) {
 		this.owner = mobEntityWithAi;
 		this.speed = d;
-		this.setControlBits(1);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 	}
 
 	@Override
@@ -28,7 +29,7 @@ public class EscapeDangerGoal extends Goal {
 			return false;
 		} else {
 			if (this.owner.isOnFire()) {
-				BlockPos blockPos = this.locateClosestWater(this.owner.world, this.owner, 5, 4);
+				BlockPos blockPos = this.method_6300(this.owner.field_6002, this.owner, 5, 4);
 				if (blockPos != null) {
 					this.targetX = (double)blockPos.getX();
 					this.targetY = (double)blockPos.getY();
@@ -55,16 +56,16 @@ public class EscapeDangerGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.owner.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
+		this.owner.method_5942().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.owner.getNavigation().isIdle();
+		return !this.owner.method_5942().isIdle();
 	}
 
 	@Nullable
-	protected BlockPos locateClosestWater(BlockView blockView, Entity entity, int i, int j) {
+	protected BlockPos method_6300(BlockView blockView, Entity entity, int i, int j) {
 		BlockPos blockPos = new BlockPos(entity);
 		int k = blockPos.getX();
 		int l = blockPos.getY();
@@ -77,7 +78,7 @@ public class EscapeDangerGoal extends Goal {
 			for (int o = l - j; o <= l + j; o++) {
 				for (int p = m - i; p <= m + i; p++) {
 					mutable.set(n, o, p);
-					if (blockView.getFluidState(mutable).matches(FluidTags.field_15517)) {
+					if (blockView.method_8316(mutable).method_15767(FluidTags.field_15517)) {
 						float g = (float)((n - k) * (n - k) + (o - l) * (o - l) + (p - m) * (p - m));
 						if (g < f) {
 							f = g;

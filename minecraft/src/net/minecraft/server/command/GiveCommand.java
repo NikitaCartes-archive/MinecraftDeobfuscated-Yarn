@@ -52,16 +52,16 @@ public class GiveCommand {
 				int k = Math.min(arg.method_9785().getMaxAmount(), j);
 				j -= k;
 				ItemStack itemStack = arg.method_9781(k, false);
-				boolean bl = serverPlayerEntity.inventory.insertStack(itemStack);
+				boolean bl = serverPlayerEntity.inventory.method_7394(itemStack);
 				if (bl && itemStack.isEmpty()) {
 					itemStack.setAmount(1);
-					ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
+					ItemEntity itemEntity = serverPlayerEntity.method_7328(itemStack, false);
 					if (itemEntity != null) {
 						itemEntity.method_6987();
 					}
 
-					serverPlayerEntity.world
-						.playSound(
+					serverPlayerEntity.field_6002
+						.method_8465(
 							null,
 							serverPlayerEntity.x,
 							serverPlayerEntity.y,
@@ -71,9 +71,9 @@ public class GiveCommand {
 							0.2F,
 							((serverPlayerEntity.getRand().nextFloat() - serverPlayerEntity.getRand().nextFloat()) * 0.7F + 1.0F) * 2.0F
 						);
-					serverPlayerEntity.containerPlayer.sendContentUpdates();
+					serverPlayerEntity.field_7498.sendContentUpdates();
 				} else {
-					ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
+					ItemEntity itemEntity = serverPlayerEntity.method_7328(itemStack, false);
 					if (itemEntity != null) {
 						itemEntity.resetPickupDelay();
 						itemEntity.setOwner(serverPlayerEntity.getUuid());
@@ -83,15 +83,15 @@ public class GiveCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent(
-					"commands.give.success.single", i, arg.method_9781(i, false).toTextComponent(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+					"commands.give.success.single", i, arg.method_9781(i, false).method_7954(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()
 				),
 				true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.give.success.single", i, arg.method_9781(i, false).toTextComponent(), collection.size()), true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.give.success.single", i, arg.method_9781(i, false).method_7954(), collection.size()), true
 			);
 		}
 

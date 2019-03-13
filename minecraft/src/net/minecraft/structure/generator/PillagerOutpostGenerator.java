@@ -18,20 +18,21 @@ import net.minecraft.structure.processor.BlockRotStructureProcessor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class PillagerOutpostGenerator {
-	public static void addPieces(
+	public static void method_16650(
 		ChunkGenerator<?> chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<StructurePiece> list, ChunkRandom chunkRandom
 	) {
-		StructurePoolBasedGenerator.addPieces(
+		StructurePoolBasedGenerator.method_16605(
 			new Identifier("pillager_outpost/base_plates"), 7, PillagerOutpostGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
 		);
 	}
 
 	static {
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("pillager_outpost/base_plates"),
@@ -40,7 +41,7 @@ public class PillagerOutpostGenerator {
 					StructurePool.Projection.RIGID
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("pillager_outpost/towers"),
@@ -59,7 +60,7 @@ public class PillagerOutpostGenerator {
 					StructurePool.Projection.RIGID
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("pillager_outpost/feature_plates"),
@@ -68,7 +69,7 @@ public class PillagerOutpostGenerator {
 					StructurePool.Projection.TERRAIN_MATCHING
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("pillager_outpost/features"),
@@ -88,8 +89,15 @@ public class PillagerOutpostGenerator {
 	}
 
 	public static class Piece extends PoolStructurePiece {
-		public Piece(StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, Rotation rotation) {
-			super(StructurePieceType.PILLAGER_OUTPOST, structureManager, structurePoolElement, blockPos, i, rotation);
+		public Piece(
+			StructureManager structureManager,
+			StructurePoolElement structurePoolElement,
+			BlockPos blockPos,
+			int i,
+			Rotation rotation,
+			MutableIntBoundingBox mutableIntBoundingBox
+		) {
+			super(StructurePieceType.PILLAGER_OUTPOST, structureManager, structurePoolElement, blockPos, i, rotation, mutableIntBoundingBox);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {

@@ -28,12 +28,12 @@ public class ParticleArgumentType implements ArgumentType<ParticleParameters> {
 		return new ParticleArgumentType();
 	}
 
-	public static ParticleParameters getParticleArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static ParticleParameters method_9421(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, ParticleParameters.class);
 	}
 
 	public ParticleParameters method_9416(StringReader stringReader) throws CommandSyntaxException {
-		return readParameters(stringReader);
+		return method_9418(stringReader);
 	}
 
 	@Override
@@ -41,16 +41,16 @@ public class ParticleArgumentType implements ArgumentType<ParticleParameters> {
 		return EXAMPLES;
 	}
 
-	public static ParticleParameters readParameters(StringReader stringReader) throws CommandSyntaxException {
+	public static ParticleParameters method_9418(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
 		ParticleType<?> particleType = (ParticleType<?>)Registry.PARTICLE_TYPE
-			.getOrEmpty(identifier)
+			.method_17966(identifier)
 			.orElseThrow(() -> UNKNOWN_PARTICLE_EXCEPTION.create(identifier));
-		return readParameters(stringReader, (ParticleType<ParticleParameters>)particleType);
+		return method_9420(stringReader, (ParticleType<ParticleParameters>)particleType);
 	}
 
-	private static <T extends ParticleParameters> T readParameters(StringReader stringReader, ParticleType<T> particleType) throws CommandSyntaxException {
-		return particleType.getParametersFactory().read(particleType, stringReader);
+	private static <T extends ParticleParameters> T method_9420(StringReader stringReader, ParticleType<T> particleType) throws CommandSyntaxException {
+		return particleType.getParametersFactory().method_10296(particleType, stringReader);
 	}
 
 	@Override

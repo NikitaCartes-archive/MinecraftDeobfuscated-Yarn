@@ -10,12 +10,12 @@ public class DedicatedPlayerManager extends PlayerManager {
 	private static final Logger field_13804 = LogManager.getLogger();
 
 	public DedicatedPlayerManager(MinecraftDedicatedServer minecraftDedicatedServer) {
-		super(minecraftDedicatedServer, minecraftDedicatedServer.getProperties().maxPlayers);
-		ServerPropertiesHandler serverPropertiesHandler = minecraftDedicatedServer.getProperties();
+		super(minecraftDedicatedServer, minecraftDedicatedServer.method_16705().maxPlayers);
+		ServerPropertiesHandler serverPropertiesHandler = minecraftDedicatedServer.method_16705();
 		this.setViewDistance(serverPropertiesHandler.viewDistance, serverPropertiesHandler.viewDistance - 2);
-		super.setWhitelistEnabled(serverPropertiesHandler.whiteList.get());
+		super.setWhitelistEnabled(serverPropertiesHandler.field_16804.get());
 		if (!minecraftDedicatedServer.isSinglePlayer()) {
-			this.getUserBanList().setEnabled(true);
+			this.method_14563().setEnabled(true);
 			this.getIpBanList().setEnabled(true);
 		}
 
@@ -26,7 +26,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		this.loadOpList();
 		this.loadWhitelist();
 		this.saveOpList();
-		if (!this.getWhitelist().getFile().exists()) {
+		if (!this.method_14590().getFile().exists()) {
 			this.saveWhitelist();
 		}
 	}
@@ -64,7 +64,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	private void saveUserBanList() {
 		try {
-			this.getUserBanList().save();
+			this.method_14563().save();
 		} catch (IOException var2) {
 			field_13804.warn("Failed to save user banlist: ", (Throwable)var2);
 		}
@@ -80,7 +80,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	private void loadUserBanList() {
 		try {
-			this.getUserBanList().load();
+			this.method_14563().load();
 		} catch (IOException var2) {
 			field_13804.warn("Failed to load user banlist: ", (Throwable)var2);
 		}
@@ -88,7 +88,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	private void loadOpList() {
 		try {
-			this.getOpList().load();
+			this.method_14603().load();
 		} catch (Exception var2) {
 			field_13804.warn("Failed to load operators list: ", (Throwable)var2);
 		}
@@ -96,7 +96,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	private void saveOpList() {
 		try {
-			this.getOpList().save();
+			this.method_14603().save();
 		} catch (Exception var2) {
 			field_13804.warn("Failed to save operators list: ", (Throwable)var2);
 		}
@@ -104,7 +104,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	private void loadWhitelist() {
 		try {
-			this.getWhitelist().load();
+			this.method_14590().load();
 		} catch (Exception var2) {
 			field_13804.warn("Failed to load white-list: ", (Throwable)var2);
 		}
@@ -112,7 +112,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	private void saveWhitelist() {
 		try {
-			this.getWhitelist().save();
+			this.method_14590().save();
 		} catch (Exception var2) {
 			field_13804.warn("Failed to save white-list: ", (Throwable)var2);
 		}
@@ -120,7 +120,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	@Override
 	public boolean isWhitelisted(GameProfile gameProfile) {
-		return !this.isWhitelistEnabled() || this.isOperator(gameProfile) || this.getWhitelist().method_14653(gameProfile);
+		return !this.isWhitelistEnabled() || this.isOperator(gameProfile) || this.method_14590().method_14653(gameProfile);
 	}
 
 	public MinecraftDedicatedServer method_13938() {
@@ -129,6 +129,6 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	@Override
 	public boolean canBypassPlayerLimit(GameProfile gameProfile) {
-		return this.getOpList().isOp(gameProfile);
+		return this.method_14603().isOp(gameProfile);
 	}
 }

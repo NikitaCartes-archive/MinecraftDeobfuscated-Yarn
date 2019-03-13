@@ -2,23 +2,23 @@ package net.minecraft.client.gui.menu;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
 public class DirectConnectServerScreen extends Screen {
-	private ButtonWidget selectServerButton;
-	private final Screen parent;
-	private final ServerEntry serverEntry;
+	private class_4185 selectServerButton;
+	private final Screen field_2461;
+	private final ServerEntry field_2460;
 	private TextFieldWidget addressField;
 
 	public DirectConnectServerScreen(Screen screen, ServerEntry serverEntry) {
-		this.parent = screen;
-		this.serverEntry = serverEntry;
+		this.field_2461 = screen;
+		this.field_2460 = serverEntry;
 	}
 
 	@Override
@@ -29,26 +29,25 @@ public class DirectConnectServerScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.selectServerButton = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 12, I18n.translate("selectServer.select")) {
-				@Override
-				public void onPressed(double d, double e) {
-					DirectConnectServerScreen.this.saveAndClose();
-				}
-			}
-		);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, I18n.translate("gui.cancel")) {
+		this.selectServerButton = this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 12, I18n.translate("selectServer.select")) {
 			@Override
-			public void onPressed(double d, double e) {
-				DirectConnectServerScreen.this.parent.confirmResult(false, 0);
+			public void method_1826() {
+				DirectConnectServerScreen.this.saveAndClose();
+			}
+		});
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, I18n.translate("gui.cancel")) {
+			@Override
+			public void method_1826() {
+				DirectConnectServerScreen.this.field_2461.confirmResult(false, 0);
 			}
 		});
 		this.addressField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 116, 200, 20);
 		this.addressField.setMaxLength(128);
 		this.addressField.setFocused(true);
-		this.addressField.setText(this.client.options.lastServer);
+		this.addressField.setText(this.client.field_1690.lastServer);
+		this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
 		this.listeners.add(this.addressField);
-		this.setFocused(this.addressField);
+		this.method_18624(this.addressField);
 		this.onAddressFieldChanged();
 	}
 
@@ -60,47 +59,19 @@ public class DirectConnectServerScreen extends Screen {
 	}
 
 	private void saveAndClose() {
-		this.serverEntry.address = this.addressField.getText();
-		this.parent.confirmResult(true, 0);
+		this.field_2460.address = this.addressField.getText();
+		this.field_2461.confirmResult(true, 0);
 	}
 
 	@Override
 	public void onClosed() {
 		this.client.keyboard.enableRepeatEvents(false);
-		this.client.options.lastServer = this.addressField.getText();
-		this.client.options.write();
-	}
-
-	@Override
-	public boolean charTyped(char c, int i) {
-		if (this.addressField.charTyped(c, i)) {
-			this.onAddressFieldChanged();
-			return true;
-		} else {
-			return false;
-		}
+		this.client.field_1690.lastServer = this.addressField.getText();
+		this.client.field_1690.write();
 	}
 
 	private void onAddressFieldChanged() {
 		this.selectServerButton.enabled = !this.addressField.getText().isEmpty() && this.addressField.getText().split(":").length > 0;
-	}
-
-	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (i != 257 && i != 335) {
-			if (super.keyPressed(i, j, k)) {
-				this.onAddressFieldChanged();
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			if (this.selectServerButton.enabled) {
-				this.saveAndClose();
-			}
-
-			return true;
-		}
 	}
 
 	@Override

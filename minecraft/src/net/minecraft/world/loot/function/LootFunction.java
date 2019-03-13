@@ -20,16 +20,16 @@ public interface LootFunction extends ParameterConsumer, BiFunction<ItemStack, L
 	}
 
 	public abstract static class Factory<T extends LootFunction> {
-		private final Identifier id;
+		private final Identifier field_1045;
 		private final Class<T> functionClass;
 
 		protected Factory(Identifier identifier, Class<T> class_) {
-			this.id = identifier;
+			this.field_1045 = identifier;
 			this.functionClass = class_;
 		}
 
-		public Identifier getId() {
-			return this.id;
+		public Identifier method_518() {
+			return this.field_1045;
 		}
 
 		public Class<T> getFunctionClass() {

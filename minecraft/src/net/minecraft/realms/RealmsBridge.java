@@ -27,7 +27,7 @@ public class RealmsBridge extends RealmsScreen {
 			Constructor<?> constructor = class_.getDeclaredConstructor(RealmsScreen.class);
 			constructor.setAccessible(true);
 			Object object = constructor.newInstance(this);
-			MinecraftClient.getInstance().openScreen(((RealmsScreen)object).getProxy());
+			MinecraftClient.getInstance().method_1507(((RealmsScreen)object).getProxy());
 		} catch (ClassNotFoundException var5) {
 			LOGGER.error("Realms module missing");
 			this.showMissingRealmsErrorScreen();
@@ -56,7 +56,7 @@ public class RealmsBridge extends RealmsScreen {
 
 	@Override
 	public void init() {
-		MinecraftClient.getInstance().openScreen(this.previousScreen);
+		MinecraftClient.getInstance().method_1507(this.previousScreen);
 	}
 
 	public static void openUri(String string) {
@@ -69,9 +69,9 @@ public class RealmsBridge extends RealmsScreen {
 
 	private void showMissingRealmsErrorScreen() {
 		MinecraftClient.getInstance()
-			.openScreen(
+			.method_1507(
 				new class_403(
-					() -> MinecraftClient.getInstance().openScreen(this.previousScreen),
+					() -> MinecraftClient.getInstance().method_1507(this.previousScreen),
 					new StringTextComponent(""),
 					new TranslatableTextComponent(SharedConstants.getGameVersion().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
 				)

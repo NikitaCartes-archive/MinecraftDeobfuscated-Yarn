@@ -25,7 +25,7 @@ public final class EntityPredicates {
 	}
 
 	public static Predicate<Entity> method_5911(Entity entity) {
-		AbstractScoreboardTeam abstractScoreboardTeam = entity.getScoreboardTeam();
+		AbstractScoreboardTeam abstractScoreboardTeam = entity.method_5781();
 		AbstractScoreboardTeam.CollisionRule collisionRule = abstractScoreboardTeam == null
 			? AbstractScoreboardTeam.CollisionRule.field_1437
 			: abstractScoreboardTeam.getCollisionRule();
@@ -35,8 +35,8 @@ public final class EntityPredicates {
 				entity2 -> {
 					if (!entity2.isPushable()) {
 						return false;
-					} else if (!entity.world.isClient || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).method_7340()) {
-						AbstractScoreboardTeam abstractScoreboardTeam2 = entity2.getScoreboardTeam();
+					} else if (!entity.field_6002.isClient || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).method_7340()) {
+						AbstractScoreboardTeam abstractScoreboardTeam2 = entity2.method_5781();
 						AbstractScoreboardTeam.CollisionRule collisionRule2 = abstractScoreboardTeam2 == null
 							? AbstractScoreboardTeam.CollisionRule.field_1437
 							: abstractScoreboardTeam2.getCollisionRule();
@@ -69,10 +69,10 @@ public final class EntityPredicates {
 	}
 
 	public static class CanPickup implements Predicate<Entity> {
-		private final ItemStack itemstack;
+		private final ItemStack field_6158;
 
 		public CanPickup(ItemStack itemStack) {
-			this.itemstack = itemStack;
+			this.field_6158 = itemStack;
 		}
 
 		public boolean method_5916(@Nullable Entity entity) {
@@ -82,7 +82,7 @@ public final class EntityPredicates {
 				return false;
 			} else {
 				LivingEntity livingEntity = (LivingEntity)entity;
-				return livingEntity.canPickUp(this.itemstack);
+				return livingEntity.method_18397(this.field_6158);
 			}
 		}
 	}

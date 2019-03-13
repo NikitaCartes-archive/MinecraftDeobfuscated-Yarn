@@ -34,17 +34,17 @@ public class AdvancementsProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void method_10319(DataCache dataCache) throws IOException {
 		Path path = this.root.getOutput();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		Consumer<SimpleAdvancement> consumer = simpleAdvancement -> {
-			if (!set.add(simpleAdvancement.getId())) {
-				throw new IllegalStateException("Duplicate advancement " + simpleAdvancement.getId());
+			if (!set.add(simpleAdvancement.method_688())) {
+				throw new IllegalStateException("Duplicate advancement " + simpleAdvancement.method_688());
 			} else {
-				Path path2 = getOutput(path, simpleAdvancement);
+				Path path2 = method_10334(path, simpleAdvancement);
 
 				try {
-					DataProvider.writeToPath(GSON, dataCache, simpleAdvancement.createTask().toJson(), path2);
+					DataProvider.method_10320(GSON, dataCache, simpleAdvancement.createTask().toJson(), path2);
 				} catch (IOException var6x) {
 					LOGGER.error("Couldn't save advancement {}", path2, var6x);
 				}
@@ -56,8 +56,8 @@ public class AdvancementsProvider implements DataProvider {
 		}
 	}
 
-	private static Path getOutput(Path path, SimpleAdvancement simpleAdvancement) {
-		return path.resolve("data/" + simpleAdvancement.getId().getNamespace() + "/advancements/" + simpleAdvancement.getId().getPath() + ".json");
+	private static Path method_10334(Path path, SimpleAdvancement simpleAdvancement) {
+		return path.resolve("data/" + simpleAdvancement.method_688().getNamespace() + "/advancements/" + simpleAdvancement.method_688().getPath() + ".json");
 	}
 
 	@Override

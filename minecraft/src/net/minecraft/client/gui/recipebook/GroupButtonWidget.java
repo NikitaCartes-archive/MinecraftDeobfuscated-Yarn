@@ -23,15 +23,17 @@ public class GroupButtonWidget extends ToggleButtonWidget {
 	public GroupButtonWidget(RecipeBookGroup recipeBookGroup) {
 		super(0, 0, 35, 27, false);
 		this.category = recipeBookGroup;
-		this.setTextureUV(153, 2, 35, 0, RecipeBookGui.TEXTURE);
+		this.method_1962(153, 2, 35, 0, RecipeBookGui.field_3097);
 	}
 
 	public void checkForNewRecipes(MinecraftClient minecraftClient) {
-		ClientRecipeBook clientRecipeBook = minecraftClient.player.getRecipeBook();
-		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
-		if (minecraftClient.player.container instanceof CraftingContainer) {
+		ClientRecipeBook clientRecipeBook = minecraftClient.field_1724.getRecipeBook();
+		List<RecipeResultCollection> list = clientRecipeBook.method_1396(this.category);
+		if (minecraftClient.field_1724.field_7512 instanceof CraftingContainer) {
 			for (RecipeResultCollection recipeResultCollection : list) {
-				for (Recipe<?> recipe : recipeResultCollection.getResults(clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)minecraftClient.player.container))) {
+				for (Recipe<?> recipe : recipeResultCollection.getResults(
+					clientRecipeBook.isFilteringCraftable((CraftingContainer<?>)minecraftClient.field_1724.field_7512)
+				)) {
 					if (clientRecipeBook.shouldDisplay(recipe)) {
 						this.bounce = 15.0F;
 						return;
@@ -52,7 +54,7 @@ public class GroupButtonWidget extends ToggleButtonWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.getTextureManager().bindTexture(this.texture);
+		minecraftClient.method_1531().method_4618(this.field_2193);
 		GlStateManager.disableDepthTest();
 		int k = this.u;
 		int l = this.v;
@@ -74,7 +76,7 @@ public class GroupButtonWidget extends ToggleButtonWidget {
 		GlStateManager.enableDepthTest();
 		GuiLighting.enableForItems();
 		GlStateManager.disableLighting();
-		this.method_2621(minecraftClient.getItemRenderer());
+		this.method_2621(minecraftClient.method_1480());
 		GlStateManager.enableLighting();
 		GuiLighting.disable();
 		if (this.bounce > 0.0F) {
@@ -99,7 +101,7 @@ public class GroupButtonWidget extends ToggleButtonWidget {
 	}
 
 	public boolean hasKnownRecipes(ClientRecipeBook clientRecipeBook) {
-		List<RecipeResultCollection> list = clientRecipeBook.getResultsForGroup(this.category);
+		List<RecipeResultCollection> list = clientRecipeBook.method_1396(this.category);
 		this.visible = false;
 		if (list != null) {
 			for (RecipeResultCollection recipeResultCollection : list) {

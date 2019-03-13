@@ -96,6 +96,13 @@ public class Vec3i implements Comparable<Vec3i> {
 		return this.squaredDistanceTo((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ());
 	}
 
+	public int method_19455(Vec3i vec3i) {
+		float f = (float)Math.abs(vec3i.getX() - this.x);
+		float g = (float)Math.abs(vec3i.getY() - this.y);
+		float h = (float)Math.abs(vec3i.getZ() - this.z);
+		return (int)(f + g + h);
+	}
+
 	public String toString() {
 		return MoreObjects.toStringHelper(this).add("x", this.getX()).add("y", this.getY()).add("z", this.getZ()).toString();
 	}

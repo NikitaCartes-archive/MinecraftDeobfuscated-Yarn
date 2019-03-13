@@ -68,7 +68,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 			GlStateManager.disableLighting();
 			GlStateManager.disableCull();
 			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 255.0F, 255.0F);
-			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+			bufferBuilder.method_1328(5, VertexFormats.field_1576);
 			int aa = 37;
 			int ab = 7 - x % 7;
 			double ac = 0.1;
@@ -92,7 +92,7 @@ public class TridentEntityRenderer extends EntityRenderer<TridentEntity> {
 			}
 
 			tessellator.draw();
-			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+			bufferBuilder.method_1328(5, VertexFormats.field_1576);
 
 			for (int adx = 0; adx <= 37; adx++) {
 				double ae = (double)adx / 37.0;

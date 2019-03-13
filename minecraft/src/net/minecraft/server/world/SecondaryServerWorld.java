@@ -23,12 +23,12 @@ public class SecondaryServerWorld extends ServerWorld {
 			minecraftServer,
 			executor,
 			worldSaveHandler,
-			new UnmodifiableLevelProperties(serverWorld.getLevelProperties()),
+			new UnmodifiableLevelProperties(serverWorld.method_8401()),
 			dimensionType,
 			profiler,
 			worldGenerationProgressListener
 		);
-		serverWorld.getWorldBorder().addListener(new WorldBorderListener.WorldBorderSyncer(this.getWorldBorder()));
+		serverWorld.method_8621().addListener(new WorldBorderListener.WorldBorderSyncer(this.method_8621()));
 	}
 
 	@Override

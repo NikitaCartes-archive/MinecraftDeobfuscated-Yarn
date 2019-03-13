@@ -39,7 +39,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 	protected abstract void configure();
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void method_10319(DataCache dataCache) throws IOException {
 		this.field_11481.clear();
 		this.configure();
 		TagContainer<T> tagContainer = new TagContainer<>(identifierx -> Optional.empty(), "", false, "generated");
@@ -51,8 +51,8 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 			}
 
 			Tag<T> tag = ((Tag.Builder)entry.getValue()).build(identifier);
-			JsonObject jsonObject = tag.toJson(this.registry::getId);
-			Path path = this.getOutput(identifier);
+			JsonObject jsonObject = tag.toJson(this.registry::method_10221);
+			Path path = this.method_10510(identifier);
 			tagContainer.add(tag);
 			this.method_10511(tagContainer);
 
@@ -93,7 +93,7 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 
 	protected abstract void method_10511(TagContainer<T> tagContainer);
 
-	protected abstract Path getOutput(Identifier identifier);
+	protected abstract Path method_10510(Identifier identifier);
 
 	protected Tag.Builder<T> method_10512(Tag<T> tag) {
 		return (Tag.Builder<T>)this.field_11481.computeIfAbsent(tag, tagx -> Tag.Builder.create());

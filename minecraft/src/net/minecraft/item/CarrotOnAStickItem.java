@@ -14,8 +14,8 @@ public class CarrotOnAStickItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
@@ -25,7 +25,7 @@ public class CarrotOnAStickItem extends Item {
 					itemStack.applyDamage(7, playerEntity);
 					if (itemStack.isEmpty()) {
 						ItemStack itemStack2 = new ItemStack(Items.field_8378);
-						itemStack2.setTag(itemStack.getTag());
+						itemStack2.method_7980(itemStack.method_7969());
 						return new TypedActionResult<>(ActionResult.field_5812, itemStack2);
 					}
 
@@ -33,7 +33,7 @@ public class CarrotOnAStickItem extends Item {
 				}
 			}
 
-			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		}
 	}

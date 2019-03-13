@@ -4,6 +4,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.mojang.datafixers.DataFixUtils;
+import com.mojang.datafixers.Dynamic;
 import it.unimi.dsi.fastutil.Hash.Strategy;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -65,7 +67,7 @@ public class SystemUtil {
 		return property.getValueAsString((T)object);
 	}
 
-	public static String createTranslationKey(String string, @Nullable Identifier identifier) {
+	public static String method_646(String string, @Nullable Identifier identifier) {
 		return identifier == null ? string + ".unregistered_sadface" : string + '.' + identifier.getNamespace() + '.' + identifier.getPath().replace('/', '.');
 	}
 
@@ -115,6 +117,13 @@ public class SystemUtil {
 		if (!bl) {
 			SERVER_WORKER_EXECUTOR.shutdownNow();
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static <T> CompletableFuture<T> method_19483(Throwable throwable) {
+		CompletableFuture<T> completableFuture = new CompletableFuture();
+		completableFuture.completeExceptionally(throwable);
+		return completableFuture;
 	}
 
 	public static SystemUtil.OperatingSystem getOperatingSystem() {
@@ -250,6 +259,17 @@ public class SystemUtil {
 
 	public static Runnable method_18839(Runnable runnable, Supplier<String> supplier) {
 		return runnable;
+	}
+
+	public static Optional<UUID> method_19481(String string, Dynamic<?> dynamic) {
+		return dynamic.get(string + "Most")
+			.asNumber()
+			.flatMap(number -> dynamic.get(string + "Least").asNumber().map(number2 -> new UUID(number.longValue(), number2.longValue())));
+	}
+
+	public static <T> Dynamic<T> method_19482(String string, UUID uUID, Dynamic<T> dynamic) {
+		return dynamic.set(string + "Most", dynamic.createLong(uUID.getMostSignificantBits()))
+			.set(string + "Least", dynamic.createLong(uUID.getLeastSignificantBits()));
 	}
 
 	static enum IdentityHashStrategy implements Strategy<Object> {

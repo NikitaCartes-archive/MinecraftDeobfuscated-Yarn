@@ -45,11 +45,11 @@ public class NamespaceResourceManager implements ResourceManager {
 
 		for (int i = this.packList.size() - 1; i >= 0; i--) {
 			ResourcePack resourcePack2 = (ResourcePack)this.packList.get(i);
-			if (resourcePack == null && resourcePack2.contains(this.type, identifier2)) {
+			if (resourcePack == null && resourcePack2.method_14411(this.type, identifier2)) {
 				resourcePack = resourcePack2;
 			}
 
-			if (resourcePack2.contains(this.type, identifier)) {
+			if (resourcePack2.method_14411(this.type, identifier)) {
 				InputStream inputStream = null;
 				if (resourcePack != null) {
 					inputStream = this.open(identifier2, resourcePack);
@@ -70,7 +70,7 @@ public class NamespaceResourceManager implements ResourceManager {
 		} else {
 			for (int i = this.packList.size() - 1; i >= 0; i--) {
 				ResourcePack resourcePack = (ResourcePack)this.packList.get(i);
-				if (resourcePack.contains(this.type, identifier)) {
+				if (resourcePack.method_14411(this.type, identifier)) {
 					return true;
 				}
 			}
@@ -80,7 +80,7 @@ public class NamespaceResourceManager implements ResourceManager {
 	}
 
 	protected InputStream open(Identifier identifier, ResourcePack resourcePack) throws IOException {
-		InputStream inputStream = resourcePack.open(this.type, identifier);
+		InputStream inputStream = resourcePack.method_14405(this.type, identifier);
 		return (InputStream)(LOGGER.isDebugEnabled() ? new NamespaceResourceManager.DebugInputStream(inputStream, identifier, resourcePack.getName()) : inputStream);
 	}
 
@@ -101,8 +101,8 @@ public class NamespaceResourceManager implements ResourceManager {
 		Identifier identifier2 = getMetadataPath(identifier);
 
 		for (ResourcePack resourcePack : this.packList) {
-			if (resourcePack.contains(this.type, identifier)) {
-				InputStream inputStream = resourcePack.contains(this.type, identifier2) ? this.open(identifier2, resourcePack) : null;
+			if (resourcePack.method_14411(this.type, identifier)) {
+				InputStream inputStream = resourcePack.method_14411(this.type, identifier2) ? this.open(identifier2, resourcePack) : null;
 				list.add(new ResourceImpl(resourcePack.getName(), identifier, this.open(identifier, resourcePack), inputStream));
 			}
 		}
@@ -119,7 +119,7 @@ public class NamespaceResourceManager implements ResourceManager {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 
 		for (ResourcePack resourcePack : this.packList) {
-			list.addAll(resourcePack.findResources(this.type, string, Integer.MAX_VALUE, predicate));
+			list.addAll(resourcePack.method_14408(this.type, string, Integer.MAX_VALUE, predicate));
 		}
 
 		Collections.sort(list);

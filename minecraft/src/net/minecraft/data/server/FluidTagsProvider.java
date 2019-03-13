@@ -21,7 +21,7 @@ public class FluidTagsProvider extends AbstractTagProvider<Fluid> {
 	}
 
 	@Override
-	protected Path getOutput(Identifier identifier) {
+	protected Path method_10510(Identifier identifier) {
 		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/fluids/" + identifier.getPath() + ".json");
 	}
 
@@ -32,6 +32,6 @@ public class FluidTagsProvider extends AbstractTagProvider<Fluid> {
 
 	@Override
 	protected void method_10511(TagContainer<Fluid> tagContainer) {
-		FluidTags.setContainer(tagContainer);
+		FluidTags.method_15096(tagContainer);
 	}
 }

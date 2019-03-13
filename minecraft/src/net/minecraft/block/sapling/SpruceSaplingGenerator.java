@@ -10,13 +10,13 @@ import net.minecraft.world.gen.feature.SpruceTreeFeature;
 public class SpruceSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> method_11430(Random random) {
 		return new SpruceTreeFeature(DefaultFeatureConfig::deserialize, true);
 	}
 
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> createLargeTreeFeature(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> method_11443(Random random) {
 		return new MegaPineTreeFeature(DefaultFeatureConfig::deserialize, false, random.nextBoolean());
 	}
 }

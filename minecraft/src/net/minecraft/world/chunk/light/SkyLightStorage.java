@@ -15,7 +15,7 @@ import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.WorldNibbleStorage;
 
 public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
-	private static final Direction[] DIRECTIONS_SKYLIGHT = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
+	private static final Direction[] field_15818 = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 	private final LongSet field_15820 = new LongOpenHashSet();
 	private final LongSet field_15815 = new LongOpenHashSet();
 	private final LongSet field_15816 = new LongOpenHashSet();
@@ -165,7 +165,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 							int k = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l));
 							int m = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l));
 
-							for (Direction direction : DIRECTIONS_SKYLIGHT) {
+							for (Direction direction : field_15818) {
 								long n = ChunkSectionPos.offsetPacked(l, direction);
 								if ((this.field_15816.contains(n) || !this.field_15820.contains(n) && !this.field_15815.contains(n)) && this.hasChunk(n)) {
 									for (int o = 0; o < 16; o++) {

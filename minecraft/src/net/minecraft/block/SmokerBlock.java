@@ -21,31 +21,31 @@ public class SmokerBlock extends AbstractFurnaceBlock {
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity method_10123(BlockView blockView) {
 		return new SmokerBlockEntity();
 	}
 
 	@Override
-	protected void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	protected void method_17025(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+		BlockEntity blockEntity = world.method_8321(blockPos);
 		if (blockEntity instanceof SmokerBlockEntity) {
 			playerEntity.openContainer((NameableContainerProvider)blockEntity);
-			playerEntity.increaseStat(Stats.field_17273);
+			playerEntity.method_7281(Stats.field_17273);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.get(LIT)) {
+	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.method_11654(field_11105)) {
 			double d = (double)blockPos.getX() + 0.5;
 			double e = (double)blockPos.getY();
 			double f = (double)blockPos.getZ() + 0.5;
 			if (random.nextDouble() < 0.1) {
-				world.playSound(d, e, f, SoundEvents.field_17618, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				world.method_8486(d, e, f, SoundEvents.field_17618, SoundCategory.field_15245, 1.0F, 1.0F, false);
 			}
 
-			world.addParticle(ParticleTypes.field_11251, d, e + 1.1, f, 0.0, 0.0, 0.0);
+			world.method_8406(ParticleTypes.field_11251, d, e + 1.1, f, 0.0, 0.0, 0.0);
 		}
 	}
 }

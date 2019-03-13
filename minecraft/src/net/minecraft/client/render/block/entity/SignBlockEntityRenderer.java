@@ -24,38 +24,38 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity> {
-	private static final Identifier OAK_TEX = new Identifier("textures/entity/signs/oak.png");
-	private static final Identifier SPRUCE_TEX = new Identifier("textures/entity/signs/spruce.png");
-	private static final Identifier BIRCH_TEX = new Identifier("textures/entity/signs/birch.png");
-	private static final Identifier ACACIA_TEX = new Identifier("textures/entity/signs/acacia.png");
-	private static final Identifier JUNGLE_TEX = new Identifier("textures/entity/signs/jungle.png");
-	private static final Identifier DARK_OAK_TEX = new Identifier("textures/entity/signs/dark_oak.png");
+	private static final Identifier field_4396 = new Identifier("textures/entity/signs/oak.png");
+	private static final Identifier field_4397 = new Identifier("textures/entity/signs/spruce.png");
+	private static final Identifier field_4395 = new Identifier("textures/entity/signs/birch.png");
+	private static final Identifier field_4394 = new Identifier("textures/entity/signs/acacia.png");
+	private static final Identifier field_4399 = new Identifier("textures/entity/signs/jungle.png");
+	private static final Identifier field_4400 = new Identifier("textures/entity/signs/dark_oak.png");
 	private final SignBlockEntityModel model = new SignBlockEntityModel();
 
 	public void method_3582(SignBlockEntity signBlockEntity, double d, double e, double f, float g, int i) {
-		BlockState blockState = signBlockEntity.getCachedState();
+		BlockState blockState = signBlockEntity.method_11010();
 		GlStateManager.pushMatrix();
 		float h = 0.6666667F;
-		if (blockState.getBlock().matches(BlockTags.field_15472)) {
+		if (blockState.getBlock().method_9525(BlockTags.field_15472)) {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((float)((Integer)blockState.get(StandingSignBlock.ROTATION) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
-			this.model.getSignpostModel().visible = true;
+			GlStateManager.rotatef(-((float)((Integer)blockState.method_11654(StandingSignBlock.field_11559) * 360) / 16.0F), 0.0F, 1.0F, 0.0F);
+			this.model.method_2832().visible = true;
 		} else {
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-			GlStateManager.rotatef(-((Direction)blockState.get(WallSignBlock.FACING)).asRotation(), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-((Direction)blockState.method_11654(WallSignBlock.field_11726)).asRotation(), 0.0F, 1.0F, 0.0F);
 			GlStateManager.translatef(0.0F, -0.3125F, -0.4375F);
-			this.model.getSignpostModel().visible = false;
+			this.model.method_2832().visible = false;
 		}
 
 		if (i >= 0) {
-			this.bindTexture(DESTROY_STAGE_TEXTURES[i]);
+			this.method_3566(field_4368[i]);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(4.0F, 2.0F, 1.0F);
 			GlStateManager.translatef(0.0625F, 0.0625F, 0.0625F);
 			GlStateManager.matrixMode(5888);
 		} else {
-			this.bindTexture(this.getModelTexture(blockState.getBlock()));
+			this.method_3566(this.method_3584(blockState.getBlock()));
 		}
 
 		GlStateManager.enableRescaleNormal();
@@ -73,16 +73,16 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
 				String string = signBlockEntity.getTextBeingEditedOnRow(l, textComponent -> {
-					List<TextComponent> list = TextComponentUtil.wrapLines(textComponent, 90, textRenderer, false, true);
+					List<TextComponent> list = TextComponentUtil.method_1850(textComponent, 90, textRenderer, false, true);
 					return list.isEmpty() ? "" : ((TextComponent)list.get(0)).getFormattedText();
 				});
 				if (string != null) {
-					textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.text.length * 5), k);
+					textRenderer.draw(string, (float)(-textRenderer.getStringWidth(string) / 2), (float)(l * 10 - signBlockEntity.field_12050.length * 5), k);
 					if (l == signBlockEntity.getCurrentRow() && signBlockEntity.getSelectionStart() >= 0) {
 						int m = textRenderer.getStringWidth(string.substring(0, Math.max(Math.min(signBlockEntity.getSelectionStart(), string.length()), 0)));
 						int n = textRenderer.isRightToLeft() ? -1 : 1;
 						int o = (m - textRenderer.getStringWidth(string) / 2) * n;
-						int p = l * 10 - signBlockEntity.text.length * 5;
+						int p = l * 10 - signBlockEntity.field_12050.length * 5;
 						if (signBlockEntity.isCaretVisible()) {
 							if (signBlockEntity.getSelectionStart() < string.length()) {
 								DrawableHelper.drawRect(o, p - 1, o + 1, p + 9, 0xFF000000 | k);
@@ -113,19 +113,19 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		}
 	}
 
-	private Identifier getModelTexture(Block block) {
+	private Identifier method_3584(Block block) {
 		if (block == Blocks.field_10121 || block == Blocks.field_10187) {
-			return OAK_TEX;
+			return field_4396;
 		} else if (block == Blocks.field_10411 || block == Blocks.field_10088) {
-			return SPRUCE_TEX;
+			return field_4397;
 		} else if (block == Blocks.field_10231 || block == Blocks.field_10391) {
-			return BIRCH_TEX;
+			return field_4395;
 		} else if (block == Blocks.field_10284 || block == Blocks.field_10401) {
-			return ACACIA_TEX;
+			return field_4394;
 		} else if (block == Blocks.field_10544 || block == Blocks.field_10587) {
-			return JUNGLE_TEX;
+			return field_4399;
 		} else {
-			return block != Blocks.field_10330 && block != Blocks.field_10265 ? OAK_TEX : DARK_OAK_TEX;
+			return block != Blocks.field_10330 && block != Blocks.field_10265 ? field_4396 : field_4400;
 		}
 	}
 
@@ -136,7 +136,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
 		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
-		bufferBuilder.begin(7, VertexFormats.POSITION);
+		bufferBuilder.method_1328(7, VertexFormats.field_1592);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)j, 0.0).next();

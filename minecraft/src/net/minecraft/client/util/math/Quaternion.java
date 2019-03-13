@@ -4,7 +4,6 @@ import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-@Environment(EnvType.CLIENT)
 public final class Quaternion {
 	private final float[] components;
 
@@ -34,6 +33,7 @@ public final class Quaternion {
 		this.components[3] = method_16003(f / 2.0F);
 	}
 
+	@Environment(EnvType.CLIENT)
 	public Quaternion(float f, float g, float h, boolean bl) {
 		if (bl) {
 			f *= (float) (Math.PI / 180.0);

@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityData;
@@ -19,7 +20,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
 
 public abstract class PatrolEntity extends HostileEntity {
-	private BlockPos patrolTarget;
+	private BlockPos field_16478;
 	private boolean patrolLeader;
 	private boolean patrolling;
 
@@ -30,14 +31,14 @@ public abstract class PatrolEntity extends HostileEntity {
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.goalSelector.add(4, new PatrolEntity.PatrolGoal<>(this, 0.7, 0.595));
+		this.field_6201.add(4, new PatrolEntity.PatrolGoal<>(this, 0.7, 0.595));
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		if (this.patrolTarget != null) {
-			compoundTag.put("PatrolTarget", TagHelper.serializeBlockPos(this.patrolTarget));
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
+		if (this.field_16478 != null) {
+			compoundTag.method_10566("PatrolTarget", TagHelper.serializeBlockPos(this.field_16478));
 		}
 
 		compoundTag.putBoolean("PatrolLeader", this.patrolLeader);
@@ -45,10 +46,10 @@ public abstract class PatrolEntity extends HostileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		if (compoundTag.containsKey("PatrolTarget")) {
-			this.patrolTarget = TagHelper.deserializeBlockPos(compoundTag.getCompound("PatrolTarget"));
+			this.field_16478 = TagHelper.deserializeBlockPos(compoundTag.getCompound("PatrolTarget"));
 		}
 
 		this.patrolLeader = compoundTag.getBoolean("PatrolLeader");
@@ -66,7 +67,7 @@ public abstract class PatrolEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (spawnType != SpawnType.field_16527 && spawnType != SpawnType.field_16467 && this.random.nextFloat() < 0.06F && this.canLead()) {
@@ -74,7 +75,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		if (this.isPatrolLeader()) {
-			this.setEquippedStack(EquipmentSlot.HEAD, Raid.ILLAGER_BANNER);
+			this.method_5673(EquipmentSlot.HEAD, Raid.field_16609);
 			this.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
 		}
 
@@ -82,7 +83,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			this.patrolling = true;
 		}
 
-		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -90,17 +91,17 @@ public abstract class PatrolEntity extends HostileEntity {
 		return !this.patrolling || d > 16384.0;
 	}
 
-	public void setRaidCenter(BlockPos blockPos) {
-		this.patrolTarget = blockPos;
+	public void method_16216(BlockPos blockPos) {
+		this.field_16478 = blockPos;
 		this.patrolling = true;
 	}
 
-	public BlockPos getPatrolTarget() {
-		return this.patrolTarget;
+	public BlockPos method_16215() {
+		return this.field_16478;
 	}
 
 	public boolean hasPatrolTarget() {
-		return this.patrolTarget != null;
+		return this.field_16478 != null;
 	}
 
 	public void setPatrolLeader(boolean bl) {
@@ -117,7 +118,7 @@ public abstract class PatrolEntity extends HostileEntity {
 	}
 
 	public void setRandomRaidCenter() {
-		this.patrolTarget = new BlockPos(this).add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
+		this.field_16478 = new BlockPos(this).add(-500 + this.random.nextInt(1000), 0, -500 + this.random.nextInt(1000));
 		this.patrolling = true;
 	}
 
@@ -134,7 +135,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			this.field_16481 = patrolEntity;
 			this.field_16480 = d;
 			this.field_16535 = e;
-			this.setControlBits(1);
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override
@@ -153,28 +154,28 @@ public abstract class PatrolEntity extends HostileEntity {
 		@Override
 		public void tick() {
 			boolean bl = this.field_16481.isPatrolLeader();
-			EntityNavigation entityNavigation = this.field_16481.getNavigation();
+			EntityNavigation entityNavigation = this.field_16481.method_5942();
 			if (entityNavigation.isIdle()) {
-				double d = this.field_16481.squaredDistanceTo(this.field_16481.getPatrolTarget());
+				double d = this.field_16481.method_5831(this.field_16481.method_16215());
 				if (bl && !(d >= 100.0)) {
 					this.field_16481.setRandomRaidCenter();
 				} else {
-					Vec3d vec3d = new Vec3d(this.field_16481.getPatrolTarget());
+					Vec3d vec3d = new Vec3d(this.field_16481.method_16215());
 					Vec3d vec3d2 = new Vec3d(this.field_16481.x, this.field_16481.y, this.field_16481.z);
 					Vec3d vec3d3 = vec3d2.subtract(vec3d);
 					vec3d = vec3d3.rotateY(90.0F).multiply(0.4).add(vec3d);
 					Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 					BlockPos blockPos = new BlockPos((int)vec3d4.x, (int)vec3d4.y, (int)vec3d4.z);
-					blockPos = this.field_16481.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
+					blockPos = this.field_16481.field_6002.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
 					if (!entityNavigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), bl ? this.field_16535 : this.field_16480)) {
 						this.method_16222();
 					} else if (bl) {
 						for (PatrolEntity patrolEntity : this.field_16481
-							.world
+							.field_6002
 							.method_8390(
-								PatrolEntity.class, this.field_16481.getBoundingBox().expand(16.0), patrolEntityx -> !patrolEntityx.isPatrolLeader() && patrolEntityx.hasNoRaid()
+								PatrolEntity.class, this.field_16481.method_5829().expand(16.0), patrolEntityx -> !patrolEntityx.isPatrolLeader() && patrolEntityx.hasNoRaid()
 							)) {
-							patrolEntity.setRaidCenter(blockPos);
+							patrolEntity.method_16216(blockPos);
 						}
 					}
 				}
@@ -184,9 +185,9 @@ public abstract class PatrolEntity extends HostileEntity {
 		private void method_16222() {
 			Random random = this.field_16481.getRand();
 			BlockPos blockPos = this.field_16481
-				.world
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.field_16481).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-			this.field_16481.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.field_16480);
+				.field_6002
+				.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.field_16481).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+			this.field_16481.method_5942().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.field_16480);
 		}
 	}
 }

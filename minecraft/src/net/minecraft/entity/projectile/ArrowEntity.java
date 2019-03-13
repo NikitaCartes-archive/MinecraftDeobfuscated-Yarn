@@ -23,8 +23,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class ArrowEntity extends ProjectileEntity {
-	private static final TrackedData<Integer> COLOR = DataTracker.registerData(ArrowEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private Potion potion = Potions.field_8984;
+	private static final TrackedData<Integer> field_7595 = DataTracker.registerData(ArrowEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private Potion field_7597 = Potions.field_8984;
 	private final Set<StatusEffectInstance> effects = Sets.<StatusEffectInstance>newHashSet();
 	private boolean field_7596;
 
@@ -40,9 +40,9 @@ public class ArrowEntity extends ProjectileEntity {
 		super(EntityType.ARROW, livingEntity, world);
 	}
 
-	public void initFromStack(ItemStack itemStack) {
+	public void method_7459(ItemStack itemStack) {
 		if (itemStack.getItem() == Items.field_8087) {
-			this.potion = PotionUtil.getPotion(itemStack);
+			this.field_7597 = PotionUtil.getPotion(itemStack);
 			Collection<StatusEffectInstance> collection = PotionUtil.getCustomPotionEffects(itemStack);
 			if (!collection.isEmpty()) {
 				for (StatusEffectInstance statusEffectInstance : collection) {
@@ -57,37 +57,37 @@ public class ArrowEntity extends ProjectileEntity {
 				this.method_7465(i);
 			}
 		} else if (itemStack.getItem() == Items.field_8107) {
-			this.potion = Potions.field_8984;
+			this.field_7597 = Potions.field_8984;
 			this.effects.clear();
-			this.dataTracker.set(COLOR, -1);
+			this.field_6011.set(field_7595, -1);
 		}
 	}
 
 	public static int method_7464(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getTag();
+		CompoundTag compoundTag = itemStack.method_7969();
 		return compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99) ? compoundTag.getInt("CustomPotionColor") : -1;
 	}
 
 	private void initColor() {
 		this.field_7596 = false;
-		this.dataTracker.set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
+		this.field_6011.set(field_7595, PotionUtil.getColor(PotionUtil.getPotionEffects(this.field_7597, this.effects)));
 	}
 
 	public void addEffect(StatusEffectInstance statusEffectInstance) {
 		this.effects.add(statusEffectInstance);
-		this.getDataTracker().set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
+		this.method_5841().set(field_7595, PotionUtil.getColor(PotionUtil.getPotionEffects(this.field_7597, this.effects)));
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(COLOR, -1);
+		this.field_6011.startTracking(field_7595, -1);
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			if (this.inGround) {
 				if (this.field_7576 % 5 == 0) {
 					this.spawnParticles(1);
@@ -96,10 +96,10 @@ public class ArrowEntity extends ProjectileEntity {
 				this.spawnParticles(2);
 			}
 		} else if (this.inGround && this.field_7576 != 0 && !this.effects.isEmpty() && this.field_7576 >= 600) {
-			this.world.summonParticle(this, (byte)0);
-			this.potion = Potions.field_8984;
+			this.field_6002.summonParticle(this, (byte)0);
+			this.field_7597 = Potions.field_8984;
 			this.effects.clear();
-			this.dataTracker.set(COLOR, -1);
+			this.field_6011.set(field_7595, -1);
 		}
 	}
 
@@ -111,8 +111,8 @@ public class ArrowEntity extends ProjectileEntity {
 			double f = (double)(j >> 0 & 0xFF) / 255.0;
 
 			for (int k = 0; k < i; k++) {
-				this.world
-					.addParticle(
+				this.field_6002
+					.method_8406(
 						ParticleTypes.field_11226,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 						this.y + this.random.nextDouble() * (double)this.getHeight(),
@@ -126,19 +126,19 @@ public class ArrowEntity extends ProjectileEntity {
 	}
 
 	public int getColor() {
-		return this.dataTracker.get(COLOR);
+		return this.field_6011.get(field_7595);
 	}
 
 	private void method_7465(int i) {
 		this.field_7596 = true;
-		this.dataTracker.set(COLOR, i);
+		this.field_6011.set(field_7595, i);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		if (this.potion != Potions.field_8984 && this.potion != null) {
-			compoundTag.putString("Potion", Registry.POTION.getId(this.potion).toString());
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
+		if (this.field_7597 != Potions.field_8984 && this.field_7597 != null) {
+			compoundTag.putString("Potion", Registry.POTION.method_10221(this.field_7597).toString());
 		}
 
 		if (this.field_7596) {
@@ -149,21 +149,21 @@ public class ArrowEntity extends ProjectileEntity {
 			ListTag listTag = new ListTag();
 
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				listTag.add(statusEffectInstance.serialize(new CompoundTag()));
+				listTag.add(statusEffectInstance.method_5582(new CompoundTag()));
 			}
 
-			compoundTag.put("CustomPotionEffects", listTag);
+			compoundTag.method_10566("CustomPotionEffects", listTag);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		if (compoundTag.containsKey("Potion", 8)) {
-			this.potion = PotionUtil.getPotion(compoundTag);
+			this.field_7597 = PotionUtil.method_8057(compoundTag);
 		}
 
-		for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(compoundTag)) {
+		for (StatusEffectInstance statusEffectInstance : PotionUtil.method_8060(compoundTag)) {
 			this.addEffect(statusEffectInstance);
 		}
 
@@ -178,7 +178,7 @@ public class ArrowEntity extends ProjectileEntity {
 	protected void onHit(LivingEntity livingEntity) {
 		super.onHit(livingEntity);
 
-		for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
+		for (StatusEffectInstance statusEffectInstance : this.field_7597.getEffects()) {
 			livingEntity.addPotionEffect(
 				new StatusEffectInstance(
 					statusEffectInstance.getEffectType(),
@@ -198,15 +198,15 @@ public class ArrowEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected ItemStack asItemStack() {
-		if (this.effects.isEmpty() && this.potion == Potions.field_8984) {
+	protected ItemStack method_7445() {
+		if (this.effects.isEmpty() && this.field_7597 == Potions.field_8984) {
 			return new ItemStack(Items.field_8107);
 		} else {
 			ItemStack itemStack = new ItemStack(Items.field_8087);
-			PotionUtil.setPotion(itemStack, this.potion);
+			PotionUtil.setPotion(itemStack, this.field_7597);
 			PotionUtil.setCustomPotionEffects(itemStack, this.effects);
 			if (this.field_7596) {
-				itemStack.getOrCreateTag().putInt("CustomPotionColor", this.getColor());
+				itemStack.method_7948().putInt("CustomPotionColor", this.getColor());
 			}
 
 			return itemStack;
@@ -224,8 +224,8 @@ public class ArrowEntity extends ProjectileEntity {
 				double f = (double)(i >> 0 & 0xFF) / 255.0;
 
 				for (int j = 0; j < 20; j++) {
-					this.world
-						.addParticle(
+					this.field_6002
+						.method_8406(
 							ParticleTypes.field_11226,
 							this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 							this.y + this.random.nextDouble() * (double)this.getHeight(),

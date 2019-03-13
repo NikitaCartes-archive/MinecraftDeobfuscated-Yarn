@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_1191;
+import net.minecraft.class_4092;
 import net.minecraft.datafixers.fixes.AddTrappedChestFix;
 import net.minecraft.datafixers.fixes.AdvancementsFix;
 import net.minecraft.datafixers.fixes.BedBlockEntityFix;
@@ -491,5 +492,7 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema89, "Add Wandering Trader and Trader Llama", TypeReferences.ENTITY));
 		Schema schema90 = dataFixerBuilder.addSchema(1931, Schema1931::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema90, "Added Fox", TypeReferences.ENTITY));
+		Schema schema91 = dataFixerBuilder.addSchema(1936, identNormalize);
+		dataFixerBuilder.addFixer(new class_4092(schema91, false));
 	}
 }

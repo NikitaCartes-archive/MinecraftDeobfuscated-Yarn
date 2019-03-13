@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final AtomicInteger stateFlags = new AtomicInteger(0);
-	public final Mailbox<? super T, ? extends Runnable> taskList;
+	public final Mailbox<? super T, ? extends Runnable> field_17039;
 	private final Executor field_17042;
 	private final String name;
 
@@ -21,7 +21,7 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 
 	public MailboxProcessor(Mailbox<? super T, ? extends Runnable> mailbox, Executor executor, String string) {
 		this.field_17042 = executor;
-		this.taskList = mailbox;
+		this.field_17039 = mailbox;
 		this.name = string;
 	}
 
@@ -45,7 +45,7 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 	}
 
 	private boolean hasMessages() {
-		return (this.stateFlags.get() & 1) != 0 ? false : !this.taskList.isEmpty();
+		return (this.stateFlags.get() & 1) != 0 ? false : !this.field_17039.isEmpty();
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 		if (!this.isLocked()) {
 			return false;
 		} else {
-			Runnable runnable = this.taskList.getNext();
+			Runnable runnable = this.field_17039.getNext();
 			if (runnable == null) {
 				return false;
 			} else {
@@ -85,7 +85,7 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 
 	@Override
 	public void method_16901(T object) {
-		this.taskList.add(object);
+		this.field_17039.add(object);
 		this.execute();
 	}
 
@@ -114,7 +114,7 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 	}
 
 	public String toString() {
-		return this.name + " " + this.stateFlags.get() + " " + this.taskList.isEmpty();
+		return this.name + " " + this.stateFlags.get() + " " + this.field_17039.isEmpty();
 	}
 
 	@Override

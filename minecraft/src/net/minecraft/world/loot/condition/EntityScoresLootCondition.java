@@ -30,15 +30,15 @@ public class EntityScoresLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.target.getIdentifier());
+		return ImmutableSet.of(this.target.method_315());
 	}
 
 	public boolean method_864(LootContext lootContext) {
-		Entity entity = lootContext.get(this.target.getIdentifier());
+		Entity entity = lootContext.method_296(this.target.method_315());
 		if (entity == null) {
 			return false;
 		} else {
-			Scoreboard scoreboard = entity.world.getScoreboard();
+			Scoreboard scoreboard = entity.field_6002.method_8428();
 
 			for (Entry<String, UniformLootTableRange> entry : this.scores.entrySet()) {
 				if (!this.method_865(entity, scoreboard, (String)entry.getKey(), (UniformLootTableRange)entry.getValue())) {

@@ -69,20 +69,20 @@ public class BlockSoundGroup {
 	);
 	public final float volume;
 	public final float pitch;
-	private final SoundEvent breakSound;
-	private final SoundEvent stepSound;
-	private final SoundEvent placeSound;
-	private final SoundEvent hitSound;
-	private final SoundEvent fallSound;
+	private final SoundEvent field_11546;
+	private final SoundEvent field_11527;
+	private final SoundEvent field_11536;
+	private final SoundEvent field_11530;
+	private final SoundEvent field_11541;
 
 	public BlockSoundGroup(float f, float g, SoundEvent soundEvent, SoundEvent soundEvent2, SoundEvent soundEvent3, SoundEvent soundEvent4, SoundEvent soundEvent5) {
 		this.volume = f;
 		this.pitch = g;
-		this.breakSound = soundEvent;
-		this.stepSound = soundEvent2;
-		this.placeSound = soundEvent3;
-		this.hitSound = soundEvent4;
-		this.fallSound = soundEvent5;
+		this.field_11546 = soundEvent;
+		this.field_11527 = soundEvent2;
+		this.field_11536 = soundEvent3;
+		this.field_11530 = soundEvent4;
+		this.field_11541 = soundEvent5;
 	}
 
 	public float getVolume() {
@@ -94,24 +94,24 @@ public class BlockSoundGroup {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent getBreakSound() {
-		return this.breakSound;
+	public SoundEvent method_10595() {
+		return this.field_11546;
 	}
 
-	public SoundEvent getStepSound() {
-		return this.stepSound;
+	public SoundEvent method_10594() {
+		return this.field_11527;
 	}
 
-	public SoundEvent getPlaceSound() {
-		return this.placeSound;
+	public SoundEvent method_10598() {
+		return this.field_11536;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent getHitSound() {
-		return this.hitSound;
+	public SoundEvent method_10596() {
+		return this.field_11530;
 	}
 
-	public SoundEvent getFallSound() {
-		return this.fallSound;
+	public SoundEvent method_10593() {
+		return this.field_11541;
 	}
 }

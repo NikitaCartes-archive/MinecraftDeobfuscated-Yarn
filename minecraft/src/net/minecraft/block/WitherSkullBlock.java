@@ -22,57 +22,57 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class WitherSkullBlock extends SkullBlock {
-	private static BlockPattern witherBossPattern;
-	private static BlockPattern witherDispenserPattern;
+	private static BlockPattern field_11765;
+	private static BlockPattern field_11764;
 
 	protected WitherSkullBlock(Block.Settings settings) {
 		super(SkullBlock.Type.WITHER_SKELETON, settings);
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		super.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public void method_9567(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+		super.method_9567(world, blockPos, blockState, livingEntity, itemStack);
+		BlockEntity blockEntity = world.method_8321(blockPos);
 		if (blockEntity instanceof SkullBlockEntity) {
-			onPlaced(world, blockPos, (SkullBlockEntity)blockEntity);
+			method_10898(world, blockPos, (SkullBlockEntity)blockEntity);
 		}
 	}
 
-	public static void onPlaced(World world, BlockPos blockPos, SkullBlockEntity skullBlockEntity) {
+	public static void method_10898(World world, BlockPos blockPos, SkullBlockEntity skullBlockEntity) {
 		if (!world.isClient) {
-			Block block = skullBlockEntity.getCachedState().getBlock();
+			Block block = skullBlockEntity.method_11010().getBlock();
 			boolean bl = block == Blocks.field_10177 || block == Blocks.field_10101;
 			if (bl && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL) {
-				BlockPattern blockPattern = getWitherBossPattern();
-				BlockPattern.Result result = blockPattern.searchAround(world, blockPos);
+				BlockPattern blockPattern = method_10900();
+				BlockPattern.Result result = blockPattern.method_11708(world, blockPos);
 				if (result != null) {
 					for (int i = 0; i < blockPattern.getWidth(); i++) {
 						for (int j = 0; j < blockPattern.getHeight(); j++) {
-							world.setBlockState(result.translate(i, j, 0).getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
+							world.method_8652(result.translate(i, j, 0).method_11683(), Blocks.field_10124.method_9564(), 2);
 						}
 					}
 
-					BlockPos blockPos2 = result.translate(1, 0, 0).getBlockPos();
-					WitherEntity witherEntity = EntityType.WITHER.create(world);
-					BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
+					BlockPos blockPos2 = result.translate(1, 0, 0).method_11683();
+					WitherEntity witherEntity = EntityType.WITHER.method_5883(world);
+					BlockPos blockPos3 = result.translate(1, 2, 0).method_11683();
 					witherEntity.setPositionAndAngles(
 						(double)blockPos3.getX() + 0.5,
 						(double)blockPos3.getY() + 0.55,
 						(double)blockPos3.getZ() + 0.5,
-						result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F,
+						result.method_11719().getAxis() == Direction.Axis.X ? 0.0F : 90.0F,
 						0.0F
 					);
-					witherEntity.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
+					witherEntity.field_6283 = result.method_11719().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
 					witherEntity.method_6885();
 
-					for (ServerPlayerEntity serverPlayerEntity : world.method_18467(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
-						Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, witherEntity);
+					for (ServerPlayerEntity serverPlayerEntity : world.method_18467(ServerPlayerEntity.class, witherEntity.method_5829().expand(50.0))) {
+						Criterions.SUMMONED_ENTITY.method_9124(serverPlayerEntity, witherEntity);
 					}
 
 					world.spawnEntity(witherEntity);
 
 					for (int k = 0; k < 120; k++) {
-						world.addParticle(
+						world.method_8406(
 							ParticleTypes.field_11230,
 							(double)blockPos2.getX() + world.random.nextDouble(),
 							(double)(blockPos2.getY() - 2) + world.random.nextDouble() * 3.9,
@@ -85,7 +85,7 @@ public class WitherSkullBlock extends SkullBlock {
 
 					for (int k = 0; k < blockPattern.getWidth(); k++) {
 						for (int l = 0; l < blockPattern.getHeight(); l++) {
-							world.updateNeighbors(result.translate(k, l, 0).getBlockPos(), Blocks.field_10124);
+							world.method_8408(result.translate(k, l, 0).method_11683(), Blocks.field_10124);
 						}
 					}
 				}
@@ -93,34 +93,34 @@ public class WitherSkullBlock extends SkullBlock {
 		}
 	}
 
-	public static boolean canDispense(World world, BlockPos blockPos, ItemStack itemStack) {
+	public static boolean method_10899(World world, BlockPos blockPos, ItemStack itemStack) {
 		return itemStack.getItem() == Items.WITHER_SKELETON_SKULL && blockPos.getY() >= 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient
-			? getWitherDispenserPattern().searchAround(world, blockPos) != null
+			? method_10897().method_11708(world, blockPos) != null
 			: false;
 	}
 
-	protected static BlockPattern getWitherBossPattern() {
-		if (witherBossPattern == null) {
-			witherBossPattern = BlockPatternBuilder.start()
+	protected static BlockPattern method_10900() {
+		if (field_11765 == null) {
+			field_11765 = BlockPatternBuilder.start()
 				.aisle("^^^", "###", "~#~")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10114)))
 				.where('^', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10177).or(BlockStatePredicate.forBlock(Blocks.field_10101))))
-				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
+				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.method_11746(Material.AIR)))
 				.build();
 		}
 
-		return witherBossPattern;
+		return field_11765;
 	}
 
-	protected static BlockPattern getWitherDispenserPattern() {
-		if (witherDispenserPattern == null) {
-			witherDispenserPattern = BlockPatternBuilder.start()
+	protected static BlockPattern method_10897() {
+		if (field_11764 == null) {
+			field_11764 = BlockPatternBuilder.start()
 				.aisle("   ", "###", "~#~")
 				.where('#', CachedBlockPosition.matchesBlockState(BlockStatePredicate.forBlock(Blocks.field_10114)))
-				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.create(Material.AIR)))
+				.where('~', CachedBlockPosition.matchesBlockState(MaterialPredicate.method_11746(Material.AIR)))
 				.build();
 		}
 
-		return witherDispenserPattern;
+		return field_11764;
 	}
 }

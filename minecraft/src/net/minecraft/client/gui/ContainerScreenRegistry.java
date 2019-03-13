@@ -37,7 +37,7 @@ public class ContainerScreenRegistry {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<ContainerType<?>, ContainerScreenRegistry.GuiFactory<?, ?>> GUI_FACTORIES = Maps.<ContainerType<?>, ContainerScreenRegistry.GuiFactory<?, ?>>newHashMap();
 
-	public static <T extends Container> void openScreen(
+	public static <T extends Container> void method_17541(
 		@Nullable ContainerType<T> containerType, MinecraftClient minecraftClient, int i, TextComponent textComponent
 	) {
 		if (containerType == null) {
@@ -45,9 +45,9 @@ public class ContainerScreenRegistry {
 		} else {
 			ContainerScreenRegistry.GuiFactory<T, ?> guiFactory = method_17540(containerType);
 			if (guiFactory == null) {
-				LOGGER.warn("Failed to create screen for menu type: {}", Registry.CONTAINER.getId(containerType));
+				LOGGER.warn("Failed to create screen for menu type: {}", Registry.CONTAINER.method_10221(containerType));
 			} else {
-				guiFactory.openScreen(textComponent, containerType, minecraftClient, i);
+				guiFactory.method_17543(textComponent, containerType, minecraftClient, i);
 			}
 		}
 	}
@@ -62,7 +62,7 @@ public class ContainerScreenRegistry {
 	) {
 		ContainerScreenRegistry.GuiFactory<?, ?> guiFactory2 = (ContainerScreenRegistry.GuiFactory<?, ?>)GUI_FACTORIES.put(containerType, guiFactory);
 		if (guiFactory2 != null) {
-			throw new IllegalStateException("Duplicate registration for " + Registry.CONTAINER.getId(containerType));
+			throw new IllegalStateException("Duplicate registration for " + Registry.CONTAINER.method_10221(containerType));
 		}
 	}
 
@@ -71,7 +71,7 @@ public class ContainerScreenRegistry {
 
 		for (ContainerType<?> containerType : Registry.CONTAINER) {
 			if (!GUI_FACTORIES.containsKey(containerType)) {
-				LOGGER.debug("Menu {} has no matching screen", Registry.CONTAINER.getId(containerType));
+				LOGGER.debug("Menu {} has no matching screen", Registry.CONTAINER.method_10221(containerType));
 				bl = true;
 			}
 		}
@@ -80,7 +80,11 @@ public class ContainerScreenRegistry {
 	}
 
 	static {
+		registerGui(ContainerType.field_18664, ContainerScreen54::new);
+		registerGui(ContainerType.field_18665, ContainerScreen54::new);
 		registerGui(ContainerType.GENERIC_9X3, ContainerScreen54::new);
+		registerGui(ContainerType.field_18666, ContainerScreen54::new);
+		registerGui(ContainerType.field_18667, ContainerScreen54::new);
 		registerGui(ContainerType.GENERIC_9X6, ContainerScreen54::new);
 		registerGui(ContainerType.GENERIC_3X3, ContainerScreen9::new);
 		registerGui(ContainerType.ANVIL, AnvilScreen::new);
@@ -103,10 +107,10 @@ public class ContainerScreenRegistry {
 
 	@Environment(EnvType.CLIENT)
 	interface GuiFactory<T extends Container, U extends Screen & ContainerProvider<T>> {
-		default void openScreen(TextComponent textComponent, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
-			U screen = this.create(containerType.create(i, minecraftClient.player.inventory), minecraftClient.player.inventory, textComponent);
-			minecraftClient.player.container = screen.getContainer();
-			minecraftClient.openScreen(screen);
+		default void method_17543(TextComponent textComponent, ContainerType<T> containerType, MinecraftClient minecraftClient, int i) {
+			U screen = this.create(containerType.create(i, minecraftClient.field_1724.inventory), minecraftClient.field_1724.inventory, textComponent);
+			minecraftClient.field_1724.field_7512 = screen.getContainer();
+			minecraftClient.method_1507(screen);
 		}
 
 		U create(T container, PlayerInventory playerInventory, TextComponent textComponent);

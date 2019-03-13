@@ -18,53 +18,53 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 	public boolean method_13979(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig
 	) {
-		if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.up()).getBlock())) {
+		if (!Block.isNaturalStone(iWorld.method_8320(blockPos.up()).getBlock())) {
 			return false;
-		} else if (!Block.isNaturalStone(iWorld.getBlockState(blockPos.down()).getBlock())) {
+		} else if (!Block.isNaturalStone(iWorld.method_8320(blockPos.down()).getBlock())) {
 			return false;
 		} else {
-			BlockState blockState = iWorld.getBlockState(blockPos);
+			BlockState blockState = iWorld.method_8320(blockPos);
 			if (!blockState.isAir() && !Block.isNaturalStone(blockState.getBlock())) {
 				return false;
 			} else {
 				int i = 0;
 				int j = 0;
-				if (Block.isNaturalStone(iWorld.getBlockState(blockPos.west()).getBlock())) {
+				if (Block.isNaturalStone(iWorld.method_8320(blockPos.west()).getBlock())) {
 					j++;
 				}
 
-				if (Block.isNaturalStone(iWorld.getBlockState(blockPos.east()).getBlock())) {
+				if (Block.isNaturalStone(iWorld.method_8320(blockPos.east()).getBlock())) {
 					j++;
 				}
 
-				if (Block.isNaturalStone(iWorld.getBlockState(blockPos.north()).getBlock())) {
+				if (Block.isNaturalStone(iWorld.method_8320(blockPos.north()).getBlock())) {
 					j++;
 				}
 
-				if (Block.isNaturalStone(iWorld.getBlockState(blockPos.south()).getBlock())) {
+				if (Block.isNaturalStone(iWorld.method_8320(blockPos.south()).getBlock())) {
 					j++;
 				}
 
 				int k = 0;
-				if (iWorld.isAir(blockPos.west())) {
+				if (iWorld.method_8623(blockPos.west())) {
 					k++;
 				}
 
-				if (iWorld.isAir(blockPos.east())) {
+				if (iWorld.method_8623(blockPos.east())) {
 					k++;
 				}
 
-				if (iWorld.isAir(blockPos.north())) {
+				if (iWorld.method_8623(blockPos.north())) {
 					k++;
 				}
 
-				if (iWorld.isAir(blockPos.south())) {
+				if (iWorld.method_8623(blockPos.south())) {
 					k++;
 				}
 
 				if (j == 3 && k == 1) {
-					iWorld.setBlockState(blockPos, springFeatureConfig.state.getBlockState(), 2);
-					iWorld.getFluidTickScheduler().schedule(blockPos, springFeatureConfig.state.getFluid(), 0);
+					iWorld.method_8652(blockPos, springFeatureConfig.field_13850.getBlockState(), 2);
+					iWorld.method_8405().method_8676(blockPos, springFeatureConfig.field_13850.getFluid(), 0);
 					i++;
 				}
 

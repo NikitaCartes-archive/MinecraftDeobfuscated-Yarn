@@ -24,7 +24,7 @@ public class LightningEntity extends Entity {
 	private int remainingActions;
 	private final boolean cosmetic;
 	@Nullable
-	private ServerPlayerEntity channeller;
+	private ServerPlayerEntity field_7182;
 
 	public LightningEntity(World world, double d, double e, double f, boolean bl) {
 		super(EntityType.LIGHTNING_BOLT, world);
@@ -41,20 +41,21 @@ public class LightningEntity extends Entity {
 	}
 
 	@Override
-	public SoundCategory getSoundCategory() {
+	public SoundCategory method_5634() {
 		return SoundCategory.field_15252;
 	}
 
-	public void setChanneller(@Nullable ServerPlayerEntity serverPlayerEntity) {
-		this.channeller = serverPlayerEntity;
+	public void method_6961(@Nullable ServerPlayerEntity serverPlayerEntity) {
+		this.field_7182 = serverPlayerEntity;
 	}
 
 	@Override
 	public void update() {
 		super.update();
 		if (this.ambientTick == 2) {
-			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14865, SoundCategory.field_15252, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
-			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14956, SoundCategory.field_15252, 2.0F, 0.5F + this.random.nextFloat() * 0.2F);
+			this.field_6002
+				.method_8465(null, this.x, this.y, this.z, SoundEvents.field_14865, SoundCategory.field_15252, 10000.0F, 0.8F + this.random.nextFloat() * 0.2F);
+			this.field_6002.method_8465(null, this.x, this.y, this.z, SoundEvents.field_14956, SoundCategory.field_15252, 2.0F, 0.5F + this.random.nextFloat() * 0.2F);
 		}
 
 		this.ambientTick--;
@@ -70,37 +71,36 @@ public class LightningEntity extends Entity {
 		}
 
 		if (this.ambientTick >= 0) {
-			if (this.world.isClient) {
-				this.world.setTicksSinceLightning(2);
+			if (this.field_6002.isClient) {
+				this.field_6002.setTicksSinceLightning(2);
 			} else if (!this.cosmetic) {
 				double d = 3.0;
-				List<Entity> list = this.world
-					.getVisibleEntities(this, new BoundingBox(this.x - 3.0, this.y - 3.0, this.z - 3.0, this.x + 3.0, this.y + 6.0 + 3.0, this.z + 3.0));
+				List<Entity> list = this.field_6002
+					.method_8333(this, new BoundingBox(this.x - 3.0, this.y - 3.0, this.z - 3.0, this.x + 3.0, this.y + 6.0 + 3.0, this.z + 3.0), Entity::isValid);
 
-				for (int i = 0; i < list.size(); i++) {
-					Entity entity = (Entity)list.get(i);
-					entity.onStruckByLightning(this);
+				for (Entity entity : list) {
+					entity.method_5800(this);
 				}
 
-				if (this.channeller != null) {
-					Criterions.CHANNELED_LIGHTNING.method_8803(this.channeller, list);
+				if (this.field_7182 != null) {
+					Criterions.CHANNELED_LIGHTNING.method_8803(this.field_7182, list);
 				}
 			}
 		}
 	}
 
 	private void spawnFire(int i) {
-		if (!this.cosmetic && !this.world.isClient && this.world.getGameRules().getBoolean("doFireTick")) {
-			BlockState blockState = Blocks.field_10036.getDefaultState();
+		if (!this.cosmetic && !this.field_6002.isClient && this.field_6002.getGameRules().getBoolean("doFireTick")) {
+			BlockState blockState = Blocks.field_10036.method_9564();
 			BlockPos blockPos = new BlockPos(this);
-			if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
-				this.world.setBlockState(blockPos, blockState);
+			if (this.field_6002.method_8320(blockPos).isAir() && blockState.method_11591(this.field_6002, blockPos)) {
+				this.field_6002.method_8501(blockPos, blockState);
 			}
 
 			for (int j = 0; j < i; j++) {
 				BlockPos blockPos2 = blockPos.add(this.random.nextInt(3) - 1, this.random.nextInt(3) - 1, this.random.nextInt(3) - 1);
-				if (this.world.getBlockState(blockPos2).isAir() && blockState.canPlaceAt(this.world, blockPos2)) {
-					this.world.setBlockState(blockPos2, blockState);
+				if (this.field_6002.method_8320(blockPos2).isAir() && blockState.method_11591(this.field_6002, blockPos2)) {
+					this.field_6002.method_8501(blockPos2, blockState);
 				}
 			}
 		}
@@ -118,15 +118,15 @@ public class LightningEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+	protected void method_5749(CompoundTag compoundTag) {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+	protected void method_5652(CompoundTag compoundTag) {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<?> method_18002() {
 		return new EntitySpawnGlobalS2CPacket(this);
 	}
 }

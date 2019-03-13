@@ -23,11 +23,11 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class TropicalFishEntity extends SchoolingFishEntity {
-	private static final TrackedData<Integer> VARIANT = DataTracker.registerData(TropicalFishEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Identifier[] SHAPE_IDS = new Identifier[]{
+	private static final TrackedData<Integer> field_6874 = DataTracker.registerData(TropicalFishEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final Identifier[] field_6875 = new Identifier[]{
 		new Identifier("textures/entity/fish/tropical_a.png"), new Identifier("textures/entity/fish/tropical_b.png")
 	};
-	private static final Identifier[] SMALL_FISH_VARIETY_IDS = new Identifier[]{
+	private static final Identifier[] field_6878 = new Identifier[]{
 		new Identifier("textures/entity/fish/tropical_a_pattern_1.png"),
 		new Identifier("textures/entity/fish/tropical_a_pattern_2.png"),
 		new Identifier("textures/entity/fish/tropical_a_pattern_3.png"),
@@ -35,7 +35,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		new Identifier("textures/entity/fish/tropical_a_pattern_5.png"),
 		new Identifier("textures/entity/fish/tropical_a_pattern_6.png")
 	};
-	private static final Identifier[] LARGE_FISH_VARIETY_IDS = new Identifier[]{
+	private static final Identifier[] field_6876 = new Identifier[]{
 		new Identifier("textures/entity/fish/tropical_b_pattern_1.png"),
 		new Identifier("textures/entity/fish/tropical_b_pattern_2.png"),
 		new Identifier("textures/entity/fish/tropical_b_pattern_3.png"),
@@ -44,32 +44,32 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 		new Identifier("textures/entity/fish/tropical_b_pattern_6.png")
 	};
 	public static final int[] COMMON_VARIANTS = new int[]{
-		toVariant(TropicalFishEntity.Variety.field_6887, DyeColor.field_7946, DyeColor.field_7944),
-		toVariant(TropicalFishEntity.Variety.field_6893, DyeColor.field_7944, DyeColor.field_7944),
-		toVariant(TropicalFishEntity.Variety.field_6893, DyeColor.field_7944, DyeColor.field_7966),
-		toVariant(TropicalFishEntity.Variety.field_6889, DyeColor.field_7952, DyeColor.field_7944),
-		toVariant(TropicalFishEntity.Variety.field_6880, DyeColor.field_7966, DyeColor.field_7944),
-		toVariant(TropicalFishEntity.Variety.field_6881, DyeColor.field_7946, DyeColor.field_7952),
-		toVariant(TropicalFishEntity.Variety.field_6892, DyeColor.field_7954, DyeColor.field_7951),
-		toVariant(TropicalFishEntity.Variety.field_6884, DyeColor.field_7945, DyeColor.field_7947),
-		toVariant(TropicalFishEntity.Variety.field_6889, DyeColor.field_7952, DyeColor.field_7964),
-		toVariant(TropicalFishEntity.Variety.field_6892, DyeColor.field_7952, DyeColor.field_7947),
-		toVariant(TropicalFishEntity.Variety.field_6883, DyeColor.field_7952, DyeColor.field_7944),
-		toVariant(TropicalFishEntity.Variety.field_6889, DyeColor.field_7952, DyeColor.field_7946),
-		toVariant(TropicalFishEntity.Variety.field_6890, DyeColor.field_7955, DyeColor.field_7954),
-		toVariant(TropicalFishEntity.Variety.field_6891, DyeColor.field_7961, DyeColor.field_7951),
-		toVariant(TropicalFishEntity.Variety.field_6888, DyeColor.field_7964, DyeColor.field_7952),
-		toVariant(TropicalFishEntity.Variety.field_6882, DyeColor.field_7944, DyeColor.field_7964),
-		toVariant(TropicalFishEntity.Variety.field_6884, DyeColor.field_7964, DyeColor.field_7952),
-		toVariant(TropicalFishEntity.Variety.field_6893, DyeColor.field_7952, DyeColor.field_7947),
-		toVariant(TropicalFishEntity.Variety.field_6881, DyeColor.field_7964, DyeColor.field_7952),
-		toVariant(TropicalFishEntity.Variety.field_6880, DyeColor.field_7944, DyeColor.field_7952),
-		toVariant(TropicalFishEntity.Variety.field_6890, DyeColor.field_7955, DyeColor.field_7947),
-		toVariant(TropicalFishEntity.Variety.field_6893, DyeColor.field_7947, DyeColor.field_7947)
+		method_6647(TropicalFishEntity.Variety.field_6887, DyeColor.field_7946, DyeColor.field_7944),
+		method_6647(TropicalFishEntity.Variety.field_6893, DyeColor.field_7944, DyeColor.field_7944),
+		method_6647(TropicalFishEntity.Variety.field_6893, DyeColor.field_7944, DyeColor.field_7966),
+		method_6647(TropicalFishEntity.Variety.field_6889, DyeColor.field_7952, DyeColor.field_7944),
+		method_6647(TropicalFishEntity.Variety.field_6880, DyeColor.field_7966, DyeColor.field_7944),
+		method_6647(TropicalFishEntity.Variety.field_6881, DyeColor.field_7946, DyeColor.field_7952),
+		method_6647(TropicalFishEntity.Variety.field_6892, DyeColor.field_7954, DyeColor.field_7951),
+		method_6647(TropicalFishEntity.Variety.field_6884, DyeColor.field_7945, DyeColor.field_7947),
+		method_6647(TropicalFishEntity.Variety.field_6889, DyeColor.field_7952, DyeColor.field_7964),
+		method_6647(TropicalFishEntity.Variety.field_6892, DyeColor.field_7952, DyeColor.field_7947),
+		method_6647(TropicalFishEntity.Variety.field_6883, DyeColor.field_7952, DyeColor.field_7944),
+		method_6647(TropicalFishEntity.Variety.field_6889, DyeColor.field_7952, DyeColor.field_7946),
+		method_6647(TropicalFishEntity.Variety.field_6890, DyeColor.field_7955, DyeColor.field_7954),
+		method_6647(TropicalFishEntity.Variety.field_6891, DyeColor.field_7961, DyeColor.field_7951),
+		method_6647(TropicalFishEntity.Variety.field_6888, DyeColor.field_7964, DyeColor.field_7952),
+		method_6647(TropicalFishEntity.Variety.field_6882, DyeColor.field_7944, DyeColor.field_7964),
+		method_6647(TropicalFishEntity.Variety.field_6884, DyeColor.field_7964, DyeColor.field_7952),
+		method_6647(TropicalFishEntity.Variety.field_6893, DyeColor.field_7952, DyeColor.field_7947),
+		method_6647(TropicalFishEntity.Variety.field_6881, DyeColor.field_7964, DyeColor.field_7952),
+		method_6647(TropicalFishEntity.Variety.field_6880, DyeColor.field_7944, DyeColor.field_7952),
+		method_6647(TropicalFishEntity.Variety.field_6890, DyeColor.field_7955, DyeColor.field_7947),
+		method_6647(TropicalFishEntity.Variety.field_6893, DyeColor.field_7947, DyeColor.field_7947)
 	};
 	private boolean commonSpawn = true;
 
-	private static int toVariant(TropicalFishEntity.Variety variety, DyeColor dyeColor, DyeColor dyeColor2) {
+	private static int method_6647(TropicalFishEntity.Variety variety, DyeColor dyeColor, DyeColor dyeColor2) {
 		return variety.getShape() & 0xFF | (variety.getPattern() & 0xFF) << 8 | (dyeColor.getId() & 0xFF) << 16 | (dyeColor2.getId() & 0xFF) << 24;
 	}
 
@@ -83,12 +83,12 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static DyeColor getBaseDyeColor(int i) {
+	public static DyeColor method_6652(int i) {
 		return DyeColor.byId(getBaseDyeColorIndex(i));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static DyeColor getPatternDyeColor(int i) {
+	public static DyeColor method_6651(int i) {
 		return DyeColor.byId(getPatternDyeColorIndex(i));
 	}
 
@@ -102,23 +102,23 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(VARIANT, 0);
+		this.field_6011.startTracking(field_6874, 0);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putInt("Variant", this.getVariant());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		this.setVariant(compoundTag.getInt("Variant"));
 	}
 
 	public void setVariant(int i) {
-		this.dataTracker.set(VARIANT, i);
+		this.field_6011.set(field_6874, i);
 	}
 
 	@Override
@@ -127,38 +127,38 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	}
 
 	public int getVariant() {
-		return this.dataTracker.get(VARIANT);
+		return this.field_6011.get(field_6874);
 	}
 
 	@Override
-	protected void copyDataToStack(ItemStack itemStack) {
-		super.copyDataToStack(itemStack);
-		CompoundTag compoundTag = itemStack.getOrCreateTag();
+	protected void method_6455(ItemStack itemStack) {
+		super.method_6455(itemStack);
+		CompoundTag compoundTag = itemStack.method_7948();
 		compoundTag.putInt("BucketVariantTag", this.getVariant());
 	}
 
 	@Override
-	protected ItemStack getFishBucketItem() {
+	protected ItemStack method_6452() {
 		return new ItemStack(Items.field_8478);
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return SoundEvents.field_15085;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_15201;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_14985;
 	}
 
 	@Override
-	protected SoundEvent getFlopSound() {
+	protected SoundEvent method_6457() {
 		return SoundEvents.field_14878;
 	}
 
@@ -198,21 +198,21 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier getVarietyId() {
-		return getShape(this.getVariant()) == 0 ? SMALL_FISH_VARIETY_IDS[getPattern(this.getVariant())] : LARGE_FISH_VARIETY_IDS[getPattern(this.getVariant())];
+	public Identifier method_6646() {
+		return getShape(this.getVariant()) == 0 ? field_6878[getPattern(this.getVariant())] : field_6876[getPattern(this.getVariant())];
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier getShapeId() {
-		return SHAPE_IDS[getShape(this.getVariant())];
+	public Identifier method_6650() {
+		return field_6875[getShape(this.getVariant())];
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {
 			this.setVariant(compoundTag.getInt("BucketVariantTag"));
 			return entityData;

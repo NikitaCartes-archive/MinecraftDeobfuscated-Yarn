@@ -76,11 +76,11 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<TextComponent> TEXT_COMPONENT = new TrackedDataHandler<TextComponent>() {
 		public void method_12727(PacketByteBuf packetByteBuf, TextComponent textComponent) {
-			packetByteBuf.writeTextComponent(textComponent);
+			packetByteBuf.method_10805(textComponent);
 		}
 
 		public TextComponent method_12725(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readTextComponent();
+			return packetByteBuf.method_10808();
 		}
 
 		public TextComponent method_12726(TextComponent textComponent) {
@@ -91,14 +91,14 @@ public class TrackedDataHandlerRegistry {
 		public void method_12728(PacketByteBuf packetByteBuf, Optional<TextComponent> optional) {
 			if (optional.isPresent()) {
 				packetByteBuf.writeBoolean(true);
-				packetByteBuf.writeTextComponent((TextComponent)optional.get());
+				packetByteBuf.method_10805((TextComponent)optional.get());
 			} else {
 				packetByteBuf.writeBoolean(false);
 			}
 		}
 
 		public Optional<TextComponent> method_12729(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readBoolean() ? Optional.of(packetByteBuf.readTextComponent()) : Optional.empty();
+			return packetByteBuf.readBoolean() ? Optional.of(packetByteBuf.method_10808()) : Optional.empty();
 		}
 
 		public Optional<TextComponent> method_12730(Optional<TextComponent> optional) {
@@ -121,7 +121,7 @@ public class TrackedDataHandlerRegistry {
 	public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = new TrackedDataHandler<Optional<BlockState>>() {
 		public void method_12734(PacketByteBuf packetByteBuf, Optional<BlockState> optional) {
 			if (optional.isPresent()) {
-				packetByteBuf.writeVarInt(Block.getRawIdFromState((BlockState)optional.get()));
+				packetByteBuf.writeVarInt(Block.method_9507((BlockState)optional.get()));
 			} else {
 				packetByteBuf.writeVarInt(0);
 			}
@@ -129,7 +129,7 @@ public class TrackedDataHandlerRegistry {
 
 		public Optional<BlockState> method_12735(PacketByteBuf packetByteBuf) {
 			int i = packetByteBuf.readVarInt();
-			return i == 0 ? Optional.empty() : Optional.of(Block.getStateFromRawId(i));
+			return i == 0 ? Optional.empty() : Optional.of(Block.method_9531(i));
 		}
 
 		public Optional<BlockState> method_12736(Optional<BlockState> optional) {
@@ -151,8 +151,8 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<ParticleParameters> PARTICLE = new TrackedDataHandler<ParticleParameters>() {
 		public void method_12746(PacketByteBuf packetByteBuf, ParticleParameters particleParameters) {
-			packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleParameters>)particleParameters.getType()));
-			particleParameters.write(packetByteBuf);
+			packetByteBuf.writeVarInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleParameters>)particleParameters.method_10295()));
+			particleParameters.method_10294(packetByteBuf);
 		}
 
 		public ParticleParameters method_12743(PacketByteBuf packetByteBuf) {
@@ -160,7 +160,7 @@ public class TrackedDataHandlerRegistry {
 		}
 
 		private <T extends ParticleParameters> T method_12744(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
-			return particleType.getParametersFactory().read(particleType, packetByteBuf);
+			return particleType.getParametersFactory().method_10297(particleType, packetByteBuf);
 		}
 
 		public ParticleParameters method_12745(ParticleParameters particleParameters) {
@@ -255,8 +255,8 @@ public class TrackedDataHandlerRegistry {
 	};
 	public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = new TrackedDataHandler<VillagerData>() {
 		public void method_17197(PacketByteBuf packetByteBuf, VillagerData villagerData) {
-			packetByteBuf.writeVarInt(Registry.VILLAGER_TYPE.getRawId(villagerData.getType()));
-			packetByteBuf.writeVarInt(Registry.VILLAGER_PROFESSION.getRawId(villagerData.getProfession()));
+			packetByteBuf.writeVarInt(Registry.VILLAGER_TYPE.getRawId(villagerData.method_16919()));
+			packetByteBuf.writeVarInt(Registry.VILLAGER_PROFESSION.getRawId(villagerData.method_16924()));
 			packetByteBuf.writeVarInt(villagerData.getLevel());
 		}
 

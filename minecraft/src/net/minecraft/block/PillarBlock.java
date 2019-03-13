@@ -8,23 +8,23 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.Direction;
 
 public class PillarBlock extends Block {
-	public static final EnumProperty<Direction.Axis> AXIS = Properties.AXIS_XYZ;
+	public static final EnumProperty<Direction.Axis> field_11459 = Properties.field_12496;
 
 	public PillarBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.getDefaultState().with(AXIS, Direction.Axis.Y));
+		this.method_9590(this.method_9564().method_11657(field_11459, Direction.Axis.Y));
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
+	public BlockState method_9598(BlockState blockState, Rotation rotation) {
 		switch (rotation) {
 			case ROT_270:
 			case ROT_90:
-				switch ((Direction.Axis)blockState.get(AXIS)) {
+				switch ((Direction.Axis)blockState.method_11654(field_11459)) {
 					case X:
-						return blockState.with(AXIS, Direction.Axis.Z);
+						return blockState.method_11657(field_11459, Direction.Axis.Z);
 					case Z:
-						return blockState.with(AXIS, Direction.Axis.X);
+						return blockState.method_11657(field_11459, Direction.Axis.X);
 					default:
 						return blockState;
 				}
@@ -34,12 +34,12 @@ public class PillarBlock extends Block {
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(AXIS);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_11459);
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(AXIS, itemPlacementContext.getFacing().getAxis());
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return this.method_9564().method_11657(field_11459, itemPlacementContext.method_8038().getAxis());
 	}
 }

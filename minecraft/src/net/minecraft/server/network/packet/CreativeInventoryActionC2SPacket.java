@@ -22,7 +22,7 @@ public class CreativeInventoryActionC2SPacket implements Packet<ServerPlayPacket
 	}
 
 	public void method_12480(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onCreativeInventoryAction(this);
+		serverPlayPacketListener.method_12070(this);
 	}
 
 	@Override

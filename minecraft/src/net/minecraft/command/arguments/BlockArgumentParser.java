@@ -56,12 +56,12 @@ public class BlockArgumentParser {
 	private final boolean allowTag;
 	private final Map<Property<?>, Comparable<?>> blockProperties = Maps.<Property<?>, Comparable<?>>newHashMap();
 	private final Map<String, String> tagProperties = Maps.<String, String>newHashMap();
-	private Identifier blockId = new Identifier("");
+	private Identifier field_10697 = new Identifier("");
 	private StateFactory<Block, BlockState> stateFactory;
 	private BlockState blockState;
 	@Nullable
-	private CompoundTag data;
-	private Identifier tagId = new Identifier("");
+	private CompoundTag field_10693;
+	private Identifier field_10681 = new Identifier("");
 	private int cursorPos;
 	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestions = SUGGEST_DEFAULT;
 
@@ -80,13 +80,13 @@ public class BlockArgumentParser {
 	}
 
 	@Nullable
-	public CompoundTag getNbtData() {
-		return this.data;
+	public CompoundTag method_9694() {
+		return this.field_10693;
 	}
 
 	@Nullable
 	public Identifier method_9664() {
-		return this.tagId;
+		return this.field_10681;
 	}
 
 	public BlockArgumentParser parse(boolean bl) throws CommandSyntaxException {
@@ -145,11 +145,11 @@ public class BlockArgumentParser {
 
 	private CompletableFuture<Suggestions> suggestTagProperties(SuggestionsBuilder suggestionsBuilder) {
 		String string = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
-		if (this.tagId != null && !this.tagId.getPath().isEmpty()) {
-			Tag<Block> tag = BlockTags.getContainer().get(this.tagId);
+		if (this.field_10681 != null && !this.field_10681.getPath().isEmpty()) {
+			Tag<Block> tag = BlockTags.method_15073().get(this.field_10681);
 			if (tag != null) {
 				for (Block block : tag.values()) {
-					for (Property<?> property : block.getStateFactory().getProperties()) {
+					for (Property<?> property : block.method_9595().getProperties()) {
 						if (!this.tagProperties.containsKey(property.getName()) && property.getName().startsWith(string)) {
 							suggestionsBuilder.suggest(property.getName() + '=');
 						}
@@ -173,8 +173,8 @@ public class BlockArgumentParser {
 		if (this.blockState != null) {
 			return this.blockState.getBlock().hasBlockEntity();
 		} else {
-			if (this.tagId != null) {
-				Tag<Block> tag = BlockTags.getContainer().get(this.tagId);
+			if (this.field_10681 != null) {
+				Tag<Block> tag = BlockTags.method_15073().get(this.field_10681);
 				if (tag != null) {
 					for (Block block : tag.values()) {
 						if (block.hasBlockEntity()) {
@@ -222,17 +222,17 @@ public class BlockArgumentParser {
 
 	private CompletableFuture<Suggestions> suggestTagPropertyValues(SuggestionsBuilder suggestionsBuilder, String string) {
 		boolean bl = false;
-		if (this.tagId != null && !this.tagId.getPath().isEmpty()) {
-			Tag<Block> tag = BlockTags.getContainer().get(this.tagId);
+		if (this.field_10681 != null && !this.field_10681.getPath().isEmpty()) {
+			Tag<Block> tag = BlockTags.method_15073().get(this.field_10681);
 			if (tag != null) {
 				for (Block block : tag.values()) {
-					Property<?> property = block.getStateFactory().getProperty(string);
+					Property<?> property = block.method_9595().method_11663(string);
 					if (property != null) {
 						suggestPropertyValues(suggestionsBuilder, property);
 					}
 
 					if (!bl) {
-						for (Property<?> property2 : block.getStateFactory().getProperties()) {
+						for (Property<?> property2 : block.method_9595().getProperties()) {
 							if (!this.tagProperties.containsKey(property2.getName())) {
 								bl = true;
 								break;
@@ -253,13 +253,13 @@ public class BlockArgumentParser {
 
 	private CompletableFuture<Suggestions> suggestMojangsonOrTagProperties(SuggestionsBuilder suggestionsBuilder) {
 		if (suggestionsBuilder.getRemaining().isEmpty()) {
-			Tag<Block> tag = BlockTags.getContainer().get(this.tagId);
+			Tag<Block> tag = BlockTags.method_15073().get(this.field_10681);
 			if (tag != null) {
 				boolean bl = false;
 				boolean bl2 = false;
 
 				for (Block block : tag.values()) {
-					bl |= !block.getStateFactory().getProperties().isEmpty();
+					bl |= !block.method_9595().getProperties().isEmpty();
 					bl2 |= block.hasBlockEntity();
 					if (bl && bl2) {
 						break;
@@ -281,7 +281,7 @@ public class BlockArgumentParser {
 
 	private CompletableFuture<Suggestions> suggestMojangsonOrBlockProperties(SuggestionsBuilder suggestionsBuilder) {
 		if (suggestionsBuilder.getRemaining().isEmpty()) {
-			if (!this.blockState.getBlock().getStateFactory().getProperties().isEmpty()) {
+			if (!this.blockState.getBlock().method_9595().getProperties().isEmpty()) {
 				suggestionsBuilder.suggest(String.valueOf('['));
 			}
 
@@ -294,12 +294,12 @@ public class BlockArgumentParser {
 	}
 
 	private CompletableFuture<Suggestions> suggestIdentifiers(SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(BlockTags.getContainer().getKeys(), suggestionsBuilder.createOffset(this.cursorPos).add(suggestionsBuilder));
+		return CommandSource.suggestIdentifiers(BlockTags.method_15073().getKeys(), suggestionsBuilder.createOffset(this.cursorPos).add(suggestionsBuilder));
 	}
 
 	private CompletableFuture<Suggestions> suggestBlockOrTagId(SuggestionsBuilder suggestionsBuilder) {
 		if (this.allowTag) {
-			CommandSource.suggestIdentifiers(BlockTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
+			CommandSource.suggestIdentifiers(BlockTags.method_15073().getKeys(), suggestionsBuilder, String.valueOf('#'));
 		}
 
 		CommandSource.suggestIdentifiers(Registry.BLOCK.getIds(), suggestionsBuilder);
@@ -308,13 +308,13 @@ public class BlockArgumentParser {
 
 	public void parseBlockId() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
-		this.blockId = Identifier.parse(this.reader);
-		Block block = (Block)Registry.BLOCK.getOrEmpty(this.blockId).orElseThrow(() -> {
+		this.field_10697 = Identifier.parse(this.reader);
+		Block block = (Block)Registry.BLOCK.method_17966(this.field_10697).orElseThrow(() -> {
 			this.reader.setCursor(i);
-			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.blockId.toString());
+			return INVALID_BLOCK_ID_EXCEPTION.createWithContext(this.reader, this.field_10697.toString());
 		});
-		this.stateFactory = block.getStateFactory();
-		this.blockState = block.getDefaultState();
+		this.stateFactory = block.method_9595();
+		this.blockState = block.method_9564();
 	}
 
 	public void parseTagId() throws CommandSyntaxException {
@@ -324,7 +324,7 @@ public class BlockArgumentParser {
 			this.suggestions = this::suggestIdentifiers;
 			this.reader.expect('#');
 			this.cursorPos = this.reader.getCursor();
-			this.tagId = Identifier.parse(this.reader);
+			this.field_10681 = Identifier.parse(this.reader);
 		}
 	}
 
@@ -337,21 +337,21 @@ public class BlockArgumentParser {
 			this.reader.skipWhitespace();
 			int i = this.reader.getCursor();
 			String string = this.reader.readString();
-			Property<?> property = this.stateFactory.getProperty(string);
+			Property<?> property = this.stateFactory.method_11663(string);
 			if (property == null) {
 				this.reader.setCursor(i);
-				throw UNKNOWN_PROPERTY_EXCEPTION.createWithContext(this.reader, this.blockId.toString(), string);
+				throw UNKNOWN_PROPERTY_EXCEPTION.createWithContext(this.reader, this.field_10697.toString(), string);
 			}
 
 			if (this.blockProperties.containsKey(property)) {
 				this.reader.setCursor(i);
-				throw DUPLICATE_PROPERTY_EXCEPTION.createWithContext(this.reader, this.blockId.toString(), string);
+				throw DUPLICATE_PROPERTY_EXCEPTION.createWithContext(this.reader, this.field_10697.toString(), string);
 			}
 
 			this.reader.skipWhitespace();
 			this.suggestions = this::suggestEqualsCharacter;
 			if (!this.reader.canRead() || this.reader.peek() != '=') {
-				throw EMPTY_PROPERTY_EXCEPTION.createWithContext(this.reader, this.blockId.toString(), string);
+				throw EMPTY_PROPERTY_EXCEPTION.createWithContext(this.reader, this.field_10697.toString(), string);
 			}
 
 			this.reader.skip();
@@ -393,13 +393,13 @@ public class BlockArgumentParser {
 			String string = this.reader.readString();
 			if (this.tagProperties.containsKey(string)) {
 				this.reader.setCursor(j);
-				throw DUPLICATE_PROPERTY_EXCEPTION.createWithContext(this.reader, this.blockId.toString(), string);
+				throw DUPLICATE_PROPERTY_EXCEPTION.createWithContext(this.reader, this.field_10697.toString(), string);
 			}
 
 			this.reader.skipWhitespace();
 			if (!this.reader.canRead() || this.reader.peek() != '=') {
 				this.reader.setCursor(j);
-				throw EMPTY_PROPERTY_EXCEPTION.createWithContext(this.reader, this.blockId.toString(), string);
+				throw EMPTY_PROPERTY_EXCEPTION.createWithContext(this.reader, this.field_10697.toString(), string);
 			}
 
 			this.reader.skip();
@@ -435,22 +435,22 @@ public class BlockArgumentParser {
 	}
 
 	public void parseMojangson() throws CommandSyntaxException {
-		this.data = new JsonLikeTagParser(this.reader).parseCompoundTag();
+		this.field_10693 = new JsonLikeTagParser(this.reader).parseCompoundTag();
 	}
 
 	private <T extends Comparable<T>> void parsePropertyValue(Property<T> property, String string, int i) throws CommandSyntaxException {
 		Optional<T> optional = property.getValue(string);
 		if (optional.isPresent()) {
-			this.blockState = this.blockState.with(property, (Comparable)optional.get());
+			this.blockState = this.blockState.method_11657(property, (Comparable)optional.get());
 			this.blockProperties.put(property, optional.get());
 		} else {
 			this.reader.setCursor(i);
-			throw INVALID_PROPERTY_EXCEPTION.createWithContext(this.reader, this.blockId.toString(), property.getName(), string);
+			throw INVALID_PROPERTY_EXCEPTION.createWithContext(this.reader, this.field_10697.toString(), property.getName(), string);
 		}
 	}
 
 	public static String stringifyBlockState(BlockState blockState) {
-		StringBuilder stringBuilder = new StringBuilder(Registry.BLOCK.getId(blockState.getBlock()).toString());
+		StringBuilder stringBuilder = new StringBuilder(Registry.BLOCK.method_10221(blockState.getBlock()).toString());
 		if (!blockState.getProperties().isEmpty()) {
 			stringBuilder.append('[');
 			boolean bl = false;

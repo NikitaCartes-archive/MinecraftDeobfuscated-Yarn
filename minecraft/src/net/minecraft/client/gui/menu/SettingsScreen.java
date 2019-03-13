@@ -2,6 +2,10 @@ package net.minecraft.client.gui.menu;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
+import net.minecraft.class_4189;
+import net.minecraft.class_4210;
+import net.minecraft.class_4211;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.menu.settings.AudioSettingsScreen;
 import net.minecraft.client.gui.menu.settings.ChatSettingsScreen;
@@ -9,9 +13,7 @@ import net.minecraft.client.gui.menu.settings.ControlsSettingsScreen;
 import net.minecraft.client.gui.menu.settings.LanguageSettingsScreen;
 import net.minecraft.client.gui.menu.settings.ResourcePackSettingsScreen;
 import net.minecraft.client.gui.menu.settings.SkinSettingsScreen;
-import net.minecraft.client.gui.menu.settings.SnooperSettingsScreen;
 import net.minecraft.client.gui.menu.settings.VideoSettingsScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LockButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOption;
@@ -22,15 +24,16 @@ import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
 public class SettingsScreen extends Screen {
-	private static final GameOption[] field_2504 = new GameOption[]{GameOption.FOV};
-	private final Screen parent;
+	private static final GameOption[] field_2504 = new GameOption[]{GameOption.field_1964};
+	private final Screen field_2501;
 	private final GameOptions settings;
-	private ButtonWidget difficultyButton;
+	private class_4185 difficultyButton;
 	private LockButtonWidget lockDifficultyButton;
+	private Difficulty field_18745;
 	protected String title = "Options";
 
 	public SettingsScreen(Screen screen, GameOptions gameOptions) {
-		this.parent = screen;
+		this.field_2501 = screen;
 		this.settings = gameOptions;
 	}
 
@@ -42,46 +45,41 @@ public class SettingsScreen extends Screen {
 		for (GameOption gameOption : field_2504) {
 			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
 			int k = this.screenHeight / 6 - 12 + 24 * (i >> 1);
-			this.addButton(gameOption.createOptionButton(this.client.options, j, k, 150));
+			this.addButton(gameOption.method_18520(this.client.field_1690, j, k, 150));
 			i++;
 		}
 
-		if (this.client.world != null) {
-			Difficulty difficulty = this.client.world.getDifficulty();
-			this.difficultyButton = new ButtonWidget(
-				this.screenWidth / 2 - 155 + i % 2 * 160, this.screenHeight / 6 - 12 + 24 * (i >> 1), 150, 20, this.method_2189(difficulty)
+		if (this.client.field_1687 != null) {
+			this.field_18745 = this.client.field_1687.getDifficulty();
+			this.difficultyButton = new class_4185(
+				this.screenWidth / 2 - 155 + i % 2 * 160, this.screenHeight / 6 - 12 + 24 * (i >> 1), 150, 20, this.method_2189(this.field_18745)
 			) {
 				@Override
-				public void onPressed(double d, double e) {
-					SettingsScreen.this.client
-						.world
-						.getLevelProperties()
-						.setDifficulty(Difficulty.getDifficulty(SettingsScreen.this.client.world.getDifficulty().getId() + 1));
-					SettingsScreen.this.difficultyButton.setText(SettingsScreen.this.method_2189(SettingsScreen.this.client.world.getDifficulty()));
+				public void method_1826() {
+					SettingsScreen.this.field_18745 = Difficulty.getDifficulty(SettingsScreen.this.field_18745.getId() + 1);
+					SettingsScreen.this.client.method_1562().method_2883(new class_4210(SettingsScreen.this.field_18745));
+					SettingsScreen.this.difficultyButton.setText(SettingsScreen.this.method_2189(SettingsScreen.this.field_18745));
 				}
 			};
 			this.addButton(this.difficultyButton);
-			if (this.client.isIntegratedServerRunning() && !this.client.world.getLevelProperties().isHardcore()) {
+			if (this.client.isIntegratedServerRunning() && !this.client.field_1687.method_8401().isHardcore()) {
 				this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
 				this.lockDifficultyButton = new LockButtonWidget(this.difficultyButton.x + this.difficultyButton.getWidth(), this.difficultyButton.y) {
 					@Override
-					public void onPressed(double d, double e) {
-						SettingsScreen.this.client
-							.openScreen(
-								new YesNoScreen(
-									SettingsScreen.this,
-									new TranslatableTextComponent("difficulty.lock.title").getFormattedText(),
-									new TranslatableTextComponent(
-											"difficulty.lock.question", new TranslatableTextComponent(SettingsScreen.this.client.world.getLevelProperties().getDifficulty().getTranslationKey())
-										)
-										.getFormattedText(),
-									109
-								)
-							);
+					public void method_1826() {
+						TranslatableTextComponent translatableTextComponent = new TranslatableTextComponent("difficulty.lock.title");
+						TranslatableTextComponent translatableTextComponent2 = new TranslatableTextComponent(
+							"options.difficulty." + SettingsScreen.this.client.field_1687.method_8401().getDifficulty().getTranslationKey()
+						);
+						TranslatableTextComponent translatableTextComponent3 = new TranslatableTextComponent("difficulty.lock.question", translatableTextComponent2);
+						YesNoScreen yesNoScreen = new YesNoScreen(
+							SettingsScreen.this, translatableTextComponent.getFormattedText(), translatableTextComponent3.getFormattedText(), 109
+						);
+						SettingsScreen.this.client.method_1507(yesNoScreen);
 					}
 				};
 				this.addButton(this.lockDifficultyButton);
-				this.lockDifficultyButton.setLocked(this.client.world.getLevelProperties().isDifficultyLocked());
+				this.lockDifficultyButton.setLocked(this.client.field_1687.method_8401().isDifficultyLocked());
 				this.lockDifficultyButton.enabled = !this.lockDifficultyButton.isLocked();
 				this.difficultyButton.enabled = !this.lockDifficultyButton.isLocked();
 			} else {
@@ -98,7 +96,7 @@ public class SettingsScreen extends Screen {
 					GameOption.REALMS_NOTIFICATIONS.method_18495(this.settings)
 				) {
 					@Override
-					public void onPressed(double d, double e) {
+					public void method_1826() {
 						GameOption.REALMS_NOTIFICATIONS.method_18491(SettingsScreen.this.settings);
 						SettingsScreen.this.settings.write();
 						this.setText(GameOption.REALMS_NOTIFICATIONS.method_18495(SettingsScreen.this.settings));
@@ -107,74 +105,74 @@ public class SettingsScreen extends Screen {
 			);
 		}
 
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 48 - 6, 150, 20, I18n.translate("options.skinCustomisation")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 155, this.screenHeight / 6 + 48 - 6, 150, 20, I18n.translate("options.skinCustomisation")) {
 			@Override
-			public void onPressed(double d, double e) {
-				SettingsScreen.this.client.openScreen(new SkinSettingsScreen(SettingsScreen.this));
+			public void method_1826() {
+				SettingsScreen.this.client.method_1507(new SkinSettingsScreen(SettingsScreen.this));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 48 - 6, 150, 20, I18n.translate("options.sounds")) {
+		this.addButton(new class_4185(this.screenWidth / 2 + 5, this.screenHeight / 6 + 48 - 6, 150, 20, I18n.translate("options.sounds")) {
 			@Override
-			public void onPressed(double d, double e) {
-				SettingsScreen.this.client.openScreen(new AudioSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
+			public void method_1826() {
+				SettingsScreen.this.client.method_1507(new AudioSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 72 - 6, 150, 20, I18n.translate("options.video")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 155, this.screenHeight / 6 + 72 - 6, 150, 20, I18n.translate("options.video")) {
 			@Override
-			public void onPressed(double d, double e) {
-				SettingsScreen.this.client.openScreen(new VideoSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
+			public void method_1826() {
+				SettingsScreen.this.client.method_1507(new VideoSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 72 - 6, 150, 20, I18n.translate("options.controls")) {
+		this.addButton(new class_4185(this.screenWidth / 2 + 5, this.screenHeight / 6 + 72 - 6, 150, 20, I18n.translate("options.controls")) {
 			@Override
-			public void onPressed(double d, double e) {
-				SettingsScreen.this.client.openScreen(new ControlsSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
+			public void method_1826() {
+				SettingsScreen.this.client.method_1507(new ControlsSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
 		this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 96 - 6, 150, 20, I18n.translate("options.language")) {
+			new class_4185(this.screenWidth / 2 - 155, this.screenHeight / 6 + 96 - 6, 150, 20, I18n.translate("options.language")) {
 				@Override
-				public void onPressed(double d, double e) {
+				public void method_1826() {
 					SettingsScreen.this.client
-						.openScreen(new LanguageSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings, SettingsScreen.this.client.getLanguageManager()));
+						.method_1507(new LanguageSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings, SettingsScreen.this.client.method_1526()));
 				}
 			}
 		);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 96 - 6, 150, 20, I18n.translate("options.chat.title")) {
+		this.addButton(new class_4185(this.screenWidth / 2 + 5, this.screenHeight / 6 + 96 - 6, 150, 20, I18n.translate("options.chat.title")) {
 			@Override
-			public void onPressed(double d, double e) {
-				SettingsScreen.this.client.openScreen(new ChatSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
+			public void method_1826() {
+				SettingsScreen.this.client.method_1507(new ChatSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 120 - 6, 150, 20, I18n.translate("options.resourcepack")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 155, this.screenHeight / 6 + 120 - 6, 150, 20, I18n.translate("options.resourcepack")) {
 			@Override
-			public void onPressed(double d, double e) {
-				SettingsScreen.this.client.openScreen(new ResourcePackSettingsScreen(SettingsScreen.this));
+			public void method_1826() {
+				SettingsScreen.this.client.method_1507(new ResourcePackSettingsScreen(SettingsScreen.this));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 120 - 6, 150, 20, I18n.translate("options.snooper.view")) {
+		this.addButton(new class_4185(this.screenWidth / 2 + 5, this.screenHeight / 6 + 120 - 6, 150, 20, I18n.translate("options.accessibility.title")) {
 			@Override
-			public void onPressed(double d, double e) {
-				SettingsScreen.this.client.openScreen(new SnooperSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
+			public void method_1826() {
+				SettingsScreen.this.client.method_1507(new class_4189(SettingsScreen.this, SettingsScreen.this.settings));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, I18n.translate("gui.done")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, I18n.translate("gui.done")) {
 			@Override
-			public void onPressed(double d, double e) {
-				SettingsScreen.this.client.openScreen(SettingsScreen.this.parent);
+			public void method_1826() {
+				SettingsScreen.this.client.method_1507(SettingsScreen.this.field_2501);
 			}
 		});
 	}
 
 	public String method_2189(Difficulty difficulty) {
-		return new TranslatableTextComponent("options.difficulty").append(": ").append(difficulty.toTextComponent()).getFormattedText();
+		return new TranslatableTextComponent("options.difficulty").append(": ").append(difficulty.method_5463()).getFormattedText();
 	}
 
 	@Override
 	public void confirmResult(boolean bl, int i) {
-		this.client.openScreen(this);
-		if (i == 109 && bl && this.client.world != null) {
-			this.client.world.getLevelProperties().setDifficultyLocked(true);
+		this.client.method_1507(this);
+		if (i == 109 && bl && this.client.field_1687 != null) {
+			this.client.method_1562().method_2883(new class_4211(true));
 			this.lockDifficultyButton.setLocked(true);
 			this.lockDifficultyButton.enabled = false;
 			this.difficultyButton.enabled = false;

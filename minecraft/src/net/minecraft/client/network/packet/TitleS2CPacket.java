@@ -39,7 +39,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.action = packetByteBuf.readEnumConstant(TitleS2CPacket.Action.class);
 		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627) {
-			this.text = packetByteBuf.readTextComponent();
+			this.text = packetByteBuf.method_10808();
 		}
 
 		if (this.action == TitleS2CPacket.Action.DISPLAY) {
@@ -53,7 +53,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.action);
 		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627) {
-			packetByteBuf.writeTextComponent(this.text);
+			packetByteBuf.method_10805(this.text);
 		}
 
 		if (this.action == TitleS2CPacket.Action.DISPLAY) {
@@ -64,7 +64,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11879(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onTitle(this);
+		clientPlayPacketListener.method_11103(this);
 	}
 
 	@Environment(EnvType.CLIENT)

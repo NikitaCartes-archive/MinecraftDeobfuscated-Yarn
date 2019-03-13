@@ -22,23 +22,23 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ModelItemOverride {
-	private final Identifier modelId;
+	private final Identifier field_4268;
 	private final Map<Identifier, Float> minPropertyValues;
 
 	public ModelItemOverride(Identifier identifier, Map<Identifier, Float> map) {
-		this.modelId = identifier;
+		this.field_4268 = identifier;
 		this.minPropertyValues = map;
 	}
 
-	public Identifier getModelId() {
-		return this.modelId;
+	public Identifier method_3472() {
+		return this.field_4268;
 	}
 
 	boolean matches(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
 		Item item = itemStack.getItem();
 
 		for (Entry<Identifier, Float> entry : this.minPropertyValues.entrySet()) {
-			ItemPropertyGetter itemPropertyGetter = item.getProperty((Identifier)entry.getKey());
+			ItemPropertyGetter itemPropertyGetter = item.method_7868((Identifier)entry.getKey());
 			if (itemPropertyGetter == null || itemPropertyGetter.call(itemStack, world, livingEntity) < (Float)entry.getValue()) {
 				return false;
 			}

@@ -36,7 +36,7 @@ public class HealthUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11832(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onHealthUpdate(this);
+		clientPlayPacketListener.method_11122(this);
 	}
 
 	@Environment(EnvType.CLIENT)

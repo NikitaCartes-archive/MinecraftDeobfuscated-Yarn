@@ -17,12 +17,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("used_totem");
+	private static final Identifier field_9773 = new Identifier("used_totem");
 	private final Map<PlayerAdvancementTracker, UsedTotemCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, UsedTotemCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9773;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.addCondition(conditionsContainer);
+		handler.method_9166(conditionsContainer);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 	) {
 		UsedTotemCriterion.Handler handler = (UsedTotemCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
+			handler.method_9169(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -61,7 +61,7 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 		return new UsedTotemCriterion.Conditions(itemPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
+	public void method_9165(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
 		UsedTotemCriterion.Handler handler = (UsedTotemCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
 			handler.handle(itemStack);
@@ -72,12 +72,12 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 		private final ItemPredicate item;
 
 		public Conditions(ItemPredicate itemPredicate) {
-			super(UsedTotemCriterion.ID);
+			super(UsedTotemCriterion.field_9773);
 			this.item = itemPredicate;
 		}
 
 		public static UsedTotemCriterion.Conditions method_9170(ItemProvider itemProvider) {
-			return new UsedTotemCriterion.Conditions(ItemPredicate.Builder.create().item(itemProvider).build());
+			return new UsedTotemCriterion.Conditions(ItemPredicate.Builder.create().method_8977(itemProvider).build());
 		}
 
 		public boolean matches(ItemStack itemStack) {
@@ -93,22 +93,22 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker manager;
+		private final PlayerAdvancementTracker field_9776;
 		private final Set<Criterion.ConditionsContainer<UsedTotemCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<UsedTotemCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+			this.field_9776 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void addCondition(Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainer) {
+		public void method_9166(Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void removeCondition(Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainer) {
+		public void method_9169(Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
@@ -116,7 +116,7 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 			List<Criterion.ConditionsContainer<UsedTotemCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(itemStack)) {
+				if (conditionsContainer.method_797().matches(itemStack)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<UsedTotemCriterion.Conditions>>newArrayList();
 					}
@@ -127,7 +127,7 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<UsedTotemCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9776);
 				}
 			}
 		}

@@ -34,7 +34,7 @@ public class BrewingRecipeRegistry {
 		int i = 0;
 
 		for (int j = ITEM_RECIPES.size(); i < j; i++) {
-			if (((BrewingRecipeRegistry.Recipe)ITEM_RECIPES.get(i)).ingredient.method_8093(itemStack)) {
+			if (((BrewingRecipeRegistry.Recipe)ITEM_RECIPES.get(i)).field_8960.method_8093(itemStack)) {
 				return true;
 			}
 		}
@@ -46,7 +46,7 @@ public class BrewingRecipeRegistry {
 		int i = 0;
 
 		for (int j = POTION_RECIPES.size(); i < j; i++) {
-			if (((BrewingRecipeRegistry.Recipe)POTION_RECIPES.get(i)).ingredient.method_8093(itemStack)) {
+			if (((BrewingRecipeRegistry.Recipe)POTION_RECIPES.get(i)).field_8960.method_8093(itemStack)) {
 				return true;
 			}
 		}
@@ -64,7 +64,7 @@ public class BrewingRecipeRegistry {
 
 		for (int j = ITEM_RECIPES.size(); i < j; i++) {
 			BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe<Item>)ITEM_RECIPES.get(i);
-			if (recipe.input == item && recipe.ingredient.method_8093(itemStack2)) {
+			if (recipe.input == item && recipe.field_8960.method_8093(itemStack2)) {
 				return true;
 			}
 		}
@@ -78,7 +78,7 @@ public class BrewingRecipeRegistry {
 
 		for (int j = POTION_RECIPES.size(); i < j; i++) {
 			BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe<Potion>)POTION_RECIPES.get(i);
-			if (recipe.input == potion && recipe.ingredient.method_8093(itemStack2)) {
+			if (recipe.input == potion && recipe.field_8960.method_8093(itemStack2)) {
 				return true;
 			}
 		}
@@ -94,7 +94,7 @@ public class BrewingRecipeRegistry {
 
 			for (int j = ITEM_RECIPES.size(); i < j; i++) {
 				BrewingRecipeRegistry.Recipe<Item> recipe = (BrewingRecipeRegistry.Recipe<Item>)ITEM_RECIPES.get(i);
-				if (recipe.input == item && recipe.ingredient.method_8093(itemStack)) {
+				if (recipe.input == item && recipe.field_8960.method_8093(itemStack)) {
 					return PotionUtil.setPotion(new ItemStack(recipe.output), potion);
 				}
 			}
@@ -103,7 +103,7 @@ public class BrewingRecipeRegistry {
 
 			for (int jx = POTION_RECIPES.size(); i < jx; i++) {
 				BrewingRecipeRegistry.Recipe<Potion> recipe = (BrewingRecipeRegistry.Recipe<Potion>)POTION_RECIPES.get(i);
-				if (recipe.input == potion && recipe.ingredient.method_8093(itemStack)) {
+				if (recipe.input == potion && recipe.field_8960.method_8093(itemStack)) {
 					return PotionUtil.setPotion(new ItemStack(item), recipe.output);
 				}
 			}
@@ -177,34 +177,34 @@ public class BrewingRecipeRegistry {
 
 	private static void registerItemRecipe(Item item, Item item2, Item item3) {
 		if (!(item instanceof PotionItem)) {
-			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item));
+			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.method_10221(item));
 		} else if (!(item3 instanceof PotionItem)) {
-			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item3));
+			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.method_10221(item3));
 		} else {
-			ITEM_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(item, Ingredient.ofItems(item2), item3));
+			ITEM_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(item, Ingredient.method_8091(item2), item3));
 		}
 	}
 
 	private static void registerPotionType(Item item) {
 		if (!(item instanceof PotionItem)) {
-			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.getId(item));
+			throw new IllegalArgumentException("Expected a potion, got: " + Registry.ITEM.method_10221(item));
 		} else {
-			POTION_TYPES.add(Ingredient.ofItems(item));
+			POTION_TYPES.add(Ingredient.method_8091(item));
 		}
 	}
 
 	private static void registerPotionRecipe(Potion potion, Item item, Potion potion2) {
-		POTION_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(potion, Ingredient.ofItems(item), potion2));
+		POTION_RECIPES.add(new BrewingRecipeRegistry.Recipe<>(potion, Ingredient.method_8091(item), potion2));
 	}
 
 	static class Recipe<T> {
 		private final T input;
-		private final Ingredient ingredient;
+		private final Ingredient field_8960;
 		private final T output;
 
 		public Recipe(T object, Ingredient ingredient, T object2) {
 			this.input = object;
-			this.ingredient = ingredient;
+			this.field_8960 = ingredient;
 			this.output = object2;
 		}
 	}

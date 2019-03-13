@@ -38,39 +38,39 @@ public abstract class class_3855 extends ExplosiveProjectileEntity implements Fl
 
 	public void method_16936(ItemStack itemStack) {
 		if (itemStack.getItem() != Items.field_8814 || itemStack.hasTag()) {
-			this.getDataTracker().set(field_17081, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
+			this.method_5841().set(field_17081, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
 		}
 	}
 
 	protected ItemStack method_16938() {
-		return this.getDataTracker().get(field_17081);
+		return this.method_5841().get(field_17081);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getItem() {
+	public ItemStack method_7495() {
 		ItemStack itemStack = this.method_16938();
 		return itemStack.isEmpty() ? new ItemStack(Items.field_8814) : itemStack;
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(field_17081, ItemStack.EMPTY);
+		this.method_5841().startTracking(field_17081, ItemStack.EMPTY);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		ItemStack itemStack = this.method_16938();
 		if (!itemStack.isEmpty()) {
-			compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
+			compoundTag.method_10566("Item", itemStack.method_7953(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
+		ItemStack itemStack = ItemStack.method_7915(compoundTag.getCompound("Item"));
 		this.method_16936(itemStack);
 	}
 }

@@ -17,25 +17,25 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.World;
 
 public class ShapelessRecipe implements CraftingRecipe {
-	private final Identifier id;
+	private final Identifier field_9048;
 	private final String group;
 	private final ItemStack output;
-	private final DefaultedList<Ingredient> input;
+	private final DefaultedList<Ingredient> field_9047;
 
 	public ShapelessRecipe(Identifier identifier, String string, ItemStack itemStack, DefaultedList<Ingredient> defaultedList) {
-		this.id = identifier;
+		this.field_9048 = identifier;
 		this.group = string;
 		this.output = itemStack;
-		this.input = defaultedList;
+		this.field_9047 = defaultedList;
 	}
 
 	@Override
-	public Identifier getId() {
-		return this.id;
+	public Identifier method_8114() {
+		return this.field_9048;
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
+	public RecipeSerializer<?> method_8119() {
 		return RecipeSerializer.SHAPELESS;
 	}
 
@@ -51,8 +51,8 @@ public class ShapelessRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public DefaultedList<Ingredient> getPreviewInputs() {
-		return this.input;
+	public DefaultedList<Ingredient> method_8117() {
+		return this.field_9047;
 	}
 
 	public boolean method_17730(CraftingInventory craftingInventory, World world) {
@@ -60,14 +60,14 @@ public class ShapelessRecipe implements CraftingRecipe {
 		int i = 0;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack = craftingInventory.getInvStack(j);
+			ItemStack itemStack = craftingInventory.method_5438(j);
 			if (!itemStack.isEmpty()) {
 				i++;
-				recipeFinder.addItem(itemStack);
+				recipeFinder.method_7400(itemStack);
 			}
 		}
 
-		return i == this.input.size() && recipeFinder.findRecipe(this, null);
+		return i == this.field_9047.size() && recipeFinder.method_7402(this, null);
 	}
 
 	public ItemStack method_17729(CraftingInventory craftingInventory) {
@@ -77,13 +77,13 @@ public class ShapelessRecipe implements CraftingRecipe {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean fits(int i, int j) {
-		return i * j >= this.input.size();
+		return i * j >= this.field_9047.size();
 	}
 
 	public static class Serializer implements RecipeSerializer<ShapelessRecipe> {
 		public ShapelessRecipe method_8142(Identifier identifier, JsonObject jsonObject) {
 			String string = JsonHelper.getString(jsonObject, "group", "");
-			DefaultedList<Ingredient> defaultedList = getIngredients(JsonHelper.getArray(jsonObject, "ingredients"));
+			DefaultedList<Ingredient> defaultedList = method_8144(JsonHelper.getArray(jsonObject, "ingredients"));
 			if (defaultedList.isEmpty()) {
 				throw new JsonParseException("No ingredients for shapeless recipe");
 			} else if (defaultedList.size() > 9) {
@@ -94,7 +94,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 			}
 		}
 
-		private static DefaultedList<Ingredient> getIngredients(JsonArray jsonArray) {
+		private static DefaultedList<Ingredient> method_8144(JsonArray jsonArray) {
 			DefaultedList<Ingredient> defaultedList = DefaultedList.create();
 
 			for (int i = 0; i < jsonArray.size(); i++) {
@@ -113,7 +113,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 			DefaultedList<Ingredient> defaultedList = DefaultedList.create(i, Ingredient.EMPTY);
 
 			for (int j = 0; j < defaultedList.size(); j++) {
-				defaultedList.set(j, Ingredient.fromPacket(packetByteBuf));
+				defaultedList.set(j, Ingredient.method_8086(packetByteBuf));
 			}
 
 			ItemStack itemStack = packetByteBuf.readItemStack();
@@ -122,10 +122,10 @@ public class ShapelessRecipe implements CraftingRecipe {
 
 		public void method_8143(PacketByteBuf packetByteBuf, ShapelessRecipe shapelessRecipe) {
 			packetByteBuf.writeString(shapelessRecipe.group);
-			packetByteBuf.writeVarInt(shapelessRecipe.input.size());
+			packetByteBuf.writeVarInt(shapelessRecipe.field_9047.size());
 
-			for (Ingredient ingredient : shapelessRecipe.input) {
-				ingredient.write(packetByteBuf);
+			for (Ingredient ingredient : shapelessRecipe.field_9047) {
+				ingredient.method_8088(packetByteBuf);
 			}
 
 			packetByteBuf.writeItemStack(shapelessRecipe.output);

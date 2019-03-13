@@ -23,16 +23,16 @@ public class SkeletonHorseGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.owner.world.method_18458(this.owner.x, this.owner.y, this.owner.z, 10.0);
+		return this.owner.field_6002.method_18458(this.owner.x, this.owner.y, this.owner.z, 10.0);
 	}
 
 	@Override
 	public void tick() {
-		LocalDifficulty localDifficulty = this.owner.world.getLocalDifficulty(new BlockPos(this.owner));
+		LocalDifficulty localDifficulty = this.owner.field_6002.method_8404(new BlockPos(this.owner));
 		this.owner.method_6813(false);
 		this.owner.setTame(true);
 		this.owner.setBreedingAge(0);
-		((ServerWorld)this.owner.world).addLightning(new LightningEntity(this.owner.world, this.owner.x, this.owner.y, this.owner.z, true));
+		((ServerWorld)this.owner.field_6002).addLightning(new LightningEntity(this.owner.field_6002, this.owner.x, this.owner.y, this.owner.z, true));
 		SkeletonEntity skeletonEntity = this.method_6811(localDifficulty, this.owner);
 		skeletonEntity.startRiding(this.owner);
 
@@ -45,46 +45,46 @@ public class SkeletonHorseGoal extends Goal {
 	}
 
 	private HorseBaseEntity method_6810(LocalDifficulty localDifficulty) {
-		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.owner.world);
-		skeletonHorseEntity.prepareEntityData(this.owner.world, localDifficulty, SpawnType.field_16461, null, null);
+		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.method_5883(this.owner.field_6002);
+		skeletonHorseEntity.method_5943(this.owner.field_6002, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonHorseEntity.setPosition(this.owner.x, this.owner.y, this.owner.z);
 		skeletonHorseEntity.field_6008 = 60;
 		skeletonHorseEntity.setPersistent();
 		skeletonHorseEntity.setTame(true);
 		skeletonHorseEntity.setBreedingAge(0);
-		skeletonHorseEntity.world.spawnEntity(skeletonHorseEntity);
+		skeletonHorseEntity.field_6002.spawnEntity(skeletonHorseEntity);
 		return skeletonHorseEntity;
 	}
 
 	private SkeletonEntity method_6811(LocalDifficulty localDifficulty, HorseBaseEntity horseBaseEntity) {
-		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(horseBaseEntity.world);
-		skeletonEntity.prepareEntityData(horseBaseEntity.world, localDifficulty, SpawnType.field_16461, null, null);
+		SkeletonEntity skeletonEntity = EntityType.SKELETON.method_5883(horseBaseEntity.field_6002);
+		skeletonEntity.method_5943(horseBaseEntity.field_6002, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonEntity.setPosition(horseBaseEntity.x, horseBaseEntity.y, horseBaseEntity.z);
 		skeletonEntity.field_6008 = 60;
 		skeletonEntity.setPersistent();
-		if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
-			skeletonEntity.setEquippedStack(EquipmentSlot.HEAD, new ItemStack(Items.field_8743));
+		if (skeletonEntity.method_6118(EquipmentSlot.HEAD).isEmpty()) {
+			skeletonEntity.method_5673(EquipmentSlot.HEAD, new ItemStack(Items.field_8743));
 		}
 
-		skeletonEntity.setEquippedStack(
+		skeletonEntity.method_5673(
 			EquipmentSlot.HAND_MAIN,
 			EnchantmentHelper.enchant(
 				skeletonEntity.getRand(),
-				skeletonEntity.getMainHandStack(),
+				skeletonEntity.method_6047(),
 				(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRand().nextInt(18)),
 				false
 			)
 		);
-		skeletonEntity.setEquippedStack(
+		skeletonEntity.method_5673(
 			EquipmentSlot.HEAD,
 			EnchantmentHelper.enchant(
 				skeletonEntity.getRand(),
-				skeletonEntity.getEquippedStack(EquipmentSlot.HEAD),
+				skeletonEntity.method_6118(EquipmentSlot.HEAD),
 				(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRand().nextInt(18)),
 				false
 			)
 		);
-		skeletonEntity.world.spawnEntity(skeletonEntity);
+		skeletonEntity.field_6002.spawnEntity(skeletonEntity);
 		return skeletonEntity;
 	}
 }

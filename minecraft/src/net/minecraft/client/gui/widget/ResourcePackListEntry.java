@@ -21,43 +21,43 @@ public class ResourcePackListEntry extends EntryListWidget.Entry<ResourcePackLis
 	private static final TextComponent field_3163 = new TranslatableTextComponent("resourcePack.incompatible.confirm.title");
 	protected final MinecraftClient client;
 	protected final ResourcePackSettingsScreen field_3164;
-	private final ClientResourcePackContainer resourcePack;
+	private final ClientResourcePackContainer field_3161;
 
 	public ResourcePackListEntry(ResourcePackSettingsScreen resourcePackSettingsScreen, ClientResourcePackContainer clientResourcePackContainer) {
 		this.field_3164 = resourcePackSettingsScreen;
 		this.client = MinecraftClient.getInstance();
-		this.resourcePack = clientResourcePackContainer;
+		this.field_3161 = clientResourcePackContainer;
 	}
 
-	public void addTo(SelectedResourcePackListWidget selectedResourcePackListWidget) {
-		this.getResourcePack().getSortingDirection().locate(selectedResourcePackListWidget.getInputListeners(), this, ResourcePackListEntry::getResourcePack, true);
+	public void method_2686(SelectedResourcePackListWidget selectedResourcePackListWidget) {
+		this.method_2681().getSortingDirection().locate(selectedResourcePackListWidget.getInputListeners(), this, ResourcePackListEntry::method_2681, true);
 	}
 
 	protected void drawIcon() {
-		this.resourcePack.drawIcon(this.client.getTextureManager());
+		this.field_3161.drawIcon(this.client.method_1531());
 	}
 
-	protected ResourcePackCompatibility getCompatibility() {
-		return this.resourcePack.getCompatibility();
+	protected ResourcePackCompatibility method_2677() {
+		return this.field_3161.getCompatibility();
 	}
 
 	protected String getDescription() {
-		return this.resourcePack.getDescription().getFormattedText();
+		return this.field_3161.getDescription().getFormattedText();
 	}
 
 	protected String getDisplayName() {
-		return this.resourcePack.getDisplayName().getFormattedText();
+		return this.field_3161.getDisplayName().getFormattedText();
 	}
 
-	public ClientResourcePackContainer getResourcePack() {
-		return this.resourcePack;
+	public ClientResourcePackContainer method_2681() {
+		return this.field_3161;
 	}
 
 	@Override
 	public void draw(int i, int j, int k, int l, boolean bl, float f) {
 		int m = this.getY();
 		int n = this.getX();
-		ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
+		ResourcePackCompatibility resourcePackCompatibility = this.method_2677();
 		if (!resourcePackCompatibility.isCompatible()) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawRect(n - 1, m - 1, n + i - 9, m + j + 1, -8978432);
@@ -68,8 +68,8 @@ public class ResourcePackListEntry extends EntryListWidget.Entry<ResourcePackLis
 		DrawableHelper.drawTexturedRect(n, m, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
 		String string = this.getDisplayName();
 		String string2 = this.getDescription();
-		if (this.method_2687() && (this.client.options.touchscreen || bl)) {
-			this.client.getTextureManager().bindTexture(field_3160);
+		if (this.method_2687() && (this.client.field_1690.touchscreen || bl)) {
+			this.client.method_1531().method_4618(field_3160);
 			DrawableHelper.drawRect(n, m, n + 32, m + 32, -1601138544);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int o = k - n;
@@ -112,21 +112,21 @@ public class ResourcePackListEntry extends EntryListWidget.Entry<ResourcePackLis
 			}
 		}
 
-		int ox = this.client.textRenderer.getStringWidth(string);
+		int ox = this.client.field_1772.getStringWidth(string);
 		if (ox > 157) {
-			string = this.client.textRenderer.trimToWidth(string, 157 - this.client.textRenderer.getStringWidth("...")) + "...";
+			string = this.client.field_1772.trimToWidth(string, 157 - this.client.field_1772.getStringWidth("...")) + "...";
 		}
 
-		this.client.textRenderer.drawWithShadow(string, (float)(n + 32 + 2), (float)(m + 1), 16777215);
-		List<String> list = this.client.textRenderer.wrapStringToWidthAsList(string2, 157);
+		this.client.field_1772.drawWithShadow(string, (float)(n + 32 + 2), (float)(m + 1), 16777215);
+		List<String> list = this.client.field_1772.wrapStringToWidthAsList(string2, 157);
 
 		for (int q = 0; q < 2 && q < list.size(); q++) {
-			this.client.textRenderer.drawWithShadow((String)list.get(q), (float)(n + 32 + 2), (float)(m + 12 + 10 * q), 8421504);
+			this.client.field_1772.drawWithShadow((String)list.get(q), (float)(n + 32 + 2), (float)(m + 12 + 10 * q), 8421504);
 		}
 	}
 
 	protected boolean method_2687() {
-		return !this.resourcePack.sortsTillEnd() || !this.resourcePack.canBeSorted();
+		return !this.field_3161.sortsTillEnd() || !this.field_3161.canBeSorted();
 	}
 
 	protected boolean method_2688() {
@@ -134,19 +134,19 @@ public class ResourcePackListEntry extends EntryListWidget.Entry<ResourcePackLis
 	}
 
 	protected boolean method_2685() {
-		return this.field_3164.method_2669(this) && !this.resourcePack.canBeSorted();
+		return this.field_3164.method_2669(this) && !this.field_3161.canBeSorted();
 	}
 
 	protected boolean method_2682() {
 		List<ResourcePackListEntry> list = this.getParent().getInputListeners();
 		int i = list.indexOf(this);
-		return i > 0 && !((ResourcePackListEntry)list.get(i - 1)).resourcePack.sortsTillEnd();
+		return i > 0 && !((ResourcePackListEntry)list.get(i - 1)).field_3161.sortsTillEnd();
 	}
 
 	protected boolean method_2683() {
 		List<ResourcePackListEntry> list = this.getParent().getInputListeners();
 		int i = list.indexOf(this);
-		return i >= 0 && i < list.size() - 1 && !((ResourcePackListEntry)list.get(i + 1)).resourcePack.sortsTillEnd();
+		return i >= 0 && i < list.size() - 1 && !((ResourcePackListEntry)list.get(i + 1)).field_3161.sortsTillEnd();
 	}
 
 	@Override
@@ -156,16 +156,16 @@ public class ResourcePackListEntry extends EntryListWidget.Entry<ResourcePackLis
 		if (this.method_2687() && f <= 32.0) {
 			if (this.method_2688()) {
 				this.method_2680().method_2660();
-				ResourcePackCompatibility resourcePackCompatibility = this.getCompatibility();
+				ResourcePackCompatibility resourcePackCompatibility = this.method_2677();
 				if (resourcePackCompatibility.isCompatible()) {
-					this.method_2680().select(this);
+					this.method_2680().method_2674(this);
 				} else {
 					String string = field_3163.getFormattedText();
 					String string2 = resourcePackCompatibility.getConfirmMessage().getFormattedText();
-					this.client.openScreen(new YesNoScreen((bl, ix) -> {
-						this.client.openScreen(this.method_2680());
+					this.client.method_1507(new YesNoScreen((bl, ix) -> {
+						this.client.method_1507(this.method_2680());
 						if (bl) {
-							this.method_2680().select(this);
+							this.method_2680().method_2674(this);
 						}
 					}, string, string2, 0));
 				}
@@ -174,7 +174,7 @@ public class ResourcePackListEntry extends EntryListWidget.Entry<ResourcePackLis
 			}
 
 			if (f < 16.0 && this.method_2685()) {
-				this.method_2680().remove(this);
+				this.method_2680().method_2663(this);
 				return true;
 			}
 

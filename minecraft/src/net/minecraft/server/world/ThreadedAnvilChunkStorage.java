@@ -30,6 +30,8 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4153;
+import net.minecraft.class_4209;
 import net.minecraft.client.network.packet.ChunkDataS2CPacket;
 import net.minecraft.client.network.packet.EntityAttachS2CPacket;
 import net.minecraft.client.network.packet.EntityPassengersSetS2CPacket;
@@ -58,6 +60,7 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.profiler.Profiler;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SessionLockException;
@@ -79,18 +82,20 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 	public static final int field_18239 = 33 + ChunkStatus.getMaxTargetGenerationRadius();
 	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolder = new Long2ObjectLinkedOpenHashMap<>();
 	private volatile Long2ObjectLinkedOpenHashMap<ChunkHolder> posToHolderCopy = this.posToHolder.clone();
+	private final Long2ObjectLinkedOpenHashMap<ChunkHolder> field_18807 = new Long2ObjectLinkedOpenHashMap<>();
 	private final LongSet field_18307 = new LongOpenHashSet();
-	private final ServerWorld world;
-	private final ServerLightingProvider serverLightingProvider;
+	private final ServerWorld field_17214;
+	private final ServerLightingProvider field_17215;
 	private final Executor genQueueAdder;
 	private final ChunkGenerator<?> chunkGenerator;
 	private final Supplier<PersistentStateManager> persistentStateManagerFactory;
+	private final class_4153 field_18808;
 	private final LongSet field_17221 = new LongOpenHashSet();
 	private boolean posToHolderCopyOutdated;
-	private final ChunkTaskPrioritySystem chunkTaskPrioritySystem;
+	private final ChunkTaskPrioritySystem field_17223;
 	private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> worldgenActor;
 	private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> mainActor;
-	private final WorldGenerationProgressListener worldGenerationProgressListener;
+	private final WorldGenerationProgressListener field_17442;
 	private final ThreadedAnvilChunkStorage.TicketManager ticketManager;
 	private final AtomicInteger totalChunksLoadedCount = new AtomicInteger();
 	private final StructureManager structureManager;
@@ -114,26 +119,25 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 		int i,
 		int j
 	) {
-		super(dataFixer);
+		super(new File(serverWorld.method_8597().method_12460().getFile(file), "region"), dataFixer);
 		this.structureManager = structureManager;
-		this.saveDir = serverWorld.getDimension().getType().getFile(file);
-		this.world = serverWorld;
+		this.saveDir = serverWorld.method_8597().method_12460().getFile(file);
+		this.field_17214 = serverWorld;
 		this.chunkGenerator = chunkGenerator;
 		this.genQueueAdder = executor2;
 		MailboxProcessor<Runnable> mailboxProcessor = MailboxProcessor.create(executor, "worldgen");
 		MailboxProcessor<Runnable> mailboxProcessor2 = MailboxProcessor.create(executor2, "main");
-		this.worldGenerationProgressListener = worldGenerationProgressListener;
+		this.field_17442 = worldGenerationProgressListener;
 		MailboxProcessor<Runnable> mailboxProcessor3 = MailboxProcessor.create(executor, "light");
-		this.chunkTaskPrioritySystem = new ChunkTaskPrioritySystem(
-			ImmutableList.of(mailboxProcessor, mailboxProcessor2, mailboxProcessor3), executor, Integer.MAX_VALUE
-		);
-		this.worldgenActor = this.chunkTaskPrioritySystem.getExecutingActor(mailboxProcessor, false);
-		this.mainActor = this.chunkTaskPrioritySystem.getExecutingActor(mailboxProcessor2, false);
-		this.serverLightingProvider = new ServerLightingProvider(
-			chunkProvider, this, this.world.getDimension().hasSkyLight(), mailboxProcessor3, this.chunkTaskPrioritySystem.getExecutingActor(mailboxProcessor3, false)
+		this.field_17223 = new ChunkTaskPrioritySystem(ImmutableList.of(mailboxProcessor, mailboxProcessor2, mailboxProcessor3), executor, Integer.MAX_VALUE);
+		this.worldgenActor = this.field_17223.getExecutingActor(mailboxProcessor, false);
+		this.mainActor = this.field_17223.getExecutingActor(mailboxProcessor2, false);
+		this.field_17215 = new ServerLightingProvider(
+			chunkProvider, this, this.field_17214.method_8597().hasSkyLight(), mailboxProcessor3, this.field_17223.getExecutingActor(mailboxProcessor3, false)
 		);
 		this.ticketManager = new ThreadedAnvilChunkStorage.TicketManager(executor, executor2);
 		this.persistentStateManagerFactory = supplier;
+		this.field_18808 = new class_4153(new File(this.saveDir, "poi"));
 		this.applyViewDistance(i, j);
 	}
 
@@ -170,8 +174,8 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 		return Math.max(Math.abs(k), Math.abs(l));
 	}
 
-	protected ServerLightingProvider getLightProvider() {
-		return this.serverLightingProvider;
+	protected ServerLightingProvider method_17212() {
+		return this.field_17215;
 	}
 
 	@Nullable
@@ -205,7 +209,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 			}
 
 			if (chunk != null) {
-				string = string + "Ch: §" + chunk.getStatus().getIndex() + chunk.getStatus() + '§' + "r\n";
+				string = string + "Ch: §" + chunk.method_12009().getIndex() + chunk.method_12009() + '§' + "r\n";
 			}
 
 			ChunkHolder.LevelType levelType = chunkHolder.getLevelType();
@@ -234,7 +238,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 				}
 
 				ChunkStatus chunkStatus = (ChunkStatus)intFunction.apply(n);
-				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.getChunk(chunkStatus, this);
+				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.method_13993(chunkStatus, this);
 				list.add(completableFuture);
 			}
 		}
@@ -286,7 +290,13 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 			}
 
 			if (i <= field_18239 && chunkHolder == null) {
-				chunkHolder = new ChunkHolder(new ChunkPos(l), i, this.serverLightingProvider, this.chunkTaskPrioritySystem, this);
+				chunkHolder = this.field_18807.remove(l);
+				if (chunkHolder != null) {
+					chunkHolder.setLevel(i);
+				} else {
+					chunkHolder = new ChunkHolder(new ChunkPos(l), i, this.field_17215, this.field_17223, this);
+				}
+
 				this.posToHolder.put(l, chunkHolder);
 				this.posToHolderCopyOutdated = true;
 			}
@@ -297,8 +307,9 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 
 	@Override
 	public void close() throws IOException {
-		this.chunkTaskPrioritySystem.close();
+		this.field_17223.close();
 		this.save(true);
+		this.field_18808.close();
 		super.close();
 	}
 
@@ -310,36 +321,43 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 	}
 
 	protected void unload(BooleanSupplier booleanSupplier) {
-		if (!this.world.isSavingDisabled()) {
+		Profiler profiler = this.field_17214.getProfiler();
+		profiler.push("poi");
+		this.field_18808.method_19290(booleanSupplier);
+		profiler.swap("chunk_unload");
+		if (!this.field_17214.isSavingDisabled()) {
 			LongIterator longIterator = this.field_17221.iterator();
 
 			for (int i = 0; longIterator.hasNext() && (booleanSupplier.getAsBoolean() || i < 200 || this.field_17221.size() > 2000); longIterator.remove()) {
 				long l = longIterator.nextLong();
 				ChunkHolder chunkHolder = this.posToHolder.remove(l);
+				this.field_18807.put(l, chunkHolder);
 				if (chunkHolder != null) {
 					this.posToHolderCopyOutdated = true;
 					i++;
 					CompletableFuture<Chunk> completableFuture = chunkHolder.getChunkFuture();
 					completableFuture.thenAcceptAsync(chunk -> {
-						if (chunk != null) {
+						if (this.field_18807.remove(l, chunkHolder) && chunk != null) {
 							this.save(chunk);
 							if (this.field_18307.remove(l) && chunk instanceof WorldChunk) {
 								WorldChunk worldChunk = (WorldChunk)chunk;
 								worldChunk.setLoadedToWorld(false);
-								this.world.method_18764(worldChunk);
+								this.field_17214.method_18764(worldChunk);
 							}
 
 							for (int ix = 0; ix < 16; ix++) {
-								this.serverLightingProvider.scheduleChunkLightUpdate(ChunkSectionPos.from(chunk.getPos(), ix), true);
+								this.field_17215.method_15551(ChunkSectionPos.from(chunk.getPos(), ix), true);
 							}
 
-							this.serverLightingProvider.tick();
-							this.worldGenerationProgressListener.setChunkStatus(chunk.getPos(), null);
+							this.field_17215.tick();
+							this.field_17442.setChunkStatus(chunk.getPos(), null);
 						}
 					}, this.genQueueAdder);
 				}
 			}
 		}
+
+		profiler.pop();
 	}
 
 	protected void updateHolderMap() {
@@ -358,8 +376,8 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 					if (compoundTag != null) {
 						boolean bl = compoundTag.containsKey("Level", 10) && compoundTag.getCompound("Level").containsKey("Status", 8);
 						if (bl) {
-							Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, chunkPos, compoundTag);
-							chunk.setLastSaveTime(this.world.getTime());
+							Chunk chunk = ChunkSerializer.method_12395(this.field_17214, this.structureManager, chunkPos, compoundTag);
+							chunk.setLastSaveTime(this.field_17214.getTime());
 							return Either.left(chunk);
 						}
 
@@ -381,15 +399,15 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 				either -> (CompletableFuture)either.map(
 						list -> {
 							try {
-								CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = chunkStatus.runTask(
-										this.world, this.chunkGenerator, this.structureManager, this.serverLightingProvider, this::convertToFullChunk, list
+								CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuturex = chunkStatus.method_12154(
+										this.field_17214, this.chunkGenerator, this.structureManager, this.field_17215, this::convertToFullChunk, list
 									)
 									.thenApply(Either::left);
-								this.worldGenerationProgressListener.setChunkStatus(chunkPos, chunkStatus);
+								this.field_17442.setChunkStatus(chunkPos, chunkStatus);
 								return completableFuturex;
 							} catch (Exception var8) {
 								CrashReport crashReport = CrashReport.create(var8, "Exception generating new chunk");
-								CrashReportSection crashReportSection = crashReport.addElement("Chunk to be generated");
+								CrashReportSection crashReportSection = crashReport.method_562("Chunk to be generated");
 								crashReportSection.add("Location", String.format("%d,%d", chunkPos.x, chunkPos.z));
 								crashReportSection.add("Position hash", ChunkPos.toLong(chunkPos.x, chunkPos.z));
 								crashReportSection.add("Generator", this.chunkGenerator);
@@ -423,24 +441,24 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 			return CompletableFuture.supplyAsync(() -> {
 				WorldChunk worldChunk;
 				if (chunk instanceof ReadOnlyChunk) {
-					worldChunk = ((ReadOnlyChunk)chunk).getWrappedChunk();
+					worldChunk = ((ReadOnlyChunk)chunk).method_12240();
 				} else {
-					worldChunk = new WorldChunk(this.world, (ProtoChunk)chunk);
+					worldChunk = new WorldChunk(this.field_17214, (ProtoChunk)chunk);
 				}
 
 				worldChunk.setLevelTypeProvider(() -> ChunkHolder.getLevelType(chunkHolder.getLevel()));
 				worldChunk.loadToWorld();
 				if (this.field_18307.add(chunkPos.toLong())) {
 					worldChunk.setLoadedToWorld(true);
-					this.world.addBlockEntities(worldChunk.getBlockEntityMap().values());
+					this.field_17214.addBlockEntities(worldChunk.getBlockEntityMap().values());
 
-					for (TypeFilterableList<Entity> typeFilterableList : worldChunk.getEntitySectionArray()) {
-						typeFilterableList.stream().filter(entity -> !(entity instanceof PlayerEntity)).forEach(this.world::method_18214);
+					for (TypeFilterableList<Entity> typeFilterableList : worldChunk.method_12215()) {
+						typeFilterableList.stream().filter(entity -> !(entity instanceof PlayerEntity)).forEach(this.field_17214::method_18214);
 					}
 				}
 
 				return worldChunk;
-			}, runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, () -> this.genQueueAdder.execute(runnable))));
+			}, runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, runnable)));
 		}
 	}
 
@@ -451,13 +469,13 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 				WorldChunk worldChunk = (WorldChunk)list.get(list.size() / 2);
 				worldChunk.runPostProcessing();
 				return Either.left(worldChunk);
-			}), runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, () -> this.genQueueAdder.execute(runnable))));
+			}), runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, runnable)));
 		completableFuture2.thenAcceptAsync(either -> either.mapLeft(worldChunk -> {
 				this.totalChunksLoadedCount.getAndIncrement();
 				Packet<?>[] packets = new Packet[2];
 				this.getPlayersWatchingChunk(chunkPos, false).forEach(serverPlayerEntity -> this.method_18715(serverPlayerEntity, packets, worldChunk));
 				return Either.left(worldChunk);
-			}), runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, () -> this.genQueueAdder.execute(runnable))));
+			}), runnable -> this.mainActor.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(chunkHolder, runnable)));
 		return completableFuture2;
 	}
 
@@ -468,21 +486,21 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 	private void save(Chunk chunk) {
 		if (chunk.needsSaving()) {
 			try {
-				this.world.checkSessionLock();
+				this.field_17214.checkSessionLock();
 			} catch (SessionLockException var6) {
 				LOGGER.error("Couldn't save chunk; already in use by another instance of Minecraft?", (Throwable)var6);
 				return;
 			}
 
-			chunk.setLastSaveTime(this.world.getTime());
+			chunk.setLastSaveTime(this.field_17214.getTime());
 			chunk.setShouldSave(false);
 			ChunkPos chunkPos = chunk.getPos();
 
 			try {
-				ChunkStatus chunkStatus = chunk.getStatus();
+				ChunkStatus chunkStatus = chunk.method_12009();
 				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
 					CompoundTag compoundTag = this.getUpdatedChunkTag(chunkPos);
-					if (compoundTag != null && ChunkSerializer.getChunkType(compoundTag) == ChunkStatus.ChunkType.LEVELCHUNK) {
+					if (compoundTag != null && ChunkSerializer.method_12377(compoundTag) == ChunkStatus.ChunkType.LEVELCHUNK) {
 						return;
 					}
 
@@ -491,8 +509,8 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 					}
 				}
 
-				CompoundTag compoundTagx = ChunkSerializer.serialize(this.world, chunk);
-				this.writeChunkTag(chunkPos, compoundTagx);
+				CompoundTag compoundTagx = ChunkSerializer.method_12410(this.field_17214, chunk);
+				this.method_17910(chunkPos, compoundTagx);
 			} catch (Exception var5) {
 				LOGGER.error("Failed to save chunk {},{}", chunkPos.x, chunkPos.z, var5);
 			}
@@ -513,7 +531,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 					int jx = method_18718(chunkPos, serverPlayerEntity);
 					boolean bl = jx <= l;
 					boolean bl2 = jx <= this.field_18243;
-					this.sendWatchPackets(serverPlayerEntity, chunkPos, packets, bl, bl2);
+					this.method_17241(serverPlayerEntity, chunkPos, packets, bl, bl2);
 				});
 			}
 		}
@@ -525,8 +543,8 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 		}
 	}
 
-	protected void sendWatchPackets(ServerPlayerEntity serverPlayerEntity, ChunkPos chunkPos, Packet<?>[] packets, boolean bl, boolean bl2) {
-		if (serverPlayerEntity.world == this.world) {
+	protected void method_17241(ServerPlayerEntity serverPlayerEntity, ChunkPos chunkPos, Packet<?>[] packets, boolean bl, boolean bl2) {
+		if (serverPlayerEntity.field_6002 == this.field_17214) {
 			if (bl2 && !bl) {
 				ChunkHolder chunkHolder = this.getCopiedChunkHolder(chunkPos.toLong());
 				if (chunkHolder != null) {
@@ -534,6 +552,8 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 					if (worldChunk != null) {
 						this.method_18715(serverPlayerEntity, packets, worldChunk);
 					}
+
+					class_4209.method_19471(this.field_17214, this.field_18808, chunkPos, serverPlayerEntity);
 				}
 			}
 
@@ -557,13 +577,8 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 
 	@Nullable
 	private CompoundTag getUpdatedChunkTag(ChunkPos chunkPos) throws IOException {
-		CompoundTag compoundTag = this.readChunkTag(chunkPos);
-		return compoundTag == null ? null : this.updateChunkTag(this.world.getDimension().getType(), this.persistentStateManagerFactory, compoundTag);
-	}
-
-	@Override
-	protected File getRegionDir() {
-		return new File(this.saveDir, "region");
+		CompoundTag compoundTag = this.method_17911(chunkPos);
+		return compoundTag == null ? null : this.method_17907(this.field_17214.method_8597().method_12460(), this.persistentStateManagerFactory, compoundTag);
 	}
 
 	boolean method_18724(ChunkPos chunkPos) {
@@ -571,22 +586,22 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 	}
 
 	private boolean method_18722(ServerPlayerEntity serverPlayerEntity) {
-		return serverPlayerEntity.isSpectator() && !this.world.getGameRules().getBoolean("spectatorsGenerateChunks");
+		return serverPlayerEntity.isSpectator() && !this.field_17214.getGameRules().getBoolean("spectatorsGenerateChunks");
 	}
 
 	void method_18714(ServerPlayerEntity serverPlayerEntity, boolean bl) {
 		boolean bl2 = this.method_18722(serverPlayerEntity);
-		boolean bl3 = this.field_18241.isWatchDisabled(serverPlayerEntity);
+		boolean bl3 = this.field_18241.method_14082(serverPlayerEntity);
 		int i = MathHelper.floor(serverPlayerEntity.x) >> 4;
 		int j = MathHelper.floor(serverPlayerEntity.z) >> 4;
 		if (bl) {
-			this.field_18241.add(ChunkPos.toLong(i, j), serverPlayerEntity, bl2);
+			this.field_18241.method_14085(ChunkPos.toLong(i, j), serverPlayerEntity, bl2);
 			if (!bl2) {
 				this.ticketManager.method_14048(ChunkSectionPos.from(serverPlayerEntity), serverPlayerEntity);
 			}
 		} else {
 			ChunkSectionPos chunkSectionPos = serverPlayerEntity.getChunkPos();
-			this.field_18241.remove(chunkSectionPos.toChunkPos().toLong(), serverPlayerEntity);
+			this.field_18241.method_14084(chunkSectionPos.toChunkPos().toLong(), serverPlayerEntity);
 			if (!bl2) {
 				this.ticketManager.method_14051(chunkSectionPos, serverPlayerEntity);
 			}
@@ -595,7 +610,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 		for (int k = i - this.field_18243; k <= i + this.field_18243; k++) {
 			for (int l = j - this.field_18243; l <= j + this.field_18243; l++) {
 				ChunkPos chunkPos = new ChunkPos(k, l);
-				this.sendWatchPackets(serverPlayerEntity, chunkPos, new Packet[2], !bl && !bl3, bl && !bl2);
+				this.method_17241(serverPlayerEntity, chunkPos, new Packet[2], !bl && !bl3, bl && !bl2);
 			}
 		}
 	}
@@ -603,7 +618,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 	public void method_18713(ServerPlayerEntity serverPlayerEntity) {
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.field_18242.values()) {
 			if (entityTracker.field_18247 == serverPlayerEntity) {
-				entityTracker.method_18729(this.world.getPlayers());
+				entityTracker.method_18729(this.field_17214.getPlayers());
 			} else {
 				entityTracker.method_18736(serverPlayerEntity);
 			}
@@ -615,7 +630,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 		ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(serverPlayerEntity);
 		long l = chunkSectionPos.toChunkPos().toLong();
 		long m = chunkSectionPos2.toChunkPos().toLong();
-		boolean bl = this.field_18241.isWatchDisabled(serverPlayerEntity);
+		boolean bl = this.field_18241.method_14082(serverPlayerEntity);
 		boolean bl2 = this.method_18722(serverPlayerEntity);
 		boolean bl3 = chunkSectionPos.asLong() != chunkSectionPos2.asLong();
 		if (bl3 || bl != bl2) {
@@ -628,15 +643,15 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 			}
 
 			if (!bl && bl2) {
-				this.field_18241.disableWatch(serverPlayerEntity);
+				this.field_18241.method_14086(serverPlayerEntity);
 			}
 
 			if (bl && !bl2) {
-				this.field_18241.enableWatch(serverPlayerEntity);
+				this.field_18241.method_14087(serverPlayerEntity);
 			}
 
 			if (l != m) {
-				this.field_18241.movePlayer(l, m, serverPlayerEntity);
+				this.field_18241.method_14081(l, m, serverPlayerEntity);
 			}
 
 			int k = chunkSectionPos.getChunkX();
@@ -651,7 +666,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 					ChunkPos chunkPos = new ChunkPos(s, t);
 					boolean bl4 = !bl && method_18703(chunkPos, k, n) <= this.field_18243;
 					boolean bl5 = !bl2 && method_18703(chunkPos, i, j) <= this.field_18243;
-					this.sendWatchPackets(serverPlayerEntity, chunkPos, new Packet[2], bl4, bl5);
+					this.method_17241(serverPlayerEntity, chunkPos, new Packet[2], bl4, bl5);
 				}
 			}
 		}
@@ -668,7 +683,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 	protected void method_18701(Entity entity) {
 		if (!(entity instanceof EnderDragonPart)) {
 			if (!(entity instanceof LightningEntity)) {
-				EntityType<?> entityType = entity.getType();
+				EntityType<?> entityType = entity.method_5864();
 				int i = entityType.method_18387() * 16;
 				int j = entityType.method_18388();
 				if (this.field_18242.containsKey(entity.getEntityId())) {
@@ -676,7 +691,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 				} else {
 					ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.method_18389());
 					this.field_18242.put(entity.getEntityId(), entityTracker);
-					entityTracker.method_18729(this.world.getPlayers());
+					entityTracker.method_18729(this.field_17214.getPlayers());
 					if (entity instanceof ServerPlayerEntity) {
 						ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 						this.method_18714(serverPlayerEntity, true);
@@ -710,7 +725,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 
 	protected void method_18727() {
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
-		List<ServerPlayerEntity> list2 = this.world.getPlayers();
+		List<ServerPlayerEntity> list2 = this.field_17214.getPlayers();
 
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.field_18242.values()) {
 			ChunkSectionPos chunkSectionPos = entityTracker.field_18249;
@@ -750,10 +765,11 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 	private void method_18715(ServerPlayerEntity serverPlayerEntity, Packet<?>[] packets, WorldChunk worldChunk) {
 		if (packets[0] == null) {
 			packets[0] = new ChunkDataS2CPacket(worldChunk, 65535);
-			packets[1] = new LightUpdateS2CPacket(worldChunk.getPos(), this.serverLightingProvider);
+			packets[1] = new LightUpdateS2CPacket(worldChunk.getPos(), this.field_17215);
 		}
 
 		serverPlayerEntity.sendInitialChunkPackets(worldChunk.getPos(), packets[0], packets[1]);
+		class_4209.method_19471(this.field_17214, this.field_18808, worldChunk.getPos(), serverPlayerEntity);
 		List<Entity> list = Lists.<Entity>newArrayList();
 		List<Entity> list2 = Lists.<Entity>newArrayList();
 
@@ -773,15 +789,19 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 
 		if (!list.isEmpty()) {
 			for (Entity entity2 : list) {
-				serverPlayerEntity.networkHandler.sendPacket(new EntityAttachS2CPacket(entity2, ((MobEntity)entity2).getHoldingEntity()));
+				serverPlayerEntity.field_13987.sendPacket(new EntityAttachS2CPacket(entity2, ((MobEntity)entity2).getHoldingEntity()));
 			}
 		}
 
 		if (!list2.isEmpty()) {
 			for (Entity entity2 : list2) {
-				serverPlayerEntity.networkHandler.sendPacket(new EntityPassengersSetS2CPacket(entity2));
+				serverPlayerEntity.field_13987.sendPacket(new EntityPassengersSetS2CPacket(entity2));
 			}
 		}
+	}
+
+	protected class_4153 method_19488() {
+		return this.field_18808;
 	}
 
 	class EntityTracker {
@@ -792,7 +812,7 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 		private final Set<ServerPlayerEntity> field_18250 = Sets.<ServerPlayerEntity>newHashSet();
 
 		public EntityTracker(Entity entity, int i, int j, boolean bl) {
-			this.field_18246 = new EntityTrackerEntry(ThreadedAnvilChunkStorage.this.world, entity, j, bl, this::method_18730);
+			this.field_18246 = new EntityTrackerEntry(ThreadedAnvilChunkStorage.this.field_17214, entity, j, bl, this::method_18730);
 			this.field_18247 = entity;
 			this.field_18248 = i;
 			this.field_18249 = ChunkSectionPos.from(entity);
@@ -810,14 +830,14 @@ public class ThreadedAnvilChunkStorage extends VersionedRegionFileCache implemen
 
 		public void method_18730(Packet<?> packet) {
 			for (ServerPlayerEntity serverPlayerEntity : this.field_18250) {
-				serverPlayerEntity.networkHandler.sendPacket(packet);
+				serverPlayerEntity.field_13987.sendPacket(packet);
 			}
 		}
 
 		public void method_18734(Packet<?> packet) {
 			this.method_18730(packet);
 			if (this.field_18247 instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)this.field_18247).networkHandler.sendPacket(packet);
+				((ServerPlayerEntity)this.field_18247).field_13987.sendPacket(packet);
 			}
 		}
 

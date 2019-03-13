@@ -18,41 +18,41 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class JukeboxBlock extends BlockWithEntity {
-	public static final BooleanProperty HAS_RECORD = Properties.HAS_RECORD;
+	public static final BooleanProperty field_11180 = Properties.field_12544;
 
 	protected JukeboxBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(HAS_RECORD, Boolean.valueOf(false)));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11180, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if ((Boolean)blockState.get(HAS_RECORD)) {
-			this.removeRecord(world, blockPos);
-			blockState = blockState.with(HAS_RECORD, Boolean.valueOf(false));
-			world.setBlockState(blockPos, blockState, 2);
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if ((Boolean)blockState.method_11654(field_11180)) {
+			this.method_10277(world, blockPos);
+			blockState = blockState.method_11657(field_11180, Boolean.valueOf(false));
+			world.method_8652(blockPos, blockState, 2);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public void setRecord(IWorld iWorld, BlockPos blockPos, BlockState blockState, ItemStack itemStack) {
-		BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+	public void method_10276(IWorld iWorld, BlockPos blockPos, BlockState blockState, ItemStack itemStack) {
+		BlockEntity blockEntity = iWorld.method_8321(blockPos);
 		if (blockEntity instanceof JukeboxBlockEntity) {
 			((JukeboxBlockEntity)blockEntity).setRecord(itemStack.copy());
-			iWorld.setBlockState(blockPos, blockState.with(HAS_RECORD, Boolean.valueOf(true)), 2);
+			iWorld.method_8652(blockPos, blockState.method_11657(field_11180, Boolean.valueOf(true)), 2);
 		}
 	}
 
-	private void removeRecord(World world, BlockPos blockPos) {
+	private void method_10277(World world, BlockPos blockPos) {
 		if (!world.isClient) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof JukeboxBlockEntity) {
 				JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity)blockEntity;
 				ItemStack itemStack = jukeboxBlockEntity.getRecord();
 				if (!itemStack.isEmpty()) {
-					world.playEvent(1010, blockPos, 0);
+					world.method_8535(1010, blockPos, 0);
 					jukeboxBlockEntity.clear();
 					float f = 0.7F;
 					double d = (double)(world.random.nextFloat() * 0.7F) + 0.15F;
@@ -68,26 +68,26 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
-			this.removeRecord(world, blockPos);
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+			this.method_10277(world, blockPos);
+			super.method_9536(blockState, world, blockPos, blockState2, bl);
 		}
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
+	public BlockEntity method_10123(BlockView blockView) {
 		return new JukeboxBlockEntity();
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState blockState) {
+	public boolean method_9498(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	public int method_9572(BlockState blockState, World world, BlockPos blockPos) {
+		BlockEntity blockEntity = world.method_8321(blockPos);
 		if (blockEntity instanceof JukeboxBlockEntity) {
 			Item item = ((JukeboxBlockEntity)blockEntity).getRecord().getItem();
 			if (item instanceof RecordItem) {
@@ -99,12 +99,12 @@ public class JukeboxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType method_9604(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(HAS_RECORD);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_11180);
 	}
 }

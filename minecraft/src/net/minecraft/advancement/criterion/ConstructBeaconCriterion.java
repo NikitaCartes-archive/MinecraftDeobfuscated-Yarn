@@ -16,12 +16,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 
 public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("construct_beacon");
+	private static final Identifier field_9504 = new Identifier("construct_beacon");
 	private final Map<PlayerAdvancementTracker, ConstructBeaconCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, ConstructBeaconCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9504;
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.addCondition(conditionsContainer);
+		handler.method_8813(conditionsContainer);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 	) {
 		ConstructBeaconCriterion.Handler handler = (ConstructBeaconCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
+			handler.method_8816(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -60,10 +60,10 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 		return new ConstructBeaconCriterion.Conditions(integer);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
+	public void method_8812(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
 		ConstructBeaconCriterion.Handler handler = (ConstructBeaconCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(beaconBlockEntity);
+			handler.method_8814(beaconBlockEntity);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 		private final NumberRange.Integer level;
 
 		public Conditions(NumberRange.Integer integer) {
-			super(ConstructBeaconCriterion.ID);
+			super(ConstructBeaconCriterion.field_9504);
 			this.level = integer;
 		}
 
@@ -79,7 +79,7 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 			return new ConstructBeaconCriterion.Conditions(integer);
 		}
 
-		public boolean matches(BeaconBlockEntity beaconBlockEntity) {
+		public boolean method_8817(BeaconBlockEntity beaconBlockEntity) {
 			return this.level.test(beaconBlockEntity.getLevel());
 		}
 
@@ -92,30 +92,30 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker manager;
+		private final PlayerAdvancementTracker field_9507;
 		private final Set<Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+			this.field_9507 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void addCondition(Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer) {
+		public void method_8813(Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void removeCondition(Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer) {
+		public void method_8816(Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(BeaconBlockEntity beaconBlockEntity) {
+		public void method_8814(BeaconBlockEntity beaconBlockEntity) {
 			List<Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(beaconBlockEntity)) {
+				if (conditionsContainer.method_797().method_8817(beaconBlockEntity)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions>>newArrayList();
 					}
@@ -126,7 +126,7 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<ConstructBeaconCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9507);
 				}
 			}
 		}

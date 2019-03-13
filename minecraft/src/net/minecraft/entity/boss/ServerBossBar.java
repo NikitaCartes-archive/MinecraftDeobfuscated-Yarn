@@ -37,9 +37,9 @@ public class ServerBossBar extends BossBar {
 	}
 
 	@Override
-	public void setOverlay(BossBar.Overlay overlay) {
+	public void method_5409(BossBar.Overlay overlay) {
 		if (overlay != this.overlay) {
-			super.setOverlay(overlay);
+			super.method_5409(overlay);
 			this.sendPacket(BossBarS2CPacket.Type.UPDATE_STYLE);
 		}
 	}
@@ -75,9 +75,9 @@ public class ServerBossBar extends BossBar {
 	}
 
 	@Override
-	public void setName(TextComponent textComponent) {
-		if (!Objects.equal(textComponent, this.name)) {
-			super.setName(textComponent);
+	public void method_5413(TextComponent textComponent) {
+		if (!Objects.equal(textComponent, this.field_5777)) {
+			super.method_5413(textComponent);
 			this.sendPacket(BossBarS2CPacket.Type.UPDATE_TITLE);
 		}
 	}
@@ -87,27 +87,27 @@ public class ServerBossBar extends BossBar {
 			BossBarS2CPacket bossBarS2CPacket = new BossBarS2CPacket(type, this);
 
 			for (ServerPlayerEntity serverPlayerEntity : this.players) {
-				serverPlayerEntity.networkHandler.sendPacket(bossBarS2CPacket);
+				serverPlayerEntity.field_13987.sendPacket(bossBarS2CPacket);
 			}
 		}
 	}
 
-	public void addPlayer(ServerPlayerEntity serverPlayerEntity) {
+	public void method_14088(ServerPlayerEntity serverPlayerEntity) {
 		if (this.players.add(serverPlayerEntity) && this.visible) {
-			serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.ADD, this));
+			serverPlayerEntity.field_13987.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.ADD, this));
 		}
 	}
 
-	public void removePlayer(ServerPlayerEntity serverPlayerEntity) {
+	public void method_14089(ServerPlayerEntity serverPlayerEntity) {
 		if (this.players.remove(serverPlayerEntity) && this.visible) {
-			serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.REMOVE, this));
+			serverPlayerEntity.field_13987.sendPacket(new BossBarS2CPacket(BossBarS2CPacket.Type.REMOVE, this));
 		}
 	}
 
 	public void clearPlayers() {
 		if (!this.players.isEmpty()) {
 			for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(this.players)) {
-				this.removePlayer(serverPlayerEntity);
+				this.method_14089(serverPlayerEntity);
 			}
 		}
 	}
@@ -121,7 +121,7 @@ public class ServerBossBar extends BossBar {
 			this.visible = bl;
 
 			for (ServerPlayerEntity serverPlayerEntity : this.players) {
-				serverPlayerEntity.networkHandler.sendPacket(new BossBarS2CPacket(bl ? BossBarS2CPacket.Type.ADD : BossBarS2CPacket.Type.REMOVE, this));
+				serverPlayerEntity.field_13987.sendPacket(new BossBarS2CPacket(bl ? BossBarS2CPacket.Type.ADD : BossBarS2CPacket.Type.REMOVE, this));
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class PathNode {
 	public final int x;
@@ -66,6 +67,10 @@ public class PathNode {
 		float g = (float)Math.abs(pathNode.y - this.y);
 		float h = (float)Math.abs(pathNode.z - this.z);
 		return f + g + h;
+	}
+
+	public Vec3d method_19312() {
+		return new Vec3d((double)this.x, (double)this.y, (double)this.z);
 	}
 
 	public boolean equals(Object object) {

@@ -36,17 +36,17 @@ public class ClientBossBar extends BossBar {
 		return MathHelper.lerp(f, this.percent, this.healthLatest);
 	}
 
-	public void handlePacket(BossBarS2CPacket bossBarS2CPacket) {
+	public void method_1894(BossBarS2CPacket bossBarS2CPacket) {
 		switch (bossBarS2CPacket.getType()) {
 			case UPDATE_TITLE:
-				this.setName(bossBarS2CPacket.getName());
+				this.method_5413(bossBarS2CPacket.getName());
 				break;
 			case UPDATE_PCT:
 				this.setPercent(bossBarS2CPacket.getPercent());
 				break;
 			case UPDATE_STYLE:
 				this.setColor(bossBarS2CPacket.getColor());
-				this.setOverlay(bossBarS2CPacket.getOverlay());
+				this.method_5409(bossBarS2CPacket.getOverlay());
 				break;
 			case UPDATE_FLAGS:
 				this.setDarkenSky(bossBarS2CPacket.shouldDarkenSky());

@@ -21,7 +21,7 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class RedirectedResourcePack implements ResourcePack {
-	private final ResourcePack parent;
+	private final ResourcePack field_5316;
 	private final Map<Identifier, Identifier> idMap;
 	public static final Map<Identifier, Identifier> NEW_TO_OLD_MAP = SystemUtil.get(
 		() -> {
@@ -886,63 +886,63 @@ public class RedirectedResourcePack implements ResourcePack {
 		}
 	);
 
-	private static Identifier getMetadataLocation(Identifier identifier) {
+	private static Identifier method_4660(Identifier identifier) {
 		return new Identifier(identifier.getNamespace(), identifier.getPath() + ".mcmeta");
 	}
 
 	public RedirectedResourcePack(ResourcePack resourcePack, Map<Identifier, Identifier> map) {
-		this.parent = resourcePack;
+		this.field_5316 = resourcePack;
 		Builder<Identifier, Identifier> builder = ImmutableMap.builder();
 
 		for (Entry<Identifier, Identifier> entry : map.entrySet()) {
 			builder.put(entry);
-			builder.put(getMetadataLocation((Identifier)entry.getKey()), getMetadataLocation((Identifier)entry.getValue()));
+			builder.put(method_4660((Identifier)entry.getKey()), method_4660((Identifier)entry.getValue()));
 		}
 
 		this.idMap = builder.build();
 	}
 
-	private Identifier getRedirectedId(Identifier identifier) {
+	private Identifier method_4658(Identifier identifier) {
 		return (Identifier)this.idMap.getOrDefault(identifier, identifier);
 	}
 
 	@Override
 	public InputStream openRoot(String string) throws IOException {
-		return this.parent.openRoot(string);
+		return this.field_5316.openRoot(string);
 	}
 
 	@Override
-	public InputStream open(ResourceType resourceType, Identifier identifier) throws IOException {
-		return this.parent.open(resourceType, this.getRedirectedId(identifier));
+	public InputStream method_14405(ResourceType resourceType, Identifier identifier) throws IOException {
+		return this.field_5316.method_14405(resourceType, this.method_4658(identifier));
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
+	public Collection<Identifier> method_14408(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public boolean contains(ResourceType resourceType, Identifier identifier) {
-		return this.parent.contains(resourceType, this.getRedirectedId(identifier));
+	public boolean method_14411(ResourceType resourceType, Identifier identifier) {
+		return this.field_5316.method_14411(resourceType, this.method_4658(identifier));
 	}
 
 	@Override
-	public Set<String> getNamespaces(ResourceType resourceType) {
-		return this.parent.getNamespaces(resourceType);
+	public Set<String> method_14406(ResourceType resourceType) {
+		return this.field_5316.method_14406(resourceType);
 	}
 
 	@Nullable
 	@Override
-	public <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
-		return this.parent.parseMetadata(resourceMetadataReader);
+	public <T> T method_14407(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
+		return this.field_5316.method_14407(resourceMetadataReader);
 	}
 
 	@Override
 	public String getName() {
-		return this.parent.getName();
+		return this.field_5316.getName();
 	}
 
 	public void close() throws IOException {
-		this.parent.close();
+		this.field_5316.close();
 	}
 }

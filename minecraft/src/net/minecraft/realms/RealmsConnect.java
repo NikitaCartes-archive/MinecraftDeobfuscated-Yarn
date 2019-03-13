@@ -37,13 +37,13 @@ public class RealmsConnect {
 							return;
 						}
 
-						RealmsConnect.this.connection = ClientConnection.connect(inetAddress, i, MinecraftClient.getInstance().options.shouldUseNativeTransport());
+						RealmsConnect.this.connection = ClientConnection.connect(inetAddress, i, MinecraftClient.getInstance().field_1690.shouldUseNativeTransport());
 						if (RealmsConnect.this.aborted) {
 							return;
 						}
 
 						RealmsConnect.this.connection
-							.setPacketListener(
+							.method_10763(
 								new ClientLoginNetworkHandler(
 									RealmsConnect.this.connection, MinecraftClient.getInstance(), RealmsConnect.this.onlineScreen.getProxy(), textComponent -> {
 									}
@@ -53,12 +53,12 @@ public class RealmsConnect {
 							return;
 						}
 
-						RealmsConnect.this.connection.sendPacket(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
+						RealmsConnect.this.connection.method_10743(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
 						if (RealmsConnect.this.aborted) {
 							return;
 						}
 
-						RealmsConnect.this.connection.sendPacket(new LoginHelloC2SPacket(MinecraftClient.getInstance().getSession().getProfile()));
+						RealmsConnect.this.connection.method_10743(new LoginHelloC2SPacket(MinecraftClient.getInstance().method_1548().getProfile()));
 					} catch (UnknownHostException var5) {
 						Realms.clearResourcePack();
 						if (RealmsConnect.this.aborted) {
@@ -96,7 +96,7 @@ public class RealmsConnect {
 	public void abort() {
 		this.aborted = true;
 		if (this.connection != null && this.connection.isOpen()) {
-			this.connection.disconnect(new TranslatableTextComponent("disconnect.genericReason"));
+			this.connection.method_10747(new TranslatableTextComponent("disconnect.genericReason"));
 			this.connection.handleDisconnection();
 		}
 	}

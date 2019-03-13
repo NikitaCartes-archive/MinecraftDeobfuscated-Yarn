@@ -20,14 +20,14 @@ public interface RecipeType<T extends Recipe<?>> {
 	RecipeType<StonecuttingRecipe> field_17641 = register("stonecutting");
 
 	static <T extends Recipe<?>> RecipeType<T> register(String string) {
-		return Registry.register(Registry.RECIPE_TYPE, new Identifier(string), new RecipeType<T>() {
+		return Registry.method_10230(Registry.RECIPE_TYPE, new Identifier(string), new RecipeType<T>() {
 			public String toString() {
 				return string;
 			}
 		});
 	}
 
-	default <C extends Inventory> Optional<T> get(Recipe<C> recipe, World world, C inventory) {
-		return recipe.matches(inventory, world) ? Optional.of(recipe) : Optional.empty();
+	default <C extends Inventory> Optional<T> method_17725(Recipe<C> recipe, World world, C inventory) {
+		return recipe.method_8115(inventory, world) ? Optional.of(recipe) : Optional.empty();
 	}
 }

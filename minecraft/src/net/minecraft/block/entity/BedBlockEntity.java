@@ -19,14 +19,14 @@ public class BedBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 11, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.field_11867, 11, this.method_16887());
 	}
 
 	@Environment(EnvType.CLIENT)
 	public DyeColor getColor() {
 		if (this.color == null) {
-			this.color = ((BedBlock)this.getCachedState().getBlock()).getColor();
+			this.color = ((BedBlock)this.method_11010().getBlock()).getColor();
 		}
 
 		return this.color;

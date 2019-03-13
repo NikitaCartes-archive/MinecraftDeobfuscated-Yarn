@@ -20,11 +20,11 @@ public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 	public boolean method_13385(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, IcePatchFeatureConfig icePatchFeatureConfig
 	) {
-		while (iWorld.isAir(blockPos) && blockPos.getY() > 2) {
+		while (iWorld.method_8623(blockPos) && blockPos.getY() > 2) {
 			blockPos = blockPos.down();
 		}
 
-		if (iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10491) {
+		if (iWorld.method_8320(blockPos).getBlock() != Blocks.field_10491) {
 			return false;
 		} else {
 			int i = random.nextInt(icePatchFeatureConfig.radius) + 2;
@@ -37,9 +37,9 @@ public class IcePatchFeature extends Feature<IcePatchFeatureConfig> {
 					if (m * m + n * n <= i * i) {
 						for (int o = blockPos.getY() - 1; o <= blockPos.getY() + 1; o++) {
 							BlockPos blockPos2 = new BlockPos(k, o, l);
-							Block block = iWorld.getBlockState(blockPos2).getBlock();
+							Block block = iWorld.method_8320(blockPos2).getBlock();
 							if (Block.isNaturalDirt(block) || block == Blocks.field_10491 || block == Blocks.field_10295) {
-								iWorld.setBlockState(blockPos2, this.ICE.getDefaultState(), 2);
+								iWorld.method_8652(blockPos2, this.ICE.method_9564(), 2);
 							}
 						}
 					}

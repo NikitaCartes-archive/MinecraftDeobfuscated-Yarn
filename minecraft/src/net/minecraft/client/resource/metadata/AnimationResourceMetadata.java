@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class AnimationResourceMetadata {
-	public static final AnimationResourceMetadataReader READER = new AnimationResourceMetadataReader();
+	public static final AnimationResourceMetadataReader field_5337 = new AnimationResourceMetadataReader();
 	private final List<AnimationFrameResourceMetadata> frames;
 	private final int width;
 	private final int height;

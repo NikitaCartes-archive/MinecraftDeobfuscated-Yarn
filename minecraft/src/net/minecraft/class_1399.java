@@ -1,6 +1,10 @@
 package net.minecraft;
 
+import java.util.EnumSet;
+import java.util.Iterator;
+import java.util.List;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -17,7 +21,7 @@ public class class_1399 extends TrackTargetGoal {
 	public class_1399(MobEntityWithAi mobEntityWithAi, Class<?>... classs) {
 		super(mobEntityWithAi, true);
 		this.field_6637 = classs;
-		this.setControlBits(1);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
 	}
 
 	@Override
@@ -31,7 +35,7 @@ public class class_1399 extends TrackTargetGoal {
 				}
 			}
 
-			return this.canTrack(livingEntity, field_18091);
+			return this.method_6328(livingEntity, field_18091);
 		} else {
 			return false;
 		}
@@ -58,30 +62,46 @@ public class class_1399 extends TrackTargetGoal {
 
 	protected void method_6317() {
 		double d = this.getFollowRange();
-
-		for (MobEntity mobEntity : this.entity
-			.world
+		List<MobEntity> list = this.entity
+			.field_6002
 			.method_18467(
 				this.entity.getClass(),
 				new BoundingBox(this.entity.x, this.entity.y, this.entity.z, this.entity.x + 1.0, this.entity.y + 1.0, this.entity.z + 1.0).expand(d, 10.0, d)
-			)) {
-			if (this.entity != mobEntity
-				&& mobEntity.getTarget() == null
-				&& (!(this.entity instanceof TameableEntity) || ((TameableEntity)this.entity).getOwner() == ((TameableEntity)mobEntity).getOwner())
-				&& !mobEntity.isTeammate(this.entity.getAttacker())) {
-				boolean bl = false;
+			);
+		Iterator var4 = list.iterator();
 
-				for (Class<?> class_ : this.field_6640) {
-					if (mobEntity.getClass() == class_) {
-						bl = true;
+		while (true) {
+			MobEntity mobEntity;
+			while (true) {
+				if (!var4.hasNext()) {
+					return;
+				}
+
+				mobEntity = (MobEntity)var4.next();
+				if (this.entity != mobEntity
+					&& mobEntity.getTarget() == null
+					&& (!(this.entity instanceof TameableEntity) || ((TameableEntity)this.entity).getOwner() == ((TameableEntity)mobEntity).getOwner())
+					&& !mobEntity.isTeammate(this.entity.getAttacker())) {
+					if (this.field_6640 == null) {
+						break;
+					}
+
+					boolean bl = false;
+
+					for (Class<?> class_ : this.field_6640) {
+						if (mobEntity.getClass() == class_) {
+							bl = true;
+							break;
+						}
+					}
+
+					if (!bl) {
 						break;
 					}
 				}
-
-				if (!bl) {
-					this.method_6319(mobEntity, this.entity.getAttacker());
-				}
 			}
+
+			this.method_6319(mobEntity, this.entity.getAttacker());
 		}
 	}
 

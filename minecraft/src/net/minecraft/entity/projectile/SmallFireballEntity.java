@@ -27,22 +27,22 @@ public class SmallFireballEntity extends class_3855 {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
-		if (!this.world.isClient) {
+	protected void method_7469(HitResult hitResult) {
+		if (!this.field_6002.isClient) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (!entity.isFireImmune()) {
 					entity.setOnFireFor(5);
-					boolean bl = entity.damage(DamageSource.explosiveProjectile(this, this.owner), 5.0F);
+					boolean bl = entity.damage(DamageSource.method_5521(this, this.owner), 5.0F);
 					if (bl) {
-						this.dealDamage(this.owner, entity);
+						this.method_5723(this.owner, entity);
 					}
 				}
-			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.world.getGameRules().getBoolean("mobGriefing")) {
+			} else if (this.owner == null || !(this.owner instanceof MobEntity) || this.field_6002.getGameRules().getBoolean("mobGriefing")) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
-				BlockPos blockPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-				if (this.world.isAir(blockPos)) {
-					this.world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
+				BlockPos blockPos = blockHitResult.method_17777().method_10093(blockHitResult.method_17780());
+				if (this.field_6002.method_8623(blockPos)) {
+					this.field_6002.method_8501(blockPos, Blocks.field_10036.method_9564());
 				}
 			}
 

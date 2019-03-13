@@ -62,7 +62,7 @@ public class UpdatePlayerAbilitiesC2SPacket implements Packet<ServerPlayPacketLi
 	}
 
 	public void method_12339(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onPlayerAbilities(this);
+		serverPlayPacketListener.method_12083(this);
 	}
 
 	public boolean isInvulnerable() {

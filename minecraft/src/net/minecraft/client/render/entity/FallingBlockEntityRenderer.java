@@ -25,11 +25,11 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 	}
 
 	public void method_3965(FallingBlockEntity fallingBlockEntity, double d, double e, double f, float g, float h) {
-		BlockState blockState = fallingBlockEntity.getBlockState();
+		BlockState blockState = fallingBlockEntity.method_6962();
 		if (blockState.getRenderType() == BlockRenderType.field_11458) {
-			World world = fallingBlockEntity.getWorldClient();
-			if (blockState != world.getBlockState(new BlockPos(fallingBlockEntity)) && blockState.getRenderType() != BlockRenderType.field_11455) {
-				this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			World world = fallingBlockEntity.method_6966();
+			if (blockState != world.method_8320(new BlockPos(fallingBlockEntity)) && blockState.getRenderType() != BlockRenderType.field_11455) {
+				this.method_3924(SpriteAtlasTexture.field_5275);
 				GlStateManager.pushMatrix();
 				GlStateManager.disableLighting();
 				Tessellator tessellator = Tessellator.getInstance();
@@ -39,20 +39,20 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 					GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fallingBlockEntity));
 				}
 
-				bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_LMAP);
-				BlockPos blockPos = new BlockPos(fallingBlockEntity.x, fallingBlockEntity.getBoundingBox().maxY, fallingBlockEntity.z);
+				bufferBuilder.method_1328(7, VertexFormats.field_1582);
+				BlockPos blockPos = new BlockPos(fallingBlockEntity.x, fallingBlockEntity.method_5829().maxY, fallingBlockEntity.z);
 				GlStateManager.translatef((float)(d - (double)blockPos.getX() - 0.5), (float)(e - (double)blockPos.getY()), (float)(f - (double)blockPos.getZ() - 0.5));
-				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
-				blockRenderManager.getModelRenderer()
-					.tesselate(
+				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().method_1541();
+				blockRenderManager.method_3350()
+					.method_3374(
 						world,
-						blockRenderManager.getModel(blockState),
+						blockRenderManager.method_3349(blockState),
 						blockState,
 						blockPos,
 						bufferBuilder,
 						false,
 						new Random(),
-						blockState.getRenderingSeed(fallingBlockEntity.getFallingBlockPos())
+						blockState.method_11617(fallingBlockEntity.method_6964())
 					);
 				tessellator.draw();
 				if (this.renderOutlines) {
@@ -68,6 +68,6 @@ public class FallingBlockEntityRenderer extends EntityRenderer<FallingBlockEntit
 	}
 
 	protected Identifier method_3964(FallingBlockEntity fallingBlockEntity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+		return SpriteAtlasTexture.field_5275;
 	}
 }

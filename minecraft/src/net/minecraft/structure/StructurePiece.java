@@ -29,10 +29,10 @@ import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.Heightmap;
 
 public abstract class StructurePiece {
-	protected static final BlockState AIR = Blocks.field_10543.getDefaultState();
+	protected static final BlockState AIR = Blocks.field_10543.method_9564();
 	protected MutableIntBoundingBox boundingBox;
 	@Nullable
-	private Direction facing;
+	private Direction field_15312;
 	private Mirror mirror;
 	private Rotation rotation;
 	public int field_15316;
@@ -63,21 +63,21 @@ public abstract class StructurePiece {
 		}
 
 		int i = compoundTag.getInt("O");
-		this.setOrientation(i == -1 ? null : Direction.fromHorizontal(i));
+		this.method_14926(i == -1 ? null : Direction.fromHorizontal(i));
 	}
 
-	public final CompoundTag getTag() {
+	public final CompoundTag method_14946() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
-		compoundTag.put("BB", this.boundingBox.toNbt());
-		Direction direction = this.getFacing();
+		compoundTag.putString("id", Registry.STRUCTURE_PIECE.method_10221(this.getType()).toString());
+		compoundTag.method_10566("BB", this.boundingBox.method_14658());
+		Direction direction = this.method_14934();
 		compoundTag.putInt("O", direction == null ? -1 : direction.getHorizontal());
 		compoundTag.putInt("GD", this.field_15316);
-		this.toNbt(compoundTag);
+		this.method_14943(compoundTag);
 		return compoundTag;
 	}
 
-	protected abstract void toNbt(CompoundTag compoundTag);
+	protected abstract void method_14943(CompoundTag compoundTag);
 
 	public void method_14918(StructurePiece structurePiece, List<StructurePiece> list, Random random) {
 	}
@@ -119,11 +119,11 @@ public abstract class StructurePiece {
 
 		for (int o = i; o <= l; o++) {
 			for (int p = k; p <= n; p++) {
-				if (blockView.getBlockState(mutable.set(o, j, p)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(o, j, p)).method_11620().isLiquid()) {
 					return true;
 				}
 
-				if (blockView.getBlockState(mutable.set(o, m, p)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(o, m, p)).method_11620().isLiquid()) {
 					return true;
 				}
 			}
@@ -131,11 +131,11 @@ public abstract class StructurePiece {
 
 		for (int o = i; o <= l; o++) {
 			for (int p = j; p <= m; p++) {
-				if (blockView.getBlockState(mutable.set(o, p, k)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(o, p, k)).method_11620().isLiquid()) {
 					return true;
 				}
 
-				if (blockView.getBlockState(mutable.set(o, p, n)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(o, p, n)).method_11620().isLiquid()) {
 					return true;
 				}
 			}
@@ -143,11 +143,11 @@ public abstract class StructurePiece {
 
 		for (int o = k; o <= n; o++) {
 			for (int p = j; p <= m; p++) {
-				if (blockView.getBlockState(mutable.set(i, p, o)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(i, p, o)).method_11620().isLiquid()) {
 					return true;
 				}
 
-				if (blockView.getBlockState(mutable.set(l, p, o)).getMaterial().isLiquid()) {
+				if (blockView.method_8320(mutable.set(l, p, o)).method_11620().isLiquid()) {
 					return true;
 				}
 			}
@@ -157,7 +157,7 @@ public abstract class StructurePiece {
 	}
 
 	protected int applyXTransform(int i, int j) {
-		Direction direction = this.getFacing();
+		Direction direction = this.method_14934();
 		if (direction == null) {
 			return i;
 		} else {
@@ -176,11 +176,11 @@ public abstract class StructurePiece {
 	}
 
 	protected int applyYTransform(int i) {
-		return this.getFacing() == null ? i : i + this.boundingBox.minY;
+		return this.method_14934() == null ? i : i + this.boundingBox.minY;
 	}
 
 	protected int applyZTransform(int i, int j) {
-		Direction direction = this.getFacing();
+		Direction direction = this.method_14934();
 		if (direction == null) {
 			return j;
 		} else {
@@ -200,7 +200,7 @@ public abstract class StructurePiece {
 
 	protected void addBlock(IWorld iWorld, BlockState blockState, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-		if (mutableIntBoundingBox.contains(blockPos)) {
+		if (mutableIntBoundingBox.method_14662(blockPos)) {
 			if (this.mirror != Mirror.NONE) {
 				blockState = blockState.mirror(this.mirror);
 			}
@@ -209,14 +209,14 @@ public abstract class StructurePiece {
 				blockState = blockState.rotate(this.rotation);
 			}
 
-			iWorld.setBlockState(blockPos, blockState, 2);
-			FluidState fluidState = iWorld.getFluidState(blockPos);
+			iWorld.method_8652(blockPos, blockState, 2);
+			FluidState fluidState = iWorld.method_8316(blockPos);
 			if (!fluidState.isEmpty()) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
+				iWorld.method_8405().method_8676(blockPos, fluidState.getFluid(), 0);
 			}
 
 			if (BLOCKS_NEEDING_POST_PROCESSING.contains(blockState.getBlock())) {
-				iWorld.getChunk(blockPos).markBlockForPostProcessing(blockPos);
+				iWorld.method_16955(blockPos).method_12039(blockPos);
 			}
 		}
 	}
@@ -226,7 +226,7 @@ public abstract class StructurePiece {
 		int m = this.applyYTransform(j);
 		int n = this.applyZTransform(i, k);
 		BlockPos blockPos = new BlockPos(l, m, n);
-		return !mutableIntBoundingBox.contains(blockPos) ? Blocks.field_10124.getDefaultState() : blockView.getBlockState(blockPos);
+		return !mutableIntBoundingBox.method_14662(blockPos) ? Blocks.field_10124.method_9564() : blockView.method_8320(blockPos);
 	}
 
 	protected boolean isUnderSeaLevel(ViewableWorld viewableWorld, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
@@ -234,14 +234,14 @@ public abstract class StructurePiece {
 		int m = this.applyYTransform(j + 1);
 		int n = this.applyZTransform(i, k);
 		BlockPos blockPos = new BlockPos(l, m, n);
-		return !mutableIntBoundingBox.contains(blockPos) ? false : m < viewableWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
+		return !mutableIntBoundingBox.method_14662(blockPos) ? false : m < viewableWorld.method_8589(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
 	}
 
 	protected void fill(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, int i, int j, int k, int l, int m, int n) {
 		for (int o = j; o <= m; o++) {
 			for (int p = i; p <= l; p++) {
 				for (int q = k; q <= n; q++) {
-					this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), p, o, q, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10124.method_9564(), p, o, q, mutableIntBoundingBox);
 				}
 			}
 		}
@@ -373,9 +373,9 @@ public abstract class StructurePiece {
 		int l = this.applyXTransform(i, k);
 		int m = this.applyYTransform(j);
 		int n = this.applyZTransform(i, k);
-		if (mutableIntBoundingBox.contains(new BlockPos(l, m, n))) {
-			while ((iWorld.isAir(new BlockPos(l, m, n)) || iWorld.getBlockState(new BlockPos(l, m, n)).getMaterial().isLiquid()) && m > 1) {
-				iWorld.setBlockState(new BlockPos(l, m, n), blockState, 2);
+		if (mutableIntBoundingBox.method_14662(new BlockPos(l, m, n))) {
+			while ((iWorld.method_8623(new BlockPos(l, m, n)) || iWorld.method_8320(new BlockPos(l, m, n)).method_11620().isLiquid()) && m > 1) {
+				iWorld.method_8652(new BlockPos(l, m, n), blockState, 2);
 				m--;
 			}
 		}
@@ -383,20 +383,20 @@ public abstract class StructurePiece {
 
 	protected boolean method_14915(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Identifier identifier) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-		return this.addChest(iWorld, mutableIntBoundingBox, random, blockPos, identifier, null);
+		return this.method_14921(iWorld, mutableIntBoundingBox, random, blockPos, identifier, null);
 	}
 
 	public static BlockState method_14916(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		Direction direction = null;
 
 		for (Direction direction2 : Direction.Type.HORIZONTAL) {
-			BlockPos blockPos2 = blockPos.offset(direction2);
-			BlockState blockState2 = blockView.getBlockState(blockPos2);
+			BlockPos blockPos2 = blockPos.method_10093(direction2);
+			BlockState blockState2 = blockView.method_8320(blockPos2);
 			if (blockState2.getBlock() == Blocks.field_10034) {
 				return blockState;
 			}
 
-			if (blockState2.isFullOpaque(blockView, blockPos2)) {
+			if (blockState2.method_11598(blockView, blockPos2)) {
 				if (direction != null) {
 					direction = null;
 					break;
@@ -407,41 +407,41 @@ public abstract class StructurePiece {
 		}
 
 		if (direction != null) {
-			return blockState.with(HorizontalFacingBlock.field_11177, direction.getOpposite());
+			return blockState.method_11657(HorizontalFacingBlock.field_11177, direction.getOpposite());
 		} else {
-			Direction direction3 = blockState.get(HorizontalFacingBlock.field_11177);
-			BlockPos blockPos3 = blockPos.offset(direction3);
-			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
+			Direction direction3 = blockState.method_11654(HorizontalFacingBlock.field_11177);
+			BlockPos blockPos3 = blockPos.method_10093(direction3);
+			if (blockView.method_8320(blockPos3).method_11598(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
-				blockPos3 = blockPos.offset(direction3);
+				blockPos3 = blockPos.method_10093(direction3);
 			}
 
-			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
+			if (blockView.method_8320(blockPos3).method_11598(blockView, blockPos3)) {
 				direction3 = direction3.rotateYClockwise();
-				blockPos3 = blockPos.offset(direction3);
+				blockPos3 = blockPos.method_10093(direction3);
 			}
 
-			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
+			if (blockView.method_8320(blockPos3).method_11598(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
-				blockPos3 = blockPos.offset(direction3);
+				blockPos3 = blockPos.method_10093(direction3);
 			}
 
-			return blockState.with(HorizontalFacingBlock.field_11177, direction3);
+			return blockState.method_11657(HorizontalFacingBlock.field_11177, direction3);
 		}
 	}
 
-	protected boolean addChest(
+	protected boolean method_14921(
 		IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, BlockPos blockPos, Identifier identifier, @Nullable BlockState blockState
 	) {
-		if (mutableIntBoundingBox.contains(blockPos) && iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10034) {
+		if (mutableIntBoundingBox.method_14662(blockPos) && iWorld.method_8320(blockPos).getBlock() != Blocks.field_10034) {
 			if (blockState == null) {
-				blockState = method_14916(iWorld, blockPos, Blocks.field_10034.getDefaultState());
+				blockState = method_14916(iWorld, blockPos, Blocks.field_10034.method_9564());
 			}
 
-			iWorld.setBlockState(blockPos, blockState, 2);
-			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+			iWorld.method_8652(blockPos, blockState, 2);
+			BlockEntity blockEntity = iWorld.method_8321(blockPos);
 			if (blockEntity instanceof ChestBlockEntity) {
-				((ChestBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
+				((ChestBlockEntity)blockEntity).method_11285(identifier, random.nextLong());
 			}
 
 			return true;
@@ -450,15 +450,15 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean addDispenser(
+	protected boolean method_14930(
 		IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Direction direction, Identifier identifier
 	) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
-		if (mutableIntBoundingBox.contains(blockPos) && iWorld.getBlockState(blockPos).getBlock() != Blocks.field_10200) {
-			this.addBlock(iWorld, Blocks.field_10200.getDefaultState().with(DispenserBlock.FACING, direction), i, j, k, mutableIntBoundingBox);
-			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
+		if (mutableIntBoundingBox.method_14662(blockPos) && iWorld.method_8320(blockPos).getBlock() != Blocks.field_10200) {
+			this.addBlock(iWorld, Blocks.field_10200.method_9564().method_11657(DispenserBlock.field_10918, direction), i, j, k, mutableIntBoundingBox);
+			BlockEntity blockEntity = iWorld.method_8321(blockPos);
 			if (blockEntity instanceof DispenserBlockEntity) {
-				((DispenserBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
+				((DispenserBlockEntity)blockEntity).method_11285(identifier, random.nextLong());
 			}
 
 			return true;
@@ -472,12 +472,12 @@ public abstract class StructurePiece {
 	}
 
 	@Nullable
-	public Direction getFacing() {
-		return this.facing;
+	public Direction method_14934() {
+		return this.field_15312;
 	}
 
-	public void setOrientation(@Nullable Direction direction) {
-		this.facing = direction;
+	public void method_14926(@Nullable Direction direction) {
+		this.field_15312 = direction;
 		if (direction == null) {
 			this.rotation = Rotation.ROT_0;
 			this.mirror = Mirror.NONE;
@@ -511,7 +511,7 @@ public abstract class StructurePiece {
 	}
 
 	public abstract static class class_3444 {
-		protected BlockState block = Blocks.field_10124.getDefaultState();
+		protected BlockState block = Blocks.field_10124.method_9564();
 
 		protected class_3444() {
 		}

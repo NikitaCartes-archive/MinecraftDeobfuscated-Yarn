@@ -8,7 +8,7 @@ import net.minecraft.text.TextComponent;
 public interface SpectatorMenuCommand {
 	void use(SpectatorMenu spectatorMenu);
 
-	TextComponent getName();
+	TextComponent method_16892();
 
 	void renderIcon(float f, int i);
 

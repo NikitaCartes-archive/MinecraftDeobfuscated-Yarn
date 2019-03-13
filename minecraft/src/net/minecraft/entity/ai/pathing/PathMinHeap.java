@@ -1,20 +1,20 @@
 package net.minecraft.entity.ai.pathing;
 
 public class PathMinHeap {
-	private PathNode[] pathNodes = new PathNode[128];
+	private PathNode[] field_1 = new PathNode[128];
 	private int count;
 
-	public PathNode push(PathNode pathNode) {
+	public PathNode method_2(PathNode pathNode) {
 		if (pathNode.heapIndex >= 0) {
 			throw new IllegalStateException("OW KNOWS!");
 		} else {
-			if (this.count == this.pathNodes.length) {
+			if (this.count == this.field_1.length) {
 				PathNode[] pathNodes = new PathNode[this.count << 1];
-				System.arraycopy(this.pathNodes, 0, pathNodes, 0, this.count);
-				this.pathNodes = pathNodes;
+				System.arraycopy(this.field_1, 0, pathNodes, 0, this.count);
+				this.field_1 = pathNodes;
 			}
 
-			this.pathNodes[this.count] = pathNode;
+			this.field_1[this.count] = pathNode;
 			pathNode.heapIndex = this.count;
 			this.shiftUp(this.count++);
 			return pathNode;
@@ -25,10 +25,10 @@ public class PathMinHeap {
 		this.count = 0;
 	}
 
-	public PathNode pop() {
-		PathNode pathNode = this.pathNodes[0];
-		this.pathNodes[0] = this.pathNodes[--this.count];
-		this.pathNodes[this.count] = null;
+	public PathNode method_6() {
+		PathNode pathNode = this.field_1[0];
+		this.field_1[0] = this.field_1[--this.count];
+		this.field_1[this.count] = null;
 		if (this.count > 0) {
 			this.shiftDown(0);
 		}
@@ -37,7 +37,7 @@ public class PathMinHeap {
 		return pathNode;
 	}
 
-	public void setNodeWeight(PathNode pathNode, float f) {
+	public void method_3(PathNode pathNode, float f) {
 		float g = pathNode.heapWeight;
 		pathNode.heapWeight = f;
 		if (f < g) {
@@ -48,27 +48,27 @@ public class PathMinHeap {
 	}
 
 	private void shiftUp(int i) {
-		PathNode pathNode = this.pathNodes[i];
+		PathNode pathNode = this.field_1[i];
 		float f = pathNode.heapWeight;
 
 		while (i > 0) {
 			int j = i - 1 >> 1;
-			PathNode pathNode2 = this.pathNodes[j];
+			PathNode pathNode2 = this.field_1[j];
 			if (!(f < pathNode2.heapWeight)) {
 				break;
 			}
 
-			this.pathNodes[i] = pathNode2;
+			this.field_1[i] = pathNode2;
 			pathNode2.heapIndex = i;
 			i = j;
 		}
 
-		this.pathNodes[i] = pathNode;
+		this.field_1[i] = pathNode;
 		pathNode.heapIndex = i;
 	}
 
 	private void shiftDown(int i) {
-		PathNode pathNode = this.pathNodes[i];
+		PathNode pathNode = this.field_1[i];
 		float f = pathNode.heapWeight;
 
 		while (true) {
@@ -78,7 +78,7 @@ public class PathMinHeap {
 				break;
 			}
 
-			PathNode pathNode2 = this.pathNodes[j];
+			PathNode pathNode2 = this.field_1[j];
 			float g = pathNode2.heapWeight;
 			PathNode pathNode3;
 			float h;
@@ -86,7 +86,7 @@ public class PathMinHeap {
 				pathNode3 = null;
 				h = Float.POSITIVE_INFINITY;
 			} else {
-				pathNode3 = this.pathNodes[k];
+				pathNode3 = this.field_1[k];
 				h = pathNode3.heapWeight;
 			}
 
@@ -95,7 +95,7 @@ public class PathMinHeap {
 					break;
 				}
 
-				this.pathNodes[i] = pathNode2;
+				this.field_1[i] = pathNode2;
 				pathNode2.heapIndex = i;
 				i = j;
 			} else {
@@ -103,13 +103,13 @@ public class PathMinHeap {
 					break;
 				}
 
-				this.pathNodes[i] = pathNode3;
+				this.field_1[i] = pathNode3;
 				pathNode3.heapIndex = i;
 				i = k;
 			}
 		}
 
-		this.pathNodes[i] = pathNode;
+		this.field_1[i] = pathNode;
 		pathNode.heapIndex = i;
 	}
 

@@ -12,7 +12,6 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.network.packet.PlaySoundS2CPacket;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnType;
@@ -24,7 +23,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sortme.SpawnHelper;
@@ -35,26 +33,20 @@ import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.VillageProperties;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
 
 public class Raid {
-	public static final ItemStack ILLAGER_BANNER = getIllagerBanner();
-	@Nullable
-	private final Map<Integer, RaiderEntity> waveToLeader;
-	@Nullable
-	private final Map<Integer, Set<RaiderEntity>> waveToRaiders;
+	public static final ItemStack field_16609 = method_16515();
+	private final Map<Integer, RaiderEntity> waveToLeader = Maps.<Integer, RaiderEntity>newHashMap();
+	private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.<Integer, Set<RaiderEntity>>newHashMap();
 	private long ticksActive;
-	private BlockPos center = BlockPos.ORIGIN;
-	private World world;
+	private final BlockPos field_16613;
+	private final ServerWorld field_16619;
 	private boolean markedForRemoval;
-	@Nullable
-	private VillageProperties villageProperties;
 	private boolean started;
 	private boolean ignoreDayRequirement;
 	private int id;
@@ -62,49 +54,44 @@ public class Raid {
 	private int badOmenLevel;
 	private boolean active;
 	private int wavesSpawned;
-	private final ServerBossBar bar = new ServerBossBar(
+	private final ServerBossBar field_16607 = new ServerBossBar(
 		new TranslatableTextComponent("event.minecraft.raid"), BossBar.Color.field_5784, BossBar.Overlay.field_5791
 	);
 	private int postRaidTicks;
 	private int preRaidTicks;
-	@Nullable
-	private BoundingBox volume;
 	private final Random random = new Random();
 
-	public Raid() {
-		this.waveToLeader = Maps.<Integer, RaiderEntity>newHashMap();
-		this.waveToRaiders = Maps.<Integer, Set<RaiderEntity>>newHashMap();
-		this.ticksActive = 0L;
-	}
-
-	public Raid(int i, World world, VillageProperties villageProperties) {
-		this();
+	public Raid(int i, ServerWorld serverWorld, BlockPos blockPos) {
 		this.id = i;
-		this.world = world;
-		this.setWorld(world);
+		this.field_16619 = serverWorld;
 		this.active = true;
-		this.badOmenLevel = 0;
-		this.wavesSpawned = 0;
-		this.postRaidTicks = 0;
 		this.preRaidTicks = 300;
-		this.bar.setPercent(0.0F);
-		if (villageProperties != null) {
-			this.setVillage(villageProperties);
-			villageProperties.setRaidId(i);
-		}
+		this.field_16607.setPercent(0.0F);
+		this.field_16613 = blockPos;
 	}
 
-	public World getWorld() {
-		return this.world;
+	public Raid(ServerWorld serverWorld, CompoundTag compoundTag) {
+		this.field_16619 = serverWorld;
+		this.id = compoundTag.getInt("Id");
+		this.started = compoundTag.getBoolean("Started");
+		this.active = compoundTag.getBoolean("Active");
+		this.ticksActive = compoundTag.getLong("TicksActive");
+		this.markedForRemoval = compoundTag.getBoolean("MarkedForRemoval");
+		this.ignoreDayRequirement = compoundTag.getBoolean("IgnoreDayRequirement");
+		this.badOmenLevel = compoundTag.getInt("BadOmenLevel");
+		this.wavesSpawned = compoundTag.getInt("GroupsSpawned");
+		this.preRaidTicks = compoundTag.getInt("PreRaidTicks");
+		this.postRaidTicks = compoundTag.getInt("PostRaidTicks");
+		this.totalHealth = compoundTag.getFloat("TotalHealth");
+		this.field_16613 = new BlockPos(compoundTag.getInt("CX"), compoundTag.getInt("CY"), compoundTag.getInt("CZ"));
+	}
+
+	public World method_16831() {
+		return this.field_16619;
 	}
 
 	public boolean isOnGoing() {
 		return this.hasStarted() && this.isActive();
-	}
-
-	@Nullable
-	public BoundingBox getVolume() {
-		return this.volume;
 	}
 
 	public boolean hasStarted() {
@@ -115,29 +102,23 @@ public class Raid {
 		return this.wavesSpawned;
 	}
 
-	private Predicate<Entity> isInRaidDistance() {
-		if (this.villageProperties != null && this.center != null && this.center != BlockPos.ORIGIN) {
-			float f = (float)(this.villageProperties.getRadius() + 24);
-			return EntityPredicates.VALID_ENTITY
-				.and(EntityPredicates.maximumDistance((double)this.center.getX(), (double)this.center.getY(), (double)this.center.getZ(), (double)f));
-		} else {
-			return EntityPredicates.VALID_ENTITY.negate();
-		}
+	private Predicate<ServerPlayerEntity> isInRaidDistance() {
+		return serverPlayerEntity -> serverPlayerEntity.isValid() && serverPlayerEntity.getServerWorld().method_19497(new BlockPos(serverPlayerEntity), 2);
 	}
 
 	private void updateBarToPlayers() {
 		Set<ServerPlayerEntity> set = Sets.<ServerPlayerEntity>newHashSet();
 
-		for (ServerPlayerEntity serverPlayerEntity : ((ServerWorld)this.world).method_18766(this.isInRaidDistance())) {
-			this.bar.addPlayer(serverPlayerEntity);
+		for (ServerPlayerEntity serverPlayerEntity : this.field_16619.method_18766(this.isInRaidDistance())) {
+			this.field_16607.method_14088(serverPlayerEntity);
 			set.add(serverPlayerEntity);
 		}
 
-		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet(this.bar.getPlayers());
+		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet(this.field_16607.getPlayers());
 		set2.removeAll(set);
 
 		for (ServerPlayerEntity serverPlayerEntity2 : set2) {
-			this.bar.removePlayer(serverPlayerEntity2);
+			this.field_16607.method_14089(serverPlayerEntity2);
 		}
 	}
 
@@ -161,21 +142,10 @@ public class Raid {
 		playerEntity.removeStatusEffect(StatusEffects.field_16595);
 	}
 
-	public void setWorld(World world) {
-		this.world = world;
-	}
-
 	public void invalidate() {
-		if (this.villageProperties != null) {
-			this.villageProperties.setRaidId(0);
-		}
-
-		this.setVillage(null);
 		this.markedForRemoval = true;
-		this.bar.clearPlayers();
-		if (this.world.getVillageManager() != null) {
-			this.world.getVillageManager().markDirty();
-		}
+		this.active = false;
+		this.field_16607.clearPlayers();
 	}
 
 	public boolean isMarkedForRemoval() {
@@ -183,91 +153,79 @@ public class Raid {
 	}
 
 	public void tick() {
-		boolean bl = this.active;
-		if (this.world != null && this.center != null && this.villageProperties != null && this.world.isBlockLoaded(this.center)) {
-			this.active = true;
-		} else {
-			this.active = false;
-		}
-
-		if (this.world != null && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-			this.invalidate();
-		} else {
-			if (bl != this.active) {
-				this.bar.setVisible(this.active);
-			}
-
-			if (this.villageProperties == null && !this.active && this.world.getTime() % 60L == 0L) {
-				this.villageProperties = this.world.getVillageManager().getNearestVillage(this.center, 16);
-			}
-
-			if (this.active) {
-				this.ticksActive++;
-				if (this.villageProperties != null && (this.volume == null || this.ticksActive % 60L == 0L)) {
-					this.center = this.villageProperties.getCenter();
-					this.volume = new BoundingBox(this.center).expand((double)this.villageProperties.getRadius()).expand(16.0);
+		if (!this.markedForRemoval) {
+			boolean bl = this.active;
+			this.active = this.field_16619.method_8591(this.field_16613);
+			if (this.field_16619.getDifficulty() == Difficulty.PEACEFUL) {
+				this.invalidate();
+			} else {
+				if (bl != this.active) {
+					this.field_16607.setVisible(this.active);
 				}
 
-				int i = this.getRaiderCount();
-				if (i == 0 && !this.hasSpawnedAllGroups()) {
-					if (this.preRaidTicks > 0) {
-						if (this.preRaidTicks == 300 || this.preRaidTicks % 20 == 0) {
-							this.updateBarToPlayers();
+				if (this.active) {
+					this.ticksActive++;
+					int i = this.getRaiderCount();
+					if (i == 0 && !this.hasSpawnedAllGroups()) {
+						if (this.preRaidTicks > 0) {
+							if (this.preRaidTicks == 300 || this.preRaidTicks % 20 == 0) {
+								this.updateBarToPlayers();
+							}
+
+							this.preRaidTicks--;
+							this.field_16607.setPercent(MathHelper.clamp((float)(300 - this.preRaidTicks) / 300.0F, 0.0F, 100.0F));
+						} else if (this.preRaidTicks == 0 && this.wavesSpawned > 0) {
+							this.preRaidTicks = 300;
+							this.field_16607.method_5413(new TranslatableTextComponent("event.minecraft.raid"));
+							return;
+						}
+					}
+
+					if (i > 0 && this.preRaidTicks == 0 && this.ticksActive % 20L == 0L) {
+						this.updateBarToPlayers();
+						this.removeObsoleteRaiders();
+						if (i <= 2) {
+							this.field_16607
+								.method_5413(
+									new TranslatableTextComponent("event.minecraft.raid").append(" - ").append(new TranslatableTextComponent("event.minecraft.raid.mobs_remaining", i))
+								);
+						} else {
+							this.field_16607.method_5413(new TranslatableTextComponent("event.minecraft.raid"));
+						}
+					}
+
+					boolean bl2 = false;
+					int j = 0;
+
+					while (this.canSpawnRaiders()) {
+						BlockPos blockPos = this.method_16525(j);
+						if (blockPos != null) {
+							this.started = true;
+							this.method_16522(blockPos);
+							if (!bl2) {
+								this.method_16521(blockPos);
+								bl2 = true;
+							}
+						} else {
+							j++;
 						}
 
-						this.preRaidTicks--;
-						this.bar.setPercent(MathHelper.clamp((float)(300 - this.preRaidTicks) / 300.0F, 0.0F, 100.0F));
-					} else if (this.preRaidTicks == 0 && this.wavesSpawned > 0) {
-						this.preRaidTicks = 300;
-						this.bar.setName(new TranslatableTextComponent("event.minecraft.raid"));
-						return;
-					}
-				}
-
-				if (i > 0 && this.preRaidTicks == 0 && this.ticksActive % 20L == 0L) {
-					this.updateBarToPlayers();
-					this.removeObsoleteRaiders();
-					if (i <= 2) {
-						this.bar
-							.setName(
-								new TranslatableTextComponent("event.minecraft.raid").append(" - ").append(new TranslatableTextComponent("event.minecraft.raid.mobs_remaining", i))
-							);
-					} else {
-						this.bar.setName(new TranslatableTextComponent("event.minecraft.raid"));
-					}
-				}
-
-				boolean bl2 = false;
-				int j = 0;
-
-				while (this.canSpawnRaiders()) {
-					BlockPos blockPos = this.getPillagerSpawnLocation(this.world, j);
-					if (blockPos != null) {
-						this.started = true;
-						this.spawnNextWave(blockPos);
-						if (!bl2) {
-							this.playRaidHorn(blockPos);
-							bl2 = true;
+						if (j > 2) {
+							this.invalidate();
+							break;
 						}
-					} else {
-						j++;
 					}
 
-					if (j > 2) {
-						this.invalidate();
-						break;
+					if (this.hasStarted() && this.getGroupsSpawned() >= this.getBadOmenLevel() * 2 && i == 0) {
+						if (this.postRaidTicks < 40) {
+							this.postRaidTicks++;
+						} else {
+							this.invalidate();
+						}
 					}
+
+					this.markDirty();
 				}
-
-				if (this.hasStarted() && this.getGroupsSpawned() >= this.getBadOmenLevel() * 2 && i == 0) {
-					if (this.postRaidTicks < 40) {
-						this.postRaidTicks++;
-					} else {
-						this.invalidate();
-					}
-				}
-
-				this.markDirty();
 			}
 		}
 	}
@@ -277,60 +235,55 @@ public class Raid {
 	}
 
 	private void removeObsoleteRaiders() {
-		if (this.villageProperties != null && this.world != null) {
-			Iterator<Set<RaiderEntity>> iterator = this.waveToRaiders.values().iterator();
-			Set<RaiderEntity> set = Sets.<RaiderEntity>newHashSet();
+		Iterator<Set<RaiderEntity>> iterator = this.waveToRaiders.values().iterator();
+		Set<RaiderEntity> set = Sets.<RaiderEntity>newHashSet();
 
-			while (iterator.hasNext()) {
-				Set<RaiderEntity> set2 = (Set<RaiderEntity>)iterator.next();
+		while (iterator.hasNext()) {
+			Set<RaiderEntity> set2 = (Set<RaiderEntity>)iterator.next();
 
-				for (RaiderEntity raiderEntity : set2) {
-					if (!raiderEntity.invalid && raiderEntity.dimension == this.world.getDimension().getType()) {
-						if (raiderEntity.age <= 300) {
-							continue;
-						}
-					} else {
-						raiderEntity.setOutOfRaidCounter(30);
+			for (RaiderEntity raiderEntity : set2) {
+				if (!raiderEntity.invalid && raiderEntity.field_6026 == this.field_16619.method_8597().method_12460()) {
+					if (raiderEntity.age <= 300) {
+						continue;
 					}
+				} else {
+					raiderEntity.setOutOfRaidCounter(30);
+				}
 
-					if (!RaidManager.isLivingAroundVillage(this.villageProperties, raiderEntity) || raiderEntity.getDespawnCounter() > 2400) {
-						raiderEntity.setOutOfRaidCounter(raiderEntity.getOutOfRaidCounter() + 1);
-					}
+				if (!RaidManager.method_16537(raiderEntity, this.field_16613, 32) || raiderEntity.getDespawnCounter() > 2400) {
+					raiderEntity.setOutOfRaidCounter(raiderEntity.getOutOfRaidCounter() + 1);
+				}
 
-					if (raiderEntity.getOutOfRaidCounter() >= 30) {
-						set.add(raiderEntity);
-					}
+				if (raiderEntity.getOutOfRaidCounter() >= 30) {
+					set.add(raiderEntity);
 				}
 			}
+		}
 
-			for (RaiderEntity raiderEntity2 : set) {
-				this.removeFromWave(raiderEntity2, true);
+		for (RaiderEntity raiderEntity2 : set) {
+			this.method_16510(raiderEntity2, true);
+		}
+	}
+
+	private void method_16521(BlockPos blockPos) {
+		float f = 13.0F;
+		int i = 64;
+
+		for (PlayerEntity playerEntity : this.field_16619.getPlayers()) {
+			Vec3d vec3d = new Vec3d(playerEntity.x, playerEntity.y, playerEntity.z);
+			Vec3d vec3d2 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
+			double d = vec3d.x + (double)(13.0F / g) * (vec3d2.x - vec3d.x);
+			double e = vec3d.z + (double)(13.0F / g) * (vec3d2.z - vec3d.z);
+			if (g <= 64.0F || RaidManager.method_16537(playerEntity, this.field_16613, 32)) {
+				((ServerPlayerEntity)playerEntity)
+					.field_13987
+					.sendPacket(new PlaySoundS2CPacket(SoundEvents.field_17266, SoundCategory.field_15254, d, playerEntity.y, e, 64.0F, 1.0F));
 			}
 		}
 	}
 
-	private void playRaidHorn(BlockPos blockPos) {
-		if (this.world != null && this.villageProperties != null) {
-			ServerWorld serverWorld = (ServerWorld)this.world;
-			float f = 13.0F;
-			int i = 64;
-
-			for (PlayerEntity playerEntity : serverWorld.getPlayers()) {
-				Vec3d vec3d = new Vec3d(playerEntity.x, playerEntity.y, playerEntity.z);
-				Vec3d vec3d2 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
-				float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
-				double d = vec3d.x + (double)(13.0F / g) * (vec3d2.x - vec3d.x);
-				double e = vec3d.z + (double)(13.0F / g) * (vec3d2.z - vec3d.z);
-				if (g <= 64.0F || RaidManager.isLivingAroundVillage(this.villageProperties, playerEntity)) {
-					((ServerPlayerEntity)playerEntity)
-						.networkHandler
-						.sendPacket(new PlaySoundS2CPacket(SoundEvents.field_17266, SoundCategory.field_15254, d, playerEntity.y, e, 64.0F, 1.0F));
-				}
-			}
-		}
-	}
-
-	private void spawnNextWave(BlockPos blockPos) {
+	private void method_16522(BlockPos blockPos) {
 		boolean bl = false;
 		int i = this.wavesSpawned + 1;
 		this.totalHealth = 0.0F;
@@ -339,24 +292,24 @@ public class Raid {
 			int j = getSpawnCount(member, this.random, i) + getBonusSpawnCount(member, this.random, i);
 
 			for (int k = 0; k < j; k++) {
-				RaiderEntity raiderEntity = member.type.create(this.world);
-				this.addRaider(i, raiderEntity, blockPos, false);
+				RaiderEntity raiderEntity = member.type.method_5883(this.field_16619);
+				this.method_16516(i, raiderEntity, blockPos, false);
 				if (!bl && raiderEntity.canLead()) {
 					raiderEntity.setPatrolLeader(true);
-					this.setRaidLeader(i, raiderEntity);
+					this.method_16491(i, raiderEntity);
 					bl = true;
 				}
 
 				if (member.type == EntityType.RAVAGER) {
 					RaiderEntity raiderEntity2;
 					if (i < 6) {
-						raiderEntity2 = EntityType.PILLAGER.create(this.world);
+						raiderEntity2 = EntityType.PILLAGER.method_5883(this.field_16619);
 					} else {
-						raiderEntity2 = EntityType.VINDICATOR.create(this.world);
+						raiderEntity2 = EntityType.VINDICATOR.method_5883(this.field_16619);
 					}
 
-					this.addRaider(i, raiderEntity2, blockPos, false);
-					raiderEntity2.setPositionAndAngles(blockPos, 0.0F, 0.0F);
+					this.method_16516(i, raiderEntity2, blockPos, false);
+					raiderEntity2.method_5725(blockPos, 0.0F, 0.0F);
 					raiderEntity2.startRiding(raiderEntity);
 				}
 			}
@@ -367,8 +320,8 @@ public class Raid {
 		this.markDirty();
 	}
 
-	public void addRaider(int i, RaiderEntity raiderEntity, @Nullable BlockPos blockPos, boolean bl) {
-		boolean bl2 = this.addToWave(i, raiderEntity);
+	public void method_16516(int i, RaiderEntity raiderEntity, @Nullable BlockPos blockPos, boolean bl) {
+		boolean bl2 = this.method_16505(i, raiderEntity);
 		if (bl2) {
 			raiderEntity.setRaid(this);
 			raiderEntity.setWave(i);
@@ -376,16 +329,16 @@ public class Raid {
 			raiderEntity.setOutOfRaidCounter(0);
 			if (!bl && blockPos != null) {
 				raiderEntity.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.0, (double)blockPos.getZ() + 0.5);
-				raiderEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(blockPos), SpawnType.field_16467, null, null);
+				raiderEntity.method_5943(this.field_16619, this.field_16619.method_8404(blockPos), SpawnType.field_16467, null, null);
 				raiderEntity.addBonusForWave(i, false);
 				raiderEntity.onGround = true;
-				this.world.spawnEntity(raiderEntity);
+				this.field_16619.spawnEntity(raiderEntity);
 			}
 		}
 	}
 
 	private void updateBar() {
-		this.bar.setPercent(MathHelper.clamp(this.getCurrentRaiderHealth() / this.totalHealth, 0.0F, 100.0F));
+		this.field_16607.setPercent(MathHelper.clamp(this.getCurrentRaiderHealth() / this.totalHealth, 0.0F, 100.0F));
 	}
 
 	public float getCurrentRaiderHealth() {
@@ -408,7 +361,7 @@ public class Raid {
 		return this.waveToRaiders.values().stream().mapToInt(Set::size).sum();
 	}
 
-	public void removeFromWave(@Nonnull RaiderEntity raiderEntity, boolean bl) {
+	public void method_16510(@Nonnull RaiderEntity raiderEntity, boolean bl) {
 		Set<RaiderEntity> set = (Set<RaiderEntity>)this.waveToRaiders.get(raiderEntity.getWave());
 		if (set != null) {
 			boolean bl2 = set.remove(raiderEntity);
@@ -424,14 +377,12 @@ public class Raid {
 	}
 
 	private void markDirty() {
-		if (this.world != null) {
-			this.world.getRaidManager().markDirty();
-		}
+		this.field_16619.method_19495().markDirty();
 	}
 
-	private static ItemStack getIllagerBanner() {
+	private static ItemStack method_16515() {
 		ItemStack itemStack = new ItemStack(Items.field_8539);
-		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
+		CompoundTag compoundTag = itemStack.method_7911("BlockEntityTag");
 		ListTag listTag = new BannerPattern.Builder()
 			.with(BannerPattern.RHOMBUS, DyeColor.field_7955)
 			.with(BannerPattern.STRIPE_BOTTOM, DyeColor.field_7967)
@@ -441,9 +392,9 @@ public class Raid {
 			.with(BannerPattern.HALF_HORIZONTAL_TOP, DyeColor.field_7967)
 			.with(BannerPattern.CIRCLE, DyeColor.field_7967)
 			.with(BannerPattern.BORDER, DyeColor.BLACK)
-			.build();
-		compoundTag.put("Patterns", listTag);
-		itemStack.setDisplayName(new TranslatableTextComponent("block.minecraft.illager_banner").applyFormat(TextFormat.field_1065));
+			.method_16375();
+		compoundTag.method_10566("Patterns", listTag);
+		itemStack.method_7977(new TranslatableTextComponent("block.minecraft.illager_banner").applyFormat(TextFormat.field_1065));
 		return itemStack;
 	}
 
@@ -457,45 +408,40 @@ public class Raid {
 	}
 
 	@Nullable
-	public RaiderEntity getLeader(int i) {
+	public RaiderEntity method_16496(int i) {
 		return (RaiderEntity)this.waveToLeader.get(i);
 	}
 
 	@Nullable
-	private BlockPos getPillagerSpawnLocation(World world, int i) {
-		if (this.villageProperties == null) {
-			return null;
-		} else {
-			BlockPos blockPos = this.villageProperties.getCenter();
-			float f = (float)this.villageProperties.getRadius();
-			int j = i == 0 ? 2 : 2 - i;
-			BlockPos.Mutable mutable = new BlockPos.Mutable();
+	private BlockPos method_16525(int i) {
+		int j = i == 0 ? 2 : 2 - i;
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (int k = 0; k < 20; k++) {
-				float g = world.random.nextFloat() * (float) (Math.PI * 2);
-				int l = blockPos.getX() + (int)(MathHelper.cos(g) * f * (float)j) + world.random.nextInt(5);
-				int m = blockPos.getZ() + (int)(MathHelper.sin(g) * f * (float)j) + world.random.nextInt(5);
-				int n = world.getTop(Heightmap.Type.WORLD_SURFACE, l, m);
-				mutable.set(l, n, m);
-				if (!this.villageProperties.isInRadius(mutable)
-					&& world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)
-					&& (
-						SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, world, mutable, EntityType.PILLAGER)
-							|| world.getBlockState(mutable.down()).getBlock() == Blocks.field_10477 && world.getBlockState(mutable).isAir()
-					)) {
-					return mutable;
-				}
+		for (int k = 0; k < 20; k++) {
+			float f = this.field_16619.random.nextFloat() * (float) (Math.PI * 2);
+			int l = this.field_16613.getX() + (int)(MathHelper.cos(f) * 32.0F * (float)j) + this.field_16619.random.nextInt(5);
+			int m = this.field_16613.getZ() + (int)(MathHelper.sin(f) * 32.0F * (float)j) + this.field_16619.random.nextInt(5);
+			int n = this.field_16619.method_8589(Heightmap.Type.WORLD_SURFACE, l, m);
+			mutable.set(l, n, m);
+			if (!this.field_16619.method_19500(mutable)
+				&& this.field_16619
+					.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)
+				&& (
+					SpawnHelper.method_8660(SpawnRestriction.Location.field_6317, this.field_16619, mutable, EntityType.PILLAGER)
+						|| this.field_16619.method_8320(mutable.down()).getBlock() == Blocks.field_10477 && this.field_16619.method_8320(mutable).isAir()
+				)) {
+				return mutable;
 			}
-
-			return null;
 		}
+
+		return null;
 	}
 
-	private boolean addToWave(int i, RaiderEntity raiderEntity) {
-		return this.addToWave(i, raiderEntity, true);
+	private boolean method_16505(int i, RaiderEntity raiderEntity) {
+		return this.method_16487(i, raiderEntity, true);
 	}
 
-	public boolean addToWave(int i, RaiderEntity raiderEntity, boolean bl) {
+	public boolean method_16487(int i, RaiderEntity raiderEntity, boolean bl) {
 		this.waveToRaiders.computeIfAbsent(i, integer -> Sets.newHashSet());
 		if (((Set)this.waveToRaiders.get(i)).contains(raiderEntity)) {
 			return false;
@@ -511,9 +457,9 @@ public class Raid {
 		}
 	}
 
-	public void setRaidLeader(int i, RaiderEntity raiderEntity) {
+	public void method_16491(int i, RaiderEntity raiderEntity) {
 		this.waveToLeader.put(i, raiderEntity);
-		raiderEntity.setEquippedStack(EquipmentSlot.HEAD, ILLAGER_BANNER);
+		raiderEntity.method_5673(EquipmentSlot.HEAD, field_16609);
 		raiderEntity.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
 	}
 
@@ -521,21 +467,8 @@ public class Raid {
 		this.waveToLeader.remove(i);
 	}
 
-	@Nullable
-	public VillageProperties getVillage() {
-		return this.villageProperties;
-	}
-
-	public void setVillage(VillageProperties villageProperties) {
-		this.villageProperties = villageProperties;
-		this.center = null;
-		if (villageProperties != null) {
-			this.center = villageProperties.getCenter();
-		}
-	}
-
-	public BlockPos getCenter() {
-		return this.center;
+	public BlockPos method_16495() {
+		return this.field_16613;
 	}
 
 	public int getRaidId() {
@@ -593,24 +526,7 @@ public class Raid {
 		return this.active;
 	}
 
-	public void fromTag(CompoundTag compoundTag) {
-		this.id = compoundTag.getInt("Id");
-		this.started = compoundTag.getBoolean("Started");
-		this.active = compoundTag.getBoolean("Active");
-		this.ticksActive = compoundTag.getLong("TicksActive");
-		this.markedForRemoval = compoundTag.getBoolean("MarkedForRemoval");
-		this.ignoreDayRequirement = compoundTag.getBoolean("IgnoreDayRequirement");
-		this.badOmenLevel = compoundTag.getInt("BadOmenLevel");
-		this.wavesSpawned = compoundTag.getInt("GroupsSpawned");
-		this.preRaidTicks = compoundTag.getInt("PreRaidTicks");
-		this.postRaidTicks = compoundTag.getInt("PostRaidTicks");
-		this.totalHealth = compoundTag.getFloat("TotalHealth");
-		if (compoundTag.containsKey("CX", 3)) {
-			this.center = new BlockPos(compoundTag.getInt("CX"), compoundTag.getInt("CY"), compoundTag.getInt("CZ"));
-		}
-	}
-
-	public CompoundTag toTag(CompoundTag compoundTag) {
+	public CompoundTag method_16502(CompoundTag compoundTag) {
 		compoundTag.putInt("Id", this.id);
 		compoundTag.putBoolean("Started", this.started);
 		compoundTag.putBoolean("Active", this.active);
@@ -622,12 +538,9 @@ public class Raid {
 		compoundTag.putInt("PreRaidTicks", this.preRaidTicks);
 		compoundTag.putInt("PostRaidTicks", this.postRaidTicks);
 		compoundTag.putFloat("TotalHealth", this.totalHealth);
-		if (this.center != null) {
-			compoundTag.putInt("CX", this.center.getX());
-			compoundTag.putInt("CY", this.center.getY());
-			compoundTag.putInt("CZ", this.center.getZ());
-		}
-
+		compoundTag.putInt("CX", this.field_16613.getX());
+		compoundTag.putInt("CY", this.field_16613.getY());
+		compoundTag.putInt("CZ", this.field_16613.getZ());
 		return compoundTag;
 	}
 

@@ -2,6 +2,7 @@ package net.minecraft.client.gui.menu.settings;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOption;
@@ -15,23 +16,24 @@ public class ChatSettingsScreen extends Screen {
 		GameOption.VISIBILITY,
 		GameOption.CHAT_COLOR,
 		GameOption.CHAT_LINKS,
-		GameOption.CHAT_OPACITY,
 		GameOption.CHAT_LINKS_PROMPT,
-		GameOption.CHAT_SCALE,
-		GameOption.CHAT_HEIGHT_FOCUSED,
-		GameOption.SATURATION,
-		GameOption.CHAT_WIDTH,
+		GameOption.field_1921,
+		GameOption.field_18723,
+		GameOption.field_1946,
+		GameOption.field_1941,
+		GameOption.field_1940,
+		GameOption.field_1939,
 		GameOption.REDUCED_DEBUG_INFO,
-		GameOption.field_18194,
-		GameOption.AUTO_SUGGESTIONS
+		GameOption.AUTO_SUGGESTIONS,
+		GameOption.field_18194
 	};
-	private final Screen parent;
+	private final Screen field_2354;
 	private final GameOptions settings;
 	private String field_2353;
 	private ButtonWidget field_2355;
 
 	public ChatSettingsScreen(Screen screen, GameOptions gameOptions) {
-		this.parent = screen;
+		this.field_2354 = screen;
 		this.settings = gameOptions;
 	}
 
@@ -43,7 +45,7 @@ public class ChatSettingsScreen extends Screen {
 		for (GameOption gameOption : SETTINGS) {
 			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
 			int k = this.screenHeight / 6 + 24 * (i >> 1);
-			ButtonWidget buttonWidget = gameOption.createOptionButton(this.client.options, j, k, 150);
+			ButtonWidget buttonWidget = gameOption.method_18520(this.client.field_1690, j, k, 150);
 			this.addButton(buttonWidget);
 			if (gameOption == GameOption.field_18194) {
 				this.field_2355 = buttonWidget;
@@ -53,17 +55,17 @@ public class ChatSettingsScreen extends Screen {
 			i++;
 		}
 
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 144, I18n.translate("gui.done")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 6 + 24 * (i + 1) / 2, I18n.translate("gui.done")) {
 			@Override
-			public void onPressed(double d, double e) {
-				ChatSettingsScreen.this.client.openScreen(ChatSettingsScreen.this.parent);
+			public void method_1826() {
+				ChatSettingsScreen.this.client.method_1507(ChatSettingsScreen.this.field_2354);
 			}
 		});
 	}
 
 	@Override
 	public void onClosed() {
-		this.client.options.write();
+		this.client.field_1690.write();
 	}
 
 	@Override

@@ -19,9 +19,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SplashScreen extends class_4071 {
-	private static final Identifier LOGO = new Identifier("textures/gui/title/mojang.png");
+	private static final Identifier field_2483 = new Identifier("textures/gui/title/mojang.png");
 	private final MinecraftClient client;
-	private final ResourceReloadMonitor reloadMonitor;
+	private final ResourceReloadMonitor field_17767;
 	private final Runnable field_18218;
 	private final boolean field_18219;
 	private float field_17770;
@@ -30,13 +30,13 @@ public class SplashScreen extends class_4071 {
 
 	public SplashScreen(MinecraftClient minecraftClient, ResourceReloadMonitor resourceReloadMonitor, Runnable runnable, boolean bl) {
 		this.client = minecraftClient;
-		this.reloadMonitor = resourceReloadMonitor;
+		this.field_17767 = resourceReloadMonitor;
 		this.field_18218 = runnable;
 		this.field_18219 = bl;
 	}
 
 	public static void method_18819(MinecraftClient minecraftClient) {
-		minecraftClient.getTextureManager().registerTexture(LOGO, new SplashScreen.class_4070());
+		minecraftClient.method_1531().method_4616(field_2483, new SplashScreen.class_4070());
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class SplashScreen extends class_4071 {
 		int k = this.client.window.getScaledWidth();
 		int l = this.client.window.getScaledHeight();
 		long m = SystemUtil.getMeasuringTimeMs();
-		if (this.field_18219 && (this.reloadMonitor.isLoadStageComplete() || this.client.currentScreen != null) && this.field_18220 == -1L) {
+		if (this.field_18219 && (this.field_17767.isLoadStageComplete() || this.client.field_1755 != null) && this.field_18220 == -1L) {
 			this.field_18220 = m;
 		}
 
@@ -52,16 +52,16 @@ public class SplashScreen extends class_4071 {
 		float h = this.field_18220 > -1L ? (float)(m - this.field_18220) / 500.0F : -1.0F;
 		float o;
 		if (g >= 1.0F) {
-			if (this.client.currentScreen != null) {
-				this.client.currentScreen.draw(0, 0, f);
+			if (this.client.field_1755 != null) {
+				this.client.field_1755.draw(0, 0, f);
 			}
 
 			int n = MathHelper.ceil((1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F)) * 255.0F);
 			drawRect(0, 0, k, l, 16777215 | n << 24);
 			o = 1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F);
 		} else if (this.field_18219) {
-			if (this.client.currentScreen != null && h < 1.0F) {
-				this.client.currentScreen.draw(i, j, f);
+			if (this.client.field_1755 != null && h < 1.0F) {
+				this.client.field_1755.draw(i, j, f);
 			}
 
 			int n = MathHelper.ceil(MathHelper.clamp((double)h, 0.15, 1.0) * 255.0);
@@ -74,11 +74,11 @@ public class SplashScreen extends class_4071 {
 
 		int n = (this.client.window.getScaledWidth() - 256) / 2;
 		int p = (this.client.window.getScaledHeight() - 256) / 2;
-		this.client.getTextureManager().bindTexture(LOGO);
+		this.client.method_1531().method_4618(field_2483);
 		GlStateManager.enableBlend();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, o);
 		this.drawTexturedRect(n, p, 0, 0, 256, 256);
-		float q = this.reloadMonitor.getProgress();
+		float q = this.field_17767.getProgress();
 		this.field_17770 = this.field_17770 * 0.95F + q * 0.050000012F;
 		if (g < 1.0F) {
 			this.renderProgressBar(k / 2 - 150, l / 4 * 3, k / 2 + 150, l / 4 * 3 + 10, this.field_17770, 1.0F - MathHelper.clamp(g, 0.0F, 1.0F));
@@ -88,12 +88,12 @@ public class SplashScreen extends class_4071 {
 			this.client.method_18502(null);
 		}
 
-		if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || h >= 2.0F)) {
-			this.reloadMonitor.method_18849();
+		if (this.field_17771 == -1L && this.field_17767.isApplyStageComplete() && (!this.field_18219 || h >= 2.0F)) {
+			this.field_17767.method_18849();
 			this.field_17771 = SystemUtil.getMeasuringTimeMs();
 			this.field_18218.run();
-			if (this.client.currentScreen != null) {
-				this.client.currentScreen.initialize(this.client, this.client.window.getScaledWidth(), this.client.window.getScaledHeight());
+			if (this.client.field_1755 != null) {
+				this.client.field_1755.initialize(this.client, this.client.window.getScaledWidth(), this.client.window.getScaledHeight());
 			}
 		}
 	}
@@ -124,16 +124,16 @@ public class SplashScreen extends class_4071 {
 	@Environment(EnvType.CLIENT)
 	static class class_4070 extends ResourceTexture {
 		public class_4070() {
-			super(SplashScreen.LOGO);
+			super(SplashScreen.field_2483);
 		}
 
 		@Override
-		protected ResourceTexture.TextureData loadTextureData(ResourceManager resourceManager) {
+		protected ResourceTexture.TextureData method_18153(ResourceManager resourceManager) {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			DefaultResourcePack defaultResourcePack = minecraftClient.getResourcePackDownloader().getPack();
+			DefaultResourcePack defaultResourcePack = minecraftClient.method_1516().method_4633();
 
 			try {
-				InputStream inputStream = defaultResourcePack.open(ResourceType.ASSETS, SplashScreen.LOGO);
+				InputStream inputStream = defaultResourcePack.method_14405(ResourceType.ASSETS, SplashScreen.field_2483);
 				Throwable var5 = null;
 
 				ResourceTexture.TextureData var6;

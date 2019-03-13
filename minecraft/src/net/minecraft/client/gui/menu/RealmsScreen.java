@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4186;
+import net.minecraft.class_4187;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.RealmsButtonWidget;
 import net.minecraft.item.ItemStack;
 import net.minecraft.realms.RealmsButton;
 import net.minecraft.realms.RealmsGuiEventListener;
@@ -142,15 +143,15 @@ public class RealmsScreen extends Screen {
 		return this.listeners.contains(realmsGuiEventListener.getProxy());
 	}
 
-	public void addButton(RealmsButton realmsButton) {
-		this.addButton(realmsButton.getProxy());
+	public void addButton(class_4186<?> arg) {
+		this.addButton(arg.getProxy());
 	}
 
-	public List<RealmsButton> getButtons() {
-		List<RealmsButton> list = Lists.<RealmsButton>newArrayListWithExpectedSize(this.buttons.size());
+	public List<class_4186<?>> getButtons() {
+		List<class_4186<?>> list = Lists.<class_4186<?>>newArrayListWithExpectedSize(this.buttons.size());
 
 		for (ButtonWidget buttonWidget : this.buttons) {
-			list.add(((RealmsButtonWidget)buttonWidget).getRealmsButton());
+			list.add(((class_4187)buttonWidget).method_19359());
 		}
 
 		return list;

@@ -17,12 +17,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillagerCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("cured_zombie_villager");
+	private static final Identifier field_9514 = new Identifier("cured_zombie_villager");
 	private final Map<PlayerAdvancementTracker, CuredZombieVillagerCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, CuredZombieVillagerCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9514;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillag
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.addCondition(conditionsContainer);
+		handler.method_8832(conditionsContainer);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillag
 	) {
 		CuredZombieVillagerCriterion.Handler handler = (CuredZombieVillagerCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
+			handler.method_8834(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -62,65 +62,65 @@ public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillag
 		return new CuredZombieVillagerCriterion.Conditions(entityPredicate, entityPredicate2);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
+	public void method_8831(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
 		CuredZombieVillagerCriterion.Handler handler = (CuredZombieVillagerCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(serverPlayerEntity, zombieEntity, villagerEntity);
+			handler.method_8835(serverPlayerEntity, zombieEntity, villagerEntity);
 		}
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate zombie;
-		private final EntityPredicate villager;
+		private final EntityPredicate field_9518;
+		private final EntityPredicate field_9519;
 
 		public Conditions(EntityPredicate entityPredicate, EntityPredicate entityPredicate2) {
-			super(CuredZombieVillagerCriterion.ID);
-			this.zombie = entityPredicate;
-			this.villager = entityPredicate2;
+			super(CuredZombieVillagerCriterion.field_9514);
+			this.field_9518 = entityPredicate;
+			this.field_9519 = entityPredicate2;
 		}
 
 		public static CuredZombieVillagerCriterion.Conditions any() {
 			return new CuredZombieVillagerCriterion.Conditions(EntityPredicate.ANY, EntityPredicate.ANY);
 		}
 
-		public boolean matches(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
-			return !this.zombie.test(serverPlayerEntity, zombieEntity) ? false : this.villager.test(serverPlayerEntity, villagerEntity);
+		public boolean method_8837(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
+			return !this.field_9518.method_8914(serverPlayerEntity, zombieEntity) ? false : this.field_9519.method_8914(serverPlayerEntity, villagerEntity);
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("zombie", this.zombie.serialize());
-			jsonObject.add("villager", this.villager.serialize());
+			jsonObject.add("zombie", this.field_9518.serialize());
+			jsonObject.add("villager", this.field_9519.serialize());
 			return jsonObject;
 		}
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker manager;
+		private final PlayerAdvancementTracker field_9517;
 		private final Set<Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+			this.field_9517 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void addCondition(Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer) {
+		public void method_8832(Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void removeCondition(Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer) {
+		public void method_8834(Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
+		public void method_8835(ServerPlayerEntity serverPlayerEntity, ZombieEntity zombieEntity, VillagerEntity villagerEntity) {
 			List<Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(serverPlayerEntity, zombieEntity, villagerEntity)) {
+				if (conditionsContainer.method_797().method_8837(serverPlayerEntity, zombieEntity, villagerEntity)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions>>newArrayList();
 					}
@@ -131,7 +131,7 @@ public class CuredZombieVillagerCriterion implements Criterion<CuredZombieVillag
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<CuredZombieVillagerCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9517);
 				}
 			}
 		}

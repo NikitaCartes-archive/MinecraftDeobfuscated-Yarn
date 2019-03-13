@@ -17,24 +17,24 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextType;
 
 public abstract class CombinedEntry extends LootEntry {
-	protected final LootEntry[] children;
+	protected final LootEntry[] field_982;
 	private final LootChoiceProvider predicate;
 
 	protected CombinedEntry(LootEntry[] lootEntrys, LootCondition[] lootConditions) {
 		super(lootConditions);
-		this.children = lootEntrys;
+		this.field_982 = lootEntrys;
 		this.predicate = this.combine(lootEntrys);
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		super.check(lootTableReporter, function, set, lootContextType);
-		if (this.children.length == 0) {
+	public void method_415(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		super.method_415(lootTableReporter, function, set, lootContextType);
+		if (this.field_982.length == 0) {
 			lootTableReporter.report("Empty children list");
 		}
 
-		for (int i = 0; i < this.children.length; i++) {
-			this.children[i].check(lootTableReporter.makeChild(".entry[" + i + "]"), function, set, lootContextType);
+		for (int i = 0; i < this.field_982.length; i++) {
+			this.field_982[i].method_415(lootTableReporter.makeChild(".entry[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
@@ -45,7 +45,7 @@ public abstract class CombinedEntry extends LootEntry {
 		return !this.test(lootContext) ? false : this.predicate.expand(lootContext, consumer);
 	}
 
-	public static <T extends CombinedEntry> CombinedEntry.Serializer<T> createSerializer(Identifier identifier, Class<T> class_, CombinedEntry.Factory<T> factory) {
+	public static <T extends CombinedEntry> CombinedEntry.Serializer<T> method_395(Identifier identifier, Class<T> class_, CombinedEntry.Factory<T> factory) {
 		return new CombinedEntry.Serializer<T>(identifier, class_) {
 			@Override
 			protected T method_398(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootEntry[] lootEntrys, LootCondition[] lootConditions) {
@@ -65,7 +65,7 @@ public abstract class CombinedEntry extends LootEntry {
 		}
 
 		public void method_397(JsonObject jsonObject, T combinedEntry, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.add("children", jsonSerializationContext.serialize(combinedEntry.children));
+			jsonObject.add("children", jsonSerializationContext.serialize(combinedEntry.field_982));
 		}
 
 		public final T method_396(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {

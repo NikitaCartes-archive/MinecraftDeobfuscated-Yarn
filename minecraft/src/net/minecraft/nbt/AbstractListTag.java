@@ -9,7 +9,7 @@ public abstract class AbstractListTag<T extends Tag> extends AbstractList<T> imp
 
 	public abstract T method_10536(int i);
 
-	public abstract boolean setTag(int i, Tag tag);
+	public abstract boolean method_10535(int i, Tag tag);
 
-	public abstract boolean addTag(int i, Tag tag);
+	public abstract boolean method_10533(int i, Tag tag);
 }

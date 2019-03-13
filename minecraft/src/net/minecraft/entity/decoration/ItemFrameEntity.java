@@ -34,8 +34,8 @@ import org.apache.logging.log4j.Logger;
 
 public class ItemFrameEntity extends AbstractDecorationEntity {
 	private static final Logger field_7131 = LogManager.getLogger();
-	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-	private static final TrackedData<Integer> ROTATION = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<ItemStack> field_7130 = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+	private static final TrackedData<Integer> field_7132 = DataTracker.registerData(ItemFrameEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private float itemDropChance = 1.0F;
 
 	public ItemFrameEntity(EntityType<? extends ItemFrameEntity> entityType, World world) {
@@ -44,27 +44,27 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	public ItemFrameEntity(World world, BlockPos blockPos, Direction direction) {
 		super(EntityType.ITEM_FRAME, world, blockPos);
-		this.setFacing(direction);
+		this.method_6892(direction);
 	}
 
 	@Override
-	protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float method_18378(EntityPose entityPose, EntitySize entitySize) {
 		return 0.0F;
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(ITEM_STACK, ItemStack.EMPTY);
-		this.getDataTracker().startTracking(ROTATION, 0);
+		this.method_5841().startTracking(field_7130, ItemStack.EMPTY);
+		this.method_5841().startTracking(field_7132, 0);
 	}
 
 	@Override
-	protected void setFacing(Direction direction) {
+	protected void method_6892(Direction direction) {
 		Validate.notNull(direction);
-		this.facing = direction;
+		this.field_7099 = direction;
 		if (direction.getAxis().isHorizontal()) {
 			this.pitch = 0.0F;
-			this.yaw = (float)(this.facing.getHorizontal() * 90);
+			this.yaw = (float)(this.field_7099.getHorizontal() * 90);
 		} else {
 			this.pitch = (float)(-90 * direction.getDirection().offset());
 			this.yaw = 0.0F;
@@ -77,15 +77,15 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	protected void method_6895() {
-		if (this.facing != null) {
+		if (this.field_7099 != null) {
 			double d = 0.46875;
-			this.x = (double)this.blockPos.getX() + 0.5 - (double)this.facing.getOffsetX() * 0.46875;
-			this.y = (double)this.blockPos.getY() + 0.5 - (double)this.facing.getOffsetY() * 0.46875;
-			this.z = (double)this.blockPos.getZ() + 0.5 - (double)this.facing.getOffsetZ() * 0.46875;
+			this.x = (double)this.field_7100.getX() + 0.5 - (double)this.field_7099.getOffsetX() * 0.46875;
+			this.y = (double)this.field_7100.getY() + 0.5 - (double)this.field_7099.getOffsetY() * 0.46875;
+			this.z = (double)this.field_7100.getZ() + 0.5 - (double)this.field_7099.getOffsetZ() * 0.46875;
 			double e = (double)this.getWidthPixels();
 			double f = (double)this.getHeightPixels();
 			double g = (double)this.getWidthPixels();
-			Direction.Axis axis = this.facing.getAxis();
+			Direction.Axis axis = this.field_7099.getAxis();
 			switch (axis) {
 				case X:
 					e = 1.0;
@@ -100,18 +100,18 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			e /= 32.0;
 			f /= 32.0;
 			g /= 32.0;
-			this.setBoundingBox(new BoundingBox(this.x - e, this.y - f, this.z - g, this.x + e, this.y + f, this.z + g));
+			this.method_5857(new BoundingBox(this.x - e, this.y - f, this.z - g, this.x + e, this.y + f, this.z + g));
 		}
 	}
 
 	@Override
 	public boolean method_6888() {
-		if (!this.world.method_17892(this)) {
+		if (!this.field_6002.method_17892(this)) {
 			return false;
 		} else {
-			BlockState blockState = this.world.getBlockState(this.blockPos.offset(this.facing.getOpposite()));
-			return blockState.getMaterial().method_15799() || this.facing.getAxis().isHorizontal() && AbstractRedstoneGateBlock.method_9999(blockState)
-				? this.world.getEntities(this, this.getBoundingBox(), PREDICATE).isEmpty()
+			BlockState blockState = this.field_6002.method_8320(this.field_7100.method_10093(this.field_7099.getOpposite()));
+			return blockState.method_11620().method_15799() || this.field_7099.getAxis().isHorizontal() && AbstractRedstoneGateBlock.method_9999(blockState)
+				? this.field_6002.method_8333(this, this.method_5829(), PREDICATE).isEmpty()
 				: false;
 		}
 	}
@@ -125,10 +125,10 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	public boolean damage(DamageSource damageSource, float f) {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
-		} else if (!damageSource.isExplosive() && !this.getHeldItemStack().isEmpty()) {
-			if (!this.world.isClient) {
-				this.method_6936(damageSource.getAttacker(), false);
-				this.playSound(SoundEvents.field_14770, 1.0F, 1.0F);
+		} else if (!damageSource.isExplosive() && !this.method_6940().isEmpty()) {
+			if (!this.field_6002.isClient) {
+				this.method_6936(damageSource.method_5529(), false);
+				this.method_5783(SoundEvents.field_14770, 1.0F, 1.0F);
 			}
 
 			return true;
@@ -157,19 +157,19 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void copyEntityData(@Nullable Entity entity) {
-		this.playSound(SoundEvents.field_14585, 1.0F, 1.0F);
+		this.method_5783(SoundEvents.field_14585, 1.0F, 1.0F);
 		this.method_6936(entity, true);
 	}
 
 	@Override
 	public void method_6894() {
-		this.playSound(SoundEvents.field_14844, 1.0F, 1.0F);
+		this.method_5783(SoundEvents.field_14844, 1.0F, 1.0F);
 	}
 
 	public void method_6936(@Nullable Entity entity, boolean bl) {
-		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
-			ItemStack itemStack = this.getHeldItemStack();
-			this.setHeldItemStack(ItemStack.EMPTY);
+		if (this.field_6002.getGameRules().getBoolean("doEntityDrops")) {
+			ItemStack itemStack = this.method_6940();
+			this.method_6935(ItemStack.EMPTY);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
 				if (playerEntity.abilities.creativeMode) {
@@ -179,55 +179,55 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			}
 
 			if (bl) {
-				this.dropItem(Items.field_8143);
+				this.method_5706(Items.field_8143);
 			}
 
 			if (!itemStack.isEmpty() && this.random.nextFloat() < this.itemDropChance) {
 				itemStack = itemStack.copy();
 				this.method_6937(itemStack);
-				this.dropStack(itemStack);
+				this.method_5775(itemStack);
 			}
 		}
 	}
 
 	private void method_6937(ItemStack itemStack) {
 		if (itemStack.getItem() == Items.field_8204) {
-			MapState mapState = FilledMapItem.method_8001(itemStack, this.world);
-			mapState.method_104(this.blockPos, this.getEntityId());
+			MapState mapState = FilledMapItem.method_8001(itemStack, this.field_6002);
+			mapState.method_104(this.field_7100, this.getEntityId());
 		}
 
 		itemStack.setHoldingItemFrame(null);
 	}
 
-	public ItemStack getHeldItemStack() {
-		return this.getDataTracker().get(ITEM_STACK);
+	public ItemStack method_6940() {
+		return this.method_5841().get(field_7130);
 	}
 
-	public void setHeldItemStack(ItemStack itemStack) {
-		this.setHeldItemStack(itemStack, true);
+	public void method_6935(ItemStack itemStack) {
+		this.method_6933(itemStack, true);
 	}
 
-	public void setHeldItemStack(ItemStack itemStack, boolean bl) {
+	public void method_6933(ItemStack itemStack, boolean bl) {
 		if (!itemStack.isEmpty()) {
 			itemStack = itemStack.copy();
 			itemStack.setAmount(1);
 			itemStack.setHoldingItemFrame(this);
 		}
 
-		this.getDataTracker().set(ITEM_STACK, itemStack);
+		this.method_5841().set(field_7130, itemStack);
 		if (!itemStack.isEmpty()) {
-			this.playSound(SoundEvents.field_14667, 1.0F, 1.0F);
+			this.method_5783(SoundEvents.field_14667, 1.0F, 1.0F);
 		}
 
-		if (bl && this.blockPos != null) {
-			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.field_10124);
+		if (bl && this.field_7100 != null) {
+			this.field_6002.method_8455(this.field_7100, Blocks.field_10124);
 		}
 	}
 
 	@Override
 	public boolean method_5758(int i, ItemStack itemStack) {
 		if (i == 0) {
-			this.setHeldItemStack(itemStack);
+			this.method_6935(itemStack);
 			return true;
 		} else {
 			return false;
@@ -235,9 +235,9 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (trackedData.equals(ITEM_STACK)) {
-			ItemStack itemStack = this.getHeldItemStack();
+	public void method_5674(TrackedData<?> trackedData) {
+		if (trackedData.equals(field_7130)) {
+			ItemStack itemStack = this.method_6940();
 			if (!itemStack.isEmpty() && itemStack.getHoldingItemFrame() != this) {
 				itemStack.setHoldingItemFrame(this);
 			}
@@ -245,7 +245,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	public int getRotation() {
-		return this.getDataTracker().get(ROTATION);
+		return this.method_5841().get(field_7132);
 	}
 
 	public void setRotation(int i) {
@@ -253,57 +253,57 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	private void setRotation(int i, boolean bl) {
-		this.getDataTracker().set(ROTATION, i % 8);
-		if (bl && this.blockPos != null) {
-			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.field_10124);
+		this.method_5841().set(field_7132, i % 8);
+		if (bl && this.field_7100 != null) {
+			this.field_6002.method_8455(this.field_7100, Blocks.field_10124);
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		if (!this.getHeldItemStack().isEmpty()) {
-			compoundTag.put("Item", this.getHeldItemStack().toTag(new CompoundTag()));
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
+		if (!this.method_6940().isEmpty()) {
+			compoundTag.method_10566("Item", this.method_6940().method_7953(new CompoundTag()));
 			compoundTag.putByte("ItemRotation", (byte)this.getRotation());
 			compoundTag.putFloat("ItemDropChance", this.itemDropChance);
 		}
 
-		compoundTag.putByte("Facing", (byte)this.facing.getId());
+		compoundTag.putByte("Facing", (byte)this.field_7099.getId());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		CompoundTag compoundTag2 = compoundTag.getCompound("Item");
 		if (compoundTag2 != null && !compoundTag2.isEmpty()) {
-			ItemStack itemStack = ItemStack.fromTag(compoundTag2);
+			ItemStack itemStack = ItemStack.method_7915(compoundTag2);
 			if (itemStack.isEmpty()) {
 				field_7131.warn("Unable to load item from: {}", compoundTag2);
 			}
 
-			this.setHeldItemStack(itemStack, false);
+			this.method_6933(itemStack, false);
 			this.setRotation(compoundTag.getByte("ItemRotation"), false);
 			if (compoundTag.containsKey("ItemDropChance", 99)) {
 				this.itemDropChance = compoundTag.getFloat("ItemDropChance");
 			}
 		}
 
-		this.setFacing(Direction.byId(compoundTag.getByte("Facing")));
+		this.method_6892(Direction.byId(compoundTag.getByte("Facing")));
 	}
 
 	@Override
-	public boolean interact(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (!this.world.isClient) {
-			if (this.getHeldItemStack().isEmpty()) {
+	public boolean method_5688(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
+		if (!this.field_6002.isClient) {
+			if (this.method_6940().isEmpty()) {
 				if (!itemStack.isEmpty()) {
-					this.setHeldItemStack(itemStack);
+					this.method_6935(itemStack);
 					if (!playerEntity.abilities.creativeMode) {
 						itemStack.subtractAmount(1);
 					}
 				}
 			} else {
-				this.playSound(SoundEvents.field_15038, 1.0F, 1.0F);
+				this.method_5783(SoundEvents.field_15038, 1.0F, 1.0F);
 				this.setRotation(this.getRotation() + 1);
 			}
 		}
@@ -312,11 +312,11 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	public int method_6938() {
-		return this.getHeldItemStack().isEmpty() ? 0 : this.getRotation() % 8 + 1;
+		return this.method_6940().isEmpty() ? 0 : this.getRotation() % 8 + 1;
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
-		return new EntitySpawnS2CPacket(this, this.getType(), this.facing.getId(), this.getDecorationBlockPos());
+	public Packet<?> method_18002() {
+		return new EntitySpawnS2CPacket(this, this.method_5864(), this.field_7099.getId(), this.method_6896());
 	}
 }

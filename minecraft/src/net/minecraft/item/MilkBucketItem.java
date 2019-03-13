@@ -17,11 +17,11 @@ public class MilkBucketItem extends Item {
 	}
 
 	@Override
-	public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+	public ItemStack method_7861(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		if (livingEntity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
-			Criterions.CONSUME_ITEM.handle(serverPlayerEntity, itemStack);
-			serverPlayerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			Criterions.CONSUME_ITEM.method_8821(serverPlayerEntity, itemStack);
+			serverPlayerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
 		}
 
 		if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).abilities.creativeMode) {
@@ -36,18 +36,18 @@ public class MilkBucketItem extends Item {
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack itemStack) {
+	public int method_7881(ItemStack itemStack) {
 		return 32;
 	}
 
 	@Override
-	public UseAction getUseAction(ItemStack itemStack) {
+	public UseAction method_7853(ItemStack itemStack) {
 		return UseAction.field_8946;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		playerEntity.setCurrentHand(hand);
-		return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
+		return new TypedActionResult<>(ActionResult.field_5812, playerEntity.method_5998(hand));
 	}
 }

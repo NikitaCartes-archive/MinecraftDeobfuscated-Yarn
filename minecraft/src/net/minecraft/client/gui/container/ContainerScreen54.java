@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ContainerScreen54 extends ContainerScreen<GenericContainer> implements ContainerProvider<GenericContainer> {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/generic_54.png");
+	private static final Identifier field_2861 = new Identifier("textures/gui/container/generic_54.png");
 	private final int rows;
 
 	public ContainerScreen54(GenericContainer genericContainer, PlayerInventory playerInventory, TextComponent textComponent) {
@@ -33,14 +33,14 @@ public class ContainerScreen54 extends ContainerScreen<GenericContainer> impleme
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.name.getFormattedText(), 8.0F, 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+		this.fontRenderer.draw(this.field_17411.getFormattedText(), 8.0F, 6.0F, 4210752);
+		this.fontRenderer.draw(this.playerInventory.method_5476().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
+		this.client.method_1531().method_4618(field_2861);
 		int k = (this.screenWidth - this.width) / 2;
 		int l = (this.screenHeight - this.height) / 2;
 		this.drawTexturedRect(k, l, 0, 0, this.width, this.rows * 18 + 17);

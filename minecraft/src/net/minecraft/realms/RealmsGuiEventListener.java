@@ -18,7 +18,7 @@ public abstract class RealmsGuiEventListener {
 		return false;
 	}
 
-	public boolean mouseScrolled(double d) {
+	public boolean mouseScrolled(double d, double e, double f) {
 		return false;
 	}
 

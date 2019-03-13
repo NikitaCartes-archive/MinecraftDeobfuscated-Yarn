@@ -5,9 +5,9 @@ import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicInteger;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
@@ -26,23 +26,23 @@ import org.apache.logging.log4j.Logger;
 public class ServerConnectingScreen extends Screen {
 	private static final AtomicInteger field_2408 = new AtomicInteger(0);
 	private static final Logger LOGGER = LogManager.getLogger();
-	private ClientConnection connection;
+	private ClientConnection field_2411;
 	private boolean field_2409;
-	private final Screen parent;
-	private TextComponent status = new TranslatableTextComponent("connect.connecting");
+	private final Screen field_2412;
+	private TextComponent field_2413 = new TranslatableTextComponent("connect.connecting");
 
 	public ServerConnectingScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
 		this.client = minecraftClient;
-		this.parent = screen;
+		this.field_2412 = screen;
 		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
 		minecraftClient.openWorkingScreen();
-		minecraftClient.setCurrentServerEntry(serverEntry);
+		minecraftClient.method_1584(serverEntry);
 		this.method_2130(serverAddress.getAddress(), serverAddress.getPort());
 	}
 
 	public ServerConnectingScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
 		this.client = minecraftClient;
-		this.parent = screen;
+		this.field_2412 = screen;
 		minecraftClient.openWorkingScreen();
 		this.method_2130(string, i);
 	}
@@ -59,18 +59,18 @@ public class ServerConnectingScreen extends Screen {
 					}
 
 					inetAddress = InetAddress.getByName(string);
-					ServerConnectingScreen.this.connection = ClientConnection.connect(inetAddress, i, ServerConnectingScreen.this.client.options.shouldUseNativeTransport());
-					ServerConnectingScreen.this.connection
-						.setPacketListener(
+					ServerConnectingScreen.this.field_2411 = ClientConnection.connect(inetAddress, i, ServerConnectingScreen.this.client.field_1690.shouldUseNativeTransport());
+					ServerConnectingScreen.this.field_2411
+						.method_10763(
 							new ClientLoginNetworkHandler(
-								ServerConnectingScreen.this.connection,
+								ServerConnectingScreen.this.field_2411,
 								ServerConnectingScreen.this.client,
-								ServerConnectingScreen.this.parent,
-								textComponent -> ServerConnectingScreen.this.setStatus(textComponent)
+								ServerConnectingScreen.this.field_2412,
+								textComponent -> ServerConnectingScreen.this.method_2131(textComponent)
 							)
 						);
-					ServerConnectingScreen.this.connection.sendPacket(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
-					ServerConnectingScreen.this.connection.sendPacket(new LoginHelloC2SPacket(ServerConnectingScreen.this.client.getSession().getProfile()));
+					ServerConnectingScreen.this.field_2411.method_10743(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
+					ServerConnectingScreen.this.field_2411.method_10743(new LoginHelloC2SPacket(ServerConnectingScreen.this.client.method_1548().getProfile()));
 				} catch (UnknownHostException var4) {
 					if (ServerConnectingScreen.this.field_2409) {
 						return;
@@ -80,9 +80,9 @@ public class ServerConnectingScreen extends Screen {
 					ServerConnectingScreen.this.client
 						.execute(
 							() -> ServerConnectingScreen.this.client
-									.openScreen(
+									.method_1507(
 										new DisconnectedScreen(
-											ServerConnectingScreen.this.parent, "connect.failed", new TranslatableTextComponent("disconnect.genericReason", "Unknown host")
+											ServerConnectingScreen.this.field_2412, "connect.failed", new TranslatableTextComponent("disconnect.genericReason", "Unknown host")
 										)
 									)
 						);
@@ -96,8 +96,8 @@ public class ServerConnectingScreen extends Screen {
 					ServerConnectingScreen.this.client
 						.execute(
 							() -> ServerConnectingScreen.this.client
-									.openScreen(
-										new DisconnectedScreen(ServerConnectingScreen.this.parent, "connect.failed", new TranslatableTextComponent("disconnect.genericReason", string))
+									.method_1507(
+										new DisconnectedScreen(ServerConnectingScreen.this.field_2412, "connect.failed", new TranslatableTextComponent("disconnect.genericReason", string))
 									)
 						);
 				}
@@ -107,17 +107,17 @@ public class ServerConnectingScreen extends Screen {
 		thread.start();
 	}
 
-	private void setStatus(TextComponent textComponent) {
-		this.status = textComponent;
+	private void method_2131(TextComponent textComponent) {
+		this.field_2413 = textComponent;
 	}
 
 	@Override
 	public void update() {
-		if (this.connection != null) {
-			if (this.connection.isOpen()) {
-				this.connection.tick();
+		if (this.field_2411 != null) {
+			if (this.field_2411.isOpen()) {
+				this.field_2411.tick();
 			} else {
-				this.connection.handleDisconnection();
+				this.field_2411.handleDisconnection();
 			}
 		}
 	}
@@ -129,15 +129,15 @@ public class ServerConnectingScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, I18n.translate("gui.cancel")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, I18n.translate("gui.cancel")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				ServerConnectingScreen.this.field_2409 = true;
-				if (ServerConnectingScreen.this.connection != null) {
-					ServerConnectingScreen.this.connection.disconnect(new TranslatableTextComponent("connect.aborted"));
+				if (ServerConnectingScreen.this.field_2411 != null) {
+					ServerConnectingScreen.this.field_2411.method_10747(new TranslatableTextComponent("connect.aborted"));
 				}
 
-				ServerConnectingScreen.this.client.openScreen(ServerConnectingScreen.this.parent);
+				ServerConnectingScreen.this.client.method_1507(ServerConnectingScreen.this.field_2412);
 			}
 		});
 	}
@@ -145,7 +145,7 @@ public class ServerConnectingScreen extends Screen {
 	@Override
 	public void draw(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.status.getFormattedText(), this.screenWidth / 2, this.screenHeight / 2 - 50, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.field_2413.getFormattedText(), this.screenWidth / 2, this.screenHeight / 2 - 50, 16777215);
 		super.draw(i, j, f);
 	}
 }

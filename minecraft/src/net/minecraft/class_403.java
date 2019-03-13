@@ -32,9 +32,9 @@ public class class_403 extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, this.field_2349) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, this.field_2349) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				class_403.this.field_2345.run();
 			}
 		});

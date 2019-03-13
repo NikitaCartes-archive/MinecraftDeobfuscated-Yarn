@@ -95,7 +95,7 @@ public class ServerStatHandler extends StatHandler {
 						for (String string2 : compoundTag2.getKeys()) {
 							if (compoundTag2.containsKey(string2, 10)) {
 								SystemUtil.method_17974(
-									Registry.STAT_TYPE.getOrEmpty(new Identifier(string2)),
+									Registry.STAT_TYPE.method_17966(new Identifier(string2)),
 									statType -> {
 										CompoundTag compoundTag2x = compoundTag2.getCompound(string2);
 
@@ -107,7 +107,7 @@ public class ServerStatHandler extends StatHandler {
 													() -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string2x)
 												);
 											} else {
-												LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, compoundTag2x.getTag(string2x), string2x);
+												LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, compoundTag2x.method_10580(string2x), string2x);
 											}
 										}
 									},
@@ -143,7 +143,7 @@ public class ServerStatHandler extends StatHandler {
 	}
 
 	private <T> Optional<Stat<T>> method_14905(StatType<T> statType, String string) {
-		return Optional.ofNullable(Identifier.create(string)).flatMap(statType.getRegistry()::getOrEmpty).map(statType::getOrCreateStat);
+		return Optional.ofNullable(Identifier.create(string)).flatMap(statType.getRegistry()::method_17966).map(statType::getOrCreateStat);
 	}
 
 	private static CompoundTag jsonToCompound(JsonObject jsonObject) {
@@ -152,7 +152,7 @@ public class ServerStatHandler extends StatHandler {
 		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
 			JsonElement jsonElement = (JsonElement)entry.getValue();
 			if (jsonElement.isJsonObject()) {
-				compoundTag.put((String)entry.getKey(), jsonToCompound(jsonElement.getAsJsonObject()));
+				compoundTag.method_10566((String)entry.getKey(), jsonToCompound(jsonElement.getAsJsonObject()));
 			} else if (jsonElement.isJsonPrimitive()) {
 				JsonPrimitive jsonPrimitive = jsonElement.getAsJsonPrimitive();
 				if (jsonPrimitive.isNumber()) {
@@ -169,13 +169,13 @@ public class ServerStatHandler extends StatHandler {
 
 		for (it.unimi.dsi.fastutil.objects.Object2IntMap.Entry<Stat<?>> entry : this.statMap.object2IntEntrySet()) {
 			Stat<?> stat = (Stat<?>)entry.getKey();
-			((JsonObject)map.computeIfAbsent(stat.getType(), statType -> new JsonObject())).addProperty(method_14907(stat).toString(), entry.getIntValue());
+			((JsonObject)map.computeIfAbsent(stat.method_14949(), statType -> new JsonObject())).addProperty(method_14907(stat).toString(), entry.getIntValue());
 		}
 
 		JsonObject jsonObject = new JsonObject();
 
 		for (Entry<StatType<?>, JsonObject> entry2 : map.entrySet()) {
-			jsonObject.add(Registry.STAT_TYPE.getId((StatType<?>)entry2.getKey()).toString(), (JsonElement)entry2.getValue());
+			jsonObject.add(Registry.STAT_TYPE.method_10221((StatType<?>)entry2.getKey()).toString(), (JsonElement)entry2.getValue());
 		}
 
 		JsonObject jsonObject2 = new JsonObject();
@@ -185,7 +185,7 @@ public class ServerStatHandler extends StatHandler {
 	}
 
 	private static <T> Identifier method_14907(Stat<T> stat) {
-		return stat.getType().getRegistry().getId(stat.getValue());
+		return stat.method_14949().getRegistry().method_10221(stat.getValue());
 	}
 
 	public void method_14914() {
@@ -203,6 +203,6 @@ public class ServerStatHandler extends StatHandler {
 			}
 		}
 
-		serverPlayerEntity.networkHandler.sendPacket(new StatisticsS2CPacket(object2IntMap));
+		serverPlayerEntity.field_13987.sendPacket(new StatisticsS2CPacket(object2IntMap));
 	}
 }

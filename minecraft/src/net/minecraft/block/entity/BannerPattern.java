@@ -49,13 +49,14 @@ public enum BannerPattern {
 	GRADIENT_DOWN("gradient", "gra", "# #", " # ", " # "),
 	GRADIENT_UP("gradient_up", "gru", " # ", " # ", "# #"),
 	BRICKS("bricks", "bri", new ItemStack(Blocks.field_10104)),
+	field_18689("globe", "glb"),
 	CREEPER("creeper", "cre", new ItemStack(Items.CREEPER_HEAD)),
 	SKULL("skull", "sku", new ItemStack(Items.WITHER_SKELETON_SKULL)),
 	FLOWER("flower", "flo", new ItemStack(Blocks.field_10554)),
 	MOJANG("mojang", "moj", new ItemStack(Items.field_8367));
 
 	public static final int COUNT = values().length;
-	public static final int field_18283 = COUNT - 4 - 1;
+	public static final int field_18283 = COUNT - 5 - 1;
 	private final String name;
 	private final String id;
 	private final String[] recipePattern = new String[3];
@@ -107,7 +108,7 @@ public enum BannerPattern {
 			return this;
 		}
 
-		public ListTag build() {
+		public ListTag method_16375() {
 			ListTag listTag = new ListTag();
 
 			for (Pair<BannerPattern, DyeColor> pair : this.patterns) {

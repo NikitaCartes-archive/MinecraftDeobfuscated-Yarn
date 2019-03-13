@@ -5,12 +5,12 @@ import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
 
 public class OceanRuinFeatureConfig implements FeatureConfig {
-	public final OceanRuinFeature.BiomeType biomeType;
+	public final OceanRuinFeature.BiomeType field_13709;
 	public final float largeProbability;
 	public final float clusterProbability;
 
 	public OceanRuinFeatureConfig(OceanRuinFeature.BiomeType biomeType, float f, float g) {
-		this.biomeType = biomeType;
+		this.field_13709 = biomeType;
 		this.largeProbability = f;
 		this.clusterProbability = g;
 	}
@@ -22,7 +22,7 @@ public class OceanRuinFeatureConfig implements FeatureConfig {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("biome_temp"),
-					dynamicOps.createString(this.biomeType.getName()),
+					dynamicOps.createString(this.field_13709.getName()),
 					dynamicOps.createString("large_probability"),
 					dynamicOps.createFloat(this.largeProbability),
 					dynamicOps.createString("cluster_probability"),

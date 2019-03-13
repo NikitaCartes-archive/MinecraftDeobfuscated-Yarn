@@ -32,7 +32,7 @@ public class ShapedRecipeJsonFactory {
 	private final int outputCount;
 	private final List<String> pattern = Lists.<String>newArrayList();
 	private final Map<Character, Ingredient> inputs = Maps.<Character, Ingredient>newLinkedHashMap();
-	private final SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.create();
+	private final SimpleAdvancement.Builder field_11379 = SimpleAdvancement.Builder.create();
 	private String group;
 
 	public ShapedRecipeJsonFactory(ItemProvider itemProvider, int i) {
@@ -48,12 +48,12 @@ public class ShapedRecipeJsonFactory {
 		return new ShapedRecipeJsonFactory(itemProvider, i);
 	}
 
-	public ShapedRecipeJsonFactory input(Character character, Tag<Item> tag) {
-		return this.input(character, Ingredient.fromTag(tag));
+	public ShapedRecipeJsonFactory method_10433(Character character, Tag<Item> tag) {
+		return this.input(character, Ingredient.method_8106(tag));
 	}
 
 	public ShapedRecipeJsonFactory input(Character character, ItemProvider itemProvider) {
-		return this.input(character, Ingredient.ofItems(itemProvider));
+		return this.input(character, Ingredient.method_8091(itemProvider));
 	}
 
 	public ShapedRecipeJsonFactory input(Character character, Ingredient ingredient) {
@@ -76,8 +76,8 @@ public class ShapedRecipeJsonFactory {
 		}
 	}
 
-	public ShapedRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
-		this.builder.criterion(string, criterionConditions);
+	public ShapedRecipeJsonFactory method_10429(String string, CriterionConditions criterionConditions) {
+		this.field_11379.method_709(string, criterionConditions);
 		return this;
 	}
 
@@ -87,24 +87,24 @@ public class ShapedRecipeJsonFactory {
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer) {
-		this.offerTo(consumer, Registry.ITEM.getId(this.output));
+		this.method_10430(consumer, Registry.ITEM.method_10221(this.output));
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer, String string) {
-		Identifier identifier = Registry.ITEM.getId(this.output);
+		Identifier identifier = Registry.ITEM.method_10221(this.output);
 		if (new Identifier(string).equals(identifier)) {
 			throw new IllegalStateException("Shaped Recipe " + string + " should remove its 'save' argument");
 		} else {
-			this.offerTo(consumer, new Identifier(string));
+			this.method_10430(consumer, new Identifier(string));
 		}
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
-		this.validate(identifier);
-		this.builder
-			.parent(new Identifier("recipes/root"))
-			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
-			.rewards(AdvancementRewards.Builder.recipe(identifier))
+	public void method_10430(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
+		this.method_10432(identifier);
+		this.field_11379
+			.method_708(new Identifier("recipes/root"))
+			.method_709("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
+			.method_703(AdvancementRewards.Builder.recipe(identifier))
 			.criteriaMerger(CriteriaMerger.OR);
 		consumer.accept(
 			new ShapedRecipeJsonFactory.ShapedRecipeJsonProvider(
@@ -114,13 +114,13 @@ public class ShapedRecipeJsonFactory {
 				this.group == null ? "" : this.group,
 				this.pattern,
 				this.inputs,
-				this.builder,
+				this.field_11379,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())
 			)
 		);
 	}
 
-	private void validate(Identifier identifier) {
+	private void method_10432(Identifier identifier) {
 		if (this.pattern.isEmpty()) {
 			throw new IllegalStateException("No pattern is defined for shaped recipe " + identifier + "!");
 		} else {
@@ -142,21 +142,21 @@ public class ShapedRecipeJsonFactory {
 				throw new IllegalStateException("Ingredients are defined but not used in pattern for recipe " + identifier);
 			} else if (this.pattern.size() == 1 && ((String)this.pattern.get(0)).length() == 1) {
 				throw new IllegalStateException("Shaped recipe " + identifier + " only takes in a single item - should it be a shapeless recipe instead?");
-			} else if (this.builder.getCriteria().isEmpty()) {
+			} else if (this.field_11379.getCriteria().isEmpty()) {
 				throw new IllegalStateException("No way of obtaining recipe " + identifier);
 			}
 		}
 	}
 
 	class ShapedRecipeJsonProvider implements RecipeJsonProvider {
-		private final Identifier recipeId;
+		private final Identifier field_11385;
 		private final Item output;
 		private final int resultCount;
 		private final String group;
 		private final List<String> pattern;
 		private final Map<Character, Ingredient> inputs;
-		private final SimpleAdvancement.Builder builder;
-		private final Identifier advancementId;
+		private final SimpleAdvancement.Builder field_11389;
+		private final Identifier field_11390;
 
 		public ShapedRecipeJsonProvider(
 			Identifier identifier,
@@ -168,14 +168,14 @@ public class ShapedRecipeJsonFactory {
 			SimpleAdvancement.Builder builder,
 			Identifier identifier2
 		) {
-			this.recipeId = identifier;
+			this.field_11385 = identifier;
 			this.output = item;
 			this.resultCount = i;
 			this.group = string;
 			this.pattern = list;
 			this.inputs = map;
-			this.builder = builder;
-			this.advancementId = identifier2;
+			this.field_11389 = builder;
+			this.field_11390 = identifier2;
 		}
 
 		@Override
@@ -199,7 +199,7 @@ public class ShapedRecipeJsonFactory {
 
 			jsonObject.add("key", jsonObject2);
 			JsonObject jsonObject3 = new JsonObject();
-			jsonObject3.addProperty("item", Registry.ITEM.getId(this.output).toString());
+			jsonObject3.addProperty("item", Registry.ITEM.method_10221(this.output).toString());
 			if (this.resultCount > 1) {
 				jsonObject3.addProperty("count", this.resultCount);
 			}
@@ -213,20 +213,20 @@ public class ShapedRecipeJsonFactory {
 		}
 
 		@Override
-		public Identifier getRecipeId() {
-			return this.recipeId;
+		public Identifier method_10417() {
+			return this.field_11385;
 		}
 
 		@Nullable
 		@Override
 		public JsonObject toAdvancementJson() {
-			return this.builder.toJson();
+			return this.field_11389.toJson();
 		}
 
 		@Nullable
 		@Override
-		public Identifier getAdvancementId() {
-			return this.advancementId;
+		public Identifier method_10418() {
+			return this.field_11390;
 		}
 	}
 }

@@ -22,9 +22,9 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 		return new MessageArgumentType();
 	}
 
-	public static TextComponent getMessageArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static TextComponent method_9339(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<MessageArgumentType.MessageFormat>getArgument(string, MessageArgumentType.MessageFormat.class)
-			.format(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
+			.method_9341(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
 	}
 
 	public MessageArgumentType.MessageFormat method_9338(StringReader stringReader) throws CommandSyntaxException {
@@ -38,20 +38,20 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 
 	public static class MessageFormat {
 		private final String contents;
-		private final MessageArgumentType.MessageSelector[] selectors;
+		private final MessageArgumentType.MessageSelector[] field_9878;
 
 		public MessageFormat(String string, MessageArgumentType.MessageSelector[] messageSelectors) {
 			this.contents = string;
-			this.selectors = messageSelectors;
+			this.field_9878 = messageSelectors;
 		}
 
-		public TextComponent format(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
-			if (this.selectors.length != 0 && bl) {
-				TextComponent textComponent = new StringTextComponent(this.contents.substring(0, this.selectors[0].getStart()));
-				int i = this.selectors[0].getStart();
+		public TextComponent method_9341(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
+			if (this.field_9878.length != 0 && bl) {
+				TextComponent textComponent = new StringTextComponent(this.contents.substring(0, this.field_9878[0].getStart()));
+				int i = this.field_9878[0].getStart();
 
-				for (MessageArgumentType.MessageSelector messageSelector : this.selectors) {
-					TextComponent textComponent2 = messageSelector.format(serverCommandSource);
+				for (MessageArgumentType.MessageSelector messageSelector : this.field_9878) {
+					TextComponent textComponent2 = messageSelector.method_9345(serverCommandSource);
 					if (i < messageSelector.getStart()) {
 						textComponent.append(this.contents.substring(i, messageSelector.getStart()));
 					}
@@ -120,12 +120,12 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 	public static class MessageSelector {
 		private final int start;
 		private final int end;
-		private final EntitySelector selector;
+		private final EntitySelector field_9881;
 
 		public MessageSelector(int i, int j, EntitySelector entitySelector) {
 			this.start = i;
 			this.end = j;
-			this.selector = entitySelector;
+			this.field_9881 = entitySelector;
 		}
 
 		public int getStart() {
@@ -137,8 +137,8 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 		}
 
 		@Nullable
-		public TextComponent format(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-			return EntitySelector.getNames(this.selector.getEntities(serverCommandSource));
+		public TextComponent method_9345(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+			return EntitySelector.method_9822(this.field_9881.getEntities(serverCommandSource));
 		}
 	}
 }

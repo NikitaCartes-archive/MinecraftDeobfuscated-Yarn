@@ -21,17 +21,19 @@ public class DifficultyS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11341(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onDifficulty(this);
+		clientPlayPacketListener.method_11140(this);
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.difficulty = Difficulty.getDifficulty(packetByteBuf.readUnsignedByte());
+		this.field_12091 = packetByteBuf.readBoolean();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeByte(this.difficulty.getId());
+		packetByteBuf.writeBoolean(this.field_12091);
 	}
 
 	@Environment(EnvType.CLIENT)

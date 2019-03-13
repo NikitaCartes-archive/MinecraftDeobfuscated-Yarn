@@ -29,26 +29,26 @@ public class DebugStickItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack itemStack) {
+	public boolean method_7886(ItemStack itemStack) {
 		return true;
 	}
 
 	@Override
-	public boolean beforeBlockBreak(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean method_7885(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		if (!world.isClient) {
-			this.method_7759(playerEntity, blockState, world, blockPos, false, playerEntity.getStackInHand(Hand.MAIN));
+			this.method_7759(playerEntity, blockState, world, blockPos, false, playerEntity.method_5998(Hand.MAIN));
 		}
 
 		return false;
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+	public ActionResult method_7884(ItemUsageContext itemUsageContext) {
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
-		World world = itemUsageContext.getWorld();
+		World world = itemUsageContext.method_8045();
 		if (!world.isClient && playerEntity != null) {
-			BlockPos blockPos = itemUsageContext.getBlockPos();
-			this.method_7759(playerEntity, world.getBlockState(blockPos), world, blockPos, true, itemUsageContext.getItemStack());
+			BlockPos blockPos = itemUsageContext.method_8037();
+			this.method_7759(playerEntity, world.method_8320(blockPos), world, blockPos, true, itemUsageContext.getItemStack());
 		}
 
 		return ActionResult.field_5812;
@@ -57,22 +57,22 @@ public class DebugStickItem extends Item {
 	private void method_7759(PlayerEntity playerEntity, BlockState blockState, IWorld iWorld, BlockPos blockPos, boolean bl, ItemStack itemStack) {
 		if (playerEntity.isCreativeLevelTwoOp()) {
 			Block block = blockState.getBlock();
-			StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+			StateFactory<Block, BlockState> stateFactory = block.method_9595();
 			Collection<Property<?>> collection = stateFactory.getProperties();
-			String string = Registry.BLOCK.getId(block).toString();
+			String string = Registry.BLOCK.method_10221(block).toString();
 			if (collection.isEmpty()) {
 				method_7762(playerEntity, new TranslatableTextComponent(this.getTranslationKey() + ".empty", string));
 			} else {
-				CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("DebugProperty");
+				CompoundTag compoundTag = itemStack.method_7911("DebugProperty");
 				String string2 = compoundTag.getString(string);
-				Property<?> property = stateFactory.getProperty(string2);
+				Property<?> property = stateFactory.method_11663(string2);
 				if (bl) {
 					if (property == null) {
 						property = (Property<?>)collection.iterator().next();
 					}
 
 					BlockState blockState2 = method_7758(blockState, property, playerEntity.isSneaking());
-					iWorld.setBlockState(blockPos, blockState2, 18);
+					iWorld.method_8652(blockPos, blockState2, 18);
 					method_7762(playerEntity, new TranslatableTextComponent(this.getTranslationKey() + ".update", property.getName(), method_7761(blockState2, property)));
 				} else {
 					property = method_7760(collection, property, playerEntity.isSneaking());
@@ -85,7 +85,7 @@ public class DebugStickItem extends Item {
 	}
 
 	private static <T extends Comparable<T>> BlockState method_7758(BlockState blockState, Property<T> property, boolean bl) {
-		return blockState.with(property, method_7760(property.getValues(), blockState.get(property), bl));
+		return blockState.method_11657(property, method_7760(property.getValues(), blockState.method_11654(property), bl));
 	}
 
 	private static <T> T method_7760(Iterable<T> iterable, @Nullable T object, boolean bl) {
@@ -97,6 +97,6 @@ public class DebugStickItem extends Item {
 	}
 
 	private static <T extends Comparable<T>> String method_7761(BlockState blockState, Property<T> property) {
-		return property.getValueAsString(blockState.get(property));
+		return property.getValueAsString(blockState.method_11654(property));
 	}
 }

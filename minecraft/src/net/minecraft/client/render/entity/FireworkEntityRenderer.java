@@ -30,13 +30,13 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		}
 
-		this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.method_3924(SpriteAtlasTexture.field_5275);
 		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fireworkEntity));
 		}
 
-		this.field_4703.renderItem(fireworkEntity.getItem(), ModelTransformation.Type.field_4318);
+		this.field_4703.renderItem(fireworkEntity.method_7495(), ModelTransformation.Type.field_4318);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
@@ -48,6 +48,6 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkEntity> {
 	}
 
 	protected Identifier method_3969(FireworkEntity fireworkEntity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+		return SpriteAtlasTexture.field_5275;
 	}
 }

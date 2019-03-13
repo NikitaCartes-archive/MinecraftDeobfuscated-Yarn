@@ -60,4 +60,13 @@ public class LabelWidget extends DrawableHelper implements Drawable, InputListen
 			this.drawVerticalLine(m + k, n, n + l, this.field_2119);
 		}
 	}
+
+	@Override
+	public boolean method_19356(double d, double e) {
+		return this.field_2117
+			&& d >= (double)this.field_2111
+			&& d < (double)(this.field_2111 + this.field_2114)
+			&& e >= (double)this.field_2110
+			&& e < (double)(this.field_2110 + this.field_2112);
+	}
 }

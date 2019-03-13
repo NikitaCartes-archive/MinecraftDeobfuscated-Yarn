@@ -51,7 +51,7 @@ public class RunArgs {
 			this.assetIndex = string;
 		}
 
-		public ResourceIndex getResourceIndex() {
+		public ResourceIndex method_2788() {
 			return (ResourceIndex)(this.assetIndex == null ? new DirectResourceIndex(this.assetDir) : new ResourceIndex(this.assetDir, this.assetIndex));
 		}
 	}

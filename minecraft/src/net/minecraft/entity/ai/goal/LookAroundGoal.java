@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import net.minecraft.entity.mob.MobEntity;
 
 public class LookAroundGoal extends Goal {
@@ -10,7 +11,7 @@ public class LookAroundGoal extends Goal {
 
 	public LookAroundGoal(MobEntity mobEntity) {
 		this.owner = mobEntity;
-		this.setControlBits(3);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 	}
 
 	@Override
@@ -35,7 +36,7 @@ public class LookAroundGoal extends Goal {
 	public void tick() {
 		this.lookTime--;
 		this.owner
-			.getLookControl()
+			.method_5988()
 			.lookAt(
 				this.owner.x + this.deltaX,
 				this.owner.y + (double)this.owner.getStandingEyeHeight(),

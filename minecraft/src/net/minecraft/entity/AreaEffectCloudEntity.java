@@ -34,11 +34,11 @@ import org.apache.logging.log4j.Logger;
 
 public class AreaEffectCloudEntity extends Entity {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final TrackedData<Float> RADIUS = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);
-	private static final TrackedData<Integer> COLOR = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Boolean> WAITING = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<ParticleParameters> PARTICLE_ID = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.PARTICLE);
-	private Potion potion = Potions.field_8984;
+	private static final TrackedData<Float> field_5938 = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.FLOAT);
+	private static final TrackedData<Integer> field_5936 = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Boolean> field_5944 = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<ParticleParameters> field_5931 = DataTracker.registerData(AreaEffectCloudEntity.class, TrackedDataHandlerRegistry.PARTICLE);
+	private Potion field_5933 = Potions.field_8984;
 	private final List<StatusEffectInstance> effects = Lists.<StatusEffectInstance>newArrayList();
 	private final Map<Entity, Integer> affectedEntities = Maps.<Entity, Integer>newHashMap();
 	private int duration = 600;
@@ -48,7 +48,7 @@ public class AreaEffectCloudEntity extends Entity {
 	private int durationOnUse;
 	private float radiusOnUse;
 	private float radiusGrowth;
-	private LivingEntity owner;
+	private LivingEntity field_5943;
 	private UUID ownerUuid;
 
 	public AreaEffectCloudEntity(EntityType<? extends AreaEffectCloudEntity> entityType, World world) {
@@ -65,15 +65,15 @@ public class AreaEffectCloudEntity extends Entity {
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(COLOR, 0);
-		this.getDataTracker().startTracking(RADIUS, 0.5F);
-		this.getDataTracker().startTracking(WAITING, false);
-		this.getDataTracker().startTracking(PARTICLE_ID, ParticleTypes.field_11226);
+		this.method_5841().startTracking(field_5936, 0);
+		this.method_5841().startTracking(field_5938, 0.5F);
+		this.method_5841().startTracking(field_5944, false);
+		this.method_5841().startTracking(field_5931, ParticleTypes.field_11226);
 	}
 
 	public void setRadius(float f) {
-		if (!this.world.isClient) {
-			this.getDataTracker().set(RADIUS, f);
+		if (!this.field_6002.isClient) {
+			this.method_5841().set(field_5938, f);
 		}
 	}
 
@@ -87,21 +87,21 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	public float getRadius() {
-		return this.getDataTracker().get(RADIUS);
+		return this.method_5841().get(field_5938);
 	}
 
-	public void setPotion(Potion potion) {
-		this.potion = potion;
+	public void method_5612(Potion potion) {
+		this.field_5933 = potion;
 		if (!this.customColor) {
 			this.updateColor();
 		}
 	}
 
 	private void updateColor() {
-		if (this.potion == Potions.field_8984 && this.effects.isEmpty()) {
-			this.getDataTracker().set(COLOR, 0);
+		if (this.field_5933 == Potions.field_8984 && this.effects.isEmpty()) {
+			this.method_5841().set(field_5936, 0);
 		} else {
-			this.getDataTracker().set(COLOR, PotionUtil.getColor(PotionUtil.getPotionEffects(this.potion, this.effects)));
+			this.method_5841().set(field_5936, PotionUtil.getColor(PotionUtil.getPotionEffects(this.field_5933, this.effects)));
 		}
 	}
 
@@ -113,28 +113,28 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	public int getColor() {
-		return this.getDataTracker().get(COLOR);
+		return this.method_5841().get(field_5936);
 	}
 
 	public void setColor(int i) {
 		this.customColor = true;
-		this.getDataTracker().set(COLOR, i);
+		this.method_5841().set(field_5936, i);
 	}
 
-	public ParticleParameters getParticleType() {
-		return this.getDataTracker().get(PARTICLE_ID);
+	public ParticleParameters method_5600() {
+		return this.method_5841().get(field_5931);
 	}
 
-	public void setParticleType(ParticleParameters particleParameters) {
-		this.getDataTracker().set(PARTICLE_ID, particleParameters);
+	public void method_5608(ParticleParameters particleParameters) {
+		this.method_5841().set(field_5931, particleParameters);
 	}
 
 	protected void setWaiting(boolean bl) {
-		this.getDataTracker().set(WAITING, bl);
+		this.method_5841().set(field_5944, bl);
 	}
 
 	public boolean method_5611() {
-		return this.getDataTracker().get(WAITING);
+		return this.method_5841().get(field_5944);
 	}
 
 	public int getDuration() {
@@ -150,8 +150,8 @@ public class AreaEffectCloudEntity extends Entity {
 		super.update();
 		boolean bl = this.method_5611();
 		float f = this.getRadius();
-		if (this.world.isClient) {
-			ParticleParameters particleParameters = this.getParticleType();
+		if (this.field_6002.isClient) {
+			ParticleParameters particleParameters = this.method_5600();
 			if (bl) {
 				if (this.random.nextBoolean()) {
 					for (int i = 0; i < 2; i++) {
@@ -159,13 +159,13 @@ public class AreaEffectCloudEntity extends Entity {
 						float h = MathHelper.sqrt(this.random.nextFloat()) * 0.2F;
 						float j = MathHelper.cos(g) * h;
 						float k = MathHelper.sin(g) * h;
-						if (particleParameters.getType() == ParticleTypes.field_11226) {
+						if (particleParameters.method_10295() == ParticleTypes.field_11226) {
 							int l = this.random.nextBoolean() ? 16777215 : this.getColor();
 							int m = l >> 16 & 0xFF;
 							int n = l >> 8 & 0xFF;
 							int o = l & 0xFF;
-							this.world
-								.addImportantParticle(
+							this.field_6002
+								.method_8494(
 									particleParameters,
 									this.x + (double)j,
 									this.y,
@@ -175,7 +175,7 @@ public class AreaEffectCloudEntity extends Entity {
 									(double)((float)o / 255.0F)
 								);
 						} else {
-							this.world.addImportantParticle(particleParameters, this.x + (double)j, this.y, this.z + (double)k, 0.0, 0.0, 0.0);
+							this.field_6002.method_8494(particleParameters, this.x + (double)j, this.y, this.z + (double)k, 0.0, 0.0, 0.0);
 						}
 					}
 				}
@@ -187,13 +187,13 @@ public class AreaEffectCloudEntity extends Entity {
 					float j = MathHelper.sqrt(this.random.nextFloat()) * f;
 					float k = MathHelper.cos(h) * j;
 					float r = MathHelper.sin(h) * j;
-					if (particleParameters.getType() == ParticleTypes.field_11226) {
+					if (particleParameters.method_10295() == ParticleTypes.field_11226) {
 						int m = this.getColor();
 						int n = m >> 16 & 0xFF;
 						int o = m >> 8 & 0xFF;
 						int s = m & 0xFF;
-						this.world
-							.addImportantParticle(
+						this.field_6002
+							.method_8494(
 								particleParameters,
 								this.x + (double)k,
 								this.y,
@@ -203,8 +203,8 @@ public class AreaEffectCloudEntity extends Entity {
 								(double)((float)s / 255.0F)
 							);
 					} else {
-						this.world
-							.addImportantParticle(
+						this.field_6002
+							.method_8494(
 								particleParameters,
 								this.x + (double)k,
 								this.y,
@@ -253,7 +253,7 @@ public class AreaEffectCloudEntity extends Entity {
 
 				List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
 
-				for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
+				for (StatusEffectInstance statusEffectInstance : this.field_5933.getEffects()) {
 					list.add(
 						new StatusEffectInstance(
 							statusEffectInstance.getEffectType(),
@@ -269,7 +269,7 @@ public class AreaEffectCloudEntity extends Entity {
 				if (list.isEmpty()) {
 					this.affectedEntities.clear();
 				} else {
-					List<LivingEntity> list2 = this.world.method_18467(LivingEntity.class, this.getBoundingBox());
+					List<LivingEntity> list2 = this.field_6002.method_18467(LivingEntity.class, this.method_5829());
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
 							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.method_6086()) {
@@ -281,7 +281,7 @@ public class AreaEffectCloudEntity extends Entity {
 
 									for (StatusEffectInstance statusEffectInstance2 : list) {
 										if (statusEffectInstance2.getEffectType().isInstant()) {
-											statusEffectInstance2.getEffectType().applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance2.getAmplifier(), 0.5);
+											statusEffectInstance2.getEffectType().method_5564(this, this.method_5601(), livingEntity, statusEffectInstance2.getAmplifier(), 0.5);
 										} else {
 											livingEntity.addPotionEffect(new StatusEffectInstance(statusEffectInstance2));
 										}
@@ -325,25 +325,25 @@ public class AreaEffectCloudEntity extends Entity {
 		this.waitTime = i;
 	}
 
-	public void setOwner(@Nullable LivingEntity livingEntity) {
-		this.owner = livingEntity;
+	public void method_5607(@Nullable LivingEntity livingEntity) {
+		this.field_5943 = livingEntity;
 		this.ownerUuid = livingEntity == null ? null : livingEntity.getUuid();
 	}
 
 	@Nullable
-	public LivingEntity getOwner() {
-		if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
-			Entity entity = ((ServerWorld)this.world).getEntity(this.ownerUuid);
+	public LivingEntity method_5601() {
+		if (this.field_5943 == null && this.ownerUuid != null && this.field_6002 instanceof ServerWorld) {
+			Entity entity = ((ServerWorld)this.field_6002).getEntity(this.ownerUuid);
 			if (entity instanceof LivingEntity) {
-				this.owner = (LivingEntity)entity;
+				this.field_5943 = (LivingEntity)entity;
 			}
 		}
 
-		return this.owner;
+		return this.field_5943;
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+	protected void method_5749(CompoundTag compoundTag) {
 		this.age = compoundTag.getInt("Age");
 		this.duration = compoundTag.getInt("Duration");
 		this.waitTime = compoundTag.getInt("WaitTime");
@@ -355,7 +355,7 @@ public class AreaEffectCloudEntity extends Entity {
 		this.ownerUuid = compoundTag.getUuid("OwnerUUID");
 		if (compoundTag.containsKey("Particle", 8)) {
 			try {
-				this.setParticleType(ParticleArgumentType.readParameters(new StringReader(compoundTag.getString("Particle"))));
+				this.method_5608(ParticleArgumentType.method_9418(new StringReader(compoundTag.getString("Particle"))));
 			} catch (CommandSyntaxException var5) {
 				LOGGER.warn("Couldn't load custom particle {}", compoundTag.getString("Particle"), var5);
 			}
@@ -366,15 +366,15 @@ public class AreaEffectCloudEntity extends Entity {
 		}
 
 		if (compoundTag.containsKey("Potion", 8)) {
-			this.setPotion(PotionUtil.getPotion(compoundTag));
+			this.method_5612(PotionUtil.method_8057(compoundTag));
 		}
 
 		if (compoundTag.containsKey("Effects", 9)) {
-			ListTag listTag = compoundTag.getList("Effects", 10);
+			ListTag listTag = compoundTag.method_10554("Effects", 10);
 			this.effects.clear();
 
 			for (int i = 0; i < listTag.size(); i++) {
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(listTag.getCompoundTag(i));
+				StatusEffectInstance statusEffectInstance = StatusEffectInstance.method_5583(listTag.getCompoundTag(i));
 				if (statusEffectInstance != null) {
 					this.setPotionEffect(statusEffectInstance);
 				}
@@ -383,7 +383,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+	protected void method_5652(CompoundTag compoundTag) {
 		compoundTag.putInt("Age", this.age);
 		compoundTag.putInt("Duration", this.duration);
 		compoundTag.putInt("WaitTime", this.waitTime);
@@ -392,7 +392,7 @@ public class AreaEffectCloudEntity extends Entity {
 		compoundTag.putFloat("RadiusOnUse", this.radiusOnUse);
 		compoundTag.putFloat("RadiusPerTick", this.radiusGrowth);
 		compoundTag.putFloat("Radius", this.getRadius());
-		compoundTag.putString("Particle", this.getParticleType().asString());
+		compoundTag.putString("Particle", this.method_5600().asString());
 		if (this.ownerUuid != null) {
 			compoundTag.putUuid("OwnerUUID", this.ownerUuid);
 		}
@@ -401,42 +401,42 @@ public class AreaEffectCloudEntity extends Entity {
 			compoundTag.putInt("Color", this.getColor());
 		}
 
-		if (this.potion != Potions.field_8984 && this.potion != null) {
-			compoundTag.putString("Potion", Registry.POTION.getId(this.potion).toString());
+		if (this.field_5933 != Potions.field_8984 && this.field_5933 != null) {
+			compoundTag.putString("Potion", Registry.POTION.method_10221(this.field_5933).toString());
 		}
 
 		if (!this.effects.isEmpty()) {
 			ListTag listTag = new ListTag();
 
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				listTag.add(statusEffectInstance.serialize(new CompoundTag()));
+				listTag.add(statusEffectInstance.method_5582(new CompoundTag()));
 			}
 
-			compoundTag.put("Effects", listTag);
+			compoundTag.method_10566("Effects", listTag);
 		}
 	}
 
 	@Override
-	public void onTrackedDataSet(TrackedData<?> trackedData) {
-		if (RADIUS.equals(trackedData)) {
+	public void method_5674(TrackedData<?> trackedData) {
+		if (field_5938.equals(trackedData)) {
 			this.refreshSize();
 		}
 
-		super.onTrackedDataSet(trackedData);
+		super.method_5674(trackedData);
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior() {
+	public PistonBehavior method_5657() {
 		return PistonBehavior.field_15975;
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<?> method_18002() {
 		return new EntitySpawnS2CPacket(this);
 	}
 
 	@Override
-	public EntitySize getSize(EntityPose entityPose) {
+	public EntitySize method_18377(EntityPose entityPose) {
 		return EntitySize.resizeable(this.getRadius() * 2.0F, 0.5F);
 	}
 }

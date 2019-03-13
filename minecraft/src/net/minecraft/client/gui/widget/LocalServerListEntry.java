@@ -12,12 +12,12 @@ import net.minecraft.util.SystemUtil;
 public class LocalServerListEntry extends ServerListWidget.Entry {
 	private final MultiplayerScreen gui;
 	protected final MinecraftClient client;
-	protected final LanServerEntry entry;
+	protected final LanServerEntry field_3070;
 	private long lastUpdateMillis;
 
 	protected LocalServerListEntry(MultiplayerScreen multiplayerScreen, LanServerEntry lanServerEntry) {
 		this.gui = multiplayerScreen;
-		this.entry = lanServerEntry;
+		this.field_3070 = lanServerEntry;
 		this.client = MinecraftClient.getInstance();
 	}
 
@@ -25,12 +25,12 @@ public class LocalServerListEntry extends ServerListWidget.Entry {
 	public void draw(int i, int j, int k, int l, boolean bl, float f) {
 		int m = this.getX();
 		int n = this.getY();
-		this.client.textRenderer.draw(I18n.translate("lanServer.title"), (float)(m + 32 + 3), (float)(n + 1), 16777215);
-		this.client.textRenderer.draw(this.entry.getMotd(), (float)(m + 32 + 3), (float)(n + 12), 8421504);
-		if (this.client.options.hideServerAddress) {
-			this.client.textRenderer.draw(I18n.translate("selectServer.hiddenAddress"), (float)(m + 32 + 3), (float)(n + 12 + 11), 3158064);
+		this.client.field_1772.draw(I18n.translate("lanServer.title"), (float)(m + 32 + 3), (float)(n + 1), 16777215);
+		this.client.field_1772.draw(this.field_3070.getMotd(), (float)(m + 32 + 3), (float)(n + 12), 8421504);
+		if (this.client.field_1690.hideServerAddress) {
+			this.client.field_1772.draw(I18n.translate("selectServer.hiddenAddress"), (float)(m + 32 + 3), (float)(n + 12 + 11), 3158064);
 		} else {
-			this.client.textRenderer.draw(this.entry.getAddressPort(), (float)(m + 32 + 3), (float)(n + 12 + 11), 3158064);
+			this.client.field_1772.draw(this.field_3070.getAddressPort(), (float)(m + 32 + 3), (float)(n + 12 + 11), 3158064);
 		}
 	}
 
@@ -45,7 +45,7 @@ public class LocalServerListEntry extends ServerListWidget.Entry {
 		return false;
 	}
 
-	public LanServerEntry getLanServerEntry() {
-		return this.entry;
+	public LanServerEntry method_2559() {
+		return this.field_3070;
 	}
 }

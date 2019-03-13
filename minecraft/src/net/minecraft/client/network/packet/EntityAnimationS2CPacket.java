@@ -33,7 +33,7 @@ public class EntityAnimationS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public void method_11268(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEntityAnimation(this);
+		clientPlayPacketListener.method_11160(this);
 	}
 
 	@Environment(EnvType.CLIENT)

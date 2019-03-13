@@ -15,16 +15,16 @@ public class DamagePredicate {
 	public static final DamagePredicate ANY = DamagePredicate.Builder.create().build();
 	private final NumberRange.Float dealt;
 	private final NumberRange.Float taken;
-	private final EntityPredicate sourceEntity;
+	private final EntityPredicate field_9521;
 	private final Boolean blocked;
-	private final DamageSourcePredicate type;
+	private final DamageSourcePredicate field_9525;
 
 	public DamagePredicate() {
 		this.dealt = NumberRange.Float.ANY;
 		this.taken = NumberRange.Float.ANY;
-		this.sourceEntity = EntityPredicate.ANY;
+		this.field_9521 = EntityPredicate.ANY;
 		this.blocked = null;
-		this.type = DamageSourcePredicate.EMPTY;
+		this.field_9525 = DamageSourcePredicate.EMPTY;
 	}
 
 	public DamagePredicate(
@@ -32,22 +32,22 @@ public class DamagePredicate {
 	) {
 		this.dealt = float_;
 		this.taken = float2;
-		this.sourceEntity = entityPredicate;
+		this.field_9521 = entityPredicate;
 		this.blocked = boolean_;
-		this.type = damageSourcePredicate;
+		this.field_9525 = damageSourcePredicate;
 	}
 
-	public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
+	public boolean method_8838(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
 		if (this == ANY) {
 			return true;
 		} else if (!this.dealt.matches(f)) {
 			return false;
 		} else if (!this.taken.matches(g)) {
 			return false;
-		} else if (!this.sourceEntity.test(serverPlayerEntity, damageSource.getAttacker())) {
+		} else if (!this.field_9521.method_8914(serverPlayerEntity, damageSource.method_5529())) {
 			return false;
 		} else {
-			return this.blocked != null && this.blocked != bl ? false : this.type.test(serverPlayerEntity, damageSource);
+			return this.blocked != null && this.blocked != bl ? false : this.field_9525.method_8847(serverPlayerEntity, damageSource);
 		}
 	}
 
@@ -72,8 +72,8 @@ public class DamagePredicate {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("dealt", this.dealt.serialize());
 			jsonObject.add("taken", this.taken.serialize());
-			jsonObject.add("source_entity", this.sourceEntity.serialize());
-			jsonObject.add("type", this.type.serialize());
+			jsonObject.add("source_entity", this.field_9521.serialize());
+			jsonObject.add("type", this.field_9525.serialize());
 			if (this.blocked != null) {
 				jsonObject.addProperty("blocked", this.blocked);
 			}
@@ -85,9 +85,9 @@ public class DamagePredicate {
 	public static class Builder {
 		private NumberRange.Float dealt = NumberRange.Float.ANY;
 		private NumberRange.Float taken = NumberRange.Float.ANY;
-		private EntityPredicate sourceEntity = EntityPredicate.ANY;
+		private EntityPredicate field_9528 = EntityPredicate.ANY;
 		private Boolean blocked;
-		private DamageSourcePredicate type = DamageSourcePredicate.EMPTY;
+		private DamageSourcePredicate field_9529 = DamageSourcePredicate.EMPTY;
 
 		public static DamagePredicate.Builder create() {
 			return new DamagePredicate.Builder();
@@ -98,13 +98,13 @@ public class DamagePredicate {
 			return this;
 		}
 
-		public DamagePredicate.Builder type(DamageSourcePredicate.Builder builder) {
-			this.type = builder.build();
+		public DamagePredicate.Builder method_8842(DamageSourcePredicate.Builder builder) {
+			this.field_9529 = builder.build();
 			return this;
 		}
 
 		public DamagePredicate build() {
-			return new DamagePredicate(this.dealt, this.taken, this.sourceEntity, this.blocked, this.type);
+			return new DamagePredicate(this.dealt, this.taken, this.field_9528, this.blocked, this.field_9529);
 		}
 	}
 }

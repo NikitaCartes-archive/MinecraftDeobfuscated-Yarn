@@ -11,11 +11,9 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.debug.DebugRenderer;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
@@ -28,12 +26,12 @@ public class class_871 implements DebugRenderer.DebugRenderer {
 	}
 
 	@Override
-	public void render(float f, long l) {
-		PlayerEntity playerEntity = this.field_4628.player;
-		double d = MathHelper.lerp((double)f, playerEntity.prevRenderX, playerEntity.x);
-		double e = MathHelper.lerp((double)f, playerEntity.prevRenderY, playerEntity.y);
-		double g = MathHelper.lerp((double)f, playerEntity.prevRenderZ, playerEntity.z);
-		BlockView blockView = this.field_4628.player.world;
+	public void render(long l) {
+		class_4184 lv = this.field_4628.field_1773.method_19418();
+		double d = lv.method_19326().x;
+		double e = lv.method_19326().y;
+		double f = lv.method_19326().z;
+		BlockView blockView = this.field_4628.field_1724.field_6002;
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
@@ -41,88 +39,88 @@ public class class_871 implements DebugRenderer.DebugRenderer {
 		GlStateManager.lineWidth(2.0F);
 		GlStateManager.disableTexture();
 		GlStateManager.depthMask(false);
-		BlockPos blockPos = new BlockPos(playerEntity);
+		BlockPos blockPos = new BlockPos(lv.method_19326());
 
 		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {
-			BlockState blockState = blockView.getBlockState(blockPos2);
+			BlockState blockState = blockView.method_8320(blockPos2);
 			if (blockState.getBlock() != Blocks.field_10124) {
-				VoxelShape voxelShape = blockState.getOutlineShape(blockView, blockPos2);
+				VoxelShape voxelShape = blockState.method_17770(blockView, blockPos2);
 
 				for (BoundingBox boundingBox : voxelShape.getBoundingBoxList()) {
-					BoundingBox boundingBox2 = boundingBox.offset(blockPos2).expand(0.002).offset(-d, -e, -g);
-					double h = boundingBox2.minX;
-					double i = boundingBox2.minY;
-					double j = boundingBox2.minZ;
-					double k = boundingBox2.maxX;
-					double m = boundingBox2.maxY;
-					double n = boundingBox2.maxZ;
-					float o = 1.0F;
+					BoundingBox boundingBox2 = boundingBox.method_996(blockPos2).expand(0.002).offset(-d, -e, -f);
+					double g = boundingBox2.minX;
+					double h = boundingBox2.minY;
+					double i = boundingBox2.minZ;
+					double j = boundingBox2.maxX;
+					double k = boundingBox2.maxY;
+					double m = boundingBox2.maxZ;
+					float n = 1.0F;
+					float o = 0.0F;
 					float p = 0.0F;
-					float q = 0.0F;
-					float r = 0.5F;
-					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.WEST)) {
+					float q = 0.5F;
+					if (Block.method_9501(blockState.method_11628(blockView, blockPos2), Direction.WEST)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(h, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(h, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(h, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(h, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
+						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH)) {
+					if (Block.method_9501(blockState.method_11628(blockView, blockPos2), Direction.SOUTH)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(h, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(h, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
+						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.EAST)) {
+					if (Block.method_9501(blockState.method_11628(blockView, blockPos2), Direction.EAST)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(k, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
+						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.NORTH)) {
+					if (Block.method_9501(blockState.method_11628(blockView, blockPos2), Direction.NORTH)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(k, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(h, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(h, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
+						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.DOWN)) {
+					if (Block.method_9501(blockState.method_11628(blockView, blockPos2), Direction.DOWN)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(h, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, i, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(h, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, i, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
+						bufferBuilder.vertex(g, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, h, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 
-					if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.UP)) {
+					if (Block.method_9501(blockState.method_11628(blockView, blockPos2), Direction.UP)) {
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-						bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-						bufferBuilder.vertex(h, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(h, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, m, j).color(1.0F, 0.0F, 0.0F, 0.5F).next();
-						bufferBuilder.vertex(k, m, n).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.method_1328(5, VertexFormats.field_1576);
+						bufferBuilder.vertex(g, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(g, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, i).color(1.0F, 0.0F, 0.0F, 0.5F).next();
+						bufferBuilder.vertex(j, k, m).color(1.0F, 0.0F, 0.0F, 0.5F).next();
 						tessellator.draw();
 					}
 				}

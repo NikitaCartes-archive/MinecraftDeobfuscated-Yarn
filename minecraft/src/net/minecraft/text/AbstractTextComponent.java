@@ -8,11 +8,11 @@ import java.util.stream.Stream;
 
 public abstract class AbstractTextComponent implements TextComponent {
 	protected final List<TextComponent> children = Lists.<TextComponent>newArrayList();
-	private Style style;
+	private Style field_11730;
 
 	@Override
 	public TextComponent append(TextComponent textComponent) {
-		textComponent.getStyle().setParent(this.getStyle());
+		textComponent.method_10866().setParent(this.method_10866());
 		this.children.add(textComponent);
 		return this;
 	}
@@ -23,27 +23,27 @@ public abstract class AbstractTextComponent implements TextComponent {
 	}
 
 	@Override
-	public TextComponent setStyle(Style style) {
-		this.style = style;
+	public TextComponent method_10862(Style style) {
+		this.field_11730 = style;
 
 		for (TextComponent textComponent : this.children) {
-			textComponent.getStyle().setParent(this.getStyle());
+			textComponent.method_10866().setParent(this.method_10866());
 		}
 
 		return this;
 	}
 
 	@Override
-	public Style getStyle() {
-		if (this.style == null) {
-			this.style = new Style();
+	public Style method_10866() {
+		if (this.field_11730 == null) {
+			this.field_11730 = new Style();
 
 			for (TextComponent textComponent : this.children) {
-				textComponent.getStyle().setParent(this.style);
+				textComponent.method_10866().setParent(this.field_11730);
 			}
 		}
 
-		return this.style;
+		return this.field_11730;
 	}
 
 	@Override
@@ -58,15 +58,15 @@ public abstract class AbstractTextComponent implements TextComponent {
 			return false;
 		} else {
 			AbstractTextComponent abstractTextComponent = (AbstractTextComponent)object;
-			return this.children.equals(abstractTextComponent.children) && this.getStyle().equals(abstractTextComponent.getStyle());
+			return this.children.equals(abstractTextComponent.children) && this.method_10866().equals(abstractTextComponent.method_10866());
 		}
 	}
 
 	public int hashCode() {
-		return Objects.hash(new Object[]{this.getStyle(), this.children});
+		return Objects.hash(new Object[]{this.method_10866(), this.children});
 	}
 
 	public String toString() {
-		return "BaseComponent{style=" + this.style + ", siblings=" + this.children + '}';
+		return "BaseComponent{style=" + this.field_11730 + ", siblings=" + this.children + '}';
 	}
 }

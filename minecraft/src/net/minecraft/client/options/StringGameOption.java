@@ -24,10 +24,10 @@ public class StringGameOption extends GameOption {
 	}
 
 	@Override
-	public ButtonWidget createOptionButton(GameOptions gameOptions, int i, int j, int k) {
+	public ButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k) {
 		return new OptionButtonWidget(i, j, k, 20, this, this.method_18501(gameOptions)) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				StringGameOption.this.method_18500(gameOptions, 1);
 				this.setText(StringGameOption.this.method_18501(gameOptions));
 			}

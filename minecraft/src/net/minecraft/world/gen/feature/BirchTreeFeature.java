@@ -10,8 +10,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
 
 public class BirchTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
-	private static final BlockState LOG = Blocks.field_10511.getDefaultState();
-	private static final BlockState LEAVES = Blocks.field_10539.getDefaultState();
+	private static final BlockState LOG = Blocks.field_10511.method_9564();
+	private static final BlockState LEAVES = Blocks.field_10539.method_9564();
 	private final boolean alwaysTall;
 
 	public BirchTreeFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function, boolean bl, boolean bl2) {
@@ -20,7 +20,7 @@ public class BirchTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 	}
 
 	@Override
-	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
+	public boolean method_12775(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
 		int i = random.nextInt(3) + 5;
 		if (this.alwaysTall) {
 			i += random.nextInt(7);
@@ -44,7 +44,7 @@ public class BirchTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 					for (int m = blockPos.getZ() - k; m <= blockPos.getZ() + k && bl; m++) {
 						if (j < 0 || j >= 256) {
 							bl = false;
-						} else if (!canTreeReplace(modifiableTestableWorld, mutable.set(l, j, m))) {
+						} else if (!method_16432(modifiableTestableWorld, mutable.set(l, j, m))) {
 							bl = false;
 						}
 					}
@@ -53,8 +53,8 @@ public class BirchTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 
 			if (!bl) {
 				return false;
-			} else if (isDirtOrGrass(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
-				this.setToDirt(modifiableTestableWorld, blockPos.down());
+			} else if (method_16433(modifiableTestableWorld, blockPos.down()) && blockPos.getY() < 256 - i - 1) {
+				this.method_16427(modifiableTestableWorld, blockPos.down());
 
 				for (int j = blockPos.getY() - 3 + i; j <= blockPos.getY() + i; j++) {
 					int kx = j - (blockPos.getY() + i);
@@ -67,8 +67,8 @@ public class BirchTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 							int p = o - blockPos.getZ();
 							if (Math.abs(mx) != n || Math.abs(p) != n || random.nextInt(2) != 0 && kx != 0) {
 								BlockPos blockPos2 = new BlockPos(l, j, o);
-								if (isAirOrLeaves(modifiableTestableWorld, blockPos2)) {
-									this.setBlockState(modifiableTestableWorld, blockPos2, LEAVES);
+								if (method_16420(modifiableTestableWorld, blockPos2)) {
+									this.method_13153(modifiableTestableWorld, blockPos2, LEAVES);
 								}
 							}
 						}
@@ -76,8 +76,8 @@ public class BirchTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 				}
 
 				for (int j = 0; j < i; j++) {
-					if (isAirOrLeaves(modifiableTestableWorld, blockPos.up(j))) {
-						this.setBlockState(set, modifiableTestableWorld, blockPos.up(j), LOG);
+					if (method_16420(modifiableTestableWorld, blockPos.up(j))) {
+						this.method_12773(set, modifiableTestableWorld, blockPos.up(j), LOG);
 					}
 				}
 

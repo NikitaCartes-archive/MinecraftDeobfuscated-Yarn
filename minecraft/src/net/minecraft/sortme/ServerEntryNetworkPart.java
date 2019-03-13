@@ -57,19 +57,19 @@ public class ServerEntryNetworkPart {
 		serverEntry.label = I18n.translate("multiplayer.status.pinging");
 		serverEntry.ping = -1L;
 		serverEntry.playerListSummary = null;
-		clientConnection.setPacketListener(
+		clientConnection.method_10763(
 			new ClientQueryPacketListener() {
 				private boolean field_3775;
 				private boolean field_3773;
 				private long field_3772;
 
 				@Override
-				public void onResponse(QueryResponseS2CPacket queryResponseS2CPacket) {
+				public void method_12667(QueryResponseS2CPacket queryResponseS2CPacket) {
 					if (this.field_3773) {
-						clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.unrequested"));
+						clientConnection.method_10747(new TranslatableTextComponent("multiplayer.status.unrequested"));
 					} else {
 						this.field_3773 = true;
-						ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
+						ServerMetadata serverMetadata = queryResponseS2CPacket.method_12672();
 						if (serverMetadata.getDescription() != null) {
 							serverEntry.label = serverMetadata.getDescription().getFormattedText();
 						} else {
@@ -132,21 +132,21 @@ public class ServerEntryNetworkPart {
 						}
 
 						this.field_3772 = SystemUtil.getMeasuringTimeMs();
-						clientConnection.sendPacket(new QueryPingC2SPacket(this.field_3772));
+						clientConnection.method_10743(new QueryPingC2SPacket(this.field_3772));
 						this.field_3775 = true;
 					}
 				}
 
 				@Override
-				public void onPong(QueryPongS2CPacket queryPongS2CPacket) {
+				public void method_12666(QueryPongS2CPacket queryPongS2CPacket) {
 					long l = this.field_3772;
 					long m = SystemUtil.getMeasuringTimeMs();
 					serverEntry.ping = m - l;
-					clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.finished"));
+					clientConnection.method_10747(new TranslatableTextComponent("multiplayer.status.finished"));
 				}
 
 				@Override
-				public void onDisconnected(TextComponent textComponent) {
+				public void method_10839(TextComponent textComponent) {
 					if (!this.field_3775) {
 						ServerEntryNetworkPart.LOGGER.error("Can't ping {}: {}", serverEntry.address, textComponent.getString());
 						serverEntry.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
@@ -158,8 +158,8 @@ public class ServerEntryNetworkPart {
 		);
 
 		try {
-			clientConnection.sendPacket(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.QUERY));
-			clientConnection.sendPacket(new QueryRequestC2SPacket());
+			clientConnection.method_10743(new HandshakeC2SPacket(serverAddress.getAddress(), serverAddress.getPort(), NetworkState.QUERY));
+			clientConnection.method_10743(new QueryRequestC2SPacket());
 		} catch (Throwable var5) {
 			LOGGER.error(var5);
 		}
@@ -167,7 +167,7 @@ public class ServerEntryNetworkPart {
 
 	private void ping(ServerEntry serverEntry) {
 		final ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
-		new Bootstrap().group(ClientConnection.CLIENT_IO_GROUP.get()).handler(new ChannelInitializer<Channel>() {
+		new Bootstrap().group(ClientConnection.field_11650.get()).handler(new ChannelInitializer<Channel>() {
 			@Override
 			protected void initChannel(Channel channel) throws Exception {
 				try {
@@ -262,7 +262,7 @@ public class ServerEntryNetworkPart {
 				ClientConnection clientConnection = (ClientConnection)iterator.next();
 				if (clientConnection.isOpen()) {
 					iterator.remove();
-					clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.cancelled"));
+					clientConnection.method_10747(new TranslatableTextComponent("multiplayer.status.cancelled"));
 				}
 			}
 		}

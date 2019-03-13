@@ -101,7 +101,7 @@ public class ServerNetworkIO {
 									ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVER);
 									ServerNetworkIO.this.field_14107.add(clientConnection);
 									channel.pipeline().addLast("packet_handler", clientConnection);
-									clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIO.this.server, clientConnection));
+									clientConnection.method_10763(new ServerHandshakeNetworkHandler(ServerNetworkIO.this.server, clientConnection));
 								}
 							}
 						)
@@ -121,7 +121,7 @@ public class ServerNetworkIO {
 				@Override
 				protected void initChannel(Channel channel) throws Exception {
 					ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVER);
-					clientConnection.setPacketListener(new IntegratedServerHandshakeNetworkHandler(ServerNetworkIO.this.server, clientConnection));
+					clientConnection.method_10763(new IntegratedServerHandshakeNetworkHandler(ServerNetworkIO.this.server, clientConnection));
 					ServerNetworkIO.this.field_14107.add(clientConnection);
 					channel.pipeline().addLast("packet_handler", clientConnection);
 				}
@@ -157,14 +157,14 @@ public class ServerNetworkIO {
 						} catch (Exception var8) {
 							if (clientConnection.isLocal()) {
 								CrashReport crashReport = CrashReport.create(var8, "Ticking memory connection");
-								CrashReportSection crashReportSection = crashReport.addElement("Ticking connection");
-								crashReportSection.add("Connection", clientConnection::toString);
+								CrashReportSection crashReportSection = crashReport.method_562("Ticking connection");
+								crashReportSection.method_577("Connection", clientConnection::toString);
 								throw new CrashException(crashReport);
 							}
 
 							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddress(), var8);
 							TextComponent textComponent = new StringTextComponent("Internal server error");
-							clientConnection.sendPacket(new DisconnectS2CPacket(textComponent), future -> clientConnection.disconnect(textComponent));
+							clientConnection.method_10752(new DisconnectS2CPacket(textComponent), future -> clientConnection.method_10747(textComponent));
 							clientConnection.disableAutoRead();
 						}
 					} else {

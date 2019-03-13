@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 import net.minecraft.class_1407;
@@ -24,18 +25,20 @@ public class FollowMobGoal extends Goal {
 		this.field_6432 = mobEntity;
 		this.field_6436 = mobEntity2 -> mobEntity2 != null && mobEntity.getClass() != mobEntity2.getClass();
 		this.field_6430 = d;
-		this.field_6434 = mobEntity.getNavigation();
+		this.field_6434 = mobEntity.method_5942();
 		this.field_6438 = f;
 		this.field_6435 = g;
-		this.setControlBits(3);
-		if (!(mobEntity.getNavigation() instanceof EntityMobNavigation) && !(mobEntity.getNavigation() instanceof class_1407)) {
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		if (!(mobEntity.method_5942() instanceof EntityMobNavigation) && !(mobEntity.method_5942() instanceof class_1407)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowMobGoal");
 		}
 	}
 
 	@Override
 	public boolean canStart() {
-		List<MobEntity> list = this.field_6432.world.method_8390(MobEntity.class, this.field_6432.getBoundingBox().expand((double)this.field_6435), this.field_6436);
+		List<MobEntity> list = this.field_6432
+			.field_6002
+			.method_8390(MobEntity.class, this.field_6432.method_5829().expand((double)this.field_6435), this.field_6436);
 		if (!list.isEmpty()) {
 			for (MobEntity mobEntity : list) {
 				if (!mobEntity.isInvisible()) {
@@ -58,21 +61,21 @@ public class FollowMobGoal extends Goal {
 	@Override
 	public void start() {
 		this.field_6431 = 0;
-		this.field_6437 = this.field_6432.getPathNodeTypeWeight(PathNodeType.field_18);
-		this.field_6432.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
+		this.field_6437 = this.field_6432.method_5944(PathNodeType.field_18);
+		this.field_6432.method_5941(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override
 	public void onRemove() {
 		this.field_6433 = null;
 		this.field_6434.stop();
-		this.field_6432.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6437);
+		this.field_6432.method_5941(PathNodeType.field_18, this.field_6437);
 	}
 
 	@Override
 	public void tick() {
 		if (this.field_6433 != null && !this.field_6432.isLeashed()) {
-			this.field_6432.getLookControl().lookAt(this.field_6433, 10.0F, (float)this.field_6432.method_5978());
+			this.field_6432.method_5988().lookAt(this.field_6433, 10.0F, (float)this.field_6432.method_5978());
 			if (--this.field_6431 <= 0) {
 				this.field_6431 = 10;
 				double d = this.field_6432.x - this.field_6433.x;
@@ -83,7 +86,7 @@ public class FollowMobGoal extends Goal {
 					this.field_6434.startMovingTo(this.field_6433, this.field_6430);
 				} else {
 					this.field_6434.stop();
-					LookControl lookControl = this.field_6433.getLookControl();
+					LookControl lookControl = this.field_6433.method_5988();
 					if (g <= (double)this.field_6438
 						|| lookControl.getLookX() == this.field_6432.x && lookControl.getLookY() == this.field_6432.y && lookControl.getLookZ() == this.field_6432.z) {
 						double h = this.field_6433.x - this.field_6432.x;

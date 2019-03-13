@@ -23,22 +23,22 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	public void onHandshake(HandshakeC2SPacket handshakeC2SPacket) {
 		switch (handshakeC2SPacket.getIntendedState()) {
 			case LOGIN:
-				this.client.setState(NetworkState.LOGIN);
+				this.client.method_10750(NetworkState.LOGIN);
 				if (handshakeC2SPacket.getProtocolVersion() > SharedConstants.getGameVersion().getProtocolVersion()) {
 					TextComponent textComponent = new TranslatableTextComponent("multiplayer.disconnect.outdated_server", SharedConstants.getGameVersion().getName());
-					this.client.sendPacket(new LoginDisconnectS2CPacket(textComponent));
-					this.client.disconnect(textComponent);
+					this.client.method_10743(new LoginDisconnectS2CPacket(textComponent));
+					this.client.method_10747(textComponent);
 				} else if (handshakeC2SPacket.getProtocolVersion() < SharedConstants.getGameVersion().getProtocolVersion()) {
 					TextComponent textComponent = new TranslatableTextComponent("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
-					this.client.sendPacket(new LoginDisconnectS2CPacket(textComponent));
-					this.client.disconnect(textComponent);
+					this.client.method_10743(new LoginDisconnectS2CPacket(textComponent));
+					this.client.method_10747(textComponent);
 				} else {
-					this.client.setPacketListener(new ServerLoginNetworkHandler(this.server, this.client));
+					this.client.method_10763(new ServerLoginNetworkHandler(this.server, this.client));
 				}
 				break;
 			case QUERY:
-				this.client.setState(NetworkState.QUERY);
-				this.client.setPacketListener(new ServerQueryNetworkHandler(this.server, this.client));
+				this.client.method_10750(NetworkState.QUERY);
+				this.client.method_10763(new ServerQueryNetworkHandler(this.server, this.client));
 				break;
 			default:
 				throw new UnsupportedOperationException("Invalid intention " + handshakeC2SPacket.getIntendedState());
@@ -46,6 +46,6 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 	}
 
 	@Override
-	public void onDisconnected(TextComponent textComponent) {
+	public void method_10839(TextComponent textComponent) {
 	}
 }

@@ -19,7 +19,7 @@ public class NbtCompoundTagArgumentType implements ArgumentType<CompoundTag> {
 		return new NbtCompoundTagArgumentType();
 	}
 
-	public static <S> CompoundTag getCompoundArgument(CommandContext<S> commandContext, String string) {
+	public static <S> CompoundTag method_9285(CommandContext<S> commandContext, String string) {
 		return commandContext.getArgument(string, CompoundTag.class);
 	}
 

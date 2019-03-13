@@ -30,12 +30,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
 public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("placed_block");
+	private static final Identifier field_9724 = new Identifier("placed_block");
 	private final Map<PlayerAdvancementTracker, PlacedBlockCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, PlacedBlockCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9724;
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.addCondition(conditionsContainer);
+		handler.method_9090(conditionsContainer);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 	) {
 		PlacedBlockCriterion.Handler handler = (PlacedBlockCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
+			handler.method_9093(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -73,7 +73,7 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 		Block block = null;
 		if (jsonObject.has("block")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
-			block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
+			block = (Block)Registry.BLOCK.method_17966(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown block type '" + identifier + "'"));
 		}
 
 		Map<Property<?>, Object> map = null;
@@ -82,19 +82,19 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 				throw new JsonSyntaxException("Can't define block state without a specific block type");
 			}
 
-			StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+			StateFactory<Block, BlockState> stateFactory = block.method_9595();
 
 			for (Entry<String, JsonElement> entry : JsonHelper.getObject(jsonObject, "state").entrySet()) {
-				Property<?> property = stateFactory.getProperty((String)entry.getKey());
+				Property<?> property = stateFactory.method_11663((String)entry.getKey());
 				if (property == null) {
-					throw new JsonSyntaxException("Unknown block state property '" + (String)entry.getKey() + "' for block '" + Registry.BLOCK.getId(block) + "'");
+					throw new JsonSyntaxException("Unknown block state property '" + (String)entry.getKey() + "' for block '" + Registry.BLOCK.method_10221(block) + "'");
 				}
 
 				String string = JsonHelper.asString((JsonElement)entry.getValue(), (String)entry.getKey());
 				Optional<?> optional = property.getValue(string);
 				if (!optional.isPresent()) {
 					throw new JsonSyntaxException(
-						"Invalid block state value '" + string + "' for property '" + (String)entry.getKey() + "' on block '" + Registry.BLOCK.getId(block) + "'"
+						"Invalid block state value '" + string + "' for property '" + (String)entry.getKey() + "' on block '" + Registry.BLOCK.method_10221(block) + "'"
 					);
 				}
 
@@ -111,11 +111,11 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 		return new PlacedBlockCriterion.Conditions(block, map, locationPredicate, itemPredicate);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
-		BlockState blockState = serverPlayerEntity.world.getBlockState(blockPos);
+	public void method_9087(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos, ItemStack itemStack) {
+		BlockState blockState = serverPlayerEntity.field_6002.method_8320(blockPos);
 		PlacedBlockCriterion.Handler handler = (PlacedBlockCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.handle(blockState, blockPos, serverPlayerEntity.getServerWorld(), itemStack);
+			handler.method_9092(blockState, blockPos, serverPlayerEntity.getServerWorld(), itemStack);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 		private final ItemPredicate item;
 
 		public Conditions(@Nullable Block block, @Nullable Map<Property<?>, Object> map, LocationPredicate locationPredicate, ItemPredicate itemPredicate) {
-			super(PlacedBlockCriterion.ID);
+			super(PlacedBlockCriterion.field_9724);
 			this.block = block;
 			this.state = map;
 			this.location = locationPredicate;
@@ -137,19 +137,19 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 			return new PlacedBlockCriterion.Conditions(block, null, LocationPredicate.ANY, ItemPredicate.ANY);
 		}
 
-		public boolean matches(BlockState blockState, BlockPos blockPos, ServerWorld serverWorld, ItemStack itemStack) {
+		public boolean method_9094(BlockState blockState, BlockPos blockPos, ServerWorld serverWorld, ItemStack itemStack) {
 			if (this.block != null && blockState.getBlock() != this.block) {
 				return false;
 			} else {
 				if (this.state != null) {
 					for (Entry<Property<?>, Object> entry : this.state.entrySet()) {
-						if (blockState.get((Property)entry.getKey()) != entry.getValue()) {
+						if (blockState.method_11654((Property)entry.getKey()) != entry.getValue()) {
 							return false;
 						}
 					}
 				}
 
-				return !this.location.test(serverWorld, (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ()) ? false : this.item.test(itemStack);
+				return !this.location.method_9020(serverWorld, (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ()) ? false : this.item.test(itemStack);
 			}
 		}
 
@@ -157,7 +157,7 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			if (this.block != null) {
-				jsonObject.addProperty("block", Registry.BLOCK.getId(this.block).toString());
+				jsonObject.addProperty("block", Registry.BLOCK.method_10221(this.block).toString());
 			}
 
 			if (this.state != null) {
@@ -177,30 +177,30 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker manager;
+		private final PlayerAdvancementTracker field_9727;
 		private final Set<Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+			this.field_9727 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void addCondition(Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions> conditionsContainer) {
+		public void method_9090(Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void removeCondition(Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions> conditionsContainer) {
+		public void method_9093(Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void handle(BlockState blockState, BlockPos blockPos, ServerWorld serverWorld, ItemStack itemStack) {
+		public void method_9092(BlockState blockState, BlockPos blockPos, ServerWorld serverWorld, ItemStack itemStack) {
 			List<Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(blockState, blockPos, serverWorld, itemStack)) {
+				if (conditionsContainer.method_797().method_9094(blockState, blockPos, serverWorld, itemStack)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions>>newArrayList();
 					}
@@ -211,7 +211,7 @@ public class PlacedBlockCriterion implements Criterion<PlacedBlockCriterion.Cond
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<PlacedBlockCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9727);
 				}
 			}
 		}

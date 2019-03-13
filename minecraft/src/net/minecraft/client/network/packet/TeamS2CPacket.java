@@ -33,13 +33,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.teamName = scoreboardTeam.getName();
 		this.mode = i;
 		if (i == 0 || i == 2) {
-			this.field_12603 = scoreboardTeam.getDisplayName();
+			this.field_12603 = scoreboardTeam.method_1140();
 			this.flags = scoreboardTeam.getFriendlyFlagsBitwise();
 			this.nameTagVisibilityRule = scoreboardTeam.getNameTagVisibilityRule().field_1445;
 			this.collisionRule = scoreboardTeam.getCollisionRule().field_1436;
 			this.field_12598 = scoreboardTeam.getColor();
-			this.field_12601 = scoreboardTeam.getPrefix();
-			this.field_12597 = scoreboardTeam.getSuffix();
+			this.field_12601 = scoreboardTeam.method_1144();
+			this.field_12597 = scoreboardTeam.method_1136();
 		}
 
 		if (i == 0) {
@@ -64,13 +64,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.teamName = packetByteBuf.readString(16);
 		this.mode = packetByteBuf.readByte();
 		if (this.mode == 0 || this.mode == 2) {
-			this.field_12603 = packetByteBuf.readTextComponent();
+			this.field_12603 = packetByteBuf.method_10808();
 			this.flags = packetByteBuf.readByte();
 			this.nameTagVisibilityRule = packetByteBuf.readString(40);
 			this.collisionRule = packetByteBuf.readString(40);
 			this.field_12598 = packetByteBuf.readEnumConstant(TextFormat.class);
-			this.field_12601 = packetByteBuf.readTextComponent();
-			this.field_12597 = packetByteBuf.readTextComponent();
+			this.field_12601 = packetByteBuf.method_10808();
+			this.field_12597 = packetByteBuf.method_10808();
 		}
 
 		if (this.mode == 0 || this.mode == 3 || this.mode == 4) {
@@ -87,13 +87,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeString(this.teamName);
 		packetByteBuf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
-			packetByteBuf.writeTextComponent(this.field_12603);
+			packetByteBuf.method_10805(this.field_12603);
 			packetByteBuf.writeByte(this.flags);
 			packetByteBuf.writeString(this.nameTagVisibilityRule);
 			packetByteBuf.writeString(this.collisionRule);
 			packetByteBuf.writeEnumConstant(this.field_12598);
-			packetByteBuf.writeTextComponent(this.field_12601);
-			packetByteBuf.writeTextComponent(this.field_12597);
+			packetByteBuf.method_10805(this.field_12601);
+			packetByteBuf.method_10805(this.field_12597);
 		}
 
 		if (this.mode == 0 || this.mode == 3 || this.mode == 4) {
@@ -106,7 +106,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11860(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onTeam(this);
+		clientPlayPacketListener.method_11099(this);
 	}
 
 	@Environment(EnvType.CLIENT)

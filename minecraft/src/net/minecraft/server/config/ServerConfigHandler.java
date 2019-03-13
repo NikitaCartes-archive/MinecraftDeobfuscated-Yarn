@@ -77,7 +77,7 @@ public class ServerConfigHandler {
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 					@Override
 					public void onProfileLookupSucceeded(GameProfile gameProfile) {
-						minecraftServer.getUserCache().add(gameProfile);
+						minecraftServer.method_3793().add(gameProfile);
 						String[] strings = (String[])map.get(gameProfile.getName().toLowerCase(Locale.ROOT));
 						if (strings == null) {
 							ServerConfigHandler.LOGGER.warn("Could not convert user banlist entry for {}", gameProfile.getName());
@@ -167,7 +167,7 @@ public class ServerConfigHandler {
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 					@Override
 					public void onProfileLookupSucceeded(GameProfile gameProfile) {
-						minecraftServer.getUserCache().add(gameProfile);
+						minecraftServer.method_3793().add(gameProfile);
 						operatorList.add(new OperatorEntry(gameProfile, minecraftServer.getOpPermissionLevel(), false));
 					}
 
@@ -211,7 +211,7 @@ public class ServerConfigHandler {
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 					@Override
 					public void onProfileLookupSucceeded(GameProfile gameProfile) {
-						minecraftServer.getUserCache().add(gameProfile);
+						minecraftServer.method_3793().add(gameProfile);
 						whitelistList.add(new WhitelistEntry(gameProfile));
 					}
 
@@ -241,7 +241,7 @@ public class ServerConfigHandler {
 
 	public static String getPlayerUuidByName(MinecraftServer minecraftServer, String string) {
 		if (!ChatUtil.isEmpty(string) && string.length() <= 16) {
-			GameProfile gameProfile = minecraftServer.getUserCache().findByName(string);
+			GameProfile gameProfile = minecraftServer.method_3793().findByName(string);
 			if (gameProfile != null && gameProfile.getId() != null) {
 				return gameProfile.getId().toString();
 			} else if (!minecraftServer.isSinglePlayer() && minecraftServer.isOnlineMode()) {
@@ -249,7 +249,7 @@ public class ServerConfigHandler {
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 					@Override
 					public void onProfileLookupSucceeded(GameProfile gameProfile) {
-						minecraftServer.getUserCache().add(gameProfile);
+						minecraftServer.method_3793().add(gameProfile);
 						list.add(gameProfile);
 					}
 
@@ -291,7 +291,7 @@ public class ServerConfigHandler {
 				ProfileLookupCallback profileLookupCallback = new ProfileLookupCallback() {
 					@Override
 					public void onProfileLookupSucceeded(GameProfile gameProfile) {
-						minecraftDedicatedServer.getUserCache().add(gameProfile);
+						minecraftDedicatedServer.method_3793().add(gameProfile);
 						UUID uUID = gameProfile.getId();
 						if (uUID == null) {
 							throw new ServerConfigHandler.ServerConfigException("Missing UUID for user profile " + gameProfile.getName());

@@ -38,7 +38,7 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 	}
 
 	public void method_11823(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEquipmentUpdate(this);
+		clientPlayPacketListener.method_11151(this);
 	}
 
 	@Environment(EnvType.CLIENT)

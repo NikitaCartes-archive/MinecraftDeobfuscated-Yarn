@@ -22,7 +22,7 @@ public class KilledByPlayerLootCondition implements LootCondition {
 	}
 
 	public boolean method_938(LootContext lootContext) {
-		return lootContext.hasParameter(LootContextParameters.field_1233);
+		return lootContext.method_300(LootContextParameters.field_1233);
 	}
 
 	public static LootCondition.Builder method_939() {

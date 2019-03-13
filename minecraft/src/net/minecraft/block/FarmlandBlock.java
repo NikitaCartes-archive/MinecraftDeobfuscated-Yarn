@@ -19,36 +19,34 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class FarmlandBlock extends Block {
-	public static final IntegerProperty MOISTURE = Properties.MOISTURE;
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
+	public static final IntegerProperty field_11009 = Properties.field_12510;
+	protected static final VoxelShape field_11010 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 15.0, 16.0);
 
 	protected FarmlandBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(MOISTURE, Integer.valueOf(0)));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11009, Integer.valueOf(0)));
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (direction == Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		if (direction == Direction.UP && !blockState.method_11591(iWorld, blockPos)) {
+			iWorld.method_8397().method_8676(blockPos, this, 1);
 		}
 
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
-		return !blockState2.getMaterial().method_15799() || blockState2.getBlock() instanceof FenceGateBlock;
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		BlockState blockState2 = viewableWorld.method_8320(blockPos.up());
+		return !blockState2.method_11620().method_15799() || blockState2.getBlock() instanceof FenceGateBlock;
 	}
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return !this.getDefaultState().canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
-			? Blocks.field_10566.getDefaultState()
-			: super.getPlacementState(itemPlacementContext);
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return !this.method_9564().method_11591(itemPlacementContext.method_8045(), itemPlacementContext.method_8037())
+			? Blocks.field_10566.method_9564()
+			: super.method_9605(itemPlacementContext);
 	}
 
 	@Override
@@ -57,53 +55,53 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return SHAPE;
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return field_11010;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!blockState.canPlaceAt(world, blockPos)) {
-			setToDirt(blockState, world, blockPos);
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!blockState.method_11591(world, blockPos)) {
+			method_10125(blockState, world, blockPos);
 		} else {
-			int i = (Integer)blockState.get(MOISTURE);
-			if (!method_10126(world, blockPos) && !world.hasRain(blockPos.up())) {
+			int i = (Integer)blockState.method_11654(field_11009);
+			if (!method_10126(world, blockPos) && !world.method_8520(blockPos.up())) {
 				if (i > 0) {
-					world.setBlockState(blockPos, blockState.with(MOISTURE, Integer.valueOf(i - 1)), 2);
-				} else if (!hasCrop(world, blockPos)) {
-					setToDirt(blockState, world, blockPos);
+					world.method_8652(blockPos, blockState.method_11657(field_11009, Integer.valueOf(i - 1)), 2);
+				} else if (!method_10124(world, blockPos)) {
+					method_10125(blockState, world, blockPos);
 				}
 			} else if (i < 7) {
-				world.setBlockState(blockPos, blockState.with(MOISTURE, Integer.valueOf(7)), 2);
+				world.method_8652(blockPos, blockState.method_11657(field_11009, Integer.valueOf(7)), 2);
 			}
 		}
 	}
 
 	@Override
-	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
+	public void method_9554(World world, BlockPos blockPos, Entity entity, float f) {
 		if (!world.isClient
 			&& world.random.nextFloat() < f - 0.5F
 			&& entity instanceof LivingEntity
 			&& (entity instanceof PlayerEntity || world.getGameRules().getBoolean("mobGriefing"))
 			&& entity.getWidth() * entity.getWidth() * entity.getHeight() > 0.512F) {
-			setToDirt(world.getBlockState(blockPos), world, blockPos);
+			method_10125(world.method_8320(blockPos), world, blockPos);
 		}
 
-		super.onLandedUpon(world, blockPos, entity, f);
+		super.method_9554(world, blockPos, entity, f);
 	}
 
-	public static void setToDirt(BlockState blockState, World world, BlockPos blockPos) {
-		world.setBlockState(blockPos, pushEntitiesUpBeforeBlockChange(blockState, Blocks.field_10566.getDefaultState(), world, blockPos));
+	public static void method_10125(BlockState blockState, World world, BlockPos blockPos) {
+		world.method_8501(blockPos, method_9582(blockState, Blocks.field_10566.method_9564(), world, blockPos));
 	}
 
-	private static boolean hasCrop(BlockView blockView, BlockPos blockPos) {
-		Block block = blockView.getBlockState(blockPos.up()).getBlock();
+	private static boolean method_10124(BlockView blockView, BlockPos blockPos) {
+		Block block = blockView.method_8320(blockPos.up()).getBlock();
 		return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
 	}
 
 	private static boolean method_10126(ViewableWorld viewableWorld, BlockPos blockPos) {
 		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
-			if (viewableWorld.getFluidState(blockPos2).matches(FluidTags.field_15517)) {
+			if (viewableWorld.method_8316(blockPos2).method_15767(FluidTags.field_15517)) {
 				return true;
 			}
 		}
@@ -112,12 +110,12 @@ public class FarmlandBlock extends Block {
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(MOISTURE);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_11009);
 	}
 
 	@Override
-	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

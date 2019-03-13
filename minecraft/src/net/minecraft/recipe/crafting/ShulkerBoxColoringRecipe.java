@@ -23,7 +23,7 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 		int j = 0;
 
 		for (int k = 0; k < craftingInventory.getInvSize(); k++) {
-			ItemStack itemStack = craftingInventory.getInvStack(k);
+			ItemStack itemStack = craftingInventory.method_5438(k);
 			if (!itemStack.isEmpty()) {
 				if (Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock) {
 					i++;
@@ -49,7 +49,7 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 		DyeItem dyeItem = (DyeItem)Items.field_8446;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(i);
+			ItemStack itemStack2 = craftingInventory.method_5438(i);
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();
 				if (Block.getBlockFromItem(item) instanceof ShulkerBoxBlock) {
@@ -62,7 +62,7 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 
 		ItemStack itemStack3 = ShulkerBoxBlock.getItemStack(dyeItem.getColor());
 		if (itemStack.hasTag()) {
-			itemStack3.setTag(itemStack.getTag().method_10553());
+			itemStack3.method_7980(itemStack.method_7969().method_10553());
 		}
 
 		return itemStack3;
@@ -75,7 +75,7 @@ public class ShulkerBoxColoringRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.SHULKER_BOX;
+	public RecipeSerializer<?> method_8119() {
+		return RecipeSerializer.field_9041;
 	}
 }

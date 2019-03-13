@@ -46,7 +46,7 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 	public static final int FILE_EXTENSION_LENGTH = ".json".length();
 	private boolean errored;
 
-	private Map<Identifier, SimpleAdvancement.Builder> scanAdvancements(ResourceManager resourceManager) {
+	private Map<Identifier, SimpleAdvancement.Builder> method_12894(ResourceManager resourceManager) {
 		Map<Identifier, SimpleAdvancement.Builder> map = Maps.<Identifier, SimpleAdvancement.Builder>newHashMap();
 
 		for (Identifier identifier : resourceManager.findResources("advancements", stringx -> stringx.endsWith(".json"))) {
@@ -96,7 +96,7 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 
 	@Nullable
 	public SimpleAdvancement get(Identifier identifier) {
-		return MANAGER.get(identifier);
+		return MANAGER.method_716(identifier);
 	}
 
 	public Collection<SimpleAdvancement> getAdvancements() {
@@ -107,12 +107,12 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 	public void apply(ResourceManager resourceManager) {
 		this.errored = false;
 		MANAGER.clear();
-		Map<Identifier, SimpleAdvancement.Builder> map = this.scanAdvancements(resourceManager);
+		Map<Identifier, SimpleAdvancement.Builder> map = this.method_12894(resourceManager);
 		MANAGER.load(map);
 
 		for (SimpleAdvancement simpleAdvancement : MANAGER.getRoots()) {
-			if (simpleAdvancement.getDisplay() != null) {
-				AdvancementPosition.arrangeForRoot(simpleAdvancement);
+			if (simpleAdvancement.method_686() != null) {
+				AdvancementPosition.method_852(simpleAdvancement);
 			}
 		}
 	}

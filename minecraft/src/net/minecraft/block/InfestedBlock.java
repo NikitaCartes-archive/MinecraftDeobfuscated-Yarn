@@ -24,22 +24,22 @@ public class InfestedBlock extends Block {
 		return this.regularBlock;
 	}
 
-	public static boolean hasRegularBlock(BlockState blockState) {
+	public static boolean method_10269(BlockState blockState) {
 		return INFESTED_TO_REGULAR.containsKey(blockState.getBlock());
 	}
 
 	@Override
-	public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
-		super.onStacksDropped(blockState, world, blockPos, itemStack);
+	public void method_9565(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
+		super.method_9565(blockState, world, blockPos, itemStack);
 		if (!world.isClient && world.getGameRules().getBoolean("doTileDrops") && EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
-			SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
+			SilverfishEntity silverfishEntity = EntityType.SILVERFISH.method_5883(world);
 			silverfishEntity.setPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(silverfishEntity);
 			silverfishEntity.method_5990();
 		}
 	}
 
-	public static BlockState getRegularBlock(Block block) {
-		return ((Block)INFESTED_TO_REGULAR.get(block)).getDefaultState();
+	public static BlockState method_10270(Block block) {
+		return ((Block)INFESTED_TO_REGULAR.get(block)).method_9564();
 	}
 }

@@ -18,31 +18,31 @@ import net.minecraft.world.loot.context.LootContextType;
 import net.minecraft.world.loot.function.LootFunction;
 
 public class LootTableEntry extends LeafEntry {
-	private final Identifier id;
+	private final Identifier field_993;
 
 	private LootTableEntry(Identifier identifier, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
 		super(i, j, lootConditions, lootFunctions);
-		this.id = identifier;
+		this.field_993 = identifier;
 	}
 
 	@Override
 	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-		LootSupplier lootSupplier = lootContext.getLootManager().getSupplier(this.id);
+		LootSupplier lootSupplier = lootContext.method_301().method_367(this.field_993);
 		lootSupplier.drop(lootContext, consumer);
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		if (set.contains(this.id)) {
-			lootTableReporter.report("Table " + this.id + " is recursively called");
+	public void method_415(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		if (set.contains(this.field_993)) {
+			lootTableReporter.report("Table " + this.field_993 + " is recursively called");
 		} else {
-			super.check(lootTableReporter, function, set, lootContextType);
-			LootSupplier lootSupplier = (LootSupplier)function.apply(this.id);
+			super.method_415(lootTableReporter, function, set, lootContextType);
+			LootSupplier lootSupplier = (LootSupplier)function.apply(this.field_993);
 			if (lootSupplier == null) {
-				lootTableReporter.report("Unknown loot table called " + this.id);
+				lootTableReporter.report("Unknown loot table called " + this.field_993);
 			} else {
-				Set<Identifier> set2 = ImmutableSet.<Identifier>builder().addAll(set).add(this.id).build();
-				lootSupplier.check(lootTableReporter.makeChild("->{" + this.id + "}"), function, set2, lootContextType);
+				Set<Identifier> set2 = ImmutableSet.<Identifier>builder().addAll(set).add(this.field_993).build();
+				lootSupplier.method_330(lootTableReporter.makeChild("->{" + this.field_993 + "}"), function, set2, lootContextType);
 			}
 		}
 	}
@@ -58,7 +58,7 @@ public class LootTableEntry extends LeafEntry {
 
 		public void method_431(JsonObject jsonObject, LootTableEntry lootTableEntry, JsonSerializationContext jsonSerializationContext) {
 			super.method_442(jsonObject, lootTableEntry, jsonSerializationContext);
-			jsonObject.addProperty("name", lootTableEntry.id.toString());
+			jsonObject.addProperty("name", lootTableEntry.field_993.toString());
 		}
 
 		protected LootTableEntry method_432(

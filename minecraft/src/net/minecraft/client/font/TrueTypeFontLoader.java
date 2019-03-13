@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class TrueTypeFontLoader implements FontLoader {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Identifier filename;
+	private final Identifier field_2330;
 	private final float size;
 	private final float oversample;
 	private final float shiftX;
@@ -28,7 +28,7 @@ public class TrueTypeFontLoader implements FontLoader {
 	private final String excludedCharacters;
 
 	public TrueTypeFontLoader(Identifier identifier, float f, float g, float h, float i, String string) {
-		this.filename = identifier;
+		this.field_2330 = identifier;
 		this.size = f;
 		this.oversample = g;
 		this.shiftX = h;
@@ -75,9 +75,9 @@ public class TrueTypeFontLoader implements FontLoader {
 
 	@Nullable
 	@Override
-	public Font load(ResourceManager resourceManager) {
+	public Font method_2039(ResourceManager resourceManager) {
 		try {
-			Resource resource = resourceManager.getResource(new Identifier(this.filename.getNamespace(), "font/" + this.filename.getPath()));
+			Resource resource = resourceManager.getResource(new Identifier(this.field_2330.getNamespace(), "font/" + this.field_2330.getPath()));
 			Throwable var3 = null;
 
 			TrueTypeFont var5;
@@ -106,7 +106,7 @@ public class TrueTypeFontLoader implements FontLoader {
 
 			return var5;
 		} catch (IOException var17) {
-			LOGGER.error("Couldn't load truetype font {}", this.filename, var17);
+			LOGGER.error("Couldn't load truetype font {}", this.field_2330, var17);
 			return null;
 		}
 	}

@@ -28,7 +28,7 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 		this.buttonsAdd(
 			new RealmsButton(0, this.width() / 2 - 100, this.height() / 2 + this.textHeight / 2 + this.fontLineHeight(), getLocalizedString("gui.back")) {
 				@Override
-				public void onClick(double d, double e) {
+				public void onPress() {
 					Realms.setScreen(DisconnectedRealmsScreen.this.parent);
 				}
 			}

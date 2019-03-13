@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class SignBlockEntity extends BlockEntity {
-	public final TextComponent[] text = new TextComponent[]{
+	public final TextComponent[] field_12050 = new TextComponent[]{
 		new StringTextComponent(""), new StringTextComponent(""), new StringTextComponent(""), new StringTextComponent("")
 	};
 	@Environment(EnvType.CLIENT)
@@ -40,11 +40,11 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
+	public CompoundTag method_11007(CompoundTag compoundTag) {
+		super.method_11007(compoundTag);
 
 		for (int i = 0; i < 4; i++) {
-			String string = TextComponent.Serializer.toJsonString(this.text[i]);
+			String string = TextComponent.Serializer.toJsonString(this.field_12050[i]);
 			compoundTag.putString("Text" + (i + 1), string);
 		}
 
@@ -53,9 +53,9 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
+	public void method_11014(CompoundTag compoundTag) {
 		this.editable = false;
-		super.fromTag(compoundTag);
+		super.method_11014(compoundTag);
 		this.textColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.BLACK);
 
 		for (int i = 0; i < 4; i++) {
@@ -63,12 +63,12 @@ public class SignBlockEntity extends BlockEntity {
 			TextComponent textComponent = TextComponent.Serializer.fromJsonString(string);
 			if (this.world instanceof ServerWorld) {
 				try {
-					this.text[i] = TextFormatter.method_10881(this.getCommandSource(null), textComponent, null);
+					this.field_12050[i] = TextFormatter.method_10881(this.method_11304(null), textComponent, null);
 				} catch (CommandSyntaxException var6) {
-					this.text[i] = textComponent;
+					this.field_12050[i] = textComponent;
 				}
 			} else {
-				this.text[i] = textComponent;
+				this.field_12050[i] = textComponent;
 			}
 
 			this.textBeingEdited[i] = null;
@@ -76,20 +76,20 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent getTextOnRow(int i) {
-		return this.text[i];
+	public TextComponent method_11302(int i) {
+		return this.field_12050[i];
 	}
 
-	public void setTextOnRow(int i, TextComponent textComponent) {
-		this.text[i] = textComponent;
+	public void method_11299(int i, TextComponent textComponent) {
+		this.field_12050[i] = textComponent;
 		this.textBeingEdited[i] = null;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	public String getTextBeingEditedOnRow(int i, Function<TextComponent, String> function) {
-		if (this.textBeingEdited[i] == null && this.text[i] != null) {
-			this.textBeingEdited[i] = (String)function.apply(this.text[i]);
+		if (this.textBeingEdited[i] == null && this.field_12050[i] != null) {
+			this.textBeingEdited[i] = (String)function.apply(this.field_12050[i]);
 		}
 
 		return this.textBeingEdited[i];
@@ -97,13 +97,13 @@ public class SignBlockEntity extends BlockEntity {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 9, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.field_11867, 9, this.method_16887());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.toTag(new CompoundTag());
+	public CompoundTag method_16887() {
+		return this.method_11007(new CompoundTag());
 	}
 
 	@Override
@@ -132,12 +132,12 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	public boolean onActivate(PlayerEntity playerEntity) {
-		for (TextComponent textComponent : this.text) {
-			Style style = textComponent == null ? null : textComponent.getStyle();
+		for (TextComponent textComponent : this.field_12050) {
+			Style style = textComponent == null ? null : textComponent.method_10866();
 			if (style != null && style.getClickEvent() != null) {
 				ClickEvent clickEvent = style.getClickEvent();
 				if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-					playerEntity.getServer().getCommandManager().execute(this.getCommandSource((ServerPlayerEntity)playerEntity), clickEvent.getValue());
+					playerEntity.getServer().getCommandManager().execute(this.method_11304((ServerPlayerEntity)playerEntity), clickEvent.getValue());
 				}
 			}
 		}
@@ -145,12 +145,12 @@ public class SignBlockEntity extends BlockEntity {
 		return true;
 	}
 
-	public ServerCommandSource getCommandSource(@Nullable ServerPlayerEntity serverPlayerEntity) {
-		String string = serverPlayerEntity == null ? "Sign" : serverPlayerEntity.getName().getString();
-		TextComponent textComponent = (TextComponent)(serverPlayerEntity == null ? new StringTextComponent("Sign") : serverPlayerEntity.getDisplayName());
+	public ServerCommandSource method_11304(@Nullable ServerPlayerEntity serverPlayerEntity) {
+		String string = serverPlayerEntity == null ? "Sign" : serverPlayerEntity.method_5477().getString();
+		TextComponent textComponent = (TextComponent)(serverPlayerEntity == null ? new StringTextComponent("Sign") : serverPlayerEntity.method_5476());
 		return new ServerCommandSource(
 			CommandOutput.field_17395,
-			new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5),
+			new Vec3d((double)this.field_11867.getX() + 0.5, (double)this.field_11867.getY() + 0.5, (double)this.field_11867.getZ() + 0.5),
 			Vec2f.ZERO,
 			(ServerWorld)this.world,
 			2,
@@ -169,7 +169,7 @@ public class SignBlockEntity extends BlockEntity {
 		if (dyeColor != this.getTextColor()) {
 			this.textColor = dyeColor;
 			this.markDirty();
-			this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
+			this.world.method_8413(this.method_11016(), this.method_11010(), this.method_11010(), 3);
 			return true;
 		} else {
 			return false;

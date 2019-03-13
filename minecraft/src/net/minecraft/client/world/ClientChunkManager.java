@@ -35,12 +35,12 @@ public class ClientChunkManager extends ChunkManager {
 	private int loadedChunkCount;
 	private volatile int playerChunkX;
 	private volatile int playerChunkZ;
-	private final ClientWorld world;
+	private final ClientWorld field_16525;
 
 	public ClientChunkManager(ClientWorld clientWorld) {
-		this.world = clientWorld;
+		this.field_16525 = clientWorld;
 		this.emptyChunk = new EmptyChunk(clientWorld, new ChunkPos(0, 0));
-		this.lightingProvider = new LightingProvider(this, true, clientWorld.getDimension().hasSkyLight());
+		this.lightingProvider = new LightingProvider(this, true, clientWorld.method_8597().hasSkyLight());
 	}
 
 	private static boolean isWithinDistance(int i, int j, int k, int l, int m) {
@@ -48,7 +48,7 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public LightingProvider getLightingProvider() {
+	public LightingProvider method_12130() {
 		return this.lightingProvider;
 	}
 
@@ -70,11 +70,11 @@ public class ClientChunkManager extends ChunkManager {
 
 	@Override
 	public BlockView getWorld() {
-		return this.world;
+		return this.field_16525;
 	}
 
 	@Nullable
-	public WorldChunk loadChunkFromPacket(World world, int i, int j, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
+	public WorldChunk method_16020(World world, int i, int j, PacketByteBuf packetByteBuf, CompoundTag compoundTag, int k, boolean bl) {
 		this.updateChunkList();
 		if (!this.chunks.hasChunk(i, j)) {
 			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", i, j);
@@ -89,19 +89,19 @@ public class ClientChunkManager extends ChunkManager {
 				}
 
 				worldChunk = new WorldChunk(world, new ChunkPos(i, j), new Biome[256]);
-				worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
+				worldChunk.method_12224(packetByteBuf, compoundTag, k, bl);
 				this.chunks.unload(l, worldChunk);
 				this.loadedChunkCount++;
 			} else {
-				worldChunk.loadFromPacket(packetByteBuf, compoundTag, k, bl);
+				worldChunk.method_12224(packetByteBuf, compoundTag, k, bl);
 			}
 
-			ChunkSection[] chunkSections = worldChunk.getSectionArray();
-			LightingProvider lightingProvider = this.getLightingProvider();
+			ChunkSection[] chunkSections = worldChunk.method_12006();
+			LightingProvider lightingProvider = this.method_12130();
 
 			for (int m = 0; m < chunkSections.length; m++) {
 				ChunkSection chunkSection = chunkSections[m];
-				lightingProvider.scheduleChunkLightUpdate(ChunkSectionPos.from(i, m, j), ChunkSection.isEmpty(chunkSection));
+				lightingProvider.method_15551(ChunkSectionPos.from(i, m, j), ChunkSection.isEmpty(chunkSection));
 			}
 
 			return worldChunk;
@@ -115,7 +115,7 @@ public class ClientChunkManager extends ChunkManager {
 
 	private void updateChunkList() {
 		int i = this.chunks.loadDistance;
-		int j = Math.max(2, this.client.options.viewDistance + -2) + 2;
+		int j = Math.max(2, this.client.field_1690.viewDistance + -2) + 2;
 		if (i != j) {
 			ClientChunkManager.ClientChunkMap clientChunkMap = new ClientChunkManager.ClientChunkMap(j);
 
@@ -135,8 +135,8 @@ public class ClientChunkManager extends ChunkManager {
 			this.chunks = clientChunkMap;
 		}
 
-		int m = MathHelper.floor(this.client.player.x) >> 4;
-		int k = MathHelper.floor(this.client.player.z) >> 4;
+		int m = MathHelper.floor(this.client.field_1724.x) >> 4;
+		int k = MathHelper.floor(this.client.field_1724.z) >> 4;
 		if (this.playerChunkX != m || this.playerChunkZ != k) {
 			for (int lx = this.playerChunkZ - j; lx <= this.playerChunkZ + j; lx++) {
 				for (int n = this.playerChunkX - j; n <= this.playerChunkX + j; n++) {
@@ -162,8 +162,8 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Override
-	public void onLightUpdate(LightType lightType, ChunkSectionPos chunkSectionPos) {
-		MinecraftClient.getInstance().worldRenderer.method_8571(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkY(), chunkSectionPos.getChunkZ());
+	public void method_12247(LightType lightType, ChunkSectionPos chunkSectionPos) {
+		MinecraftClient.getInstance().field_1769.method_8571(chunkSectionPos.getChunkX(), chunkSectionPos.getChunkY(), chunkSectionPos.getChunkZ());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -186,7 +186,7 @@ public class ClientChunkManager extends ChunkManager {
 			WorldChunk worldChunk2 = (WorldChunk)this.chunks.getAndSet(i, worldChunk);
 			if (worldChunk2 != null) {
 				ClientChunkManager.this.loadedChunkCount--;
-				ClientChunkManager.this.world.method_18110(worldChunk2);
+				ClientChunkManager.this.field_16525.method_18110(worldChunk2);
 			}
 		}
 

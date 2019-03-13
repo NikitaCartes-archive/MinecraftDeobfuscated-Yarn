@@ -25,14 +25,14 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public CombatEventS2CPacket(DamageTracker damageTracker, CombatEventS2CPacket.Type type, TextComponent textComponent) {
 		this.type = type;
-		LivingEntity livingEntity = damageTracker.getBiggestAttacker();
+		LivingEntity livingEntity = damageTracker.method_5541();
 		switch (type) {
 			case END:
 				this.timeSinceLastAttack = damageTracker.getTimeSinceLastAttack();
 				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
 				break;
 			case DEATH:
-				this.entityId = damageTracker.getEntity().getEntityId();
+				this.entityId = damageTracker.method_5540().getEntityId();
 				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
 				this.deathMessage = textComponent;
 		}
@@ -47,7 +47,7 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		} else if (this.type == CombatEventS2CPacket.Type.DEATH) {
 			this.entityId = packetByteBuf.readVarInt();
 			this.attackerEntityId = packetByteBuf.readInt();
-			this.deathMessage = packetByteBuf.readTextComponent();
+			this.deathMessage = packetByteBuf.method_10808();
 		}
 	}
 
@@ -60,12 +60,12 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		} else if (this.type == CombatEventS2CPacket.Type.DEATH) {
 			packetByteBuf.writeVarInt(this.entityId);
 			packetByteBuf.writeInt(this.attackerEntityId);
-			packetByteBuf.writeTextComponent(this.deathMessage);
+			packetByteBuf.method_10805(this.deathMessage);
 		}
 	}
 
 	public void method_11706(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onCombatEvent(this);
+		clientPlayPacketListener.method_11133(this);
 	}
 
 	@Override

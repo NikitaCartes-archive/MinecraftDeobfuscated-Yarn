@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EquipmentSlot;
@@ -14,30 +15,30 @@ public class EscapeSunlightGoal extends Goal {
 	private double targetY;
 	private double targetZ;
 	private final double speed;
-	private final World world;
+	private final World field_6418;
 
 	public EscapeSunlightGoal(MobEntityWithAi mobEntityWithAi, double d) {
 		this.owner = mobEntityWithAi;
 		this.speed = d;
-		this.world = mobEntityWithAi.world;
-		this.setControlBits(1);
+		this.field_6418 = mobEntityWithAi.field_6002;
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.world.isDaylight()) {
+		if (!this.field_6418.isDaylight()) {
 			return false;
 		} else if (!this.owner.isOnFire()) {
 			return false;
-		} else if (!this.world.isSkyVisible(new BlockPos(this.owner.x, this.owner.getBoundingBox().minY, this.owner.z))) {
+		} else if (!this.field_6418.method_8311(new BlockPos(this.owner.x, this.owner.method_5829().minY, this.owner.z))) {
 			return false;
 		} else {
-			return !this.owner.getEquippedStack(EquipmentSlot.HEAD).isEmpty() ? false : this.method_18250();
+			return !this.owner.method_6118(EquipmentSlot.HEAD).isEmpty() ? false : this.method_18250();
 		}
 	}
 
 	protected boolean method_18250() {
-		Vec3d vec3d = this.locateShadedPos();
+		Vec3d vec3d = this.method_6257();
 		if (vec3d == null) {
 			return false;
 		} else {
@@ -50,22 +51,22 @@ public class EscapeSunlightGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.owner.getNavigation().isIdle();
+		return !this.owner.method_5942().isIdle();
 	}
 
 	@Override
 	public void start() {
-		this.owner.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
+		this.owner.method_5942().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
 	}
 
 	@Nullable
-	protected Vec3d locateShadedPos() {
+	protected Vec3d method_6257() {
 		Random random = this.owner.getRand();
-		BlockPos blockPos = new BlockPos(this.owner.x, this.owner.getBoundingBox().minY, this.owner.z);
+		BlockPos blockPos = new BlockPos(this.owner.x, this.owner.method_5829().minY, this.owner.z);
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(20) - 10, random.nextInt(6) - 3, random.nextInt(20) - 10);
-			if (!this.world.isSkyVisible(blockPos2) && this.owner.getPathfindingFavor(blockPos2) < 0.0F) {
+			if (!this.field_6418.method_8311(blockPos2) && this.owner.method_6149(blockPos2) < 0.0F) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}

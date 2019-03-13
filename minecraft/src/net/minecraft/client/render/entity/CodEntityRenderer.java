@@ -14,7 +14,7 @@ public class CodEntityRenderer extends MobEntityRenderer<CodEntity, CodEntityMod
 	private static final Identifier field_4652 = new Identifier("textures/entity/fish/cod.png");
 
 	public CodEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new CodEntityModel<>(), 0.2F);
+		super(entityRenderDispatcher, new CodEntityModel<>(), 0.3F);
 	}
 
 	@Nullable

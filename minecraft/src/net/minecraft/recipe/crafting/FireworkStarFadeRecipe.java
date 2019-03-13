@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
-	private static final Ingredient field_9015 = Ingredient.ofItems(Items.field_8450);
+	private static final Ingredient field_9015 = Ingredient.method_8091(Items.field_8450);
 
 	public FireworkStarFadeRecipe(Identifier identifier) {
 		super(identifier);
@@ -26,7 +26,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		boolean bl2 = false;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+			ItemStack itemStack = craftingInventory.method_5438(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem() instanceof DyeItem) {
 					bl = true;
@@ -52,7 +52,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = null;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(i);
+			ItemStack itemStack2 = craftingInventory.method_5438(i);
 			Item item = itemStack2.getItem();
 			if (item instanceof DyeItem) {
 				list.add(((DyeItem)item).getColor().getFireworkColor());
@@ -63,7 +63,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 		}
 
 		if (itemStack != null && !list.isEmpty()) {
-			itemStack.getOrCreateSubCompoundTag("Explosion").putIntArray("FadeColors", list);
+			itemStack.method_7911("Explosion").putIntArray("FadeColors", list);
 			return itemStack;
 		} else {
 			return ItemStack.EMPTY;
@@ -77,7 +77,7 @@ public class FireworkStarFadeRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.FIREWORK_STAR_FADE;
+	public RecipeSerializer<?> method_8119() {
+		return RecipeSerializer.field_9034;
 	}
 }

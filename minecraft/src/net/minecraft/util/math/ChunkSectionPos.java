@@ -44,6 +44,13 @@ public class ChunkSectionPos extends Vec3i {
 		return i & 15;
 	}
 
+	public static short method_19454(BlockPos blockPos) {
+		int i = toLocalCoord(blockPos.getX());
+		int j = toLocalCoord(blockPos.getY());
+		int k = toLocalCoord(blockPos.getZ());
+		return (short)(i << 8 | k << 4 | j);
+	}
+
 	public static int fromChunkCoord(int i) {
 		return i << 4;
 	}

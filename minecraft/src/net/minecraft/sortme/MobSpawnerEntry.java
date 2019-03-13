@@ -5,12 +5,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.WeightedPicker;
 
 public class MobSpawnerEntry extends WeightedPicker.Entry {
-	private final CompoundTag entityTag;
+	private final CompoundTag field_9307;
 
 	public MobSpawnerEntry() {
 		super(1);
-		this.entityTag = new CompoundTag();
-		this.entityTag.putString("id", "minecraft:pig");
+		this.field_9307 = new CompoundTag();
+		this.field_9307.putString("id", "minecraft:pig");
 	}
 
 	public MobSpawnerEntry(CompoundTag compoundTag) {
@@ -19,23 +19,23 @@ public class MobSpawnerEntry extends WeightedPicker.Entry {
 
 	public MobSpawnerEntry(int i, CompoundTag compoundTag) {
 		super(i);
-		this.entityTag = compoundTag;
+		this.field_9307 = compoundTag;
 	}
 
-	public CompoundTag serialize() {
+	public CompoundTag method_8679() {
 		CompoundTag compoundTag = new CompoundTag();
-		if (!this.entityTag.containsKey("id", 8)) {
-			this.entityTag.putString("id", "minecraft:pig");
-		} else if (!this.entityTag.getString("id").contains(":")) {
-			this.entityTag.putString("id", new Identifier(this.entityTag.getString("id")).toString());
+		if (!this.field_9307.containsKey("id", 8)) {
+			this.field_9307.putString("id", "minecraft:pig");
+		} else if (!this.field_9307.getString("id").contains(":")) {
+			this.field_9307.putString("id", new Identifier(this.field_9307.getString("id")).toString());
 		}
 
-		compoundTag.put("Entity", this.entityTag);
+		compoundTag.method_10566("Entity", this.field_9307);
 		compoundTag.putInt("Weight", this.weight);
 		return compoundTag;
 	}
 
-	public CompoundTag getEntityTag() {
-		return this.entityTag;
+	public CompoundTag method_8678() {
+		return this.field_9307;
 	}
 }

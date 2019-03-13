@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/lead_knot.png");
+	private static final Identifier field_4734 = new Identifier("textures/entity/lead_knot.png");
 	private final LeashEntityModel<LeadKnotEntity> field_4735 = new LeashEntityModel<>();
 
 	public LeashKnotEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -41,6 +41,6 @@ public class LeashKnotEntityRenderer extends EntityRenderer<LeadKnotEntity> {
 	}
 
 	protected Identifier method_4036(LeadKnotEntity leadKnotEntity) {
-		return SKIN;
+		return field_4734;
 	}
 }

@@ -149,7 +149,7 @@ public class Scoreboard {
 			}
 		}
 
-		List<ScoreboardObjective> list = (List<ScoreboardObjective>)this.objectivesByCriterion.get(scoreboardObjective.getCriterion());
+		List<ScoreboardObjective> list = (List<ScoreboardObjective>)this.objectivesByCriterion.get(scoreboardObjective.method_1116());
 		if (list != null) {
 			list.remove(scoreboardObjective);
 		}
@@ -332,7 +332,7 @@ public class Scoreboard {
 		}
 	}
 
-	protected ListTag toTag() {
+	protected ListTag method_1169() {
 		ListTag listTag = new ListTag();
 		this.playerObjectives
 			.values()
@@ -349,7 +349,7 @@ public class Scoreboard {
 		return listTag;
 	}
 
-	protected void fromTag(ListTag listTag) {
+	protected void method_1188(ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
 			ScoreboardObjective scoreboardObjective = this.method_1165(compoundTag.getString("Objective"));

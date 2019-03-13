@@ -61,7 +61,7 @@ public class ResourceIndex {
 	}
 
 	@Nullable
-	public File getResource(Identifier identifier) {
+	public File method_4630(Identifier identifier) {
 		return this.findFile(identifier.toString());
 	}
 

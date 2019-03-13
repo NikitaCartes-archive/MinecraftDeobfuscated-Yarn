@@ -9,7 +9,7 @@ import net.minecraft.world.ViewableWorld;
 
 public class CachedBlockPosition {
 	private final ViewableWorld world;
-	private final BlockPos pos;
+	private final BlockPos field_12331;
 	private final boolean forceLoad;
 	private BlockState state;
 	private BlockEntity blockEntity;
@@ -17,13 +17,13 @@ public class CachedBlockPosition {
 
 	public CachedBlockPosition(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
 		this.world = viewableWorld;
-		this.pos = blockPos.toImmutable();
+		this.field_12331 = blockPos.toImmutable();
 		this.forceLoad = bl;
 	}
 
 	public BlockState getBlockState() {
-		if (this.state == null && (this.forceLoad || this.world.isBlockLoaded(this.pos))) {
-			this.state = this.world.getBlockState(this.pos);
+		if (this.state == null && (this.forceLoad || this.world.method_8591(this.field_12331))) {
+			this.state = this.world.method_8320(this.field_12331);
 		}
 
 		return this.state;
@@ -32,7 +32,7 @@ public class CachedBlockPosition {
 	@Nullable
 	public BlockEntity getBlockEntity() {
 		if (this.blockEntity == null && !this.cachedEntity) {
-			this.blockEntity = this.world.getBlockEntity(this.pos);
+			this.blockEntity = this.world.method_8321(this.field_12331);
 			this.cachedEntity = true;
 		}
 
@@ -43,8 +43,8 @@ public class CachedBlockPosition {
 		return this.world;
 	}
 
-	public BlockPos getBlockPos() {
-		return this.pos;
+	public BlockPos method_11683() {
+		return this.field_12331;
 	}
 
 	public static Predicate<CachedBlockPosition> matchesBlockState(Predicate<BlockState> predicate) {

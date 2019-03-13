@@ -9,11 +9,11 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractSoundInstance implements SoundInstance {
-	protected Sound sound;
+	protected Sound field_5444;
 	@Nullable
-	private WeightedSoundSet accessor;
-	protected final SoundCategory category;
-	protected final Identifier id;
+	private WeightedSoundSet field_5443;
+	protected final SoundCategory field_5447;
+	protected final Identifier field_5448;
 	protected float volume = 1.0F;
 	protected float pitch = 1.0F;
 	protected float x;
@@ -21,7 +21,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected float z;
 	protected boolean repeat;
 	protected int repeatDelay;
-	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.LINEAR;
+	protected SoundInstance.AttenuationType field_5440 = SoundInstance.AttenuationType.LINEAR;
 	protected boolean field_5445;
 
 	protected AbstractSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory) {
@@ -29,35 +29,35 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	}
 
 	protected AbstractSoundInstance(Identifier identifier, SoundCategory soundCategory) {
-		this.id = identifier;
-		this.category = soundCategory;
+		this.field_5448 = identifier;
+		this.field_5447 = soundCategory;
 	}
 
 	@Override
-	public Identifier getId() {
-		return this.id;
+	public Identifier method_4775() {
+		return this.field_5448;
 	}
 
 	@Override
-	public WeightedSoundSet getAccess(SoundLoader soundLoader) {
-		this.accessor = soundLoader.get(this.id);
-		if (this.accessor == null) {
-			this.sound = SoundLoader.SOUND_MISSING;
+	public WeightedSoundSet method_4783(SoundLoader soundLoader) {
+		this.field_5443 = soundLoader.method_4869(this.field_5448);
+		if (this.field_5443 == null) {
+			this.field_5444 = SoundLoader.SOUND_MISSING;
 		} else {
-			this.sound = this.accessor.method_4887();
+			this.field_5444 = this.field_5443.method_4887();
 		}
 
-		return this.accessor;
+		return this.field_5443;
 	}
 
 	@Override
 	public Sound getSound() {
-		return this.sound;
+		return this.field_5444;
 	}
 
 	@Override
-	public SoundCategory getCategory() {
-		return this.category;
+	public SoundCategory method_4774() {
+		return this.field_5447;
 	}
 
 	@Override
@@ -72,12 +72,12 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 
 	@Override
 	public float getVolume() {
-		return this.volume * this.sound.getVolume();
+		return this.volume * this.field_5444.getVolume();
 	}
 
 	@Override
 	public float getPitch() {
-		return this.pitch * this.sound.getPitch();
+		return this.pitch * this.field_5444.getPitch();
 	}
 
 	@Override
@@ -97,7 +97,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 
 	@Override
 	public SoundInstance.AttenuationType getAttenuationType() {
-		return this.attenuationType;
+		return this.field_5440;
 	}
 
 	@Override

@@ -26,7 +26,7 @@ public class RealmsAnvilLevelStorageSource {
 	}
 
 	public boolean convertLevel(String string, ProgressListener progressListener) {
-		return this.levelStorageSource.convertLevel(string, progressListener);
+		return this.levelStorageSource.method_17927(string, progressListener);
 	}
 
 	public boolean requiresConversion(String string) {

@@ -19,10 +19,10 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 	@Override
 	public void method_6855() {
 		this.field_7050++;
-		LivingEntity livingEntity = this.dragon.world.method_18463(this.field_18124, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
+		LivingEntity livingEntity = this.dragon.field_6002.method_18463(this.field_18124, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
 		if (livingEntity != null) {
 			if (this.field_7050 > 25) {
-				this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_ATTACKING);
+				this.dragon.method_6831().setPhase(PhaseType.SITTING_ATTACKING);
 			} else {
 				Vec3d vec3d = new Vec3d(livingEntity.x - this.dragon.x, 0.0, livingEntity.z - this.dragon.z).normalize();
 				Vec3d vec3d2 = new Vec3d(
@@ -47,11 +47,11 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 				}
 			}
 		} else if (this.field_7050 >= 100) {
-			livingEntity = this.dragon.world.method_18463(field_18123, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
-			this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
+			livingEntity = this.dragon.field_6002.method_18463(field_18123, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
+			this.dragon.method_6831().setPhase(PhaseType.TAKEOFF);
 			if (livingEntity != null) {
-				this.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-				this.dragon.getPhaseManager().create(PhaseType.CHARGING_PLAYER).setTarget(new Vec3d(livingEntity.x, livingEntity.y, livingEntity.z));
+				this.dragon.method_6831().setPhase(PhaseType.CHARGING_PLAYER);
+				this.dragon.method_6831().create(PhaseType.CHARGING_PLAYER).method_6840(new Vec3d(livingEntity.x, livingEntity.y, livingEntity.z));
 			}
 		}
 	}
@@ -62,7 +62,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 	}
 
 	@Override
-	public PhaseType<SittingScanningPhase> getType() {
+	public PhaseType<SittingScanningPhase> method_6849() {
 		return PhaseType.SITTING_SCANNING;
 	}
 }

@@ -33,7 +33,7 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public void method_11490(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onGameStateChange(this);
+		clientPlayPacketListener.method_11085(this);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -27,10 +27,10 @@ public class BannerItem extends WallStandingBlockItem {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void buildBannerTooltip(ItemStack itemStack, List<TextComponent> list) {
-		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+	public static void method_7705(ItemStack itemStack, List<TextComponent> list) {
+		CompoundTag compoundTag = itemStack.method_7941("BlockEntityTag");
 		if (compoundTag != null && compoundTag.containsKey("Patterns")) {
-			ListTag listTag = compoundTag.getList("Patterns", 10);
+			ListTag listTag = compoundTag.method_10554("Patterns", 10);
 
 			for (int i = 0; i < listTag.size() && i < 6; i++) {
 				CompoundTag compoundTag2 = listTag.getCompoundTag(i);
@@ -43,13 +43,13 @@ public class BannerItem extends WallStandingBlockItem {
 		}
 	}
 
-	public DyeColor getColor() {
-		return ((AbstractBannerBlock)this.getBlock()).getColor();
+	public DyeColor method_7706() {
+		return ((AbstractBannerBlock)this.method_7711()).getColor();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
-		buildBannerTooltip(itemStack, list);
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+		method_7705(itemStack, list);
 	}
 }

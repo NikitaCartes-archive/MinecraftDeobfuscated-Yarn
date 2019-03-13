@@ -1,6 +1,7 @@
 package net.minecraft;
 
 import java.util.Random;
+import java.util.function.ToDoubleFunction;
 import javax.annotation.Nullable;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -17,7 +18,12 @@ public class class_1414 {
 
 	@Nullable
 	public static Vec3d method_6378(MobEntityWithAi mobEntityWithAi, int i, int j) {
-		return method_6371(mobEntityWithAi, i, j, null, false, 0.0);
+		return method_19108(mobEntityWithAi, i, j, mobEntityWithAi::method_6149);
+	}
+
+	@Nullable
+	public static Vec3d method_19108(MobEntityWithAi mobEntityWithAi, int i, int j, ToDoubleFunction<BlockPos> toDoubleFunction) {
+		return method_6371(mobEntityWithAi, i, j, null, false, 0.0, toDoubleFunction);
 	}
 
 	@Nullable
@@ -29,7 +35,7 @@ public class class_1414 {
 	@Nullable
 	public static Vec3d method_6377(MobEntityWithAi mobEntityWithAi, int i, int j, Vec3d vec3d, double d) {
 		Vec3d vec3d2 = vec3d.subtract(mobEntityWithAi.x, mobEntityWithAi.y, mobEntityWithAi.z);
-		return method_6371(mobEntityWithAi, i, j, vec3d2, true, d);
+		return method_6371(mobEntityWithAi, i, j, vec3d2, true, d, mobEntityWithAi::method_6149);
 	}
 
 	@Nullable
@@ -40,12 +46,14 @@ public class class_1414 {
 
 	@Nullable
 	private static Vec3d method_6376(MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d) {
-		return method_6371(mobEntityWithAi, i, j, vec3d, true, (float) (Math.PI / 2));
+		return method_6371(mobEntityWithAi, i, j, vec3d, true, (float) (Math.PI / 2), mobEntityWithAi::method_6149);
 	}
 
 	@Nullable
-	private static Vec3d method_6371(MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d, boolean bl, double d) {
-		EntityNavigation entityNavigation = mobEntityWithAi.getNavigation();
+	private static Vec3d method_6371(
+		MobEntityWithAi mobEntityWithAi, int i, int j, @Nullable Vec3d vec3d, boolean bl, double d, ToDoubleFunction<BlockPos> toDoubleFunction
+	) {
+		EntityNavigation entityNavigation = mobEntityWithAi.method_5942();
 		Random random = mobEntityWithAi.getRand();
 		boolean bl2;
 		if (mobEntityWithAi.method_18410()) {
@@ -59,7 +67,7 @@ public class class_1414 {
 		}
 
 		boolean bl3 = false;
-		float g = -99999.0F;
+		double g = Double.NEGATIVE_INFINITY;
 		int k = 0;
 		int l = 0;
 		int m = 0;
@@ -86,7 +94,7 @@ public class class_1414 {
 				}
 
 				BlockPos blockPos2x = new BlockPos((double)o + mobEntityWithAi.x, (double)p + mobEntityWithAi.y, (double)q + mobEntityWithAi.z);
-				if ((!bl2 || mobEntityWithAi.method_18407(blockPos2x)) && entityNavigation.isValidPosition(blockPos2x)) {
+				if ((!bl2 || mobEntityWithAi.method_18407(blockPos2x)) && entityNavigation.method_6333(blockPos2x)) {
 					if (!bl) {
 						blockPos2x = method_6372(blockPos2x, mobEntityWithAi);
 						if (method_6380(blockPos2x, mobEntityWithAi)) {
@@ -94,7 +102,7 @@ public class class_1414 {
 						}
 					}
 
-					float h = mobEntityWithAi.getPathfindingFavor(blockPos2x);
+					double h = toDoubleFunction.applyAsDouble(blockPos2x);
 					if (h > g) {
 						g = h;
 						k = o;
@@ -132,12 +140,12 @@ public class class_1414 {
 	}
 
 	private static BlockPos method_6372(BlockPos blockPos, MobEntityWithAi mobEntityWithAi) {
-		if (!mobEntityWithAi.world.getBlockState(blockPos).getMaterial().method_15799()) {
+		if (!mobEntityWithAi.field_6002.method_8320(blockPos).method_11620().method_15799()) {
 			return blockPos;
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 
-			while (blockPos2.getY() < mobEntityWithAi.world.getHeight() && mobEntityWithAi.world.getBlockState(blockPos2).getMaterial().method_15799()) {
+			while (blockPos2.getY() < mobEntityWithAi.field_6002.getHeight() && mobEntityWithAi.field_6002.method_8320(blockPos2).method_11620().method_15799()) {
 				blockPos2 = blockPos2.up();
 			}
 
@@ -146,6 +154,6 @@ public class class_1414 {
 	}
 
 	private static boolean method_6380(BlockPos blockPos, MobEntityWithAi mobEntityWithAi) {
-		return mobEntityWithAi.world.getFluidState(blockPos).matches(FluidTags.field_15517);
+		return mobEntityWithAi.field_6002.method_8316(blockPos).method_15767(FluidTags.field_15517);
 	}
 }

@@ -37,6 +37,10 @@ public class Path {
 		return this.nodes[i];
 	}
 
+	public PathNode[] method_19314() {
+		return this.nodes;
+	}
+
 	public void setNode(int i, PathNode pathNode) {
 		this.nodes[i] = pathNode;
 	}
@@ -57,18 +61,18 @@ public class Path {
 		this.currentNodeIndex = i;
 	}
 
-	public Vec3d getNodePosition(Entity entity, int i) {
+	public Vec3d method_47(Entity entity, int i) {
 		double d = (double)this.nodes[i].x + (double)((int)(entity.getWidth() + 1.0F)) * 0.5;
 		double e = (double)this.nodes[i].y;
 		double f = (double)this.nodes[i].z + (double)((int)(entity.getWidth() + 1.0F)) * 0.5;
 		return new Vec3d(d, e, f);
 	}
 
-	public Vec3d getNodePosition(Entity entity) {
-		return this.getNodePosition(entity, this.currentNodeIndex);
+	public Vec3d method_49(Entity entity) {
+		return this.method_47(entity, this.currentNodeIndex);
 	}
 
-	public Vec3d getCurrentPosition() {
+	public Vec3d method_35() {
 		PathNode pathNode = this.nodes[this.currentNodeIndex];
 		return new Vec3d((double)pathNode.x, (double)pathNode.y, (double)pathNode.z);
 	}
@@ -87,6 +91,16 @@ public class Path {
 
 			return true;
 		}
+	}
+
+	public boolean method_19315() {
+		PathNode pathNode = this.getEnd();
+		return pathNode != null && this.method_19313(pathNode.method_19312());
+	}
+
+	public boolean method_19313(Vec3d vec3d) {
+		PathNode pathNode = this.getEnd();
+		return pathNode == null ? false : pathNode.x == (int)vec3d.x && pathNode.y == (int)vec3d.y && pathNode.z == (int)vec3d.z;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -132,5 +146,9 @@ public class Path {
 		path.field_56 = pathNode;
 		path.currentNodeIndex = i;
 		return path;
+	}
+
+	public String toString() {
+		return "Path(length=" + this.length + ")";
 	}
 }

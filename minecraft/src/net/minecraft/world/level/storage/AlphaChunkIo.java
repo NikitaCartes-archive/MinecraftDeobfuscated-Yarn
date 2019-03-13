@@ -8,7 +8,7 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 
 public class AlphaChunkIo {
-	public static AlphaChunkIo.AlphaChunk readAlphaChunk(CompoundTag compoundTag) {
+	public static AlphaChunkIo.AlphaChunk method_12433(CompoundTag compoundTag) {
 		int i = compoundTag.getInt("xPos");
 		int j = compoundTag.getInt("zPos");
 		AlphaChunkIo.AlphaChunk alphaChunk = new AlphaChunkIo.AlphaChunk(i, j);
@@ -18,9 +18,9 @@ public class AlphaChunkIo {
 		alphaChunk.blockLight = new AlphaChunkDataArray(compoundTag.getByteArray("BlockLight"), 7);
 		alphaChunk.heightMap = compoundTag.getByteArray("HeightMap");
 		alphaChunk.terrainPopulated = compoundTag.getBoolean("TerrainPopulated");
-		alphaChunk.entities = compoundTag.getList("Entities", 10);
-		alphaChunk.blockEntities = compoundTag.getList("TileEntities", 10);
-		alphaChunk.blockTicks = compoundTag.getList("TileTicks", 10);
+		alphaChunk.field_13037 = compoundTag.method_10554("Entities", 10);
+		alphaChunk.field_13040 = compoundTag.method_10554("TileEntities", 10);
+		alphaChunk.field_13041 = compoundTag.method_10554("TileTicks", 10);
 
 		try {
 			alphaChunk.lastUpdate = compoundTag.getLong("LastUpdate");
@@ -31,7 +31,7 @@ public class AlphaChunkIo {
 		return alphaChunk;
 	}
 
-	public static void convertAlphaChunk(AlphaChunkIo.AlphaChunk alphaChunk, CompoundTag compoundTag, BiomeSource biomeSource) {
+	public static void method_12432(AlphaChunkIo.AlphaChunk alphaChunk, CompoundTag compoundTag, BiomeSource biomeSource) {
 		compoundTag.putInt("xPos", alphaChunk.x);
 		compoundTag.putInt("zPos", alphaChunk.z);
 		compoundTag.putLong("LastUpdate", alphaChunk.lastUpdate);
@@ -90,22 +90,22 @@ public class AlphaChunkIo {
 			}
 		}
 
-		compoundTag.put("Sections", listTag);
+		compoundTag.method_10566("Sections", listTag);
 		byte[] cs = new byte[256];
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
 				mutable.set(alphaChunk.x << 4 | k, 0, alphaChunk.z << 4 | l);
-				cs[l << 4 | k] = (byte)(Registry.BIOME.getRawId(biomeSource.getBiome(mutable)) & 0xFF);
+				cs[l << 4 | k] = (byte)(Registry.BIOME.getRawId(biomeSource.method_8758(mutable)) & 0xFF);
 			}
 		}
 
 		compoundTag.putByteArray("Biomes", cs);
-		compoundTag.put("Entities", alphaChunk.entities);
-		compoundTag.put("TileEntities", alphaChunk.blockEntities);
-		if (alphaChunk.blockTicks != null) {
-			compoundTag.put("TileTicks", alphaChunk.blockTicks);
+		compoundTag.method_10566("Entities", alphaChunk.field_13037);
+		compoundTag.method_10566("TileEntities", alphaChunk.field_13040);
+		if (alphaChunk.field_13041 != null) {
+			compoundTag.method_10566("TileTicks", alphaChunk.field_13041);
 		}
 
 		compoundTag.putBoolean("convertedFromAlphaFormat", true);
@@ -119,9 +119,9 @@ public class AlphaChunkIo {
 		public AlphaChunkDataArray skyLight;
 		public AlphaChunkDataArray data;
 		public byte[] blocks;
-		public ListTag entities;
-		public ListTag blockEntities;
-		public ListTag blockTicks;
+		public ListTag field_13037;
+		public ListTag field_13040;
+		public ListTag field_13041;
 		public final int x;
 		public final int z;
 

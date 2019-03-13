@@ -51,28 +51,28 @@ public class EntityDataObject implements DataCommandObject {
 			throw field_13799.create();
 		} else {
 			UUID uUID = this.field_13801.getUuid();
-			this.field_13801.fromTag(compoundTag);
+			this.field_13801.method_5651(compoundTag);
 			this.field_13801.setUuid(uUID);
 		}
 	}
 
 	@Override
 	public CompoundTag method_13881() {
-		return NbtPredicate.entityToTag(this.field_13801);
+		return NbtPredicate.method_9076(this.field_13801);
 	}
 
 	@Override
 	public TextComponent method_13883() {
-		return new TranslatableTextComponent("commands.data.entity.modified", this.field_13801.getDisplayName());
+		return new TranslatableTextComponent("commands.data.entity.modified", this.field_13801.method_5476());
 	}
 
 	@Override
 	public TextComponent method_13882(Tag tag) {
-		return new TranslatableTextComponent("commands.data.entity.query", this.field_13801.getDisplayName(), tag.toTextComponent());
+		return new TranslatableTextComponent("commands.data.entity.query", this.field_13801.method_5476(), tag.method_10715());
 	}
 
 	@Override
 	public TextComponent method_13879(NbtPathArgumentType.class_2209 arg, double d, int i) {
-		return new TranslatableTextComponent("commands.data.entity.get", arg, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
+		return new TranslatableTextComponent("commands.data.entity.get", arg, this.field_13801.method_5476(), String.format(Locale.ROOT, "%.2f", d), i);
 	}
 }

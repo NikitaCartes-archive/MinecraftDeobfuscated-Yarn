@@ -16,14 +16,14 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.PacketByteBuf;
 
 public class AdvancementCriterion {
-	private final CriterionConditions conditions;
+	private final CriterionConditions field_1214;
 
 	public AdvancementCriterion(CriterionConditions criterionConditions) {
-		this.conditions = criterionConditions;
+		this.field_1214 = criterionConditions;
 	}
 
 	public AdvancementCriterion() {
-		this.conditions = null;
+		this.field_1214 = null;
 	}
 
 	public void serialize(PacketByteBuf packetByteBuf) {
@@ -31,13 +31,11 @@ public class AdvancementCriterion {
 
 	public static AdvancementCriterion deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "trigger"));
-		Criterion<?> criterion = Criterions.getById(identifier);
+		Criterion<?> criterion = Criterions.method_765(identifier);
 		if (criterion == null) {
 			throw new JsonSyntaxException("Invalid criterion trigger: " + identifier);
 		} else {
-			CriterionConditions criterionConditions = criterion.deserializeConditions(
-				JsonHelper.getObject(jsonObject, "conditions", new JsonObject()), jsonDeserializationContext
-			);
+			CriterionConditions criterionConditions = criterion.method_795(JsonHelper.getObject(jsonObject, "conditions", new JsonObject()), jsonDeserializationContext);
 			return new AdvancementCriterion(criterionConditions);
 		}
 	}
@@ -77,14 +75,14 @@ public class AdvancementCriterion {
 	}
 
 	@Nullable
-	public CriterionConditions getConditions() {
-		return this.conditions;
+	public CriterionConditions method_774() {
+		return this.field_1214;
 	}
 
 	public JsonElement toJson() {
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("trigger", this.conditions.getId().toString());
-		jsonObject.add("conditions", this.conditions.toJson());
+		jsonObject.addProperty("trigger", this.field_1214.getId().toString());
+		jsonObject.add("conditions", this.field_1214.toJson());
 		return jsonObject;
 	}
 }

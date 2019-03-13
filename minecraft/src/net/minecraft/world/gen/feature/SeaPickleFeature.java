@@ -22,11 +22,11 @@ public class SeaPickleFeature extends Feature<SeaPickleFeatureConfig> {
 		for (int j = 0; j < seaPickleFeatureConfig.count; j++) {
 			int k = random.nextInt(8) - random.nextInt(8);
 			int l = random.nextInt(8) - random.nextInt(8);
-			int m = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
+			int m = iWorld.method_8589(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + k, blockPos.getZ() + l);
 			BlockPos blockPos2 = new BlockPos(blockPos.getX() + k, m, blockPos.getZ() + l);
-			BlockState blockState = Blocks.field_10476.getDefaultState().with(SeaPickleBlock.PICKLES, Integer.valueOf(random.nextInt(4) + 1));
-			if (iWorld.getBlockState(blockPos2).getBlock() == Blocks.field_10382 && blockState.canPlaceAt(iWorld, blockPos2)) {
-				iWorld.setBlockState(blockPos2, blockState, 2);
+			BlockState blockState = Blocks.field_10476.method_9564().method_11657(SeaPickleBlock.field_11472, Integer.valueOf(random.nextInt(4) + 1));
+			if (iWorld.method_8320(blockPos2).getBlock() == Blocks.field_10382 && blockState.method_11591(iWorld, blockPos2)) {
+				iWorld.method_8652(blockPos2, blockState, 2);
 				i++;
 			}
 		}

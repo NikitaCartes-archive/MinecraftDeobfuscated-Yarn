@@ -92,14 +92,12 @@ public class RecipeCommand {
 			throw GIVE_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent(
-						"commands.recipe.give.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
-					),
+				serverCommandSource.method_9226(
+					new TranslatableTextComponent("commands.recipe.give.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.recipe.give.success.multiple", collection2.size(), collection.size()), true);
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.recipe.give.success.multiple", collection2.size(), collection.size()), true);
 			}
 
 			return i;
@@ -117,14 +115,12 @@ public class RecipeCommand {
 			throw TAKE_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent(
-						"commands.recipe.take.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
-					),
+				serverCommandSource.method_9226(
+					new TranslatableTextComponent("commands.recipe.take.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.recipe.take.success.multiple", collection2.size(), collection.size()), true);
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.recipe.take.success.multiple", collection2.size(), collection.size()), true);
 			}
 
 			return i;

@@ -21,14 +21,14 @@ public class SaveAllCommand {
 	}
 
 	private static int saveAll(ServerCommandSource serverCommandSource, boolean bl) throws CommandSyntaxException {
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.save.saving"), false);
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.save.saving"), false);
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-		minecraftServer.getPlayerManager().saveAllPlayerData();
+		minecraftServer.method_3760().saveAllPlayerData();
 		boolean bl2 = minecraftServer.save(true, bl, true);
 		if (!bl2) {
 			throw SAVE_FAILED.create();
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.save.success"), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.save.success"), true);
 			return 1;
 		}
 	}

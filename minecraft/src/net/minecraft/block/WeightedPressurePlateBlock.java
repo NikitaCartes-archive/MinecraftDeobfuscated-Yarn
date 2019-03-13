@@ -13,18 +13,18 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
-	public static final IntegerProperty POWER = Properties.POWER;
+	public static final IntegerProperty field_11739 = Properties.field_12511;
 	private final int weight;
 
 	protected WeightedPressurePlateBlock(int i, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(POWER, Integer.valueOf(0)));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11739, Integer.valueOf(0)));
 		this.weight = i;
 	}
 
 	@Override
-	protected int getRedstoneOutput(World world, BlockPos blockPos) {
-		int i = Math.min(world.method_18467(Entity.class, BOX.offset(blockPos)).size(), this.weight);
+	protected int method_9434(World world, BlockPos blockPos) {
+		int i = Math.min(world.method_18467(Entity.class, field_9941.method_996(blockPos)).size(), this.weight);
 		if (i > 0) {
 			float f = (float)Math.min(this.weight, i) / (float)this.weight;
 			return MathHelper.ceil(f * 15.0F);
@@ -34,23 +34,23 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 	}
 
 	@Override
-	protected void playPressSound(IWorld iWorld, BlockPos blockPos) {
-		iWorld.playSound(null, blockPos, SoundEvents.field_14988, SoundCategory.field_15245, 0.3F, 0.90000004F);
+	protected void method_9436(IWorld iWorld, BlockPos blockPos) {
+		iWorld.method_8396(null, blockPos, SoundEvents.field_14988, SoundCategory.field_15245, 0.3F, 0.90000004F);
 	}
 
 	@Override
-	protected void playDepressSound(IWorld iWorld, BlockPos blockPos) {
-		iWorld.playSound(null, blockPos, SoundEvents.field_15100, SoundCategory.field_15245, 0.3F, 0.75F);
+	protected void method_9438(IWorld iWorld, BlockPos blockPos) {
+		iWorld.method_8396(null, blockPos, SoundEvents.field_15100, SoundCategory.field_15245, 0.3F, 0.75F);
 	}
 
 	@Override
-	protected int getRedstoneOutput(BlockState blockState) {
-		return (Integer)blockState.get(POWER);
+	protected int method_9435(BlockState blockState) {
+		return (Integer)blockState.method_11654(field_11739);
 	}
 
 	@Override
-	protected BlockState setRedstoneOutput(BlockState blockState, int i) {
-		return blockState.with(POWER, Integer.valueOf(i));
+	protected BlockState method_9432(BlockState blockState, int i) {
+		return blockState.method_11657(field_11739, Integer.valueOf(i));
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class WeightedPressurePlateBlock extends AbstractPressurePlateBlock {
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(POWER);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_11739);
 	}
 }

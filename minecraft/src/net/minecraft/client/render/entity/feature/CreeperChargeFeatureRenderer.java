@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper_armor.png");
+	private static final Identifier field_4842 = new Identifier("textures/entity/creeper/creeper_armor.png");
 	private final CreeperEntityModel<CreeperEntity> field_4844 = new CreeperEntityModel<>(2.0F);
 
 	public CreeperChargeFeatureRenderer(FeatureRendererContext<CreeperEntity, CreeperEntityModel<CreeperEntity>> featureRendererContext) {
@@ -22,7 +22,7 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 		if (creeperEntity.isCharged()) {
 			boolean bl = creeperEntity.isInvisible();
 			GlStateManager.depthMask(!bl);
-			this.bindTexture(SKIN);
+			this.method_17164(field_4842);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.loadIdentity();
 			float m = (float)creeperEntity.age + h;
@@ -34,7 +34,7 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 			GlStateManager.disableLighting();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			this.getModel().method_17081(this.field_4844);
-			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+			GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 			gameRenderer.method_3201(true);
 			this.field_4844.render(creeperEntity, f, g, i, j, k, l);
 			gameRenderer.method_3201(false);

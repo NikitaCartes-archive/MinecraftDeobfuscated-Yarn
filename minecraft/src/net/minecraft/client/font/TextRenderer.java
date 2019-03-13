@@ -22,21 +22,21 @@ import net.minecraft.util.math.MathHelper;
 public class TextRenderer implements AutoCloseable {
 	public final int fontHeight = 9;
 	public final Random random = new Random();
-	private final TextureManager textureManager;
-	private final FontStorage fontStorage;
+	private final TextureManager field_1998;
+	private final FontStorage field_1997;
 	private boolean rightToLeft;
 
 	public TextRenderer(TextureManager textureManager, FontStorage fontStorage) {
-		this.textureManager = textureManager;
-		this.fontStorage = fontStorage;
+		this.field_1998 = textureManager;
+		this.field_1997 = fontStorage;
 	}
 
 	public void setFonts(List<Font> list) {
-		this.fontStorage.setFonts(list);
+		this.field_1997.setFonts(list);
 	}
 
 	public void close() {
-		this.fontStorage.close();
+		this.field_1997.close();
 	}
 
 	public int drawWithShadow(String string, float f, float g, int i) {
@@ -92,7 +92,7 @@ public class TextRenderer implements AutoCloseable {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		Identifier identifier = null;
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.method_1328(7, VertexFormats.field_1575);
 		boolean bl2 = false;
 		boolean bl3 = false;
 		boolean bl4 = false;
@@ -136,20 +136,20 @@ public class TextRenderer implements AutoCloseable {
 
 				q++;
 			} else {
-				Glyph glyph = this.fontStorage.getGlyph(c);
-				GlyphRenderer glyphRenderer = bl2 && c != ' ' ? this.fontStorage.getObfuscatedGlyphRenderer(glyph) : this.fontStorage.getGlyphRenderer(c);
-				Identifier identifier2 = glyphRenderer.getId();
+				Glyph glyph = this.field_1997.getGlyph(c);
+				GlyphRenderer glyphRenderer = bl2 && c != ' ' ? this.field_1997.method_2013(glyph) : this.field_1997.method_2014(c);
+				Identifier identifier2 = glyphRenderer.method_2026();
 				if (identifier2 != null) {
 					if (identifier != identifier2) {
 						tessellator.draw();
-						this.textureManager.bindTexture(identifier2);
-						bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+						this.field_1998.method_4618(identifier2);
+						bufferBuilder.method_1328(7, VertexFormats.field_1575);
 						identifier = identifier2;
 					}
 
 					float s = bl3 ? glyph.getBoldOffset() : 0.0F;
 					float t = bl ? glyph.getShadowOffset() : 0.0F;
-					this.drawGlyph(glyphRenderer, bl3, bl4, s, f + t, g + t, bufferBuilder, m, n, o, p);
+					this.method_1710(glyphRenderer, bl3, bl4, s, f + t, g + t, bufferBuilder, m, n, o, p);
 				}
 
 				float s = glyph.getAdvance(bl3);
@@ -169,7 +169,7 @@ public class TextRenderer implements AutoCloseable {
 		tessellator.draw();
 		if (!list.isEmpty()) {
 			GlStateManager.disableTexture();
-			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
+			bufferBuilder.method_1328(7, VertexFormats.field_1576);
 
 			for (TextRenderer.Rectangle rectangle : list) {
 				rectangle.draw(bufferBuilder);
@@ -182,12 +182,12 @@ public class TextRenderer implements AutoCloseable {
 		return f;
 	}
 
-	private void drawGlyph(
+	private void method_1710(
 		GlyphRenderer glyphRenderer, boolean bl, boolean bl2, float f, float g, float h, BufferBuilder bufferBuilder, float i, float j, float k, float l
 	) {
-		glyphRenderer.draw(this.textureManager, bl2, g, h, bufferBuilder, i, j, k, l);
+		glyphRenderer.method_2025(this.field_1998, bl2, g, h, bufferBuilder, i, j, k, l);
 		if (bl) {
-			glyphRenderer.draw(this.textureManager, bl2, g + f, h, bufferBuilder, i, j, k, l);
+			glyphRenderer.method_2025(this.field_1998, bl2, g + f, h, bufferBuilder, i, j, k, l);
 		}
 	}
 
@@ -208,7 +208,7 @@ public class TextRenderer implements AutoCloseable {
 						bl = false;
 					}
 				} else {
-					f += this.fontStorage.getGlyph(c).getAdvance(bl);
+					f += this.field_1997.getGlyph(c).getAdvance(bl);
 				}
 			}
 
@@ -217,7 +217,7 @@ public class TextRenderer implements AutoCloseable {
 	}
 
 	public float getCharWidth(char c) {
-		return c == 167 ? 0.0F : this.fontStorage.getGlyph(c).getAdvance(false);
+		return c == 167 ? 0.0F : this.field_1997.getGlyph(c).getAdvance(false);
 	}
 
 	public String trimToWidth(String string, int i) {

@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/shulker/spark.png");
+	private static final Identifier field_4776 = new Identifier("textures/entity/shulker/spark.png");
 	private final ShulkerBulletEntityModel<ShulkerBulletEntity> field_4777 = new ShulkerBulletEntityModel<>();
 
 	public ShulkerBulletEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -55,6 +55,6 @@ public class ShulkerBulletEntityRenderer extends EntityRenderer<ShulkerBulletEnt
 	}
 
 	protected Identifier method_4105(ShulkerBulletEntity shulkerBulletEntity) {
-		return SKIN;
+		return field_4776;
 	}
 }

@@ -59,12 +59,12 @@ import org.apache.logging.log4j.Logger;
 public class EnderDragonFight {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Predicate<Entity> VALID_ENTITY = EntityPredicates.VALID_ENTITY.and(EntityPredicates.maximumDistance(0.0, 128.0, 0.0, 192.0));
-	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(
+	private final ServerBossBar field_13119 = (ServerBossBar)new ServerBossBar(
 			new TranslatableTextComponent("entity.minecraft.ender_dragon"), BossBar.Color.field_5788, BossBar.Overlay.field_5795
 		)
 		.setDragonMusic(true)
 		.setThickenFog(true);
-	private final ServerWorld world;
+	private final ServerWorld field_13108;
 	private final List<Integer> gateways = Lists.<Integer>newArrayList();
 	private final BlockPattern endPortalPattern;
 	private int dragonSeenTimer;
@@ -75,13 +75,13 @@ public class EnderDragonFight {
 	private boolean previouslyKilled;
 	private UUID dragonUuid;
 	private boolean doLegacyCheck = true;
-	private BlockPos exitPortalLocation;
+	private BlockPos field_13117;
 	private EnderDragonSpawnState dragonSpawnState;
 	private int spawnStateTimer;
 	private List<EnderCrystalEntity> crystals;
 
 	public EnderDragonFight(ServerWorld serverWorld, CompoundTag compoundTag) {
-		this.world = serverWorld;
+		this.field_13108 = serverWorld;
 		if (compoundTag.containsKey("DragonKilled", 99)) {
 			if (compoundTag.hasUuid("DragonUUID")) {
 				this.dragonUuid = compoundTag.getUuid("DragonUUID");
@@ -94,7 +94,7 @@ public class EnderDragonFight {
 			}
 
 			if (compoundTag.containsKey("ExitPortalLocation", 10)) {
-				this.exitPortalLocation = TagHelper.deserializeBlockPos(compoundTag.getCompound("ExitPortalLocation"));
+				this.field_13117 = TagHelper.deserializeBlockPos(compoundTag.getCompound("ExitPortalLocation"));
 			}
 		} else {
 			this.dragonKilled = true;
@@ -102,7 +102,7 @@ public class EnderDragonFight {
 		}
 
 		if (compoundTag.containsKey("Gateways", 9)) {
-			ListTag listTag = compoundTag.getList("Gateways", 3);
+			ListTag listTag = compoundTag.method_10554("Gateways", 3);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				this.gateways.add(listTag.getInt(i));
@@ -122,7 +122,7 @@ public class EnderDragonFight {
 			.build();
 	}
 
-	public CompoundTag toTag() {
+	public CompoundTag method_12530() {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.dragonUuid != null) {
 			compoundTag.putUuid("DragonUUID", this.dragonUuid);
@@ -130,8 +130,8 @@ public class EnderDragonFight {
 
 		compoundTag.putBoolean("DragonKilled", this.dragonKilled);
 		compoundTag.putBoolean("PreviouslyKilled", this.previouslyKilled);
-		if (this.exitPortalLocation != null) {
-			compoundTag.put("ExitPortalLocation", TagHelper.serializeBlockPos(this.exitPortalLocation));
+		if (this.field_13117 != null) {
+			compoundTag.method_10566("ExitPortalLocation", TagHelper.serializeBlockPos(this.field_13117));
 		}
 
 		ListTag listTag = new ListTag();
@@ -140,19 +140,19 @@ public class EnderDragonFight {
 			listTag.add(new IntTag(i));
 		}
 
-		compoundTag.put("Gateways", listTag);
+		compoundTag.method_10566("Gateways", listTag);
 		return compoundTag;
 	}
 
 	public void tick() {
-		this.bossBar.setVisible(!this.dragonKilled);
+		this.field_13119.setVisible(!this.dragonKilled);
 		if (++this.playerUpdateTimer >= 20) {
 			this.updatePlayers();
 			this.playerUpdateTimer = 0;
 		}
 
-		if (!this.bossBar.getPlayers().isEmpty()) {
-			this.world.method_14178().addTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 8, Void.INSTANCE);
+		if (!this.field_13119.getPlayers().isEmpty()) {
+			this.field_13108.method_14178().method_17297(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 8, Void.INSTANCE);
 			boolean bl = this.loadChunks();
 			if (this.doLegacyCheck && bl) {
 				this.convertFromLegacy();
@@ -165,7 +165,7 @@ public class EnderDragonFight {
 					this.respawnDragon();
 				}
 
-				this.dragonSpawnState.run(this.world, this, this.crystals, this.spawnStateTimer++, this.exitPortalLocation);
+				this.dragonSpawnState.method_12507(this.field_13108, this, this.crystals, this.spawnStateTimer++, this.field_13117);
 			}
 
 			if (!this.dragonKilled) {
@@ -180,7 +180,7 @@ public class EnderDragonFight {
 				}
 			}
 		} else {
-			this.world.method_14178().removeTicket(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 8, Void.INSTANCE);
+			this.field_13108.method_14178().method_17300(ChunkTicketType.DRAGON, new ChunkPos(0, 0), 8, Void.INSTANCE);
 		}
 	}
 
@@ -196,7 +196,7 @@ public class EnderDragonFight {
 			this.generateEndPortal(false);
 		}
 
-		List<EnderDragonEntity> list = this.world.method_18776();
+		List<EnderDragonEntity> list = this.field_13108.method_18776();
 		if (list.isEmpty()) {
 			this.dragonKilled = true;
 		} else {
@@ -217,7 +217,7 @@ public class EnderDragonFight {
 	}
 
 	private void checkDragonSeen() {
-		List<EnderDragonEntity> list = this.world.method_18776();
+		List<EnderDragonEntity> list = this.field_13108.method_18776();
 		if (list.isEmpty()) {
 			LOGGER.debug("Haven't seen the dragon, respawning it");
 			this.createDragon();
@@ -237,8 +237,8 @@ public class EnderDragonFight {
 				this.dragonKilled = false;
 				EnderDragonEntity enderDragonEntity = this.createDragon();
 
-				for (ServerPlayerEntity serverPlayerEntity : this.bossBar.getPlayers()) {
-					Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, enderDragonEntity);
+				for (ServerPlayerEntity serverPlayerEntity : this.field_13119.getPlayers()) {
+					Criterions.SUMMONED_ENTITY.method_9124(serverPlayerEntity, enderDragonEntity);
 				}
 			} else {
 				this.dragonSpawnState = enderDragonSpawnState;
@@ -249,7 +249,7 @@ public class EnderDragonFight {
 	private boolean worldContainsEndPortal() {
 		for (int i = -8; i <= 8; i++) {
 			for (int j = -8; j <= 8; j++) {
-				WorldChunk worldChunk = this.world.method_8497(i, j);
+				WorldChunk worldChunk = this.field_13108.method_8497(i, j);
 
 				for (BlockEntity blockEntity : worldChunk.getBlockEntityMap().values()) {
 					if (blockEntity instanceof EndPortalBlockEntity) {
@@ -266,15 +266,15 @@ public class EnderDragonFight {
 	private BlockPattern.Result findEndPortal() {
 		for (int i = -8; i <= 8; i++) {
 			for (int j = -8; j <= 8; j++) {
-				WorldChunk worldChunk = this.world.method_8497(i, j);
+				WorldChunk worldChunk = this.field_13108.method_8497(i, j);
 
 				for (BlockEntity blockEntity : worldChunk.getBlockEntityMap().values()) {
 					if (blockEntity instanceof EndPortalBlockEntity) {
-						BlockPattern.Result result = this.endPortalPattern.searchAround(this.world, blockEntity.getPos());
+						BlockPattern.Result result = this.endPortalPattern.method_11708(this.field_13108, blockEntity.method_11016());
 						if (result != null) {
-							BlockPos blockPos = result.translate(3, 3, 3).getBlockPos();
-							if (this.exitPortalLocation == null && blockPos.getX() == 0 && blockPos.getZ() == 0) {
-								this.exitPortalLocation = blockPos;
+							BlockPos blockPos = result.translate(3, 3, 3).method_11683();
+							if (this.field_13117 == null && blockPos.getX() == 0 && blockPos.getZ() == 0) {
+								this.field_13117 = blockPos;
 							}
 
 							return result;
@@ -284,14 +284,14 @@ public class EnderDragonFight {
 			}
 		}
 
-		int i = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN).getY();
+		int i = this.field_13108.method_8598(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.field_13600).getY();
 
 		for (int j = i; j >= 0; j--) {
 			BlockPattern.Result result2 = this.endPortalPattern
-				.searchAround(this.world, new BlockPos(EndPortalFeature.ORIGIN.getX(), j, EndPortalFeature.ORIGIN.getZ()));
+				.method_11708(this.field_13108, new BlockPos(EndPortalFeature.field_13600.getX(), j, EndPortalFeature.field_13600.getZ()));
 			if (result2 != null) {
-				if (this.exitPortalLocation == null) {
-					this.exitPortalLocation = result2.translate(3, 3, 3).getBlockPos();
+				if (this.field_13117 == null) {
+					this.field_13117 = result2.translate(3, 3, 3).method_11683();
 				}
 
 				return result2;
@@ -304,12 +304,12 @@ public class EnderDragonFight {
 	private boolean loadChunks() {
 		for (int i = -8; i <= 8; i++) {
 			for (int j = 8; j <= 8; j++) {
-				Chunk chunk = this.world.getChunk(i, j, ChunkStatus.FULL, false);
+				Chunk chunk = this.field_13108.method_8402(i, j, ChunkStatus.FULL, false);
 				if (!(chunk instanceof WorldChunk)) {
 					return false;
 				}
 
-				ChunkHolder.LevelType levelType = ((WorldChunk)chunk).getLevelType();
+				ChunkHolder.LevelType levelType = ((WorldChunk)chunk).method_12225();
 				if (!levelType.isAfter(ChunkHolder.LevelType.TICKING)) {
 					return false;
 				}
@@ -322,16 +322,16 @@ public class EnderDragonFight {
 	private void updatePlayers() {
 		Set<ServerPlayerEntity> set = Sets.<ServerPlayerEntity>newHashSet();
 
-		for (ServerPlayerEntity serverPlayerEntity : this.world.method_18766(VALID_ENTITY)) {
-			this.bossBar.addPlayer(serverPlayerEntity);
+		for (ServerPlayerEntity serverPlayerEntity : this.field_13108.method_18766(VALID_ENTITY)) {
+			this.field_13119.method_14088(serverPlayerEntity);
 			set.add(serverPlayerEntity);
 		}
 
-		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet(this.bossBar.getPlayers());
+		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet(this.field_13119.getPlayers());
 		set2.removeAll(set);
 
 		for (ServerPlayerEntity serverPlayerEntity2 : set2) {
-			this.bossBar.removePlayer(serverPlayerEntity2);
+			this.field_13119.method_14089(serverPlayerEntity2);
 		}
 	}
 
@@ -339,8 +339,8 @@ public class EnderDragonFight {
 		this.crystalCountTimer = 0;
 		this.endCrystalsAlive = 0;
 
-		for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.world)) {
-			this.endCrystalsAlive = this.endCrystalsAlive + this.world.method_18467(EnderCrystalEntity.class, spike.getBoundingBox()).size();
+		for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.field_13108)) {
+			this.endCrystalsAlive = this.endCrystalsAlive + this.field_13108.method_18467(EnderCrystalEntity.class, spike.method_13968()).size();
 		}
 
 		LOGGER.debug("Found {} end crystals still alive", this.endCrystalsAlive);
@@ -348,12 +348,12 @@ public class EnderDragonFight {
 
 	public void dragonKilled(EnderDragonEntity enderDragonEntity) {
 		if (enderDragonEntity.getUuid().equals(this.dragonUuid)) {
-			this.bossBar.setPercent(0.0F);
-			this.bossBar.setVisible(false);
+			this.field_13119.setPercent(0.0F);
+			this.field_13119.setVisible(false);
 			this.generateEndPortal(true);
 			this.generateNewEndGateway();
 			if (!this.previouslyKilled) {
-				this.world.setBlockState(this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN), Blocks.field_10081.getDefaultState());
+				this.field_13108.method_8501(this.field_13108.method_8598(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.field_13600), Blocks.field_10081.method_9564());
 			}
 
 			this.previouslyKilled = true;
@@ -366,16 +366,16 @@ public class EnderDragonFight {
 			int i = (Integer)this.gateways.remove(this.gateways.size() - 1);
 			int j = (int)(96.0 * Math.cos(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));
 			int k = (int)(96.0 * Math.sin(2.0 * (-Math.PI + (Math.PI / 20) * (double)i)));
-			this.generateEndGateway(new BlockPos(j, 75, k));
+			this.method_12516(new BlockPos(j, 75, k));
 		}
 	}
 
-	private void generateEndGateway(BlockPos blockPos) {
-		this.world.playEvent(3000, blockPos, 0);
+	private void method_12516(BlockPos blockPos) {
+		this.field_13108.method_8535(3000, blockPos, 0);
 		Feature.field_13564
-			.generate(
-				this.world,
-				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.method_14178().getChunkGenerator(),
+			.method_13151(
+				this.field_13108,
+				(ChunkGenerator<? extends ChunkGeneratorConfig>)this.field_13108.method_14178().getChunkGenerator(),
 				new Random(),
 				blockPos,
 				EndGatewayFeatureConfig.createConfig()
@@ -384,39 +384,39 @@ public class EnderDragonFight {
 
 	private void generateEndPortal(boolean bl) {
 		EndPortalFeature endPortalFeature = new EndPortalFeature(bl);
-		if (this.exitPortalLocation == null) {
-			this.exitPortalLocation = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN).down();
+		if (this.field_13117 == null) {
+			this.field_13117 = this.field_13108.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.field_13600).down();
 
-			while (this.world.getBlockState(this.exitPortalLocation).getBlock() == Blocks.field_9987 && this.exitPortalLocation.getY() > this.world.getSeaLevel()) {
-				this.exitPortalLocation = this.exitPortalLocation.down();
+			while (this.field_13108.method_8320(this.field_13117).getBlock() == Blocks.field_9987 && this.field_13117.getY() > this.field_13108.getSeaLevel()) {
+				this.field_13117 = this.field_13117.down();
 			}
 		}
 
 		endPortalFeature.method_13163(
-			this.world,
-			(ChunkGenerator<? extends ChunkGeneratorConfig>)this.world.method_14178().getChunkGenerator(),
+			this.field_13108,
+			(ChunkGenerator<? extends ChunkGeneratorConfig>)this.field_13108.method_14178().getChunkGenerator(),
 			new Random(),
-			this.exitPortalLocation,
-			FeatureConfig.DEFAULT
+			this.field_13117,
+			FeatureConfig.field_13603
 		);
 	}
 
 	private EnderDragonEntity createDragon() {
-		this.world.getWorldChunk(new BlockPos(0, 128, 0));
-		EnderDragonEntity enderDragonEntity = EntityType.ENDER_DRAGON.create(this.world);
-		enderDragonEntity.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
-		enderDragonEntity.setPositionAndAngles(0.0, 128.0, 0.0, this.world.random.nextFloat() * 360.0F, 0.0F);
-		this.world.spawnEntity(enderDragonEntity);
+		this.field_13108.method_8500(new BlockPos(0, 128, 0));
+		EnderDragonEntity enderDragonEntity = EntityType.ENDER_DRAGON.method_5883(this.field_13108);
+		enderDragonEntity.method_6831().setPhase(PhaseType.HOLDING_PATTERN);
+		enderDragonEntity.setPositionAndAngles(0.0, 128.0, 0.0, this.field_13108.random.nextFloat() * 360.0F, 0.0F);
+		this.field_13108.spawnEntity(enderDragonEntity);
 		this.dragonUuid = enderDragonEntity.getUuid();
 		return enderDragonEntity;
 	}
 
 	public void updateFight(EnderDragonEntity enderDragonEntity) {
 		if (enderDragonEntity.getUuid().equals(this.dragonUuid)) {
-			this.bossBar.setPercent(enderDragonEntity.getHealth() / enderDragonEntity.getHealthMaximum());
+			this.field_13119.setPercent(enderDragonEntity.getHealth() / enderDragonEntity.getHealthMaximum());
 			this.dragonSeenTimer = 0;
 			if (enderDragonEntity.hasCustomName()) {
-				this.bossBar.setName(enderDragonEntity.getDisplayName());
+				this.field_13119.method_5413(enderDragonEntity.method_5476());
 			}
 		}
 	}
@@ -434,9 +434,9 @@ public class EnderDragonFight {
 			this.generateEndPortal(true);
 		} else {
 			this.countAliveCrystals();
-			Entity entity = this.world.getEntity(this.dragonUuid);
+			Entity entity = this.field_13108.getEntity(this.dragonUuid);
 			if (entity instanceof EnderDragonEntity) {
-				((EnderDragonEntity)entity).crystalDestroyed(enderCrystalEntity, new BlockPos(enderCrystalEntity), damageSource);
+				((EnderDragonEntity)entity).method_6828(enderCrystalEntity, new BlockPos(enderCrystalEntity), damageSource);
 			}
 		}
 	}
@@ -447,7 +447,7 @@ public class EnderDragonFight {
 
 	public void respawnDragon() {
 		if (this.dragonKilled && this.dragonSpawnState == null) {
-			BlockPos blockPos = this.exitPortalLocation;
+			BlockPos blockPos = this.field_13117;
 			if (blockPos == null) {
 				LOGGER.debug("Tried to respawn, but need to find the portal first.");
 				BlockPattern.Result result = this.findEndPortal();
@@ -458,14 +458,14 @@ public class EnderDragonFight {
 					LOGGER.debug("Found the exit portal & temporarily using it.");
 				}
 
-				blockPos = this.exitPortalLocation;
+				blockPos = this.field_13117;
 			}
 
 			List<EnderCrystalEntity> list = Lists.<EnderCrystalEntity>newArrayList();
 			BlockPos blockPos2 = blockPos.up(1);
 
 			for (Direction direction : Direction.Type.HORIZONTAL) {
-				List<EnderCrystalEntity> list2 = this.world.method_18467(EnderCrystalEntity.class, new BoundingBox(blockPos2.offset(direction, 2)));
+				List<EnderCrystalEntity> list2 = this.field_13108.method_18467(EnderCrystalEntity.class, new BoundingBox(blockPos2.method_10079(direction, 2)));
 				if (list2.isEmpty()) {
 					return;
 				}
@@ -486,7 +486,7 @@ public class EnderDragonFight {
 						for (int k = 0; k < this.endPortalPattern.getDepth(); k++) {
 							CachedBlockPosition cachedBlockPosition = result.translate(i, j, k);
 							if (cachedBlockPosition.getBlockState().getBlock() == Blocks.field_9987 || cachedBlockPosition.getBlockState().getBlock() == Blocks.field_10027) {
-								this.world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.field_10471.getDefaultState());
+								this.field_13108.method_8501(cachedBlockPosition.method_11683(), Blocks.field_10471.method_9564());
 							}
 						}
 					}
@@ -501,10 +501,10 @@ public class EnderDragonFight {
 	}
 
 	public void resetEndCrystals() {
-		for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.world)) {
-			for (EnderCrystalEntity enderCrystalEntity : this.world.method_18467(EnderCrystalEntity.class, spike.getBoundingBox())) {
+		for (EndSpikeFeature.Spike spike : EndSpikeFeature.getSpikes(this.field_13108)) {
+			for (EnderCrystalEntity enderCrystalEntity : this.field_13108.method_18467(EnderCrystalEntity.class, spike.method_13968())) {
 				enderCrystalEntity.setInvulnerable(false);
-				enderCrystalEntity.setBeamTarget(null);
+				enderCrystalEntity.method_6837(null);
 			}
 		}
 	}

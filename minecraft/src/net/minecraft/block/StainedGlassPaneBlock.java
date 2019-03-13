@@ -10,14 +10,14 @@ public class StainedGlassPaneBlock extends PaneBlock {
 	public StainedGlassPaneBlock(DyeColor dyeColor, Block.Settings settings) {
 		super(settings);
 		this.color = dyeColor;
-		this.setDefaultState(
-			this.stateFactory
-				.getDefaultState()
-				.with(NORTH, Boolean.valueOf(false))
-				.with(EAST, Boolean.valueOf(false))
-				.with(SOUTH, Boolean.valueOf(false))
-				.with(WEST, Boolean.valueOf(false))
-				.with(WATERLOGGED, Boolean.valueOf(false))
+		this.method_9590(
+			this.field_10647
+				.method_11664()
+				.method_11657(field_10905, Boolean.valueOf(false))
+				.method_11657(field_10907, Boolean.valueOf(false))
+				.method_11657(field_10904, Boolean.valueOf(false))
+				.method_11657(field_10903, Boolean.valueOf(false))
+				.method_11657(field_10900, Boolean.valueOf(false))
 		);
 	}
 
@@ -31,19 +31,19 @@ public class StainedGlassPaneBlock extends PaneBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (!world.isClient) {
-				BeaconBlock.onStainedGlassAdded(world, blockPos);
+				BeaconBlock.method_9463(world, blockPos);
 			}
 		}
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
 			if (!world.isClient) {
-				BeaconBlock.onStainedGlassAdded(world, blockPos);
+				BeaconBlock.method_9463(world, blockPos);
 			}
 		}
 	}

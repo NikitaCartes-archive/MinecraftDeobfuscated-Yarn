@@ -13,8 +13,8 @@ public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior 
 	@Override
 	public ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
 		World world = blockPointer.getWorld();
-		Position position = DispenserBlock.getOutputLocation(blockPointer);
-		Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
+		Position position = DispenserBlock.method_10010(blockPointer);
+		Direction direction = blockPointer.getBlockState().method_11654(DispenserBlock.field_10918);
 		Projectile projectile = this.createProjectile(world, position, itemStack);
 		projectile.setVelocity(
 			(double)direction.getOffsetX(), (double)((float)direction.getOffsetY() + 0.1F), (double)direction.getOffsetZ(), this.getForce(), this.getVariation()
@@ -26,7 +26,7 @@ public abstract class ProjectileDispenserBehavior extends ItemDispenserBehavior 
 
 	@Override
 	protected void playSound(BlockPointer blockPointer) {
-		blockPointer.getWorld().playEvent(1002, blockPointer.getBlockPos(), 0);
+		blockPointer.getWorld().method_8535(1002, blockPointer.getBlockPos(), 0);
 	}
 
 	protected abstract Projectile createProjectile(World world, Position position, ItemStack itemStack);

@@ -14,12 +14,12 @@ import net.minecraft.util.Identifier;
 public class WeightedSoundSet implements SoundContainer<Sound> {
 	private final List<SoundContainer<Sound>> sounds = Lists.<SoundContainer<Sound>>newArrayList();
 	private final Random random = new Random();
-	private final Identifier id;
-	private final TextComponent subtitle;
+	private final Identifier field_5602;
+	private final TextComponent field_5599;
 
 	public WeightedSoundSet(Identifier identifier, @Nullable String string) {
-		this.id = identifier;
-		this.subtitle = string == null ? null : new TranslatableTextComponent(string);
+		this.field_5602 = identifier;
+		this.field_5599 = string == null ? null : new TranslatableTextComponent(string);
 	}
 
 	@Override
@@ -51,13 +51,13 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 		}
 	}
 
-	public void add(SoundContainer<Sound> soundContainer) {
+	public void method_4885(SoundContainer<Sound> soundContainer) {
 		this.sounds.add(soundContainer);
 	}
 
 	@Nullable
-	public TextComponent getSubtitle() {
-		return this.subtitle;
+	public TextComponent method_4886() {
+		return this.field_5599;
 	}
 
 	@Override

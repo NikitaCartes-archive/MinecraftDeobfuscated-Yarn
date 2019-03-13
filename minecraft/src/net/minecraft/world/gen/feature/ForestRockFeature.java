@@ -19,8 +19,8 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, BoulderFeatureConfig boulderFeatureConfig
 	) {
 		while (blockPos.getY() > 3) {
-			if (!iWorld.isAir(blockPos.down())) {
-				Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+			if (!iWorld.method_8623(blockPos.down())) {
+				Block block = iWorld.method_8320(blockPos.down()).getBlock();
 				if (block == Blocks.field_10219 || Block.isNaturalDirt(block) || Block.isNaturalStone(block)) {
 					break;
 				}
@@ -42,7 +42,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 
 				for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-k, -l, -m), blockPos.add(k, l, m))) {
 					if (blockPos2.squaredDistanceTo(blockPos) <= (double)(f * f)) {
-						iWorld.setBlockState(blockPos2, boulderFeatureConfig.state, 4);
+						iWorld.method_8652(blockPos2, boulderFeatureConfig.state, 4);
 					}
 				}
 

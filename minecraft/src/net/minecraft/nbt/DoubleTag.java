@@ -52,7 +52,7 @@ public class DoubleTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public TextComponent toTextComponent(String string, int i) {
+	public TextComponent method_10710(String string, int i) {
 		TextComponent textComponent = new StringTextComponent("d").applyFormat(RED);
 		return new StringTextComponent(String.valueOf(this.value)).append(textComponent).applyFormat(GOLD);
 	}

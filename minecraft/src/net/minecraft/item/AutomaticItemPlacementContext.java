@@ -20,13 +20,13 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 	}
 
 	@Override
-	public BlockPos getBlockPos() {
-		return this.hitResult.getBlockPos();
+	public BlockPos method_8037() {
+		return this.field_17543.method_17777();
 	}
 
 	@Override
 	public boolean canPlace() {
-		return this.world.getBlockState(this.hitResult.getBlockPos()).method_11587(this);
+		return this.field_8945.method_8320(this.field_17543.method_17777()).method_11587(this);
 	}
 
 	@Override
@@ -35,12 +35,12 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 	}
 
 	@Override
-	public Direction getPlayerFacing() {
+	public Direction method_7715() {
 		return Direction.DOWN;
 	}
 
 	@Override
-	public Direction[] getPlacementFacings() {
+	public Direction[] method_7718() {
 		switch (this.field_13362) {
 			case DOWN:
 			default:
@@ -59,7 +59,7 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 	}
 
 	@Override
-	public Direction getPlayerHorizontalFacing() {
+	public Direction method_8042() {
 		return this.field_13362.getAxis() == Direction.Axis.Y ? Direction.NORTH : this.field_13362;
 	}
 

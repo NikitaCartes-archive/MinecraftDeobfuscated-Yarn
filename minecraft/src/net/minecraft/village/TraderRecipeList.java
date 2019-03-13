@@ -12,7 +12,7 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 	}
 
 	public TraderRecipeList(CompoundTag compoundTag) {
-		ListTag listTag = compoundTag.getList("Recipes", 10);
+		ListTag listTag = compoundTag.method_10554("Recipes", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			this.add(new TraderRecipe(listTag.getCompoundTag(i)));
@@ -36,12 +36,12 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 		}
 	}
 
-	public void toPacket(PacketByteBuf packetByteBuf) {
+	public void method_8270(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeByte((byte)(this.size() & 0xFF));
 
 		for (int i = 0; i < this.size(); i++) {
 			TraderRecipe traderRecipe = (TraderRecipe)this.get(i);
-			packetByteBuf.writeItemStack(traderRecipe.getFirstBuyItem());
+			packetByteBuf.writeItemStack(traderRecipe.method_19272());
 			packetByteBuf.writeItemStack(traderRecipe.getModifiableSellItem());
 			ItemStack itemStack = traderRecipe.getSecondBuyItem();
 			packetByteBuf.writeBoolean(!itemStack.isEmpty());
@@ -52,10 +52,13 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 			packetByteBuf.writeBoolean(traderRecipe.isDisabled());
 			packetByteBuf.writeInt(traderRecipe.getUses());
 			packetByteBuf.writeInt(traderRecipe.getMaxUses());
+			packetByteBuf.writeInt(traderRecipe.method_19279());
+			packetByteBuf.writeInt(traderRecipe.method_19277());
+			packetByteBuf.writeFloat(traderRecipe.method_19278());
 		}
 	}
 
-	public static TraderRecipeList fromPacket(PacketByteBuf packetByteBuf) {
+	public static TraderRecipeList method_8265(PacketByteBuf packetByteBuf) {
 		TraderRecipeList traderRecipeList = new TraderRecipeList();
 		int i = packetByteBuf.readByte() & 255;
 
@@ -70,27 +73,31 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 			boolean bl = packetByteBuf.readBoolean();
 			int k = packetByteBuf.readInt();
 			int l = packetByteBuf.readInt();
-			TraderRecipe traderRecipe = new TraderRecipe(itemStack, itemStack3, itemStack2, k, l);
+			int m = packetByteBuf.readInt();
+			int n = packetByteBuf.readInt();
+			float f = packetByteBuf.readFloat();
+			TraderRecipe traderRecipe = new TraderRecipe(itemStack, itemStack3, itemStack2, k, l, m, f);
 			if (bl) {
 				traderRecipe.clearUses();
 			}
 
+			traderRecipe.method_19273(n);
 			traderRecipeList.add(traderRecipe);
 		}
 
 		return traderRecipeList;
 	}
 
-	public CompoundTag toTag() {
+	public CompoundTag method_8268() {
 		CompoundTag compoundTag = new CompoundTag();
 		ListTag listTag = new ListTag();
 
 		for (int i = 0; i < this.size(); i++) {
 			TraderRecipe traderRecipe = (TraderRecipe)this.get(i);
-			listTag.add(traderRecipe.deserialize());
+			listTag.add(traderRecipe.method_8251());
 		}
 
-		compoundTag.put("Recipes", listTag);
+		compoundTag.method_10566("Recipes", listTag);
 		return compoundTag;
 	}
 }

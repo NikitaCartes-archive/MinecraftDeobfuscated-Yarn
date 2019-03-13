@@ -38,8 +38,8 @@ public class LocateCommand {
 	}
 
 	private static int method_13457(ServerCommandSource serverCommandSource, String string) throws CommandSyntaxException {
-		BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
-		BlockPos blockPos2 = serverCommandSource.getWorld().locateStructure(string, blockPos, 100, false);
+		BlockPos blockPos = new BlockPos(serverCommandSource.method_9222());
+		BlockPos blockPos2 = serverCommandSource.method_9225().method_8487(string, blockPos, 100, false);
 		if (blockPos2 == null) {
 			throw FAILED_EXCEPTION.create();
 		} else {
@@ -50,7 +50,7 @@ public class LocateCommand {
 							.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/tp @s " + blockPos2.getX() + " ~ " + blockPos2.getZ()))
 							.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableTextComponent("chat.coordinates.tooltip")))
 				);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.locate.success", string, textComponent, i), false);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.locate.success", string, textComponent, i), false);
 			return i;
 		}
 	}

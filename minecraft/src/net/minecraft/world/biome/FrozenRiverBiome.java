@@ -11,9 +11,9 @@ public final class FrozenRiverBiome extends Biome {
 	public FrozenRiverBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG)
+				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15677)
 				.precipitation(Biome.Precipitation.SNOW)
-				.category(Biome.Category.RIVER)
+				.method_8738(Biome.Category.RIVER)
 				.depth(-0.5F)
 				.scale(0.0F)
 				.temperature(0.0F)
@@ -22,7 +22,7 @@ public final class FrozenRiverBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

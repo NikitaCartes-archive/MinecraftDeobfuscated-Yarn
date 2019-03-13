@@ -26,7 +26,7 @@ public class RenameItemC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12408(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onRenameItem(this);
+		serverPlayPacketListener.method_12060(this);
 	}
 
 	public String getItemName() {

@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class HuskEntityRenderer extends ZombieEntityRenderer {
-	private static final Identifier SKIN = new Identifier("textures/entity/zombie/husk.png");
+	private static final Identifier field_4716 = new Identifier("textures/entity/zombie/husk.png");
 
 	public HuskEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -22,6 +22,6 @@ public class HuskEntityRenderer extends ZombieEntityRenderer {
 
 	@Override
 	protected Identifier method_4163(ZombieEntity zombieEntity) {
-		return SKIN;
+		return field_4716;
 	}
 }

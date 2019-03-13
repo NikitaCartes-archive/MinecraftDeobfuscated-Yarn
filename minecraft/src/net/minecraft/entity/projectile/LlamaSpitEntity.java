@@ -46,7 +46,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 
 		for (int j = 0; j < 7; j++) {
 			double k = 0.4 + 0.1 * (double)j;
-			world.addParticle(ParticleTypes.field_11228, d, e, f, g * k, h, i * k);
+			world.method_8406(ParticleTypes.field_11228, d, e, f, g * k, h, i * k);
 		}
 
 		this.setVelocity(g, h, i);
@@ -59,10 +59,10 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			this.method_7479();
 		}
 
-		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d = this.method_18798();
 		HitResult hitResult = class_1675.method_18074(
 			this,
-			this.getBoundingBox().method_18804(vec3d).expand(1.0),
+			this.method_5829().method_18804(vec3d).expand(1.0),
 			entity -> !entity.isSpectator() && entity != this.owner,
 			RayTraceContext.ShapeType.field_17559,
 			true
@@ -74,7 +74,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		this.x = this.x + vec3d.x;
 		this.y = this.y + vec3d.y;
 		this.z = this.z + vec3d.z;
-		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		float f = MathHelper.sqrt(method_17996(vec3d));
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
 		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
@@ -98,14 +98,14 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
 		float g = 0.99F;
 		float h = 0.06F;
-		if (!this.world.containsBlockWithMaterial(this.getBoundingBox(), Material.AIR)) {
+		if (!this.field_6002.method_8422(this.method_5829(), Material.AIR)) {
 			this.invalidate();
 		} else if (this.isInsideWaterOrBubbleColumn()) {
 			this.invalidate();
 		} else {
-			this.setVelocity(vec3d.multiply(0.99F));
+			this.method_18799(vec3d.multiply(0.99F));
 			if (!this.isUnaffectedByGravity()) {
-				this.setVelocity(this.getVelocity().add(0.0, -0.06F, 0.0));
+				this.method_18799(this.method_18798().add(0.0, -0.06F, 0.0));
 			}
 
 			this.setPosition(this.x, this.y, this.z);
@@ -132,23 +132,19 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			.normalize()
 			.add(this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h, this.random.nextGaussian() * 0.0075F * (double)h)
 			.multiply((double)g);
-		this.setVelocity(vec3d);
-		float i = MathHelper.sqrt(squaredHorizontalLength(vec3d));
+		this.method_18799(vec3d);
+		float i = MathHelper.sqrt(method_17996(vec3d));
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, f) * 180.0F / (float)Math.PI);
 		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)i) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
 	}
 
-	@Override
-	public void method_7474(Entity entity, float f, float g, float h, float i, float j) {
-	}
-
 	public void method_7481(HitResult hitResult) {
 		HitResult.Type type = hitResult.getType();
 		if (type == HitResult.Type.ENTITY && this.owner != null) {
-			((EntityHitResult)hitResult).getEntity().damage(DamageSource.mobProjectile(this, this.owner).setProjectile(), 1.0F);
-		} else if (type == HitResult.Type.BLOCK && !this.world.isClient) {
+			((EntityHitResult)hitResult).getEntity().damage(DamageSource.method_5519(this, this.owner).setProjectile(), 1.0F);
+		} else if (type == HitResult.Type.BLOCK && !this.field_6002.isClient) {
 			this.invalidate();
 		}
 	}
@@ -158,19 +154,19 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+	protected void method_5749(CompoundTag compoundTag) {
 		if (compoundTag.containsKey("Owner", 10)) {
 			this.field_7623 = compoundTag.getCompound("Owner");
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+	protected void method_5652(CompoundTag compoundTag) {
 		if (this.owner != null) {
 			CompoundTag compoundTag2 = new CompoundTag();
 			UUID uUID = this.owner.getUuid();
 			compoundTag2.putUuid("OwnerUUID", uUID);
-			compoundTag.put("Owner", compoundTag2);
+			compoundTag.method_10566("Owner", compoundTag2);
 		}
 	}
 
@@ -178,7 +174,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		if (this.field_7623 != null && this.field_7623.hasUuid("OwnerUUID")) {
 			UUID uUID = this.field_7623.getUuid("OwnerUUID");
 
-			for (LlamaEntity llamaEntity : this.world.method_18467(LlamaEntity.class, this.getBoundingBox().expand(15.0))) {
+			for (LlamaEntity llamaEntity : this.field_6002.method_18467(LlamaEntity.class, this.method_5829().expand(15.0))) {
 				if (llamaEntity.getUuid().equals(uUID)) {
 					this.owner = llamaEntity;
 					break;
@@ -190,7 +186,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<?> method_18002() {
 		return new EntitySpawnS2CPacket(this);
 	}
 }

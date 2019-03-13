@@ -24,7 +24,7 @@ public class ScoreboardEntry {
 	private int latency;
 	private boolean field_3740;
 	private String field_3745;
-	private TextComponent displayName;
+	private TextComponent field_3743;
 	private int field_3738;
 	private int field_3736;
 	private long field_3737;
@@ -39,7 +39,7 @@ public class ScoreboardEntry {
 		this.profile = arg.method_11726();
 		this.gameMode = arg.method_11725();
 		this.latency = arg.method_11727();
-		this.displayName = arg.method_11724();
+		this.field_3743 = arg.method_11724();
 	}
 
 	public GameProfile getProfile() {
@@ -63,40 +63,40 @@ public class ScoreboardEntry {
 	}
 
 	public boolean isSkinTextureLoaded() {
-		return this.getSkinTexture() != null;
+		return this.method_2968() != null;
 	}
 
 	public String method_2977() {
 		return this.field_3745 == null ? DefaultSkinHelper.getModel(this.profile.getId()) : this.field_3745;
 	}
 
-	public Identifier getSkinTexture() {
+	public Identifier method_2968() {
 		this.method_2969();
-		return MoreObjects.firstNonNull((Identifier)this.field_3742.get(Type.SKIN), DefaultSkinHelper.getTexture(this.profile.getId()));
+		return MoreObjects.firstNonNull((Identifier)this.field_3742.get(Type.SKIN), DefaultSkinHelper.method_4648(this.profile.getId()));
 	}
 
 	@Nullable
-	public Identifier getCapeTexture() {
+	public Identifier method_2979() {
 		this.method_2969();
 		return (Identifier)this.field_3742.get(Type.CAPE);
 	}
 
 	@Nullable
-	public Identifier getElytraTexture() {
+	public Identifier method_2957() {
 		this.method_2969();
 		return (Identifier)this.field_3742.get(Type.ELYTRA);
 	}
 
 	@Nullable
 	public ScoreboardTeam getScoreboardTeam() {
-		return MinecraftClient.getInstance().world.getScoreboard().getPlayerTeam(this.getProfile().getName());
+		return MinecraftClient.getInstance().field_1687.method_8428().getPlayerTeam(this.getProfile().getName());
 	}
 
 	protected void method_2969() {
 		synchronized (this) {
 			if (!this.field_3740) {
 				this.field_3740 = true;
-				MinecraftClient.getInstance().getSkinProvider().method_4652(this.profile, (type, identifier, minecraftProfileTexture) -> {
+				MinecraftClient.getInstance().method_1582().method_4652(this.profile, (type, identifier, minecraftProfileTexture) -> {
 					switch (type) {
 						case SKIN:
 							this.field_3742.put(Type.SKIN, identifier);
@@ -116,13 +116,13 @@ public class ScoreboardEntry {
 		}
 	}
 
-	public void setDisplayName(@Nullable TextComponent textComponent) {
-		this.displayName = textComponent;
+	public void method_2962(@Nullable TextComponent textComponent) {
+		this.field_3743 = textComponent;
 	}
 
 	@Nullable
-	public TextComponent getDisplayName() {
-		return this.displayName;
+	public TextComponent method_2971() {
+		return this.field_3743;
 	}
 
 	public int method_2973() {

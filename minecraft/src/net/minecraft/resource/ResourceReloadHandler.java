@@ -32,7 +32,7 @@ public class ResourceReloadHandler<S> implements ResourceReloadMonitor {
 			executor2,
 			resourceManager,
 			list,
-			(helper, resourceManagerx, resourceReloadListener, executor2x, executor3) -> resourceReloadListener.apply(
+			(helper, resourceManagerx, resourceReloadListener, executor2x, executor3) -> resourceReloadListener.method_18222(
 					helper, resourceManagerx, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor3
 				),
 			completableFuture

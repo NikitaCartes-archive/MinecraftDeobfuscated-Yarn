@@ -11,9 +11,9 @@ import net.minecraft.util.Int2ObjectBiMap;
 import net.minecraft.util.PacketByteBuf;
 
 public class BiMapPalette<T> implements Palette<T> {
-	private final IdList<T> idList;
-	private final Int2ObjectBiMap<T> map;
-	private final PaletteResizeListener<T> resizeHandler;
+	private final IdList<T> field_12821;
+	private final Int2ObjectBiMap<T> field_12824;
+	private final PaletteResizeListener<T> field_12825;
 	private final Function<CompoundTag, T> elementDeserializer;
 	private final Function<T, CompoundTag> elementSerializer;
 	private final int indexBits;
@@ -21,21 +21,21 @@ public class BiMapPalette<T> implements Palette<T> {
 	public BiMapPalette(
 		IdList<T> idList, int i, PaletteResizeListener<T> paletteResizeListener, Function<CompoundTag, T> function, Function<T, CompoundTag> function2
 	) {
-		this.idList = idList;
+		this.field_12821 = idList;
 		this.indexBits = i;
-		this.resizeHandler = paletteResizeListener;
+		this.field_12825 = paletteResizeListener;
 		this.elementDeserializer = function;
 		this.elementSerializer = function2;
-		this.map = new Int2ObjectBiMap<>(1 << i);
+		this.field_12824 = new Int2ObjectBiMap<>(1 << i);
 	}
 
 	@Override
 	public int getIndex(T object) {
-		int i = this.map.getId(object);
+		int i = this.field_12824.getId(object);
 		if (i == -1) {
-			i = this.map.add(object);
+			i = this.field_12824.add(object);
 			if (i >= 1 << this.indexBits) {
-				i = this.resizeHandler.onResize(this.indexBits + 1, object);
+				i = this.field_12825.onResize(this.indexBits + 1, object);
 			}
 		}
 
@@ -45,27 +45,27 @@ public class BiMapPalette<T> implements Palette<T> {
 	@Nullable
 	@Override
 	public T getByIndex(int i) {
-		return this.map.get(i);
+		return this.field_12824.get(i);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void fromPacket(PacketByteBuf packetByteBuf) {
-		this.map.clear();
+	public void method_12289(PacketByteBuf packetByteBuf) {
+		this.field_12824.clear();
 		int i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			this.map.add(this.idList.get(packetByteBuf.readVarInt()));
+			this.field_12824.add(this.field_12821.get(packetByteBuf.readVarInt()));
 		}
 	}
 
 	@Override
-	public void toPacket(PacketByteBuf packetByteBuf) {
+	public void method_12287(PacketByteBuf packetByteBuf) {
 		int i = this.getIndexBits();
 		packetByteBuf.writeVarInt(i);
 
 		for (int j = 0; j < i; j++) {
-			packetByteBuf.writeVarInt(this.idList.getId(this.map.get(j)));
+			packetByteBuf.writeVarInt(this.field_12821.getId(this.field_12824.get(j)));
 		}
 	}
 
@@ -74,28 +74,28 @@ public class BiMapPalette<T> implements Palette<T> {
 		int i = PacketByteBuf.getVarIntSizeBytes(this.getIndexBits());
 
 		for (int j = 0; j < this.getIndexBits(); j++) {
-			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getId(this.map.get(j)));
+			i += PacketByteBuf.getVarIntSizeBytes(this.field_12821.getId(this.field_12824.get(j)));
 		}
 
 		return i;
 	}
 
 	public int getIndexBits() {
-		return this.map.size();
+		return this.field_12824.size();
 	}
 
 	@Override
-	public void fromTag(ListTag listTag) {
-		this.map.clear();
+	public void method_12286(ListTag listTag) {
+		this.field_12824.clear();
 
 		for (int i = 0; i < listTag.size(); i++) {
-			this.map.add((T)this.elementDeserializer.apply(listTag.getCompoundTag(i)));
+			this.field_12824.add((T)this.elementDeserializer.apply(listTag.getCompoundTag(i)));
 		}
 	}
 
-	public void toTag(ListTag listTag) {
+	public void method_12196(ListTag listTag) {
 		for (int i = 0; i < this.getIndexBits(); i++) {
-			listTag.add(this.elementSerializer.apply(this.map.get(i)));
+			listTag.add(this.elementSerializer.apply(this.field_12824.get(i)));
 		}
 	}
 }

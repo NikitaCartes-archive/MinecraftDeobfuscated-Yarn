@@ -23,27 +23,27 @@ public class ItemStackParticleParameters implements ParticleParameters {
 			return new ItemStackParticleParameters(particleType, packetByteBuf.readItemStack());
 		}
 	};
-	private final ParticleType<ItemStackParticleParameters> particleType;
+	private final ParticleType<ItemStackParticleParameters> field_11193;
 	private final ItemStack stack;
 
 	public ItemStackParticleParameters(ParticleType<ItemStackParticleParameters> particleType, ItemStack itemStack) {
-		this.particleType = particleType;
+		this.field_11193 = particleType;
 		this.stack = itemStack;
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) {
+	public void method_10294(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeItemStack(this.stack);
 	}
 
 	@Override
 	public String asString() {
-		return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + new class_2290(this.stack.getItem(), this.stack.getTag()).method_9782();
+		return Registry.PARTICLE_TYPE.method_10221(this.method_10295()) + " " + new class_2290(this.stack.getItem(), this.stack.method_7969()).method_9782();
 	}
 
 	@Override
-	public ParticleType<ItemStackParticleParameters> getType() {
-		return this.particleType;
+	public ParticleType<ItemStackParticleParameters> method_10295() {
+		return this.field_11193;
 	}
 
 	@Environment(EnvType.CLIENT)

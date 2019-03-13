@@ -19,12 +19,12 @@ public class CactusFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			if (iWorld.isAir(blockPos2)) {
+			if (iWorld.method_8623(blockPos2)) {
 				int j = 1 + random.nextInt(random.nextInt(3) + 1);
 
 				for (int k = 0; k < j; k++) {
-					if (Blocks.field_10029.getDefaultState().canPlaceAt(iWorld, blockPos2)) {
-						iWorld.setBlockState(blockPos2.up(k), Blocks.field_10029.getDefaultState(), 2);
+					if (Blocks.field_10029.method_9564().method_11591(iWorld, blockPos2)) {
+						iWorld.method_8652(blockPos2.up(k), Blocks.field_10029.method_9564(), 2);
 					}
 				}
 			}

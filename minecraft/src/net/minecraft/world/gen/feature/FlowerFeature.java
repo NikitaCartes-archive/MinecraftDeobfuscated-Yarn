@@ -17,13 +17,13 @@ public abstract class FlowerFeature extends Feature<DefaultFeatureConfig> {
 	public boolean method_13176(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		BlockState blockState = this.getFlowerToPlace(random, blockPos);
+		BlockState blockState = this.method_13175(random, blockPos);
 		int i = 0;
 
 		for (int j = 0; j < 64; j++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			if (iWorld.isAir(blockPos2) && blockPos2.getY() < 255 && blockState.canPlaceAt(iWorld, blockPos2)) {
-				iWorld.setBlockState(blockPos2, blockState, 2);
+			if (iWorld.method_8623(blockPos2) && blockPos2.getY() < 255 && blockState.method_11591(iWorld, blockPos2)) {
+				iWorld.method_8652(blockPos2, blockState, 2);
 				i++;
 			}
 		}
@@ -31,5 +31,5 @@ public abstract class FlowerFeature extends Feature<DefaultFeatureConfig> {
 		return i > 0;
 	}
 
-	public abstract BlockState getFlowerToPlace(Random random, BlockPos blockPos);
+	public abstract BlockState method_13175(Random random, BlockPos blockPos);
 }

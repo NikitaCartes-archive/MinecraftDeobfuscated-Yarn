@@ -63,7 +63,7 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	public void method_12469(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onUpdateCommandBlock(this);
+		serverPlayPacketListener.method_12077(this);
 	}
 
 	public BlockPos getBlockPos() {

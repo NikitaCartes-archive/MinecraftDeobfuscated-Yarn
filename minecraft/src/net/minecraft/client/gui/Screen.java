@@ -39,7 +39,6 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -49,7 +48,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 	private static final Set<String> PROTOCOLS = Sets.<String>newHashSet("http", "https");
 	protected final List<InputListener> listeners = Lists.<InputListener>newArrayList();
 	public MinecraftClient client;
-	public ItemRenderer itemRenderer;
+	public ItemRenderer field_2560;
 	public int screenWidth;
 	public int screenHeight;
 	protected final List<ButtonWidget> buttons = Lists.<ButtonWidget>newArrayList();
@@ -74,6 +73,14 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 		if (i == 256 && this.doesEscapeKeyClose()) {
 			this.close();
 			return true;
+		} else if (i == 258) {
+			if (isShiftPressed()) {
+				this.method_19354();
+			} else {
+				this.focusNext();
+			}
+
+			return true;
 		} else {
 			return super.keyPressed(i, j, k);
 		}
@@ -84,7 +91,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 	}
 
 	public void close() {
-		this.client.openScreen(null);
+		this.client.method_1507(null);
 	}
 
 	protected <T extends ButtonWidget> T addButton(T buttonWidget) {
@@ -98,8 +105,8 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 	}
 
 	public List<String> getStackTooltip(ItemStack itemStack) {
-		List<TextComponent> list = itemStack.getTooltipText(
-			this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
+		List<TextComponent> list = itemStack.method_7950(
+			this.client.field_1724, this.client.field_1690.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
 		);
 		List<String> list2 = Lists.<String>newArrayList();
 
@@ -145,7 +152,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 			}
 
 			this.zOffset = 300.0F;
-			this.itemRenderer.zOffset = 300.0F;
+			this.field_2560.zOffset = 300.0F;
 			int p = -267386864;
 			this.drawGradientRect(m - 3, n - 4, m + k + 3, n - 3, -267386864, -267386864);
 			this.drawGradientRect(m - 3, n + o + 3, m + k + 3, n + o + 4, -267386864, -267386864);
@@ -170,7 +177,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 			}
 
 			this.zOffset = 0.0F;
-			this.itemRenderer.zOffset = 0.0F;
+			this.field_2560.zOffset = 0.0F;
 			GlStateManager.enableLighting();
 			GlStateManager.enableDepthTest();
 			GuiLighting.enable();
@@ -178,16 +185,16 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 		}
 	}
 
-	protected void drawTextComponentHover(TextComponent textComponent, int i, int j) {
-		if (textComponent != null && textComponent.getStyle().getHoverEvent() != null) {
-			HoverEvent hoverEvent = textComponent.getStyle().getHoverEvent();
+	protected void method_2229(TextComponent textComponent, int i, int j) {
+		if (textComponent != null && textComponent.method_10866().getHoverEvent() != null) {
+			HoverEvent hoverEvent = textComponent.method_10866().getHoverEvent();
 			if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ITEM) {
 				ItemStack itemStack = ItemStack.EMPTY;
 
 				try {
 					Tag tag = JsonLikeTagParser.parse(hoverEvent.getValue().getString());
 					if (tag instanceof CompoundTag) {
-						itemStack = ItemStack.fromTag((CompoundTag)tag);
+						itemStack = ItemStack.method_7915((CompoundTag)tag);
 					}
 				} catch (CommandSyntaxException var10) {
 				}
@@ -198,7 +205,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 					this.drawStackTooltip(itemStack, i, j);
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ENTITY) {
-				if (this.client.options.advancedItemTooltips) {
+				if (this.client.field_1690.advancedItemTooltips) {
 					try {
 						CompoundTag compoundTag = JsonLikeTagParser.parse(hoverEvent.getValue().getString());
 						List<String> list = Lists.<String>newArrayList();
@@ -219,7 +226,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 					}
 				}
 			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_TEXT) {
-				this.drawTooltip(this.client.textRenderer.wrapStringToWidthAsList(hoverEvent.getValue().getFormattedText(), Math.max(this.screenWidth / 2, 200)), i, j);
+				this.drawTooltip(this.client.field_1772.wrapStringToWidthAsList(hoverEvent.getValue().getFormattedText(), Math.max(this.screenWidth / 2, 200)), i, j);
 			}
 
 			GlStateManager.disableLighting();
@@ -229,18 +236,18 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 	protected void method_2237(String string, boolean bl) {
 	}
 
-	public boolean handleTextComponentClick(TextComponent textComponent) {
+	public boolean method_2216(TextComponent textComponent) {
 		if (textComponent == null) {
 			return false;
 		} else {
-			ClickEvent clickEvent = textComponent.getStyle().getClickEvent();
+			ClickEvent clickEvent = textComponent.method_10866().getClickEvent();
 			if (isShiftPressed()) {
-				if (textComponent.getStyle().getInsertion() != null) {
-					this.method_2237(textComponent.getStyle().getInsertion(), false);
+				if (textComponent.method_10866().getInsertion() != null) {
+					this.method_2237(textComponent.method_10866().getInsertion(), false);
 				}
 			} else if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
-					if (!this.client.options.chatLinks) {
+					if (!this.client.field_1690.chatLinks) {
 						return false;
 					}
 
@@ -255,9 +262,9 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 							throw new URISyntaxException(clickEvent.getValue(), "Unsupported protocol: " + string.toLowerCase(Locale.ROOT));
 						}
 
-						if (this.client.options.chatLinksPrompt) {
+						if (this.client.field_1690.chatLinksPrompt) {
 							this.uri = uRI;
-							this.client.openScreen(new ConfirmChatLinkScreen(this, clickEvent.getValue(), 31102009, false));
+							this.client.method_1507(new ConfirmChatLinkScreen(this, clickEvent.getValue(), 31102009, false));
 						} else {
 							this.openUri(uRI);
 						}
@@ -288,16 +295,16 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 
 	public void sendMessage(String string, boolean bl) {
 		if (bl) {
-			this.client.inGameHud.getChatHud().method_1803(string);
+			this.client.field_1705.method_1743().method_1803(string);
 		}
 
-		this.client.player.sendChatMessage(string);
+		this.client.field_1724.sendChatMessage(string);
 	}
 
 	public void initialize(MinecraftClient minecraftClient, int i, int j) {
 		this.client = minecraftClient;
-		this.itemRenderer = minecraftClient.getItemRenderer();
-		this.fontRenderer = minecraftClient.textRenderer;
+		this.field_2560 = minecraftClient.method_1480();
+		this.fontRenderer = minecraftClient.field_1772;
 		this.screenWidth = i;
 		this.screenHeight = j;
 		this.buttons.clear();
@@ -325,7 +332,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 	}
 
 	public void drawBackground(int i) {
-		if (this.client.world != null) {
+		if (this.client.field_1687 != null) {
 			this.drawGradientRect(0, 0, this.screenWidth, this.screenHeight, -1072689136, -804253680);
 		} else {
 			this.drawTextureBackground(i);
@@ -337,10 +344,10 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 		GlStateManager.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.client.getTextureManager().bindTexture(OPTIONS_BG);
+		this.client.method_1531().method_4618(field_2051);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.method_1328(7, VertexFormats.field_1575);
 		bufferBuilder.vertex(0.0, (double)this.screenHeight, 0.0).texture(0.0, (double)((float)this.screenHeight / 32.0F + (float)i)).color(64, 64, 64, 255).next();
 		bufferBuilder.vertex((double)this.screenWidth, (double)this.screenHeight, 0.0)
 			.texture((double)((float)this.screenWidth / 32.0F), (double)((float)this.screenHeight / 32.0F + (float)i))
@@ -363,7 +370,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 			}
 
 			this.uri = null;
-			this.client.openScreen(this);
+			this.client.method_1507(this);
 		}
 	}
 
@@ -414,8 +421,8 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 			runnable.run();
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, string);
-			CrashReportSection crashReportSection = crashReport.addElement("Affected screen");
-			crashReportSection.add("Screen name", (ICrashCallable<String>)(() -> string2));
+			CrashReportSection crashReportSection = crashReport.method_562("Affected screen");
+			crashReportSection.method_577("Screen name", () -> string2);
 			throw new CrashException(crashReport);
 		}
 	}
@@ -428,5 +435,10 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 		} else {
 			return c == '/' ? i > j : c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
 		}
+	}
+
+	@Override
+	public boolean method_19356(double d, double e) {
+		return true;
 	}
 }

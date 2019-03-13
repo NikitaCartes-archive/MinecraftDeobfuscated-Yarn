@@ -41,17 +41,17 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			}
 		}
 	});
-	private static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	private static final BlockState AIR = Blocks.field_10124.method_9564();
 	private final int verticalNoiseResolution;
 	private final int horizontalNoiseResolution;
 	private final int noiseSizeX;
 	private final int noiseSizeY;
 	private final int noiseSizeZ;
-	protected final ChunkRandom random;
+	protected final ChunkRandom field_16577;
 	private final OctavePerlinNoiseSampler field_16574;
 	private final OctavePerlinNoiseSampler field_16581;
 	private final OctavePerlinNoiseSampler field_16575;
-	private final NoiseSampler surfaceDepthNoise;
+	private final NoiseSampler field_16571;
 	protected final BlockState defaultBlock;
 	protected final BlockState defaultFluid;
 
@@ -64,11 +64,11 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		this.noiseSizeX = 16 / this.horizontalNoiseResolution;
 		this.noiseSizeY = k / this.verticalNoiseResolution;
 		this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
-		this.random = new ChunkRandom(this.seed);
-		this.field_16574 = new OctavePerlinNoiseSampler(this.random, 16);
-		this.field_16581 = new OctavePerlinNoiseSampler(this.random, 16);
-		this.field_16575 = new OctavePerlinNoiseSampler(this.random, 8);
-		this.surfaceDepthNoise = (NoiseSampler)(bl ? new OctaveSimplexNoiseSampler(this.random, 4) : new OctavePerlinNoiseSampler(this.random, 4));
+		this.field_16577 = new ChunkRandom(this.seed);
+		this.field_16574 = new OctavePerlinNoiseSampler(this.field_16577, 16);
+		this.field_16581 = new OctavePerlinNoiseSampler(this.field_16577, 16);
+		this.field_16575 = new OctavePerlinNoiseSampler(this.field_16577, 8);
+		this.field_16571 = (NoiseSampler)(bl ? new OctaveSimplexNoiseSampler(this.field_16577, 4) : new OctavePerlinNoiseSampler(this.field_16577, 4));
 	}
 
 	private double sampleNoise(int i, int j, int k, double d, double e, double f, double g) {
@@ -142,7 +142,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 	}
 
 	@Override
-	public int getHeightOnGround(int i, int j, Heightmap.Type type) {
+	public int method_16397(int i, int j, Heightmap.Type type) {
 		int k = Math.floorDiv(i, this.horizontalNoiseResolution);
 		int l = Math.floorDiv(j, this.horizontalNoiseResolution);
 		int m = Math.floorMod(i, this.horizontalNoiseResolution);
@@ -209,10 +209,10 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			for (int n = 0; n < 16; n++) {
 				int o = k + m;
 				int p = l + n;
-				int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
-				double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625);
+				int q = chunk.method_12005(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
+				double e = this.field_16571.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625);
 				biomes[n * 16 + m]
-					.buildSurface(chunkRandom, chunk, o, p, q, e, this.getConfig().getDefaultBlock(), this.getConfig().getDefaultFluid(), 63, this.world.getSeed());
+					.method_8703(chunkRandom, chunk, o, p, q, e, this.method_12109().getDefaultBlock(), this.method_12109().getDefaultFluid(), 63, this.world.getSeed());
 			}
 		}
 
@@ -223,7 +223,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int i = chunk.getPos().getStartX();
 		int j = chunk.getPos().getStartZ();
-		T chunkGeneratorConfig = this.getConfig();
+		T chunkGeneratorConfig = this.method_12109();
 		int k = chunkGeneratorConfig.getMinY();
 		int l = chunkGeneratorConfig.getMaxY();
 
@@ -231,7 +231,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			if (l > 0) {
 				for (int m = l; m >= l - 4; m--) {
 					if (m >= l - random.nextInt(5)) {
-						chunk.setBlockState(mutable.set(blockPos.getX(), m, blockPos.getZ()), Blocks.field_9987.getDefaultState(), false);
+						chunk.method_12010(mutable.set(blockPos.getX(), m, blockPos.getZ()), Blocks.field_9987.method_9564(), false);
 					}
 				}
 			}
@@ -239,7 +239,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			if (k < 256) {
 				for (int mx = k + 4; mx >= k; mx--) {
 					if (mx <= k + random.nextInt(5)) {
-						chunk.setBlockState(mutable.set(blockPos.getX(), mx, blockPos.getZ()), Blocks.field_9987.getDefaultState(), false);
+						chunk.method_12010(mutable.set(blockPos.getX(), mx, blockPos.getZ()), Blocks.field_9987.method_9564(), false);
 					}
 				}
 			}
@@ -264,13 +264,13 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			while (longIterator.hasNext()) {
 				long n = longIterator.nextLong();
 				ChunkPos chunkPos2 = new ChunkPos(n);
-				Chunk chunk2 = iWorld.getChunk(chunkPos2.x, chunkPos2.z);
-				StructureStart structureStart = chunk2.getStructureStart(string);
+				Chunk chunk2 = iWorld.method_8392(chunkPos2.x, chunkPos2.z);
+				StructureStart structureStart = chunk2.method_12181(string);
 				if (structureStart != null && structureStart.hasChildren()) {
 					for (StructurePiece structurePiece : structureStart.getChildren()) {
 						if (structurePiece.method_16654(chunkPos, 12) && structurePiece instanceof PoolStructurePiece) {
 							PoolStructurePiece poolStructurePiece = (PoolStructurePiece)structurePiece;
-							StructurePool.Projection projection = poolStructurePiece.getPoolElement().getProjection();
+							StructurePool.Projection projection = poolStructurePiece.getPoolElement().method_16624();
 							if (projection == StructurePool.Projection.RIGID) {
 								objectList.add(poolStructurePiece);
 							}
@@ -297,8 +297,8 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		}
 
 		ProtoChunk protoChunk = (ProtoChunk)chunk;
-		Heightmap heightmap = protoChunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
-		Heightmap heightmap2 = protoChunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
+		Heightmap heightmap = protoChunk.method_12032(Heightmap.Type.OCEAN_FLOOR_WG);
+		Heightmap heightmap2 = protoChunk.method_12032(Heightmap.Type.WORLD_SURFACE_WG);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		ObjectListIterator<PoolStructurePiece> objectListIterator = objectList.iterator();
 		ObjectListIterator<JigsawJunction> objectListIterator2 = objectList2.iterator();
@@ -385,7 +385,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 								if (blockState != AIR) {
 									if (blockState.getLuminance() != 0) {
 										mutable.set(ah, y, an);
-										protoChunk.addLightSource(mutable);
+										protoChunk.method_12315(mutable);
 									}
 
 									chunkSection.setBlockState(ai, z, ao, blockState, false);

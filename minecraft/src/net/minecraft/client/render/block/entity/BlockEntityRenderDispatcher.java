@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BedBlockEntity;
@@ -30,13 +31,11 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.texture.TextureManager;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -47,15 +46,10 @@ public class BlockEntityRenderDispatcher {
 	public static double renderOffsetX;
 	public static double renderOffsetY;
 	public static double renderOffsetZ;
-	public TextureManager textureManager;
+	public TextureManager field_4347;
 	public World world;
-	public Entity cameraEntity;
-	public float cameraYaw;
-	public float cameraPitch;
+	public class_4184 cameraEntity;
 	public HitResult hitResult;
-	public double cameraX;
-	public double cameraY;
-	public double cameraZ;
 
 	private BlockEntityRenderDispatcher() {
 		this.renderers.put(SignBlockEntity.class, new SignBlockEntityRenderer());
@@ -82,10 +76,10 @@ public class BlockEntityRenderDispatcher {
 		}
 	}
 
-	public <T extends BlockEntity> BlockEntityRenderer<T> get(Class<? extends BlockEntity> class_) {
+	public <T extends BlockEntity> BlockEntityRenderer<T> method_3550(Class<? extends BlockEntity> class_) {
 		BlockEntityRenderer<? extends BlockEntity> blockEntityRenderer = (BlockEntityRenderer<? extends BlockEntity>)this.renderers.get(class_);
 		if (blockEntityRenderer == null && class_ != BlockEntity.class) {
-			blockEntityRenderer = this.get(class_.getSuperclass());
+			blockEntityRenderer = this.method_3550(class_.getSuperclass());
 			this.renderers.put(class_, blockEntityRenderer);
 		}
 
@@ -93,35 +87,31 @@ public class BlockEntityRenderDispatcher {
 	}
 
 	@Nullable
-	public <T extends BlockEntity> BlockEntityRenderer<T> get(@Nullable BlockEntity blockEntity) {
-		return blockEntity == null ? null : this.get(blockEntity.getClass());
+	public <T extends BlockEntity> BlockEntityRenderer<T> method_3553(@Nullable BlockEntity blockEntity) {
+		return blockEntity == null ? null : this.method_3550(blockEntity.getClass());
 	}
 
-	public void configure(World world, TextureManager textureManager, TextRenderer textRenderer, Entity entity, HitResult hitResult, float f) {
+	public void method_3549(World world, TextureManager textureManager, TextRenderer textRenderer, class_4184 arg, HitResult hitResult) {
 		if (this.world != world) {
 			this.setWorld(world);
 		}
 
-		this.textureManager = textureManager;
-		this.cameraEntity = entity;
+		this.field_4347 = textureManager;
+		this.cameraEntity = arg;
 		this.fontRenderer = textRenderer;
 		this.hitResult = hitResult;
-		this.cameraYaw = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
-		this.cameraPitch = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
-		this.cameraX = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
-		this.cameraY = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
-		this.cameraZ = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
 	}
 
 	public void render(BlockEntity blockEntity, float f, int i) {
-		if (blockEntity.getSquaredDistance(this.cameraX, this.cameraY, this.cameraZ) < blockEntity.getSquaredRenderDistance()) {
+		if (blockEntity.getSquaredDistance(this.cameraEntity.method_19326().x, this.cameraEntity.method_19326().y, this.cameraEntity.method_19326().z)
+			< blockEntity.getSquaredRenderDistance()) {
 			GuiLighting.enable();
-			int j = this.world.getLightmapIndex(blockEntity.getPos(), 0);
+			int j = this.world.method_8313(blockEntity.method_11016(), 0);
 			int k = j % 65536;
 			int l = j / 65536;
 			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)k, (float)l);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			BlockPos blockPos = blockEntity.getPos();
+			BlockPos blockPos = blockEntity.method_11016();
 			this.renderEntity(
 				blockEntity, (double)blockPos.getX() - renderOffsetX, (double)blockPos.getY() - renderOffsetY, (double)blockPos.getZ() - renderOffsetZ, f, i, false
 			);
@@ -137,18 +127,18 @@ public class BlockEntityRenderDispatcher {
 	}
 
 	public void renderEntity(BlockEntity blockEntity, double d, double e, double f, float g, int i, boolean bl) {
-		BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.get(blockEntity);
+		BlockEntityRenderer<BlockEntity> blockEntityRenderer = this.method_3553(blockEntity);
 		if (blockEntityRenderer != null) {
 			try {
-				if (!bl && (!blockEntity.hasWorld() || !blockEntity.getCachedState().getBlock().hasBlockEntity())) {
+				if (!bl && (!blockEntity.hasWorld() || !blockEntity.method_11010().getBlock().hasBlockEntity())) {
 					return;
 				}
 
 				blockEntityRenderer.render(blockEntity, d, e, f, g, i);
 			} catch (Throwable var15) {
 				CrashReport crashReport = CrashReport.create(var15, "Rendering Block Entity");
-				CrashReportSection crashReportSection = crashReport.addElement("Block Entity Details");
-				blockEntity.populateCrashReport(crashReportSection);
+				CrashReportSection crashReportSection = crashReport.method_562("Block Entity Details");
+				blockEntity.method_11003(crashReportSection);
 				throw new CrashException(crashReport);
 			}
 		}

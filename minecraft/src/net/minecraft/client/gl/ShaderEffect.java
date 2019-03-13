@@ -28,7 +28,7 @@ import org.apache.commons.io.IOUtils;
 @Environment(EnvType.CLIENT)
 public class ShaderEffect implements AutoCloseable {
 	private final GlFramebuffer mainTarget;
-	private final ResourceManager resourceManager;
+	private final ResourceManager field_1502;
 	private final String name;
 	private final List<PostProcessShader> passes = Lists.<PostProcessShader>newArrayList();
 	private final Map<String, GlFramebuffer> targetsByName = Maps.<String, GlFramebuffer>newHashMap();
@@ -40,7 +40,7 @@ public class ShaderEffect implements AutoCloseable {
 	private float lastTickDelta;
 
 	public ShaderEffect(TextureManager textureManager, ResourceManager resourceManager, GlFramebuffer glFramebuffer, Identifier identifier) throws IOException, JsonSyntaxException {
-		this.resourceManager = resourceManager;
+		this.field_1502 = resourceManager;
 		this.mainTarget = glFramebuffer;
 		this.time = 0.0F;
 		this.lastTickDelta = 0.0F;
@@ -48,14 +48,14 @@ public class ShaderEffect implements AutoCloseable {
 		this.height = glFramebuffer.viewHeight;
 		this.name = identifier.toString();
 		this.setupProjectionMatrix();
-		this.parseEffect(textureManager, identifier);
+		this.method_1256(textureManager, identifier);
 	}
 
-	private void parseEffect(TextureManager textureManager, Identifier identifier) throws IOException, JsonSyntaxException {
+	private void method_1256(TextureManager textureManager, Identifier identifier) throws IOException, JsonSyntaxException {
 		Resource resource = null;
 
 		try {
-			resource = this.resourceManager.getResource(identifier);
+			resource = this.field_1502.getResource(identifier);
 			JsonObject jsonObject = JsonHelper.deserialize(new InputStreamReader(resource.getInputStream(), StandardCharsets.UTF_8));
 			if (JsonHelper.hasArray(jsonObject, "targets")) {
 				JsonArray jsonArray = jsonObject.getAsJsonArray("targets");
@@ -80,7 +80,7 @@ public class ShaderEffect implements AutoCloseable {
 
 				for (JsonElement jsonElement : jsonArray) {
 					try {
-						this.parsePass(textureManager, jsonElement);
+						this.method_1257(textureManager, jsonElement);
 					} catch (Exception var16) {
 						ShaderParseException shaderParseException = ShaderParseException.wrap(var16);
 						shaderParseException.addFaultyElement("passes[" + i + "]");
@@ -115,7 +115,7 @@ public class ShaderEffect implements AutoCloseable {
 		}
 	}
 
-	private void parsePass(TextureManager textureManager, JsonElement jsonElement) throws IOException {
+	private void method_1257(TextureManager textureManager, JsonElement jsonElement) throws IOException {
 		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "pass");
 		String string = JsonHelper.getString(jsonObject, "name");
 		String string2 = JsonHelper.getString(jsonObject, "intarget");
@@ -127,7 +127,7 @@ public class ShaderEffect implements AutoCloseable {
 		} else if (glFramebuffer2 == null) {
 			throw new ShaderParseException("Output target '" + string3 + "' does not exist");
 		} else {
-			PostProcessShader postProcessShader = this.addPass(string, glFramebuffer, glFramebuffer2);
+			PostProcessShader postProcessShader = this.method_1262(string, glFramebuffer, glFramebuffer2);
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "auxtargets", null);
 			if (jsonArray != null) {
 				int i = 0;
@@ -143,15 +143,15 @@ public class ShaderEffect implements AutoCloseable {
 							Resource resource = null;
 
 							try {
-								resource = this.resourceManager.getResource(identifier);
+								resource = this.field_1502.getResource(identifier);
 							} catch (FileNotFoundException var29) {
 								throw new ShaderParseException("Render target or texture '" + string5 + "' does not exist");
 							} finally {
 								IOUtils.closeQuietly(resource);
 							}
 
-							textureManager.bindTexture(identifier);
-							Texture texture = textureManager.getTexture(identifier);
+							textureManager.method_4618(identifier);
+							Texture texture = textureManager.method_4619(identifier);
 							int j = JsonHelper.getInt(jsonObject2, "width");
 							int k = JsonHelper.getInt(jsonObject2, "height");
 							boolean bl = JsonHelper.getBoolean(jsonObject2, "bilinear");
@@ -262,8 +262,8 @@ public class ShaderEffect implements AutoCloseable {
 		this.passes.clear();
 	}
 
-	public PostProcessShader addPass(String string, GlFramebuffer glFramebuffer, GlFramebuffer glFramebuffer2) throws IOException {
-		PostProcessShader postProcessShader = new PostProcessShader(this.resourceManager, string, glFramebuffer, glFramebuffer2);
+	public PostProcessShader method_1262(String string, GlFramebuffer glFramebuffer, GlFramebuffer glFramebuffer2) throws IOException {
+		PostProcessShader postProcessShader = new PostProcessShader(this.field_1502, string, glFramebuffer, glFramebuffer2);
 		this.passes.add(this.passes.size(), postProcessShader);
 		return postProcessShader;
 	}

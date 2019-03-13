@@ -64,14 +64,14 @@ public interface VillagerType {
 	});
 
 	static VillagerType create(String string) {
-		return Registry.register(Registry.VILLAGER_TYPE, new Identifier(string), new VillagerType() {
+		return Registry.method_10230(Registry.VILLAGER_TYPE, new Identifier(string), new VillagerType() {
 			public String toString() {
 				return string;
 			}
 		});
 	}
 
-	static VillagerType forBiome(Biome biome) {
+	static VillagerType method_16930(Biome biome) {
 		return (VillagerType)biomeToType.getOrDefault(biome, field_17073);
 	}
 }

@@ -26,13 +26,13 @@ public class BlockListProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void method_10319(DataCache dataCache) throws IOException {
 		JsonObject jsonObject = new JsonObject();
 
 		for (Block block : Registry.BLOCK) {
-			Identifier identifier = Registry.BLOCK.getId(block);
+			Identifier identifier = Registry.BLOCK.method_10221(block);
 			JsonObject jsonObject2 = new JsonObject();
-			StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
+			StateFactory<Block, BlockState> stateFactory = block.method_9595();
 			if (!stateFactory.getProperties().isEmpty()) {
 				JsonObject jsonObject3 = new JsonObject();
 
@@ -56,15 +56,15 @@ public class BlockListProvider implements DataProvider {
 				JsonObject jsonObject5 = new JsonObject();
 
 				for (Property<?> property2 : stateFactory.getProperties()) {
-					jsonObject5.addProperty(property2.getName(), SystemUtil.getValueAsString(property2, blockState.get(property2)));
+					jsonObject5.addProperty(property2.getName(), SystemUtil.getValueAsString(property2, blockState.method_11654(property2)));
 				}
 
 				if (jsonObject5.size() > 0) {
 					jsonObject4.add("properties", jsonObject5);
 				}
 
-				jsonObject4.addProperty("id", Block.getRawIdFromState(blockState));
-				if (blockState == block.getDefaultState()) {
+				jsonObject4.addProperty("id", Block.method_9507(blockState));
+				if (blockState == block.method_9564()) {
 					jsonObject4.addProperty("default", true);
 				}
 
@@ -76,7 +76,7 @@ public class BlockListProvider implements DataProvider {
 		}
 
 		Path path = this.root.getOutput().resolve("reports/blocks.json");
-		DataProvider.writeToPath(field_17168, dataCache, jsonObject, path);
+		DataProvider.method_10320(field_17168, dataCache, jsonObject, path);
 	}
 
 	@Override

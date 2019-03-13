@@ -13,9 +13,9 @@ public interface ArmorMaterial {
 
 	int getEnchantability();
 
-	SoundEvent getEquipSound();
+	SoundEvent method_7698();
 
-	Ingredient getRepairIngredient();
+	Ingredient method_7695();
 
 	@Environment(EnvType.CLIENT)
 	String getName();

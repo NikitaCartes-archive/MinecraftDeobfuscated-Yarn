@@ -17,7 +17,7 @@ public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEnti
 
 	public void method_4115(ShulkerEntity shulkerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		GlStateManager.pushMatrix();
-		switch (shulkerEntity.getAttachedFace()) {
+		switch (shulkerEntity.method_7119()) {
 			case DOWN:
 			default:
 				break;
@@ -52,9 +52,9 @@ public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEnti
 		cuboid.pitch = k * (float) (Math.PI / 180.0);
 		DyeColor dyeColor = shulkerEntity.method_7121();
 		if (dyeColor == null) {
-			this.bindTexture(ShulkerEntityRenderer.field_4781);
+			this.method_17164(ShulkerEntityRenderer.field_4781);
 		} else {
-			this.bindTexture(ShulkerEntityRenderer.SKIN[dyeColor.getId()]);
+			this.method_17164(ShulkerEntityRenderer.field_4780[dyeColor.getId()]);
 		}
 
 		cuboid.render(l);

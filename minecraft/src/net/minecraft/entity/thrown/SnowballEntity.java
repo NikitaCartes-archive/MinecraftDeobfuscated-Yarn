@@ -48,21 +48,21 @@ public class SnowballEntity extends ThrownItemEntity {
 			ParticleParameters particleParameters = this.method_16939();
 
 			for (int i = 0; i < 8; i++) {
-				this.world.addParticle(particleParameters, this.x, this.y, this.z, 0.0, 0.0, 0.0);
+				this.field_6002.method_8406(particleParameters, this.x, this.y, this.z, 0.0, 0.0, 0.0);
 			}
 		}
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
+	protected void method_7492(HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
 			int i = entity instanceof BlazeEntity ? 3 : 0;
-			entity.damage(DamageSource.thrownProjectile(this, this.getOwner()), (float)i);
+			entity.damage(DamageSource.method_5524(this, this.getOwner()), (float)i);
 		}
 
-		if (!this.world.isClient) {
-			this.world.summonParticle(this, (byte)3);
+		if (!this.field_6002.isClient) {
+			this.field_6002.summonParticle(this, (byte)3);
 			this.invalidate();
 		}
 	}

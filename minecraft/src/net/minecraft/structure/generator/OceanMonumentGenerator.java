@@ -309,7 +309,7 @@ public class OceanMonumentGenerator {
 				for (int j = 1; j <= 6; j++) {
 					if (random.nextInt(3) != 0) {
 						int k = 2 + (random.nextInt(4) == 0 ? 0 : 1);
-						BlockState blockState = Blocks.field_10562.getDefaultState();
+						BlockState blockState = Blocks.field_10562.method_9564();
 						this.fillWithOutline(iWorld, mutableIntBoundingBox, i, k, j, i, 3, j, blockState, blockState, false);
 					}
 				}
@@ -492,8 +492,8 @@ public class OceanMonumentGenerator {
 
 		public class_3374(Random random, int i, int j, Direction direction) {
 			super(StructurePieceType.field_16922, 0);
-			this.setOrientation(direction);
-			Direction direction2 = this.getFacing();
+			this.method_14926(direction);
+			Direction direction2 = this.method_14934();
 			if (direction2.getAxis() == Direction.Axis.Z) {
 				this.boundingBox = new MutableIntBoundingBox(i, 39, j, i + 58 - 1, 61, j + 58 - 1);
 			} else {
@@ -1095,7 +1095,7 @@ public class OceanMonumentGenerator {
 			}
 
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, 3, 6, 9, 6, 9, field_14474, field_14474, false);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 4, 7, 8, 5, 8, Blocks.field_10205.getDefaultState(), Blocks.field_10205.getDefaultState(), false);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 4, 7, 8, 5, 8, Blocks.field_10205.method_9564(), Blocks.field_10205.method_9564(), false);
 
 			for (int ix = 3; ix <= 6; ix += 3) {
 				for (int k = 6; k <= 9; k += 3) {
@@ -1608,12 +1608,12 @@ public class OceanMonumentGenerator {
 	}
 
 	public abstract static class class_3384 extends StructurePiece {
-		protected static final BlockState field_14473 = Blocks.field_10135.getDefaultState();
-		protected static final BlockState field_14476 = Blocks.field_10006.getDefaultState();
-		protected static final BlockState field_14474 = Blocks.field_10297.getDefaultState();
+		protected static final BlockState field_14473 = Blocks.field_10135.method_9564();
+		protected static final BlockState field_14476 = Blocks.field_10006.method_9564();
+		protected static final BlockState field_14474 = Blocks.field_10297.method_9564();
 		protected static final BlockState field_14470 = field_14476;
-		protected static final BlockState field_14471 = Blocks.field_10174.getDefaultState();
-		protected static final BlockState field_14475 = Blocks.field_10382.getDefaultState();
+		protected static final BlockState field_14471 = Blocks.field_10174.method_9564();
+		protected static final BlockState field_14475 = Blocks.field_10382.method_9564();
 		protected static final Set<Block> field_14472 = ImmutableSet.<Block>builder()
 			.add(Blocks.field_10295)
 			.add(Blocks.field_10225)
@@ -1636,13 +1636,13 @@ public class OceanMonumentGenerator {
 
 		public class_3384(StructurePieceType structurePieceType, Direction direction, MutableIntBoundingBox mutableIntBoundingBox) {
 			super(structurePieceType, 1);
-			this.setOrientation(direction);
+			this.method_14926(direction);
 			this.boundingBox = mutableIntBoundingBox;
 		}
 
 		protected class_3384(StructurePieceType structurePieceType, int i, Direction direction, OceanMonumentGenerator.class_3388 arg, int j, int k, int l) {
 			super(structurePieceType, i);
-			this.setOrientation(direction);
+			this.method_14926(direction);
 			this.field_14479 = arg;
 			int m = arg.field_14486;
 			int n = m % 5;
@@ -1674,7 +1674,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag compoundTag) {
+		protected void method_14943(CompoundTag compoundTag) {
 		}
 
 		protected void method_14773(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, int i, int j, int k, int l, int m, int n) {
@@ -1684,7 +1684,7 @@ public class OceanMonumentGenerator {
 						BlockState blockState = this.getBlockAt(iWorld, p, o, q, mutableIntBoundingBox);
 						if (!field_14472.contains(blockState.getBlock())) {
 							if (this.applyYTransform(o) >= iWorld.getSeaLevel() && blockState != field_14475) {
-								this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), p, o, q, mutableIntBoundingBox);
+								this.addBlock(iWorld, Blocks.field_10124.method_9564(), p, o, q, mutableIntBoundingBox);
 							} else {
 								this.addBlock(iWorld, field_14475, p, o, q, mutableIntBoundingBox);
 							}
@@ -1733,11 +1733,11 @@ public class OceanMonumentGenerator {
 			int l = this.applyXTransform(i, k);
 			int m = this.applyYTransform(j);
 			int n = this.applyZTransform(i, k);
-			if (mutableIntBoundingBox.contains(new BlockPos(l, m, n))) {
-				ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(iWorld.getWorld());
+			if (mutableIntBoundingBox.method_14662(new BlockPos(l, m, n))) {
+				ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.method_5883(iWorld.getWorld());
 				elderGuardianEntity.heal(elderGuardianEntity.getHealthMaximum());
 				elderGuardianEntity.setPositionAndAngles((double)l + 0.5, (double)m, (double)n + 0.5, 0.0F, 0.0F);
-				elderGuardianEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(elderGuardianEntity)), SpawnType.field_16474, null, null);
+				elderGuardianEntity.method_5943(iWorld, iWorld.method_8404(new BlockPos(elderGuardianEntity)), SpawnType.field_16474, null, null);
 				iWorld.spawnEntity(elderGuardianEntity);
 				return true;
 			} else {

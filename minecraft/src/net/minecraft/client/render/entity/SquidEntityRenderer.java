@@ -10,14 +10,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SquidEntityRenderer extends MobEntityRenderer<SquidEntity, SquidEntityModel<SquidEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/squid.png");
+	private static final Identifier field_4791 = new Identifier("textures/entity/squid.png");
 
 	public SquidEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SquidEntityModel<>(), 0.7F);
 	}
 
 	protected Identifier method_4127(SquidEntity squidEntity) {
-		return SKIN;
+		return field_4791;
 	}
 
 	protected void method_4126(SquidEntity squidEntity, float f, float g, float h) {

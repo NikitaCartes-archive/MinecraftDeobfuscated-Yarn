@@ -8,40 +8,40 @@ import net.minecraft.text.TextFormatter;
 import net.minecraft.text.event.HoverEvent;
 
 public class ScoreboardObjective {
-	private final Scoreboard scoreboard;
+	private final Scoreboard field_1404;
 	private final String name;
-	private final ScoreboardCriterion criterion;
+	private final ScoreboardCriterion field_1406;
 	private TextComponent field_1402;
-	private ScoreboardCriterion.Type criterionType;
+	private ScoreboardCriterion.Type field_1403;
 
 	public ScoreboardObjective(
 		Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, TextComponent textComponent, ScoreboardCriterion.Type type
 	) {
-		this.scoreboard = scoreboard;
+		this.field_1404 = scoreboard;
 		this.name = string;
-		this.criterion = scoreboardCriterion;
+		this.field_1406 = scoreboardCriterion;
 		this.field_1402 = textComponent;
-		this.criterionType = type;
+		this.field_1403 = type;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Scoreboard getScoreboard() {
-		return this.scoreboard;
+	public Scoreboard method_1117() {
+		return this.field_1404;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public ScoreboardCriterion getCriterion() {
-		return this.criterion;
+	public ScoreboardCriterion method_1116() {
+		return this.field_1406;
 	}
 
-	public TextComponent getDisplayName() {
+	public TextComponent method_1114() {
 		return this.field_1402;
 	}
 
-	public TextComponent getTextComponent() {
+	public TextComponent method_1120() {
 		return TextFormatter.bracketed(
 			this.field_1402.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.getName()))))
 		);
@@ -49,15 +49,15 @@ public class ScoreboardObjective {
 
 	public void method_1121(TextComponent textComponent) {
 		this.field_1402 = textComponent;
-		this.scoreboard.updateExistingObjective(this);
+		this.field_1404.updateExistingObjective(this);
 	}
 
-	public ScoreboardCriterion.Type getCriterionType() {
-		return this.criterionType;
+	public ScoreboardCriterion.Type method_1118() {
+		return this.field_1403;
 	}
 
-	public void setCriterionType(ScoreboardCriterion.Type type) {
-		this.criterionType = type;
-		this.scoreboard.updateExistingObjective(this);
+	public void method_1115(ScoreboardCriterion.Type type) {
+		this.field_1403 = type;
+		this.field_1404.updateExistingObjective(this);
 	}
 }

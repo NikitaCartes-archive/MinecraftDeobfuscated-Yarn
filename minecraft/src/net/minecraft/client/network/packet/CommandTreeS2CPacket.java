@@ -111,13 +111,13 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		int i = b & 3;
 		if (i == 2) {
 			String string = packetByteBuf.readString(32767);
-			ArgumentType<?> argumentType = ArgumentTypes.fromPacket(packetByteBuf);
+			ArgumentType<?> argumentType = ArgumentTypes.method_10014(packetByteBuf);
 			if (argumentType == null) {
 				return null;
 			} else {
 				RequiredArgumentBuilder<CommandSource, ?> requiredArgumentBuilder = RequiredArgumentBuilder.argument(string, argumentType);
 				if ((b & 16) != 0) {
-					requiredArgumentBuilder.suggests(SuggestionProviders.byId(packetByteBuf.readIdentifier()));
+					requiredArgumentBuilder.suggests(SuggestionProviders.method_10024(packetByteBuf.method_10810()));
 				}
 
 				return requiredArgumentBuilder;
@@ -166,9 +166,9 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		if (commandNode instanceof ArgumentCommandNode) {
 			ArgumentCommandNode<CommandSource, ?> argumentCommandNode = (ArgumentCommandNode<CommandSource, ?>)commandNode;
 			packetByteBuf.writeString(argumentCommandNode.getName());
-			ArgumentTypes.toPacket(packetByteBuf, argumentCommandNode.getType());
+			ArgumentTypes.method_10019(packetByteBuf, argumentCommandNode.getType());
 			if (argumentCommandNode.getCustomSuggestions() != null) {
-				packetByteBuf.writeIdentifier(SuggestionProviders.computeName(argumentCommandNode.getCustomSuggestions()));
+				packetByteBuf.method_10812(SuggestionProviders.method_10027(argumentCommandNode.getCustomSuggestions()));
 			}
 		} else if (commandNode instanceof LiteralCommandNode) {
 			packetByteBuf.writeString(((LiteralCommandNode)commandNode).getLiteral());
@@ -176,7 +176,7 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11404(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onCommandTree(this);
+		clientPlayPacketListener.method_11145(this);
 	}
 
 	@Environment(EnvType.CLIENT)

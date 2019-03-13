@@ -10,14 +10,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BatEntityRenderer extends MobEntityRenderer<BatEntity, BatEntityModel> {
-	private static final Identifier SKIN = new Identifier("textures/entity/bat.png");
+	private static final Identifier field_4645 = new Identifier("textures/entity/bat.png");
 
 	public BatEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new BatEntityModel(), 0.25F);
 	}
 
 	protected Identifier method_3883(BatEntity batEntity) {
-		return SKIN;
+		return field_4645;
 	}
 
 	protected void method_3884(BatEntity batEntity, float f) {

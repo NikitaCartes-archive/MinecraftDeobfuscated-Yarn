@@ -1,5 +1,7 @@
 package net.minecraft;
 
+import java.util.EnumSet;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.passive.CatEntity;
@@ -14,7 +16,7 @@ public class class_3697 extends MoveToTargetPosGoal {
 		super(catEntity, d, i, 6);
 		this.field_16282 = catEntity;
 		this.field_6515 = -2;
-		this.setControlBits(5);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 	}
 
 	@Override
@@ -51,7 +53,7 @@ public class class_3697 extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.isAir(blockPos.up()) && viewableWorld.getBlockState(blockPos).getBlock().matches(BlockTags.field_16443);
+	protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
+		return viewableWorld.method_8623(blockPos.up()) && viewableWorld.method_8320(blockPos).getBlock().method_9525(BlockTags.field_16443);
 	}
 }

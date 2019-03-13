@@ -7,33 +7,33 @@ import net.minecraft.util.IdList;
 import net.minecraft.util.PacketByteBuf;
 
 public class IdListPalette<T> implements Palette<T> {
-	private final IdList<T> idList;
+	private final IdList<T> field_12828;
 	private final T field_12829;
 
 	public IdListPalette(IdList<T> idList, T object) {
-		this.idList = idList;
+		this.field_12828 = idList;
 		this.field_12829 = object;
 	}
 
 	@Override
 	public int getIndex(T object) {
-		int i = this.idList.getId(object);
+		int i = this.field_12828.getId(object);
 		return i == -1 ? 0 : i;
 	}
 
 	@Override
 	public T getByIndex(int i) {
-		T object = this.idList.get(i);
+		T object = this.field_12828.get(i);
 		return object == null ? this.field_12829 : object;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void fromPacket(PacketByteBuf packetByteBuf) {
+	public void method_12289(PacketByteBuf packetByteBuf) {
 	}
 
 	@Override
-	public void toPacket(PacketByteBuf packetByteBuf) {
+	public void method_12287(PacketByteBuf packetByteBuf) {
 	}
 
 	@Override
@@ -42,6 +42,6 @@ public class IdListPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void fromTag(ListTag listTag) {
+	public void method_12286(ListTag listTag) {
 	}
 }

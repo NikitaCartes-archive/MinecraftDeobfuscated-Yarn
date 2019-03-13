@@ -6,7 +6,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.level.LevelGeneratorType;
@@ -16,7 +15,6 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private boolean hardcore;
 	private GameMode gameMode;
 	private DimensionType field_12284;
-	private Difficulty difficulty;
 	private int maxPlayers;
 	private LevelGeneratorType generatorType;
 	private boolean reducedDebugInfo;
@@ -24,12 +22,9 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	public GameJoinS2CPacket() {
 	}
 
-	public GameJoinS2CPacket(
-		int i, GameMode gameMode, boolean bl, DimensionType dimensionType, Difficulty difficulty, int j, LevelGeneratorType levelGeneratorType, boolean bl2
-	) {
+	public GameJoinS2CPacket(int i, GameMode gameMode, boolean bl, DimensionType dimensionType, int j, LevelGeneratorType levelGeneratorType, boolean bl2) {
 		this.playerEntityId = i;
 		this.field_12284 = dimensionType;
-		this.difficulty = difficulty;
 		this.gameMode = gameMode;
 		this.maxPlayers = j;
 		this.hardcore = bl;
@@ -45,7 +40,6 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		i &= -9;
 		this.gameMode = GameMode.byId(i);
 		this.field_12284 = DimensionType.byRawId(packetByteBuf.readInt());
-		this.difficulty = Difficulty.getDifficulty(packetByteBuf.readUnsignedByte());
 		this.maxPlayers = packetByteBuf.readUnsignedByte();
 		this.generatorType = LevelGeneratorType.getTypeFromName(packetByteBuf.readString(16));
 		if (this.generatorType == null) {
@@ -65,14 +59,13 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		packetByteBuf.writeByte(i);
 		packetByteBuf.writeInt(this.field_12284.getRawId());
-		packetByteBuf.writeByte(this.difficulty.getId());
 		packetByteBuf.writeByte(this.maxPlayers);
 		packetByteBuf.writeString(this.generatorType.getName());
 		packetByteBuf.writeBoolean(this.reducedDebugInfo);
 	}
 
 	public void method_11567(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onGameJoin(this);
+		clientPlayPacketListener.method_11120(this);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -93,11 +86,6 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Environment(EnvType.CLIENT)
 	public DimensionType getDimension() {
 		return this.field_12284;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public Difficulty getDifficulty() {
-		return this.difficulty;
 	}
 
 	@Environment(EnvType.CLIENT)

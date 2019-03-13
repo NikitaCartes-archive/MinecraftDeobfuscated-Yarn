@@ -78,7 +78,7 @@ public class ScoreboardCommand {
 																	commandContext.getSource(),
 																	StringArgumentType.getString(commandContext, "objective"),
 																	ObjectiveCriteriaArgumentType.getCriteriaArgument(commandContext, "criteria"),
-																	ComponentArgumentType.getComponentArgument(commandContext, "displayName")
+																	ComponentArgumentType.method_9280(commandContext, "displayName")
 																)
 														)
 												)
@@ -97,7 +97,7 @@ public class ScoreboardCommand {
 															commandContext -> method_13576(
 																	commandContext.getSource(),
 																	ObjectiveArgumentType.getObjectiveArgument(commandContext, "objective"),
-																	ComponentArgumentType.getComponentArgument(commandContext, "displayName")
+																	ComponentArgumentType.method_9280(commandContext, "displayName")
 																)
 														)
 												)
@@ -312,10 +312,10 @@ public class ScoreboardCommand {
 		ServerCommandSource serverCommandSource, Collection<String> collection, SuggestionsBuilder suggestionsBuilder
 	) {
 		List<String> list = Lists.<String>newArrayList();
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 
 		for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
-			if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER) {
+			if (scoreboardObjective.method_1116() == ScoreboardCriterion.TRIGGER) {
 				boolean bl = false;
 
 				for (String string : collection) {
@@ -335,13 +335,13 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13607(ServerCommandSource serverCommandSource, String string, ScoreboardObjective scoreboardObjective) throws CommandSyntaxException {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 		if (!scoreboard.playerHasObjective(string, scoreboardObjective)) {
 			throw PLAYERS_GET_NULL_EXCEPTION.create(scoreboardObjective.getName(), string);
 		} else {
 			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.players.get.success", string, scoreboardPlayerScore.getScore(), scoreboardObjective.getTextComponent()),
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.get.success", string, scoreboardPlayerScore.getScore(), scoreboardObjective.method_1120()),
 				false
 			);
 			return scoreboardPlayerScore.getScore();
@@ -356,7 +356,7 @@ public class ScoreboardCommand {
 		Collection<String> collection2,
 		ScoreboardObjective scoreboardObjective2
 	) throws CommandSyntaxException {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 		int i = 0;
 
 		for (String string : collection) {
@@ -371,15 +371,13 @@ public class ScoreboardCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent(
-					"commands.scoreboard.players.operation.success.single", scoreboardObjective.getTextComponent(), collection.iterator().next(), i
-				),
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.operation.success.single", scoreboardObjective.method_1120(), collection.iterator().next(), i),
 				true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.players.operation.success.multiple", scoreboardObjective.getTextComponent(), collection.size()), true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.operation.success.multiple", scoreboardObjective.method_1120(), collection.size()), true
 			);
 		}
 
@@ -387,10 +385,10 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13609(ServerCommandSource serverCommandSource, Collection<String> collection, ScoreboardObjective scoreboardObjective) throws CommandSyntaxException {
-		if (scoreboardObjective.getCriterion() != ScoreboardCriterion.TRIGGER) {
+		if (scoreboardObjective.method_1116() != ScoreboardCriterion.TRIGGER) {
 			throw PLAYERS_ENABLE_INVALID_EXCEPTION.create();
 		} else {
-			Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+			Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 			int i = 0;
 
 			for (String string : collection) {
@@ -405,13 +403,12 @@ public class ScoreboardCommand {
 				throw PLAYERS_ENABLE_FAILED_EXCEPTION.create();
 			} else {
 				if (collection.size() == 1) {
-					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent("commands.scoreboard.players.enable.success.single", scoreboardObjective.getTextComponent(), collection.iterator().next()),
-						true
+					serverCommandSource.method_9226(
+						new TranslatableTextComponent("commands.scoreboard.players.enable.success.single", scoreboardObjective.method_1120(), collection.iterator().next()), true
 					);
 				} else {
-					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent("commands.scoreboard.players.enable.success.multiple", scoreboardObjective.getTextComponent(), collection.size()), true
+					serverCommandSource.method_9226(
+						new TranslatableTextComponent("commands.scoreboard.players.enable.success.multiple", scoreboardObjective.method_1120(), collection.size()), true
 					);
 				}
 
@@ -421,36 +418,35 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13575(ServerCommandSource serverCommandSource, Collection<String> collection) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 
 		for (String string : collection) {
 			scoreboard.resetPlayerScore(string, null);
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.players.reset.all.single", collection.iterator().next()), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.players.reset.all.single", collection.iterator().next()), true);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.players.reset.all.multiple", collection.size()), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.players.reset.all.multiple", collection.size()), true);
 		}
 
 		return collection.size();
 	}
 
 	private static int method_13586(ServerCommandSource serverCommandSource, Collection<String> collection, ScoreboardObjective scoreboardObjective) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 
 		for (String string : collection) {
 			scoreboard.resetPlayerScore(string, scoreboardObjective);
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.players.reset.specific.single", scoreboardObjective.getTextComponent(), collection.iterator().next()),
-				true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.reset.specific.single", scoreboardObjective.method_1120(), collection.iterator().next()), true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.players.reset.specific.multiple", scoreboardObjective.getTextComponent(), collection.size()), true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.reset.specific.multiple", scoreboardObjective.method_1120(), collection.size()), true
 			);
 		}
 
@@ -458,7 +454,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13604(ServerCommandSource serverCommandSource, Collection<String> collection, ScoreboardObjective scoreboardObjective, int i) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 
 		for (String string : collection) {
 			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
@@ -466,13 +462,12 @@ public class ScoreboardCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.players.set.success.single", scoreboardObjective.getTextComponent(), collection.iterator().next(), i),
-				true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.set.success.single", scoreboardObjective.method_1120(), collection.iterator().next(), i), true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.players.set.success.multiple", scoreboardObjective.getTextComponent(), collection.size(), i), true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.set.success.multiple", scoreboardObjective.method_1120(), collection.size(), i), true
 			);
 		}
 
@@ -480,7 +475,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13578(ServerCommandSource serverCommandSource, Collection<String> collection, ScoreboardObjective scoreboardObjective, int i) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 		int j = 0;
 
 		for (String string : collection) {
@@ -490,13 +485,13 @@ public class ScoreboardCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.players.add.success.single", i, scoreboardObjective.getTextComponent(), collection.iterator().next(), j),
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.add.success.single", i, scoreboardObjective.method_1120(), collection.iterator().next(), j),
 				true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.players.add.success.multiple", i, scoreboardObjective.getTextComponent(), collection.size()), true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.add.success.multiple", i, scoreboardObjective.method_1120(), collection.size()), true
 			);
 		}
 
@@ -504,7 +499,7 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13600(ServerCommandSource serverCommandSource, Collection<String> collection, ScoreboardObjective scoreboardObjective, int i) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 		int j = 0;
 
 		for (String string : collection) {
@@ -514,15 +509,13 @@ public class ScoreboardCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent(
-					"commands.scoreboard.players.remove.success.single", i, scoreboardObjective.getTextComponent(), collection.iterator().next(), j
-				),
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.remove.success.single", i, scoreboardObjective.method_1120(), collection.iterator().next(), j),
 				true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.players.remove.success.multiple", i, scoreboardObjective.getTextComponent(), collection.size()), true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.players.remove.success.multiple", i, scoreboardObjective.method_1120(), collection.size()), true
 			);
 		}
 
@@ -530,11 +523,11 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13589(ServerCommandSource serverCommandSource) {
-		Collection<String> collection = serverCommandSource.getMinecraftServer().getScoreboard().getKnownPlayers();
+		Collection<String> collection = serverCommandSource.getMinecraftServer().method_3845().getKnownPlayers();
 		if (collection.isEmpty()) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.players.list.empty"), false);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.players.list.empty"), false);
 		} else {
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent("commands.scoreboard.players.list.success", collection.size(), TextFormatter.sortedJoin(collection)), false
 			);
 		}
@@ -543,17 +536,17 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13614(ServerCommandSource serverCommandSource, String string) {
-		Map<ScoreboardObjective, ScoreboardPlayerScore> map = serverCommandSource.getMinecraftServer().getScoreboard().getPlayerObjectives(string);
+		Map<ScoreboardObjective, ScoreboardPlayerScore> map = serverCommandSource.getMinecraftServer().method_3845().getPlayerObjectives(string);
 		if (map.isEmpty()) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.players.list.entity.empty", string), false);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.players.list.entity.empty", string), false);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.players.list.entity.success", string, map.size()), false);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.players.list.entity.success", string, map.size()), false);
 
 			for (Entry<ScoreboardObjective, ScoreboardPlayerScore> entry : map.entrySet()) {
-				serverCommandSource.sendFeedback(
+				serverCommandSource.method_9226(
 					new TranslatableTextComponent(
 						"commands.scoreboard.players.list.entity.entry",
-						((ScoreboardObjective)entry.getKey()).getTextComponent(),
+						((ScoreboardObjective)entry.getKey()).method_1120(),
 						((ScoreboardPlayerScore)entry.getValue()).getScore()
 					),
 					false
@@ -565,36 +558,34 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13592(ServerCommandSource serverCommandSource, int i) throws CommandSyntaxException {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 		if (scoreboard.getObjectiveForSlot(i) == null) {
 			throw OBJECTIVES_DISPLAY_ALREADYEMPTY_EXCEPTION.create();
 		} else {
 			scoreboard.setObjectiveSlot(i, null);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.objectives.display.cleared", Scoreboard.getDisplaySlotNames()[i]), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.objectives.display.cleared", Scoreboard.getDisplaySlotNames()[i]), true);
 			return 0;
 		}
 	}
 
 	private static int method_13596(ServerCommandSource serverCommandSource, int i, ScoreboardObjective scoreboardObjective) throws CommandSyntaxException {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 		if (scoreboard.getObjectiveForSlot(i) == scoreboardObjective) {
 			throw OBJECTIVES_DISPLAY_ALREADYSET_EXCEPTION.create();
 		} else {
 			scoreboard.setObjectiveSlot(i, scoreboardObjective);
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.objectives.display.set", Scoreboard.getDisplaySlotNames()[i], scoreboardObjective.getDisplayName()),
-				true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.objectives.display.set", Scoreboard.getDisplaySlotNames()[i], scoreboardObjective.method_1114()), true
 			);
 			return 0;
 		}
 	}
 
 	private static int method_13576(ServerCommandSource serverCommandSource, ScoreboardObjective scoreboardObjective, TextComponent textComponent) {
-		if (!scoreboardObjective.getDisplayName().equals(textComponent)) {
+		if (!scoreboardObjective.method_1114().equals(textComponent)) {
 			scoreboardObjective.method_1121(textComponent);
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.objectives.modify.displayname", scoreboardObjective.getName(), scoreboardObjective.getTextComponent()),
-				true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.scoreboard.objectives.modify.displayname", scoreboardObjective.getName(), scoreboardObjective.method_1120()), true
 			);
 		}
 
@@ -602,25 +593,23 @@ public class ScoreboardCommand {
 	}
 
 	private static int method_13581(ServerCommandSource serverCommandSource, ScoreboardObjective scoreboardObjective, ScoreboardCriterion.Type type) {
-		if (scoreboardObjective.getCriterionType() != type) {
-			scoreboardObjective.setCriterionType(type);
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.scoreboard.objectives.modify.rendertype", scoreboardObjective.getTextComponent()), true
-			);
+		if (scoreboardObjective.method_1118() != type) {
+			scoreboardObjective.method_1115(type);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.objectives.modify.rendertype", scoreboardObjective.method_1120()), true);
 		}
 
 		return 0;
 	}
 
 	private static int method_13602(ServerCommandSource serverCommandSource, ScoreboardObjective scoreboardObjective) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 		scoreboard.removeObjective(scoreboardObjective);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.objectives.remove.success", scoreboardObjective.getTextComponent()), true);
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.objectives.remove.success", scoreboardObjective.method_1120()), true);
 		return scoreboard.getObjectives().size();
 	}
 
 	private static int method_13611(ServerCommandSource serverCommandSource, String string, ScoreboardCriterion scoreboardCriterion, TextComponent textComponent) throws CommandSyntaxException {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
 		if (scoreboard.method_1170(string) != null) {
 			throw OBJECTIVES_ADD_DUPLICATE_EXCEPTION.create();
 		} else if (string.length() > 16) {
@@ -628,19 +617,19 @@ public class ScoreboardCommand {
 		} else {
 			scoreboard.method_1168(string, scoreboardCriterion, textComponent, scoreboardCriterion.getCriterionType());
 			ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.objectives.add.success", scoreboardObjective.getTextComponent()), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.objectives.add.success", scoreboardObjective.method_1120()), true);
 			return scoreboard.getObjectives().size();
 		}
 	}
 
 	private static int method_13597(ServerCommandSource serverCommandSource) {
-		Collection<ScoreboardObjective> collection = serverCommandSource.getMinecraftServer().getScoreboard().getObjectives();
+		Collection<ScoreboardObjective> collection = serverCommandSource.getMinecraftServer().method_3845().getObjectives();
 		if (collection.isEmpty()) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.objectives.list.empty"), false);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.scoreboard.objectives.list.empty"), false);
 		} else {
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent(
-					"commands.scoreboard.objectives.list.success", collection.size(), TextFormatter.join(collection, ScoreboardObjective::getTextComponent)
+					"commands.scoreboard.objectives.list.success", collection.size(), TextFormatter.join(collection, ScoreboardObjective::method_1120)
 				),
 				false
 			);

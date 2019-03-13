@@ -14,10 +14,14 @@ public abstract class SliderWidget extends ButtonWidget {
 	protected final GameOptions gameOptions;
 	protected double progress;
 
-	protected SliderWidget(GameOptions gameOptions, int i, int j, int k, int l, float f) {
+	protected SliderWidget(int i, int j, int k, int l, double d) {
+		this(MinecraftClient.getInstance().field_1690, i, j, k, l, d);
+	}
+
+	protected SliderWidget(GameOptions gameOptions, int i, int j, int k, int l, double d) {
 		super(i, j, k, l, "");
 		this.gameOptions = gameOptions;
-		this.progress = (double)f;
+		this.progress = d;
 	}
 
 	@Override
@@ -32,15 +36,49 @@ public abstract class SliderWidget extends ButtonWidget {
 
 	@Override
 	protected void drawBackground(MinecraftClient minecraftClient, int i, int j) {
-		minecraftClient.getTextureManager().bindTexture(WIDGET_TEX);
+		minecraftClient.method_1531().method_4618(field_2072);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawTexturedRect(this.x + (int)(this.progress * (double)(this.width - 8)), this.y, 0, 66, 4, 20);
 		this.drawTexturedRect(this.x + (int)(this.progress * (double)(this.width - 8)) + 4, this.y, 196, 66, 4, 20);
 	}
 
 	@Override
-	public void onPressed(double d, double e) {
-		this.changeProgress(d);
+	public boolean mouseClicked(double d, double e, int i) {
+		if (i == 0) {
+			boolean bl = this.isSelected(d, e);
+			if (bl) {
+				this.method_1832(MinecraftClient.getInstance().method_1483());
+				this.changeProgress(d);
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
+	public boolean keyPressed(int i, int j, int k) {
+		if (i == 263) {
+			double d = this.progress;
+			double e = 1.0 / (double)(this.width - 8);
+			this.progress = MathHelper.clamp(this.progress - e, 0.0, 1.0);
+			if (d != this.progress) {
+				this.onProgressChanged();
+			}
+
+			this.updateText();
+		} else if (i == 262) {
+			double d = this.progress;
+			double e = 1.0 / (double)(this.width - 8);
+			this.progress = MathHelper.clamp(this.progress + e, 0.0, 1.0);
+			if (d != this.progress) {
+				this.onProgressChanged();
+			}
+
+			this.updateText();
+		}
+
+		return false;
 	}
 
 	private void changeProgress(double d) {
@@ -60,12 +98,12 @@ public abstract class SliderWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void playPressedSound(SoundLoader soundLoader) {
+	public void method_1832(SoundLoader soundLoader) {
 	}
 
 	@Override
 	public void onReleased(double d, double e) {
-		super.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
+		super.method_1832(MinecraftClient.getInstance().method_1483());
 	}
 
 	protected abstract void updateText();

@@ -33,7 +33,7 @@ public class MobEffectArgumentType implements ArgumentType<StatusEffect> {
 
 	public StatusEffect method_9348(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
-		return (StatusEffect)Registry.STATUS_EFFECT.getOrEmpty(identifier).orElseThrow(() -> INVALID_EFFECT_EXCEPTION.create(identifier));
+		return (StatusEffect)Registry.STATUS_EFFECT.method_17966(identifier).orElseThrow(() -> INVALID_EFFECT_EXCEPTION.create(identifier));
 	}
 
 	@Override

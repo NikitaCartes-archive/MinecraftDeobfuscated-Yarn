@@ -39,7 +39,7 @@ public class PlayerActionC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12361(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onPlayerAction(this);
+		serverPlayPacketListener.method_12066(this);
 	}
 
 	public BlockPos getPos() {

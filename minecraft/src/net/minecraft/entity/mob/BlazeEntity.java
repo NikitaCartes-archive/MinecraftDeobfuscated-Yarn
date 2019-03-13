@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import java.util.EnumSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1370;
@@ -31,55 +32,55 @@ import net.minecraft.world.World;
 public class BlazeEntity extends HostileEntity {
 	private float field_7214 = 0.5F;
 	private int field_7215;
-	private static final TrackedData<Byte> BLAZE_FLAGS = DataTracker.registerData(BlazeEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Byte> field_7216 = DataTracker.registerData(BlazeEntity.class, TrackedDataHandlerRegistry.BYTE);
 
 	public BlazeEntity(EntityType<? extends BlazeEntity> entityType, World world) {
 		super(entityType, world);
-		this.setPathNodeTypeWeight(PathNodeType.field_18, -1.0F);
-		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
-		this.setPathNodeTypeWeight(PathNodeType.field_9, 0.0F);
-		this.setPathNodeTypeWeight(PathNodeType.field_3, 0.0F);
+		this.method_5941(PathNodeType.field_18, -1.0F);
+		this.method_5941(PathNodeType.field_14, 8.0F);
+		this.method_5941(PathNodeType.field_9, 0.0F);
+		this.method_5941(PathNodeType.field_3, 0.0F);
 		this.fireImmune = true;
 		this.experiencePoints = 10;
 	}
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(4, new BlazeEntity.ShootFireballGoal(this));
-		this.goalSelector.add(5, new class_1370(this, 1.0));
-		this.goalSelector.add(7, new class_1394(this, 1.0, 0.0F));
-		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(8, new LookAroundGoal(this));
-		this.targetSelector.add(1, new class_1399(this).method_6318());
-		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
+		this.field_6201.add(4, new BlazeEntity.ShootFireballGoal(this));
+		this.field_6201.add(5, new class_1370(this, 1.0));
+		this.field_6201.add(7, new class_1394(this, 1.0, 0.0F));
+		this.field_6201.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.field_6201.add(8, new LookAroundGoal(this));
+		this.field_6185.add(1, new class_1399(this).method_6318());
+		this.field_6185.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
-		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(48.0);
+		this.method_5996(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
+		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
+		this.method_5996(EntityAttributes.FOLLOW_RANGE).setBaseValue(48.0);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(BLAZE_FLAGS, (byte)0);
+		this.field_6011.startTracking(field_7216, (byte)0);
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return SoundEvents.field_14991;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_14842;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_14580;
 	}
 
@@ -96,19 +97,19 @@ public class BlazeEntity extends HostileEntity {
 
 	@Override
 	public void updateMovement() {
-		if (!this.onGround && this.getVelocity().y < 0.0) {
-			this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
+		if (!this.onGround && this.method_18798().y < 0.0) {
+			this.method_18799(this.method_18798().multiply(1.0, 0.6, 1.0));
 		}
 
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			if (this.random.nextInt(24) == 0 && !this.isSilent()) {
-				this.world
-					.playSound(
+				this.field_6002
+					.method_8486(
 						this.x + 0.5,
 						this.y + 0.5,
 						this.z + 0.5,
 						SoundEvents.field_14734,
-						this.getSoundCategory(),
+						this.method_5634(),
 						1.0F + this.random.nextFloat(),
 						this.random.nextFloat() * 0.7F + 0.3F,
 						false
@@ -116,8 +117,8 @@ public class BlazeEntity extends HostileEntity {
 			}
 
 			for (int i = 0; i < 2; i++) {
-				this.world
-					.addParticle(
+				this.field_6002
+					.method_8406(
 						ParticleTypes.field_11237,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 						this.y + this.random.nextDouble() * (double)this.getHeight(),
@@ -147,8 +148,8 @@ public class BlazeEntity extends HostileEntity {
 		LivingEntity livingEntity = this.getTarget();
 		if (livingEntity != null
 			&& livingEntity.y + (double)livingEntity.getStandingEyeHeight() > this.y + (double)this.getStandingEyeHeight() + (double)this.field_7214) {
-			Vec3d vec3d = this.getVelocity();
-			this.setVelocity(this.getVelocity().add(0.0, (0.3F - vec3d.y) * 0.3F, 0.0));
+			Vec3d vec3d = this.method_18798();
+			this.method_18799(this.method_18798().add(0.0, (0.3F - vec3d.y) * 0.3F, 0.0));
 			this.velocityDirty = true;
 		}
 
@@ -165,18 +166,18 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	public boolean isFireActive() {
-		return (this.dataTracker.get(BLAZE_FLAGS) & 1) != 0;
+		return (this.field_6011.get(field_7216) & 1) != 0;
 	}
 
 	public void setFireActive(boolean bl) {
-		byte b = this.dataTracker.get(BLAZE_FLAGS);
+		byte b = this.field_6011.get(field_7216);
 		if (bl) {
 			b = (byte)(b | 1);
 		} else {
 			b = (byte)(b & -2);
 		}
 
-		this.dataTracker.set(BLAZE_FLAGS, b);
+		this.field_6011.set(field_7216, b);
 	}
 
 	@Override
@@ -191,7 +192,7 @@ public class BlazeEntity extends HostileEntity {
 
 		public ShootFireballGoal(BlazeEntity blazeEntity) {
 			this.field_7219 = blazeEntity;
-			this.setControlBits(3);
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 
 		@Override
@@ -221,12 +222,10 @@ public class BlazeEntity extends HostileEntity {
 					this.field_7219.attack(livingEntity);
 				}
 
-				this.field_7219.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
+				this.field_7219.method_5962().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
 			} else if (d < this.method_6995() * this.method_6995()) {
 				double e = livingEntity.x - this.field_7219.x;
-				double f = livingEntity.getBoundingBox().minY
-					+ (double)(livingEntity.getHeight() / 2.0F)
-					- (this.field_7219.y + (double)(this.field_7219.getHeight() / 2.0F));
+				double f = livingEntity.method_5829().minY + (double)(livingEntity.getHeight() / 2.0F) - (this.field_7219.y + (double)(this.field_7219.getHeight() / 2.0F));
 				double g = livingEntity.z - this.field_7219.z;
 				if (this.field_7217 <= 0) {
 					this.field_7218++;
@@ -243,33 +242,33 @@ public class BlazeEntity extends HostileEntity {
 
 					if (this.field_7218 > 1) {
 						float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
-						this.field_7219.world.playEvent(null, 1018, new BlockPos((int)this.field_7219.x, (int)this.field_7219.y, (int)this.field_7219.z), 0);
+						this.field_7219.field_6002.method_8444(null, 1018, new BlockPos((int)this.field_7219.x, (int)this.field_7219.y, (int)this.field_7219.z), 0);
 
 						for (int i = 0; i < 1; i++) {
 							SmallFireballEntity smallFireballEntity = new SmallFireballEntity(
-								this.field_7219.world,
+								this.field_7219.field_6002,
 								this.field_7219,
 								e + this.field_7219.getRand().nextGaussian() * (double)h,
 								f,
 								g + this.field_7219.getRand().nextGaussian() * (double)h
 							);
 							smallFireballEntity.y = this.field_7219.y + (double)(this.field_7219.getHeight() / 2.0F) + 0.5;
-							this.field_7219.world.spawnEntity(smallFireballEntity);
+							this.field_7219.field_6002.spawnEntity(smallFireballEntity);
 						}
 					}
 				}
 
-				this.field_7219.getLookControl().lookAt(livingEntity, 10.0F, 10.0F);
+				this.field_7219.method_5988().lookAt(livingEntity, 10.0F, 10.0F);
 			} else {
-				this.field_7219.getNavigation().stop();
-				this.field_7219.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
+				this.field_7219.method_5942().stop();
+				this.field_7219.method_5962().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);
 			}
 
 			super.tick();
 		}
 
 		private double method_6995() {
-			EntityAttributeInstance entityAttributeInstance = this.field_7219.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
+			EntityAttributeInstance entityAttributeInstance = this.field_7219.method_5996(EntityAttributes.FOLLOW_RANGE);
 			return entityAttributeInstance == null ? 16.0 : entityAttributeInstance.getValue();
 		}
 	}

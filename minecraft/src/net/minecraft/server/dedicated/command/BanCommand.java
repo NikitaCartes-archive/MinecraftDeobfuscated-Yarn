@@ -24,8 +24,7 @@ public class BanCommand {
 		commandDispatcher.register(
 			ServerCommandManager.literal("ban")
 				.requires(
-					serverCommandSource -> serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList().isEnabled()
-							&& serverCommandSource.hasPermissionLevel(3)
+					serverCommandSource -> serverCommandSource.getMinecraftServer().method_3760().method_14563().isEnabled() && serverCommandSource.hasPermissionLevel(3)
 				)
 				.then(
 					ServerCommandManager.argument("targets", GameProfileArgumentType.create())
@@ -36,7 +35,7 @@ public class BanCommand {
 									commandContext -> method_13022(
 											commandContext.getSource(),
 											GameProfileArgumentType.getProfilesArgument(commandContext, "targets"),
-											MessageArgumentType.getMessageArgument(commandContext, "reason")
+											MessageArgumentType.method_9339(commandContext, "reason")
 										)
 								)
 						)
@@ -45,7 +44,7 @@ public class BanCommand {
 	}
 
 	private static int method_13022(ServerCommandSource serverCommandSource, Collection<GameProfile> collection, @Nullable TextComponent textComponent) throws CommandSyntaxException {
-		BannedPlayerList bannedPlayerList = serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList();
+		BannedPlayerList bannedPlayerList = serverCommandSource.getMinecraftServer().method_3760().method_14563();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {
@@ -55,12 +54,12 @@ public class BanCommand {
 				);
 				bannedPlayerList.add(bannedPlayerEntry);
 				i++;
-				serverCommandSource.sendFeedback(
+				serverCommandSource.method_9226(
 					new TranslatableTextComponent("commands.ban.success", TextFormatter.profile(gameProfile), bannedPlayerEntry.getReason()), true
 				);
-				ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(gameProfile.getId());
+				ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().method_3760().getPlayer(gameProfile.getId());
 				if (serverPlayerEntity != null) {
-					serverPlayerEntity.networkHandler.disconnect(new TranslatableTextComponent("multiplayer.disconnect.banned"));
+					serverPlayerEntity.field_13987.disconnect(new TranslatableTextComponent("multiplayer.disconnect.banned"));
 				}
 			}
 		}

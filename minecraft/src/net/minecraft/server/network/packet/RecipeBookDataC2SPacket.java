@@ -11,7 +11,7 @@ import net.minecraft.util.PacketByteBuf;
 
 public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener> {
 	private RecipeBookDataC2SPacket.Mode mode;
-	private Identifier recipeId;
+	private Identifier field_13004;
 	private boolean guiOpen;
 	private boolean filteringCraftable;
 	private boolean furnaceGuiOpen;
@@ -26,7 +26,7 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 
 	public RecipeBookDataC2SPacket(Recipe<?> recipe) {
 		this.mode = RecipeBookDataC2SPacket.Mode.field_13011;
-		this.recipeId = recipe.getId();
+		this.field_13004 = recipe.method_8114();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -46,7 +46,7 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.mode = packetByteBuf.readEnumConstant(RecipeBookDataC2SPacket.Mode.class);
 		if (this.mode == RecipeBookDataC2SPacket.Mode.field_13011) {
-			this.recipeId = packetByteBuf.readIdentifier();
+			this.field_13004 = packetByteBuf.method_10810();
 		} else if (this.mode == RecipeBookDataC2SPacket.Mode.field_13010) {
 			this.guiOpen = packetByteBuf.readBoolean();
 			this.filteringCraftable = packetByteBuf.readBoolean();
@@ -63,7 +63,7 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.mode);
 		if (this.mode == RecipeBookDataC2SPacket.Mode.field_13011) {
-			packetByteBuf.writeIdentifier(this.recipeId);
+			packetByteBuf.method_10812(this.field_13004);
 		} else if (this.mode == RecipeBookDataC2SPacket.Mode.field_13010) {
 			packetByteBuf.writeBoolean(this.guiOpen);
 			packetByteBuf.writeBoolean(this.filteringCraftable);
@@ -77,15 +77,15 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	public void method_12400(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onRecipeBookData(this);
+		serverPlayPacketListener.method_12047(this);
 	}
 
 	public RecipeBookDataC2SPacket.Mode getMode() {
 		return this.mode;
 	}
 
-	public Identifier getRecipeId() {
-		return this.recipeId;
+	public Identifier method_12406() {
+		return this.field_13004;
 	}
 
 	public boolean isGuiOpen() {

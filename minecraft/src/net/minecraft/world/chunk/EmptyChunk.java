@@ -28,18 +28,18 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public BlockState getBlockState(BlockPos blockPos) {
-		return Blocks.field_10243.getDefaultState();
+	public BlockState method_8320(BlockPos blockPos) {
+		return Blocks.field_10243.method_9564();
 	}
 
 	@Nullable
 	@Override
-	public LightingProvider getLightingProvider() {
+	public LightingProvider method_12023() {
 		return null;
 	}
 
 	@Override
-	public int getLuminance(BlockPos blockPos) {
+	public int method_8317(BlockPos blockPos) {
 		return 0;
 	}
 
@@ -57,7 +57,7 @@ public class EmptyChunk extends WorldChunk {
 
 	@Nullable
 	@Override
-	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
+	public BlockEntity method_12201(BlockPos blockPos, WorldChunk.CreationType creationType) {
 		return null;
 	}
 
@@ -66,11 +66,11 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
+	public void method_12007(BlockPos blockPos, BlockEntity blockEntity) {
 	}
 
 	@Override
-	public void removeBlockEntity(BlockPos blockPos) {
+	public void method_12041(BlockPos blockPos) {
 	}
 
 	@Override
@@ -78,11 +78,11 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public void appendEntities(@Nullable Entity entity, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
+	public void method_12205(@Nullable Entity entity, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
 	}
 
 	@Override
-	public <T extends Entity> void appendEntities(Class<? extends T> class_, BoundingBox boundingBox, List<T> list, Predicate<? super T> predicate) {
+	public <T extends Entity> void method_12210(Class<? extends T> class_, BoundingBox boundingBox, List<T> list, Predicate<? super T> predicate) {
 	}
 
 	@Override
@@ -96,7 +96,7 @@ public class EmptyChunk extends WorldChunk {
 	}
 
 	@Override
-	public ChunkHolder.LevelType getLevelType() {
+	public ChunkHolder.LevelType method_12225() {
 		return ChunkHolder.LevelType.BORDER;
 	}
 }

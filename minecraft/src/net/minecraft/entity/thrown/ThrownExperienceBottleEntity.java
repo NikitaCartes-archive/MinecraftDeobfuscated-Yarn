@@ -35,15 +35,15 @@ public class ThrownExperienceBottleEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	protected void onCollision(HitResult hitResult) {
-		if (!this.world.isClient) {
-			this.world.playEvent(2002, new BlockPos(this), PotionUtil.getColor(Potions.field_8991));
-			int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5);
+	protected void method_7492(HitResult hitResult) {
+		if (!this.field_6002.isClient) {
+			this.field_6002.method_8535(2002, new BlockPos(this), PotionUtil.getColor(Potions.field_8991));
+			int i = 3 + this.field_6002.random.nextInt(5) + this.field_6002.random.nextInt(5);
 
 			while (i > 0) {
 				int j = ExperienceOrbEntity.roundToOrbSize(i);
 				i -= j;
-				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y, this.z, j));
+				this.field_6002.spawnEntity(new ExperienceOrbEntity(this.field_6002, this.x, this.y, this.z, j));
 			}
 
 			this.invalidate();

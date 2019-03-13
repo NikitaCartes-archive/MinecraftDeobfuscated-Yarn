@@ -2,9 +2,9 @@ package net.minecraft.client.gui.container;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.gui.ContainerProvider;
 import net.minecraft.client.gui.WrittenBookScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.container.Container;
 import net.minecraft.container.ContainerListener;
@@ -19,12 +19,12 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 	private final LecternContainer lecternContainer;
 	private final ContainerListener listener = new ContainerListener() {
 		@Override
-		public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
+		public void method_7634(Container container, DefaultedList<ItemStack> defaultedList) {
 			LecternScreen.this.updatePageProvider();
 		}
 
 		@Override
-		public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
+		public void method_7635(Container container, int i, ItemStack itemStack) {
 			LecternScreen.this.updatePageProvider();
 		}
 
@@ -47,33 +47,33 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.lecternContainer.addListener(this.listener);
+		this.lecternContainer.method_7596(this.listener);
 	}
 
 	@Override
 	public void close() {
-		this.client.player.closeGui();
+		this.client.field_1724.closeGui();
 		super.close();
 	}
 
 	@Override
 	public void onClosed() {
 		super.onClosed();
-		this.lecternContainer.removeListener(this.listener);
+		this.lecternContainer.method_7603(this.listener);
 	}
 
 	@Override
 	protected void addCloseButton() {
-		if (this.client.player.canModifyWorld()) {
-			this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("gui.done")) {
+		if (this.client.field_1724.canModifyWorld()) {
+			this.addButton(new class_4185(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("gui.done")) {
 				@Override
-				public void onPressed(double d, double e) {
-					LecternScreen.this.client.openScreen(null);
+				public void method_1826() {
+					LecternScreen.this.client.method_1507(null);
 				}
 			});
-			this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book")) {
+			this.addButton(new class_4185(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book")) {
 				@Override
-				public void onPressed(double d, double e) {
+				public void method_1826() {
 					LecternScreen.this.sendButtonPressPacket(3);
 				}
 			});
@@ -107,7 +107,7 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 	}
 
 	private void sendButtonPressPacket(int i) {
-		this.client.interactionManager.clickButton(this.lecternContainer.syncId, i);
+		this.client.field_1761.clickButton(this.lecternContainer.syncId, i);
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 	}
 
 	private void updatePageProvider() {
-		ItemStack itemStack = this.lecternContainer.getBookItem();
+		ItemStack itemStack = this.lecternContainer.method_17418();
 		this.setPageProvider(WrittenBookScreen.Contents.create(itemStack));
 	}
 

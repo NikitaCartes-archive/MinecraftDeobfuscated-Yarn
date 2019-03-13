@@ -3,15 +3,18 @@ package net.minecraft.structure.pool;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.processor.GravityStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Rotation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.Heightmap;
 
 public class StructurePool {
@@ -21,53 +24,54 @@ public class StructurePool {
 	public static final StructurePool INVALID = new StructurePool(
 		new Identifier("invalid"), new Identifier("invalid"), ImmutableList.of(), StructurePool.Projection.RIGID
 	);
-	private final Identifier id;
+	private final Identifier field_16678;
 	private final ImmutableList<Pair<StructurePoolElement, Integer>> elementCounts;
 	private final List<StructurePoolElement> elements;
-	private final Identifier terminatorsId;
+	private final Identifier field_16681;
 	private final StructurePool.Projection projection;
+	private int field_18707 = Integer.MIN_VALUE;
 
 	public StructurePool(Identifier identifier, Identifier identifier2, List<Pair<StructurePoolElement, Integer>> list, StructurePool.Projection projection) {
-		this.id = identifier;
+		this.field_16678 = identifier;
 		this.elementCounts = ImmutableList.copyOf(list);
 		this.elements = Lists.<StructurePoolElement>newArrayList();
 
 		for (Pair<StructurePoolElement, Integer> pair : list) {
 			for (Integer integer = 0; integer < pair.getSecond(); integer = integer + 1) {
-				this.elements.add(pair.getFirst().setProjection(projection));
+				this.elements.add(pair.getFirst().method_16622(projection));
 			}
 		}
 
-		this.terminatorsId = identifier2;
+		this.field_16681 = identifier2;
 		this.projection = projection;
 	}
 
-	public StructurePoolElement getElement(int i) {
-		return (StructurePoolElement)this.elements.get(i);
+	public int method_19309(StructureManager structureManager) {
+		if (this.field_18707 == Integer.MIN_VALUE) {
+			this.field_18707 = this.elements
+				.stream()
+				.mapToInt(structurePoolElement -> structurePoolElement.method_16628(structureManager, BlockPos.ORIGIN, Rotation.ROT_0).getBlockCountY())
+				.max()
+				.orElse(0);
+		}
+
+		return this.field_18707;
 	}
 
-	public Identifier getTerminatorsId() {
-		return this.terminatorsId;
+	public Identifier method_16634() {
+		return this.field_16681;
 	}
 
 	public StructurePoolElement getRandomElement(Random random) {
 		return (StructurePoolElement)this.elements.get(random.nextInt(this.elements.size()));
 	}
 
-	public int[] getElementIndicesInRandomOrder(Random random) {
-		int[] is = new int[this.elements.size()];
-		int i = 0;
-
-		while (i < is.length) {
-			is[i] = i++;
-		}
-
-		IntArrays.shuffle(is, random);
-		return is;
+	public List<StructurePoolElement> getElementIndicesInRandomOrder(Random random) {
+		return ImmutableList.copyOf(ObjectArrays.shuffle(this.elements.toArray(new StructurePoolElement[0]), random));
 	}
 
-	public Identifier getId() {
-		return this.id;
+	public Identifier method_16629() {
+		return this.field_16678;
 	}
 
 	public int getElementCount() {

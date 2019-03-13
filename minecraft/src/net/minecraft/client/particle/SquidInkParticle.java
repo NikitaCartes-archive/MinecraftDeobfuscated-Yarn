@@ -37,7 +37,7 @@ public class SquidInkParticle extends AnimatedParticle {
 			}
 
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.world.getBlockState(new BlockPos(this.posX, this.posY, this.posZ)).isAir()) {
+			if (this.world.method_8320(new BlockPos(this.posX, this.posY, this.posZ)).isAir()) {
 				this.velocityY -= 0.008F;
 			}
 

@@ -286,7 +286,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 					case 266:
 					case 267:
 					default:
-						return i != 256;
+						return false;
 					case 261:
 						if (this.editable) {
 							this.method_16873(1);
@@ -447,7 +447,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
 		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
-		bufferBuilder.begin(7, VertexFormats.POSITION);
+		bufferBuilder.method_1328(7, VertexFormats.field_1592);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)j, 0.0).next();
@@ -496,7 +496,12 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 
 	@Override
 	public boolean hasFocus() {
-		return true;
+		return this.visible && this.editable;
+	}
+
+	@Override
+	public boolean method_19356(double d, double e) {
+		return this.visible && d >= (double)this.x && d < (double)(this.x + this.width) && e >= (double)this.y && e < (double)(this.y + this.height);
 	}
 
 	public void setFocused(boolean bl) {

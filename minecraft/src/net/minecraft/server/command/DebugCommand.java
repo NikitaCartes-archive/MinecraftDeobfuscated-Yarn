@@ -37,7 +37,7 @@ public class DebugCommand {
 			throw ALREADYRUNNING_EXCEPTION.create();
 		} else {
 			minecraftServer.method_3832();
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
 			return 0;
 		}
 	}
@@ -48,12 +48,12 @@ public class DebugCommand {
 		if (!disableableProfiler.getController().isEnabled()) {
 			throw NORUNNING_EXCPETION.create();
 		} else {
-			ProfileResult profileResult = disableableProfiler.getController().disable();
+			ProfileResult profileResult = disableableProfiler.getController().method_16058();
 			File file = new File(minecraftServer.getFile("debug"), "profile-results-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + ".txt");
 			profileResult.saveToFile(file);
 			float f = (float)profileResult.getTimeSpan() / 1.0E9F;
 			float g = (float)profileResult.getTickSpan() / f;
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent("commands.debug.stopped", String.format(Locale.ROOT, "%.2f", f), profileResult.getTickSpan(), String.format("%.2f", g)), true
 			);
 			return MathHelper.floor(g);

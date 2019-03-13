@@ -30,25 +30,25 @@ public class PotionItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getDefaultStack() {
-		return PotionUtil.setPotion(super.getDefaultStack(), Potions.field_8991);
+	public ItemStack method_7854() {
+		return PotionUtil.setPotion(super.method_7854(), Potions.field_8991);
 	}
 
 	@Override
-	public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+	public ItemStack method_7861(ItemStack itemStack, World world, LivingEntity livingEntity) {
 		PlayerEntity playerEntity = livingEntity instanceof PlayerEntity ? (PlayerEntity)livingEntity : null;
 		if (playerEntity == null || !playerEntity.abilities.creativeMode) {
 			itemStack.subtractAmount(1);
 		}
 
 		if (playerEntity instanceof ServerPlayerEntity) {
-			Criterions.CONSUME_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack);
+			Criterions.CONSUME_ITEM.method_8821((ServerPlayerEntity)playerEntity, itemStack);
 		}
 
 		if (!world.isClient) {
 			for (StatusEffectInstance statusEffectInstance : PotionUtil.getPotionEffects(itemStack)) {
 				if (statusEffectInstance.getEffectType().isInstant()) {
-					statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, livingEntity, statusEffectInstance.getAmplifier(), 1.0);
+					statusEffectInstance.getEffectType().method_5564(playerEntity, playerEntity, livingEntity, statusEffectInstance.getAmplifier(), 1.0);
 				} else {
 					livingEntity.addPotionEffect(new StatusEffectInstance(statusEffectInstance));
 				}
@@ -56,7 +56,7 @@ public class PotionItem extends Item {
 		}
 
 		if (playerEntity != null) {
-			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
 		}
 
 		if (playerEntity == null || !playerEntity.abilities.creativeMode) {
@@ -65,7 +65,7 @@ public class PotionItem extends Item {
 			}
 
 			if (playerEntity != null) {
-				playerEntity.inventory.insertStack(new ItemStack(Items.field_8469));
+				playerEntity.inventory.method_7394(new ItemStack(Items.field_8469));
 			}
 		}
 
@@ -73,40 +73,40 @@ public class PotionItem extends Item {
 	}
 
 	@Override
-	public int getMaxUseTime(ItemStack itemStack) {
+	public int method_7881(ItemStack itemStack) {
 		return 32;
 	}
 
 	@Override
-	public UseAction getUseAction(ItemStack itemStack) {
+	public UseAction method_7853(ItemStack itemStack) {
 		return UseAction.field_8946;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		playerEntity.setCurrentHand(hand);
-		return new TypedActionResult<>(ActionResult.field_5812, playerEntity.getStackInHand(hand));
+		return new TypedActionResult<>(ActionResult.field_5812, playerEntity.method_5998(hand));
 	}
 
 	@Override
-	public String getTranslationKey(ItemStack itemStack) {
+	public String method_7866(ItemStack itemStack) {
 		return PotionUtil.getPotion(itemStack).getName(this.getTranslationKey() + ".effect.");
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		PotionUtil.buildTooltip(itemStack, list, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack itemStack) {
-		return super.hasEnchantmentGlint(itemStack) || !PotionUtil.getPotionEffects(itemStack).isEmpty();
+	public boolean method_7886(ItemStack itemStack) {
+		return super.method_7886(itemStack) || !PotionUtil.getPotionEffects(itemStack).isEmpty();
 	}
 
 	@Override
-	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+	public void method_7850(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (this.isInItemGroup(itemGroup)) {
 			for (Potion potion : Registry.POTION) {
 				if (potion != Potions.field_8984) {

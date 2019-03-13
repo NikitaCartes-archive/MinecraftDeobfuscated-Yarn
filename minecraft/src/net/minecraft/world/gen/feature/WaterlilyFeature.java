@@ -22,7 +22,7 @@ public class WaterlilyFeature extends Feature<DefaultFeatureConfig> {
 
 		while (blockPos2.getY() > 0) {
 			BlockPos blockPos3 = blockPos2.down();
-			if (!iWorld.isAir(blockPos3)) {
+			if (!iWorld.method_8623(blockPos3)) {
 				break;
 			}
 
@@ -31,9 +31,9 @@ public class WaterlilyFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos4 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			BlockState blockState = Blocks.field_10588.getDefaultState();
-			if (iWorld.isAir(blockPos4) && blockState.canPlaceAt(iWorld, blockPos4)) {
-				iWorld.setBlockState(blockPos4, blockState, 2);
+			BlockState blockState = Blocks.field_10588.method_9564();
+			if (iWorld.method_8623(blockPos4) && blockState.method_11591(iWorld, blockPos4)) {
+				iWorld.method_8652(blockPos4, blockState, 2);
 			}
 		}
 

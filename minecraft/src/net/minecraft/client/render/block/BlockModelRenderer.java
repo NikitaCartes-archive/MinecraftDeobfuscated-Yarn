@@ -44,7 +44,7 @@ public class BlockModelRenderer {
 		this.colorMap = blockColorMap;
 	}
 
-	public boolean tesselate(
+	public boolean method_3374(
 		ExtendedBlockView extendedBlockView,
 		BakedModel bakedModel,
 		BlockState blockState,
@@ -58,18 +58,18 @@ public class BlockModelRenderer {
 
 		try {
 			return bl2
-				? this.tesselateSmooth(extendedBlockView, bakedModel, blockState, blockPos, bufferBuilder, bl, random, l)
-				: this.tesselateFlat(extendedBlockView, bakedModel, blockState, blockPos, bufferBuilder, bl, random, l);
+				? this.method_3361(extendedBlockView, bakedModel, blockState, blockPos, bufferBuilder, bl, random, l)
+				: this.method_3373(extendedBlockView, bakedModel, blockState, blockPos, bufferBuilder, bl, random, l);
 		} catch (Throwable var14) {
 			CrashReport crashReport = CrashReport.create(var14, "Tesselating block model");
-			CrashReportSection crashReportSection = crashReport.addElement("Block model being tesselated");
-			CrashReportSection.addBlockInfo(crashReportSection, blockPos, blockState);
+			CrashReportSection crashReportSection = crashReport.method_562("Block model being tesselated");
+			CrashReportSection.method_586(crashReportSection, blockPos, blockState);
 			crashReportSection.add("Using AO", bl2);
 			throw new CrashException(crashReport);
 		}
 	}
 
-	public boolean tesselateSmooth(
+	public boolean method_3361(
 		ExtendedBlockView extendedBlockView,
 		BakedModel bakedModel,
 		BlockState blockState,
@@ -86,24 +86,24 @@ public class BlockModelRenderer {
 
 		for (Direction direction : Direction.values()) {
 			random.setSeed(l);
-			List<BakedQuad> list = bakedModel.getQuads(blockState, direction, random);
-			if (!list.isEmpty() && (!bl || Block.shouldDrawSide(blockState, extendedBlockView, blockPos, direction))) {
-				this.tesselateQuadsSmooth(extendedBlockView, blockState, blockPos, bufferBuilder, list, fs, bitSet, ambientOcclusionCalculator);
+			List<BakedQuad> list = bakedModel.method_4707(blockState, direction, random);
+			if (!list.isEmpty() && (!bl || Block.method_9607(blockState, extendedBlockView, blockPos, direction))) {
+				this.method_3363(extendedBlockView, blockState, blockPos, bufferBuilder, list, fs, bitSet, ambientOcclusionCalculator);
 				bl2 = true;
 			}
 		}
 
 		random.setSeed(l);
-		List<BakedQuad> list2 = bakedModel.getQuads(blockState, null, random);
+		List<BakedQuad> list2 = bakedModel.method_4707(blockState, null, random);
 		if (!list2.isEmpty()) {
-			this.tesselateQuadsSmooth(extendedBlockView, blockState, blockPos, bufferBuilder, list2, fs, bitSet, ambientOcclusionCalculator);
+			this.method_3363(extendedBlockView, blockState, blockPos, bufferBuilder, list2, fs, bitSet, ambientOcclusionCalculator);
 			bl2 = true;
 		}
 
 		return bl2;
 	}
 
-	public boolean tesselateFlat(
+	public boolean method_3373(
 		ExtendedBlockView extendedBlockView,
 		BakedModel bakedModel,
 		BlockState blockState,
@@ -118,25 +118,25 @@ public class BlockModelRenderer {
 
 		for (Direction direction : Direction.values()) {
 			random.setSeed(l);
-			List<BakedQuad> list = bakedModel.getQuads(blockState, direction, random);
-			if (!list.isEmpty() && (!bl || Block.shouldDrawSide(blockState, extendedBlockView, blockPos, direction))) {
-				int i = blockState.getBlockBrightness(extendedBlockView, blockPos.offset(direction));
-				this.tesselateQuadsFlat(extendedBlockView, blockState, blockPos, i, false, bufferBuilder, list, bitSet);
+			List<BakedQuad> list = bakedModel.method_4707(blockState, direction, random);
+			if (!list.isEmpty() && (!bl || Block.method_9607(blockState, extendedBlockView, blockPos, direction))) {
+				int i = blockState.method_11632(extendedBlockView, blockPos.method_10093(direction));
+				this.method_3370(extendedBlockView, blockState, blockPos, i, false, bufferBuilder, list, bitSet);
 				bl2 = true;
 			}
 		}
 
 		random.setSeed(l);
-		List<BakedQuad> list2 = bakedModel.getQuads(blockState, null, random);
+		List<BakedQuad> list2 = bakedModel.method_4707(blockState, null, random);
 		if (!list2.isEmpty()) {
-			this.tesselateQuadsFlat(extendedBlockView, blockState, blockPos, -1, true, bufferBuilder, list2, bitSet);
+			this.method_3370(extendedBlockView, blockState, blockPos, -1, true, bufferBuilder, list2, bitSet);
 			bl2 = true;
 		}
 
 		return bl2;
 	}
 
-	private void tesselateQuadsSmooth(
+	private void method_3363(
 		ExtendedBlockView extendedBlockView,
 		BlockState blockState,
 		BlockPos blockPos,
@@ -146,7 +146,7 @@ public class BlockModelRenderer {
 		BitSet bitSet,
 		BlockModelRenderer.AmbientOcclusionCalculator ambientOcclusionCalculator
 	) {
-		Vec3d vec3d = blockState.getOffsetPos(extendedBlockView, blockPos);
+		Vec3d vec3d = blockState.method_11599(extendedBlockView, blockPos);
 		double d = (double)blockPos.getX() + vec3d.x;
 		double e = (double)blockPos.getY() + vec3d.y;
 		double f = (double)blockPos.getZ() + vec3d.z;
@@ -154,8 +154,8 @@ public class BlockModelRenderer {
 
 		for (int j = list.size(); i < j; i++) {
 			BakedQuad bakedQuad = (BakedQuad)list.get(i);
-			this.updateShape(extendedBlockView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), fs, bitSet);
-			ambientOcclusionCalculator.apply(extendedBlockView, blockState, blockPos, bakedQuad.getFace(), fs, bitSet);
+			this.method_3364(extendedBlockView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.method_3358(), fs, bitSet);
+			ambientOcclusionCalculator.method_3388(extendedBlockView, blockState, blockPos, bakedQuad.method_3358(), fs, bitSet);
 			bufferBuilder.putVertexData(bakedQuad.getVertexData());
 			bufferBuilder.brightness(
 				ambientOcclusionCalculator.brightness[0],
@@ -164,7 +164,7 @@ public class BlockModelRenderer {
 				ambientOcclusionCalculator.brightness[3]
 			);
 			if (bakedQuad.hasColor()) {
-				int k = this.colorMap.getRenderColor(blockState, extendedBlockView, blockPos, bakedQuad.getColorIndex());
+				int k = this.colorMap.method_1697(blockState, extendedBlockView, blockPos, bakedQuad.getColorIndex());
 				float g = (float)(k >> 16 & 0xFF) / 255.0F;
 				float h = (float)(k >> 8 & 0xFF) / 255.0F;
 				float l = (float)(k & 0xFF) / 255.0F;
@@ -199,7 +199,7 @@ public class BlockModelRenderer {
 		}
 	}
 
-	private void updateShape(
+	private void method_3364(
 		ExtendedBlockView extendedBlockView, BlockState blockState, BlockPos blockPos, int[] is, Direction direction, @Nullable float[] fs, BitSet bitSet
 	) {
 		float f = 32.0F;
@@ -266,7 +266,7 @@ public class BlockModelRenderer {
 		}
 	}
 
-	private void tesselateQuadsFlat(
+	private void method_3370(
 		ExtendedBlockView extendedBlockView,
 		BlockState blockState,
 		BlockPos blockPos,
@@ -276,7 +276,7 @@ public class BlockModelRenderer {
 		List<BakedQuad> list,
 		BitSet bitSet
 	) {
-		Vec3d vec3d = blockState.getOffsetPos(extendedBlockView, blockPos);
+		Vec3d vec3d = blockState.method_11599(extendedBlockView, blockPos);
 		double d = (double)blockPos.getX() + vec3d.x;
 		double e = (double)blockPos.getY() + vec3d.y;
 		double f = (double)blockPos.getZ() + vec3d.z;
@@ -285,15 +285,15 @@ public class BlockModelRenderer {
 		for (int k = list.size(); j < k; j++) {
 			BakedQuad bakedQuad = (BakedQuad)list.get(j);
 			if (bl) {
-				this.updateShape(extendedBlockView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.getFace(), null, bitSet);
-				BlockPos blockPos2 = bitSet.get(0) ? blockPos.offset(bakedQuad.getFace()) : blockPos;
-				i = blockState.getBlockBrightness(extendedBlockView, blockPos2);
+				this.method_3364(extendedBlockView, blockState, blockPos, bakedQuad.getVertexData(), bakedQuad.method_3358(), null, bitSet);
+				BlockPos blockPos2 = bitSet.get(0) ? blockPos.method_10093(bakedQuad.method_3358()) : blockPos;
+				i = blockState.method_11632(extendedBlockView, blockPos2);
 			}
 
 			bufferBuilder.putVertexData(bakedQuad.getVertexData());
 			bufferBuilder.brightness(i, i, i, i);
 			if (bakedQuad.hasColor()) {
-				int l = this.colorMap.getRenderColor(blockState, extendedBlockView, blockPos, bakedQuad.getColorIndex());
+				int l = this.colorMap.method_1697(blockState, extendedBlockView, blockPos, bakedQuad.getColorIndex());
 				float g = (float)(l >> 16 & 0xFF) / 255.0F;
 				float h = (float)(l >> 8 & 0xFF) / 255.0F;
 				float m = (float)(l & 0xFF) / 255.0F;
@@ -307,26 +307,26 @@ public class BlockModelRenderer {
 		}
 	}
 
-	public void render(BakedModel bakedModel, float f, float g, float h, float i) {
-		this.render(null, bakedModel, f, g, h, i);
+	public void method_3368(BakedModel bakedModel, float f, float g, float h, float i) {
+		this.method_3367(null, bakedModel, f, g, h, i);
 	}
 
-	public void render(@Nullable BlockState blockState, BakedModel bakedModel, float f, float g, float h, float i) {
+	public void method_3367(@Nullable BlockState blockState, BakedModel bakedModel, float f, float g, float h, float i) {
 		Random random = new Random();
 		long l = 42L;
 
 		for (Direction direction : Direction.values()) {
 			random.setSeed(42L);
-			this.renderQuad(f, g, h, i, bakedModel.getQuads(blockState, direction, random));
+			this.renderQuad(f, g, h, i, bakedModel.method_4707(blockState, direction, random));
 		}
 
 		random.setSeed(42L);
-		this.renderQuad(f, g, h, i, bakedModel.getQuads(blockState, null, random));
+		this.renderQuad(f, g, h, i, bakedModel.method_4707(blockState, null, random));
 	}
 
-	public void render(BakedModel bakedModel, BlockState blockState, float f, boolean bl) {
+	public void method_3366(BakedModel bakedModel, BlockState blockState, float f, boolean bl) {
 		GlStateManager.rotatef(90.0F, 0.0F, 1.0F, 0.0F);
-		int i = this.colorMap.getRenderColor(blockState, null, null, 0);
+		int i = this.colorMap.method_1697(blockState, null, null, 0);
 		float g = (float)(i >> 16 & 0xFF) / 255.0F;
 		float h = (float)(i >> 8 & 0xFF) / 255.0F;
 		float j = (float)(i & 0xFF) / 255.0F;
@@ -334,7 +334,7 @@ public class BlockModelRenderer {
 			GlStateManager.color4f(f, f, f, 1.0F);
 		}
 
-		this.render(blockState, bakedModel, f, g, h, j);
+		this.method_3367(blockState, bakedModel, f, g, h, j);
 	}
 
 	private void renderQuad(float f, float g, float h, float i, List<BakedQuad> list) {
@@ -344,7 +344,7 @@ public class BlockModelRenderer {
 
 		for (int k = list.size(); j < k; j++) {
 			BakedQuad bakedQuad = (BakedQuad)list.get(j);
-			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_NORMAL);
+			bufferBuilder.method_1328(7, VertexFormats.field_1590);
 			bufferBuilder.putVertexData(bakedQuad.getVertexData());
 			if (bakedQuad.hasColor()) {
 				bufferBuilder.setQuadColor(g * f, h * f, i * f);
@@ -352,7 +352,7 @@ public class BlockModelRenderer {
 				bufferBuilder.setQuadColor(f, f, f);
 			}
 
-			Vec3i vec3i = bakedQuad.getFace().getVector();
+			Vec3i vec3i = bakedQuad.method_3358().method_10163();
 			bufferBuilder.postNormal((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
 			tessellator.draw();
 		}
@@ -378,7 +378,7 @@ public class BlockModelRenderer {
 			}
 		}
 
-		int i = blockState.getBlockBrightness(extendedBlockView, blockPos);
+		int i = blockState.method_11632(extendedBlockView, blockPos);
 		if (object2IntLinkedOpenHashMap != null) {
 			if (object2IntLinkedOpenHashMap.size() == 50) {
 				object2IntLinkedOpenHashMap.removeFirstInt();
@@ -398,38 +398,38 @@ public class BlockModelRenderer {
 		public AmbientOcclusionCalculator() {
 		}
 
-		public void apply(ExtendedBlockView extendedBlockView, BlockState blockState, BlockPos blockPos, Direction direction, float[] fs, BitSet bitSet) {
-			BlockPos blockPos2 = bitSet.get(0) ? blockPos.offset(direction) : blockPos;
-			BlockModelRenderer.NeighborData neighborData = BlockModelRenderer.NeighborData.getData(direction);
+		public void method_3388(ExtendedBlockView extendedBlockView, BlockState blockState, BlockPos blockPos, Direction direction, float[] fs, BitSet bitSet) {
+			BlockPos blockPos2 = bitSet.get(0) ? blockPos.method_10093(direction) : blockPos;
+			BlockModelRenderer.NeighborData neighborData = BlockModelRenderer.NeighborData.method_3378(direction);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			mutable.set(blockPos2).setOffset(neighborData.faces[0]);
+			mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[0]);
 			int i = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
-			float f = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-			mutable.set(blockPos2).setOffset(neighborData.faces[1]);
+			float f = extendedBlockView.method_8320(mutable).method_11596(extendedBlockView, mutable);
+			mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[1]);
 			int j = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
-			float g = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-			mutable.set(blockPos2).setOffset(neighborData.faces[2]);
+			float g = extendedBlockView.method_8320(mutable).method_11596(extendedBlockView, mutable);
+			mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[2]);
 			int k = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
-			float h = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-			mutable.set(blockPos2).setOffset(neighborData.faces[3]);
+			float h = extendedBlockView.method_8320(mutable).method_11596(extendedBlockView, mutable);
+			mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[3]);
 			int l = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
-			float m = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-			mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(direction);
-			boolean bl = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
-			mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(direction);
-			boolean bl2 = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
-			mutable.set(blockPos2).setOffset(neighborData.faces[2]).setOffset(direction);
-			boolean bl3 = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
-			mutable.set(blockPos2).setOffset(neighborData.faces[3]).setOffset(direction);
-			boolean bl4 = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
+			float m = extendedBlockView.method_8320(mutable).method_11596(extendedBlockView, mutable);
+			mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[0]).method_10098(direction);
+			boolean bl = extendedBlockView.method_8320(mutable).method_11581(extendedBlockView, mutable) == 0;
+			mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[1]).method_10098(direction);
+			boolean bl2 = extendedBlockView.method_8320(mutable).method_11581(extendedBlockView, mutable) == 0;
+			mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[2]).method_10098(direction);
+			boolean bl3 = extendedBlockView.method_8320(mutable).method_11581(extendedBlockView, mutable) == 0;
+			mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[3]).method_10098(direction);
+			boolean bl4 = extendedBlockView.method_8320(mutable).method_11581(extendedBlockView, mutable) == 0;
 			float n;
 			int o;
 			if (!bl3 && !bl) {
 				n = f;
 				o = i;
 			} else {
-				mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[2]);
-				n = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+				mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[0]).method_10098(neighborData.field_4191[2]);
+				n = extendedBlockView.method_8320(mutable).method_11596(extendedBlockView, mutable);
 				o = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
 			}
 
@@ -439,8 +439,8 @@ public class BlockModelRenderer {
 				p = f;
 				q = i;
 			} else {
-				mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[3]);
-				p = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+				mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[0]).method_10098(neighborData.field_4191[3]);
+				p = extendedBlockView.method_8320(mutable).method_11596(extendedBlockView, mutable);
 				q = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
 			}
 
@@ -450,8 +450,8 @@ public class BlockModelRenderer {
 				r = g;
 				s = j;
 			} else {
-				mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[2]);
-				r = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+				mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[1]).method_10098(neighborData.field_4191[2]);
+				r = extendedBlockView.method_8320(mutable).method_11596(extendedBlockView, mutable);
 				s = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
 			}
 
@@ -461,21 +461,21 @@ public class BlockModelRenderer {
 				t = g;
 				u = j;
 			} else {
-				mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[3]);
-				t = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+				mutable.method_10101(blockPos2).method_10098(neighborData.field_4191[1]).method_10098(neighborData.field_4191[3]);
+				t = extendedBlockView.method_8320(mutable).method_11596(extendedBlockView, mutable);
 				u = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
 			}
 
 			int v = BlockModelRenderer.method_3371(blockState, extendedBlockView, blockPos);
-			mutable.set(blockPos).setOffset(direction);
-			if (bitSet.get(0) || !extendedBlockView.getBlockState(mutable).isFullOpaque(extendedBlockView, mutable)) {
+			mutable.method_10101(blockPos).method_10098(direction);
+			if (bitSet.get(0) || !extendedBlockView.method_8320(mutable).method_11598(extendedBlockView, mutable)) {
 				v = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
 			}
 
 			float w = bitSet.get(0)
-				? extendedBlockView.getBlockState(blockPos2).getAmbientOcclusionLightLevel(extendedBlockView, blockPos2)
-				: extendedBlockView.getBlockState(blockPos).getAmbientOcclusionLightLevel(extendedBlockView, blockPos);
-			BlockModelRenderer.Translation translation = BlockModelRenderer.Translation.getTranslations(direction);
+				? extendedBlockView.method_8320(blockPos2).method_11596(extendedBlockView, blockPos2)
+				: extendedBlockView.method_8320(blockPos).method_11596(extendedBlockView, blockPos);
+			BlockModelRenderer.Translation translation = BlockModelRenderer.Translation.method_3394(direction);
 			if (bitSet.get(1) && neighborData.nonCubicWeight) {
 				float x = (m + f + p + w) * 0.25F;
 				float y = (h + f + n + w) * 0.25F;
@@ -821,7 +821,7 @@ public class BlockModelRenderer {
 			}
 		);
 
-		private final Direction[] faces;
+		private final Direction[] field_4191;
 		private final boolean nonCubicWeight;
 		private final BlockModelRenderer.NeighborOrientation[] field_4192;
 		private final BlockModelRenderer.NeighborOrientation[] field_4185;
@@ -845,7 +845,7 @@ public class BlockModelRenderer {
 			BlockModelRenderer.NeighborOrientation[] neighborOrientations3,
 			BlockModelRenderer.NeighborOrientation[] neighborOrientations4
 		) {
-			this.faces = directions;
+			this.field_4191 = directions;
 			this.nonCubicWeight = bl;
 			this.field_4192 = neighborOrientations;
 			this.field_4185 = neighborOrientations2;
@@ -853,7 +853,7 @@ public class BlockModelRenderer {
 			this.field_4188 = neighborOrientations4;
 		}
 
-		public static BlockModelRenderer.NeighborData getData(Direction direction) {
+		public static BlockModelRenderer.NeighborData method_3378(Direction direction) {
 			return field_4190[direction.getId()];
 		}
 	}
@@ -909,7 +909,7 @@ public class BlockModelRenderer {
 			this.fourthCorner = m;
 		}
 
-		public static BlockModelRenderer.Translation getTranslations(Direction direction) {
+		public static BlockModelRenderer.Translation method_3394(Direction direction) {
 			return VALUES[direction.getId()];
 		}
 	}

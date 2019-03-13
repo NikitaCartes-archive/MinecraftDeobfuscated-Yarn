@@ -29,17 +29,17 @@ public class class_2290 implements Predicate<ItemStack> {
 	}
 
 	public boolean method_9783(ItemStack itemStack) {
-		return itemStack.getItem() == this.field_10796 && TagHelper.areTagsEqual(this.field_10798, itemStack.getTag(), true);
+		return itemStack.getItem() == this.field_10796 && TagHelper.method_10687(this.field_10798, itemStack.method_7969(), true);
 	}
 
 	public ItemStack method_9781(int i, boolean bl) throws CommandSyntaxException {
 		ItemStack itemStack = new ItemStack(this.field_10796, i);
 		if (this.field_10798 != null) {
-			itemStack.setTag(this.field_10798);
+			itemStack.method_7980(this.field_10798);
 		}
 
 		if (bl && i > itemStack.getMaxAmount()) {
-			throw field_10797.create(Registry.ITEM.getId(this.field_10796), itemStack.getMaxAmount());
+			throw field_10797.create(Registry.ITEM.method_10221(this.field_10796), itemStack.getMaxAmount());
 		} else {
 			return itemStack;
 		}

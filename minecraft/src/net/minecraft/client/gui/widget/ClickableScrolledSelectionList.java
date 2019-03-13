@@ -55,8 +55,8 @@ public class ClickableScrolledSelectionList extends AbstractListWidget {
 	}
 
 	@Override
-	public boolean mouseScrolled(double d) {
-		return this.field_2342.mouseScrolled(d) ? true : super.mouseScrolled(d);
+	public boolean mouseScrolled(double d, double e, double f) {
+		return this.field_2342.mouseScrolled(d, e, f) ? true : super.mouseScrolled(d, e, f);
 	}
 
 	@Override

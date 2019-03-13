@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.mob.MobEntity;
@@ -7,7 +8,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class ProjectileAttackGoal extends Goal {
 	private final MobEntity mobEntity;
-	private final RangedAttacker rangedAttacker;
+	private final RangedAttacker field_6582;
 	private LivingEntity target;
 	private int field_6581 = -1;
 	private final double field_6586;
@@ -25,14 +26,14 @@ public class ProjectileAttackGoal extends Goal {
 		if (!(rangedAttacker instanceof LivingEntity)) {
 			throw new IllegalArgumentException("ArrowAttackGoal requires Mob implements RangedAttackMob");
 		} else {
-			this.rangedAttacker = rangedAttacker;
+			this.field_6582 = rangedAttacker;
 			this.mobEntity = (MobEntity)rangedAttacker;
 			this.field_6586 = d;
 			this.field_6578 = i;
 			this.field_6577 = j;
 			this.field_6585 = f;
 			this.field_6584 = f * f;
-			this.setControlBits(3);
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 	}
 
@@ -49,7 +50,7 @@ public class ProjectileAttackGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.canStart() || !this.mobEntity.getNavigation().isIdle();
+		return this.canStart() || !this.mobEntity.method_5942().isIdle();
 	}
 
 	@Override
@@ -61,8 +62,8 @@ public class ProjectileAttackGoal extends Goal {
 
 	@Override
 	public void tick() {
-		double d = this.mobEntity.squaredDistanceTo(this.target.x, this.target.getBoundingBox().minY, this.target.z);
-		boolean bl = this.mobEntity.getVisibilityCache().canSee(this.target);
+		double d = this.mobEntity.squaredDistanceTo(this.target.x, this.target.method_5829().minY, this.target.z);
+		boolean bl = this.mobEntity.method_5985().canSee(this.target);
 		if (bl) {
 			this.field_6579++;
 		} else {
@@ -70,12 +71,12 @@ public class ProjectileAttackGoal extends Goal {
 		}
 
 		if (!(d > (double)this.field_6584) && this.field_6579 >= 5) {
-			this.mobEntity.getNavigation().stop();
+			this.mobEntity.method_5942().stop();
 		} else {
-			this.mobEntity.getNavigation().startMovingTo(this.target, this.field_6586);
+			this.mobEntity.method_5942().startMovingTo(this.target, this.field_6586);
 		}
 
-		this.mobEntity.getLookControl().lookAt(this.target, 30.0F, 30.0F);
+		this.mobEntity.method_5988().lookAt(this.target, 30.0F, 30.0F);
 		if (--this.field_6581 == 0) {
 			if (!bl) {
 				return;
@@ -83,7 +84,7 @@ public class ProjectileAttackGoal extends Goal {
 
 			float f = MathHelper.sqrt(d) / this.field_6585;
 			float g = MathHelper.clamp(f, 0.1F, 1.0F);
-			this.rangedAttacker.attack(this.target, g);
+			this.field_6582.attack(this.target, g);
 			this.field_6581 = MathHelper.floor(f * (float)(this.field_6577 - this.field_6578) + (float)this.field_6578);
 		} else if (this.field_6581 < 0) {
 			float f = MathHelper.sqrt(d) / this.field_6585;

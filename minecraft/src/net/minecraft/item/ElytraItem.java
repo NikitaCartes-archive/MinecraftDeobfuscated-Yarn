@@ -13,26 +13,26 @@ import net.minecraft.world.World;
 public class ElytraItem extends Item {
 	public ElytraItem(Item.Settings settings) {
 		super(settings);
-		this.addProperty(new Identifier("broken"), (itemStack, world, livingEntity) -> isUsable(itemStack) ? 0.0F : 1.0F);
-		DispenserBlock.registerBehavior(this, ArmorItem.DISPENSER_BEHAVIOR);
+		this.method_7863(new Identifier("broken"), (itemStack, world, livingEntity) -> method_7804(itemStack) ? 0.0F : 1.0F);
+		DispenserBlock.method_10009(this, ArmorItem.field_7879);
 	}
 
-	public static boolean isUsable(ItemStack itemStack) {
+	public static boolean method_7804(ItemStack itemStack) {
 		return itemStack.getDamage() < itemStack.getDurability() - 1;
 	}
 
 	@Override
-	public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
+	public boolean method_7878(ItemStack itemStack, ItemStack itemStack2) {
 		return itemStack2.getItem() == Items.field_8614;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-		ItemStack itemStack2 = playerEntity.getEquippedStack(equipmentSlot);
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
+		EquipmentSlot equipmentSlot = MobEntity.method_5953(itemStack);
+		ItemStack itemStack2 = playerEntity.method_6118(equipmentSlot);
 		if (itemStack2.isEmpty()) {
-			playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
+			playerEntity.method_5673(equipmentSlot, itemStack.copy());
 			itemStack.setAmount(0);
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		} else {

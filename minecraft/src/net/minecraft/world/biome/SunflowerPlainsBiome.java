@@ -18,9 +18,9 @@ public final class SunflowerPlainsBiome extends Biome {
 	protected SunflowerPlainsBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG)
+				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15677)
 				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.PLAINS)
+				.method_8738(Biome.Category.PLAINS)
 				.depth(0.125F)
 				.scale(0.05F)
 				.temperature(0.8F)
@@ -29,30 +29,27 @@ public final class SunflowerPlainsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("plains")
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
 		DefaultBiomeFeatures.addPlainsTallGrass(this);
-		this.addFeature(
+		this.method_8719(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(
-				Feature.field_13576, new DoublePlantFeatureConfig(Blocks.field_10583.getDefaultState()), Decorator.field_14253, new CountDecoratorConfig(10)
-			)
+			method_8699(Feature.field_13576, new DoublePlantFeatureConfig(Blocks.field_10583.method_9564()), Decorator.field_14253, new CountDecoratorConfig(10))
 		);
 		DefaultBiomeFeatures.addMineables(this);
 		DefaultBiomeFeatures.addDefaultOres(this);
 		DefaultBiomeFeatures.addDefaultDisks(this);
 		DefaultBiomeFeatures.addPlainsFeatures(this);
-		this.addFeature(
-			GenerationStep.Feature.VEGETAL_DECORATION, configureFeature(Feature.field_13583, FeatureConfig.DEFAULT, Decorator.field_14240, new CountDecoratorConfig(10))
+		this.method_8719(
+			GenerationStep.Feature.VEGETAL_DECORATION, method_8699(Feature.field_13583, FeatureConfig.field_13603, Decorator.field_14240, new CountDecoratorConfig(10))
 		);
 		DefaultBiomeFeatures.addDefaultMushrooms(this);
-		this.addFeature(
-			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(Feature.field_13524, FeatureConfig.DEFAULT, Decorator.field_14263, new ChanceDecoratorConfig(32))
+		this.method_8719(
+			GenerationStep.Feature.VEGETAL_DECORATION, method_8699(Feature.field_13524, FeatureConfig.field_13603, Decorator.field_14263, new ChanceDecoratorConfig(32))
 		);
 		DefaultBiomeFeatures.addSprings(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);

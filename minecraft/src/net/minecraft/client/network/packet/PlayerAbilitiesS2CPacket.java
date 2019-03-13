@@ -64,7 +64,7 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public void method_11697(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onPlayerAbilities(this);
+		clientPlayPacketListener.method_11154(this);
 	}
 
 	public boolean isInvulnerable() {

@@ -15,9 +15,9 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SupplyingResourceReloadListener;
@@ -102,8 +102,8 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 
 		for (Identifier identifier : this.sounds.keySet()) {
 			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
-			if (weightedSoundSet.getSubtitle() instanceof TranslatableTextComponent) {
-				String string = ((TranslatableTextComponent)weightedSoundSet.getSubtitle()).getKey();
+			if (weightedSoundSet.method_4886() instanceof TranslatableTextComponent) {
+				String string = ((TranslatableTextComponent)weightedSoundSet.method_4886()).getKey();
 				if (!I18n.hasTranslation(string)) {
 					LOGGER.debug("Missing subtitle {} for event: {}", string, identifier);
 				}
@@ -112,7 +112,7 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 
 		if (LOGGER.isDebugEnabled()) {
 			for (Identifier identifierx : this.sounds.keySet()) {
-				if (!Registry.SOUND_EVENT.containsId(identifierx)) {
+				if (!Registry.SOUND_EVENT.method_10250(identifierx)) {
 					LOGGER.debug("Not having sound event for: {}", identifierx);
 				}
 			}
@@ -133,8 +133,8 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 		return var1;
 	}
 
-	private static boolean isSoundResourcePresent(Sound sound, Identifier identifier, ResourceManager resourceManager) {
-		Identifier identifier2 = sound.getLocation();
+	private static boolean method_4868(Sound sound, Identifier identifier, ResourceManager resourceManager) {
+		Identifier identifier2 = sound.method_4766();
 		if (!resourceManager.containsResource(identifier2)) {
 			LOGGER.warn("File {} does not exist, cannot add it to event {}", identifier2, identifier);
 			return false;
@@ -144,7 +144,7 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 	}
 
 	@Nullable
-	public WeightedSoundSet get(Identifier identifier) {
+	public WeightedSoundSet method_4869(Identifier identifier) {
 		return (WeightedSoundSet)this.sounds.get(identifier);
 	}
 
@@ -160,8 +160,8 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 		this.soundManager.play(soundInstance, i);
 	}
 
-	public void updateListenerPosition(PlayerEntity playerEntity, float f) {
-		this.soundManager.updateListenerPosition(playerEntity, f);
+	public void updateListenerPosition(class_4184 arg) {
+		this.soundManager.updateListenerPosition(arg);
 	}
 
 	public void pause() {
@@ -184,12 +184,12 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 		this.soundManager.resume();
 	}
 
-	public void updateSoundVolume(SoundCategory soundCategory, float f) {
+	public void method_4865(SoundCategory soundCategory, float f) {
 		if (soundCategory == SoundCategory.field_15250 && f <= 0.0F) {
 			this.stopAll();
 		}
 
-		this.soundManager.updateSoundVolume(soundCategory, f);
+		this.soundManager.method_4844(soundCategory, f);
 	}
 
 	public void stop(SoundInstance soundInstance) {
@@ -201,15 +201,15 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 	}
 
 	public void registerListener(ListenerSoundInstance listenerSoundInstance) {
-		this.soundManager.registerListener(listenerSoundInstance);
+		this.soundManager.method_4855(listenerSoundInstance);
 	}
 
 	public void unregisterListener(ListenerSoundInstance listenerSoundInstance) {
-		this.soundManager.unregisterListener(listenerSoundInstance);
+		this.soundManager.method_4847(listenerSoundInstance);
 	}
 
-	public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
-		this.soundManager.stopSounds(identifier, soundCategory);
+	public void method_4875(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
+		this.soundManager.method_4838(identifier, soundCategory);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -232,11 +232,11 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 			}
 
 			for (final Sound sound : soundEntry.getSounds()) {
-				final Identifier identifier2 = sound.getIdentifier();
+				final Identifier identifier2 = sound.method_4767();
 				SoundContainer<Sound> soundContainer;
 				switch (sound.getRegistrationType()) {
 					case FILE:
-						if (!SoundLoader.isSoundResourcePresent(sound, identifier, resourceManager)) {
+						if (!SoundLoader.method_4868(sound, identifier, resourceManager)) {
 							continue;
 						}
 
@@ -257,7 +257,7 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 								} else {
 									Sound sound = weightedSoundSet.method_4887();
 									return new Sound(
-										sound.getIdentifier().toString(),
+										sound.method_4767().toString(),
 										sound.getVolume() * sound.getVolume(),
 										sound.getPitch() * sound.getPitch(),
 										sound.getWeight(),
@@ -282,7 +282,7 @@ public class SoundLoader extends SupplyingResourceReloadListener<SoundLoader.Res
 						throw new IllegalStateException("Unknown SoundEventRegistration type: " + sound.getRegistrationType());
 				}
 
-				weightedSoundSet.add(soundContainer);
+				weightedSoundSet.method_4885(soundContainer);
 			}
 		}
 

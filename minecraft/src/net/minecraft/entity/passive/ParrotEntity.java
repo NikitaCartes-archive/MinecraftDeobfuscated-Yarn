@@ -60,10 +60,10 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
-	private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> field_6826 = DataTracker.registerData(ParrotEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final Predicate<MobEntity> field_6821 = new Predicate<MobEntity>() {
 		public boolean method_6590(@Nullable MobEntity mobEntity) {
-			return mobEntity != null && ParrotEntity.field_6822.containsKey(mobEntity.getType());
+			return mobEntity != null && ParrotEntity.field_6822.containsKey(mobEntity.method_5864());
 		}
 	};
 	private static final Item field_6828 = Items.field_8423;
@@ -79,12 +79,16 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 		hashMap.put(EntityType.ENDERMITE, SoundEvents.field_15022);
 		hashMap.put(EntityType.EVOKER, SoundEvents.field_15113);
 		hashMap.put(EntityType.GHAST, SoundEvents.field_14577);
+		hashMap.put(EntityType.GUARDIAN, SoundEvents.field_18813);
 		hashMap.put(EntityType.HUSK, SoundEvents.field_15185);
 		hashMap.put(EntityType.ILLUSIONER, SoundEvents.field_15064);
 		hashMap.put(EntityType.MAGMA_CUBE, SoundEvents.field_14963);
 		hashMap.put(EntityType.ZOMBIE_PIGMAN, SoundEvents.field_15143);
+		hashMap.put(EntityType.PANDA, SoundEvents.field_18814);
 		hashMap.put(EntityType.PHANTOM, SoundEvents.field_14957);
+		hashMap.put(EntityType.PILLAGER, SoundEvents.field_18815);
 		hashMap.put(EntityType.POLAR_BEAR, SoundEvents.field_14866);
+		hashMap.put(EntityType.RAVAGER, SoundEvents.field_18816);
 		hashMap.put(EntityType.SHULKER, SoundEvents.field_14768);
 		hashMap.put(EntityType.SILVERFISH, SoundEvents.field_14683);
 		hashMap.put(EntityType.SKELETON, SoundEvents.field_14587);
@@ -110,42 +114,42 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 
 	public ParrotEntity(EntityType<? extends ParrotEntity> entityType, World world) {
 		super(entityType, world);
-		this.moveControl = new ParrotMoveControl(this);
+		this.field_6207 = new ParrotMoveControl(this);
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.setVariant(this.random.nextInt(5));
-		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
 	protected void initGoals() {
 		this.field_6321 = new class_1386(this);
-		this.goalSelector.add(0, new EscapeDangerGoal(this, 1.25));
-		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(2, this.field_6321);
-		this.goalSelector.add(2, new class_1351(this, 1.0, 5.0F, 1.0F));
-		this.goalSelector.add(2, new class_1395(this, 1.0));
-		this.goalSelector.add(3, new ParrotClimbOntoPlayerGoal(this));
-		this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0F, 7.0F));
+		this.field_6201.add(0, new EscapeDangerGoal(this, 1.25));
+		this.field_6201.add(0, new SwimGoal(this));
+		this.field_6201.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.field_6201.add(2, this.field_6321);
+		this.field_6201.add(2, new class_1351(this, 1.0, 5.0F, 1.0F));
+		this.field_6201.add(2, new class_1395(this, 1.0));
+		this.field_6201.add(3, new ParrotClimbOntoPlayerGoal(this));
+		this.field_6201.add(3, new FollowMobGoal(this, 1.0, 3.0F, 7.0F));
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeContainer().register(EntityAttributes.FLYING_SPEED);
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(6.0);
-		this.getAttributeInstance(EntityAttributes.FLYING_SPEED).setBaseValue(0.4F);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
+		this.method_6127().register(EntityAttributes.FLYING_SPEED);
+		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(6.0);
+		this.method_5996(EntityAttributes.FLYING_SPEED).setBaseValue(0.4F);
+		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
 	}
 
 	@Override
-	protected EntityNavigation createNavigation(World world) {
+	protected EntityNavigation method_5965(World world) {
 		class_1407 lv = new class_1407(this, world);
 		lv.method_6332(false);
 		lv.setCanSwim(true);
@@ -154,16 +158,16 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
 		return entitySize.height * 0.6F;
 	}
 
 	@Override
 	public void updateMovement() {
-		method_6587(this.world, this);
+		method_6587(this.field_6002, this);
 		if (this.field_6820 == null
 			|| this.field_6820.squaredDistanceTo(this.x, this.y, this.z) > 12.0
-			|| this.world.getBlockState(this.field_6820).getBlock() != Blocks.field_10223) {
+			|| this.field_6002.method_8320(this.field_6820).getBlock() != Blocks.field_10223) {
 			this.field_6823 = false;
 			this.field_6820 = null;
 		}
@@ -194,22 +198,22 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 		}
 
 		this.field_6824 = (float)((double)this.field_6824 * 0.9);
-		Vec3d vec3d = this.getVelocity();
+		Vec3d vec3d = this.method_18798();
 		if (!this.onGround && vec3d.y < 0.0) {
-			this.setVelocity(vec3d.multiply(1.0, 0.6, 1.0));
+			this.method_18799(vec3d.multiply(1.0, 0.6, 1.0));
 		}
 
 		this.field_6818 = this.field_6818 + this.field_6824 * 2.0F;
 	}
 
 	private static boolean method_6587(World world, Entity entity) {
-		if (!entity.isSilent() && world.random.nextInt(50) == 0) {
-			List<MobEntity> list = world.method_8390(MobEntity.class, entity.getBoundingBox().expand(20.0), field_6821);
+		if (entity.isValid() && !entity.isSilent() && world.random.nextInt(50) == 0) {
+			List<MobEntity> list = world.method_8390(MobEntity.class, entity.method_5829().expand(20.0), field_6821);
 			if (!list.isEmpty()) {
 				MobEntity mobEntity = (MobEntity)list.get(world.random.nextInt(list.size()));
 				if (!mobEntity.isSilent()) {
-					SoundEvent soundEvent = method_6586(mobEntity.getType());
-					world.playSound(null, entity.x, entity.y, entity.z, soundEvent, entity.getSoundCategory(), 0.7F, method_6580(world.random));
+					SoundEvent soundEvent = method_6586(mobEntity.method_5864());
+					world.method_8465(null, entity.x, entity.y, entity.z, soundEvent, entity.method_5634(), 0.7F, method_6580(world.random));
 					return true;
 				}
 			}
@@ -221,28 +225,28 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
 		if (!this.isTamed() && TAMING_INGREDIENTS.contains(itemStack.getItem())) {
 			if (!playerEntity.abilities.creativeMode) {
 				itemStack.subtractAmount(1);
 			}
 
 			if (!this.isSilent()) {
-				this.world
-					.playSound(
-						null, this.x, this.y, this.z, SoundEvents.field_14960, this.getSoundCategory(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+				this.field_6002
+					.method_8465(
+						null, this.x, this.y, this.z, SoundEvents.field_14960, this.method_5634(), 1.0F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
 					);
 			}
 
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				if (this.random.nextInt(10) == 0) {
 					this.method_6170(playerEntity);
 					this.method_6180(true);
-					this.world.summonParticle(this, (byte)7);
+					this.field_6002.summonParticle(this, (byte)7);
 				} else {
 					this.method_6180(false);
-					this.world.summonParticle(this, (byte)6);
+					this.field_6002.summonParticle(this, (byte)6);
 				}
 			}
 
@@ -254,35 +258,35 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 
 			this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5899, 900));
 			if (playerEntity.isCreative() || !this.isInvulnerable()) {
-				this.damage(DamageSource.player(playerEntity), Float.MAX_VALUE);
+				this.damage(DamageSource.method_5532(playerEntity), Float.MAX_VALUE);
 			}
 
 			return true;
 		} else {
-			if (!this.world.isClient && !this.method_6581() && this.isTamed() && this.isOwner(playerEntity)) {
+			if (!this.field_6002.isClient && !this.method_6581() && this.isTamed() && this.isOwner(playerEntity)) {
 				this.field_6321.method_6311(!this.isSitting());
 			}
 
-			return super.interactMob(playerEntity, hand);
+			return super.method_5992(playerEntity, hand);
 		}
 	}
 
 	@Override
-	public boolean isBreedingItem(ItemStack itemStack) {
+	public boolean method_6481(ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
 		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.getBoundingBox().minY);
+		int j = MathHelper.floor(this.method_5829().minY);
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
-		return block.matches(BlockTags.field_15503)
+		Block block = iWorld.method_8320(blockPos.down()).getBlock();
+		return block.method_9525(BlockTags.field_15503)
 			|| block == Blocks.field_10479
 			|| block instanceof LogBlock
-			|| block == Blocks.field_10124 && super.canSpawn(iWorld, spawnType);
+			|| block == Blocks.field_10124 && super.method_5979(iWorld, spawnType);
 	}
 
 	@Override
@@ -306,18 +310,18 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 
 	public static void method_6589(World world, Entity entity) {
 		if (!entity.isSilent() && !method_6587(world, entity) && world.random.nextInt(200) == 0) {
-			world.playSound(null, entity.x, entity.y, entity.z, method_6583(world.random), entity.getSoundCategory(), 1.0F, method_6580(world.random));
+			world.method_8465(null, entity.x, entity.y, entity.z, method_6583(world.random), entity.method_5634(), 1.0F, method_6580(world.random));
 		}
 	}
 
 	@Override
 	public boolean attack(Entity entity) {
-		return entity.damage(DamageSource.mob(this), 3.0F);
+		return entity.damage(DamageSource.method_5511(this), 3.0F);
 	}
 
 	@Nullable
 	@Override
-	public SoundEvent getAmbientSound() {
+	public SoundEvent method_5994() {
 		return method_6583(this.random);
 	}
 
@@ -335,23 +339,23 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_15077;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_15234;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14602, 0.15F, 1.0F);
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+		this.method_5783(SoundEvents.field_14602, 0.15F, 1.0F);
 	}
 
 	@Override
 	protected float method_5801(float f) {
-		this.playSound(SoundEvents.field_14925, 0.15F, 1.0F);
+		this.method_5783(SoundEvents.field_14925, 0.15F, 1.0F);
 		return f + this.field_6819 / 2.0F;
 	}
 
@@ -370,7 +374,7 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	@Override
-	public SoundCategory getSoundCategory() {
+	public SoundCategory method_5634() {
 		return SoundCategory.field_15254;
 	}
 
@@ -400,28 +404,28 @@ public class ParrotEntity extends ParrotBaseEntity implements class_1432 {
 	}
 
 	public int getVariant() {
-		return MathHelper.clamp(this.dataTracker.get(ATTR_VARIANT), 0, 4);
+		return MathHelper.clamp(this.field_6011.get(field_6826), 0, 4);
 	}
 
 	public void setVariant(int i) {
-		this.dataTracker.set(ATTR_VARIANT, i);
+		this.field_6011.set(field_6826, i);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(ATTR_VARIANT, 0);
+		this.field_6011.startTracking(field_6826, 0);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putInt("Variant", this.getVariant());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		this.setVariant(compoundTag.getInt("Variant"));
 	}
 

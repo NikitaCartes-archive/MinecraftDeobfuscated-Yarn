@@ -14,9 +14,9 @@ public class EmptyMapItem extends MapItem {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = FilledMapItem.method_8005(world, MathHelper.floor(playerEntity.x), MathHelper.floor(playerEntity.z), (byte)0, true, false);
-		ItemStack itemStack2 = playerEntity.getStackInHand(hand);
+		ItemStack itemStack2 = playerEntity.method_5998(hand);
 		if (!playerEntity.abilities.creativeMode) {
 			itemStack2.subtractAmount(1);
 		}
@@ -24,11 +24,11 @@ public class EmptyMapItem extends MapItem {
 		if (itemStack2.isEmpty()) {
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		} else {
-			if (!playerEntity.inventory.insertStack(itemStack.copy())) {
-				playerEntity.dropItem(itemStack, false);
+			if (!playerEntity.inventory.method_7394(itemStack.copy())) {
+				playerEntity.method_7328(itemStack, false);
 			}
 
-			playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+			playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack2);
 		}
 	}

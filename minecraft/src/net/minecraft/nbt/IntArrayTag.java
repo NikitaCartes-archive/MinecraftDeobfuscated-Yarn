@@ -94,7 +94,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	}
 
 	@Override
-	public TextComponent toTextComponent(String string, int i) {
+	public TextComponent method_10710(String string, int i) {
 		TextComponent textComponent = new StringTextComponent("I").applyFormat(RED);
 		TextComponent textComponent2 = new StringTextComponent("[").append(textComponent).append(";");
 
@@ -128,7 +128,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	}
 
 	@Override
-	public boolean setTag(int i, Tag tag) {
+	public boolean method_10535(int i, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
 			this.value[i] = ((AbstractNumberTag)tag).getInt();
 			return true;
@@ -138,7 +138,7 @@ public class IntArrayTag extends AbstractListTag<IntTag> {
 	}
 
 	@Override
-	public boolean addTag(int i, Tag tag) {
+	public boolean method_10533(int i, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
 			this.value = ArrayUtils.add(this.value, i, ((AbstractNumberTag)tag).getInt());
 			return true;

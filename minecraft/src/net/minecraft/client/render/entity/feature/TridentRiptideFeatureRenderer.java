@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, PlayerEntityModel<T>> {
-	public static final Identifier TEXTURE = new Identifier("textures/entity/trident_riptide.png");
+	public static final Identifier field_4898 = new Identifier("textures/entity/trident_riptide.png");
 	private final TridentRiptideFeatureRenderer.class_999 field_4897 = new TridentRiptideFeatureRenderer.class_999();
 
 	public TridentRiptideFeatureRenderer(FeatureRendererContext<T, PlayerEntityModel<T>> featureRendererContext) {
@@ -21,7 +21,7 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 	public void method_4203(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (livingEntity.isUsingRiptide()) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.bindTexture(TEXTURE);
+			this.method_17164(field_4898);
 
 			for (int m = 0; m < 3; m++) {
 				GlStateManager.pushMatrix();

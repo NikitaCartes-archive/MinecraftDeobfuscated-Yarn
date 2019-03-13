@@ -15,7 +15,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TextSearchableContainer<T> extends IdentifierSearchableContainer<T> {
-	protected SuffixArray<T> byText = new SuffixArray<>();
+	protected SuffixArray<T> field_5498 = new SuffixArray<>();
 	private final Function<T, Stream<String>> textFinder;
 
 	public TextSearchableContainer(Function<T, Stream<String>> function, Function<T, Stream<Identifier>> function2) {
@@ -25,27 +25,27 @@ public class TextSearchableContainer<T> extends IdentifierSearchableContainer<T>
 
 	@Override
 	public void reload() {
-		this.byText = new SuffixArray<>();
+		this.field_5498 = new SuffixArray<>();
 		super.reload();
-		this.byText.reload();
+		this.field_5498.reload();
 	}
 
 	@Override
 	protected void index(T object) {
 		super.index(object);
-		((Stream)this.textFinder.apply(object)).forEach(string -> this.byText.add(object, string.toLowerCase(Locale.ROOT)));
+		((Stream)this.textFinder.apply(object)).forEach(string -> this.field_5498.add(object, string.toLowerCase(Locale.ROOT)));
 	}
 
 	@Override
 	public List<T> findAll(String string) {
 		int i = string.indexOf(58);
 		if (i < 0) {
-			return this.byText.findAll(string);
+			return this.field_5498.findAll(string);
 		} else {
-			List<T> list = this.byNamespace.findAll(string.substring(0, i).trim());
+			List<T> list = this.field_5489.findAll(string.substring(0, i).trim());
 			String string2 = string.substring(i + 1).trim();
-			List<T> list2 = this.byPath.findAll(string2);
-			List<T> list3 = this.byText.findAll(string2);
+			List<T> list2 = this.field_5485.findAll(string2);
+			List<T> list3 = this.field_5498.findAll(string2);
 			return Lists.<T>newArrayList(
 				new IdentifierSearchableContainer.Iterator<>(
 					list.iterator(), new TextSearchableContainer.Iterator<>(list2.iterator(), list3.iterator(), this::method_4796), this::method_4796

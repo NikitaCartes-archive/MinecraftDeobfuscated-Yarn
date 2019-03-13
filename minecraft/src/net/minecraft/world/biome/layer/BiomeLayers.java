@@ -23,7 +23,7 @@ public class BiomeLayers {
 	protected static final int DEEP_COLD_OCEAN_ID = Registry.BIOME.getRawId(Biomes.field_9470);
 	protected static final int DEEP_FROZEN_OCEAN_ID = Registry.BIOME.getRawId(Biomes.field_9418);
 
-	private static <T extends LayerSampler, C extends LayerSampleContext<T>> LayerFactory<T> stack(
+	private static <T extends LayerSampler, C extends LayerSampleContext<T>> LayerFactory<T> method_15848(
 		long l, ParentedLayer parentedLayer, LayerFactory<T> layerFactory, int i, LongFunction<C> longFunction
 	) {
 		LayerFactory<T> layerFactory2 = layerFactory;
@@ -47,7 +47,7 @@ public class BiomeLayers {
 		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(70L), layerFactory);
 		layerFactory = class_3651.field_16158.create((LayerSampleContext<T>)longFunction.apply(2L), layerFactory);
 		LayerFactory<T> layerFactory2 = OceanTemperatureLayer.field_16105.create((LayerSampleContext<T>)longFunction.apply(2L));
-		layerFactory2 = stack(2001L, ScaleLayer.field_16196, layerFactory2, 6, longFunction);
+		layerFactory2 = method_15848(2001L, ScaleLayer.field_16196, layerFactory2, 6, longFunction);
 		layerFactory = class_3639.field_16059.create((LayerSampleContext<T>)longFunction.apply(2L), layerFactory);
 		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(3L), layerFactory);
 		layerFactory = BiomeGroupLayer.AddGroup2Layer.field_17399.create((LayerSampleContext<T>)longFunction.apply(2L), layerFactory);
@@ -58,7 +58,7 @@ public class BiomeLayers {
 		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(4L), layerFactory);
 		layerFactory = AddMushroomIslandLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(5L), layerFactory);
 		layerFactory = AddDeepOceanLayer.field_16052.create((LayerSampleContext<T>)longFunction.apply(4L), layerFactory);
-		layerFactory = stack(1000L, ScaleLayer.field_16196, layerFactory, 0, longFunction);
+		layerFactory = method_15848(1000L, ScaleLayer.field_16196, layerFactory, 0, longFunction);
 		int i = 4;
 		int j = i;
 		if (overworldChunkGeneratorConfig != null) {
@@ -70,17 +70,17 @@ public class BiomeLayers {
 			i = 6;
 		}
 
-		LayerFactory<T> layerFactory3 = stack(1000L, ScaleLayer.field_16196, layerFactory, 0, longFunction);
+		LayerFactory<T> layerFactory3 = method_15848(1000L, ScaleLayer.field_16196, layerFactory, 0, longFunction);
 		layerFactory3 = SimpleLandNoiseLayer.field_16157.create((LayerSampleContext)longFunction.apply(100L), layerFactory3);
 		LayerFactory<T> layerFactory4 = new BiomeGroupToBiomeLayer(levelGeneratorType, overworldChunkGeneratorConfig)
 			.create((LayerSampleContext<T>)longFunction.apply(200L), layerFactory);
 		layerFactory4 = AddBambooJungleLayer.INSTANCE.create((LayerSampleContext)longFunction.apply(1001L), layerFactory4);
-		layerFactory4 = stack(1000L, ScaleLayer.field_16196, layerFactory4, 2, longFunction);
+		layerFactory4 = method_15848(1000L, ScaleLayer.field_16196, layerFactory4, 2, longFunction);
 		layerFactory4 = EaseBiomeEdgeLayer.INSTANCE.create((LayerSampleContext)longFunction.apply(1000L), layerFactory4);
-		LayerFactory<T> layerFactory5 = stack(1000L, ScaleLayer.field_16196, layerFactory3, 2, longFunction);
+		LayerFactory<T> layerFactory5 = method_15848(1000L, ScaleLayer.field_16196, layerFactory3, 2, longFunction);
 		layerFactory4 = AddHillsLayer.field_16134.create((LayerSampleContext)longFunction.apply(1000L), layerFactory4, layerFactory5);
-		layerFactory3 = stack(1000L, ScaleLayer.field_16196, layerFactory3, 2, longFunction);
-		layerFactory3 = stack(1000L, ScaleLayer.field_16196, layerFactory3, j, longFunction);
+		layerFactory3 = method_15848(1000L, ScaleLayer.field_16196, layerFactory3, 2, longFunction);
+		layerFactory3 = method_15848(1000L, ScaleLayer.field_16196, layerFactory3, j, longFunction);
 		layerFactory3 = NoiseToRiverLayer.INSTANCE.create((LayerSampleContext)longFunction.apply(1L), layerFactory3);
 		layerFactory3 = SmoothenShorelineLayer.field_16171.create((LayerSampleContext)longFunction.apply(1000L), layerFactory3);
 		layerFactory4 = AddSunflowerPlainsLayer.INSTANCE.create((LayerSampleContext)longFunction.apply(1001L), layerFactory4);

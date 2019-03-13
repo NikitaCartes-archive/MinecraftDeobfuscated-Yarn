@@ -31,7 +31,7 @@ public class Tezzelator {
 	}
 
 	public void begin(int i, RealmsVertexFormat realmsVertexFormat) {
-		field_5668.getBufferBuilder().begin(i, realmsVertexFormat.getVertexFormat());
+		field_5668.getBufferBuilder().method_1328(i, realmsVertexFormat.getVertexFormat());
 	}
 
 	public void endVertex() {

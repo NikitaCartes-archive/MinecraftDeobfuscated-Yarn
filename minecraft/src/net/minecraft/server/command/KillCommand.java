@@ -24,11 +24,9 @@ public class KillCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.kill.success.single", ((Entity)collection.iterator().next()).getDisplayName()), true
-			);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.kill.success.single", ((Entity)collection.iterator().next()).method_5476()), true);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.kill.success.multiple", collection.size()), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.kill.success.multiple", collection.size()), true);
 		}
 
 		return collection.size();

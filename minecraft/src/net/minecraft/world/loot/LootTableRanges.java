@@ -18,7 +18,7 @@ public class LootTableRanges {
 			return jsonDeserializationContext.deserialize(jsonElement, ConstantLootTableRange.class);
 		} else {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			String string = JsonHelper.getString(jsonObject, "type", LootTableRange.UNIFORM.toString());
+			String string = JsonHelper.getString(jsonObject, "type", LootTableRange.field_967.toString());
 			Class<? extends LootTableRange> class_ = (Class<? extends LootTableRange>)types.get(new Identifier(string));
 			if (class_ == null) {
 				throw new JsonParseException("Unknown generator: " + string);
@@ -31,15 +31,15 @@ public class LootTableRanges {
 	public static JsonElement serialize(LootTableRange lootTableRange, JsonSerializationContext jsonSerializationContext) {
 		JsonElement jsonElement = jsonSerializationContext.serialize(lootTableRange);
 		if (jsonElement.isJsonObject()) {
-			jsonElement.getAsJsonObject().addProperty("type", lootTableRange.getType().toString());
+			jsonElement.getAsJsonObject().addProperty("type", lootTableRange.method_365().toString());
 		}
 
 		return jsonElement;
 	}
 
 	static {
-		types.put(LootTableRange.UNIFORM, UniformLootTableRange.class);
-		types.put(LootTableRange.BINOMIAL, BinomialLootTableRange.class);
-		types.put(LootTableRange.CONSTANT, ConstantLootTableRange.class);
+		types.put(LootTableRange.field_967, UniformLootTableRange.class);
+		types.put(LootTableRange.field_969, BinomialLootTableRange.class);
+		types.put(LootTableRange.field_968, ConstantLootTableRange.class);
 	}
 }

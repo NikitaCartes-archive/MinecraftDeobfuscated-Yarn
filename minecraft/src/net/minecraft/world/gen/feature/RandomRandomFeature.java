@@ -25,7 +25,7 @@ public class RandomRandomFeature extends Feature<RandomRandomFeatureConfig> {
 		for (int j = 0; j < i; j++) {
 			int k = random.nextInt(randomRandomFeatureConfig.features.size());
 			ConfiguredFeature<?> configuredFeature = (ConfiguredFeature<?>)randomRandomFeatureConfig.features.get(k);
-			configuredFeature.generate(iWorld, chunkGenerator, random, blockPos);
+			configuredFeature.method_12862(iWorld, chunkGenerator, random, blockPos);
 		}
 
 		return true;

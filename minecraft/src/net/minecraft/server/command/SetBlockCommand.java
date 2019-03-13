@@ -30,7 +30,7 @@ public class SetBlockCommand {
 								.executes(
 									commandContext -> method_13620(
 											commandContext.getSource(),
-											BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
+											BlockPosArgumentType.method_9696(commandContext, "pos"),
 											BlockArgumentType.method_9655(commandContext, "block"),
 											SetBlockCommand.class_3121.field_13722,
 											null
@@ -41,7 +41,7 @@ public class SetBlockCommand {
 										.executes(
 											commandContext -> method_13620(
 													commandContext.getSource(),
-													BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
+													BlockPosArgumentType.method_9696(commandContext, "pos"),
 													BlockArgumentType.method_9655(commandContext, "block"),
 													SetBlockCommand.class_3121.field_13721,
 													null
@@ -53,10 +53,10 @@ public class SetBlockCommand {
 										.executes(
 											commandContext -> method_13620(
 													commandContext.getSource(),
-													BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
+													BlockPosArgumentType.method_9696(commandContext, "pos"),
 													BlockArgumentType.method_9655(commandContext, "block"),
 													SetBlockCommand.class_3121.field_13722,
-													cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
+													cachedBlockPosition -> cachedBlockPosition.getWorld().method_8623(cachedBlockPosition.method_11683())
 												)
 										)
 								)
@@ -65,7 +65,7 @@ public class SetBlockCommand {
 										.executes(
 											commandContext -> method_13620(
 													commandContext.getSource(),
-													BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
+													BlockPosArgumentType.method_9696(commandContext, "pos"),
 													BlockArgumentType.method_9655(commandContext, "block"),
 													SetBlockCommand.class_3121.field_13722,
 													null
@@ -84,25 +84,25 @@ public class SetBlockCommand {
 		SetBlockCommand.class_3121 arg,
 		@Nullable Predicate<CachedBlockPosition> predicate
 	) throws CommandSyntaxException {
-		ServerWorld serverWorld = serverCommandSource.getWorld();
+		ServerWorld serverWorld = serverCommandSource.method_9225();
 		if (predicate != null && !predicate.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
 			throw FAILED_EXCEPTION.create();
 		} else {
 			boolean bl;
 			if (arg == SetBlockCommand.class_3121.field_13721) {
-				serverWorld.breakBlock(blockPos, true);
+				serverWorld.method_8651(blockPos, true);
 				bl = !blockArgument.getBlockState().isAir();
 			} else {
-				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
+				BlockEntity blockEntity = serverWorld.method_8321(blockPos);
 				Clearable.clear(blockEntity);
 				bl = true;
 			}
 
-			if (bl && !blockArgument.setBlockState(serverWorld, blockPos, 2)) {
+			if (bl && !blockArgument.method_9495(serverWorld, blockPos, 2)) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				serverWorld.updateNeighbors(blockPos, blockArgument.getBlockState().getBlock());
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
+				serverWorld.method_8408(blockPos, blockArgument.getBlockState().getBlock());
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.setblock.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
 				return 1;
 			}
 		}

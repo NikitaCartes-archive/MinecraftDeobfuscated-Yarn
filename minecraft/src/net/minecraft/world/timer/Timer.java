@@ -39,7 +39,7 @@ public class Timer<T> {
 
 			this.events.remove();
 			this.eventsByName.remove(event.name);
-			event.callback.call(object, this, l);
+			event.callback.method_974(object, this, l);
 		}
 	}
 
@@ -68,9 +68,9 @@ public class Timer<T> {
 		this.setEvent(string, l, timerCallback);
 	}
 
-	private void addEvent(CompoundTag compoundTag) {
+	private void method_986(CompoundTag compoundTag) {
 		CompoundTag compoundTag2 = compoundTag.getCompound("Callback");
-		TimerCallback<T> timerCallback = this.callback.deserialize(compoundTag2);
+		TimerCallback<T> timerCallback = this.callback.method_972(compoundTag2);
 		if (timerCallback != null) {
 			String string = compoundTag.getString("Name");
 			long l = compoundTag.getLong("TriggerTime");
@@ -78,7 +78,7 @@ public class Timer<T> {
 		}
 	}
 
-	public void fromTag(ListTag listTag) {
+	public void method_979(ListTag listTag) {
 		this.events.clear();
 		this.eventsByName.clear();
 		this.eventCounter = UnsignedLong.ZERO;
@@ -87,23 +87,23 @@ public class Timer<T> {
 				LOGGER.warn("Invalid format of events: " + listTag);
 			} else {
 				for (Tag tag : listTag) {
-					this.addEvent((CompoundTag)tag);
+					this.method_986((CompoundTag)tag);
 				}
 			}
 		}
 	}
 
-	private CompoundTag serialize(Timer.Event<T> event) {
+	private CompoundTag method_980(Timer.Event<T> event) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("Name", event.name);
 		compoundTag.putLong("TriggerTime", event.triggerTime);
-		compoundTag.put("Callback", this.callback.serialize(event.callback));
+		compoundTag.method_10566("Callback", this.callback.method_973(event.callback));
 		return compoundTag;
 	}
 
-	public ListTag toTag() {
+	public ListTag method_982() {
 		ListTag listTag = new ListTag();
-		this.events.stream().sorted(createEventComparator()).map(this::serialize).forEach(listTag::add);
+		this.events.stream().sorted(createEventComparator()).map(this::method_980).forEach(listTag::add);
 		return listTag;
 	}
 

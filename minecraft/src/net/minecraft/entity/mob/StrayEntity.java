@@ -20,22 +20,22 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		return super.canSpawn(iWorld, spawnType) && (spawnType == SpawnType.field_16469 || iWorld.isSkyVisible(new BlockPos(this)));
+	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
+		return super.method_5979(iWorld, spawnType) && (spawnType == SpawnType.field_16469 || iWorld.method_8311(new BlockPos(this)));
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return SoundEvents.field_15041;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_14805;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_14771;
 	}
 

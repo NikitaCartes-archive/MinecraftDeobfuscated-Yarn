@@ -45,7 +45,7 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public void method_11182(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onExperienceOrbSpawn(this);
+		clientPlayPacketListener.method_11091(this);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -1,10 +1,16 @@
 package net.minecraft.client.gui;
 
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface InputListener {
+	@Nullable
+	default InputListener method_19355(double d, double e) {
+		return null;
+	}
+
 	default void mouseMoved(double d, double e) {
 	}
 
@@ -20,7 +26,7 @@ public interface InputListener {
 		return false;
 	}
 
-	default boolean mouseScrolled(double d) {
+	default boolean mouseScrolled(double d, double e, double f) {
 		return false;
 	}
 
@@ -40,6 +46,10 @@ public interface InputListener {
 	}
 
 	default boolean hasFocus() {
+		return false;
+	}
+
+	default boolean method_19356(double d, double e) {
 		return false;
 	}
 }

@@ -71,6 +71,7 @@ public class GameOptions {
 	public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
 	public ChatVisibility chatVisibility = ChatVisibility.FULL;
 	public double chatOpacity = 1.0;
+	public double field_18726 = 0.5;
 	@Nullable
 	public String fullscreenResolution;
 	public boolean hideServerAddress;
@@ -89,7 +90,7 @@ public class GameOptions {
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
 	public AttackIndicator attackIndicator = AttackIndicator.field_18152;
-	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
+	public TutorialStep field_1875 = TutorialStep.MOVEMENT;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
 	public int glDebugVerbosity = 1;
@@ -106,6 +107,7 @@ public class GameOptions {
 	public boolean reducedDebugInfo;
 	public boolean snooperEnabled = true;
 	public boolean showSubtitles;
+	public boolean field_18725 = true;
 	public boolean touchscreen;
 	public boolean fullscreen;
 	public boolean bobView = true;
@@ -183,11 +185,10 @@ public class GameOptions {
 	public boolean debugTpsEnabled;
 	public String lastServer = "";
 	public boolean smoothCameraEnabled;
-	public boolean field_1821;
 	public double fov = 70.0;
 	public double gamma;
 	public int guiScale;
-	public ParticlesOption particles = ParticlesOption.field_18197;
+	public ParticlesOption field_1882 = ParticlesOption.field_18197;
 	public NarratorOption narrator = NarratorOption.field_18176;
 	public String language = "en_us";
 
@@ -195,13 +196,25 @@ public class GameOptions {
 		this.client = minecraftClient;
 		this.optionsFile = new File(file, "options.txt");
 		if (minecraftClient.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
-			GameOption.RENDER_DISTANCE.method_18612(32.0F);
+			GameOption.field_1933.method_18612(32.0F);
 		} else {
-			GameOption.RENDER_DISTANCE.method_18612(16.0F);
+			GameOption.field_1933.method_18612(16.0F);
 		}
 
 		this.viewDistance = minecraftClient.is64Bit() ? 12 : 8;
 		this.load();
+	}
+
+	public float method_19343(float f) {
+		return this.field_18725 ? f : (float)this.field_18726;
+	}
+
+	public int method_19345(float f) {
+		return (int)(this.method_19343(f) * 255.0F) << 24 & 0xFF000000;
+	}
+
+	public int method_19344(int i) {
+		return this.field_18725 ? i : (int)(this.field_18726 * 255.0) << 24 & 0xFF000000;
 	}
 
 	public void setKeyCode(KeyBinding keyBinding, InputUtil.KeyCode keyCode) {
@@ -319,7 +332,7 @@ public class GameOptions {
 					}
 
 					if ("particles".equals(string)) {
-						this.particles = ParticlesOption.byId(Integer.parseInt(string2));
+						this.field_1882 = ParticlesOption.byId(Integer.parseInt(string2));
 					}
 
 					if ("maxFps".equals(string)) {
@@ -336,7 +349,7 @@ public class GameOptions {
 					}
 
 					if ("tutorialStep".equals(string)) {
-						this.tutorialStep = TutorialStep.byName(string2);
+						this.field_1875 = TutorialStep.byName(string2);
 					}
 
 					if ("ao".equals(string)) {
@@ -391,6 +404,14 @@ public class GameOptions {
 
 					if ("chatOpacity".equals(string)) {
 						this.chatOpacity = (double)parseFloat(string2);
+					}
+
+					if ("textBackgroundOpacity".equals(string)) {
+						this.field_18726 = (double)parseFloat(string2);
+					}
+
+					if ("backgroundForChatOnly".equals(string)) {
+						this.field_18725 = "true".equals(string2);
 					}
 
 					if ("fullscreenResolution".equals(string)) {
@@ -540,7 +561,7 @@ public class GameOptions {
 				printWriter.println("gamma:" + this.gamma);
 				printWriter.println("renderDistance:" + this.viewDistance);
 				printWriter.println("guiScale:" + this.guiScale);
-				printWriter.println("particles:" + this.particles.getId());
+				printWriter.println("particles:" + this.field_1882.getId());
 				printWriter.println("maxFps:" + this.maxFps);
 				printWriter.println("difficulty:" + this.difficulty.getId());
 				printWriter.println("fancyGraphics:" + this.fancyGraphics);
@@ -563,6 +584,8 @@ public class GameOptions {
 				printWriter.println("lang:" + this.language);
 				printWriter.println("chatVisibility:" + this.chatVisibility.getId());
 				printWriter.println("chatOpacity:" + this.chatOpacity);
+				printWriter.println("textBackgroundOpacity:" + this.field_18726);
+				printWriter.println("backgroundForChatOnly:" + this.field_18725);
 				if (this.client.window.getVideoMode().isPresent()) {
 					printWriter.println("fullscreenResolution:" + ((VideoMode)this.client.window.getVideoMode().get()).asString());
 				}
@@ -582,7 +605,7 @@ public class GameOptions {
 				printWriter.println("mainHand:" + (this.mainHand == OptionMainHand.field_6182 ? "left" : "right"));
 				printWriter.println("attackIndicator:" + this.attackIndicator.getId());
 				printWriter.println("narrator:" + this.narrator.getId());
-				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
+				printWriter.println("tutorialStep:" + this.field_1875.getName());
 				printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
 				printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
 
@@ -591,7 +614,7 @@ public class GameOptions {
 				}
 
 				for (SoundCategory soundCategory : SoundCategory.values()) {
-					printWriter.println("soundCategory_" + soundCategory.getName() + ":" + this.getSoundVolume(soundCategory));
+					printWriter.println("soundCategory_" + soundCategory.getName() + ":" + this.method_1630(soundCategory));
 				}
 
 				for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
@@ -620,17 +643,17 @@ public class GameOptions {
 		this.onPlayerModelPartChange();
 	}
 
-	public float getSoundVolume(SoundCategory soundCategory) {
+	public float method_1630(SoundCategory soundCategory) {
 		return this.soundVolumeLevels.containsKey(soundCategory) ? (Float)this.soundVolumeLevels.get(soundCategory) : 1.0F;
 	}
 
-	public void setSoundVolume(SoundCategory soundCategory, float f) {
-		this.client.getSoundLoader().updateSoundVolume(soundCategory, f);
+	public void method_1624(SoundCategory soundCategory, float f) {
+		this.client.method_1483().method_4865(soundCategory, f);
 		this.soundVolumeLevels.put(soundCategory, f);
 	}
 
 	public void onPlayerModelPartChange() {
-		if (this.client.player != null) {
+		if (this.client.field_1724 != null) {
 			int i = 0;
 
 			for (PlayerModelPart playerModelPart : this.enabledPlayerModelParts) {
@@ -638,9 +661,9 @@ public class GameOptions {
 			}
 
 			this.client
-				.player
+				.field_1724
 				.networkHandler
-				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainHand));
+				.method_2883(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainHand));
 		}
 	}
 
@@ -676,16 +699,16 @@ public class GameOptions {
 		return this.useNativeTransport;
 	}
 
-	public void addResourcePackContainersToManager(ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager) {
+	public void method_1627(ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager) {
 		resourcePackContainerManager.callCreators();
 		Set<ClientResourcePackContainer> set = Sets.<ClientResourcePackContainer>newLinkedHashSet();
 		Iterator<String> iterator = this.resourcePacks.iterator();
 
 		while (iterator.hasNext()) {
 			String string = (String)iterator.next();
-			ClientResourcePackContainer clientResourcePackContainer = resourcePackContainerManager.getContainer(string);
+			ClientResourcePackContainer clientResourcePackContainer = resourcePackContainerManager.method_14449(string);
 			if (clientResourcePackContainer == null && !string.startsWith("file/")) {
-				clientResourcePackContainer = resourcePackContainerManager.getContainer("file/" + string);
+				clientResourcePackContainer = resourcePackContainerManager.method_14449("file/" + string);
 			}
 
 			if (clientResourcePackContainer == null) {

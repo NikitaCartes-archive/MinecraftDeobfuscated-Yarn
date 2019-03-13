@@ -15,7 +15,6 @@ import net.minecraft.container.CraftingTableContainer;
 import net.minecraft.container.FurnaceContainer;
 import net.minecraft.container.PlayerContainer;
 import net.minecraft.container.SmokerContainer;
-import net.minecraft.item.FoodItem;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.block.BlockItem;
@@ -41,15 +40,15 @@ public class ClientRecipeBook extends RecipeBook {
 
 		for (Recipe<?> recipe : this.manager.values()) {
 			if (!recipe.isIgnoredInRecipeBook()) {
-				RecipeBookGroup recipeBookGroup = getGroupForRecipe(recipe);
+				RecipeBookGroup recipeBookGroup = method_1400(recipe);
 				String string = recipe.getGroup();
 				RecipeResultCollection recipeResultCollection;
 				if (string.isEmpty()) {
-					recipeResultCollection = this.addGroup(recipeBookGroup);
+					recipeResultCollection = this.method_1394(recipeBookGroup);
 				} else {
 					recipeResultCollection = table.get(recipeBookGroup, string);
 					if (recipeResultCollection == null) {
-						recipeResultCollection = this.addGroup(recipeBookGroup);
+						recipeResultCollection = this.method_1394(recipeBookGroup);
 						table.put(recipeBookGroup, string, recipeResultCollection);
 					}
 				}
@@ -59,7 +58,7 @@ public class ClientRecipeBook extends RecipeBook {
 		}
 	}
 
-	private RecipeResultCollection addGroup(RecipeBookGroup recipeBookGroup) {
+	private RecipeResultCollection method_1394(RecipeBookGroup recipeBookGroup) {
 		RecipeResultCollection recipeResultCollection = new RecipeResultCollection();
 		this.orderedResults.add(recipeResultCollection);
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
@@ -84,10 +83,10 @@ public class ClientRecipeBook extends RecipeBook {
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 	}
 
-	private static RecipeBookGroup getGroupForRecipe(Recipe<?> recipe) {
-		RecipeType<?> recipeType = recipe.getType();
+	private static RecipeBookGroup method_1400(Recipe<?> recipe) {
+		RecipeType<?> recipeType = recipe.method_17716();
 		if (recipeType == RecipeType.SMELTING) {
-			if (recipe.getOutput().getItem() instanceof FoodItem) {
+			if (recipe.getOutput().getItem().method_19263()) {
 				return RecipeBookGroup.field_1808;
 			} else {
 				return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.field_1811 : RecipeBookGroup.field_1812;
@@ -133,7 +132,7 @@ public class ClientRecipeBook extends RecipeBook {
 		return this.orderedResults;
 	}
 
-	public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup recipeBookGroup) {
+	public List<RecipeResultCollection> method_1396(RecipeBookGroup recipeBookGroup) {
 		return (List<RecipeResultCollection>)this.resultsByGroup.getOrDefault(recipeBookGroup, Collections.emptyList());
 	}
 }

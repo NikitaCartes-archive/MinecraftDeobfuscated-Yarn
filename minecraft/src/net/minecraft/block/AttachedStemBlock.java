@@ -20,73 +20,71 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
 public class AttachedStemBlock extends PlantBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
-	private final GourdBlock gourdBlock;
+	public static final DirectionProperty field_9873 = HorizontalFacingBlock.field_11177;
+	private final GourdBlock field_9875;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.SOUTH,
-			Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 16.0),
+			Block.method_9541(6.0, 0.0, 6.0, 10.0, 10.0, 16.0),
 			Direction.WEST,
-			Block.createCuboidShape(0.0, 0.0, 6.0, 10.0, 10.0, 10.0),
+			Block.method_9541(0.0, 0.0, 6.0, 10.0, 10.0, 10.0),
 			Direction.NORTH,
-			Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 10.0, 10.0),
+			Block.method_9541(6.0, 0.0, 0.0, 10.0, 10.0, 10.0),
 			Direction.EAST,
-			Block.createCuboidShape(6.0, 0.0, 6.0, 16.0, 10.0, 10.0)
+			Block.method_9541(6.0, 0.0, 6.0, 16.0, 10.0, 10.0)
 		)
 	);
 
 	protected AttachedStemBlock(GourdBlock gourdBlock, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
-		this.gourdBlock = gourdBlock;
+		this.method_9590(this.field_10647.method_11664().method_11657(field_9873, Direction.NORTH));
+		this.field_9875 = gourdBlock;
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return (VoxelShape)FACING_TO_SHAPE.get(blockState.get(FACING));
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return (VoxelShape)FACING_TO_SHAPE.get(blockState.method_11654(field_9873));
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return blockState2.getBlock() != this.gourdBlock && direction == blockState.get(FACING)
-			? this.gourdBlock.getStem().getDefaultState().with(StemBlock.AGE, Integer.valueOf(7))
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		return blockState2.getBlock() != this.field_9875 && direction == blockState.method_11654(field_9873)
+			? this.field_9875.getStem().method_9564().method_11657(StemBlock.field_11584, Integer.valueOf(7))
+			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	protected boolean method_9695(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return blockState.getBlock() == Blocks.field_10362;
 	}
 
 	@Environment(EnvType.CLIENT)
 	protected Item getSeeds() {
-		if (this.gourdBlock == Blocks.field_10261) {
+		if (this.field_9875 == Blocks.field_10261) {
 			return Items.field_8706;
 		} else {
-			return this.gourdBlock == Blocks.field_10545 ? Items.field_8188 : Items.AIR;
+			return this.field_9875 == Blocks.field_10545 ? Items.field_8188 : Items.AIR;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return new ItemStack(this.getSeeds());
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
+	public BlockState method_9598(BlockState blockState, Rotation rotation) {
+		return blockState.method_11657(field_9873, rotation.method_10503(blockState.method_11654(field_9873)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
+	public BlockState method_9569(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.method_10345(blockState.method_11654(field_9873)));
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_9873);
 	}
 }

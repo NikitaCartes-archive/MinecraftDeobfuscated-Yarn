@@ -15,21 +15,21 @@ public interface Criterion<T extends CriterionConditions> {
 
 	void endTracking(PlayerAdvancementTracker playerAdvancementTracker);
 
-	T deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
+	T method_795(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
 
 	public static class ConditionsContainer<T extends CriterionConditions> {
-		private final T conditions;
+		private final T field_1223;
 		private final SimpleAdvancement advancement;
 		private final String id;
 
 		public ConditionsContainer(T criterionConditions, SimpleAdvancement simpleAdvancement, String string) {
-			this.conditions = criterionConditions;
+			this.field_1223 = criterionConditions;
 			this.advancement = simpleAdvancement;
 			this.id = string;
 		}
 
-		public T getConditions() {
-			return this.conditions;
+		public T method_797() {
+			return this.field_1223;
 		}
 
 		public void apply(PlayerAdvancementTracker playerAdvancementTracker) {
@@ -41,7 +41,7 @@ public interface Criterion<T extends CriterionConditions> {
 				return true;
 			} else if (object != null && this.getClass() == object.getClass()) {
 				Criterion.ConditionsContainer<?> conditionsContainer = (Criterion.ConditionsContainer<?>)object;
-				if (!this.conditions.equals(conditionsContainer.conditions)) {
+				if (!this.field_1223.equals(conditionsContainer.field_1223)) {
 					return false;
 				} else {
 					return !this.advancement.equals(conditionsContainer.advancement) ? false : this.id.equals(conditionsContainer.id);
@@ -52,7 +52,7 @@ public interface Criterion<T extends CriterionConditions> {
 		}
 
 		public int hashCode() {
-			int i = this.conditions.hashCode();
+			int i = this.field_1223.hashCode();
 			i = 31 * i + this.advancement.hashCode();
 			return 31 * i + this.id.hashCode();
 		}

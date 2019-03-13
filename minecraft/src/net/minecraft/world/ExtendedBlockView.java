@@ -6,22 +6,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 
 public interface ExtendedBlockView extends BlockView {
-	Biome getBiome(BlockPos blockPos);
+	Biome method_8310(BlockPos blockPos);
 
-	int getLightLevel(LightType lightType, BlockPos blockPos);
+	int method_8314(LightType lightType, BlockPos blockPos);
 
-	default boolean isSkyVisible(BlockPos blockPos) {
-		return this.getLightLevel(LightType.SKY, blockPos) >= this.getMaxLightLevel();
+	default boolean method_8311(BlockPos blockPos) {
+		return this.method_8314(LightType.SKY, blockPos) >= this.getMaxLightLevel();
 	}
 
 	@Environment(EnvType.CLIENT)
 	default int method_8312(LightType lightType, BlockPos blockPos) {
-		if (this.getBlockState(blockPos).usesNeighborLightValues(this, blockPos)) {
-			int i = this.getLightLevel(lightType, blockPos.up());
-			int j = this.getLightLevel(lightType, blockPos.east());
-			int k = this.getLightLevel(lightType, blockPos.west());
-			int l = this.getLightLevel(lightType, blockPos.south());
-			int m = this.getLightLevel(lightType, blockPos.north());
+		if (this.method_8320(blockPos).method_11593(this, blockPos)) {
+			int i = this.method_8314(lightType, blockPos.up());
+			int j = this.method_8314(lightType, blockPos.east());
+			int k = this.method_8314(lightType, blockPos.west());
+			int l = this.method_8314(lightType, blockPos.south());
+			int m = this.method_8314(lightType, blockPos.north());
 			if (j > i) {
 				i = j;
 			}
@@ -40,12 +40,12 @@ public interface ExtendedBlockView extends BlockView {
 
 			return i;
 		} else {
-			return this.getLightLevel(lightType, blockPos);
+			return this.method_8314(lightType, blockPos);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	default int getLightmapIndex(BlockPos blockPos, int i) {
+	default int method_8313(BlockPos blockPos, int i) {
 		int j = this.method_8312(LightType.SKY, blockPos);
 		int k = this.method_8312(LightType.BLOCK, blockPos);
 		if (k < i) {

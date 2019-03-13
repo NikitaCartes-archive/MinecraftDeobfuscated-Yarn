@@ -37,12 +37,12 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	});
 	private final Object2ObjectMap<VillagerType, VillagerResourceMetadata.HatType> villagerTypeToHat = new Object2ObjectOpenHashMap<>();
 	private final Object2ObjectMap<VillagerProfession, VillagerResourceMetadata.HatType> professionToHat = new Object2ObjectOpenHashMap<>();
-	private final ReloadableResourceManager resourceManager;
+	private final ReloadableResourceManager field_17151;
 	private final String entityType;
 
 	public VillagerClothingFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext, ReloadableResourceManager reloadableResourceManager, String string) {
 		super(featureRendererContext);
-		this.resourceManager = reloadableResourceManager;
+		this.field_17151 = reloadableResourceManager;
 		this.entityType = string;
 		reloadableResourceManager.registerListener(this);
 	}
@@ -50,12 +50,12 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	public void method_17151(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (!livingEntity.isInvisible()) {
 			VillagerData villagerData = livingEntity.getVillagerData();
-			VillagerType villagerType = villagerData.getType();
-			VillagerProfession villagerProfession = villagerData.getProfession();
-			VillagerResourceMetadata.HatType hatType = this.getHatType(this.villagerTypeToHat, "type", Registry.VILLAGER_TYPE, villagerType);
-			VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
+			VillagerType villagerType = villagerData.method_16919();
+			VillagerProfession villagerProfession = villagerData.method_16924();
+			VillagerResourceMetadata.HatType hatType = this.method_17153(this.villagerTypeToHat, "type", Registry.VILLAGER_TYPE, villagerType);
+			VillagerResourceMetadata.HatType hatType2 = this.method_17153(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
 			M entityModel = this.getModel();
-			this.bindTexture(this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType)));
+			this.method_17164(this.method_17155("type", Registry.VILLAGER_TYPE.method_10221(villagerType)));
 			entityModel.setHeadVisible(
 				hatType2 == VillagerResourceMetadata.HatType.field_17160
 					|| hatType2 == VillagerResourceMetadata.HatType.field_17161 && hatType != VillagerResourceMetadata.HatType.field_17162
@@ -63,9 +63,9 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 			entityModel.render(livingEntity, f, g, i, j, k, l);
 			entityModel.setHeadVisible(true);
 			if (villagerProfession != VillagerProfession.field_17051 && !livingEntity.isChild()) {
-				this.bindTexture(this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession)));
+				this.method_17164(this.method_17155("profession", Registry.VILLAGER_PROFESSION.method_10221(villagerProfession)));
 				entityModel.render(livingEntity, f, g, i, j, k, l);
-				this.bindTexture(this.findTexture("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size()))));
+				this.method_17164(this.method_17155("profession_level", LEVEL_TO_ID.get(MathHelper.clamp(villagerData.getLevel(), 1, LEVEL_TO_ID.size()))));
 				entityModel.render(livingEntity, f, g, i, j, k, l);
 			}
 		}
@@ -76,21 +76,21 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 		return true;
 	}
 
-	private Identifier findTexture(String string, Identifier identifier) {
+	private Identifier method_17155(String string, Identifier identifier) {
 		return new Identifier(identifier.getNamespace(), "textures/entity/" + this.entityType + "/" + string + "/" + identifier.getPath() + ".png");
 	}
 
-	public <K> VillagerResourceMetadata.HatType getHatType(
+	public <K> VillagerResourceMetadata.HatType method_17153(
 		Object2ObjectMap<K, VillagerResourceMetadata.HatType> object2ObjectMap, String string, DefaultedRegistry<K> defaultedRegistry, K object
 	) {
 		return (VillagerResourceMetadata.HatType)object2ObjectMap.computeIfAbsent(object, object2 -> {
 			try {
-				Resource resource = this.resourceManager.getResource(this.findTexture(string, defaultedRegistry.getId(object)));
+				Resource resource = this.field_17151.getResource(this.method_17155(string, defaultedRegistry.method_10221(object)));
 				Throwable var6 = null;
 
 				VillagerResourceMetadata.HatType var8;
 				try {
-					VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.READER);
+					VillagerResourceMetadata villagerResourceMetadata = resource.getMetadata(VillagerResourceMetadata.field_17158);
 					if (villagerResourceMetadata == null) {
 						return VillagerResourceMetadata.HatType.field_17160;
 					}

@@ -30,7 +30,7 @@ public class PhantomSpawner {
 				return 0;
 			} else {
 				this.ticksUntilNextSpawn = this.ticksUntilNextSpawn + (60 + random.nextInt(60)) * 20;
-				if (world.getAmbientDarkness() < 5 && world.dimension.hasSkyLight()) {
+				if (world.getAmbientDarkness() < 5 && world.field_9247.hasSkyLight()) {
 					return 0;
 				} else {
 					int i = 0;
@@ -38,24 +38,24 @@ public class PhantomSpawner {
 					for (PlayerEntity playerEntity : world.getPlayers()) {
 						if (!playerEntity.isSpectator()) {
 							BlockPos blockPos = new BlockPos(playerEntity);
-							if (!world.dimension.hasSkyLight() || blockPos.getY() >= world.getSeaLevel() && world.isSkyVisible(blockPos)) {
-								LocalDifficulty localDifficulty = world.getLocalDifficulty(blockPos);
+							if (!world.field_9247.hasSkyLight() || blockPos.getY() >= world.getSeaLevel() && world.method_8311(blockPos)) {
+								LocalDifficulty localDifficulty = world.method_8404(blockPos);
 								if (localDifficulty.method_5455(random.nextFloat() * 3.0F)) {
 									ServerStatHandler serverStatHandler = ((ServerPlayerEntity)playerEntity).method_14248();
 									int j = MathHelper.clamp(serverStatHandler.getStat(Stats.field_15419.getOrCreateStat(Stats.field_15429)), 1, Integer.MAX_VALUE);
 									int k = 24000;
 									if (random.nextInt(j) >= 72000) {
 										BlockPos blockPos2 = blockPos.up(20 + random.nextInt(15)).east(-10 + random.nextInt(21)).south(-10 + random.nextInt(21));
-										BlockState blockState = world.getBlockState(blockPos2);
-										FluidState fluidState = world.getFluidState(blockPos2);
-										if (SpawnHelper.isClearForSpawn(world, blockPos2, blockState, fluidState)) {
+										BlockState blockState = world.method_8320(blockPos2);
+										FluidState fluidState = world.method_8316(blockPos2);
+										if (SpawnHelper.method_8662(world, blockPos2, blockState, fluidState)) {
 											EntityData entityData = null;
 											int l = 1 + random.nextInt(localDifficulty.method_5454().getId() + 1);
 
 											for (int m = 0; m < l; m++) {
-												PhantomEntity phantomEntity = EntityType.PHANTOM.create(world);
-												phantomEntity.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
-												entityData = phantomEntity.prepareEntityData(world, localDifficulty, SpawnType.field_16459, entityData, null);
+												PhantomEntity phantomEntity = EntityType.PHANTOM.method_5883(world);
+												phantomEntity.method_5725(blockPos2, 0.0F, 0.0F);
+												entityData = phantomEntity.method_5943(world, localDifficulty, SpawnType.field_16459, entityData, null);
 												world.spawnEntity(phantomEntity);
 											}
 

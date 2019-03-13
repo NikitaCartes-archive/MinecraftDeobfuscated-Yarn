@@ -20,23 +20,23 @@ import net.minecraft.world.loot.context.LootContextTypes;
 
 public abstract class LootableContainerBlockEntity extends LockableContainerBlockEntity {
 	@Nullable
-	protected Identifier lootTableId;
+	protected Identifier field_12037;
 	protected long lootTableSeed;
 
 	protected LootableContainerBlockEntity(BlockEntityType<?> blockEntityType) {
 		super(blockEntityType);
 	}
 
-	public static void setLootTable(BlockView blockView, Random random, BlockPos blockPos, Identifier identifier) {
-		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+	public static void method_11287(BlockView blockView, Random random, BlockPos blockPos, Identifier identifier) {
+		BlockEntity blockEntity = blockView.method_8321(blockPos);
 		if (blockEntity instanceof LootableContainerBlockEntity) {
-			((LootableContainerBlockEntity)blockEntity).setLootTable(identifier, random.nextLong());
+			((LootableContainerBlockEntity)blockEntity).method_11285(identifier, random.nextLong());
 		}
 	}
 
-	protected boolean deserializeLootTable(CompoundTag compoundTag) {
+	protected boolean method_11283(CompoundTag compoundTag) {
 		if (compoundTag.containsKey("LootTable", 8)) {
-			this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
+			this.field_12037 = new Identifier(compoundTag.getString("LootTable"));
 			this.lootTableSeed = compoundTag.getLong("LootTableSeed");
 			return true;
 		} else {
@@ -44,11 +44,11 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		}
 	}
 
-	protected boolean serializeLootTable(CompoundTag compoundTag) {
-		if (this.lootTableId == null) {
+	protected boolean method_11286(CompoundTag compoundTag) {
+		if (this.field_12037 == null) {
 			return false;
 		} else {
-			compoundTag.putString("LootTable", this.lootTableId.toString());
+			compoundTag.putString("LootTable", this.field_12037.toString());
 			if (this.lootTableSeed != 0L) {
 				compoundTag.putLong("LootTableSeed", this.lootTableSeed);
 			}
@@ -58,35 +58,35 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	public void checkLootInteraction(@Nullable PlayerEntity playerEntity) {
-		if (this.lootTableId != null && this.world.getServer() != null) {
-			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
-			this.lootTableId = null;
+		if (this.field_12037 != null && this.world.getServer() != null) {
+			LootSupplier lootSupplier = this.world.getServer().getLootManager().method_367(this.field_12037);
+			this.field_12037 = null;
 			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
-				.put(LootContextParameters.field_1232, new BlockPos(this.pos))
+				.method_312(LootContextParameters.field_1232, new BlockPos(this.field_11867))
 				.setRandom(this.lootTableSeed);
 			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.field_1226, playerEntity);
+				builder.setLuck(playerEntity.getLuck()).method_312(LootContextParameters.field_1226, playerEntity);
 			}
 
-			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));
+			lootSupplier.supplyInventory(this, builder.method_309(LootContextTypes.CHEST));
 		}
 	}
 
-	public void setLootTable(Identifier identifier, long l) {
-		this.lootTableId = identifier;
+	public void method_11285(Identifier identifier, long l) {
+		this.field_12037 = identifier;
 		this.lootTableSeed = l;
 	}
 
 	@Override
-	public ItemStack getInvStack(int i) {
+	public ItemStack method_5438(int i) {
 		this.checkLootInteraction(null);
-		return this.getInvStackList().get(i);
+		return this.method_11282().get(i);
 	}
 
 	@Override
-	public ItemStack takeInvStack(int i, int j) {
+	public ItemStack method_5434(int i, int j) {
 		this.checkLootInteraction(null);
-		ItemStack itemStack = Inventories.splitStack(this.getInvStackList(), i, j);
+		ItemStack itemStack = Inventories.method_5430(this.method_11282(), i, j);
 		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}
@@ -95,15 +95,15 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public ItemStack removeInvStack(int i) {
+	public ItemStack method_5441(int i) {
 		this.checkLootInteraction(null);
-		return Inventories.removeStack(this.getInvStackList(), i);
+		return Inventories.method_5428(this.method_11282(), i);
 	}
 
 	@Override
-	public void setInvStack(int i, ItemStack itemStack) {
+	public void method_5447(int i, ItemStack itemStack) {
 		this.checkLootInteraction(null);
-		this.getInvStackList().set(i, itemStack);
+		this.method_11282().set(i, itemStack);
 		if (itemStack.getAmount() > this.getInvMaxStackAmount()) {
 			itemStack.setAmount(this.getInvMaxStackAmount());
 		}
@@ -112,31 +112,33 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.world.getBlockEntity(this.pos) != this
+	public boolean method_5443(PlayerEntity playerEntity) {
+		return this.world.method_8321(this.field_11867) != this
 			? false
-			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+			: !(
+				playerEntity.squaredDistanceTo((double)this.field_11867.getX() + 0.5, (double)this.field_11867.getY() + 0.5, (double)this.field_11867.getZ() + 0.5) > 64.0
+			);
 	}
 
 	@Override
 	public void clear() {
-		this.getInvStackList().clear();
+		this.method_11282().clear();
 	}
 
-	protected abstract DefaultedList<ItemStack> getInvStackList();
+	protected abstract DefaultedList<ItemStack> method_11282();
 
-	protected abstract void setInvStackList(DefaultedList<ItemStack> defaultedList);
+	protected abstract void method_11281(DefaultedList<ItemStack> defaultedList);
 
 	@Override
 	public boolean checkUnlocked(PlayerEntity playerEntity) {
-		return super.checkUnlocked(playerEntity) && (this.lootTableId == null || !playerEntity.isSpectator());
+		return super.checkUnlocked(playerEntity) && (this.field_12037 == null || !playerEntity.isSpectator());
 	}
 
 	@Nullable
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
 		if (this.checkUnlocked(playerEntity)) {
-			this.checkLootInteraction(playerInventory.player);
+			this.checkLootInteraction(playerInventory.field_7546);
 			return this.createContainer(i, playerInventory);
 		} else {
 			return null;

@@ -15,7 +15,7 @@ import net.minecraft.world.World;
 public class CompassItem extends Item {
 	public CompassItem(Item.Settings settings) {
 		super(settings);
-		this.addProperty(new Identifier("angle"), new ItemPropertyGetter() {
+		this.method_7863(new Identifier("angle"), new ItemPropertyGetter() {
 			@Environment(EnvType.CLIENT)
 			private double field_7907;
 			@Environment(EnvType.CLIENT)
@@ -32,11 +32,11 @@ public class CompassItem extends Item {
 					boolean bl = livingEntity != null;
 					Entity entity = (Entity)(bl ? livingEntity : itemStack.getHoldingItemFrame());
 					if (world == null) {
-						world = entity.world;
+						world = entity.field_6002;
 					}
 
 					double f;
-					if (world.dimension.hasVisibleSky()) {
+					if (world.field_9247.hasVisibleSky()) {
 						double d = bl ? (double)entity.yaw : this.method_7733((ItemFrameEntity)entity);
 						d = MathHelper.floorMod(d / 360.0, 1.0);
 						double e = this.method_7734(world, entity) / (float) (Math.PI * 2);
@@ -69,12 +69,12 @@ public class CompassItem extends Item {
 
 			@Environment(EnvType.CLIENT)
 			private double method_7733(ItemFrameEntity itemFrameEntity) {
-				return (double)MathHelper.wrapDegrees(180 + itemFrameEntity.facing.getHorizontal() * 90);
+				return (double)MathHelper.wrapDegrees(180 + itemFrameEntity.field_7099.getHorizontal() * 90);
 			}
 
 			@Environment(EnvType.CLIENT)
 			private double method_7734(IWorld iWorld, Entity entity) {
-				BlockPos blockPos = iWorld.getSpawnPos();
+				BlockPos blockPos = iWorld.method_8395();
 				return Math.atan2((double)blockPos.getZ() - entity.z, (double)blockPos.getX() - entity.x);
 			}
 		});

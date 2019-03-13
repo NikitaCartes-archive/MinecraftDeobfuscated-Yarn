@@ -19,7 +19,7 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 	}
 
 	@Override
-	protected Path getOutput(Identifier identifier) {
+	protected Path method_10510(Identifier identifier) {
 		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/entity_types/" + identifier.getPath() + ".json");
 	}
 
@@ -30,6 +30,6 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 
 	@Override
 	protected void method_10511(TagContainer<EntityType<?>> tagContainer) {
-		EntityTags.setContainer(tagContainer);
+		EntityTags.method_15078(tagContainer);
 	}
 }

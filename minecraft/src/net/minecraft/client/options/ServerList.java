@@ -31,10 +31,10 @@ public class ServerList {
 				return;
 			}
 
-			ListTag listTag = compoundTag.getList("servers", 10);
+			ListTag listTag = compoundTag.method_10554("servers", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				this.serverEntries.add(ServerEntry.deserialize(listTag.getCompoundTag(i)));
+				this.serverEntries.add(ServerEntry.method_2993(listTag.getCompoundTag(i)));
 			}
 		} catch (Exception var4) {
 			LOGGER.error("Couldn't load server list", (Throwable)var4);
@@ -46,11 +46,11 @@ public class ServerList {
 			ListTag listTag = new ListTag();
 
 			for (ServerEntry serverEntry : this.serverEntries) {
-				listTag.add(serverEntry.serialize());
+				listTag.add(serverEntry.method_2992());
 			}
 
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.put("servers", listTag);
+			compoundTag.method_10566("servers", listTag);
 			NbtIo.safeWrite(compoundTag, new File(this.client.runDirectory, "servers.dat"));
 		} catch (Exception var4) {
 			LOGGER.error("Couldn't save server list", (Throwable)var4);

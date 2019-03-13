@@ -6,20 +6,20 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.util.Identifier;
 
 public class EntityTags {
-	private static TagContainer<EntityType<?>> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
+	private static TagContainer<EntityType<?>> field_15508 = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int field_15509;
-	public static final Tag<EntityType<?>> field_15507 = register("skeletons");
+	public static final Tag<EntityType<?>> field_15507 = method_15077("skeletons");
 
-	public static void setContainer(TagContainer<EntityType<?>> tagContainer) {
-		container = tagContainer;
+	public static void method_15078(TagContainer<EntityType<?>> tagContainer) {
+		field_15508 = tagContainer;
 		field_15509++;
 	}
 
-	public static TagContainer<EntityType<?>> getContainer() {
-		return container;
+	public static TagContainer<EntityType<?>> method_15082() {
+		return field_15508;
 	}
 
-	private static Tag<EntityType<?>> register(String string) {
+	private static Tag<EntityType<?>> method_15077(String string) {
 		return new EntityTags.class_3484(new Identifier(string));
 	}
 
@@ -33,7 +33,7 @@ public class EntityTags {
 
 		public boolean method_15084(EntityType<?> entityType) {
 			if (this.field_15511 != EntityTags.field_15509) {
-				this.field_15510 = EntityTags.container.getOrCreate(this.getId());
+				this.field_15510 = EntityTags.field_15508.getOrCreate(this.getId());
 				this.field_15511 = EntityTags.field_15509;
 			}
 
@@ -43,7 +43,7 @@ public class EntityTags {
 		@Override
 		public Collection<EntityType<?>> values() {
 			if (this.field_15511 != EntityTags.field_15509) {
-				this.field_15510 = EntityTags.container.getOrCreate(this.getId());
+				this.field_15510 = EntityTags.field_15508.getOrCreate(this.getId());
 				this.field_15511 = EntityTags.field_15509;
 			}
 
@@ -53,7 +53,7 @@ public class EntityTags {
 		@Override
 		public Collection<Tag.Entry<EntityType<?>>> entries() {
 			if (this.field_15511 != EntityTags.field_15509) {
-				this.field_15510 = EntityTags.container.getOrCreate(this.getId());
+				this.field_15510 = EntityTags.field_15508.getOrCreate(this.getId());
 				this.field_15511 = EntityTags.field_15509;
 			}
 

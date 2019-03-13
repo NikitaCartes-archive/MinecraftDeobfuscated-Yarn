@@ -10,10 +10,12 @@ public class PathNodeNavigator {
 	private final PathMinHeap minHeap = new PathMinHeap();
 	private final Set<PathNode> field_59 = Sets.<PathNode>newHashSet();
 	private final PathNode[] field_60 = new PathNode[32];
+	private final int field_18708;
 	private PathNodeMaker field_61;
 
-	public PathNodeNavigator(PathNodeMaker pathNodeMaker) {
+	public PathNodeNavigator(PathNodeMaker pathNodeMaker, int i) {
 		this.field_61 = pathNodeMaker;
+		this.field_18708 = i;
 	}
 
 	@Nullable
@@ -34,16 +36,16 @@ public class PathNodeNavigator {
 		pathNode.heapWeight = pathNode.field_34;
 		this.minHeap.clear();
 		this.field_59.clear();
-		this.minHeap.push(pathNode);
+		this.minHeap.method_2(pathNode);
 		PathNode pathNode3 = pathNode;
 		int i = 0;
 
 		while (!this.minHeap.isEmpty()) {
-			if (++i >= 200) {
+			if (++i >= this.field_18708) {
 				break;
 			}
 
-			PathNode pathNode4 = this.minHeap.pop();
+			PathNode pathNode4 = this.minHeap.method_6();
 			if (pathNode4.equals(pathNode2)) {
 				pathNode3 = pathNode2;
 				break;
@@ -67,10 +69,10 @@ public class PathNodeNavigator {
 					pathNode5.field_36 = h;
 					pathNode5.field_34 = pathNode5.manhattanDistance(pathNode2) + pathNode5.field_43;
 					if (pathNode5.isInHeap()) {
-						this.minHeap.setNodeWeight(pathNode5, pathNode5.field_36 + pathNode5.field_34);
+						this.minHeap.method_3(pathNode5, pathNode5.field_36 + pathNode5.field_34);
 					} else {
 						pathNode5.heapWeight = pathNode5.field_36 + pathNode5.field_34;
-						this.minHeap.push(pathNode5);
+						this.minHeap.method_2(pathNode5);
 					}
 				}
 			}

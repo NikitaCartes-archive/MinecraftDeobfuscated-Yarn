@@ -15,6 +15,7 @@ import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -22,18 +23,31 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class FeaturePoolElement extends StructurePoolElement {
 	private final ConfiguredFeature<?> feature;
-	private final CompoundTag tag;
+	private final CompoundTag field_16662;
 
+	@Deprecated
 	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature) {
+		this(configuredFeature, StructurePool.Projection.RIGID);
+	}
+
+	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature, StructurePool.Projection projection) {
+		super(projection);
 		this.feature = configuredFeature;
-		this.tag = new CompoundTag();
-		this.tag.putString("target_pool", "minecraft:empty");
-		this.tag.putString("attachement_type", "minecraft:bottom");
-		this.tag.putString("final_state", "minecraft:air");
+		this.field_16662 = this.method_19299();
 	}
 
 	public <T> FeaturePoolElement(Dynamic<T> dynamic) {
-		this(ConfiguredFeature.deserialize(dynamic.get("feature").orElseEmptyMap()));
+		super(dynamic);
+		this.feature = ConfiguredFeature.deserialize(dynamic.get("feature").orElseEmptyMap());
+		this.field_16662 = this.method_19299();
+	}
+
+	public CompoundTag method_19299() {
+		CompoundTag compoundTag = new CompoundTag();
+		compoundTag.putString("target_pool", "minecraft:empty");
+		compoundTag.putString("attachement_type", "minecraft:bottom");
+		compoundTag.putString("final_state", "minecraft:air");
+		return compoundTag;
 	}
 
 	public BlockPos method_16601(StructureManager structureManager, Rotation rotation) {
@@ -41,14 +55,14 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
-		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.tag));
+		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.method_9564().method_11657(JigsawBlock.field_10927, Direction.DOWN), this.field_16662));
 		return list;
 	}
 
 	@Override
-	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
+	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
 		BlockPos blockPos2 = this.method_16601(structureManager, rotation);
 		return new MutableIntBoundingBox(
 			blockPos.getX(),
@@ -61,11 +75,11 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public boolean generate(
+	public boolean method_16626(
 		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	) {
-		ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
-		return this.feature.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
+		ChunkGenerator<?> chunkGenerator = iWorld.method_8398().getChunkGenerator();
+		return this.feature.method_12862(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
 	}
 
 	@Override
@@ -74,7 +88,11 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public StructurePoolElementType getType() {
+	public StructurePoolElementType method_16757() {
 		return StructurePoolElementType.FEATURE_POOL_ELEMENT;
+	}
+
+	public String toString() {
+		return "Feature[" + Registry.FEATURE.method_10221(this.feature.field_13376) + "]";
 	}
 }

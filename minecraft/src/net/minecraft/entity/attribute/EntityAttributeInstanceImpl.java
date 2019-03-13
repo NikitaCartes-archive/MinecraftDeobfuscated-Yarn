@@ -67,18 +67,18 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 
 	@Nullable
 	@Override
-	public EntityAttributeModifier getModifier(UUID uUID) {
+	public EntityAttributeModifier method_6199(UUID uUID) {
 		return (EntityAttributeModifier)this.field_6343.get(uUID);
 	}
 
 	@Override
-	public boolean hasModifier(EntityAttributeModifier entityAttributeModifier) {
+	public boolean method_6196(EntityAttributeModifier entityAttributeModifier) {
 		return this.field_6343.get(entityAttributeModifier.getId()) != null;
 	}
 
 	@Override
-	public void addModifier(EntityAttributeModifier entityAttributeModifier) {
-		if (this.getModifier(entityAttributeModifier.getId()) != null) {
+	public void method_6197(EntityAttributeModifier entityAttributeModifier) {
+		if (this.method_6199(entityAttributeModifier.getId()) != null) {
 			throw new IllegalArgumentException("Modifier is already applied on this attribute!");
 		} else {
 			Set<EntityAttributeModifier> set = (Set<EntityAttributeModifier>)this.field_6345
@@ -96,7 +96,7 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 	}
 
 	@Override
-	public void removeModifier(EntityAttributeModifier entityAttributeModifier) {
+	public void method_6202(EntityAttributeModifier entityAttributeModifier) {
 		for (EntityAttributeModifier.Operation operation : EntityAttributeModifier.Operation.values()) {
 			((Set)this.field_6347.get(operation)).remove(entityAttributeModifier);
 		}
@@ -115,9 +115,9 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 
 	@Override
 	public void removeModifier(UUID uUID) {
-		EntityAttributeModifier entityAttributeModifier = this.getModifier(uUID);
+		EntityAttributeModifier entityAttributeModifier = this.method_6199(uUID);
 		if (entityAttributeModifier != null) {
-			this.removeModifier(entityAttributeModifier);
+			this.method_6202(entityAttributeModifier);
 		}
 	}
 
@@ -127,7 +127,7 @@ public class EntityAttributeInstanceImpl implements EntityAttributeInstance {
 		Collection<EntityAttributeModifier> collection = this.getModifiers();
 		if (collection != null) {
 			for (EntityAttributeModifier entityAttributeModifier : Lists.newArrayList(collection)) {
-				this.removeModifier(entityAttributeModifier);
+				this.method_6202(entityAttributeModifier);
 			}
 		}
 	}

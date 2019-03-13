@@ -31,9 +31,9 @@ public class ElderGuardianEntity extends GuardianEntity {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(8.0);
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(80.0);
+		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
+		this.method_5996(EntityAttributes.ATTACK_DAMAGE).setBaseValue(8.0);
+		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(80.0);
 	}
 
 	@Override
@@ -48,17 +48,17 @@ public class ElderGuardianEntity extends GuardianEntity {
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15127 : SoundEvents.field_14569;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_14868 : SoundEvents.field_14652;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return this.isInsideWaterOrBubbleColumn() ? SoundEvents.field_15052 : SoundEvents.field_14973;
 	}
 
@@ -73,8 +73,8 @@ public class ElderGuardianEntity extends GuardianEntity {
 		int i = 1200;
 		if ((this.age + this.getEntityId()) % 1200 == 0) {
 			StatusEffect statusEffect = StatusEffects.field_5901;
-			List<ServerPlayerEntity> list = ((ServerWorld)this.world)
-				.method_18766(serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.interactionManager.isSurvivalLike());
+			List<ServerPlayerEntity> list = ((ServerWorld)this.field_6002)
+				.method_18766(serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.field_13974.isSurvivalLike());
 			int j = 2;
 			int k = 6000;
 			int l = 1200;
@@ -83,7 +83,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 				if (!serverPlayerEntity.hasPotionEffect(statusEffect)
 					|| serverPlayerEntity.getPotionEffect(statusEffect).getAmplifier() < 2
 					|| serverPlayerEntity.getPotionEffect(statusEffect).getDuration() < 1200) {
-					serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(10, 0.0F));
+					serverPlayerEntity.field_13987.sendPacket(new GameStateChangeS2CPacket(10, 0.0F));
 					serverPlayerEntity.addPotionEffect(new StatusEffectInstance(statusEffect, 6000, 2));
 				}
 			}

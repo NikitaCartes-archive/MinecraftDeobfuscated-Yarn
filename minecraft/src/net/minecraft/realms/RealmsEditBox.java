@@ -11,7 +11,7 @@ public class RealmsEditBox extends RealmsGuiEventListener {
 	private final TextFieldWidget editBox;
 
 	public RealmsEditBox(int i, int j, int k, int l, int m) {
-		this.editBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, j, k, l, m);
+		this.editBox = new TextFieldWidget(MinecraftClient.getInstance().field_1772, j, k, l, m);
 	}
 
 	public String getValue() {
@@ -61,8 +61,8 @@ public class RealmsEditBox extends RealmsGuiEventListener {
 	}
 
 	@Override
-	public boolean mouseScrolled(double d) {
-		return this.editBox.mouseScrolled(d);
+	public boolean mouseScrolled(double d, double e, double f) {
+		return this.editBox.mouseScrolled(d, e, f);
 	}
 
 	public void render(int i, int j, float f) {

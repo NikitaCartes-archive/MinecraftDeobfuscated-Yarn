@@ -15,9 +15,9 @@ public class EndBarrensBiome extends Biome {
 	public EndBarrensBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.END_CONFIG)
+				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15671)
 				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.THE_END)
+				.method_8738(Biome.Category.THE_END)
 				.depth(0.1F)
 				.scale(0.2F)
 				.temperature(0.5F)
@@ -26,7 +26,9 @@ public class EndBarrensBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, configureFeature(Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
+		this.method_8719(
+			GenerationStep.Feature.SURFACE_STRUCTURES, method_8699(Feature.field_13553, FeatureConfig.field_13603, Decorator.NOPE, DecoratorConfig.field_13436)
+		);
 		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 

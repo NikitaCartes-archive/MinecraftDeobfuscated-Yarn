@@ -3,8 +3,14 @@ package net.minecraft.item.block;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.client.network.packet.ChatMessageS2CPacket;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sortme.ChatMessageType;
+import net.minecraft.text.TextFormat;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -16,37 +22,46 @@ public class ScaffoldingItem extends BlockItem {
 
 	@Nullable
 	@Override
-	public ItemPlacementContext getPlacementContext(ItemPlacementContext itemPlacementContext) {
-		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		World world = itemPlacementContext.getWorld();
-		BlockState blockState = world.getBlockState(blockPos);
-		Block block = this.getBlock();
+	public ItemPlacementContext method_16356(ItemPlacementContext itemPlacementContext) {
+		BlockPos blockPos = itemPlacementContext.method_8037();
+		World world = itemPlacementContext.method_8045();
+		BlockState blockState = world.method_8320(blockPos);
+		Block block = this.method_7711();
 		if (blockState.getBlock() != block) {
 			return itemPlacementContext;
 		} else {
 			Direction direction;
 			if (itemPlacementContext.isPlayerSneaking()) {
-				direction = itemPlacementContext.method_17699() ? itemPlacementContext.getFacing().getOpposite() : itemPlacementContext.getFacing();
+				direction = itemPlacementContext.method_17699() ? itemPlacementContext.method_8038().getOpposite() : itemPlacementContext.method_8038();
 			} else {
-				direction = itemPlacementContext.getFacing() == Direction.UP ? itemPlacementContext.getPlayerHorizontalFacing() : Direction.UP;
+				direction = itemPlacementContext.method_8038() == Direction.UP ? itemPlacementContext.method_8042() : Direction.UP;
 			}
 
 			int i = 0;
-			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(direction);
+			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).method_10098(direction);
 
-			while (i < 7 && World.isValid(mutable)) {
-				blockState = world.getBlockState(mutable);
-				if (blockState.getBlock() != this.getBlock()) {
-					if (blockState.method_11587(itemPlacementContext)) {
-						return ItemPlacementContext.create(itemPlacementContext, mutable, direction);
+			while (i < 7) {
+				if (!world.isClient && !World.method_8558(mutable)) {
+					PlayerEntity playerEntity = itemPlacementContext.getPlayer();
+					int j = world.getHeight();
+					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
+						ChatMessageS2CPacket chatMessageS2CPacket = new ChatMessageS2CPacket(
+							new TranslatableTextComponent("build.tooHigh", j).applyFormat(TextFormat.field_1061), ChatMessageType.field_11733
+						);
+						((ServerPlayerEntity)playerEntity).field_13987.sendPacket(chatMessageS2CPacket);
 					}
-
-					return ItemPlacementContext.create(
-						itemPlacementContext, itemPlacementContext.getBlockPos().offset(itemPlacementContext.getFacing()), itemPlacementContext.getFacing()
-					);
+					break;
 				}
 
-				mutable.setOffset(direction);
+				blockState = world.method_8320(mutable);
+				if (blockState.getBlock() != this.method_7711()) {
+					if (blockState.method_11587(itemPlacementContext)) {
+						return ItemPlacementContext.method_16355(itemPlacementContext, mutable, direction);
+					}
+					break;
+				}
+
+				mutable.method_10098(direction);
 				if (direction.getAxis().isHorizontal()) {
 					i++;
 				}

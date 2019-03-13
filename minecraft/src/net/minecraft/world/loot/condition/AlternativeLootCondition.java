@@ -16,11 +16,11 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextType;
 
 public class AlternativeLootCondition implements LootCondition {
-	private final LootCondition[] terms;
+	private final LootCondition[] field_1246;
 	private final Predicate<LootContext> predicate;
 
 	private AlternativeLootCondition(LootCondition[] lootConditions) {
-		this.terms = lootConditions;
+		this.field_1246 = lootConditions;
 		this.predicate = LootConditions.joinOr(lootConditions);
 	}
 
@@ -29,15 +29,15 @@ public class AlternativeLootCondition implements LootCondition {
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		LootCondition.super.check(lootTableReporter, function, set, lootContextType);
+	public void method_292(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		LootCondition.super.method_292(lootTableReporter, function, set, lootContextType);
 
-		for (int i = 0; i < this.terms.length; i++) {
-			this.terms[i].check(lootTableReporter.makeChild(".term[" + i + "]"), function, set, lootContextType);
+		for (int i = 0; i < this.field_1246.length; i++) {
+			this.field_1246[i].method_292(lootTableReporter.makeChild(".term[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
-	public static AlternativeLootCondition.Builder or(LootCondition.Builder... builders) {
+	public static AlternativeLootCondition.Builder method_826(LootCondition.Builder... builders) {
 		return new AlternativeLootCondition.Builder(builders);
 	}
 
@@ -68,7 +68,7 @@ public class AlternativeLootCondition implements LootCondition {
 		}
 
 		public void method_828(JsonObject jsonObject, AlternativeLootCondition alternativeLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.terms));
+			jsonObject.add("terms", jsonSerializationContext.serialize(alternativeLootCondition.field_1246));
 		}
 
 		public AlternativeLootCondition method_829(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {

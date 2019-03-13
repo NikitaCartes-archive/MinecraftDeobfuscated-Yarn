@@ -15,7 +15,7 @@ public class SeedCommand {
 				.requires(serverCommandSource -> serverCommandSource.getMinecraftServer().isSinglePlayer() || serverCommandSource.hasPermissionLevel(2))
 				.executes(
 					commandContext -> {
-						long l = commandContext.getSource().getWorld().getSeed();
+						long l = commandContext.getSource().method_9225().getSeed();
 						TextComponent textComponent = TextFormatter.bracketed(
 							new StringTextComponent(String.valueOf(l))
 								.modifyStyle(
@@ -24,7 +24,7 @@ public class SeedCommand {
 											.setInsertion(String.valueOf(l))
 								)
 						);
-						commandContext.getSource().sendFeedback(new TranslatableTextComponent("commands.seed.success", textComponent), false);
+						commandContext.getSource().method_9226(new TranslatableTextComponent("commands.seed.success", textComponent), false);
 						return (int)l;
 					}
 				)

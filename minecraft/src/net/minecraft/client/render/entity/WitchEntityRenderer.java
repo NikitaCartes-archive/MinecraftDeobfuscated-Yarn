@@ -10,20 +10,20 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WitchEntityRenderer extends MobEntityRenderer<WitchEntity, WitchEntityModel<WitchEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/witch.png");
+	private static final Identifier field_4814 = new Identifier("textures/entity/witch.png");
 
 	public WitchEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new WitchEntityModel<>(0.0F), 0.5F);
-		this.addFeature(new WitchHeldItemFeatureRenderer<>(this));
+		this.method_4046(new WitchHeldItemFeatureRenderer<>(this));
 	}
 
 	public void method_4155(WitchEntity witchEntity, double d, double e, double f, float g, float h) {
-		this.model.method_2840(!witchEntity.getMainHandStack().isEmpty());
+		this.model.method_2840(!witchEntity.method_6047().isEmpty());
 		super.method_4072(witchEntity, d, e, f, g, h);
 	}
 
 	protected Identifier method_4154(WitchEntity witchEntity) {
-		return SKIN;
+		return field_4814;
 	}
 
 	protected void method_4157(WitchEntity witchEntity, float f) {

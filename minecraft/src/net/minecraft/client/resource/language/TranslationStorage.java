@@ -30,7 +30,7 @@ public class TranslationStorage {
 	private static final Pattern PARAM_PATTERN = Pattern.compile("%(\\d+\\$)?[\\d\\.]*[df]");
 	protected final Map<String, String> translations = Maps.<String, String>newHashMap();
 
-	public synchronized void load(ResourceManager resourceManager, List<String> list) {
+	public synchronized void method_4675(ResourceManager resourceManager, List<String> list) {
 		this.translations.clear();
 
 		for (String string : list) {

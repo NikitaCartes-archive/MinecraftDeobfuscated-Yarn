@@ -18,14 +18,14 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
-	private static final Identifier TEX = new Identifier("textures/entity/fishing_hook.png");
+	private static final Identifier field_4707 = new Identifier("textures/entity/fishing_hook.png");
 
 	public FishHookEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
 	}
 
 	public void method_3974(FishHookEntity fishHookEntity, double d, double e, double f, float g, float h) {
-		PlayerEntity playerEntity = fishHookEntity.getOwner();
+		PlayerEntity playerEntity = fishHookEntity.method_6947();
 		if (playerEntity != null && !this.renderOutlines) {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d, (float)e, (float)f);
@@ -44,7 +44,7 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishHookEntity));
 			}
 
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
+			bufferBuilder.method_1328(7, VertexFormats.field_1589);
 			bufferBuilder.vertex(-0.5, -0.5, 0.0).texture(0.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, -0.5, 0.0).texture(1.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, 0.5, 0.0).texture(1.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
@@ -58,7 +58,7 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			GlStateManager.disableRescaleNormal();
 			GlStateManager.popMatrix();
 			int l = playerEntity.getMainHand() == OptionMainHand.field_6183 ? 1 : -1;
-			ItemStack itemStack = playerEntity.getMainHandStack();
+			ItemStack itemStack = playerEntity.method_6047();
 			if (itemStack.getItem() != Items.field_8378) {
 				l = -l;
 			}
@@ -74,7 +74,7 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			double u;
 			double v;
 			double w;
-			if ((this.renderManager.settings == null || this.renderManager.settings.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
+			if ((this.renderManager.settings == null || this.renderManager.settings.perspective <= 0) && playerEntity == MinecraftClient.getInstance().field_1724) {
 				double x = this.renderManager.settings.fov;
 				x /= 100.0;
 				Vec3d vec3d = new Vec3d((double)l * -0.36 * x, -0.045 * x, 0.4);
@@ -101,7 +101,7 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			double ac = (double)((float)(v - z));
 			GlStateManager.disableTexture();
 			GlStateManager.disableLighting();
-			bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+			bufferBuilder.method_1328(3, VertexFormats.field_1576);
 			int ad = 16;
 
 			for (int ae = 0; ae <= 16; ae++) {
@@ -117,6 +117,6 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 	}
 
 	protected Identifier method_3975(FishHookEntity fishHookEntity) {
-		return TEX;
+		return field_4707;
 	}
 }

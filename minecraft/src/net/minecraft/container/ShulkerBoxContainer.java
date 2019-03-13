@@ -17,49 +17,49 @@ public class ShulkerBoxContainer extends Container {
 		super(ContainerType.SHULKER_BOX, i);
 		checkContainerSize(inventory, 27);
 		this.inventory = inventory;
-		inventory.onInvOpen(playerInventory.player);
+		inventory.method_5435(playerInventory.field_7546);
 		int j = 3;
 		int k = 9;
 
 		for (int l = 0; l < 3; l++) {
 			for (int m = 0; m < 9; m++) {
-				this.addSlot(new ShulkerBoxSlot(inventory, m + l * 9, 8 + m * 18, 18 + l * 18));
+				this.method_7621(new ShulkerBoxSlot(inventory, m + l * 9, 8 + m * 18, 18 + l * 18));
 			}
 		}
 
 		for (int l = 0; l < 3; l++) {
 			for (int m = 0; m < 9; m++) {
-				this.addSlot(new Slot(playerInventory, m + l * 9 + 9, 8 + m * 18, 84 + l * 18));
+				this.method_7621(new Slot(playerInventory, m + l * 9 + 9, 8 + m * 18, 84 + l * 18));
 			}
 		}
 
 		for (int l = 0; l < 9; l++) {
-			this.addSlot(new Slot(playerInventory, l, 8 + l * 18, 142));
+			this.method_7621(new Slot(playerInventory, l, 8 + l * 18, 142));
 		}
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return this.inventory.canPlayerUseInv(playerEntity);
+		return this.inventory.method_5443(playerEntity);
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+	public ItemStack method_7601(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.getStack();
+			ItemStack itemStack2 = slot.method_7677();
 			itemStack = itemStack2.copy();
 			if (i < this.inventory.getInvSize()) {
-				if (!this.insertItem(itemStack2, this.inventory.getInvSize(), this.slotList.size(), true)) {
+				if (!this.method_7616(itemStack2, this.inventory.getInvSize(), this.slotList.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {
+			} else if (!this.method_7616(itemStack2, 0, this.inventory.getInvSize(), false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.setStack(ItemStack.EMPTY);
+				slot.method_7673(ItemStack.EMPTY);
 			} else {
 				slot.markDirty();
 			}
@@ -71,6 +71,6 @@ public class ShulkerBoxContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.inventory.onInvClose(playerEntity);
+		this.inventory.method_5432(playerEntity);
 	}
 }

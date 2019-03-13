@@ -19,7 +19,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
-		double e = this.getBoundingBox().averageDimension() * 10.0;
+		double e = this.method_5829().averageDimension() * 10.0;
 		if (Double.isNaN(e)) {
 			e = 1.0;
 		}
@@ -70,27 +70,27 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.method_6119();
 		float g;
 		if (this.onGround && !(this.getHealth() <= 0.0F)) {
-			g = Math.min(0.1F, MathHelper.sqrt(squaredHorizontalLength(this.getVelocity())));
+			g = Math.min(0.1F, MathHelper.sqrt(method_17996(this.method_18798())));
 		} else {
 			g = 0.0F;
 		}
 
 		float h;
 		if (!this.onGround && !(this.getHealth() <= 0.0F)) {
-			h = (float)Math.atan(-this.getVelocity().y * 0.2F) * 15.0F;
+			h = (float)Math.atan(-this.method_18798().y * 0.2F) * 15.0F;
 		} else {
 			h = 0.0F;
 		}
 
 		this.field_7483 = this.field_7483 + (g - this.field_7483) * 0.4F;
 		this.field_6223 = this.field_6223 + (h - this.field_6223) * 0.8F;
-		this.world.getProfiler().push("push");
+		this.field_6002.getProfiler().push("push");
 		this.doPushLogic();
-		this.world.getProfiler().pop();
+		this.field_6002.getProfiler().pop();
 	}
 
 	@Override
-	public void appendCommandFeedback(TextComponent textComponent) {
-		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(textComponent);
+	public void method_9203(TextComponent textComponent) {
+		MinecraftClient.getInstance().field_1705.method_1743().method_1812(textComponent);
 	}
 }

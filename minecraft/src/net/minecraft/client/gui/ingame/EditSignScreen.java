@@ -3,12 +3,12 @@ package net.minecraft.client.gui.ingame;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.StandingSignBlock;
 import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
@@ -32,17 +32,17 @@ public class EditSignScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120, I18n.translate("gui.done")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120, I18n.translate("gui.done")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				EditSignScreen.this.method_2526();
 			}
 		});
 		this.sign.setEditable(false);
 		this.selectionManager = new SelectionManager(
 			this.client,
-			() -> this.sign.getTextOnRow(this.currentRow).getString(),
-			string -> this.sign.setTextOnRow(this.currentRow, new StringTextComponent(string)),
+			() -> this.sign.method_11302(this.currentRow).getString(),
+			string -> this.sign.method_11299(this.currentRow, new StringTextComponent(string)),
 			90
 		);
 	}
@@ -50,10 +50,12 @@ public class EditSignScreen extends Screen {
 	@Override
 	public void onClosed() {
 		this.client.keyboard.enableRepeatEvents(false);
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.method_1562();
 		if (clientPlayNetworkHandler != null) {
-			clientPlayNetworkHandler.sendPacket(
-				new UpdateSignC2SPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3))
+			clientPlayNetworkHandler.method_2883(
+				new UpdateSignC2SPacket(
+					this.sign.method_11016(), this.sign.method_11302(0), this.sign.method_11302(1), this.sign.method_11302(2), this.sign.method_11302(3)
+				)
 			);
 		}
 
@@ -67,7 +69,7 @@ public class EditSignScreen extends Screen {
 
 	private void method_2526() {
 		this.sign.markDirty();
-		this.client.openScreen(null);
+		this.client.method_1507(null);
 	}
 
 	@Override
@@ -106,12 +108,12 @@ public class EditSignScreen extends Screen {
 		float g = 93.75F;
 		GlStateManager.scalef(-93.75F, -93.75F, -93.75F);
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-		BlockState blockState = this.sign.getCachedState();
+		BlockState blockState = this.sign.method_11010();
 		float h;
-		if (blockState.getBlock().matches(BlockTags.field_15472)) {
-			h = (float)((Integer)blockState.get(StandingSignBlock.ROTATION) * 360) / 16.0F;
+		if (blockState.getBlock().method_9525(BlockTags.field_15472)) {
+			h = (float)((Integer)blockState.method_11654(StandingSignBlock.field_11559) * 360) / 16.0F;
 		} else {
-			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
+			h = ((Direction)blockState.method_11654(WallSignBlock.field_11726)).asRotation();
 		}
 
 		GlStateManager.rotatef(h, 0.0F, 1.0F, 0.0F);

@@ -22,31 +22,31 @@ public class EnchantedBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack itemStack) {
+	public boolean method_7886(ItemStack itemStack) {
 		return true;
 	}
 
 	@Override
-	public boolean isTool(ItemStack itemStack) {
+	public boolean method_7870(ItemStack itemStack) {
 		return false;
 	}
 
-	public static ListTag getEnchantmentTag(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getTag();
-		return compoundTag != null ? compoundTag.getList("StoredEnchantments", 10) : new ListTag();
+	public static ListTag method_7806(ItemStack itemStack) {
+		CompoundTag compoundTag = itemStack.method_7969();
+		return compoundTag != null ? compoundTag.method_10554("StoredEnchantments", 10) : new ListTag();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
-		super.buildTooltip(itemStack, world, list, tooltipContext);
-		ItemStack.method_17870(list, getEnchantmentTag(itemStack));
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+		super.method_7851(itemStack, world, list, tooltipContext);
+		ItemStack.method_17870(list, method_7806(itemStack));
 	}
 
-	public static void addEnchantment(ItemStack itemStack, InfoEnchantment infoEnchantment) {
-		ListTag listTag = getEnchantmentTag(itemStack);
+	public static void method_7807(ItemStack itemStack, InfoEnchantment infoEnchantment) {
+		ListTag listTag = method_7806(itemStack);
 		boolean bl = true;
-		Identifier identifier = Registry.ENCHANTMENT.getId(infoEnchantment.enchantment);
+		Identifier identifier = Registry.ENCHANTMENT.method_10221(infoEnchantment.enchantment);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
@@ -68,28 +68,28 @@ public class EnchantedBookItem extends Item {
 			listTag.add(compoundTag2);
 		}
 
-		itemStack.getOrCreateTag().put("StoredEnchantments", listTag);
+		itemStack.method_7948().method_10566("StoredEnchantments", listTag);
 	}
 
 	public static ItemStack method_7808(InfoEnchantment infoEnchantment) {
 		ItemStack itemStack = new ItemStack(Items.field_8598);
-		addEnchantment(itemStack, infoEnchantment);
+		method_7807(itemStack, infoEnchantment);
 		return itemStack;
 	}
 
 	@Override
-	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+	public void method_7850(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (itemGroup == ItemGroup.SEARCH) {
 			for (Enchantment enchantment : Registry.ENCHANTMENT) {
-				if (enchantment.type != null) {
+				if (enchantment.field_9083 != null) {
 					for (int i = enchantment.getMinimumLevel(); i <= enchantment.getMaximumLevel(); i++) {
 						defaultedList.add(method_7808(new InfoEnchantment(enchantment, i)));
 					}
 				}
 			}
-		} else if (itemGroup.getEnchantments().length != 0) {
+		} else if (itemGroup.method_7744().length != 0) {
 			for (Enchantment enchantmentx : Registry.ENCHANTMENT) {
-				if (itemGroup.containsEnchantments(enchantmentx.type)) {
+				if (itemGroup.method_7740(enchantmentx.field_9083)) {
 					defaultedList.add(method_7808(new InfoEnchantment(enchantmentx, enchantmentx.getMaximumLevel())));
 				}
 			}

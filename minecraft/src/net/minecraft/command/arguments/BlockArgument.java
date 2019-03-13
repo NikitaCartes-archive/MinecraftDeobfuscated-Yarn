@@ -16,12 +16,12 @@ public class BlockArgument implements Predicate<CachedBlockPosition> {
 	private final BlockState state;
 	private final Set<Property<?>> properties;
 	@Nullable
-	private final CompoundTag data;
+	private final CompoundTag field_10633;
 
 	public BlockArgument(BlockState blockState, Set<Property<?>> set, @Nullable CompoundTag compoundTag) {
 		this.state = blockState;
 		this.properties = set;
-		this.data = compoundTag;
+		this.field_10633 = compoundTag;
 	}
 
 	public BlockState getBlockState() {
@@ -34,32 +34,32 @@ public class BlockArgument implements Predicate<CachedBlockPosition> {
 			return false;
 		} else {
 			for (Property<?> property : this.properties) {
-				if (blockState.get(property) != this.state.get(property)) {
+				if (blockState.method_11654(property) != this.state.method_11654(property)) {
 					return false;
 				}
 			}
 
-			if (this.data == null) {
+			if (this.field_10633 == null) {
 				return true;
 			} else {
 				BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-				return blockEntity != null && TagHelper.areTagsEqual(this.data, blockEntity.toTag(new CompoundTag()), true);
+				return blockEntity != null && TagHelper.method_10687(this.field_10633, blockEntity.method_11007(new CompoundTag()), true);
 			}
 		}
 	}
 
-	public boolean setBlockState(ServerWorld serverWorld, BlockPos blockPos, int i) {
-		if (!serverWorld.setBlockState(blockPos, this.state, i)) {
+	public boolean method_9495(ServerWorld serverWorld, BlockPos blockPos, int i) {
+		if (!serverWorld.method_8652(blockPos, this.state, i)) {
 			return false;
 		} else {
-			if (this.data != null) {
-				BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
+			if (this.field_10633 != null) {
+				BlockEntity blockEntity = serverWorld.method_8321(blockPos);
 				if (blockEntity != null) {
-					CompoundTag compoundTag = this.data.method_10553();
+					CompoundTag compoundTag = this.field_10633.method_10553();
 					compoundTag.putInt("x", blockPos.getX());
 					compoundTag.putInt("y", blockPos.getY());
 					compoundTag.putInt("z", blockPos.getZ());
-					blockEntity.fromTag(compoundTag);
+					blockEntity.method_11014(compoundTag);
 				}
 			}
 

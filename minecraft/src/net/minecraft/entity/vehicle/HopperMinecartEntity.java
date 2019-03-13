@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 public class HopperMinecartEntity extends StorageMinecartEntity implements Hopper {
 	private boolean enabled = true;
 	private int transferCooldown = -1;
-	private final BlockPos currentBlockPos = BlockPos.ORIGIN;
+	private final BlockPos field_7750 = BlockPos.ORIGIN;
 
 	public HopperMinecartEntity(EntityType<? extends HopperMinecartEntity> entityType, World world) {
 		super(entityType, world);
@@ -35,8 +35,8 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10312.getDefaultState();
+	public BlockState method_7517() {
+		return Blocks.field_10312.method_9564();
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 
 	@Override
 	public World getWorld() {
-		return this.world;
+		return this.field_6002;
 	}
 
 	@Override
@@ -88,9 +88,9 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void update() {
 		super.update();
-		if (!this.world.isClient && this.isValid() && this.isEnabled()) {
+		if (!this.field_6002.isClient && this.isValid() && this.isEnabled()) {
 			BlockPos blockPos = new BlockPos(this);
-			if (blockPos.equals(this.currentBlockPos)) {
+			if (blockPos.equals(this.field_7750)) {
 				this.transferCooldown--;
 			} else {
 				this.setTransferCooldown(0);
@@ -110,7 +110,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 		if (HopperBlockEntity.extract(this)) {
 			return true;
 		} else {
-			List<ItemEntity> list = this.world.method_8390(ItemEntity.class, this.getBoundingBox().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
+			List<ItemEntity> list = this.field_6002.method_8390(ItemEntity.class, this.method_5829().expand(0.25, 0.0, 0.25), EntityPredicates.VALID_ENTITY);
 			if (!list.isEmpty()) {
 				HopperBlockEntity.extract(this, (ItemEntity)list.get(0));
 			}
@@ -122,21 +122,21 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
-			this.dropItem(Blocks.field_10312);
+		if (this.field_6002.getGameRules().getBoolean("doEntityDrops")) {
+			this.method_5706(Blocks.field_10312);
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	protected void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putInt("TransferCooldown", this.transferCooldown);
 		compoundTag.putBoolean("Enabled", this.enabled);
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	protected void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		this.transferCooldown = compoundTag.getInt("TransferCooldown");
 		this.enabled = compoundTag.containsKey("Enabled") ? compoundTag.getBoolean("Enabled") : true;
 	}

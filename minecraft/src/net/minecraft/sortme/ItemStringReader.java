@@ -59,7 +59,7 @@ public class ItemStringReader {
 	public void method_9795() throws CommandSyntaxException {
 		int i = this.reader.getCursor();
 		Identifier identifier = Identifier.parse(this.reader);
-		this.item = (Item)Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> {
+		this.item = (Item)Registry.ITEM.method_17966(identifier).orElseThrow(() -> {
 			this.reader.setCursor(i);
 			return ID_INVALID_EXCEPTION.createWithContext(this.reader, identifier.toString());
 		});
@@ -106,12 +106,12 @@ public class ItemStringReader {
 	}
 
 	private CompletableFuture<Suggestions> method_9796(SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestIdentifiers(ItemTags.getContainer().getKeys(), suggestionsBuilder.createOffset(this.cursor));
+		return CommandSource.suggestIdentifiers(ItemTags.method_15106().getKeys(), suggestionsBuilder.createOffset(this.cursor));
 	}
 
 	private CompletableFuture<Suggestions> method_9791(SuggestionsBuilder suggestionsBuilder) {
 		if (this.field_10804) {
-			CommandSource.suggestIdentifiers(ItemTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
+			CommandSource.suggestIdentifiers(ItemTags.method_15106().getKeys(), suggestionsBuilder, String.valueOf('#'));
 		}
 
 		return CommandSource.suggestIdentifiers(Registry.ITEM.getIds(), suggestionsBuilder);

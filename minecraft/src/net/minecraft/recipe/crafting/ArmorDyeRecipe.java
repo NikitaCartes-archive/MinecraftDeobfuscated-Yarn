@@ -23,7 +23,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(i);
+			ItemStack itemStack2 = craftingInventory.method_5438(i);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() instanceof DyeableItem) {
 					if (!itemStack.isEmpty()) {
@@ -45,69 +45,30 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 	}
 
 	public ItemStack method_17700(CraftingInventory craftingInventory) {
+		List<DyeItem> list = Lists.<DyeItem>newArrayList();
 		ItemStack itemStack = ItemStack.EMPTY;
-		int[] is = new int[3];
-		int i = 0;
-		int j = 0;
-		DyeableItem dyeableItem = null;
 
-		for (int k = 0; k < craftingInventory.getInvSize(); k++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(k);
+		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
+			ItemStack itemStack2 = craftingInventory.method_5438(i);
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();
 				if (item instanceof DyeableItem) {
-					dyeableItem = (DyeableItem)item;
 					if (!itemStack.isEmpty()) {
 						return ItemStack.EMPTY;
 					}
 
 					itemStack = itemStack2.copy();
-					itemStack.setAmount(1);
-					if (dyeableItem.hasColor(itemStack2)) {
-						int l = dyeableItem.getColor(itemStack);
-						float f = (float)(l >> 16 & 0xFF) / 255.0F;
-						float g = (float)(l >> 8 & 0xFF) / 255.0F;
-						float h = (float)(l & 0xFF) / 255.0F;
-						i = (int)((float)i + Math.max(f, Math.max(g, h)) * 255.0F);
-						is[0] = (int)((float)is[0] + f * 255.0F);
-						is[1] = (int)((float)is[1] + g * 255.0F);
-						is[2] = (int)((float)is[2] + h * 255.0F);
-						j++;
-					}
 				} else {
 					if (!(item instanceof DyeItem)) {
 						return ItemStack.EMPTY;
 					}
 
-					float[] fs = ((DyeItem)item).getColor().getColorComponents();
-					int m = (int)(fs[0] * 255.0F);
-					int n = (int)(fs[1] * 255.0F);
-					int o = (int)(fs[2] * 255.0F);
-					i += Math.max(m, Math.max(n, o));
-					is[0] += m;
-					is[1] += n;
-					is[2] += o;
-					j++;
+					list.add((DyeItem)item);
 				}
 			}
 		}
 
-		if (dyeableItem == null) {
-			return ItemStack.EMPTY;
-		} else {
-			int kx = is[0] / j;
-			int p = is[1] / j;
-			int q = is[2] / j;
-			float r = (float)i / (float)j;
-			float f = (float)Math.max(kx, Math.max(p, q));
-			kx = (int)((float)kx * r / f);
-			p = (int)((float)p * r / f);
-			q = (int)((float)q * r / f);
-			int var25 = (kx << 8) + p;
-			var25 = (var25 << 8) + q;
-			dyeableItem.setColor(itemStack, var25);
-			return itemStack;
-		}
+		return !itemStack.isEmpty() && !list.isEmpty() ? DyeableItem.method_19261(itemStack, list) : ItemStack.EMPTY;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -117,7 +78,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.ARMOR_DYE;
+	public RecipeSerializer<?> method_8119() {
+		return RecipeSerializer.field_9028;
 	}
 }

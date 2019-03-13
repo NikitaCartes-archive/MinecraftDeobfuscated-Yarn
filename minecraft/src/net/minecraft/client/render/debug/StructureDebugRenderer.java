@@ -7,14 +7,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 
@@ -30,13 +29,13 @@ public class StructureDebugRenderer implements DebugRenderer.DebugRenderer {
 	}
 
 	@Override
-	public void render(float f, long l) {
-		PlayerEntity playerEntity = this.field_4624.player;
-		IWorld iWorld = this.field_4624.world;
-		int i = iWorld.getLevelProperties().getDimension();
-		double d = MathHelper.lerp((double)f, playerEntity.prevRenderX, playerEntity.x);
-		double e = MathHelper.lerp((double)f, playerEntity.prevRenderY, playerEntity.y);
-		double g = MathHelper.lerp((double)f, playerEntity.prevRenderZ, playerEntity.z);
+	public void render(long l) {
+		class_4184 lv = this.field_4624.field_1773.method_19418();
+		IWorld iWorld = this.field_4624.field_1687;
+		int i = iWorld.method_8401().getDimension();
+		double d = lv.method_19326().x;
+		double e = lv.method_19326().y;
+		double f = lv.method_19326().z;
 		GlStateManager.pushMatrix();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
@@ -44,10 +43,10 @@ public class StructureDebugRenderer implements DebugRenderer.DebugRenderer {
 		);
 		GlStateManager.disableTexture();
 		GlStateManager.disableDepthTest();
-		BlockPos blockPos = new BlockPos(playerEntity.x, 0.0, playerEntity.z);
+		BlockPos blockPos = new BlockPos(lv.method_19326().x, 0.0, lv.method_19326().z);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+		bufferBuilder.method_1328(3, VertexFormats.field_1576);
 		GlStateManager.lineWidth(1.0F);
 		if (this.field_4626.containsKey(i)) {
 			for (MutableIntBoundingBox mutableIntBoundingBox : ((Map)this.field_4626.get(i)).values()) {
@@ -56,10 +55,10 @@ public class StructureDebugRenderer implements DebugRenderer.DebugRenderer {
 						bufferBuilder,
 						(double)mutableIntBoundingBox.minX - d,
 						(double)mutableIntBoundingBox.minY - e,
-						(double)mutableIntBoundingBox.minZ - g,
+						(double)mutableIntBoundingBox.minZ - f,
 						(double)(mutableIntBoundingBox.maxX + 1) - d,
 						(double)(mutableIntBoundingBox.maxY + 1) - e,
-						(double)(mutableIntBoundingBox.maxZ + 1) - g,
+						(double)(mutableIntBoundingBox.maxZ + 1) - f,
 						1.0F,
 						1.0F,
 						1.0F,
@@ -80,10 +79,10 @@ public class StructureDebugRenderer implements DebugRenderer.DebugRenderer {
 							bufferBuilder,
 							(double)mutableIntBoundingBox2.minX - d,
 							(double)mutableIntBoundingBox2.minY - e,
-							(double)mutableIntBoundingBox2.minZ - g,
+							(double)mutableIntBoundingBox2.minZ - f,
 							(double)(mutableIntBoundingBox2.maxX + 1) - d,
 							(double)(mutableIntBoundingBox2.maxY + 1) - e,
-							(double)(mutableIntBoundingBox2.maxZ + 1) - g,
+							(double)(mutableIntBoundingBox2.maxZ + 1) - f,
 							0.0F,
 							1.0F,
 							0.0F,
@@ -94,10 +93,10 @@ public class StructureDebugRenderer implements DebugRenderer.DebugRenderer {
 							bufferBuilder,
 							(double)mutableIntBoundingBox2.minX - d,
 							(double)mutableIntBoundingBox2.minY - e,
-							(double)mutableIntBoundingBox2.minZ - g,
+							(double)mutableIntBoundingBox2.minZ - f,
 							(double)(mutableIntBoundingBox2.maxX + 1) - d,
 							(double)(mutableIntBoundingBox2.maxY + 1) - e,
-							(double)(mutableIntBoundingBox2.maxZ + 1) - g,
+							(double)(mutableIntBoundingBox2.maxZ + 1) - f,
 							0.0F,
 							0.0F,
 							1.0F,

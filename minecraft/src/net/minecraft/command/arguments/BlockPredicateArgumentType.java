@@ -42,7 +42,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
 		if (blockArgumentParser.getBlockState() != null) {
 			BlockPredicateArgumentType.BlockStatePredicate blockStatePredicate = new BlockPredicateArgumentType.BlockStatePredicate(
-				blockArgumentParser.getBlockState(), blockArgumentParser.method_9692().keySet(), blockArgumentParser.getNbtData()
+				blockArgumentParser.getBlockState(), blockArgumentParser.method_9692().keySet(), blockArgumentParser.method_9694()
 			);
 			return tagManager -> blockStatePredicate;
 		} else {
@@ -52,7 +52,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 				if (tag == null) {
 					throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
 				} else {
-					return new BlockPredicateArgumentType.TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
+					return new BlockPredicateArgumentType.TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.method_9694());
 				}
 			};
 		}
@@ -60,7 +60,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 
 	public static Predicate<CachedBlockPosition> getPredicateArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<BlockPredicateArgumentType.BlockPredicateFactory>getArgument(string, BlockPredicateArgumentType.BlockPredicateFactory.class)
-			.create(commandContext.getSource().getMinecraftServer().getTagManager());
+			.create(commandContext.getSource().getMinecraftServer().method_3801());
 	}
 
 	@Override
@@ -90,12 +90,12 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		private final BlockState state;
 		private final Set<Property<?>> properties;
 		@Nullable
-		private final CompoundTag compound;
+		private final CompoundTag field_10675;
 
 		public BlockStatePredicate(BlockState blockState, Set<Property<?>> set, @Nullable CompoundTag compoundTag) {
 			this.state = blockState;
 			this.properties = set;
-			this.compound = compoundTag;
+			this.field_10675 = compoundTag;
 		}
 
 		public boolean method_9648(CachedBlockPosition cachedBlockPosition) {
@@ -104,40 +104,40 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 				return false;
 			} else {
 				for (Property<?> property : this.properties) {
-					if (blockState.get(property) != this.state.get(property)) {
+					if (blockState.method_11654(property) != this.state.method_11654(property)) {
 						return false;
 					}
 				}
 
-				if (this.compound == null) {
+				if (this.field_10675 == null) {
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && TagHelper.areTagsEqual(this.compound, blockEntity.toTag(new CompoundTag()), true);
+					return blockEntity != null && TagHelper.method_10687(this.field_10675, blockEntity.method_11007(new CompoundTag()), true);
 				}
 			}
 		}
 	}
 
 	static class TagPredicate implements Predicate<CachedBlockPosition> {
-		private final Tag<Block> tag;
+		private final Tag<Block> field_10676;
 		@Nullable
-		private final CompoundTag compound;
+		private final CompoundTag field_10677;
 		private final Map<String, String> properties;
 
 		private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable CompoundTag compoundTag) {
-			this.tag = tag;
+			this.field_10676 = tag;
 			this.properties = map;
-			this.compound = compoundTag;
+			this.field_10677 = compoundTag;
 		}
 
 		public boolean method_9649(CachedBlockPosition cachedBlockPosition) {
 			BlockState blockState = cachedBlockPosition.getBlockState();
-			if (!blockState.matches(this.tag)) {
+			if (!blockState.method_11602(this.field_10676)) {
 				return false;
 			} else {
 				for (Entry<String, String> entry : this.properties.entrySet()) {
-					Property<?> property = blockState.getBlock().getStateFactory().getProperty((String)entry.getKey());
+					Property<?> property = blockState.getBlock().method_9595().method_11663((String)entry.getKey());
 					if (property == null) {
 						return false;
 					}
@@ -147,16 +147,16 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 						return false;
 					}
 
-					if (blockState.get(property) != comparable) {
+					if (blockState.method_11654(property) != comparable) {
 						return false;
 					}
 				}
 
-				if (this.compound == null) {
+				if (this.field_10677 == null) {
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && TagHelper.areTagsEqual(this.compound, blockEntity.toTag(new CompoundTag()), true);
+					return blockEntity != null && TagHelper.method_10687(this.field_10677, blockEntity.method_11007(new CompoundTag()), true);
 				}
 			}
 		}

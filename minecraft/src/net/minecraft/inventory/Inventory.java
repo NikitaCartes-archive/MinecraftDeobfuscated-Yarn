@@ -1,6 +1,8 @@
 package net.minecraft.inventory;
 
+import java.util.Set;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Clearable;
 
@@ -9,13 +11,13 @@ public interface Inventory extends Clearable {
 
 	boolean isInvEmpty();
 
-	ItemStack getInvStack(int i);
+	ItemStack method_5438(int i);
 
-	ItemStack takeInvStack(int i, int j);
+	ItemStack method_5434(int i, int j);
 
-	ItemStack removeInvStack(int i);
+	ItemStack method_5441(int i);
 
-	void setInvStack(int i, ItemStack itemStack);
+	void method_5447(int i, ItemStack itemStack);
 
 	default int getInvMaxStackAmount() {
 		return 64;
@@ -23,15 +25,39 @@ public interface Inventory extends Clearable {
 
 	void markDirty();
 
-	boolean canPlayerUseInv(PlayerEntity playerEntity);
+	boolean method_5443(PlayerEntity playerEntity);
 
-	default void onInvOpen(PlayerEntity playerEntity) {
+	default void method_5435(PlayerEntity playerEntity) {
 	}
 
-	default void onInvClose(PlayerEntity playerEntity) {
+	default void method_5432(PlayerEntity playerEntity) {
 	}
 
-	default boolean isValidInvStack(int i, ItemStack itemStack) {
+	default boolean method_5437(int i, ItemStack itemStack) {
 		return true;
+	}
+
+	default int method_18861(Item item) {
+		int i = 0;
+
+		for (int j = 0; j < this.getInvSize(); j++) {
+			ItemStack itemStack = this.method_5438(j);
+			if (itemStack.getItem().equals(item)) {
+				i += itemStack.getAmount();
+			}
+		}
+
+		return i;
+	}
+
+	default boolean method_18862(Set<Item> set) {
+		for (int i = 0; i < this.getInvSize(); i++) {
+			ItemStack itemStack = this.method_5438(i);
+			if (set.contains(itemStack.getItem()) && itemStack.getAmount() > 0) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

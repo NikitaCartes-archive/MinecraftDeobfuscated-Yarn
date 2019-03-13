@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public interface Recipe<C extends Inventory> {
-	boolean matches(C inventory, World world);
+	boolean method_8115(C inventory, World world);
 
 	ItemStack craft(C inventory);
 
@@ -20,11 +20,11 @@ public interface Recipe<C extends Inventory> {
 
 	ItemStack getOutput();
 
-	default DefaultedList<ItemStack> getRemainingStacks(C inventory) {
+	default DefaultedList<ItemStack> method_8111(C inventory) {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.create(inventory.getInvSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			Item item = inventory.getInvStack(i).getItem();
+			Item item = inventory.method_5438(i).getItem();
 			if (item.hasRecipeRemainder()) {
 				defaultedList.set(i, new ItemStack(item.getRecipeRemainder()));
 			}
@@ -33,7 +33,7 @@ public interface Recipe<C extends Inventory> {
 		return defaultedList;
 	}
 
-	default DefaultedList<Ingredient> getPreviewInputs() {
+	default DefaultedList<Ingredient> method_8117() {
 		return DefaultedList.create();
 	}
 
@@ -51,9 +51,9 @@ public interface Recipe<C extends Inventory> {
 		return new ItemStack(Blocks.field_9980);
 	}
 
-	Identifier getId();
+	Identifier method_8114();
 
-	RecipeSerializer<?> getSerializer();
+	RecipeSerializer<?> method_8119();
 
-	RecipeType<?> getType();
+	RecipeType<?> method_17716();
 }

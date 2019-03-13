@@ -76,15 +76,15 @@ public class EntityTrackerEntry {
 
 		if (this.entity instanceof ItemFrameEntity && this.field_14040 % 10 == 0) {
 			ItemFrameEntity itemFrameEntity = (ItemFrameEntity)this.entity;
-			ItemStack itemStack = itemFrameEntity.getHeldItemStack();
+			ItemStack itemStack = itemFrameEntity.method_6940();
 			if (itemStack.getItem() instanceof FilledMapItem) {
 				MapState mapState = FilledMapItem.method_8001(itemStack, this.field_18258);
 
 				for (ServerPlayerEntity serverPlayerEntity : this.field_18258.getPlayers()) {
 					mapState.method_102(serverPlayerEntity, itemStack);
-					Packet<?> packet = ((FilledMapItem)itemStack.getItem()).createMapPacket(itemStack, this.field_18258, serverPlayerEntity);
+					Packet<?> packet = ((FilledMapItem)itemStack.getItem()).method_7757(itemStack, this.field_18258, serverPlayerEntity);
 					if (packet != null) {
-						serverPlayerEntity.networkHandler.sendPacket(packet);
+						serverPlayerEntity.field_13987.sendPacket(packet);
 					}
 				}
 			}
@@ -92,7 +92,7 @@ public class EntityTrackerEntry {
 			this.method_14306();
 		}
 
-		if (this.field_14040 % this.tickInterval == 0 || this.entity.velocityDirty || this.entity.getDataTracker().isDirty()) {
+		if (this.field_14040 % this.tickInterval == 0 || this.entity.velocityDirty || this.entity.method_5841().isDirty()) {
 			if (this.entity.hasVehicle()) {
 				int i = MathHelper.floor(this.entity.yaw * 256.0F / 360.0F);
 				int j = MathHelper.floor(this.entity.pitch * 256.0F / 360.0F);
@@ -141,7 +141,7 @@ public class EntityTrackerEntry {
 
 				if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying())
 					&& this.field_14040 > 0) {
-					Vec3d vec3d2 = this.entity.getVelocity();
+					Vec3d vec3d2 = this.entity.method_18798();
 					double d = vec3d2.squaredDistanceTo(this.field_18278);
 					if (d > 1.0E-7 || d > 0.0 && vec3d2.lengthSquared() == 0.0) {
 						this.field_18278 = vec3d2;
@@ -183,13 +183,13 @@ public class EntityTrackerEntry {
 	}
 
 	public void method_14302(ServerPlayerEntity serverPlayerEntity) {
-		this.entity.onStoppedTrackingBy(serverPlayerEntity);
+		this.entity.method_5742(serverPlayerEntity);
 		serverPlayerEntity.method_14249(this.entity);
 	}
 
 	public void method_18760(ServerPlayerEntity serverPlayerEntity) {
-		this.method_18757(serverPlayerEntity.networkHandler::sendPacket);
-		this.entity.onStartedTrackingBy(serverPlayerEntity);
+		this.method_18757(serverPlayerEntity.field_13987::sendPacket);
+		this.entity.method_5837(serverPlayerEntity);
 		serverPlayerEntity.onStartedTracking(this.entity);
 	}
 
@@ -198,16 +198,16 @@ public class EntityTrackerEntry {
 			LOGGER.warn("Fetching addPacket for removed entity");
 		}
 
-		Packet<?> packet = this.entity.createSpawnPacket();
+		Packet<?> packet = this.entity.method_18002();
 		this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
 		consumer.accept(packet);
-		if (!this.entity.getDataTracker().method_12790()) {
-			consumer.accept(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), this.entity.getDataTracker(), true));
+		if (!this.entity.method_5841().method_12790()) {
+			consumer.accept(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), this.entity.method_5841(), true));
 		}
 
 		boolean bl = this.alwaysUpdateVelocity;
 		if (this.entity instanceof LivingEntity) {
-			EntityAttributeContainer entityAttributeContainer = (EntityAttributeContainer)((LivingEntity)this.entity).getAttributeContainer();
+			EntityAttributeContainer entityAttributeContainer = (EntityAttributeContainer)((LivingEntity)this.entity).method_6127();
 			Collection<EntityAttributeInstance> collection = entityAttributeContainer.method_6213();
 			if (!collection.isEmpty()) {
 				consumer.accept(new EntityAttributesS2CPacket(this.entity.getEntityId(), collection));
@@ -218,14 +218,14 @@ public class EntityTrackerEntry {
 			}
 		}
 
-		this.field_18278 = this.entity.getVelocity();
+		this.field_18278 = this.entity.method_18798();
 		if (bl && !(packet instanceof MobSpawnS2CPacket)) {
 			consumer.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.field_18278));
 		}
 
 		if (this.entity instanceof LivingEntity) {
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
-				ItemStack itemStack = ((LivingEntity)this.entity).getEquippedStack(equipmentSlot);
+				ItemStack itemStack = ((LivingEntity)this.entity).method_6118(equipmentSlot);
 				if (!itemStack.isEmpty()) {
 					consumer.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getEntityId(), equipmentSlot, itemStack));
 				}
@@ -250,13 +250,13 @@ public class EntityTrackerEntry {
 	}
 
 	private void method_14306() {
-		DataTracker dataTracker = this.entity.getDataTracker();
+		DataTracker dataTracker = this.entity.method_5841();
 		if (dataTracker.isDirty()) {
 			this.method_18758(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), dataTracker, false));
 		}
 
 		if (this.entity instanceof LivingEntity) {
-			EntityAttributeContainer entityAttributeContainer = (EntityAttributeContainer)((LivingEntity)this.entity).getAttributeContainer();
+			EntityAttributeContainer entityAttributeContainer = (EntityAttributeContainer)((LivingEntity)this.entity).method_6127();
 			Set<EntityAttributeInstance> set = entityAttributeContainer.method_6215();
 			if (!set.isEmpty()) {
 				this.method_18758(new EntityAttributesS2CPacket(this.entity.getEntityId(), set));
@@ -279,7 +279,7 @@ public class EntityTrackerEntry {
 	private void method_18758(Packet<?> packet) {
 		this.field_18259.accept(packet);
 		if (this.entity instanceof ServerPlayerEntity) {
-			((ServerPlayerEntity)this.entity).networkHandler.sendPacket(packet);
+			((ServerPlayerEntity)this.entity).field_13987.sendPacket(packet);
 		}
 	}
 }

@@ -21,9 +21,7 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 	@Override
 	public PathNode getStart() {
 		return super.getPathNode(
-			MathHelper.floor(this.entity.getBoundingBox().minX),
-			MathHelper.floor(this.entity.getBoundingBox().minY + 0.5),
-			MathHelper.floor(this.entity.getBoundingBox().minZ)
+			MathHelper.floor(this.entity.method_5829().minX), MathHelper.floor(this.entity.method_5829().minY + 0.5), MathHelper.floor(this.entity.method_5829().minZ)
 		);
 	}
 
@@ -56,12 +54,12 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 	@Override
 	public PathNodeType getPathNodeType(BlockView blockView, int i, int j, int k) {
 		BlockPos blockPos = new BlockPos(i, j, k);
-		FluidState fluidState = blockView.getFluidState(blockPos);
-		BlockState blockState = blockView.getBlockState(blockPos);
-		if (fluidState.isEmpty() && blockState.canPlaceAtSide(blockView, blockPos.down(), BlockPlacementEnvironment.field_48) && blockState.isAir()) {
+		FluidState fluidState = blockView.method_8316(blockPos);
+		BlockState blockState = blockView.method_8320(blockPos);
+		if (fluidState.isEmpty() && blockState.method_11609(blockView, blockPos.down(), BlockPlacementEnvironment.field_48) && blockState.isAir()) {
 			return PathNodeType.field_16;
 		} else {
-			return fluidState.matches(FluidTags.field_15517) && blockState.canPlaceAtSide(blockView, blockPos, BlockPlacementEnvironment.field_48)
+			return fluidState.method_15767(FluidTags.field_15517) && blockState.method_11609(blockView, blockPos, BlockPlacementEnvironment.field_48)
 				? PathNodeType.field_18
 				: PathNodeType.field_22;
 		}
@@ -77,13 +75,13 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 	@Override
 	protected PathNode getPathNode(int i, int j, int k) {
 		PathNode pathNode = null;
-		PathNodeType pathNodeType = this.getPathNodeType(this.entity.world, i, j, k);
-		float f = this.entity.getPathNodeTypeWeight(pathNodeType);
+		PathNodeType pathNodeType = this.getPathNodeType(this.entity.field_6002, i, j, k);
+		float f = this.entity.method_5944(pathNodeType);
 		if (f >= 0.0F) {
 			pathNode = super.getPathNode(i, j, k);
 			pathNode.type = pathNodeType;
 			pathNode.field_43 = Math.max(pathNode.field_43, f);
-			if (this.blockView.getFluidState(new BlockPos(i, j, k)).isEmpty()) {
+			if (this.blockView.method_8316(new BlockPos(i, j, k)).isEmpty()) {
 				pathNode.field_43 += 8.0F;
 			}
 		}
@@ -97,20 +95,20 @@ public class WaterPathNodeMaker extends PathNodeMaker {
 		for (int l = i; l < i + this.field_31; l++) {
 			for (int m = j; m < j + this.field_30; m++) {
 				for (int n = k; n < k + this.field_28; n++) {
-					FluidState fluidState = this.blockView.getFluidState(mutable.set(l, m, n));
-					BlockState blockState = this.blockView.getBlockState(mutable.set(l, m, n));
-					if (fluidState.isEmpty() && blockState.canPlaceAtSide(this.blockView, mutable.down(), BlockPlacementEnvironment.field_48) && blockState.isAir()) {
+					FluidState fluidState = this.blockView.method_8316(mutable.set(l, m, n));
+					BlockState blockState = this.blockView.method_8320(mutable.set(l, m, n));
+					if (fluidState.isEmpty() && blockState.method_11609(this.blockView, mutable.down(), BlockPlacementEnvironment.field_48) && blockState.isAir()) {
 						return PathNodeType.field_16;
 					}
 
-					if (!fluidState.matches(FluidTags.field_15517)) {
+					if (!fluidState.method_15767(FluidTags.field_15517)) {
 						return PathNodeType.field_22;
 					}
 				}
 			}
 		}
 
-		BlockState blockState2 = this.blockView.getBlockState(mutable);
-		return blockState2.canPlaceAtSide(this.blockView, mutable, BlockPlacementEnvironment.field_48) ? PathNodeType.field_18 : PathNodeType.field_22;
+		BlockState blockState2 = this.blockView.method_8320(mutable);
+		return blockState2.method_11609(this.blockView, mutable, BlockPlacementEnvironment.field_48) ? PathNodeType.field_18 : PathNodeType.field_22;
 	}
 }

@@ -2,9 +2,9 @@ package net.minecraft.client.gui;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.server.network.packet.UpdateCommandBlockC2SPacket;
 import net.minecraft.sortme.CommandBlockExecutor;
@@ -13,9 +13,9 @@ import net.minecraft.util.math.BlockPos;
 @Environment(EnvType.CLIENT)
 public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	private final CommandBlockBlockEntity blockEntity;
-	private ButtonWidget modeButton;
-	private ButtonWidget conditionalModeButton;
-	private ButtonWidget redstoneTriggerButton;
+	private class_4185 modeButton;
+	private class_4185 conditionalModeButton;
+	private class_4185 redstoneTriggerButton;
 	private CommandBlockBlockEntity.Type mode = CommandBlockBlockEntity.Type.field_11924;
 	private boolean conditional;
 	private boolean autoActivate;
@@ -37,23 +37,23 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.modeButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence")) {
+		this.modeButton = this.addButton(new class_4185(this.screenWidth / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				CommandBlockScreen.this.cycleType();
 				CommandBlockScreen.this.updateMode();
 			}
 		});
-		this.conditionalModeButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional")) {
+		this.conditionalModeButton = this.addButton(new class_4185(this.screenWidth / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				CommandBlockScreen.this.conditional = !CommandBlockScreen.this.conditional;
 				CommandBlockScreen.this.updateConditionalMode();
 			}
 		});
-		this.redstoneTriggerButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered")) {
+		this.redstoneTriggerButton = this.addButton(new class_4185(this.screenWidth / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				CommandBlockScreen.this.autoActivate = !CommandBlockScreen.this.autoActivate;
 				CommandBlockScreen.this.updateActivationMode();
 			}
@@ -100,10 +100,10 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	@Override
 	protected void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor) {
 		this.client
-			.getNetworkHandler()
-			.sendPacket(
+			.method_1562()
+			.method_2883(
 				new UpdateCommandBlockC2SPacket(
-					new BlockPos(commandBlockExecutor.getPos()),
+					new BlockPos(commandBlockExecutor.method_8300()),
 					this.consoleCommandTextField.getText(),
 					this.mode,
 					commandBlockExecutor.isTrackingOutput(),

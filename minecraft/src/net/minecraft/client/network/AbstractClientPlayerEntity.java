@@ -35,13 +35,13 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	@Override
 	public boolean isSpectator() {
-		ScoreboardEntry scoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().method_2871(this.getGameProfile().getId());
+		ScoreboardEntry scoreboardEntry = MinecraftClient.getInstance().method_1562().method_2871(this.getGameProfile().getId());
 		return scoreboardEntry != null && scoreboardEntry.getGameMode() == GameMode.field_9219;
 	}
 
 	@Override
 	public boolean isCreative() {
-		ScoreboardEntry scoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().method_2871(this.getGameProfile().getId());
+		ScoreboardEntry scoreboardEntry = MinecraftClient.getInstance().method_1562().method_2871(this.getGameProfile().getId());
 		return scoreboardEntry != null && scoreboardEntry.getGameMode() == GameMode.field_9220;
 	}
 
@@ -52,7 +52,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	@Nullable
 	protected ScoreboardEntry method_3123() {
 		if (this.field_3901 == null) {
-			this.field_3901 = MinecraftClient.getInstance().getNetworkHandler().method_2871(this.getUuid());
+			this.field_3901 = MinecraftClient.getInstance().method_1562().method_2871(this.getUuid());
 		}
 
 		return this.field_3901;
@@ -65,13 +65,13 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	public Identifier method_3117() {
 		ScoreboardEntry scoreboardEntry = this.method_3123();
-		return scoreboardEntry == null ? DefaultSkinHelper.getTexture(this.getUuid()) : scoreboardEntry.getSkinTexture();
+		return scoreboardEntry == null ? DefaultSkinHelper.method_4648(this.getUuid()) : scoreboardEntry.method_2968();
 	}
 
 	@Nullable
 	public Identifier method_3119() {
 		ScoreboardEntry scoreboardEntry = this.method_3123();
-		return scoreboardEntry == null ? null : scoreboardEntry.getCapeTexture();
+		return scoreboardEntry == null ? null : scoreboardEntry.method_2979();
 	}
 
 	public boolean method_3126() {
@@ -81,26 +81,26 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	@Nullable
 	public Identifier method_3122() {
 		ScoreboardEntry scoreboardEntry = this.method_3123();
-		return scoreboardEntry == null ? null : scoreboardEntry.getElytraTexture();
+		return scoreboardEntry == null ? null : scoreboardEntry.method_2957();
 	}
 
-	public static PlayerSkinTexture loadSkin(Identifier identifier, String string) {
-		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-		Texture texture = textureManager.getTexture(identifier);
+	public static PlayerSkinTexture method_3120(Identifier identifier, String string) {
+		TextureManager textureManager = MinecraftClient.getInstance().method_1531();
+		Texture texture = textureManager.method_4619(identifier);
 		if (texture == null) {
 			texture = new PlayerSkinTexture(
 				null,
 				String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(string)),
-				DefaultSkinHelper.getTexture(getOfflinePlayerUuid(string)),
+				DefaultSkinHelper.method_4648(getOfflinePlayerUuid(string)),
 				new SkinRemappingImageFilter()
 			);
-			textureManager.registerTexture(identifier, texture);
+			textureManager.method_4616(identifier, texture);
 		}
 
 		return (PlayerSkinTexture)texture;
 	}
 
-	public static Identifier getSkinId(String string) {
+	public static Identifier method_3124(String string) {
 		return new Identifier("skins/" + Hashing.sha1().hashUnencodedChars(ChatUtil.stripTextFormat(string)));
 	}
 
@@ -115,13 +115,13 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 			f *= 1.1F;
 		}
 
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.method_5996(EntityAttributes.MOVEMENT_SPEED);
 		f = (float)((double)f * ((entityAttributeInstance.getValue() / (double)this.abilities.getWalkSpeed() + 1.0) / 2.0));
 		if (this.abilities.getWalkSpeed() == 0.0F || Float.isNaN(f) || Float.isInfinite(f)) {
 			f = 1.0F;
 		}
 
-		if (this.isUsingItem() && this.getActiveItem().getItem() == Items.field_8102) {
+		if (this.isUsingItem() && this.method_6030().getItem() == Items.field_8102) {
 			int i = this.method_6048();
 			float g = (float)i / 20.0F;
 			if (g > 1.0F) {

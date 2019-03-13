@@ -20,9 +20,7 @@ public class MessageCommand {
 							ServerCommandManager.argument("message", MessageArgumentType.create())
 								.executes(
 									commandContext -> method_13462(
-											commandContext.getSource(),
-											EntityArgumentType.method_9312(commandContext, "targets"),
-											MessageArgumentType.getMessageArgument(commandContext, "message")
+											commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), MessageArgumentType.method_9339(commandContext, "message")
 										)
 								)
 						)
@@ -34,12 +32,12 @@ public class MessageCommand {
 
 	private static int method_13462(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.appendCommandFeedback(
-				new TranslatableTextComponent("commands.message.display.incoming", serverCommandSource.getDisplayName(), textComponent.copy())
+			serverPlayerEntity.method_9203(
+				new TranslatableTextComponent("commands.message.display.incoming", serverCommandSource.method_9223(), textComponent.copy())
 					.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056})
 			);
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.message.display.outgoing", serverPlayerEntity.getDisplayName(), textComponent.copy())
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.message.display.outgoing", serverPlayerEntity.method_5476(), textComponent.copy())
 					.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056}),
 				false
 			);

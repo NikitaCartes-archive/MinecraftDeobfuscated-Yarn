@@ -17,19 +17,19 @@ public abstract class class_3968<T extends HostileEntity> extends BipedEntityMod
 		boolean bl = this.method_17790(hostileEntity);
 		float l = MathHelper.sin(this.swingProgress * (float) Math.PI);
 		float m = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
-		this.armRight.roll = 0.0F;
-		this.armLeft.roll = 0.0F;
-		this.armRight.yaw = -(0.1F - l * 0.6F);
-		this.armLeft.yaw = 0.1F - l * 0.6F;
+		this.field_3401.roll = 0.0F;
+		this.field_3390.roll = 0.0F;
+		this.field_3401.yaw = -(0.1F - l * 0.6F);
+		this.field_3390.yaw = 0.1F - l * 0.6F;
 		float n = (float) -Math.PI / (bl ? 1.5F : 2.25F);
-		this.armRight.pitch = n;
-		this.armLeft.pitch = n;
-		this.armRight.pitch += l * 1.2F - m * 0.4F;
-		this.armLeft.pitch += l * 1.2F - m * 0.4F;
-		this.armRight.roll = this.armRight.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
-		this.armLeft.roll = this.armLeft.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
-		this.armRight.pitch = this.armRight.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
-		this.armLeft.pitch = this.armLeft.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
+		this.field_3401.pitch = n;
+		this.field_3390.pitch = n;
+		this.field_3401.pitch += l * 1.2F - m * 0.4F;
+		this.field_3390.pitch += l * 1.2F - m * 0.4F;
+		this.field_3401.roll = this.field_3401.roll + MathHelper.cos(h * 0.09F) * 0.05F + 0.05F;
+		this.field_3390.roll = this.field_3390.roll - (MathHelper.cos(h * 0.09F) * 0.05F + 0.05F);
+		this.field_3401.pitch = this.field_3401.pitch + MathHelper.sin(h * 0.067F) * 0.05F;
+		this.field_3390.pitch = this.field_3390.pitch - MathHelper.sin(h * 0.067F) * 0.05F;
 	}
 
 	public abstract boolean method_17790(T hostileEntity);

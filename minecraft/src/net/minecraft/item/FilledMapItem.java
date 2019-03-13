@@ -41,29 +41,27 @@ public class FilledMapItem extends MapItem {
 
 	public static ItemStack method_8005(World world, int i, int j, byte b, boolean bl, boolean bl2) {
 		ItemStack itemStack = new ItemStack(Items.field_8204);
-		method_8000(itemStack, world, i, j, b, bl, bl2, world.dimension.getType());
+		method_8000(itemStack, world, i, j, b, bl, bl2, world.field_9247.method_12460());
 		return itemStack;
 	}
 
 	@Nullable
 	public static MapState method_7997(ItemStack itemStack, World world) {
-		return world.getMapState(method_17440(method_8003(itemStack)));
+		return world.method_17891(method_17440(method_8003(itemStack)));
 	}
 
 	@Nullable
 	public static MapState method_8001(ItemStack itemStack, World world) {
 		MapState mapState = method_7997(itemStack, world);
 		if (mapState == null && !world.isClient) {
-			mapState = method_8000(
-				itemStack, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.dimension.getType()
-			);
+			mapState = method_8000(itemStack, world, world.method_8401().getSpawnX(), world.method_8401().getSpawnZ(), 3, false, false, world.field_9247.method_12460());
 		}
 
 		return mapState;
 	}
 
 	public static int method_8003(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getTag();
+		CompoundTag compoundTag = itemStack.method_7969();
 		return compoundTag != null && compoundTag.containsKey("map", 99) ? compoundTag.getInt("map") : 0;
 	}
 
@@ -71,8 +69,8 @@ public class FilledMapItem extends MapItem {
 		int l = world.getNextMapId();
 		MapState mapState = new MapState(method_17440(l));
 		mapState.method_105(i, j, k, bl, bl2, dimensionType);
-		world.putMapState(mapState);
-		itemStack.getOrCreateTag().putInt("map", l);
+		world.method_17890(mapState);
+		itemStack.method_7948().putInt("map", l);
 		return mapState;
 	}
 
@@ -81,14 +79,14 @@ public class FilledMapItem extends MapItem {
 	}
 
 	public void method_7998(World world, Entity entity, MapState mapState) {
-		if (world.dimension.getType() == mapState.dimension && entity instanceof PlayerEntity) {
+		if (world.field_9247.method_12460() == mapState.dimension && entity instanceof PlayerEntity) {
 			int i = 1 << mapState.scale;
 			int j = mapState.xCenter;
 			int k = mapState.zCenter;
 			int l = MathHelper.floor(entity.x - (double)j) / i + 64;
 			int m = MathHelper.floor(entity.z - (double)k) / i + 64;
 			int n = 128 / i;
-			if (world.dimension.isNether()) {
+			if (world.field_9247.isNether()) {
 				n /= 2;
 			}
 
@@ -109,20 +107,20 @@ public class FilledMapItem extends MapItem {
 							int s = (j / i + o - 64) * i;
 							int t = (k / i + p - 64) * i;
 							Multiset<MaterialColor> multiset = LinkedHashMultiset.create();
-							WorldChunk worldChunk = world.getWorldChunk(new BlockPos(s, 0, t));
+							WorldChunk worldChunk = world.method_8500(new BlockPos(s, 0, t));
 							if (!worldChunk.isEmpty()) {
 								ChunkPos chunkPos = worldChunk.getPos();
 								int u = s & 15;
 								int v = t & 15;
 								int w = 0;
 								double e = 0.0;
-								if (world.dimension.isNether()) {
+								if (world.field_9247.isNether()) {
 									int x = s + t * 231871;
 									x = x * x * 31287121 + x * 11;
 									if ((x >> 20 & 1) == 0) {
-										multiset.add(Blocks.field_10566.getDefaultState().getTopMaterialColor(world, BlockPos.ORIGIN), 10);
+										multiset.add(Blocks.field_10566.method_9564().method_11625(world, BlockPos.ORIGIN), 10);
 									} else {
-										multiset.add(Blocks.field_10340.getDefaultState().getTopMaterialColor(world, BlockPos.ORIGIN), 100);
+										multiset.add(Blocks.field_10340.method_9564().method_11625(world, BlockPos.ORIGIN), 100);
 									}
 
 									e = 100.0;
@@ -132,26 +130,26 @@ public class FilledMapItem extends MapItem {
 
 									for (int y = 0; y < i; y++) {
 										for (int z = 0; z < i; z++) {
-											int aa = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
+											int aa = worldChunk.method_12005(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
 											BlockState blockState;
 											if (aa <= 1) {
-												blockState = Blocks.field_9987.getDefaultState();
+												blockState = Blocks.field_9987.method_9564();
 											} else {
 												do {
 													mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
-													blockState = worldChunk.getBlockState(mutable);
-												} while (blockState.getTopMaterialColor(world, mutable) == MaterialColor.AIR && aa > 0);
+													blockState = worldChunk.method_8320(mutable);
+												} while (blockState.method_11625(world, mutable) == MaterialColor.AIR && aa > 0);
 
-												if (aa > 0 && !blockState.getFluidState().isEmpty()) {
+												if (aa > 0 && !blockState.method_11618().isEmpty()) {
 													int ab = aa - 1;
-													mutable2.set(mutable);
+													mutable2.method_10101(mutable);
 
 													BlockState blockState2;
 													do {
 														mutable2.setY(ab--);
-														blockState2 = worldChunk.getBlockState(mutable2);
+														blockState2 = worldChunk.method_8320(mutable2);
 														w++;
-													} while (ab > 0 && !blockState2.getFluidState().isEmpty());
+													} while (ab > 0 && !blockState2.method_11618().isEmpty());
 
 													blockState = this.method_7995(world, blockState, mutable);
 												}
@@ -159,7 +157,7 @@ public class FilledMapItem extends MapItem {
 
 											mapState.method_109(world, chunkPos.getStartX() + y + u, chunkPos.getStartZ() + z + v);
 											e += (double)aa / (double)(i * i);
-											multiset.add(blockState.getTopMaterialColor(world, mutable));
+											multiset.add(blockState.method_11625(world, mutable));
 										}
 									}
 								}
@@ -207,10 +205,8 @@ public class FilledMapItem extends MapItem {
 	}
 
 	private BlockState method_7995(World world, BlockState blockState, BlockPos blockPos) {
-		FluidState fluidState = blockState.getFluidState();
-		return !fluidState.isEmpty() && !Block.isFaceFullSquare(blockState.getCollisionShape(world, blockPos), Direction.UP)
-			? fluidState.getBlockState()
-			: blockState;
+		FluidState fluidState = blockState.method_11618();
+		return !fluidState.isEmpty() && !Block.method_9501(blockState.method_11628(world, blockPos), Direction.UP) ? fluidState.getBlockState() : blockState;
 	}
 
 	private static boolean method_8004(Biome[] biomes, int i, int j, int k) {
@@ -220,11 +216,11 @@ public class FilledMapItem extends MapItem {
 	public static void method_8002(World world, ItemStack itemStack) {
 		MapState mapState = method_8001(itemStack, world);
 		if (mapState != null) {
-			if (world.dimension.getType() == mapState.dimension) {
+			if (world.field_9247.method_12460() == mapState.dimension) {
 				int i = 1 << mapState.scale;
 				int j = mapState.xCenter;
 				int k = mapState.zCenter;
-				Biome[] biomes = world.getChunkManager().getChunkGenerator().getBiomeSource().sampleBiomes((j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
+				Biome[] biomes = world.method_8398().getChunkGenerator().getBiomeSource().sampleBiomes((j / i - 64) * i, (k / i - 64) * i, 128 * i, 128 * i, false);
 
 				for (int l = 0; l < 128; l++) {
 					for (int m = 0; m < 128; m++) {
@@ -304,7 +300,7 @@ public class FilledMapItem extends MapItem {
 	}
 
 	@Override
-	public void onEntityTick(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
+	public void method_7888(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
 		if (!world.isClient) {
 			MapState mapState = method_8001(itemStack, world);
 			if (mapState != null) {
@@ -313,7 +309,7 @@ public class FilledMapItem extends MapItem {
 					mapState.method_102(playerEntity, itemStack);
 				}
 
-				if (!mapState.field_17403 && (bl || entity instanceof PlayerEntity && ((PlayerEntity)entity).getOffHandStack() == itemStack)) {
+				if (!mapState.field_17403 && (bl || entity instanceof PlayerEntity && ((PlayerEntity)entity).method_6079() == itemStack)) {
 					this.method_7998(world, entity, mapState);
 				}
 			}
@@ -322,13 +318,13 @@ public class FilledMapItem extends MapItem {
 
 	@Nullable
 	@Override
-	public Packet<?> createMapPacket(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+	public Packet<?> method_7757(ItemStack itemStack, World world, PlayerEntity playerEntity) {
 		return method_8001(itemStack, world).method_100(itemStack, world, playerEntity);
 	}
 
 	@Override
-	public void onCrafted(ItemStack itemStack, World world, PlayerEntity playerEntity) {
-		CompoundTag compoundTag = itemStack.getTag();
+	public void method_7843(ItemStack itemStack, World world, PlayerEntity playerEntity) {
+		CompoundTag compoundTag = itemStack.method_7969();
 		if (compoundTag != null && compoundTag.containsKey("map_scale_direction", 99)) {
 			method_7996(itemStack, world, compoundTag.getInt("map_scale_direction"));
 			compoundTag.remove("map_scale_direction");
@@ -366,7 +362,7 @@ public class FilledMapItem extends MapItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void method_7851(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		MapState mapState = world == null ? null : method_8001(itemStack, world);
 		if (mapState != null && mapState.field_17403) {
 			list.add(new TranslatableTextComponent("filled_map.locked", method_8003(itemStack)).applyFormat(TextFormat.field_1080));
@@ -385,7 +381,7 @@ public class FilledMapItem extends MapItem {
 
 	@Environment(EnvType.CLIENT)
 	public static int method_7999(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getSubCompoundTag("display");
+		CompoundTag compoundTag = itemStack.method_7941("display");
 		if (compoundTag != null && compoundTag.containsKey("MapColor", 99)) {
 			int i = compoundTag.getInt("MapColor");
 			return 0xFF000000 | i & 16777215;
@@ -395,17 +391,17 @@ public class FilledMapItem extends MapItem {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		BlockState blockState = itemUsageContext.getWorld().getBlockState(itemUsageContext.getBlockPos());
-		if (blockState.matches(BlockTags.field_15501)) {
-			if (!itemUsageContext.world.isClient) {
-				MapState mapState = method_8001(itemUsageContext.getItemStack(), itemUsageContext.getWorld());
-				mapState.method_108(itemUsageContext.getWorld(), itemUsageContext.getBlockPos());
+	public ActionResult method_7884(ItemUsageContext itemUsageContext) {
+		BlockState blockState = itemUsageContext.method_8045().method_8320(itemUsageContext.method_8037());
+		if (blockState.method_11602(BlockTags.field_15501)) {
+			if (!itemUsageContext.field_8945.isClient) {
+				MapState mapState = method_8001(itemUsageContext.getItemStack(), itemUsageContext.method_8045());
+				mapState.method_108(itemUsageContext.method_8045(), itemUsageContext.method_8037());
 			}
 
 			return ActionResult.field_5812;
 		} else {
-			return super.useOnBlock(itemUsageContext);
+			return super.method_7884(itemUsageContext);
 		}
 	}
 }

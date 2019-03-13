@@ -10,15 +10,15 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SkeletonEntityRenderer extends BipedEntityRenderer<AbstractSkeletonEntity, StrayEntityModel<AbstractSkeletonEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/skeleton/skeleton.png");
+	private static final Identifier field_4785 = new Identifier("textures/entity/skeleton/skeleton.png");
 
 	public SkeletonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new StrayEntityModel<>(), 0.5F);
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new StrayEntityModel(0.5F, true), new StrayEntityModel(1.0F, true)));
+		this.method_4046(new HeldItemFeatureRenderer<>(this));
+		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new StrayEntityModel(0.5F, true), new StrayEntityModel(1.0F, true)));
 	}
 
 	protected Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
-		return SKIN;
+		return field_4785;
 	}
 }

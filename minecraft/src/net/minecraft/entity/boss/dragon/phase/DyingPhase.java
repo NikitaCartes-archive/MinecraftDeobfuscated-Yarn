@@ -23,8 +23,8 @@ public class DyingPhase extends AbstractPhase {
 			float g = (this.dragon.getRand().nextFloat() - 0.5F) * 4.0F;
 			float h = (this.dragon.getRand().nextFloat() - 0.5F) * 8.0F;
 			this.dragon
-				.world
-				.addParticle(ParticleTypes.field_11221, this.dragon.x + (double)f, this.dragon.y + 2.0 + (double)g, this.dragon.z + (double)h, 0.0, 0.0, 0.0);
+				.field_6002
+				.method_8406(ParticleTypes.field_11221, this.dragon.x + (double)f, this.dragon.y + 2.0 + (double)g, this.dragon.z + (double)h, 0.0, 0.0, 0.0);
 		}
 	}
 
@@ -32,7 +32,7 @@ public class DyingPhase extends AbstractPhase {
 	public void method_6855() {
 		this.field_7040++;
 		if (this.field_7041 == null) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.field_6002.method_8598(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.field_13600);
 			this.field_7041 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 		}
 
@@ -57,12 +57,12 @@ public class DyingPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d getTarget() {
+	public Vec3d method_6851() {
 		return this.field_7041;
 	}
 
 	@Override
-	public PhaseType<DyingPhase> getType() {
+	public PhaseType<DyingPhase> method_6849() {
 		return PhaseType.DYING;
 	}
 }

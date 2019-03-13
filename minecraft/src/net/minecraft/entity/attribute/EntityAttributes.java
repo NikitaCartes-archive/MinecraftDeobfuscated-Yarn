@@ -29,17 +29,17 @@ public class EntityAttributes {
 	public static final EntityAttribute ARMOR_TOUGHNESS = new ClampedEntityAttribute(null, "generic.armorToughness", 0.0, 0.0, 20.0).method_6212(true);
 	public static final EntityAttribute LUCK = new ClampedEntityAttribute(null, "generic.luck", 0.0, -1024.0, 1024.0).method_6212(true);
 
-	public static ListTag toTag(AbstractEntityAttributeContainer abstractEntityAttributeContainer) {
+	public static ListTag method_7134(AbstractEntityAttributeContainer abstractEntityAttributeContainer) {
 		ListTag listTag = new ListTag();
 
 		for (EntityAttributeInstance entityAttributeInstance : abstractEntityAttributeContainer.values()) {
-			listTag.add(toTag(entityAttributeInstance));
+			listTag.add(method_7130(entityAttributeInstance));
 		}
 
 		return listTag;
 	}
 
-	private static CompoundTag toTag(EntityAttributeInstance entityAttributeInstance) {
+	private static CompoundTag method_7130(EntityAttributeInstance entityAttributeInstance) {
 		CompoundTag compoundTag = new CompoundTag();
 		EntityAttribute entityAttribute = entityAttributeInstance.getAttribute();
 		compoundTag.putString("Name", entityAttribute.getId());
@@ -50,17 +50,17 @@ public class EntityAttributes {
 
 			for (EntityAttributeModifier entityAttributeModifier : collection) {
 				if (entityAttributeModifier.shouldSerialize()) {
-					listTag.add(toTag(entityAttributeModifier));
+					listTag.add(method_7135(entityAttributeModifier));
 				}
 			}
 
-			compoundTag.put("Modifiers", listTag);
+			compoundTag.method_10566("Modifiers", listTag);
 		}
 
 		return compoundTag;
 	}
 
-	public static CompoundTag toTag(EntityAttributeModifier entityAttributeModifier) {
+	public static CompoundTag method_7135(EntityAttributeModifier entityAttributeModifier) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("Name", entityAttributeModifier.getName());
 		compoundTag.putDouble("Amount", entityAttributeModifier.getAmount());
@@ -84,24 +84,24 @@ public class EntityAttributes {
 	private static void method_7132(EntityAttributeInstance entityAttributeInstance, CompoundTag compoundTag) {
 		entityAttributeInstance.setBaseValue(compoundTag.getDouble("Base"));
 		if (compoundTag.containsKey("Modifiers", 9)) {
-			ListTag listTag = compoundTag.getList("Modifiers", 10);
+			ListTag listTag = compoundTag.method_10554("Modifiers", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				EntityAttributeModifier entityAttributeModifier = createFromTag(listTag.getCompoundTag(i));
+				EntityAttributeModifier entityAttributeModifier = method_7133(listTag.getCompoundTag(i));
 				if (entityAttributeModifier != null) {
-					EntityAttributeModifier entityAttributeModifier2 = entityAttributeInstance.getModifier(entityAttributeModifier.getId());
+					EntityAttributeModifier entityAttributeModifier2 = entityAttributeInstance.method_6199(entityAttributeModifier.getId());
 					if (entityAttributeModifier2 != null) {
-						entityAttributeInstance.removeModifier(entityAttributeModifier2);
+						entityAttributeInstance.method_6202(entityAttributeModifier2);
 					}
 
-					entityAttributeInstance.addModifier(entityAttributeModifier);
+					entityAttributeInstance.method_6197(entityAttributeModifier);
 				}
 			}
 		}
 	}
 
 	@Nullable
-	public static EntityAttributeModifier createFromTag(CompoundTag compoundTag) {
+	public static EntityAttributeModifier method_7133(CompoundTag compoundTag) {
 		UUID uUID = compoundTag.getUuid("UUID");
 
 		try {

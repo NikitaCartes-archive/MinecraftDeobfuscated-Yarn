@@ -18,44 +18,44 @@ import net.minecraft.util.registry.Registry;
 @Environment(EnvType.CLIENT)
 public class BlockModels {
 	private final Map<BlockState, BakedModel> models = Maps.<BlockState, BakedModel>newIdentityHashMap();
-	private final BakedModelManager modelManager;
+	private final BakedModelManager field_4163;
 
 	public BlockModels(BakedModelManager bakedModelManager) {
-		this.modelManager = bakedModelManager;
+		this.field_4163 = bakedModelManager;
 	}
 
-	public Sprite getSprite(BlockState blockState) {
-		return this.getModel(blockState).getSprite();
+	public Sprite method_3339(BlockState blockState) {
+		return this.method_3335(blockState).getSprite();
 	}
 
-	public BakedModel getModel(BlockState blockState) {
+	public BakedModel method_3335(BlockState blockState) {
 		BakedModel bakedModel = (BakedModel)this.models.get(blockState);
 		if (bakedModel == null) {
-			bakedModel = this.modelManager.getMissingModel();
+			bakedModel = this.field_4163.getMissingModel();
 		}
 
 		return bakedModel;
 	}
 
-	public BakedModelManager getModelManager() {
-		return this.modelManager;
+	public BakedModelManager method_3333() {
+		return this.field_4163;
 	}
 
 	public void reload() {
 		this.models.clear();
 
 		for (Block block : Registry.BLOCK) {
-			block.getStateFactory().getStates().forEach(blockState -> {
-				BakedModel var10000 = (BakedModel)this.models.put(blockState, this.modelManager.getModel(getModelId(blockState)));
+			block.method_9595().getStates().forEach(blockState -> {
+				BakedModel var10000 = (BakedModel)this.models.put(blockState, this.field_4163.method_4742(method_3340(blockState)));
 			});
 		}
 	}
 
-	public static ModelIdentifier getModelId(BlockState blockState) {
-		return getModelId(Registry.BLOCK.getId(blockState.getBlock()), blockState);
+	public static ModelIdentifier method_3340(BlockState blockState) {
+		return method_3336(Registry.BLOCK.method_10221(blockState.getBlock()), blockState);
 	}
 
-	public static ModelIdentifier getModelId(Identifier identifier, BlockState blockState) {
+	public static ModelIdentifier method_3336(Identifier identifier, BlockState blockState) {
 		return new ModelIdentifier(identifier, propertyMapToString(blockState.getEntries()));
 	}
 

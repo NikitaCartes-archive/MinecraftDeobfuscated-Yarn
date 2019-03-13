@@ -67,7 +67,7 @@ public class DirectoryResourcePack extends AbstractFilenameResourcePack {
 	}
 
 	@Override
-	public Set<String> getNamespaces(ResourceType resourceType) {
+	public Set<String> method_14406(ResourceType resourceType) {
 		Set<String> set = Sets.<String>newHashSet();
 		File file = new File(this.base, resourceType.getName());
 		File[] files = file.listFiles(DirectoryFileFilter.DIRECTORY);
@@ -89,11 +89,11 @@ public class DirectoryResourcePack extends AbstractFilenameResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
+	public Collection<Identifier> method_14408(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
 		File file = new File(this.base, resourceType.getName());
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 
-		for (String string2 : this.getNamespaces(resourceType)) {
+		for (String string2 : this.method_14406(resourceType)) {
 			this.findFiles(new File(new File(file, string2), string), i, string2, list, string + "/", predicate);
 		}
 

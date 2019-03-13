@@ -13,54 +13,54 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ViewableWorld;
 
 public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
-	private final CatEntity cat;
+	private final CatEntity field_6545;
 
 	public CatSitOnBlockGoal(CatEntity catEntity, double d) {
 		super(catEntity, d, 8);
-		this.cat = catEntity;
+		this.field_6545 = catEntity;
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.cat.isTamed() && !this.cat.isSitting() && super.canStart();
+		return this.field_6545.isTamed() && !this.field_6545.isSitting() && super.canStart();
 	}
 
 	@Override
 	public void start() {
 		super.start();
-		this.cat.method_6176().method_6311(false);
+		this.field_6545.method_6176().method_6311(false);
 	}
 
 	@Override
 	public void onRemove() {
 		super.onRemove();
-		this.cat.setSitting(false);
+		this.field_6545.setSitting(false);
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
-		this.cat.method_6176().method_6311(false);
+		this.field_6545.method_6176().method_6311(false);
 		if (!this.hasReached()) {
-			this.cat.setSitting(false);
-		} else if (!this.cat.isSitting()) {
-			this.cat.setSitting(true);
+			this.field_6545.setSitting(false);
+		} else if (!this.field_6545.isSitting()) {
+			this.field_6545.setSitting(true);
 		}
 	}
 
 	@Override
-	protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
-		if (!viewableWorld.isAir(blockPos.up())) {
+	protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
+		if (!viewableWorld.method_8623(blockPos.up())) {
 			return false;
 		} else {
-			BlockState blockState = viewableWorld.getBlockState(blockPos);
+			BlockState blockState = viewableWorld.method_8320(blockPos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.field_10034) {
-				return ChestBlockEntity.getPlayersLookingInChestCount(viewableWorld, blockPos) < 1;
+				return ChestBlockEntity.method_11048(viewableWorld, blockPos) < 1;
 			} else {
-				return block == Blocks.field_10181 && blockState.get(FurnaceBlock.LIT)
+				return block == Blocks.field_10181 && blockState.method_11654(FurnaceBlock.field_11105)
 					? true
-					: block.matches(BlockTags.field_16443) && blockState.get(BedBlock.PART) != BedPart.field_12560;
+					: block.method_9525(BlockTags.field_16443) && blockState.method_11654(BedBlock.field_9967) != BedPart.field_12560;
 			}
 		}
 	}

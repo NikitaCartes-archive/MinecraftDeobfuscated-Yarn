@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import java.util.EnumSet;
 import java.util.Random;
 import net.minecraft.class_1399;
 import net.minecraft.class_4051;
@@ -39,12 +40,12 @@ public class SilverfishEntity extends HostileEntity {
 	@Override
 	protected void initGoals() {
 		this.field_7366 = new SilverfishEntity.class_1616(this);
-		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(3, this.field_7366);
-		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
-		this.goalSelector.add(5, new SilverfishEntity.class_1615(this));
-		this.targetSelector.add(1, new class_1399(this).method_6318());
-		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
+		this.field_6201.add(1, new SwimGoal(this));
+		this.field_6201.add(3, this.field_7366);
+		this.field_6201.add(4, new MeleeAttackGoal(this, 1.0, false));
+		this.field_6201.add(5, new SilverfishEntity.class_1615(this));
+		this.field_6185.add(1, new class_1399(this).method_6318());
+		this.field_6185.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}
 
 	@Override
@@ -53,16 +54,16 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
 		return 0.1F;
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
+		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
+		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+		this.method_5996(EntityAttributes.ATTACK_DAMAGE).setBaseValue(1.0);
 	}
 
 	@Override
@@ -71,23 +72,23 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return SoundEvents.field_14786;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_14593;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_14673;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_15084, 0.15F, 1.0F);
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+		this.method_5783(SoundEvents.field_15084, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -116,8 +117,8 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return InfestedBlock.hasRegularBlock(viewableWorld.getBlockState(blockPos.down())) ? 10.0F : super.getPathfindingFavor(blockPos, viewableWorld);
+	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return InfestedBlock.method_10269(viewableWorld.method_8320(blockPos.down())) ? 10.0F : super.method_6144(blockPos, viewableWorld);
 	}
 
 	@Override
@@ -126,9 +127,9 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		if (super.canSpawn(iWorld, spawnType)) {
-			PlayerEntity playerEntity = this.world.method_18462(field_18131, this);
+	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
+		if (super.method_5979(iWorld, spawnType)) {
+			PlayerEntity playerEntity = this.field_6002.method_18462(field_18131, this);
 			return playerEntity == null;
 		} else {
 			return false;
@@ -136,7 +137,7 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public EntityGroup getGroup() {
+	public EntityGroup method_6046() {
 		return EntityGroup.ARTHROPOD;
 	}
 
@@ -146,22 +147,22 @@ public class SilverfishEntity extends HostileEntity {
 
 		public class_1615(SilverfishEntity silverfishEntity) {
 			super(silverfishEntity, 1.0, 10);
-			this.setControlBits(1);
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override
 		public boolean canStart() {
 			if (this.owner.getTarget() != null) {
 				return false;
-			} else if (!this.owner.getNavigation().isIdle()) {
+			} else if (!this.owner.method_5942().isIdle()) {
 				return false;
 			} else {
 				Random random = this.owner.getRand();
-				if (this.owner.world.getGameRules().getBoolean("mobGriefing") && random.nextInt(10) == 0) {
+				if (this.owner.field_6002.getGameRules().getBoolean("mobGriefing") && random.nextInt(10) == 0) {
 					this.field_7368 = Direction.random(random);
-					BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y + 0.5, this.owner.z).offset(this.field_7368);
-					BlockState blockState = this.owner.world.getBlockState(blockPos);
-					if (InfestedBlock.hasRegularBlock(blockState)) {
+					BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y + 0.5, this.owner.z).method_10093(this.field_7368);
+					BlockState blockState = this.owner.field_6002.method_8320(blockPos);
+					if (InfestedBlock.method_10269(blockState)) {
 						this.field_7367 = true;
 						return true;
 					}
@@ -182,11 +183,11 @@ public class SilverfishEntity extends HostileEntity {
 			if (!this.field_7367) {
 				super.start();
 			} else {
-				IWorld iWorld = this.owner.world;
-				BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y + 0.5, this.owner.z).offset(this.field_7368);
-				BlockState blockState = iWorld.getBlockState(blockPos);
-				if (InfestedBlock.hasRegularBlock(blockState)) {
-					iWorld.setBlockState(blockPos, InfestedBlock.getRegularBlock(blockState.getBlock()), 3);
+				IWorld iWorld = this.owner.field_6002;
+				BlockPos blockPos = new BlockPos(this.owner.x, this.owner.y + 0.5, this.owner.z).method_10093(this.field_7368);
+				BlockState blockState = iWorld.method_8320(blockPos);
+				if (InfestedBlock.method_10269(blockState)) {
+					iWorld.method_8652(blockPos, InfestedBlock.method_10270(blockState.getBlock()), 3);
 					this.owner.method_5990();
 					this.owner.invalidate();
 				}
@@ -217,7 +218,7 @@ public class SilverfishEntity extends HostileEntity {
 		public void tick() {
 			this.field_7369--;
 			if (this.field_7369 <= 0) {
-				World world = this.field_7370.world;
+				World world = this.field_7370.field_6002;
 				Random random = this.field_7370.getRand();
 				BlockPos blockPos = new BlockPos(this.field_7370);
 
@@ -225,13 +226,13 @@ public class SilverfishEntity extends HostileEntity {
 					for (int j = 0; j <= 10 && j >= -10; j = (j <= 0 ? 1 : 0) - j) {
 						for (int k = 0; k <= 10 && k >= -10; k = (k <= 0 ? 1 : 0) - k) {
 							BlockPos blockPos2 = blockPos.add(j, i, k);
-							BlockState blockState = world.getBlockState(blockPos2);
+							BlockState blockState = world.method_8320(blockPos2);
 							Block block = blockState.getBlock();
 							if (block instanceof InfestedBlock) {
 								if (world.getGameRules().getBoolean("mobGriefing")) {
-									world.breakBlock(blockPos2, true);
+									world.method_8651(blockPos2, true);
 								} else {
-									world.setBlockState(blockPos2, ((InfestedBlock)block).getRegularBlock().getDefaultState(), 3);
+									world.method_8652(blockPos2, ((InfestedBlock)block).getRegularBlock().method_9564(), 3);
 								}
 
 								if (random.nextBoolean()) {

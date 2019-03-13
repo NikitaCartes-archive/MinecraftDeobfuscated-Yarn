@@ -26,7 +26,7 @@ public class FishingParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -46,7 +46,7 @@ public class FishingParticle extends SpriteBillboardParticle {
 			this.velocityZ *= 0.98F;
 			float f = (float)i * 0.001F;
 			this.setBoundingBoxSpacing(f, f);
-			this.setSprite(this.field_17888.getSprite(i % 4, 4));
+			this.method_18141(this.field_17888.method_18138(i % 4, 4));
 		}
 	}
 

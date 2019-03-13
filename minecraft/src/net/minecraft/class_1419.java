@@ -4,47 +4,38 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sortme.SpawnHelper;
 import net.minecraft.sortme.SpawnRestriction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.VillageProperties;
-import net.minecraft.world.World;
 
 public class class_1419 {
-	private final World field_6727;
+	private final ServerWorld field_6727;
 	private boolean field_6725;
-	private int field_6724 = -1;
+	private class_1419.class_4152 field_18479 = class_1419.class_4152.field_18482;
 	private int field_6723;
 	private int field_6722;
-	private VillageProperties field_6726;
 	private int field_6721;
 	private int field_6720;
 	private int field_6719;
 
-	public class_1419(World world) {
-		this.field_6727 = world;
+	public class_1419(ServerWorld serverWorld) {
+		this.field_6727 = serverWorld;
 	}
 
 	public void method_6445() {
 		if (this.field_6727.isDaylight()) {
-			this.field_6724 = 0;
-		} else if (this.field_6724 != 2) {
-			if (this.field_6724 == 0) {
-				float f = this.field_6727.getSkyAngle(0.0F);
-				if ((double)f < 0.5 || (double)f > 0.501) {
-					return;
-				}
-
-				this.field_6724 = this.field_6727.random.nextInt(10) == 0 ? 1 : 2;
-				this.field_6725 = false;
-				if (this.field_6724 == 2) {
-					return;
-				}
+			this.field_18479 = class_1419.class_4152.field_18482;
+			this.field_6725 = false;
+		} else {
+			float f = this.field_6727.getSkyAngle(0.0F);
+			if ((double)f == 0.5) {
+				this.field_18479 = this.field_6727.random.nextInt(10) == 0 ? class_1419.class_4152.field_18481 : class_1419.class_4152.field_18482;
 			}
 
-			if (this.field_6724 != -1) {
+			if (this.field_18479 != class_1419.class_4152.field_18482) {
 				if (!this.field_6725) {
 					if (!this.method_6446()) {
 						return;
@@ -61,7 +52,7 @@ public class class_1419 {
 						this.method_6447();
 						this.field_6723--;
 					} else {
-						this.field_6724 = 2;
+						this.field_18479 = class_1419.class_4152.field_18482;
 					}
 				}
 			}
@@ -71,33 +62,13 @@ public class class_1419 {
 	private boolean method_6446() {
 		for (PlayerEntity playerEntity : this.field_6727.getPlayers()) {
 			if (!playerEntity.isSpectator()) {
-				this.field_6726 = this.field_6727.getVillageManager().getNearestVillage(new BlockPos(playerEntity), 1);
-				if (this.field_6726 != null && this.field_6726.getDoorCount() >= 10 && this.field_6726.getStableTicks() >= 20 && this.field_6726.getPopulationSize() >= 20) {
-					BlockPos blockPos = this.field_6726.getCenter();
-					float f = (float)this.field_6726.getRadius();
-					boolean bl = false;
-
+				BlockPos blockPos = new BlockPos(playerEntity);
+				if (this.field_6727.method_19500(blockPos)) {
 					for (int i = 0; i < 10; i++) {
-						float g = this.field_6727.random.nextFloat() * (float) (Math.PI * 2);
-						this.field_6721 = blockPos.getX() + (int)((double)(MathHelper.cos(g) * f) * 0.9);
+						float f = this.field_6727.random.nextFloat() * (float) (Math.PI * 2);
+						this.field_6721 = blockPos.getX() + (int)(MathHelper.cos(f) * 32.0F);
 						this.field_6720 = blockPos.getY();
-						this.field_6719 = blockPos.getZ() + (int)((double)(MathHelper.sin(g) * f) * 0.9);
-						bl = false;
-
-						for (VillageProperties villageProperties : this.field_6727.getVillageManager().getVillages()) {
-							if (villageProperties != this.field_6726 && villageProperties.isInRadius(new BlockPos(this.field_6721, this.field_6720, this.field_6719))) {
-								bl = true;
-								break;
-							}
-						}
-
-						if (!bl) {
-							break;
-						}
-					}
-
-					if (bl) {
-						return false;
+						this.field_6719 = blockPos.getZ() + (int)(MathHelper.sin(f) * 32.0F);
 					}
 
 					Vec3d vec3d = this.method_6448(new BlockPos(this.field_6721, this.field_6720, this.field_6719));
@@ -113,25 +84,20 @@ public class class_1419 {
 		return false;
 	}
 
-	private boolean method_6447() {
+	private void method_6447() {
 		Vec3d vec3d = this.method_6448(new BlockPos(this.field_6721, this.field_6720, this.field_6719));
-		if (vec3d == null) {
-			return false;
-		} else {
+		if (vec3d != null) {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(this.field_6727);
-				zombieEntity.prepareEntityData(this.field_6727, this.field_6727.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
+				zombieEntity.method_5943(this.field_6727, this.field_6727.method_8404(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
 			} catch (Exception var4) {
 				var4.printStackTrace();
-				return false;
+				return;
 			}
 
 			zombieEntity.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, this.field_6727.random.nextFloat() * 360.0F, 0.0F);
 			this.field_6727.spawnEntity(zombieEntity);
-			BlockPos blockPos = this.field_6726.getCenter();
-			zombieEntity.method_18408(blockPos, this.field_6726.getRadius());
-			return true;
 		}
 	}
 
@@ -139,11 +105,17 @@ public class class_1419 {
 	private Vec3d method_6448(BlockPos blockPos) {
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(this.field_6727.random.nextInt(16) - 8, this.field_6727.random.nextInt(6) - 3, this.field_6727.random.nextInt(16) - 8);
-			if (this.field_6726.isInRadius(blockPos2) && SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.field_6727, blockPos2, null)) {
+			if (this.field_6727.method_19500(blockPos2) && SpawnHelper.method_8660(SpawnRestriction.Location.field_6317, this.field_6727, blockPos2, null)) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}
 
 		return null;
+	}
+
+	static enum class_4152 {
+		field_18480,
+		field_18481,
+		field_18482;
 	}
 }

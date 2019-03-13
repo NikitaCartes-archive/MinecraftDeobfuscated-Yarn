@@ -47,14 +47,12 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
-import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
 import net.minecraft.world.TickScheduler;
@@ -70,7 +68,7 @@ public class ClientWorld extends World {
 	private final List<Entity> globalEntities = Lists.<Entity>newArrayList();
 	private final Int2ObjectMap<Entity> regularEntities = new Int2ObjectOpenHashMap<>();
 	private final ClientPlayNetworkHandler netHandler;
-	private final WorldRenderer worldRenderer;
+	private final WorldRenderer field_17780;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
 	private int field_3732;
@@ -80,27 +78,21 @@ public class ClientWorld extends World {
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
 
 	public ClientWorld(
-		ClientPlayNetworkHandler clientPlayNetworkHandler,
-		LevelInfo levelInfo,
-		DimensionType dimensionType,
-		Difficulty difficulty,
-		Profiler profiler,
-		WorldRenderer worldRenderer
+		ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, Profiler profiler, WorldRenderer worldRenderer
 	) {
 		super(new LevelProperties(levelInfo, "MpServer"), dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world), profiler, true);
 		this.netHandler = clientPlayNetworkHandler;
-		this.worldRenderer = worldRenderer;
-		this.getLevelProperties().setDifficulty(difficulty);
-		this.setSpawnPos(new BlockPos(8, 64, 8));
-		this.updateAmbientDarkness();
+		this.field_17780 = worldRenderer;
+		this.method_8554(new BlockPos(8, 64, 8));
+		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
 	}
 
 	public void method_8441(BooleanSupplier booleanSupplier) {
-		this.getWorldBorder().update();
+		this.method_8621().update();
 		this.tickTime();
-		this.getProfiler().swap("blocks");
-		this.chunkManager.tick(booleanSupplier);
+		this.getProfiler().push("blocks");
+		this.field_9248.tick(booleanSupplier);
 		this.method_2939();
 		this.getProfiler().pop();
 	}
@@ -162,7 +154,7 @@ public class ClientWorld extends World {
 			entity.prevPitch = entity.pitch;
 			if (entity.field_6016) {
 				entity.age++;
-				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
+				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.method_10221(entity.method_5864()).toString()));
 				entity.update();
 				this.getProfiler().pop();
 			}
@@ -229,9 +221,9 @@ public class ClientWorld extends World {
 	}
 
 	private void method_2939() {
-		int i = this.client.options.viewDistance;
-		int j = MathHelper.floor(this.client.player.x / 16.0);
-		int k = MathHelper.floor(this.client.player.z / 16.0);
+		int i = this.client.field_1690.viewDistance;
+		int j = MathHelper.floor(this.client.field_1724.x / 16.0);
+		int k = MathHelper.floor(this.client.field_1724.z / 16.0);
 		if (this.ticksSinceLightingClient > 0) {
 			this.ticksSinceLightingClient--;
 		} else {
@@ -255,14 +247,14 @@ public class ClientWorld extends World {
 				int r = q & 15;
 				int s = q >> 8 & 15;
 				int t = q >> 16 & 0xFF;
-				double d = this.client.player.squaredDistanceTo((double)r + 0.5, (double)t + 0.5, (double)s + 0.5);
-				if (this.client.player != null && d > 4.0 && d < 256.0) {
+				double d = this.client.field_1724.squaredDistanceTo((double)r + 0.5, (double)t + 0.5, (double)s + 0.5);
+				if (this.client.field_1724 != null && d > 4.0 && d < 256.0) {
 					BlockPos blockPos = new BlockPos(r + o, t, s + p);
-					BlockState blockState = worldChunk.getBlockState(blockPos);
+					BlockState blockState = worldChunk.method_8320(blockPos);
 					r += o;
 					s += p;
-					if (blockState.isAir() && this.getLightLevel(blockPos, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos) <= 0) {
-						this.playSound(
+					if (blockState.isAir() && this.method_8624(blockPos, 0) <= this.random.nextInt(8) && this.method_8314(LightType.SKY, blockPos) <= 0) {
+						this.method_8486(
 							(double)r + 0.5,
 							(double)t + 0.5,
 							(double)s + 0.5,
@@ -337,55 +329,55 @@ public class ClientWorld extends World {
 	}
 
 	public void method_2937(BlockPos blockPos, BlockState blockState) {
-		this.setBlockState(blockPos, blockState, 19);
+		this.method_8652(blockPos, blockState, 19);
 	}
 
 	@Override
 	public void disconnect() {
-		this.netHandler.getClientConnection().disconnect(new TranslatableTextComponent("multiplayer.status.quitting"));
+		this.netHandler.method_2872().method_10747(new TranslatableTextComponent("multiplayer.status.quitting"));
 	}
 
 	public void doRandomBlockDisplayTicks(int i, int j, int k) {
 		int l = 32;
 		Random random = new Random();
-		ItemStack itemStack = this.client.player.getMainHandStack();
-		boolean bl = this.client.interactionManager.getCurrentGameMode() == GameMode.field_9220
+		ItemStack itemStack = this.client.field_1724.method_6047();
+		boolean bl = this.client.field_1761.getCurrentGameMode() == GameMode.field_9220
 			&& !itemStack.isEmpty()
 			&& itemStack.getItem() == Blocks.field_10499.getItem();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int m = 0; m < 667; m++) {
-			this.randomBlockDisplayTick(i, j, k, 16, random, bl, mutable);
-			this.randomBlockDisplayTick(i, j, k, 32, random, bl, mutable);
+			this.method_2943(i, j, k, 16, random, bl, mutable);
+			this.method_2943(i, j, k, 32, random, bl, mutable);
 		}
 	}
 
-	public void randomBlockDisplayTick(int i, int j, int k, int l, Random random, boolean bl, BlockPos.Mutable mutable) {
+	public void method_2943(int i, int j, int k, int l, Random random, boolean bl, BlockPos.Mutable mutable) {
 		int m = i + this.random.nextInt(l) - this.random.nextInt(l);
 		int n = j + this.random.nextInt(l) - this.random.nextInt(l);
 		int o = k + this.random.nextInt(l) - this.random.nextInt(l);
 		mutable.set(m, n, o);
-		BlockState blockState = this.getBlockState(mutable);
-		blockState.getBlock().randomDisplayTick(blockState, this, mutable, random);
-		FluidState fluidState = this.getFluidState(mutable);
+		BlockState blockState = this.method_8320(mutable);
+		blockState.getBlock().method_9496(blockState, this, mutable, random);
+		FluidState fluidState = this.method_8316(mutable);
 		if (!fluidState.isEmpty()) {
-			fluidState.randomDisplayTick(this, mutable, random);
-			ParticleParameters particleParameters = fluidState.getParticle();
+			fluidState.method_15768(this, mutable, random);
+			ParticleParameters particleParameters = fluidState.method_15766();
 			if (particleParameters != null && this.random.nextInt(10) == 0) {
-				boolean bl2 = Block.isFaceFullSquare(blockState.getCollisionShape(this, mutable), Direction.DOWN);
+				boolean bl2 = Block.method_9501(blockState.method_11628(this, mutable), Direction.DOWN);
 				BlockPos blockPos = mutable.down();
-				this.method_2938(blockPos, this.getBlockState(blockPos), particleParameters, bl2);
+				this.method_2938(blockPos, this.method_8320(blockPos), particleParameters, bl2);
 			}
 		}
 
 		if (bl && blockState.getBlock() == Blocks.field_10499) {
-			this.addParticle(ParticleTypes.field_11235, (double)((float)m + 0.5F), (double)((float)n + 0.5F), (double)((float)o + 0.5F), 0.0, 0.0, 0.0);
+			this.method_8406(ParticleTypes.field_11235, (double)((float)m + 0.5F), (double)((float)n + 0.5F), (double)((float)o + 0.5F), 0.0, 0.0, 0.0);
 		}
 	}
 
 	private void method_2938(BlockPos blockPos, BlockState blockState, ParticleParameters particleParameters, boolean bl) {
-		if (blockState.getFluidState().isEmpty()) {
-			VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
+		if (blockState.method_11618().isEmpty()) {
+			VoxelShape voxelShape = blockState.method_11628(this, blockPos);
 			double d = voxelShape.getMaximum(Direction.Axis.Y);
 			if (d < 1.0) {
 				if (bl) {
@@ -398,16 +390,16 @@ public class ClientWorld extends World {
 						particleParameters
 					);
 				}
-			} else if (!blockState.matches(BlockTags.field_15490)) {
+			} else if (!blockState.method_11602(BlockTags.field_15490)) {
 				double e = voxelShape.getMinimum(Direction.Axis.Y);
 				if (e > 0.0) {
 					this.method_2948(blockPos, particleParameters, voxelShape, (double)blockPos.getY() + e - 0.05);
 				} else {
 					BlockPos blockPos2 = blockPos.down();
-					BlockState blockState2 = this.getBlockState(blockPos2);
-					VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos2);
+					BlockState blockState2 = this.method_8320(blockPos2);
+					VoxelShape voxelShape2 = blockState2.method_11628(this, blockPos2);
 					double f = voxelShape2.getMaximum(Direction.Axis.Y);
-					if (f < 1.0 && blockState2.getFluidState().isEmpty()) {
+					if (f < 1.0 && blockState2.method_11618().isEmpty()) {
 						this.method_2948(blockPos, particleParameters, voxelShape, (double)blockPos.getY() - 0.05);
 					}
 				}
@@ -427,7 +419,7 @@ public class ClientWorld extends World {
 	}
 
 	private void method_2932(double d, double e, double f, double g, double h, ParticleParameters particleParameters) {
-		this.addParticle(particleParameters, MathHelper.lerp(this.random.nextDouble(), d, e), h, MathHelper.lerp(this.random.nextDouble(), f, g), 0.0, 0.0, 0.0);
+		this.method_8406(particleParameters, MathHelper.lerp(this.random.nextDouble(), d, e), h, MathHelper.lerp(this.random.nextDouble(), f, g), 0.0, 0.0, 0.0);
 	}
 
 	public void method_2936() {
@@ -444,53 +436,53 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public CrashReportSection addDetailsToCrashReport(CrashReport crashReport) {
-		CrashReportSection crashReportSection = super.addDetailsToCrashReport(crashReport);
-		crashReportSection.add("Server brand", (ICrashCallable<String>)(() -> this.client.player.getServerBrand()));
-		crashReportSection.add(
-			"Server type", (ICrashCallable<String>)(() -> this.client.getServer() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server")
-		);
+	public CrashReportSection method_8538(CrashReport crashReport) {
+		CrashReportSection crashReportSection = super.method_8538(crashReport);
+		crashReportSection.method_577("Server brand", () -> this.client.field_1724.getServerBrand());
+		crashReportSection.method_577("Server type", () -> this.client.method_1576() == null ? "Non-integrated multiplayer server" : "Integrated singleplayer server");
 		return crashReportSection;
 	}
 
 	@Override
-	public void playSound(@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h) {
-		if (playerEntity == this.client.player) {
-			this.playSound(d, e, f, soundEvent, soundCategory, g, h, false);
+	public void method_8465(
+		@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h
+	) {
+		if (playerEntity == this.client.field_1724) {
+			this.method_8486(d, e, f, soundEvent, soundCategory, g, h, false);
 		}
 	}
 
 	@Override
-	public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
-		if (playerEntity == this.client.player) {
-			this.client.getSoundLoader().play(new EntityTrackingSoundInstance(soundEvent, soundCategory, entity));
+	public void method_8449(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+		if (playerEntity == this.client.field_1724) {
+			this.client.method_1483().play(new EntityTrackingSoundInstance(soundEvent, soundCategory, entity));
 		}
 	}
 
-	public void playSound(BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g, boolean bl) {
-		this.playSound((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, soundEvent, soundCategory, f, g, bl);
+	public void method_2947(BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g, boolean bl) {
+		this.method_8486((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, soundEvent, soundCategory, f, g, bl);
 	}
 
 	@Override
-	public void playSound(double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h, boolean bl) {
-		double i = this.client.getCameraEntity().squaredDistanceTo(d, e, f);
+	public void method_8486(double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h, boolean bl) {
+		double i = this.client.field_1773.method_19418().method_19326().squaredDistanceTo(d, e, f);
 		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(soundEvent, soundCategory, g, h, (float)d, (float)e, (float)f);
 		if (bl && i > 100.0) {
 			double j = Math.sqrt(i) / 40.0;
-			this.client.getSoundLoader().play(positionedSoundInstance, (int)(j * 20.0));
+			this.client.method_1483().play(positionedSoundInstance, (int)(j * 20.0));
 		} else {
-			this.client.getSoundLoader().play(positionedSoundInstance);
+			this.client.method_1483().play(positionedSoundInstance);
 		}
 	}
 
 	@Override
-	public void addFireworkParticle(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
-		this.client.particleManager.addParticle(new FireworksSparkParticle.create(this, d, e, f, g, h, i, this.client.particleManager, compoundTag));
+	public void method_8547(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
+		this.client.field_1713.addParticle(new FireworksSparkParticle.create(this, d, e, f, g, h, i, this.client.field_1713, compoundTag));
 	}
 
 	@Override
-	public void sendPacket(Packet<?> packet) {
-		this.netHandler.sendPacket(packet);
+	public void method_8522(Packet<?> packet) {
+		this.netHandler.method_2883(packet);
 	}
 
 	@Override
@@ -515,27 +507,27 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public TickScheduler<Block> getBlockTickScheduler() {
+	public TickScheduler<Block> method_8397() {
 		return DummyClientTickScheduler.get();
 	}
 
 	@Override
-	public TickScheduler<Fluid> getFluidTickScheduler() {
+	public TickScheduler<Fluid> method_8405() {
 		return DummyClientTickScheduler.get();
 	}
 
 	public ClientChunkManager method_2935() {
-		return (ClientChunkManager)super.getChunkManager();
+		return (ClientChunkManager)super.method_8398();
 	}
 
 	@Nullable
 	@Override
-	public MapState getMapState(String string) {
+	public MapState method_17891(String string) {
 		return (MapState)this.mapStates.get(string);
 	}
 
 	@Override
-	public void putMapState(MapState mapState) {
+	public void method_17890(MapState mapState) {
 		this.mapStates.put(mapState.getId(), mapState);
 	}
 
@@ -545,47 +537,47 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public Scoreboard getScoreboard() {
+	public Scoreboard method_8428() {
 		return this.scoreboard;
 	}
 
 	@Override
-	public TagManager getTagManager() {
-		return this.netHandler.getTagManager();
+	public TagManager method_8514() {
+		return this.netHandler.method_2867();
 	}
 
 	@Override
-	public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
-		this.worldRenderer.method_8570(this, blockPos, blockState, blockState2, i);
+	public void method_8413(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
+		this.field_17780.method_8570(this, blockPos, blockState, blockState2, i);
 	}
 
 	@Override
-	public void scheduleBlockRender(BlockPos blockPos) {
-		this.worldRenderer.scheduleBlockRender(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	public void method_16109(BlockPos blockPos) {
+		this.field_17780.scheduleBlockRender(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 
 	public void method_18113(int i, int j, int k) {
-		this.worldRenderer.method_18145(i, j, k);
+		this.field_17780.method_18145(i, j, k);
 	}
 
 	@Override
-	public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
-		this.worldRenderer.setBlockBreakingProgress(i, blockPos, j);
+	public void method_8517(int i, BlockPos blockPos, int j) {
+		this.field_17780.method_8569(i, blockPos, j);
 	}
 
 	@Override
-	public void playGlobalEvent(int i, BlockPos blockPos, int j) {
-		this.worldRenderer.playGlobalEvent(i, blockPos, j);
+	public void method_8474(int i, BlockPos blockPos, int j) {
+		this.field_17780.method_8564(i, blockPos, j);
 	}
 
 	@Override
-	public void playEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
+	public void method_8444(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 		try {
-			this.worldRenderer.playLevelEvent(playerEntity, i, blockPos, j);
+			this.field_17780.method_8567(playerEntity, i, blockPos, j);
 		} catch (Throwable var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Playing level event");
-			CrashReportSection crashReportSection = crashReport.addElement("Level event being played");
-			crashReportSection.add("Block coordinates", CrashReportSection.createPositionString(blockPos));
+			CrashReportSection crashReportSection = crashReport.method_562("Level event being played");
+			crashReportSection.add("Block coordinates", CrashReportSection.method_582(blockPos));
 			crashReportSection.add("Event source", playerEntity);
 			crashReportSection.add("Event type", i);
 			crashReportSection.add("Event data", j);
@@ -594,23 +586,23 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void addParticle(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i) {
-		this.worldRenderer.addParticle(particleParameters, particleParameters.getType().shouldAlwaysSpawn(), d, e, f, g, h, i);
+	public void method_8406(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i) {
+		this.field_17780.method_8568(particleParameters, particleParameters.method_10295().shouldAlwaysSpawn(), d, e, f, g, h, i);
 	}
 
 	@Override
-	public void addParticle(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
-		this.worldRenderer.addParticle(particleParameters, particleParameters.getType().shouldAlwaysSpawn() || bl, d, e, f, g, h, i);
+	public void method_8466(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
+		this.field_17780.method_8568(particleParameters, particleParameters.method_10295().shouldAlwaysSpawn() || bl, d, e, f, g, h, i);
 	}
 
 	@Override
-	public void addImportantParticle(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i) {
-		this.worldRenderer.addParticle(particleParameters, false, true, d, e, f, g, h, i);
+	public void method_8494(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i) {
+		this.field_17780.method_8563(particleParameters, false, true, d, e, f, g, h, i);
 	}
 
 	@Override
-	public void addImportantParticle(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
-		this.worldRenderer.addParticle(particleParameters, particleParameters.getType().shouldAlwaysSpawn() || bl, true, d, e, f, g, h, i);
+	public void method_17452(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
+		this.field_17780.method_8563(particleParameters, particleParameters.method_10295().shouldAlwaysSpawn() || bl, true, d, e, f, g, h, i);
 	}
 
 	@Override

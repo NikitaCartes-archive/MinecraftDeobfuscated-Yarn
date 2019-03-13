@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntSupplier;
 import net.minecraft.server.world.ChunkTaskPrioritySystem;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
@@ -30,6 +31,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	private final ThreadedAnvilChunkStorage field_17257;
 	private final Actor<ChunkTaskPrioritySystem.RunnableMessage<Runnable>> field_17259;
 	private volatile int field_17260 = 5;
+	private final AtomicBoolean field_18812 = new AtomicBoolean();
 
 	public ServerLightingProvider(
 		ChunkProvider chunkProvider,
@@ -58,24 +60,24 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void enqueueLightUpdate(BlockPos blockPos) {
+	public void method_15559(BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.toImmutable();
 		this.method_17308(
 			blockPos.getX() >> 4,
 			blockPos.getZ() >> 4,
 			ServerLightingProvider.class_3901.field_17262,
-			SystemUtil.method_18839(() -> super.enqueueLightUpdate(blockPos2), () -> "checkBlock " + blockPos)
+			SystemUtil.method_18839(() -> super.method_15559(blockPos2), () -> "checkBlock " + blockPos)
 		);
 	}
 
 	@Override
-	public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
+	public void method_15551(ChunkSectionPos chunkSectionPos, boolean bl) {
 		this.method_17307(
 			chunkSectionPos.getX(),
 			chunkSectionPos.getZ(),
 			() -> 0,
 			ServerLightingProvider.class_3901.field_17261,
-			SystemUtil.method_18839(() -> super.scheduleChunkLightUpdate(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl)
+			SystemUtil.method_18839(() -> super.method_15551(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl)
 		);
 	}
 
@@ -90,12 +92,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void setSection(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
+	public void method_15558(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
 		this.method_17308(
 			chunkSectionPos.getX(),
 			chunkSectionPos.getZ(),
 			ServerLightingProvider.class_3901.field_17261,
-			SystemUtil.method_18839(() -> super.setSection(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
+			SystemUtil.method_18839(() -> super.method_15558(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
 		);
 	}
 
@@ -119,17 +121,17 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 				super.method_15557(chunkPos, false);
 			}
 
-			ChunkSection[] chunkSections = chunk.getSectionArray();
+			ChunkSection[] chunkSections = chunk.method_12006();
 
 			for (int i = 0; i < 16; i++) {
 				ChunkSection chunkSection = chunkSections[i];
 				if (!ChunkSection.isEmpty(chunkSection)) {
-					super.scheduleChunkLightUpdate(ChunkSectionPos.from(chunkPos, i), false);
+					super.method_15551(ChunkSectionPos.from(chunkPos, i), false);
 				}
 			}
 
 			if (!bl) {
-				chunk.getLightSourcesStream().forEach(blockPos -> super.method_15560(blockPos, chunk.getLuminance(blockPos)));
+				chunk.getLightSourcesStream().forEach(blockPos -> super.method_15560(blockPos, chunk.method_8317(blockPos)));
 			}
 
 			chunk.setLightOn(true);
@@ -140,35 +142,36 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	public void tick() {
-		this.field_17255.method_16901(this::method_14277);
+		if ((!this.field_17256.isEmpty() || super.hasUpdates()) && this.field_18812.compareAndSet(false, true)) {
+			this.field_17255.method_16901(() -> {
+				this.method_14277();
+				this.field_18812.set(false);
+			});
+		}
 	}
 
 	private void method_14277() {
-		if (!this.field_17256.isEmpty() || super.hasUpdates()) {
-			int i = Math.min(this.field_17256.size(), this.field_17260);
-			ObjectListIterator<Pair<ServerLightingProvider.class_3901, Runnable>> objectListIterator = this.field_17256.iterator();
+		int i = Math.min(this.field_17256.size(), this.field_17260);
+		ObjectListIterator<Pair<ServerLightingProvider.class_3901, Runnable>> objectListIterator = this.field_17256.iterator();
 
-			int j;
-			for (j = 0; objectListIterator.hasNext() && j < i; j++) {
-				Pair<ServerLightingProvider.class_3901, Runnable> pair = (Pair<ServerLightingProvider.class_3901, Runnable>)objectListIterator.next();
-				if (pair.getFirst() == ServerLightingProvider.class_3901.field_17261) {
-					pair.getSecond().run();
-				}
+		int j;
+		for (j = 0; objectListIterator.hasNext() && j < i; j++) {
+			Pair<ServerLightingProvider.class_3901, Runnable> pair = (Pair<ServerLightingProvider.class_3901, Runnable>)objectListIterator.next();
+			if (pair.getFirst() == ServerLightingProvider.class_3901.field_17261) {
+				pair.getSecond().run();
+			}
+		}
+
+		objectListIterator.back(j);
+		super.doLightUpdates(Integer.MAX_VALUE, true, true);
+
+		for (int var5 = 0; objectListIterator.hasNext() && var5 < i; var5++) {
+			Pair<ServerLightingProvider.class_3901, Runnable> pair = (Pair<ServerLightingProvider.class_3901, Runnable>)objectListIterator.next();
+			if (pair.getFirst() == ServerLightingProvider.class_3901.field_17262) {
+				pair.getSecond().run();
 			}
 
-			objectListIterator.back(j);
-			super.doLightUpdates(Integer.MAX_VALUE, true, true);
-
-			for (int var5 = 0; objectListIterator.hasNext() && var5 < i; var5++) {
-				Pair<ServerLightingProvider.class_3901, Runnable> pair = (Pair<ServerLightingProvider.class_3901, Runnable>)objectListIterator.next();
-				if (pair.getFirst() == ServerLightingProvider.class_3901.field_17262) {
-					pair.getSecond().run();
-				}
-
-				objectListIterator.remove();
-			}
-
-			this.tick();
+			objectListIterator.remove();
 		}
 	}
 

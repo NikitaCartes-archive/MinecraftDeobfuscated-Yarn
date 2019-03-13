@@ -25,7 +25,9 @@ public class ClearCommand {
 		commandDispatcher.register(
 			ServerCommandManager.literal("clear")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-				.executes(commandContext -> method_13077(commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), itemStack -> true, -1))
+				.executes(
+					commandContext -> method_13077(commandContext.getSource(), Collections.singleton(commandContext.getSource().method_9207()), itemStack -> true, -1)
+				)
 				.then(
 					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 						.executes(commandContext -> method_13077(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), itemStack -> true, -1))
@@ -64,25 +66,25 @@ public class ClearCommand {
 
 		if (j == 0) {
 			if (collection.size() == 1) {
-				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)collection.iterator().next()).getName().getFormattedText());
+				throw FAILED_SINGLE_EXCEPTION.create(((ServerPlayerEntity)collection.iterator().next()).method_5477().getFormattedText());
 			} else {
 				throw FAILED_MULTIPLE_EXCEPTION.create(collection.size());
 			}
 		} else {
 			if (i == 0) {
 				if (collection.size() == 1) {
-					serverCommandSource.sendFeedback(
-						new TranslatableTextComponent("commands.clear.test.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+					serverCommandSource.method_9226(
+						new TranslatableTextComponent("commands.clear.test.single", j, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
 					);
 				} else {
-					serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.clear.test.multiple", j, collection.size()), true);
+					serverCommandSource.method_9226(new TranslatableTextComponent("commands.clear.test.multiple", j, collection.size()), true);
 				}
 			} else if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent("commands.clear.success.single", j, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
+				serverCommandSource.method_9226(
+					new TranslatableTextComponent("commands.clear.success.single", j, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.clear.success.multiple", j, collection.size()), true);
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.clear.success.multiple", j, collection.size()), true);
 			}
 
 			return j;

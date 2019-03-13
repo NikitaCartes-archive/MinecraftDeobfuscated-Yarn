@@ -45,7 +45,7 @@ public class BossBarManager {
 		CompoundTag compoundTag = new CompoundTag();
 
 		for (CommandBossBar commandBossBar : this.bossBars.values()) {
-			compoundTag.put(commandBossBar.getId().toString(), commandBossBar.toTag());
+			compoundTag.method_10566(commandBossBar.getId().toString(), commandBossBar.toTag());
 		}
 
 		return compoundTag;

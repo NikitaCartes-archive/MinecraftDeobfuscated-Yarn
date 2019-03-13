@@ -10,13 +10,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
-	private static final Identifier WILD_SKIN = new Identifier("textures/entity/wolf/wolf.png");
-	private static final Identifier TAMED_SKIN = new Identifier("textures/entity/wolf/wolf_tame.png");
-	private static final Identifier ANGRY_SKIN = new Identifier("textures/entity/wolf/wolf_angry.png");
+	private static final Identifier field_4821 = new Identifier("textures/entity/wolf/wolf.png");
+	private static final Identifier field_4822 = new Identifier("textures/entity/wolf/wolf_tame.png");
+	private static final Identifier field_4823 = new Identifier("textures/entity/wolf/wolf_angry.png");
 
 	public WolfEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new WolfEntityModel<>(), 0.5F);
-		this.addFeature(new WolfCollarFeatureRenderer(this));
+		this.method_4046(new WolfCollarFeatureRenderer(this));
 	}
 
 	protected float method_4167(WolfEntity wolfEntity, float f) {
@@ -34,9 +34,9 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 
 	protected Identifier method_4165(WolfEntity wolfEntity) {
 		if (wolfEntity.isTamed()) {
-			return TAMED_SKIN;
+			return field_4822;
 		} else {
-			return wolfEntity.isAngry() ? ANGRY_SKIN : WILD_SKIN;
+			return wolfEntity.isAngry() ? field_4823 : field_4821;
 		}
 	}
 }

@@ -19,30 +19,30 @@ import net.minecraft.item.block.BlockItem;
 public class ItemModels {
 	public final Int2ObjectMap<ModelIdentifier> modelIds = new Int2ObjectOpenHashMap<>(256);
 	private final Int2ObjectMap<BakedModel> models = new Int2ObjectOpenHashMap<>(256);
-	private final BakedModelManager modelManager;
+	private final BakedModelManager field_4128;
 
 	public ItemModels(BakedModelManager bakedModelManager) {
-		this.modelManager = bakedModelManager;
+		this.field_4128 = bakedModelManager;
 	}
 
-	public Sprite getSprite(ItemProvider itemProvider) {
-		return this.getSprite(new ItemStack(itemProvider));
+	public Sprite method_3307(ItemProvider itemProvider) {
+		return this.method_3305(new ItemStack(itemProvider));
 	}
 
-	public Sprite getSprite(ItemStack itemStack) {
-		BakedModel bakedModel = this.getModel(itemStack);
-		return (bakedModel == this.modelManager.getMissingModel() || bakedModel.isBuiltin()) && itemStack.getItem() instanceof BlockItem
-			? this.modelManager.getBlockStateMaps().getSprite(((BlockItem)itemStack.getItem()).getBlock().getDefaultState())
+	public Sprite method_3305(ItemStack itemStack) {
+		BakedModel bakedModel = this.method_3308(itemStack);
+		return (bakedModel == this.field_4128.getMissingModel() || bakedModel.isBuiltin()) && itemStack.getItem() instanceof BlockItem
+			? this.field_4128.getBlockStateMaps().method_3339(((BlockItem)itemStack.getItem()).method_7711().method_9564())
 			: bakedModel.getSprite();
 	}
 
-	public BakedModel getModel(ItemStack itemStack) {
-		BakedModel bakedModel = this.getModel(itemStack.getItem());
-		return bakedModel == null ? this.modelManager.getMissingModel() : bakedModel;
+	public BakedModel method_3308(ItemStack itemStack) {
+		BakedModel bakedModel = this.method_3304(itemStack.getItem());
+		return bakedModel == null ? this.field_4128.getMissingModel() : bakedModel;
 	}
 
 	@Nullable
-	public BakedModel getModel(Item item) {
+	public BakedModel method_3304(Item item) {
 		return this.models.get(getModelId(item));
 	}
 
@@ -50,19 +50,19 @@ public class ItemModels {
 		return Item.getRawIdByItem(item);
 	}
 
-	public void putModel(Item item, ModelIdentifier modelIdentifier) {
+	public void method_3309(Item item, ModelIdentifier modelIdentifier) {
 		this.modelIds.put(getModelId(item), modelIdentifier);
 	}
 
-	public BakedModelManager getModelManager() {
-		return this.modelManager;
+	public BakedModelManager method_3303() {
+		return this.field_4128;
 	}
 
 	public void reloadModels() {
 		this.models.clear();
 
 		for (Entry<Integer, ModelIdentifier> entry : this.modelIds.entrySet()) {
-			this.models.put((Integer)entry.getKey(), this.modelManager.getModel((ModelIdentifier)entry.getValue()));
+			this.models.put((Integer)entry.getKey(), this.field_4128.method_4742((ModelIdentifier)entry.getValue()));
 		}
 	}
 }

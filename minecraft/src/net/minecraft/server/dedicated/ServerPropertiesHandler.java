@@ -56,8 +56,8 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final boolean broadcastRconToOps;
 	public final boolean broadcastConsoleToOps;
 	public final int maxWorldSize;
-	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> playerIdleTimeout;
-	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> whiteList;
+	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Integer> field_16817;
+	public final AbstractPropertiesHandler<ServerPropertiesHandler>.PropertyAccessor<Boolean> field_16804;
 
 	public ServerPropertiesHandler(Properties properties) {
 		super(properties);
@@ -76,8 +76,8 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		this.broadcastRconToOps = this.parseBoolean("broadcast-rcon-to-ops", true);
 		this.broadcastConsoleToOps = this.parseBoolean("broadcast-console-to-ops", true);
 		this.maxWorldSize = this.parseIntWithOperation("max-world-size", integer -> MathHelper.clamp(integer, 1, 29999984), 29999984);
-		this.playerIdleTimeout = this.intAccessor("player-idle-timeout", 0);
-		this.whiteList = this.booleanAccessor("white-list", false);
+		this.field_16817 = this.intAccessor("player-idle-timeout", 0);
+		this.field_16804 = this.booleanAccessor("white-list", false);
 	}
 
 	public static ServerPropertiesHandler load(Path path) {

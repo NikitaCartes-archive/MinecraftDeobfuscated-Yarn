@@ -19,81 +19,79 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class LadderBlock extends Block implements Waterloggable {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
-	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
-	protected static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
+	public static final DirectionProperty field_11253 = HorizontalFacingBlock.field_11177;
+	public static final BooleanProperty field_11257 = Properties.field_12508;
+	protected static final VoxelShape field_11255 = Block.method_9541(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
+	protected static final VoxelShape field_11252 = Block.method_9541(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_11254 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 16.0, 3.0);
+	protected static final VoxelShape field_11256 = Block.method_9541(0.0, 0.0, 13.0, 16.0, 16.0, 16.0);
 
 	protected LadderBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11253, Direction.NORTH).method_11657(field_11257, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		switch ((Direction)blockState.get(FACING)) {
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		switch ((Direction)blockState.method_11654(field_11253)) {
 			case NORTH:
-				return NORTH_SHAPE;
+				return field_11256;
 			case SOUTH:
-				return SOUTH_SHAPE;
+				return field_11254;
 			case WEST:
-				return WEST_SHAPE;
+				return field_11252;
 			case EAST:
 			default:
-				return EAST_SHAPE;
+				return field_11255;
 		}
 	}
 
 	private boolean method_10305(BlockView blockView, BlockPos blockPos, Direction direction) {
-		BlockState blockState = blockView.getBlockState(blockPos);
+		BlockState blockState = blockView.method_8320(blockPos);
 		boolean bl = method_9581(blockState.getBlock());
-		return !bl && Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction) && !blockState.emitsRedstonePower();
+		return !bl && Block.method_9501(blockState.method_11628(blockView, blockPos), direction) && !blockState.emitsRedstonePower();
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = blockState.get(FACING);
-		return this.method_10305(viewableWorld, blockPos.offset(direction.getOpposite()), direction);
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		Direction direction = blockState.method_11654(field_11253);
+		return this.method_10305(viewableWorld, blockPos.method_10093(direction.getOpposite()), direction);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		if (direction.getOpposite() == blockState.method_11654(field_11253) && !blockState.method_11591(iWorld, blockPos)) {
+			return Blocks.field_10124.method_9564();
 		} else {
-			if ((Boolean)blockState.get(WATERLOGGED)) {
-				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+			if ((Boolean)blockState.method_11654(field_11257)) {
+				iWorld.method_8405().method_8676(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 			}
 
-			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
 		if (!itemPlacementContext.method_7717()) {
-			BlockState blockState = itemPlacementContext.getWorld()
-				.getBlockState(itemPlacementContext.getBlockPos().offset(itemPlacementContext.getFacing().getOpposite()));
-			if (blockState.getBlock() == this && blockState.get(FACING) == itemPlacementContext.getFacing()) {
+			BlockState blockState = itemPlacementContext.method_8045()
+				.method_8320(itemPlacementContext.method_8037().method_10093(itemPlacementContext.method_8038().getOpposite()));
+			if (blockState.getBlock() == this && blockState.method_11654(field_11253) == itemPlacementContext.method_8038()) {
 				return null;
 			}
 		}
 
-		BlockState blockState = this.getDefaultState();
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+		BlockState blockState = this.method_9564();
+		ViewableWorld viewableWorld = itemPlacementContext.method_8045();
+		BlockPos blockPos = itemPlacementContext.method_8037();
+		FluidState fluidState = itemPlacementContext.method_8045().method_8316(itemPlacementContext.method_8037());
 
-		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
+		for (Direction direction : itemPlacementContext.method_7718()) {
 			if (direction.getAxis().isHorizontal()) {
-				blockState = blockState.with(FACING, direction.getOpposite());
-				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
-					return blockState.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
+				blockState = blockState.method_11657(field_11253, direction.getOpposite());
+				if (blockState.method_11591(viewableWorld, blockPos)) {
+					return blockState.method_11657(field_11257, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 				}
 			}
 		}
@@ -107,22 +105,22 @@ public class LadderBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
+	public BlockState method_9598(BlockState blockState, Rotation rotation) {
+		return blockState.method_11657(field_11253, rotation.method_10503(blockState.method_11654(field_11253)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
+	public BlockState method_9569(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.method_10345(blockState.method_11654(field_11253)));
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, WATERLOGGED);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_11253, field_11257);
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+	public FluidState method_9545(BlockState blockState) {
+		return blockState.method_11654(field_11257) ? Fluids.WATER.method_15729(false) : super.method_9545(blockState);
 	}
 }

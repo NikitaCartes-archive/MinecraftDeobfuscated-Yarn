@@ -6,17 +6,17 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.util.Identifier;
 
 public class FluidTags {
-	private static TagContainer<Fluid> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
+	private static TagContainer<Fluid> field_15520 = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int containerChanges;
-	public static final Tag<Fluid> field_15517 = register("water");
-	public static final Tag<Fluid> field_15518 = register("lava");
+	public static final Tag<Fluid> field_15517 = method_15095("water");
+	public static final Tag<Fluid> field_15518 = method_15095("lava");
 
-	public static void setContainer(TagContainer<Fluid> tagContainer) {
-		container = tagContainer;
+	public static void method_15096(TagContainer<Fluid> tagContainer) {
+		field_15520 = tagContainer;
 		containerChanges++;
 	}
 
-	private static Tag<Fluid> register(String string) {
+	private static Tag<Fluid> method_15095(String string) {
 		return new FluidTags.class_3487(new Identifier(string));
 	}
 
@@ -30,7 +30,7 @@ public class FluidTags {
 
 		public boolean method_15101(Fluid fluid) {
 			if (this.field_15522 != FluidTags.containerChanges) {
-				this.field_15521 = FluidTags.container.getOrCreate(this.getId());
+				this.field_15521 = FluidTags.field_15520.getOrCreate(this.getId());
 				this.field_15522 = FluidTags.containerChanges;
 			}
 
@@ -40,7 +40,7 @@ public class FluidTags {
 		@Override
 		public Collection<Fluid> values() {
 			if (this.field_15522 != FluidTags.containerChanges) {
-				this.field_15521 = FluidTags.container.getOrCreate(this.getId());
+				this.field_15521 = FluidTags.field_15520.getOrCreate(this.getId());
 				this.field_15522 = FluidTags.containerChanges;
 			}
 
@@ -50,7 +50,7 @@ public class FluidTags {
 		@Override
 		public Collection<Tag.Entry<Fluid>> entries() {
 			if (this.field_15522 != FluidTags.containerChanges) {
-				this.field_15521 = FluidTags.container.getOrCreate(this.getId());
+				this.field_15521 = FluidTags.field_15520.getOrCreate(this.getId());
 				this.field_15522 = FluidTags.containerChanges;
 			}
 

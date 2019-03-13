@@ -29,7 +29,7 @@ public class LootContextType {
 				.join(
 					this.allowed
 						.stream()
-						.map(lootContextParameter -> (this.required.contains(lootContextParameter) ? "!" : "") + lootContextParameter.getIdentifier())
+						.map(lootContextParameter -> (this.required.contains(lootContextParameter) ? "!" : "") + lootContextParameter.method_746())
 						.iterator()
 				)
 			+ "]";
@@ -49,7 +49,7 @@ public class LootContextType {
 
 		public LootContextType.Builder require(LootContextParameter<?> lootContextParameter) {
 			if (this.allowed.contains(lootContextParameter)) {
-				throw new IllegalArgumentException("Parameter " + lootContextParameter.getIdentifier() + " is already optional");
+				throw new IllegalArgumentException("Parameter " + lootContextParameter.method_746() + " is already optional");
 			} else {
 				this.required.add(lootContextParameter);
 				return this;
@@ -58,7 +58,7 @@ public class LootContextType {
 
 		public LootContextType.Builder allow(LootContextParameter<?> lootContextParameter) {
 			if (this.required.contains(lootContextParameter)) {
-				throw new IllegalArgumentException("Parameter " + lootContextParameter.getIdentifier() + " is already required");
+				throw new IllegalArgumentException("Parameter " + lootContextParameter.method_746() + " is already required");
 			} else {
 				this.allowed.add(lootContextParameter);
 				return this;

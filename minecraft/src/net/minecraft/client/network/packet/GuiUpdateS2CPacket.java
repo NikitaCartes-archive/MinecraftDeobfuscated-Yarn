@@ -22,7 +22,7 @@ public class GuiUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11447(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onGuiUpdate(this);
+		clientPlayPacketListener.method_11131(this);
 	}
 
 	@Override

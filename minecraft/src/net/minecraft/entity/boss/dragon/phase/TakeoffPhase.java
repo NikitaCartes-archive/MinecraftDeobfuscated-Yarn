@@ -20,10 +20,10 @@ public class TakeoffPhase extends AbstractPhase {
 	@Override
 	public void method_6855() {
 		if (!this.field_7056 && this.field_7054 != null) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-			double d = this.dragon.squaredDistanceToCenter(blockPos);
+			BlockPos blockPos = this.dragon.field_6002.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.field_13600);
+			double d = this.dragon.method_5677(blockPos);
 			if (d > 100.0) {
-				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+				this.dragon.method_6831().setPhase(PhaseType.HOLDING_PATTERN);
 			}
 		} else {
 			this.field_7056 = false;
@@ -42,7 +42,7 @@ public class TakeoffPhase extends AbstractPhase {
 		int i = this.dragon.method_6818();
 		Vec3d vec3d = this.dragon.method_6834(1.0F);
 		int j = this.dragon.method_6822(-vec3d.x * 40.0, 105.0, -vec3d.z * 40.0);
-		if (this.dragon.getFight() != null && this.dragon.getFight().getAliveEndCrystals() > 0) {
+		if (this.dragon.method_6829() != null && this.dragon.method_6829().getAliveEndCrystals() > 0) {
 			j %= 12;
 			if (j < 0) {
 				j += 12;
@@ -61,7 +61,7 @@ public class TakeoffPhase extends AbstractPhase {
 	}
 
 	private void method_6859() {
-		Vec3d vec3d = this.field_7054.getCurrentPosition();
+		Vec3d vec3d = this.field_7054.method_35();
 		this.field_7054.next();
 
 		double d;
@@ -74,12 +74,12 @@ public class TakeoffPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d getTarget() {
+	public Vec3d method_6851() {
 		return this.field_7055;
 	}
 
 	@Override
-	public PhaseType<TakeoffPhase> getType() {
+	public PhaseType<TakeoffPhase> method_6849() {
 		return PhaseType.TAKEOFF;
 	}
 }

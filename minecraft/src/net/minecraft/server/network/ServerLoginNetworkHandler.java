@@ -56,10 +56,10 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		if (this.state == ServerLoginNetworkHandler.State.field_14168) {
 			this.method_14384();
 		} else if (this.state == ServerLoginNetworkHandler.State.field_14171) {
-			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
+			ServerPlayerEntity serverPlayerEntity = this.server.method_3760().getPlayer(this.profile.getId());
 			if (serverPlayerEntity == null) {
 				this.state = ServerLoginNetworkHandler.State.field_14168;
-				this.server.getPlayerManager().onPlayerConnect(this.client, this.clientEntity);
+				this.server.method_3760().onPlayerConnect(this.client, this.clientEntity);
 				this.clientEntity = null;
 			}
 		}
@@ -72,8 +72,8 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	public void disconnect(TextComponent textComponent) {
 		try {
 			LOGGER.info("Disconnecting {}: {}", this.method_14383(), textComponent.getString());
-			this.client.sendPacket(new LoginDisconnectS2CPacket(textComponent));
-			this.client.disconnect(textComponent);
+			this.client.method_10743(new LoginDisconnectS2CPacket(textComponent));
+			this.client.method_10747(textComponent);
 		} catch (Exception var3) {
 			LOGGER.error("Error whilst disconnecting player", (Throwable)var3);
 		}
@@ -84,32 +84,32 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			this.profile = this.toOfflineProfile(this.profile);
 		}
 
-		TextComponent textComponent = this.server.getPlayerManager().checkCanJoin(this.client.getAddress(), this.profile);
+		TextComponent textComponent = this.server.method_3760().checkCanJoin(this.client.getAddress(), this.profile);
 		if (textComponent != null) {
 			this.disconnect(textComponent);
 		} else {
 			this.state = ServerLoginNetworkHandler.State.field_14172;
 			if (this.server.getNetworkCompressionThreshold() >= 0 && !this.client.isLocal()) {
 				this.client
-					.sendPacket(
+					.method_10752(
 						new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()),
 						channelFuture -> this.client.setMinCompressedSize(this.server.getNetworkCompressionThreshold())
 					);
 			}
 
-			this.client.sendPacket(new LoginSuccessS2CPacket(this.profile));
-			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
+			this.client.method_10743(new LoginSuccessS2CPacket(this.profile));
+			ServerPlayerEntity serverPlayerEntity = this.server.method_3760().getPlayer(this.profile.getId());
 			if (serverPlayerEntity != null) {
 				this.state = ServerLoginNetworkHandler.State.field_14171;
-				this.clientEntity = this.server.getPlayerManager().method_14613(this.profile);
+				this.clientEntity = this.server.method_3760().method_14613(this.profile);
 			} else {
-				this.server.getPlayerManager().onPlayerConnect(this.client, this.server.getPlayerManager().method_14613(this.profile));
+				this.server.method_3760().onPlayerConnect(this.client, this.server.method_3760().method_14613(this.profile));
 			}
 		}
 	}
 
 	@Override
-	public void onDisconnected(TextComponent textComponent) {
+	public void method_10839(TextComponent textComponent) {
 		LOGGER.info("{} lost connection: {}", this.method_14383(), textComponent.getString());
 	}
 
@@ -118,19 +118,19 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	}
 
 	@Override
-	public void onHello(LoginHelloC2SPacket loginHelloC2SPacket) {
+	public void method_12641(LoginHelloC2SPacket loginHelloC2SPacket) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14170, "Unexpected hello packet");
 		this.profile = loginHelloC2SPacket.getProfile();
 		if (this.server.isOnlineMode() && !this.client.isLocal()) {
 			this.state = ServerLoginNetworkHandler.State.field_14175;
-			this.client.sendPacket(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic(), this.field_14167));
+			this.client.method_10743(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic(), this.field_14167));
 		} else {
 			this.state = ServerLoginNetworkHandler.State.field_14168;
 		}
 	}
 
 	@Override
-	public void onKey(LoginKeyC2SPacket loginKeyC2SPacket) {
+	public void method_12642(LoginKeyC2SPacket loginKeyC2SPacket) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14175, "Unexpected key packet");
 		PrivateKey privateKey = this.server.getKeyPair().getPrivate();
 		if (!Arrays.equals(this.field_14167, loginKeyC2SPacket.method_12655(privateKey))) {
@@ -189,7 +189,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	}
 
 	@Override
-	public void onQueryResponse(LoginQueryResponseC2SPacket loginQueryResponseC2SPacket) {
+	public void method_12640(LoginQueryResponseC2SPacket loginQueryResponseC2SPacket) {
 		this.disconnect(new TranslatableTextComponent("multiplayer.disconnect.unexpected_query_response"));
 	}
 

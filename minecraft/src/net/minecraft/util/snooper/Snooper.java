@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.Map;
 import java.util.Timer;
 import java.util.UUID;
-import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -15,7 +14,7 @@ public class Snooper {
 	private final Map<String, Object> info = Maps.<String, Object>newHashMap();
 	private final String token = UUID.randomUUID().toString();
 	private final URL snooperUrl;
-	private final SnooperListener listener;
+	private final SnooperListener field_5827;
 	private final Timer timer = new Timer("Snooper Timer", true);
 	private final Object syncObject = new Object();
 	private final long startTime;
@@ -28,7 +27,7 @@ public class Snooper {
 			throw new IllegalArgumentException();
 		}
 
-		this.listener = snooperListener;
+		this.field_5827 = snooperListener;
 		this.startTime = l;
 	}
 
@@ -42,7 +41,7 @@ public class Snooper {
 		this.addInitialInfo("memory_max", Runtime.getRuntime().maxMemory());
 		this.addInitialInfo("memory_free", Runtime.getRuntime().freeMemory());
 		this.addInitialInfo("cpu_cores", Runtime.getRuntime().availableProcessors());
-		this.listener.addSnooperInfo(this);
+		this.field_5827.addSnooperInfo(this);
 	}
 
 	public void addInfo(String string, Object object) {
@@ -54,24 +53,6 @@ public class Snooper {
 	public void addInitialInfo(String string, Object object) {
 		synchronized (this.syncObject) {
 			this.initialInfo.put(string, object);
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public Map<String, String> getEntryListClient() {
-		Map<String, String> map = Maps.<String, String>newLinkedHashMap();
-		synchronized (this.syncObject) {
-			this.update();
-
-			for (Entry<String, Object> entry : this.initialInfo.entrySet()) {
-				map.put(entry.getKey(), entry.getValue().toString());
-			}
-
-			for (Entry<String, Object> entry : this.info.entrySet()) {
-				map.put(entry.getKey(), entry.getValue().toString());
-			}
-
-			return map;
 		}
 	}
 

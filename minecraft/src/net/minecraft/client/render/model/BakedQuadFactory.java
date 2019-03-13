@@ -44,7 +44,7 @@ public class BakedQuadFactory {
 		}
 	};
 
-	public BakedQuad bake(
+	public BakedQuad method_3468(
 		Vector3f vector3f,
 		Vector3f vector3f2,
 		ModelElementFace modelElementFace,
@@ -54,9 +54,9 @@ public class BakedQuadFactory {
 		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
 		boolean bl
 	) {
-		ModelElementTexture modelElementTexture = modelElementFace.textureData;
+		ModelElementTexture modelElementTexture = modelElementFace.field_4227;
 		if (modelRotationContainer.isUvLocked()) {
-			modelElementTexture = this.method_3454(modelElementFace.textureData, direction, modelRotationContainer.getRotation());
+			modelElementTexture = this.method_3454(modelElementFace.field_4227, direction, modelRotationContainer.getRotation());
 		}
 
 		float[] fs = new float[modelElementTexture.uvs.length];
@@ -149,7 +149,7 @@ public class BakedQuadFactory {
 		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation2,
 		boolean bl
 	) {
-		Direction direction2 = modelRotation.apply(direction);
+		Direction direction2 = modelRotation.method_4705(direction);
 		int j = bl ? this.method_3457(direction2) : -1;
 		SomethingDirectionSomethingQuadBakery.class_755 lv = SomethingDirectionSomethingQuadBakery.method_3163(direction).method_3162(i);
 		Vector3f vector3f = new Vector3f(fs[lv.field_3975], fs[lv.field_3974], fs[lv.field_3973]);
@@ -237,7 +237,7 @@ public class BakedQuadFactory {
 		float f = 0.0F;
 
 		for (Direction direction2 : Direction.values()) {
-			Vec3i vec3i = direction2.getVector();
+			Vec3i vec3i = direction2.method_10163();
 			Vector3f vector3f7 = new Vector3f((float)vec3i.getX(), (float)vec3i.getY(), (float)vec3i.getZ());
 			float g = vector3f6.dot(vector3f7);
 			if (g >= 0.0F && g > f) {

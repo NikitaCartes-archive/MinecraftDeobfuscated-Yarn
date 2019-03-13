@@ -39,7 +39,7 @@ public class DataGenerator {
 		for (DataProvider dataProvider : this.providers) {
 			LOGGER.info("Starting provider: {}", dataProvider.getName());
 			stopwatch2.start();
-			dataProvider.run(dataCache);
+			dataProvider.method_10319(dataCache);
 			stopwatch2.stop();
 			LOGGER.info("{} finished after {} ms", dataProvider.getName(), stopwatch2.elapsed(TimeUnit.MILLISECONDS));
 			stopwatch2.reset();
@@ -49,7 +49,7 @@ public class DataGenerator {
 		dataCache.write();
 	}
 
-	public void install(DataProvider dataProvider) {
+	public void method_10314(DataProvider dataProvider) {
 		this.providers.add(dataProvider);
 	}
 

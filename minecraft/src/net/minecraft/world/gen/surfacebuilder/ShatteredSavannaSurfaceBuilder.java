@@ -27,11 +27,11 @@ public class ShatteredSavannaSurfaceBuilder extends SurfaceBuilder<TernarySurfac
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
 		if (d > 1.75) {
-			SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.STONE_CONFIG);
+			SurfaceBuilder.DEFAULT.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.field_15670);
 		} else if (d > -0.5) {
-			SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.COARSE_DIRT_CONFIG);
+			SurfaceBuilder.DEFAULT.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.field_15678);
 		} else {
-			SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.GRASS_CONFIG);
+			SurfaceBuilder.DEFAULT.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.field_15677);
 		}
 	}
 }

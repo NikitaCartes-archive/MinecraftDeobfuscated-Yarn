@@ -29,19 +29,19 @@ public class FreezeTopLayerFeature extends Feature<DefaultFeatureConfig> {
 			for (int j = 0; j < 16; j++) {
 				int k = blockPos.getX() + i;
 				int l = blockPos.getZ() + j;
-				int m = iWorld.getTop(Heightmap.Type.MOTION_BLOCKING, k, l);
+				int m = iWorld.method_8589(Heightmap.Type.MOTION_BLOCKING, k, l);
 				mutable.set(k, m, l);
-				mutable2.set(mutable).setOffset(Direction.DOWN, 1);
-				Biome biome = iWorld.getBiome(mutable);
-				if (biome.canSetSnow(iWorld, mutable2, false)) {
-					iWorld.setBlockState(mutable2, Blocks.field_10295.getDefaultState(), 2);
+				mutable2.method_10101(mutable).method_10104(Direction.DOWN, 1);
+				Biome biome = iWorld.method_8310(mutable);
+				if (biome.method_8685(iWorld, mutable2, false)) {
+					iWorld.method_8652(mutable2, Blocks.field_10295.method_9564(), 2);
 				}
 
-				if (biome.canSetIce(iWorld, mutable)) {
-					iWorld.setBlockState(mutable, Blocks.field_10477.getDefaultState(), 2);
-					BlockState blockState = iWorld.getBlockState(mutable2);
-					if (blockState.contains(SnowyBlock.SNOWY)) {
-						iWorld.setBlockState(mutable2, blockState.with(SnowyBlock.SNOWY, Boolean.valueOf(true)), 2);
+				if (biome.method_8696(iWorld, mutable)) {
+					iWorld.method_8652(mutable, Blocks.field_10477.method_9564(), 2);
+					BlockState blockState = iWorld.method_8320(mutable2);
+					if (blockState.method_11570(SnowyBlock.field_11522)) {
+						iWorld.method_8652(mutable2, blockState.method_11657(SnowyBlock.field_11522, Boolean.valueOf(true)), 2);
 					}
 				}
 			}

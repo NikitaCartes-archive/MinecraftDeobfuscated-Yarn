@@ -26,8 +26,8 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 	});
 
 	public PandaEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new PandaEntityModel<>(9, 0.0F), 0.5F);
-		this.addFeature(new PandaHeldItemFeatureRenderer(this));
+		super(entityRenderDispatcher, new PandaEntityModel<>(9, 0.0F), 0.9F);
+		this.method_4046(new PandaHeldItemFeatureRenderer(this));
 	}
 
 	@Nullable

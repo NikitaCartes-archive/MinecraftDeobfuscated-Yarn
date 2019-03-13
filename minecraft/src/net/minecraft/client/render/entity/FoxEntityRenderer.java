@@ -12,14 +12,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxModel<FoxEntity>> {
-	private static final Identifier TEXTURE = new Identifier("textures/entity/fox/fox.png");
-	private static final Identifier TEXTURE_SLEEP = new Identifier("textures/entity/fox/fox_sleep.png");
-	private static final Identifier TEXTURE_SNOW = new Identifier("textures/entity/fox/snow_fox.png");
-	private static final Identifier TEXTURE_SNOW_SLEEP = new Identifier("textures/entity/fox/snow_fox_sleep.png");
+	private static final Identifier field_18026 = new Identifier("textures/entity/fox/fox.png");
+	private static final Identifier field_18027 = new Identifier("textures/entity/fox/fox_sleep.png");
+	private static final Identifier field_18028 = new Identifier("textures/entity/fox/snow_fox.png");
+	private static final Identifier field_18029 = new Identifier("textures/entity/fox/snow_fox_sleep.png");
 
 	public FoxEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new FoxModel<>(), 0.4F);
-		this.addFeature(new class_4043(this));
+		this.method_4046(new class_4043(this));
 	}
 
 	protected void method_18334(FoxEntity foxEntity, float f, float g, float h) {
@@ -32,9 +32,9 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxModel<Fox
 	@Nullable
 	protected Identifier method_18333(FoxEntity foxEntity) {
 		if (foxEntity.getType() == FoxEntity.Type.field_17996) {
-			return foxEntity.isSleeping() ? TEXTURE_SLEEP : TEXTURE;
+			return foxEntity.isSleeping() ? field_18027 : field_18026;
 		} else {
-			return foxEntity.isSleeping() ? TEXTURE_SNOW_SLEEP : TEXTURE_SNOW;
+			return foxEntity.isSleeping() ? field_18029 : field_18028;
 		}
 	}
 }

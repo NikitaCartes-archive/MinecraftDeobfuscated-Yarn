@@ -23,26 +23,26 @@ public class ItemListProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void method_10319(DataCache dataCache) throws IOException {
 		JsonObject jsonObject = new JsonObject();
-		Registry.REGISTRIES.getIds().forEach(identifier -> jsonObject.add(identifier.toString(), method_17175(Registry.REGISTRIES.get(identifier))));
+		Registry.field_11144.getIds().forEach(identifier -> jsonObject.add(identifier.toString(), method_17175(Registry.field_11144.method_10223(identifier))));
 		Path path = this.root.getOutput().resolve("reports/registries.json");
-		DataProvider.writeToPath(field_17170, dataCache, jsonObject, path);
+		DataProvider.method_10320(field_17170, dataCache, jsonObject, path);
 	}
 
 	private static <T> JsonElement method_17175(MutableRegistry<T> mutableRegistry) {
 		JsonObject jsonObject = new JsonObject();
 		if (mutableRegistry instanceof DefaultedRegistry) {
-			Identifier identifier = ((DefaultedRegistry)mutableRegistry).getDefaultId();
+			Identifier identifier = ((DefaultedRegistry)mutableRegistry).method_10137();
 			jsonObject.addProperty("default", identifier.toString());
 		}
 
-		int i = Registry.REGISTRIES.getRawId(mutableRegistry);
+		int i = Registry.field_11144.getRawId(mutableRegistry);
 		jsonObject.addProperty("protocol_id", i);
 		JsonObject jsonObject2 = new JsonObject();
 
 		for (Identifier identifier2 : mutableRegistry.getIds()) {
-			T object = mutableRegistry.get(identifier2);
+			T object = mutableRegistry.method_10223(identifier2);
 			int j = mutableRegistry.getRawId(object);
 			JsonObject jsonObject3 = new JsonObject();
 			jsonObject3.addProperty("protocol_id", j);

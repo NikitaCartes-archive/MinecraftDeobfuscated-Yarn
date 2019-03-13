@@ -32,8 +32,8 @@ public class CommandBossBar extends ServerBossBar {
 	}
 
 	@Override
-	public void addPlayer(ServerPlayerEntity serverPlayerEntity) {
-		super.addPlayer(serverPlayerEntity);
+	public void method_14088(ServerPlayerEntity serverPlayerEntity) {
+		super.method_14088(serverPlayerEntity);
 		this.playerUuids.add(serverPlayerEntity.getUuid());
 	}
 
@@ -42,8 +42,8 @@ public class CommandBossBar extends ServerBossBar {
 	}
 
 	@Override
-	public void removePlayer(ServerPlayerEntity serverPlayerEntity) {
-		super.removePlayer(serverPlayerEntity);
+	public void method_14089(ServerPlayerEntity serverPlayerEntity) {
+		super.method_14089(serverPlayerEntity);
 		this.playerUuids.remove(serverPlayerEntity.getUuid());
 	}
 
@@ -72,9 +72,9 @@ public class CommandBossBar extends ServerBossBar {
 	}
 
 	public final TextComponent getTextComponent() {
-		return TextFormatter.bracketed(this.getName())
+		return TextFormatter.bracketed(this.method_5414())
 			.modifyStyle(
-				style -> style.setColor(this.getColor().getTextFormat())
+				style -> style.setColor(this.getColor().method_5423())
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.getId().toString())))
 						.setInsertion(this.getId().toString())
 			);
@@ -117,7 +117,7 @@ public class CommandBossBar extends ServerBossBar {
 		for (UUID uUID : set) {
 			for (ServerPlayerEntity serverPlayerEntity3 : this.getPlayers()) {
 				if (serverPlayerEntity3.getUuid().equals(uUID)) {
-					this.removePlayer(serverPlayerEntity3);
+					this.method_14089(serverPlayerEntity3);
 					break;
 				}
 			}
@@ -126,7 +126,7 @@ public class CommandBossBar extends ServerBossBar {
 		}
 
 		for (ServerPlayerEntity serverPlayerEntity2 : set2) {
-			this.addPlayer(serverPlayerEntity2);
+			this.method_14088(serverPlayerEntity2);
 		}
 
 		return !set.isEmpty() || !set2.isEmpty();
@@ -134,7 +134,7 @@ public class CommandBossBar extends ServerBossBar {
 
 	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", TextComponent.Serializer.toJsonString(this.name));
+		compoundTag.putString("Name", TextComponent.Serializer.toJsonString(this.field_5777));
 		compoundTag.putBoolean("Visible", this.isVisible());
 		compoundTag.putInt("Value", this.value);
 		compoundTag.putInt("Max", this.maxValue);
@@ -149,7 +149,7 @@ public class CommandBossBar extends ServerBossBar {
 			listTag.add(TagHelper.serializeUuid(uUID));
 		}
 
-		compoundTag.put("Players", listTag);
+		compoundTag.method_10566("Players", listTag);
 		return compoundTag;
 	}
 
@@ -159,11 +159,11 @@ public class CommandBossBar extends ServerBossBar {
 		commandBossBar.setValue(compoundTag.getInt("Value"));
 		commandBossBar.setMaxValue(compoundTag.getInt("Max"));
 		commandBossBar.setColor(BossBar.Color.byName(compoundTag.getString("Color")));
-		commandBossBar.setOverlay(BossBar.Overlay.byName(compoundTag.getString("Overlay")));
+		commandBossBar.method_5409(BossBar.Overlay.byName(compoundTag.getString("Overlay")));
 		commandBossBar.setDarkenSky(compoundTag.getBoolean("DarkenScreen"));
 		commandBossBar.setDragonMusic(compoundTag.getBoolean("PlayBossMusic"));
 		commandBossBar.setThickenFog(compoundTag.getBoolean("CreateWorldFog"));
-		ListTag listTag = compoundTag.getList("Players", 10);
+		ListTag listTag = compoundTag.method_10554("Players", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			commandBossBar.addPlayer(TagHelper.deserializeUuid(listTag.getCompoundTag(i)));
@@ -174,11 +174,11 @@ public class CommandBossBar extends ServerBossBar {
 
 	public void method_12957(ServerPlayerEntity serverPlayerEntity) {
 		if (this.playerUuids.contains(serverPlayerEntity.getUuid())) {
-			this.addPlayer(serverPlayerEntity);
+			this.method_14088(serverPlayerEntity);
 		}
 	}
 
 	public void method_12961(ServerPlayerEntity serverPlayerEntity) {
-		super.removePlayer(serverPlayerEntity);
+		super.method_14089(serverPlayerEntity);
 	}
 }

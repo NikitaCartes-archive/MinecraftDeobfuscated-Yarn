@@ -21,7 +21,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo process(
+	public Structure.StructureBlockInfo method_15110(
 		ViewableWorld viewableWorld,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
@@ -32,7 +32,7 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 		if (block != Blocks.field_16540) {
 			return structureBlockInfo2;
 		} else {
-			String string = structureBlockInfo2.tag.getString("final_state");
+			String string = structureBlockInfo2.field_15595.getString("final_state");
 			BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
 
 			try {
@@ -41,12 +41,12 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 				throw new RuntimeException(var10);
 			}
 
-			return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockArgumentParser.getBlockState(), null);
+			return new Structure.StructureBlockInfo(structureBlockInfo2.field_15597, blockArgumentParser.getBlockState(), null);
 		}
 	}
 
 	@Override
-	protected StructureProcessorType getType() {
+	protected StructureProcessorType method_16772() {
 		return StructureProcessorType.field_16991;
 	}
 

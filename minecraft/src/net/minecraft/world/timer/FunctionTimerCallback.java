@@ -6,15 +6,15 @@ import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.util.Identifier;
 
 public class FunctionTimerCallback implements TimerCallback<MinecraftServer> {
-	private final Identifier name;
+	private final Identifier field_1304;
 
 	public FunctionTimerCallback(Identifier identifier) {
-		this.name = identifier;
+		this.field_1304 = identifier;
 	}
 
 	public void method_967(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
-		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
-		commandFunctionManager.getFunction(this.name)
+		CommandFunctionManager commandFunctionManager = minecraftServer.method_3740();
+		commandFunctionManager.getFunction(this.field_1304)
 			.ifPresent(commandFunction -> commandFunctionManager.execute(commandFunction, commandFunctionManager.getFunctionCommandSource()));
 	}
 
@@ -24,7 +24,7 @@ public class FunctionTimerCallback implements TimerCallback<MinecraftServer> {
 		}
 
 		public void method_968(CompoundTag compoundTag, FunctionTimerCallback functionTimerCallback) {
-			compoundTag.putString("Name", functionTimerCallback.name.toString());
+			compoundTag.putString("Name", functionTimerCallback.field_1304.toString());
 		}
 
 		public FunctionTimerCallback method_969(CompoundTag compoundTag) {

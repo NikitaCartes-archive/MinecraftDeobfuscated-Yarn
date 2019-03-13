@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityModel<T>> extends FeatureRenderer<T, M> {
-	private static final Identifier SKIN = new Identifier("textures/entity/spider_eyes.png");
+	private static final Identifier field_4902 = new Identifier("textures/entity/spider_eyes.png");
 
 	public SpiderEyesFeatureRenderer(FeatureRendererContext<T, M> featureRendererContext) {
 		super(featureRendererContext);
@@ -20,7 +20,7 @@ public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityM
 
 	@Override
 	public void render(T entity, float f, float g, float h, float i, float j, float k, float l) {
-		this.bindTexture(SKIN);
+		this.method_17164(field_4902);
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
@@ -35,7 +35,7 @@ public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityM
 		int o = m / 65536;
 		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)n, (float)o);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 		gameRenderer.method_3201(true);
 		this.getModel().render(entity, f, g, i, j, k, l);
 		gameRenderer.method_3201(false);

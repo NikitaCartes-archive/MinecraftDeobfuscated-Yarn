@@ -124,7 +124,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 	}
 
 	public void method_12495(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onStructureBlockUpdate(this);
+		serverPlayPacketListener.method_12051(this);
 	}
 
 	public BlockPos getPos() {

@@ -68,12 +68,12 @@ public class LootContextTypes {
 	}
 
 	@Nullable
-	public static LootContextType get(Identifier identifier) {
+	public static LootContextType method_757(Identifier identifier) {
 		return (LootContextType)MAP.get(identifier);
 	}
 
 	@Nullable
-	public static Identifier getId(LootContextType lootContextType) {
+	public static Identifier method_762(LootContextType lootContextType) {
 		return (Identifier)MAP.inverse().get(lootContextType);
 	}
 }

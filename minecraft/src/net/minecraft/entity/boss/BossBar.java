@@ -6,7 +6,7 @@ import net.minecraft.text.TextFormat;
 
 public abstract class BossBar {
 	private final UUID uuid;
-	protected TextComponent name;
+	protected TextComponent field_5777;
 	protected float percent;
 	protected BossBar.Color color;
 	protected BossBar.Overlay overlay;
@@ -16,7 +16,7 @@ public abstract class BossBar {
 
 	public BossBar(UUID uUID, TextComponent textComponent, BossBar.Color color, BossBar.Overlay overlay) {
 		this.uuid = uUID;
-		this.name = textComponent;
+		this.field_5777 = textComponent;
 		this.color = color;
 		this.overlay = overlay;
 		this.percent = 1.0F;
@@ -26,12 +26,12 @@ public abstract class BossBar {
 		return this.uuid;
 	}
 
-	public TextComponent getName() {
-		return this.name;
+	public TextComponent method_5414() {
+		return this.field_5777;
 	}
 
-	public void setName(TextComponent textComponent) {
-		this.name = textComponent;
+	public void method_5413(TextComponent textComponent) {
+		this.field_5777 = textComponent;
 	}
 
 	public float getPercent() {
@@ -54,7 +54,7 @@ public abstract class BossBar {
 		return this.overlay;
 	}
 
-	public void setOverlay(BossBar.Overlay overlay) {
+	public void method_5409(BossBar.Overlay overlay) {
 		this.overlay = overlay;
 	}
 
@@ -95,15 +95,15 @@ public abstract class BossBar {
 		field_5786("white", TextFormat.field_1068);
 
 		private final String name;
-		private final TextFormat format;
+		private final TextFormat field_5787;
 
 		private Color(String string2, TextFormat textFormat) {
 			this.name = string2;
-			this.format = textFormat;
+			this.field_5787 = textFormat;
 		}
 
-		public TextFormat getTextFormat() {
-			return this.format;
+		public TextFormat method_5423() {
+			return this.field_5787;
 		}
 
 		public String getName() {

@@ -7,27 +7,27 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.World;
 
-public class SuspiciousStewItem extends FoodItem {
-	public SuspiciousStewItem(int i, Item.Settings settings) {
-		super(i, 0.6F, false, settings);
+public class SuspiciousStewItem extends Item {
+	public SuspiciousStewItem(Item.Settings settings) {
+		super(settings);
 	}
 
 	public static void addEffectToStew(ItemStack itemStack, StatusEffect statusEffect, int i) {
-		CompoundTag compoundTag = itemStack.getOrCreateTag();
-		ListTag listTag = compoundTag.getList("Effects", 9);
+		CompoundTag compoundTag = itemStack.method_7948();
+		ListTag listTag = compoundTag.method_10554("Effects", 9);
 		CompoundTag compoundTag2 = new CompoundTag();
 		compoundTag2.putByte("EffectId", (byte)StatusEffect.getRawId(statusEffect));
 		compoundTag2.putInt("EffectDuration", i);
 		listTag.add(compoundTag2);
-		compoundTag.put("Effects", listTag);
+		compoundTag.method_10566("Effects", listTag);
 	}
 
 	@Override
-	public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
-		super.onItemFinishedUsing(itemStack, world, livingEntity);
-		CompoundTag compoundTag = itemStack.getTag();
+	public ItemStack method_7861(ItemStack itemStack, World world, LivingEntity livingEntity) {
+		super.method_7861(itemStack, world, livingEntity);
+		CompoundTag compoundTag = itemStack.method_7969();
 		if (compoundTag != null && compoundTag.containsKey("Effects", 9)) {
-			ListTag listTag = compoundTag.getList("Effects", 10);
+			ListTag listTag = compoundTag.method_10554("Effects", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				int j = 160;

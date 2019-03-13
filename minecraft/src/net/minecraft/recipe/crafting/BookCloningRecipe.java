@@ -22,7 +22,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(j);
+			ItemStack itemStack2 = craftingInventory.method_5438(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() == Items.field_8360) {
 					if (!itemStack.isEmpty()) {
@@ -48,7 +48,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.getInvStack(j);
+			ItemStack itemStack2 = craftingInventory.method_5438(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() == Items.field_8360) {
 					if (!itemStack.isEmpty()) {
@@ -68,9 +68,9 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 
 		if (!itemStack.isEmpty() && itemStack.hasTag() && i >= 1 && WrittenBookItem.getBookGeneration(itemStack) < 2) {
 			ItemStack itemStack3 = new ItemStack(Items.field_8360, i);
-			CompoundTag compoundTag = itemStack.getTag().method_10553();
+			CompoundTag compoundTag = itemStack.method_7969().method_10553();
 			compoundTag.putInt("generation", WrittenBookItem.getBookGeneration(itemStack) + 1);
-			itemStack3.setTag(compoundTag);
+			itemStack3.method_7980(compoundTag);
 			return itemStack3;
 		} else {
 			return ItemStack.EMPTY;
@@ -81,7 +81,7 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.create(craftingInventory.getInvSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+			ItemStack itemStack = craftingInventory.method_5438(i);
 			if (itemStack.getItem().hasRecipeRemainder()) {
 				defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
 			} else if (itemStack.getItem() instanceof WrittenBookItem) {
@@ -96,8 +96,8 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.BOOK_CLONING;
+	public RecipeSerializer<?> method_8119() {
+		return RecipeSerializer.field_9029;
 	}
 
 	@Environment(EnvType.CLIENT)

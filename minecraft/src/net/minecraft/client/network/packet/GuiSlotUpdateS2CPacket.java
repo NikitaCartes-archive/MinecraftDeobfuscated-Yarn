@@ -23,7 +23,7 @@ public class GuiSlotUpdateS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public void method_11451(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onGuiSlotUpdate(this);
+		clientPlayPacketListener.method_11109(this);
 	}
 
 	@Override

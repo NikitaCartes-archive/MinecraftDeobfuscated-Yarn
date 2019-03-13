@@ -72,8 +72,8 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	@Nullable
 	@Override
-	public BlockPos locateStructure(World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean bl) {
-		if (!chunkGenerator.getBiomeSource().hasStructureFeature(this)) {
+	public BlockPos method_14015(World world, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, BlockPos blockPos, int i, boolean bl) {
+		if (!chunkGenerator.getBiomeSource().method_8754(this)) {
 			return null;
 		} else {
 			if (this.lastSeed != world.getSeed()) {
@@ -110,14 +110,14 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		List<Biome> list = Lists.<Biome>newArrayList();
 
 		for (Biome biome : Registry.BIOME) {
-			if (biome != null && chunkGenerator.hasStructure(biome, Feature.STRONGHOLD)) {
+			if (biome != null && chunkGenerator.method_12097(biome, Feature.field_13565)) {
 				list.add(biome);
 			}
 		}
 
-		int i = chunkGenerator.getConfig().getStrongholdDistance();
-		int j = chunkGenerator.getConfig().getStrongholdCount();
-		int k = chunkGenerator.getConfig().getStrongholdSpread();
+		int i = chunkGenerator.method_12109().getStrongholdDistance();
+		int j = chunkGenerator.method_12109().getStrongholdCount();
+		int k = chunkGenerator.method_12109().getStrongholdSpread();
 		this.startPositions = new ChunkPos[j];
 		int l = 0;
 
@@ -139,7 +139,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 				double e = (double)(4 * i + i * o * 6) + (random.nextDouble() - 0.5) * (double)i * 2.5;
 				int q = (int)Math.round(Math.cos(d) * e);
 				int r = (int)Math.round(Math.sin(d) * e);
-				BlockPos blockPos = chunkGenerator.getBiomeSource().locateBiome((q << 4) + 8, (r << 4) + 8, 112, list, random);
+				BlockPos blockPos = chunkGenerator.getBiomeSource().method_8762((q << 4) + 8, (r << 4) + 8, 112, list, random);
 				if (blockPos != null) {
 					q = blockPos.getX() >> 4;
 					r = blockPos.getZ() >> 4;
@@ -167,7 +167,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			int k = 0;
 			long l = chunkGenerator.getSeed();
 

@@ -53,7 +53,7 @@ public abstract class AbstractEntityAttributeContainer {
 		for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
 			EntityAttributeInstance entityAttributeInstance = this.get((String)entry.getKey());
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.removeModifier((EntityAttributeModifier)entry.getValue());
+				entityAttributeInstance.method_6202((EntityAttributeModifier)entry.getValue());
 			}
 		}
 	}
@@ -62,8 +62,8 @@ public abstract class AbstractEntityAttributeContainer {
 		for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
 			EntityAttributeInstance entityAttributeInstance = this.get((String)entry.getKey());
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.removeModifier((EntityAttributeModifier)entry.getValue());
-				entityAttributeInstance.addModifier((EntityAttributeModifier)entry.getValue());
+				entityAttributeInstance.method_6202((EntityAttributeModifier)entry.getValue());
+				entityAttributeInstance.method_6197((EntityAttributeModifier)entry.getValue());
 			}
 		}
 	}

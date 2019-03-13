@@ -13,7 +13,7 @@ import net.minecraft.util.DefaultedList;
 
 public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	private static final Random RANDOM = new Random();
-	private DefaultedList<ItemStack> inventory = DefaultedList.create(9, ItemStack.EMPTY);
+	private DefaultedList<ItemStack> field_11945 = DefaultedList.create(9, ItemStack.EMPTY);
 
 	protected DispenserBlockEntity(BlockEntityType<?> blockEntityType) {
 		super(blockEntityType);
@@ -30,7 +30,7 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 
 	@Override
 	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.inventory) {
+		for (ItemStack itemStack : this.field_11945) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -44,8 +44,8 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 		int i = -1;
 		int j = 1;
 
-		for (int k = 0; k < this.inventory.size(); k++) {
-			if (!this.inventory.get(k).isEmpty() && RANDOM.nextInt(j++) == 0) {
+		for (int k = 0; k < this.field_11945.size(); k++) {
+			if (!this.field_11945.get(k).isEmpty() && RANDOM.nextInt(j++) == 0) {
 				i = k;
 			}
 		}
@@ -54,9 +54,9 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	public int addToFirstFreeSlot(ItemStack itemStack) {
-		for (int i = 0; i < this.inventory.size(); i++) {
-			if (this.inventory.get(i).isEmpty()) {
-				this.setInvStack(i, itemStack);
+		for (int i = 0; i < this.field_11945.size(); i++) {
+			if (this.field_11945.get(i).isEmpty()) {
+				this.method_5447(i, itemStack);
 				return i;
 			}
 		}
@@ -65,37 +65,37 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
+	protected TextComponent method_17823() {
 		return new TranslatableTextComponent("container.dispenser");
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(compoundTag)) {
-			Inventories.fromTag(compoundTag, this.inventory);
+	public void method_11014(CompoundTag compoundTag) {
+		super.method_11014(compoundTag);
+		this.field_11945 = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+		if (!this.method_11283(compoundTag)) {
+			Inventories.method_5429(compoundTag, this.field_11945);
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		if (!this.serializeLootTable(compoundTag)) {
-			Inventories.toTag(compoundTag, this.inventory);
+	public CompoundTag method_11007(CompoundTag compoundTag) {
+		super.method_11007(compoundTag);
+		if (!this.method_11286(compoundTag)) {
+			Inventories.method_5426(compoundTag, this.field_11945);
 		}
 
 		return compoundTag;
 	}
 
 	@Override
-	protected DefaultedList<ItemStack> getInvStackList() {
-		return this.inventory;
+	protected DefaultedList<ItemStack> method_11282() {
+		return this.field_11945;
 	}
 
 	@Override
-	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
-		this.inventory = defaultedList;
+	protected void method_11281(DefaultedList<ItemStack> defaultedList) {
+		this.field_11945 = defaultedList;
 	}
 
 	@Override

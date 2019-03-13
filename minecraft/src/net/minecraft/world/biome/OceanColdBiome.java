@@ -18,9 +18,9 @@ public class OceanColdBiome extends Biome {
 	public OceanColdBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG)
+				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15677)
 				.precipitation(Biome.Precipitation.RAIN)
-				.category(Biome.Category.OCEAN)
+				.method_8738(Biome.Category.OCEAN)
 				.depth(-1.0F)
 				.scale(0.1F)
 				.temperature(0.5F)
@@ -29,9 +29,9 @@ public class OceanColdBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.addStructureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
-		this.addStructureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(false));
+		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.method_8710(Feature.field_13536, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
+		this.method_8710(Feature.field_13589, new ShipwreckFeatureConfig(false));
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -45,9 +45,9 @@ public class OceanColdBiome extends Biome {
 		DefaultBiomeFeatures.addDefaultMushrooms(this);
 		DefaultBiomeFeatures.addDefaultVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
-		this.addFeature(
+		this.method_8719(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			configureFeature(Feature.field_13567, new SeagrassFeatureConfig(32, 0.3), Decorator.field_14231, DecoratorConfig.DEFAULT)
+			method_8699(Feature.field_13567, new SeagrassFeatureConfig(32, 0.3), Decorator.field_14231, DecoratorConfig.field_13436)
 		);
 		DefaultBiomeFeatures.addSeagrassOnStone(this);
 		DefaultBiomeFeatures.addKelp(this);

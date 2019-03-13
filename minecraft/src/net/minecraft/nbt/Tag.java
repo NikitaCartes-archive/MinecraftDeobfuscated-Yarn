@@ -95,9 +95,9 @@ public interface Tag {
 		return this.toString();
 	}
 
-	default TextComponent toTextComponent() {
-		return this.toTextComponent("", 0);
+	default TextComponent method_10715() {
+		return this.method_10710("", 0);
 	}
 
-	TextComponent toTextComponent(String string, int i);
+	TextComponent method_10710(String string, int i);
 }

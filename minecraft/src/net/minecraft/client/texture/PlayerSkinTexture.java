@@ -57,10 +57,10 @@ public class PlayerSkinTexture extends ResourceTexture {
 	}
 
 	@Override
-	public void load(ResourceManager resourceManager) throws IOException {
+	public void method_4625(ResourceManager resourceManager) throws IOException {
 		if (!this.field_5215) {
 			synchronized (this) {
-				super.load(resourceManager);
+				super.method_4625(resourceManager);
 				this.field_5215 = true;
 			}
 		}
@@ -122,8 +122,7 @@ public class PlayerSkinTexture extends ResourceTexture {
 									nativeImage = PlayerSkinTexture.this.filter.filterImage(nativeImage);
 								}
 
-								NativeImage nativeImage2 = nativeImage;
-								MinecraftClient.getInstance().execute(() -> PlayerSkinTexture.this.method_4534(nativeImage2));
+								PlayerSkinTexture.this.method_4534(nativeImage);
 							} catch (IOException var7x) {
 								PlayerSkinTexture.LOGGER.warn("Error while loading the skin texture", (Throwable)var7x);
 							} finally {

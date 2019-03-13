@@ -26,8 +26,8 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 
 	@Override
 	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.getConfig().getOceanMonumentSpacing();
-		int n = chunkGenerator.getConfig().getOceanMonumentSeparation();
+		int m = chunkGenerator.method_12109().getOceanMonumentSpacing();
+		int n = chunkGenerator.method_12109().getOceanMonumentSeparation();
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
@@ -47,7 +47,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			for (Biome biome : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, j * 16 + 9, 16)) {
-				if (!chunkGenerator.hasStructure(biome, Feature.OCEAN_MONUMENT)) {
+				if (!chunkGenerator.method_12097(biome, Feature.field_13588)) {
 					return false;
 				}
 			}
@@ -92,7 +92,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			this.method_16588(i, j);
 		}
 

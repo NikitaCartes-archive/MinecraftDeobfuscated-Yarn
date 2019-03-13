@@ -38,11 +38,19 @@ public class ServerListWidget extends EntryListWidget<ServerListWidget.Entry> {
 		return i == this.selectedIndex;
 	}
 
+	@Override
+	protected void method_19351(int i) {
+		this.multiplayerScreen.method_19414(i);
+		if (this.getInputListeners().get(this.getIndex()) instanceof LocalScanProgressListEntry) {
+			this.multiplayerScreen.method_19414(i > 0 ? 1 : -1);
+		}
+	}
+
 	public int getIndex() {
 		return this.selectedIndex;
 	}
 
-	public void setUserServers(ServerList serverList) {
+	public void method_2564(ServerList serverList) {
 		this.userServers.clear();
 
 		for (int i = 0; i < serverList.size(); i++) {
@@ -70,6 +78,23 @@ public class ServerListWidget extends EntryListWidget<ServerListWidget.Entry> {
 	@Override
 	public int getEntryWidth() {
 		return super.getEntryWidth() + 85;
+	}
+
+	@Override
+	public boolean hasFocus() {
+		return true;
+	}
+
+	@Override
+	protected boolean method_19352() {
+		return this.multiplayerScreen.method_19357() == this;
+	}
+
+	@Override
+	public void setHasFocus(boolean bl) {
+		if (bl && this.getIndex() < 0 && this.getEntryCount() > 0) {
+			this.method_19351(1);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

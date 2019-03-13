@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ViewableWorld;
@@ -10,7 +11,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	protected int counter;
 	protected int tryingTime;
 	private int safeWaitingTime;
-	protected BlockPos targetPos = BlockPos.ORIGIN;
+	protected BlockPos field_6512 = BlockPos.ORIGIN;
 	private boolean reached;
 	private final int field_6510;
 	private final int maxYDifference;
@@ -26,7 +27,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		this.field_6510 = i;
 		this.field_6515 = 0;
 		this.maxYDifference = j;
-		this.setControlBits(5);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18407));
 	}
 
 	@Override
@@ -46,7 +47,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return this.tryingTime >= -this.safeWaitingTime && this.tryingTime <= 1200 && this.isTargetPos(this.owner.world, this.targetPos);
+		return this.tryingTime >= -this.safeWaitingTime && this.tryingTime <= 1200 && this.method_6296(this.owner.field_6002, this.field_6512);
 	}
 
 	@Override
@@ -58,8 +59,10 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	protected void startMovingToTarget() {
 		this.owner
-			.getNavigation()
-			.startMovingTo((double)((float)this.targetPos.getX()) + 0.5, (double)(this.targetPos.getY() + 1), (double)((float)this.targetPos.getZ()) + 0.5, this.speed);
+			.method_5942()
+			.startMovingTo(
+				(double)((float)this.field_6512.getX()) + 0.5, (double)(this.field_6512.getY() + 1), (double)((float)this.field_6512.getZ()) + 0.5, this.speed
+			);
 	}
 
 	public double getDesiredSquaredDistanceToTarget() {
@@ -68,13 +71,15 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	@Override
 	public void tick() {
-		if (this.owner.squaredDistanceToCenter(this.targetPos.up()) > this.getDesiredSquaredDistanceToTarget()) {
+		if (this.owner.method_5677(this.field_6512.up()) > this.getDesiredSquaredDistanceToTarget()) {
 			this.reached = false;
 			this.tryingTime++;
 			if (this.shouldResetPath()) {
 				this.owner
-					.getNavigation()
-					.startMovingTo((double)((float)this.targetPos.getX()) + 0.5, (double)(this.targetPos.getY() + 1), (double)((float)this.targetPos.getZ()) + 0.5, this.speed);
+					.method_5942()
+					.startMovingTo(
+						(double)((float)this.field_6512.getX()) + 0.5, (double)(this.field_6512.getY() + 1), (double)((float)this.field_6512.getZ()) + 0.5, this.speed
+					);
 			}
 		} else {
 			this.reached = true;
@@ -100,9 +105,9 @@ public abstract class MoveToTargetPosGoal extends Goal {
 			for (int l = 0; l < i; l++) {
 				for (int m = 0; m <= l; m = m > 0 ? -m : 1 - m) {
 					for (int n = m < l && m > -l ? l : 0; n <= l; n = n > 0 ? -n : 1 - n) {
-						mutable.set(blockPos).setOffset(m, k - 1, n);
-						if (this.owner.method_18407(mutable) && this.isTargetPos(this.owner.world, mutable)) {
-							this.targetPos = mutable;
+						mutable.method_10101(blockPos).setOffset(m, k - 1, n);
+						if (this.owner.method_18407(mutable) && this.method_6296(this.owner.field_6002, mutable)) {
+							this.field_6512 = mutable;
 							return true;
 						}
 					}
@@ -113,5 +118,5 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		return false;
 	}
 
-	protected abstract boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos);
+	protected abstract boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos);
 }

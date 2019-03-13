@@ -37,7 +37,7 @@ public class TeleportCommand {
 									commandContext -> method_13765(
 											commandContext.getSource(),
 											EntityArgumentType.method_9317(commandContext, "targets"),
-											commandContext.getSource().getWorld(),
+											commandContext.getSource().method_9225(),
 											Vec3ArgumentType.method_9734(commandContext, "location"),
 											null,
 											null
@@ -49,7 +49,7 @@ public class TeleportCommand {
 											commandContext -> method_13765(
 													commandContext.getSource(),
 													EntityArgumentType.method_9317(commandContext, "targets"),
-													commandContext.getSource().getWorld(),
+													commandContext.getSource().method_9225(),
 													Vec3ArgumentType.method_9734(commandContext, "location"),
 													RotationArgumentType.getRotationArgument(commandContext, "rotation"),
 													null
@@ -66,7 +66,7 @@ public class TeleportCommand {
 															commandContext -> method_13765(
 																	commandContext.getSource(),
 																	EntityArgumentType.method_9317(commandContext, "targets"),
-																	commandContext.getSource().getWorld(),
+																	commandContext.getSource().method_9225(),
 																	Vec3ArgumentType.method_9734(commandContext, "location"),
 																	null,
 																	new TeleportCommand.class_3144(
@@ -80,7 +80,7 @@ public class TeleportCommand {
 																	commandContext -> method_13765(
 																			commandContext.getSource(),
 																			EntityArgumentType.method_9317(commandContext, "targets"),
-																			commandContext.getSource().getWorld(),
+																			commandContext.getSource().method_9225(),
 																			Vec3ArgumentType.method_9734(commandContext, "location"),
 																			null,
 																			new TeleportCommand.class_3144(
@@ -97,7 +97,7 @@ public class TeleportCommand {
 													commandContext -> method_13765(
 															commandContext.getSource(),
 															EntityArgumentType.method_9317(commandContext, "targets"),
-															commandContext.getSource().getWorld(),
+															commandContext.getSource().method_9225(),
 															Vec3ArgumentType.method_9734(commandContext, "location"),
 															null,
 															new TeleportCommand.class_3144(Vec3ArgumentType.getVec3Argument(commandContext, "facingLocation"))
@@ -121,7 +121,7 @@ public class TeleportCommand {
 							commandContext -> method_13765(
 									commandContext.getSource(),
 									Collections.singleton(commandContext.getSource().getEntityOrThrow()),
-									commandContext.getSource().getWorld(),
+									commandContext.getSource().method_9225(),
 									Vec3ArgumentType.method_9734(commandContext, "location"),
 									DefaultPosArgument.zero(),
 									null
@@ -149,7 +149,7 @@ public class TeleportCommand {
 			method_13766(
 				serverCommandSource,
 				entity2,
-				serverCommandSource.getWorld(),
+				serverCommandSource.method_9225(),
 				entity.x,
 				entity.y,
 				entity.z,
@@ -161,14 +161,11 @@ public class TeleportCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.teleport.success.entity.single", ((Entity)collection.iterator().next()).getDisplayName(), entity.getDisplayName()),
-				true
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.teleport.success.entity.single", ((Entity)collection.iterator().next()).method_5476(), entity.method_5476()), true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.teleport.success.entity.multiple", collection.size(), entity.getDisplayName()), true
-			);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.teleport.success.entity.multiple", collection.size(), entity.method_5476()), true);
 		}
 
 		return collection.size();
@@ -219,14 +216,12 @@ public class TeleportCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent(
-					"commands.teleport.success.location.single", ((Entity)collection.iterator().next()).getDisplayName(), vec3d.x, vec3d.y, vec3d.z
-				),
+			serverCommandSource.method_9226(
+				new TranslatableTextComponent("commands.teleport.success.location.single", ((Entity)collection.iterator().next()).method_5476(), vec3d.x, vec3d.y, vec3d.z),
 				true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent("commands.teleport.success.location.multiple", collection.size(), vec3d.x, vec3d.y, vec3d.z), true
 			);
 		}
@@ -252,8 +247,8 @@ public class TeleportCommand {
 				((ServerPlayerEntity)entity).wakeUp(true, true, false);
 			}
 
-			if (serverWorld == entity.world) {
-				((ServerPlayerEntity)entity).networkHandler.teleportRequest(d, e, f, g, h, set);
+			if (serverWorld == entity.field_6002) {
+				((ServerPlayerEntity)entity).field_13987.teleportRequest(d, e, f, g, h, set);
 			} else {
 				((ServerPlayerEntity)entity).method_14251(serverWorld, d, e, f, g, h);
 			}
@@ -263,14 +258,14 @@ public class TeleportCommand {
 			float i = MathHelper.wrapDegrees(g);
 			float j = MathHelper.wrapDegrees(h);
 			j = MathHelper.clamp(j, -90.0F, 90.0F);
-			if (serverWorld == entity.world) {
+			if (serverWorld == entity.field_6002) {
 				entity.setPositionAndAngles(d, e, f, i, j);
 				entity.setHeadYaw(i);
 			} else {
 				entity.method_18375();
-				entity.dimension = serverWorld.dimension.getType();
+				entity.field_6026 = serverWorld.field_9247.method_12460();
 				Entity entity2 = entity;
-				entity = entity.getType().create(serverWorld);
+				entity = entity.method_5864().method_5883(serverWorld);
 				if (entity == null) {
 					return;
 				}
@@ -288,7 +283,7 @@ public class TeleportCommand {
 		}
 
 		if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).isFallFlying()) {
-			entity.setVelocity(entity.getVelocity().multiply(1.0, 0.0, 1.0));
+			entity.method_18799(entity.method_18798().multiply(1.0, 0.0, 1.0));
 			entity.onGround = true;
 		}
 	}
@@ -301,7 +296,7 @@ public class TeleportCommand {
 		public class_3144(Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
 			this.field_13758 = entity;
 			this.field_13759 = entityAnchor;
-			this.field_13760 = entityAnchor.positionAt(entity);
+			this.field_13760 = entityAnchor.method_9302(entity);
 		}
 
 		public class_3144(Vec3d vec3d) {
@@ -315,10 +310,10 @@ public class TeleportCommand {
 				if (entity instanceof ServerPlayerEntity) {
 					((ServerPlayerEntity)entity).method_14222(serverCommandSource.getEntityAnchor(), this.field_13758, this.field_13759);
 				} else {
-					entity.lookAt(serverCommandSource.getEntityAnchor(), this.field_13760);
+					entity.method_5702(serverCommandSource.getEntityAnchor(), this.field_13760);
 				}
 			} else {
-				entity.lookAt(serverCommandSource.getEntityAnchor(), this.field_13760);
+				entity.method_5702(serverCommandSource.getEntityAnchor(), this.field_13760);
 			}
 		}
 	}

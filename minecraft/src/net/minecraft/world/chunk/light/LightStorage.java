@@ -19,7 +19,7 @@ import net.minecraft.world.chunk.WorldNibbleStorage;
 
 public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends class_4079 {
 	protected static final ChunkNibbleArray EMPTY = new ChunkNibbleArray();
-	private static final Direction[] DIRECTIONS = Direction.values();
+	private static final Direction[] field_15799 = Direction.values();
 	private final LightType lightType;
 	private final ChunkProvider chunkProvider;
 	protected final LongSet field_15808 = new LongOpenHashSet();
@@ -218,7 +218,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 						int j = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l));
 						int k = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l));
 
-						for (Direction direction : DIRECTIONS) {
+						for (Direction direction : field_15799) {
 							long n = ChunkSectionPos.offsetPacked(l, direction);
 							if (!this.toUpdate.containsKey(n) && this.hasChunk(n)) {
 								for (int o = 0; o < 16; o++) {
@@ -318,7 +318,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 
 			while (longIterator.hasNext()) {
 				long l = longIterator.nextLong();
-				this.chunkProvider.onLightUpdate(this.lightType, ChunkSectionPos.from(l));
+				this.chunkProvider.method_12247(this.lightType, ChunkSectionPos.from(l));
 			}
 
 			this.toNotify.clear();

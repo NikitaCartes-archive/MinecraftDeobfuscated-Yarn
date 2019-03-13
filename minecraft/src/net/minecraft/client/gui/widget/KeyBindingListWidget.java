@@ -3,6 +3,7 @@ package net.minecraft.client.gui.widget;
 import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.menu.settings.ControlsSettingsScreen;
 import net.minecraft.client.options.KeyBinding;
@@ -12,15 +13,15 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
 public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.Entry> {
-	private final ControlsSettingsScreen gui;
+	private final ControlsSettingsScreen field_2735;
 	private final MinecraftClient client;
 	private int field_2733;
 
 	public KeyBindingListWidget(ControlsSettingsScreen controlsSettingsScreen, MinecraftClient minecraftClient) {
 		super(minecraftClient, controlsSettingsScreen.screenWidth + 45, controlsSettingsScreen.screenHeight, 63, controlsSettingsScreen.screenHeight - 32, 20);
-		this.gui = controlsSettingsScreen;
+		this.field_2735 = controlsSettingsScreen;
 		this.client = minecraftClient;
-		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
+		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.field_1690.keysAll);
 		Arrays.sort(keyBindings);
 		String string = null;
 
@@ -31,7 +32,7 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 				this.addEntry(new KeyBindingListWidget.CategoryEntry(string2));
 			}
 
-			int i = minecraftClient.textRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
+			int i = minecraftClient.field_1772.getStringWidth(I18n.translate(keyBinding.getId()));
 			if (i > this.field_2733) {
 				this.field_2733 = i;
 			}
@@ -57,14 +58,14 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 
 		public CategoryEntry(String string) {
 			this.name = I18n.translate(string);
-			this.nameWidth = KeyBindingListWidget.this.client.textRenderer.getStringWidth(this.name);
+			this.nameWidth = KeyBindingListWidget.this.client.field_1772.getStringWidth(this.name);
 		}
 
 		@Override
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			KeyBindingListWidget.this.client
-				.textRenderer
-				.draw(this.name, (float)(KeyBindingListWidget.this.client.currentScreen.screenWidth / 2 - this.nameWidth / 2), (float)(this.getY() + j - 9 - 1), 16777215);
+				.field_1772
+				.draw(this.name, (float)(KeyBindingListWidget.this.client.field_1755.screenWidth / 2 - this.nameWidth / 2), (float)(this.getY() + j - 9 - 1), 16777215);
 		}
 	}
 
@@ -76,22 +77,22 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 	public class KeyBindingEntry extends KeyBindingListWidget.Entry {
 		private final KeyBinding binding;
 		private final String bindingName;
-		private final ButtonWidget editButton;
-		private final ButtonWidget resetButton;
+		private final class_4185 editButton;
+		private final class_4185 resetButton;
 
 		private KeyBindingEntry(KeyBinding keyBinding) {
 			this.binding = keyBinding;
 			this.bindingName = I18n.translate(keyBinding.getId());
-			this.editButton = new ButtonWidget(0, 0, 75, 20, I18n.translate(keyBinding.getId())) {
+			this.editButton = new class_4185(0, 0, 75, 20, I18n.translate(keyBinding.getId())) {
 				@Override
-				public void onPressed(double d, double e) {
-					KeyBindingListWidget.this.gui.focusedBinding = keyBinding;
+				public void method_1826() {
+					KeyBindingListWidget.this.field_2735.focusedBinding = keyBinding;
 				}
 			};
-			this.resetButton = new ButtonWidget(0, 0, 50, 20, I18n.translate("controls.reset")) {
+			this.resetButton = new class_4185(0, 0, 50, 20, I18n.translate("controls.reset")) {
 				@Override
-				public void onPressed(double d, double e) {
-					KeyBindingListWidget.this.client.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
+				public void method_1826() {
+					KeyBindingListWidget.this.client.field_1690.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
 					KeyBinding.updateKeysByCode();
 				}
 			};
@@ -101,9 +102,9 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			int m = this.getY();
 			int n = this.getX();
-			boolean bl2 = KeyBindingListWidget.this.gui.focusedBinding == this.binding;
+			boolean bl2 = KeyBindingListWidget.this.field_2735.focusedBinding == this.binding;
 			KeyBindingListWidget.this.client
-				.textRenderer
+				.field_1772
 				.draw(this.bindingName, (float)(n + 90 - KeyBindingListWidget.this.field_2733), (float)(m + j / 2 - 9 / 2), 16777215);
 			this.resetButton.x = n + 190;
 			this.resetButton.y = m;
@@ -114,7 +115,7 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 			this.editButton.setText(this.binding.getLocalizedName());
 			boolean bl3 = false;
 			if (!this.binding.isNotBound()) {
-				for (KeyBinding keyBinding : KeyBindingListWidget.this.client.options.keysAll) {
+				for (KeyBinding keyBinding : KeyBindingListWidget.this.client.field_1690.keysAll) {
 					if (keyBinding != this.binding && this.binding.equals(keyBinding)) {
 						bl3 = true;
 						break;

@@ -10,14 +10,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class MagmaCubeEntityRenderer extends MobEntityRenderer<MagmaCubeEntity, MagmaCubeEntityModel<MagmaCubeEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/slime/magmacube.png");
+	private static final Identifier field_4727 = new Identifier("textures/entity/slime/magmacube.png");
 
 	public MagmaCubeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new MagmaCubeEntityModel<>(), 0.25F);
 	}
 
 	protected Identifier method_4001(MagmaCubeEntity magmaCubeEntity) {
-		return SKIN;
+		return field_4727;
 	}
 
 	protected void method_4000(MagmaCubeEntity magmaCubeEntity, float f) {

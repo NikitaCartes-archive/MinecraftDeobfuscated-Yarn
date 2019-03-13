@@ -19,11 +19,11 @@ public class DyeItem extends Item {
 	}
 
 	@Override
-	public boolean interactWithEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+	public boolean method_7847(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
 		if (livingEntity instanceof SheepEntity) {
 			SheepEntity sheepEntity = (SheepEntity)livingEntity;
-			if (!sheepEntity.isSheared() && sheepEntity.getColor() != this.color) {
-				sheepEntity.setColor(this.color);
+			if (sheepEntity.isValid() && !sheepEntity.isSheared() && sheepEntity.method_6633() != this.color) {
+				sheepEntity.method_6631(this.color);
 				itemStack.subtractAmount(1);
 			}
 

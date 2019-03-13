@@ -19,9 +19,9 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public abstract class StructureStart {
-	public static final StructureStart DEFAULT = new StructureStart(Feature.MINESHAFT, 0, 0, Biomes.field_9451, MutableIntBoundingBox.empty(), 0, 0L) {
+	public static final StructureStart DEFAULT = new StructureStart(Feature.field_13547, 0, 0, Biomes.field_9451, MutableIntBoundingBox.empty(), 0, 0L) {
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 		}
 	};
 	private final StructureFeature<?> feature;
@@ -44,7 +44,7 @@ public abstract class StructureStart {
 		this.boundingBox = mutableIntBoundingBox;
 	}
 
-	public abstract void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome);
+	public abstract void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome);
 
 	public MutableIntBoundingBox getBoundingBox() {
 		return this.boundingBox;
@@ -77,23 +77,23 @@ public abstract class StructureStart {
 		}
 	}
 
-	public CompoundTag toTag(int i, int j) {
+	public CompoundTag method_14972(int i, int j) {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.hasChildren()) {
-			compoundTag.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
-			compoundTag.putString("biome", Registry.BIOME.getId(this.biome).toString());
+			compoundTag.putString("id", Registry.STRUCTURE_FEATURE.method_10221(this.getFeature()).toString());
+			compoundTag.putString("biome", Registry.BIOME.method_10221(this.biome).toString());
 			compoundTag.putInt("ChunkX", i);
 			compoundTag.putInt("ChunkZ", j);
 			compoundTag.putInt("references", this.references);
-			compoundTag.put("BB", this.boundingBox.toNbt());
+			compoundTag.method_10566("BB", this.boundingBox.method_14658());
 			ListTag listTag = new ListTag();
 			synchronized (this.children) {
 				for (StructurePiece structurePiece : this.children) {
-					listTag.add(structurePiece.getTag());
+					listTag.add(structurePiece.method_14946());
 				}
 			}
 
-			compoundTag.put("Children", listTag);
+			compoundTag.method_10566("Children", listTag);
 			return compoundTag;
 		} else {
 			compoundTag.putString("id", "INVALID");
@@ -145,7 +145,7 @@ public abstract class StructureStart {
 		return this.chunkZ;
 	}
 
-	public BlockPos getPos() {
+	public BlockPos method_14962() {
 		return new BlockPos(this.chunkX << 4, 0, this.chunkZ << 4);
 	}
 

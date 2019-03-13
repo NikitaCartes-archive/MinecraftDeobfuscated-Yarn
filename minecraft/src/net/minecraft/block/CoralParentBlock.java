@@ -17,26 +17,26 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class CoralParentBlock extends Block implements Waterloggable {
-	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	private static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
+	public static final BooleanProperty field_9940 = Properties.field_12508;
+	private static final VoxelShape field_9939 = Block.method_9541(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
 
 	protected CoralParentBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(WATERLOGGED, Boolean.valueOf(true)));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_9940, Boolean.valueOf(true)));
 	}
 
-	protected void checkLivingConditions(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
-		if (!isInWater(blockState, iWorld, blockPos)) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, 60 + iWorld.getRandom().nextInt(40));
+	protected void method_9430(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+		if (!method_9431(blockState, iWorld, blockPos)) {
+			iWorld.method_8397().method_8676(blockPos, this, 60 + iWorld.getRandom().nextInt(40));
 		}
 	}
 
-	protected static boolean isInWater(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		if ((Boolean)blockState.get(WATERLOGGED)) {
+	protected static boolean method_9431(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		if ((Boolean)blockState.method_11654(field_9940)) {
 			return true;
 		} else {
 			for (Direction direction : Direction.values()) {
-				if (blockView.getFluidState(blockPos.offset(direction)).matches(FluidTags.field_15517)) {
+				if (blockView.method_8316(blockPos.method_10093(direction)).method_15767(FluidTags.field_15517)) {
 					return true;
 				}
 			}
@@ -47,14 +47,14 @@ public class CoralParentBlock extends Block implements Waterloggable {
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
-		return this.getDefaultState().with(WATERLOGGED, Boolean.valueOf(fluidState.matches(FluidTags.field_15517) && fluidState.getLevel() == 8));
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		FluidState fluidState = itemPlacementContext.method_8045().method_8316(itemPlacementContext.method_8037());
+		return this.method_9564().method_11657(field_9940, Boolean.valueOf(fluidState.method_15767(FluidTags.field_15517) && fluidState.getLevel() == 8));
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return SHAPE;
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return field_9939;
 	}
 
 	@Override
@@ -63,31 +63,29 @@ public class CoralParentBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		if ((Boolean)blockState.method_11654(field_9940)) {
+			iWorld.method_8405().method_8676(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return direction == Direction.DOWN && !this.method_9558(blockState, iWorld, blockPos)
+			? Blocks.field_10124.method_9564()
+			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return viewableWorld.getBlockState(blockPos2).hasSolidTopSurface(viewableWorld, blockPos2);
+		return viewableWorld.method_8320(blockPos2).method_11631(viewableWorld, blockPos2);
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(WATERLOGGED);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_9940);
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+	public FluidState method_9545(BlockState blockState) {
+		return blockState.method_11654(field_9940) ? Fluids.WATER.method_15729(false) : super.method_9545(blockState);
 	}
 }

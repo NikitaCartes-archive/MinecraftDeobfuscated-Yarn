@@ -30,23 +30,23 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		}
 
 		@Override
-		public ServerWorld getWorld() {
+		public ServerWorld method_8293() {
 			return (ServerWorld)CommandBlockBlockEntity.this.world;
 		}
 
 		@Override
 		public void method_8295() {
-			BlockState blockState = CommandBlockBlockEntity.this.world.getBlockState(CommandBlockBlockEntity.this.pos);
-			this.getWorld().updateListeners(CommandBlockBlockEntity.this.pos, blockState, blockState, 3);
+			BlockState blockState = CommandBlockBlockEntity.this.world.method_8320(CommandBlockBlockEntity.this.field_11867);
+			this.method_8293().method_8413(CommandBlockBlockEntity.this.field_11867, blockState, blockState, 3);
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public Vec3d getPos() {
+		public Vec3d method_8300() {
 			return new Vec3d(
-				(double)CommandBlockBlockEntity.this.pos.getX() + 0.5,
-				(double)CommandBlockBlockEntity.this.pos.getY() + 0.5,
-				(double)CommandBlockBlockEntity.this.pos.getZ() + 0.5
+				(double)CommandBlockBlockEntity.this.field_11867.getX() + 0.5,
+				(double)CommandBlockBlockEntity.this.field_11867.getY() + 0.5,
+				(double)CommandBlockBlockEntity.this.field_11867.getZ() + 0.5
 			);
 		}
 
@@ -55,16 +55,16 @@ public class CommandBlockBlockEntity extends BlockEntity {
 			return new ServerCommandSource(
 				this,
 				new Vec3d(
-					(double)CommandBlockBlockEntity.this.pos.getX() + 0.5,
-					(double)CommandBlockBlockEntity.this.pos.getY() + 0.5,
-					(double)CommandBlockBlockEntity.this.pos.getZ() + 0.5
+					(double)CommandBlockBlockEntity.this.field_11867.getX() + 0.5,
+					(double)CommandBlockBlockEntity.this.field_11867.getY() + 0.5,
+					(double)CommandBlockBlockEntity.this.field_11867.getZ() + 0.5
 				),
 				Vec2f.ZERO,
-				this.getWorld(),
+				this.method_8293(),
 				2,
-				this.getCustomName().getString(),
-				this.getCustomName(),
-				this.getWorld().getServer(),
+				this.method_8299().getString(),
+				this.method_8299(),
+				this.method_8293().getServer(),
 				null
 			);
 		}
@@ -75,9 +75,9 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		this.commandExecutor.serialize(compoundTag);
+	public CompoundTag method_11007(CompoundTag compoundTag) {
+		super.method_11007(compoundTag);
+		this.commandExecutor.method_8297(compoundTag);
 		compoundTag.putBoolean("powered", this.isPowered());
 		compoundTag.putBoolean("conditionMet", this.isConditionMet());
 		compoundTag.putBoolean("auto", this.isAuto());
@@ -85,9 +85,9 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.commandExecutor.deserialize(compoundTag);
+	public void method_11014(CompoundTag compoundTag) {
+		super.method_11014(compoundTag);
+		this.commandExecutor.method_8305(compoundTag);
 		this.powered = compoundTag.getBoolean("powered");
 		this.conditionMet = compoundTag.getBoolean("conditionMet");
 		this.setAuto(compoundTag.getBoolean("auto"));
@@ -95,11 +95,11 @@ public class CommandBlockBlockEntity extends BlockEntity {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
+	public BlockEntityUpdateS2CPacket method_16886() {
 		if (this.needsUpdatePacket()) {
 			this.setNeedsUpdatePacket(false);
-			CompoundTag compoundTag = this.toTag(new CompoundTag());
-			return new BlockEntityUpdateS2CPacket(this.pos, 2, compoundTag);
+			CompoundTag compoundTag = this.method_11007(new CompoundTag());
+			return new BlockEntityUpdateS2CPacket(this.field_11867, 2, compoundTag);
 		} else {
 			return null;
 		}
@@ -130,10 +130,10 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		boolean bl2 = this.auto;
 		this.auto = bl;
 		if (!bl2 && bl && !this.powered && this.world != null && this.getType() != CommandBlockBlockEntity.Type.field_11922) {
-			Block block = this.getCachedState().getBlock();
+			Block block = this.method_11010().getBlock();
 			if (block instanceof CommandBlock) {
 				this.updateConditionMet();
-				this.world.getBlockTickScheduler().schedule(this.pos, block, block.getTickRate(this.world));
+				this.world.method_8397().method_8676(this.field_11867, block, block.getTickRate(this.world));
 			}
 		}
 	}
@@ -145,9 +145,10 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public boolean updateConditionMet() {
 		this.conditionMet = true;
 		if (this.isConditionalCommandBlock()) {
-			BlockPos blockPos = this.pos.offset(((Direction)this.world.getBlockState(this.pos).get(CommandBlock.FACING)).getOpposite());
-			if (this.world.getBlockState(blockPos).getBlock() instanceof CommandBlock) {
-				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+			BlockPos blockPos = this.field_11867
+				.method_10093(((Direction)this.world.method_8320(this.field_11867).method_11654(CommandBlock.field_10791)).getOpposite());
+			if (this.world.method_8320(blockPos).getBlock() instanceof CommandBlock) {
+				BlockEntity blockEntity = this.world.method_8321(blockPos);
 				this.conditionMet = blockEntity instanceof CommandBlockBlockEntity && ((CommandBlockBlockEntity)blockEntity).getCommandExecutor().getSuccessCount() > 0;
 			} else {
 				this.conditionMet = false;
@@ -166,7 +167,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public CommandBlockBlockEntity.Type getType() {
-		Block block = this.getCachedState().getBlock();
+		Block block = this.method_11010().getBlock();
 		if (block == Blocks.field_10525) {
 			return CommandBlockBlockEntity.Type.field_11924;
 		} else if (block == Blocks.field_10263) {
@@ -177,8 +178,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	public boolean isConditionalCommandBlock() {
-		BlockState blockState = this.world.getBlockState(this.getPos());
-		return blockState.getBlock() instanceof CommandBlock ? (Boolean)blockState.get(CommandBlock.CONDITIONAL) : false;
+		BlockState blockState = this.world.method_8320(this.method_11016());
+		return blockState.getBlock() instanceof CommandBlock ? (Boolean)blockState.method_11654(CommandBlock.field_10793) : false;
 	}
 
 	@Override

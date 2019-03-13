@@ -14,13 +14,13 @@ public class class_1378 extends WanderAroundGoal {
 
 	@Nullable
 	@Override
-	protected Vec3d getWanderTarget() {
+	protected Vec3d method_6302() {
 		Vec3d vec3d = class_1414.method_6375(this.owner, 10, 7);
 		int i = 0;
 
 		while (
 			vec3d != null
-				&& !this.owner.world.getBlockState(new BlockPos(vec3d)).canPlaceAtSide(this.owner.world, new BlockPos(vec3d), BlockPlacementEnvironment.field_48)
+				&& !this.owner.field_6002.method_8320(new BlockPos(vec3d)).method_11609(this.owner.field_6002, new BlockPos(vec3d), BlockPlacementEnvironment.field_48)
 				&& i++ < 10
 		) {
 			vec3d = class_1414.method_6375(this.owner, 10, 7);

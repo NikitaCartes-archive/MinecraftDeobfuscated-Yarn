@@ -37,7 +37,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 
 		for (int l = 0; l < k; l++) {
 			String string = packetByteBuf.readString(32767);
-			TextComponent textComponent = packetByteBuf.readBoolean() ? packetByteBuf.readTextComponent() : null;
+			TextComponent textComponent = packetByteBuf.readBoolean() ? packetByteBuf.method_10808() : null;
 			list.add(new Suggestion(stringRange, string, textComponent));
 		}
 
@@ -55,13 +55,13 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 			packetByteBuf.writeString(suggestion.getText());
 			packetByteBuf.writeBoolean(suggestion.getTooltip() != null);
 			if (suggestion.getTooltip() != null) {
-				packetByteBuf.writeTextComponent(TextFormatter.message(suggestion.getTooltip()));
+				packetByteBuf.method_10805(TextFormatter.message(suggestion.getTooltip()));
 			}
 		}
 	}
 
 	public void method_11398(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onCommandSuggestions(this);
+		clientPlayPacketListener.method_11081(this);
 	}
 
 	@Environment(EnvType.CLIENT)

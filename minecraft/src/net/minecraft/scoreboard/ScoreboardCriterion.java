@@ -82,13 +82,13 @@ public class ScoreboardCriterion {
 			return i < 0
 				? Optional.empty()
 				: Registry.STAT_TYPE
-					.getOrEmpty(Identifier.createSplit(string.substring(0, i), '.'))
+					.method_17966(Identifier.createSplit(string.substring(0, i), '.'))
 					.flatMap(statType -> method_1223(statType, Identifier.createSplit(string.substring(i + 1), '.')));
 		}
 	}
 
 	private static <T> Optional<ScoreboardCriterion> method_1223(StatType<T> statType, Identifier identifier) {
-		return statType.getRegistry().getOrEmpty(identifier).map(statType::getOrCreateStat);
+		return statType.getRegistry().method_17966(identifier).map(statType::getOrCreateStat);
 	}
 
 	public String getName() {

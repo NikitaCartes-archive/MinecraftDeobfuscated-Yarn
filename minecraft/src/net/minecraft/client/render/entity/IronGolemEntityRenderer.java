@@ -10,15 +10,15 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, IronGolemEntityModel<IronGolemEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/iron_golem.png");
+	private static final Identifier field_4717 = new Identifier("textures/entity/iron_golem.png");
 
 	public IronGolemEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new IronGolemEntityModel<>(), 0.5F);
-		this.addFeature(new IronGolemFlowerFeatureRenderer(this));
+		super(entityRenderDispatcher, new IronGolemEntityModel<>(), 0.7F);
+		this.method_4046(new IronGolemFlowerFeatureRenderer(this));
 	}
 
 	protected Identifier method_3987(IronGolemEntity ironGolemEntity) {
-		return SKIN;
+		return field_4717;
 	}
 
 	protected void method_3986(IronGolemEntity ironGolemEntity, float f, float g, float h) {

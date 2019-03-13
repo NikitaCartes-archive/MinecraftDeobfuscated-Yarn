@@ -25,9 +25,9 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class EndCreditsScreen extends Screen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
-	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
-	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
+	private static final Identifier field_2626 = new Identifier("textures/gui/title/minecraft.png");
+	private static final Identifier field_2631 = new Identifier("textures/gui/title/edition.png");
+	private static final Identifier field_2633 = new Identifier("textures/misc/vignette.png");
 	private final boolean field_2627;
 	private final Runnable field_2630;
 	private float field_2628;
@@ -45,8 +45,8 @@ public class EndCreditsScreen extends Screen {
 
 	@Override
 	public void update() {
-		this.client.getMusicTracker().method_18669();
-		this.client.getSoundLoader().update();
+		this.client.method_1538().method_18669();
+		this.client.method_1483().update();
 		float f = (float)(this.field_2629 + this.screenHeight + this.screenHeight + 24) / this.field_2635;
 		if (this.field_2628 > f) {
 			this.method_2257();
@@ -60,7 +60,7 @@ public class EndCreditsScreen extends Screen {
 
 	private void method_2257() {
 		this.field_2630.run();
-		this.client.openScreen(null);
+		this.client.method_1507(null);
 	}
 
 	@Override
@@ -73,14 +73,14 @@ public class EndCreditsScreen extends Screen {
 				String string = "" + TextFormat.field_1068 + TextFormat.field_1051 + TextFormat.field_1060 + TextFormat.field_1075;
 				int i = 274;
 				if (this.field_2627) {
-					resource = this.client.getResourceManager().getResource(new Identifier("texts/end.txt"));
+					resource = this.client.method_1478().getResource(new Identifier("texts/end.txt"));
 					InputStream inputStream = resource.getInputStream();
 					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 					Random random = new Random(8124371L);
 
 					String string2;
 					while ((string2 = bufferedReader.readLine()) != null) {
-						string2 = string2.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+						string2 = string2.replaceAll("PLAYERNAME", this.client.method_1548().getUsername());
 
 						while (string2.contains(string)) {
 							int j = string2.indexOf(string);
@@ -89,7 +89,7 @@ public class EndCreditsScreen extends Screen {
 							string2 = string3 + TextFormat.field_1068 + TextFormat.field_1051 + "XXXXXXXX".substring(0, random.nextInt(4) + 3) + string4;
 						}
 
-						this.field_2634.addAll(this.client.textRenderer.wrapStringToWidthAsList(string2, 274));
+						this.field_2634.addAll(this.client.field_1772.wrapStringToWidthAsList(string2, 274));
 						this.field_2634.add("");
 					}
 
@@ -100,14 +100,14 @@ public class EndCreditsScreen extends Screen {
 					}
 				}
 
-				InputStream inputStream = this.client.getResourceManager().getResource(new Identifier("texts/credits.txt")).getInputStream();
+				InputStream inputStream = this.client.method_1478().getResource(new Identifier("texts/credits.txt")).getInputStream();
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
 
 				String string5;
 				while ((string5 = bufferedReader.readLine()) != null) {
-					string5 = string5.replaceAll("PLAYERNAME", this.client.getSession().getUsername());
+					string5 = string5.replaceAll("PLAYERNAME", this.client.method_1548().getUsername());
 					string5 = string5.replaceAll("\t", "    ");
-					this.field_2634.addAll(this.client.textRenderer.wrapStringToWidthAsList(string5, 274));
+					this.field_2634.addAll(this.client.field_1772.wrapStringToWidthAsList(string5, 274));
 					this.field_2634.add("");
 				}
 
@@ -124,8 +124,8 @@ public class EndCreditsScreen extends Screen {
 	private void method_2258(int i, int j, float f) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BG);
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		this.client.method_1531().method_4618(DrawableHelper.field_2051);
+		bufferBuilder.method_1328(7, VertexFormats.field_1575);
 		int k = this.screenWidth;
 		float g = -this.field_2628 * 0.5F * this.field_2635;
 		float h = (float)this.screenHeight - this.field_2628 * 0.5F * this.field_2635;
@@ -165,12 +165,12 @@ public class EndCreditsScreen extends Screen {
 		float g = -this.field_2628 * this.field_2635;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(0.0F, g, 0.0F);
-		this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
+		this.client.method_1531().method_4618(field_2626);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableAlphaTest();
 		this.drawTexturedRect(l, m, 0, 0, 155, 44);
 		this.drawTexturedRect(l + 155, m, 0, 45, 155, 44);
-		this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
+		this.client.method_1531().method_4618(field_2631);
 		drawTexturedRect(l + 88, m + 37, 0.0F, 0.0F, 98, 14, 128.0F, 16.0F);
 		GlStateManager.disableAlphaTest();
 		int n = m + 100;
@@ -197,12 +197,12 @@ public class EndCreditsScreen extends Screen {
 		}
 
 		GlStateManager.popMatrix();
-		this.client.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
+		this.client.method_1531().method_4618(field_2633);
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR);
 		int o = this.screenWidth;
 		int p = this.screenHeight;
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.method_1328(7, VertexFormats.field_1575);
 		bufferBuilder.vertex(0.0, (double)p, (double)this.zOffset).texture(0.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		bufferBuilder.vertex((double)o, (double)p, (double)this.zOffset).texture(1.0, 1.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		bufferBuilder.vertex((double)o, 0.0, (double)this.zOffset).texture(1.0, 0.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();

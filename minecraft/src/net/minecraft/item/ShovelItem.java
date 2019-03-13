@@ -50,7 +50,7 @@ public class ShovelItem extends MiningToolItem {
 		Blocks.field_10506
 	);
 	protected static final Map<Block, BlockState> BLOCK_TRANSFORMATIONS_MAP = Maps.<Block, BlockState>newHashMap(
-		ImmutableMap.of(Blocks.field_10219, Blocks.field_10194.getDefaultState())
+		ImmutableMap.of(Blocks.field_10219, Blocks.field_10194.method_9564())
 	);
 
 	public ShovelItem(ToolMaterial toolMaterial, float f, float g, Item.Settings settings) {
@@ -58,22 +58,22 @@ public class ShovelItem extends MiningToolItem {
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState blockState) {
+	public boolean method_7856(BlockState blockState) {
 		Block block = blockState.getBlock();
 		return block == Blocks.field_10477 || block == Blocks.field_10491;
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getBlockPos();
-		if (itemUsageContext.getFacing() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir()) {
-			BlockState blockState = (BlockState)BLOCK_TRANSFORMATIONS_MAP.get(world.getBlockState(blockPos).getBlock());
+	public ActionResult method_7884(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.method_8045();
+		BlockPos blockPos = itemUsageContext.method_8037();
+		if (itemUsageContext.method_8038() != Direction.DOWN && world.method_8320(blockPos.up()).isAir()) {
+			BlockState blockState = (BlockState)BLOCK_TRANSFORMATIONS_MAP.get(world.method_8320(blockPos).getBlock());
 			if (blockState != null) {
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
-				world.playSound(playerEntity, blockPos, SoundEvents.field_14616, SoundCategory.field_15245, 1.0F, 1.0F);
+				world.method_8396(playerEntity, blockPos, SoundEvents.field_14616, SoundCategory.field_15245, 1.0F, 1.0F);
 				if (!world.isClient) {
-					world.setBlockState(blockPos, blockState, 11);
+					world.method_8652(blockPos, blockState, 11);
 					if (playerEntity != null) {
 						itemUsageContext.getItemStack().applyDamage(1, playerEntity);
 					}

@@ -6,8 +6,8 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.datafixers.NbtOps;
@@ -34,14 +34,14 @@ public class NewLevelScreen extends Screen {
 	private boolean field_3178;
 	private boolean isCreatingLevel;
 	private boolean field_3202;
-	private ButtonWidget buttonCreateLevel;
-	private ButtonWidget buttonGameModeSwitch;
-	private ButtonWidget buttonMoreOptions;
-	private ButtonWidget buttonGenerateStructures;
-	private ButtonWidget buttonGenerateBonusItems;
-	private ButtonWidget buttonMapTypeSwitch;
-	private ButtonWidget buttonCommandsAllowed;
-	private ButtonWidget buttonCustomizeType;
+	private class_4185 buttonCreateLevel;
+	private class_4185 buttonGameModeSwitch;
+	private class_4185 buttonMoreOptions;
+	private class_4185 buttonGenerateStructures;
+	private class_4185 buttonGenerateBonusItems;
+	private class_4185 buttonMapTypeSwitch;
+	private class_4185 buttonCommandsAllowed;
+	private class_4185 buttonCustomizeType;
 	private String field_3194;
 	private String field_3199;
 	private String seed;
@@ -90,21 +90,17 @@ public class NewLevelScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.buttonCreateLevel = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("selectWorld.create")) {
-			@Override
-			public void onPressed(double d, double e) {
-				NewLevelScreen.this.createLevel();
-			}
+		this.textFieldLevelName = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 60, 200, 20);
+		this.textFieldLevelName.setText(this.levelName);
+		this.textFieldLevelName.setChangedListener(string -> {
+			this.levelName = string;
+			this.buttonCreateLevel.enabled = !this.textFieldLevelName.getText().isEmpty();
+			this.method_2727();
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.listeners.add(this.textFieldLevelName);
+		this.buttonGameModeSwitch = this.addButton(new class_4185(this.screenWidth / 2 - 75, 115, 150, 20, I18n.translate("selectWorld.gameMode")) {
 			@Override
-			public void onPressed(double d, double e) {
-				NewLevelScreen.this.client.openScreen(NewLevelScreen.this.parent);
-			}
-		});
-		this.buttonGameModeSwitch = this.addButton(new ButtonWidget(this.screenWidth / 2 - 75, 115, 150, 20, I18n.translate("selectWorld.gameMode")) {
-			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				if ("survival".equals(NewLevelScreen.this.gameMode)) {
 					if (!NewLevelScreen.this.field_3179) {
 						NewLevelScreen.this.commandsAllowed = false;
@@ -142,31 +138,21 @@ public class NewLevelScreen extends Screen {
 				NewLevelScreen.this.method_2722();
 			}
 		});
-		this.buttonMoreOptions = this.addButton(new ButtonWidget(this.screenWidth / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions")) {
+		this.textFieldSeed = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 60, 200, 20);
+		this.textFieldSeed.setText(this.seed);
+		this.textFieldSeed.setChangedListener(string -> this.seed = this.textFieldSeed.getText());
+		this.listeners.add(this.textFieldSeed);
+		this.buttonGenerateStructures = this.addButton(new class_4185(this.screenWidth / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.mapFeatures")) {
 			@Override
-			public void onPressed(double d, double e) {
-				NewLevelScreen.this.method_2721();
-			}
-		});
-		this.buttonGenerateStructures = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.mapFeatures")) {
-			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				NewLevelScreen.this.structures = !NewLevelScreen.this.structures;
 				NewLevelScreen.this.method_2722();
 			}
 		});
 		this.buttonGenerateStructures.visible = false;
-		this.buttonGenerateBonusItems = this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, 151, 150, 20, I18n.translate("selectWorld.bonusItems")) {
+		this.buttonMapTypeSwitch = this.addButton(new class_4185(this.screenWidth / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.mapType")) {
 			@Override
-			public void onPressed(double d, double e) {
-				NewLevelScreen.this.enableBonusItems = !NewLevelScreen.this.enableBonusItems;
-				NewLevelScreen.this.method_2722();
-			}
-		});
-		this.buttonGenerateBonusItems.visible = false;
-		this.buttonMapTypeSwitch = this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.mapType")) {
-			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				NewLevelScreen.this.generatorType++;
 				if (NewLevelScreen.this.generatorType >= LevelGeneratorType.TYPES.length) {
 					NewLevelScreen.this.generatorType = 0;
@@ -185,34 +171,56 @@ public class NewLevelScreen extends Screen {
 			}
 		});
 		this.buttonMapTypeSwitch.visible = false;
-		this.buttonCommandsAllowed = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, 151, 150, 20, I18n.translate("selectWorld.allowCommands")) {
+		this.buttonCustomizeType = this.addButton(new class_4185(this.screenWidth / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
+				if (LevelGeneratorType.TYPES[NewLevelScreen.this.generatorType] == LevelGeneratorType.FLAT) {
+					NewLevelScreen.this.client.method_1507(new CustomizeFlatLevelScreen(NewLevelScreen.this, NewLevelScreen.this.field_3200));
+				}
+
+				if (LevelGeneratorType.TYPES[NewLevelScreen.this.generatorType] == LevelGeneratorType.BUFFET) {
+					NewLevelScreen.this.client.method_1507(new CustomizeBuffetLevelScreen(NewLevelScreen.this, NewLevelScreen.this.field_3200));
+				}
+			}
+		});
+		this.buttonCustomizeType.visible = false;
+		this.buttonCommandsAllowed = this.addButton(new class_4185(this.screenWidth / 2 - 155, 151, 150, 20, I18n.translate("selectWorld.allowCommands")) {
+			@Override
+			public void method_1826() {
 				NewLevelScreen.this.field_3179 = true;
 				NewLevelScreen.this.commandsAllowed = !NewLevelScreen.this.commandsAllowed;
 				NewLevelScreen.this.method_2722();
 			}
 		});
 		this.buttonCommandsAllowed.visible = false;
-		this.buttonCustomizeType = this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType")) {
+		this.buttonGenerateBonusItems = this.addButton(new class_4185(this.screenWidth / 2 + 5, 151, 150, 20, I18n.translate("selectWorld.bonusItems")) {
 			@Override
-			public void onPressed(double d, double e) {
-				if (LevelGeneratorType.TYPES[NewLevelScreen.this.generatorType] == LevelGeneratorType.FLAT) {
-					NewLevelScreen.this.client.openScreen(new CustomizeFlatLevelScreen(NewLevelScreen.this, NewLevelScreen.this.field_3200));
-				}
-
-				if (LevelGeneratorType.TYPES[NewLevelScreen.this.generatorType] == LevelGeneratorType.BUFFET) {
-					NewLevelScreen.this.client.openScreen(new CustomizeBuffetLevelScreen(NewLevelScreen.this, NewLevelScreen.this.field_3200));
-				}
+			public void method_1826() {
+				NewLevelScreen.this.enableBonusItems = !NewLevelScreen.this.enableBonusItems;
+				NewLevelScreen.this.method_2722();
 			}
 		});
-		this.buttonCustomizeType.visible = false;
-		this.textFieldLevelName = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 60, 200, 20);
-		this.textFieldLevelName.setFocused(true);
-		this.textFieldLevelName.setText(this.levelName);
-		this.textFieldSeed = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 60, 200, 20);
-		this.textFieldSeed.setText(this.seed);
+		this.buttonGenerateBonusItems.visible = false;
+		this.buttonMoreOptions = this.addButton(new class_4185(this.screenWidth / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions")) {
+			@Override
+			public void method_1826() {
+				NewLevelScreen.this.method_2721();
+			}
+		});
+		this.buttonCreateLevel = this.addButton(new class_4185(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("selectWorld.create")) {
+			@Override
+			public void method_1826() {
+				NewLevelScreen.this.createLevel();
+			}
+		});
+		this.addButton(new class_4185(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
+			@Override
+			public void method_1826() {
+				NewLevelScreen.this.client.method_1507(NewLevelScreen.this.parent);
+			}
+		});
 		this.method_2710(this.field_3202);
+		this.method_18624(this.textFieldLevelName);
 		this.method_2727();
 		this.method_2722();
 	}
@@ -266,7 +274,7 @@ public class NewLevelScreen extends Screen {
 	}
 
 	private void createLevel() {
-		this.client.openScreen(null);
+		this.client.method_1507(null);
 		if (!this.isCreatingLevel) {
 			this.isCreatingLevel = true;
 			long l = new Random().nextLong();
@@ -340,55 +348,12 @@ public class NewLevelScreen extends Screen {
 		}
 
 		this.method_2722();
+		this.textFieldSeed.setVisible(this.field_3202);
+		this.textFieldLevelName.setVisible(!this.field_3202);
 		if (this.field_3202) {
 			this.buttonMoreOptions.setText(I18n.translate("gui.done"));
 		} else {
 			this.buttonMoreOptions.setText(I18n.translate("selectWorld.moreWorldOptions"));
-		}
-	}
-
-	@Override
-	public boolean charTyped(char c, int i) {
-		if (this.textFieldLevelName.isFocused() && !this.field_3202) {
-			this.textFieldLevelName.charTyped(c, i);
-			this.levelName = this.textFieldLevelName.getText();
-			this.buttonCreateLevel.enabled = !this.textFieldLevelName.getText().isEmpty();
-			this.method_2727();
-			return true;
-		} else if (this.textFieldSeed.isFocused() && this.field_3202) {
-			this.textFieldSeed.charTyped(c, i);
-			this.seed = this.textFieldSeed.getText();
-			return true;
-		} else {
-			return super.charTyped(c, i);
-		}
-	}
-
-	@Override
-	public boolean keyPressed(int i, int j, int k) {
-		if (this.textFieldLevelName.isFocused() && !this.field_3202) {
-			this.textFieldLevelName.keyPressed(i, j, k);
-			this.levelName = this.textFieldLevelName.getText();
-			this.buttonCreateLevel.enabled = !this.textFieldLevelName.getText().isEmpty();
-			this.method_2727();
-		} else if (this.textFieldSeed.isFocused() && this.field_3202) {
-			this.textFieldSeed.keyPressed(i, j, k);
-			this.seed = this.textFieldSeed.getText();
-		}
-
-		if (this.buttonCreateLevel.enabled && (i == 257 || i == 335)) {
-			this.createLevel();
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		if (super.mouseClicked(d, e, i)) {
-			return true;
-		} else {
-			return this.field_3202 ? this.textFieldSeed.mouseClicked(d, e, i) : this.textFieldLevelName.mouseClicked(d, e, i);
 		}
 	}
 
@@ -436,7 +401,7 @@ public class NewLevelScreen extends Screen {
 			? LevelGeneratorType.DEFAULT
 			: levelProperties.getGeneratorType();
 		this.generatorType = levelGeneratorType.getId();
-		this.field_3200 = levelProperties.getGeneratorOptions();
+		this.field_3200 = levelProperties.method_169();
 		this.structures = levelProperties.hasStructures();
 		this.commandsAllowed = levelProperties.areCommandsAllowed();
 		if (levelProperties.isHardcore()) {

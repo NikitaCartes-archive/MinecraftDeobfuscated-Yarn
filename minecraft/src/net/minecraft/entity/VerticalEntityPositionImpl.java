@@ -9,7 +9,7 @@ import net.minecraft.util.shape.VoxelShape;
 public class VerticalEntityPositionImpl implements VerticalEntityPosition {
 	protected static final VerticalEntityPosition MIN_VALUE = new VerticalEntityPositionImpl(false, -Double.MAX_VALUE, Items.AIR) {
 		@Override
-		public boolean isAboveBlock(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
+		public boolean method_16192(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
 			return bl;
 		}
 	};
@@ -26,8 +26,8 @@ public class VerticalEntityPositionImpl implements VerticalEntityPosition {
 	@Deprecated
 	protected VerticalEntityPositionImpl(Entity entity) {
 		boolean var10001 = entity.isSneaking();
-		Item var10003 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack().getItem() : Items.AIR;
-		this(var10001, entity.getBoundingBox().minY, var10003);
+		Item var10003 = entity instanceof LivingEntity ? ((LivingEntity)entity).method_6047().getItem() : Items.AIR;
+		this(var10001, entity.method_5829().minY, var10003);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class VerticalEntityPositionImpl implements VerticalEntityPosition {
 	}
 
 	@Override
-	public boolean isAboveBlock(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
+	public boolean method_16192(VoxelShape voxelShape, BlockPos blockPos, boolean bl) {
 		return this.posY > (double)blockPos.getY() + voxelShape.getMaximum(Direction.Axis.Y) - 1.0E-5F;
 	}
 }

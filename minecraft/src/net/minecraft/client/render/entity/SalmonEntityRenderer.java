@@ -14,7 +14,7 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 	private static final Identifier field_4767 = new Identifier("textures/entity/fish/salmon.png");
 
 	public SalmonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new SalmonEntityModel<>(), 0.2F);
+		super(entityRenderDispatcher, new SalmonEntityModel<>(), 0.4F);
 	}
 
 	@Nullable

@@ -21,9 +21,9 @@ import net.minecraft.util.math.MathHelper;
 public class AdvancementTreeWidget extends DrawableHelper {
 	private final MinecraftClient client;
 	private final AdvancementsScreen field_2687;
-	private final AdvancementTabType tabType;
+	private final AdvancementTabType field_2684;
 	private final int field_2681;
-	private final SimpleAdvancement rootAdvancement;
+	private final SimpleAdvancement field_2682;
 	private final AdvancementDisplay field_2695;
 	private final ItemStack field_2697;
 	private final String field_2686;
@@ -48,9 +48,9 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	) {
 		this.client = minecraftClient;
 		this.field_2687 = advancementsScreen;
-		this.tabType = advancementTabType;
+		this.field_2684 = advancementTabType;
 		this.field_2681 = i;
-		this.rootAdvancement = simpleAdvancement;
+		this.field_2682 = simpleAdvancement;
 		this.field_2695 = advancementDisplay;
 		this.field_2697 = advancementDisplay.getIcon();
 		this.field_2686 = advancementDisplay.getTitle().getFormattedText();
@@ -59,7 +59,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	public SimpleAdvancement method_2307() {
-		return this.rootAdvancement;
+		return this.field_2682;
 	}
 
 	public String method_2309() {
@@ -67,11 +67,11 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	public void drawBackground(int i, int j, boolean bl) {
-		this.tabType.drawBackground(this, i, j, bl, this.field_2681);
+		this.field_2684.drawBackground(this, i, j, bl, this.field_2681);
 	}
 
-	public void drawIcon(int i, int j, ItemRenderer itemRenderer) {
-		this.tabType.drawIcon(i, j, this.field_2681, itemRenderer, this.field_2697);
+	public void method_2315(int i, int j, ItemRenderer itemRenderer) {
+		this.field_2684.method_2306(i, j, this.field_2681, itemRenderer, this.field_2697);
 	}
 
 	public void method_2310() {
@@ -86,9 +86,9 @@ public class AdvancementTreeWidget extends DrawableHelper {
 		GlStateManager.depthFunc(515);
 		Identifier identifier = this.field_2695.getBackground();
 		if (identifier != null) {
-			this.client.getTextureManager().bindTexture(identifier);
+			this.client.method_1531().method_4618(identifier);
 		} else {
-			this.client.getTextureManager().bindTexture(TextureManager.field_5285);
+			this.client.method_1531().method_4618(TextureManager.field_5285);
 		}
 
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -134,17 +134,19 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	public boolean method_2316(int i, int j, double d, double e) {
-		return this.tabType.method_2303(i, j, this.field_2681, d, e);
+		return this.field_2684.method_2303(i, j, this.field_2681, d, e);
 	}
 
 	@Nullable
-	public static AdvancementTreeWidget create(MinecraftClient minecraftClient, AdvancementsScreen advancementsScreen, int i, SimpleAdvancement simpleAdvancement) {
-		if (simpleAdvancement.getDisplay() == null) {
+	public static AdvancementTreeWidget method_2317(
+		MinecraftClient minecraftClient, AdvancementsScreen advancementsScreen, int i, SimpleAdvancement simpleAdvancement
+	) {
+		if (simpleAdvancement.method_686() == null) {
 			return null;
 		} else {
 			for (AdvancementTabType advancementTabType : AdvancementTabType.values()) {
 				if (i < advancementTabType.method_2304()) {
-					return new AdvancementTreeWidget(minecraftClient, advancementsScreen, advancementTabType, i, simpleAdvancement, simpleAdvancement.getDisplay());
+					return new AdvancementTreeWidget(minecraftClient, advancementsScreen, advancementTabType, i, simpleAdvancement, simpleAdvancement.method_686());
 				}
 
 				i -= advancementTabType.method_2304();
@@ -165,8 +167,8 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	public void method_2318(SimpleAdvancement simpleAdvancement) {
-		if (simpleAdvancement.getDisplay() != null) {
-			AdvancementWidget advancementWidget = new AdvancementWidget(this, this.client, simpleAdvancement, simpleAdvancement.getDisplay());
+		if (simpleAdvancement.method_686() != null) {
+			AdvancementWidget advancementWidget = new AdvancementWidget(this, this.client, simpleAdvancement, simpleAdvancement.method_686());
 			this.method_2319(advancementWidget, simpleAdvancement);
 		}
 	}
@@ -188,7 +190,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	@Nullable
-	public AdvancementWidget getWidgetForAdvancement(SimpleAdvancement simpleAdvancement) {
+	public AdvancementWidget method_2308(SimpleAdvancement simpleAdvancement) {
 		return (AdvancementWidget)this.widgets.get(simpleAdvancement);
 	}
 

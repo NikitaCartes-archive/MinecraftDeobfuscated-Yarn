@@ -27,7 +27,7 @@ public class HeightmapRangeDecorator extends Decorator<HeightmapRangeDecoratorCo
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(16);
-			int l = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + j, blockPos.getZ() + k);
+			int l = iWorld.method_8589(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + j, blockPos.getZ() + k);
 			return new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
 		});
 	}

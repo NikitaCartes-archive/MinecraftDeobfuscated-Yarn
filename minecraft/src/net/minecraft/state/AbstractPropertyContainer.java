@@ -42,7 +42,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 	}
 
 	public <T extends Comparable<T>> S method_11572(Property<T> property) {
-		return this.with(property, method_11574(property.getValues(), this.get(property)));
+		return this.method_11657(property, method_11574(property.getValues(), this.method_11654(property)));
 	}
 
 	protected static <T> T method_11574(Collection<T> collection, T object) {
@@ -77,12 +77,12 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 		return Collections.unmodifiableCollection(this.entries.keySet());
 	}
 
-	public <T extends Comparable<T>> boolean contains(Property<T> property) {
+	public <T extends Comparable<T>> boolean method_11570(Property<T> property) {
 		return this.entries.containsKey(property);
 	}
 
 	@Override
-	public <T extends Comparable<T>> T get(Property<T> property) {
+	public <T extends Comparable<T>> T method_11654(Property<T> property) {
 		Comparable<?> comparable = this.entries.get(property);
 		if (comparable == null) {
 			throw new IllegalArgumentException("Cannot get property " + property + " as it does not exist in " + this.owner);
@@ -92,7 +92,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 	}
 
 	@Override
-	public <T extends Comparable<T>, V extends T> S with(Property<T> property, V comparable) {
+	public <T extends Comparable<T>, V extends T> S method_11657(Property<T> property, V comparable) {
 		Comparable<?> comparable2 = this.entries.get(property);
 		if (comparable2 == null) {
 			throw new IllegalArgumentException("Cannot set property " + property + " as it does not exist in " + this.owner);

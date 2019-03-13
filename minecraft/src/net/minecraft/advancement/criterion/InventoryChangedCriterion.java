@@ -24,12 +24,12 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.NumberRange;
 
 public class InventoryChangedCriterion implements Criterion<InventoryChangedCriterion.Conditions> {
-	private static final Identifier ID = new Identifier("inventory_changed");
+	private static final Identifier field_9625 = new Identifier("inventory_changed");
 	private final Map<PlayerAdvancementTracker, InventoryChangedCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, InventoryChangedCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9625;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.addCondition(conditionsContainer);
+		handler.method_8953(conditionsContainer);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 	) {
 		InventoryChangedCriterion.Handler handler = (InventoryChangedCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
+			handler.method_8955(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -72,7 +72,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 		return new InventoryChangedCriterion.Conditions(integer, integer2, integer3, itemPredicates);
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
+	public void method_8950(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
 		InventoryChangedCriterion.Handler handler = (InventoryChangedCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
 			handler.handle(playerInventory);
@@ -83,21 +83,21 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 		private final NumberRange.Integer occupied;
 		private final NumberRange.Integer full;
 		private final NumberRange.Integer empty;
-		private final ItemPredicate[] items;
+		private final ItemPredicate[] field_9632;
 
 		public Conditions(NumberRange.Integer integer, NumberRange.Integer integer2, NumberRange.Integer integer3, ItemPredicate[] itemPredicates) {
-			super(InventoryChangedCriterion.ID);
+			super(InventoryChangedCriterion.field_9625);
 			this.occupied = integer;
 			this.full = integer2;
 			this.empty = integer3;
-			this.items = itemPredicates;
+			this.field_9632 = itemPredicates;
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemPredicate... itemPredicates) {
+		public static InventoryChangedCriterion.Conditions method_8957(ItemPredicate... itemPredicates) {
 			return new InventoryChangedCriterion.Conditions(NumberRange.Integer.ANY, NumberRange.Integer.ANY, NumberRange.Integer.ANY, itemPredicates);
 		}
 
-		public static InventoryChangedCriterion.Conditions items(ItemProvider... itemProviders) {
+		public static InventoryChangedCriterion.Conditions method_8959(ItemProvider... itemProviders) {
 			ItemPredicate[] itemPredicates = new ItemPredicate[itemProviders.length];
 
 			for (int i = 0; i < itemProviders.length; i++) {
@@ -106,7 +106,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 				);
 			}
 
-			return items(itemPredicates);
+			return method_8957(itemPredicates);
 		}
 
 		@Override
@@ -120,10 +120,10 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 				jsonObject.add("slots", jsonObject2);
 			}
 
-			if (this.items.length > 0) {
+			if (this.field_9632.length > 0) {
 				JsonArray jsonArray = new JsonArray();
 
-				for (ItemPredicate itemPredicate : this.items) {
+				for (ItemPredicate itemPredicate : this.field_9632) {
 					jsonArray.add(itemPredicate.serialize());
 				}
 
@@ -137,10 +137,10 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 			int i = 0;
 			int j = 0;
 			int k = 0;
-			List<ItemPredicate> list = Lists.<ItemPredicate>newArrayList(this.items);
+			List<ItemPredicate> list = Lists.<ItemPredicate>newArrayList(this.field_9632);
 
 			for (int l = 0; l < playerInventory.getInvSize(); l++) {
-				ItemStack itemStack = playerInventory.getInvStack(l);
+				ItemStack itemStack = playerInventory.method_5438(l);
 				if (itemStack.isEmpty()) {
 					j++;
 				} else {
@@ -171,22 +171,22 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker manager;
+		private final PlayerAdvancementTracker field_9628;
 		private final Set<Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+			this.field_9628 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void addCondition(Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainer) {
+		public void method_8953(Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void removeCondition(Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainer) {
+		public void method_8955(Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
@@ -194,7 +194,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 			List<Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.getConditions().matches(playerInventory)) {
+				if (conditionsContainer.method_797().matches(playerInventory)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions>>newArrayList();
 					}
@@ -205,7 +205,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<InventoryChangedCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.manager);
+					conditionsContainerx.apply(this.field_9628);
 				}
 			}
 		}

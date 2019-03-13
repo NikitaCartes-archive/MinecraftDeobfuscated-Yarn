@@ -20,7 +20,7 @@ public class PhantomEyesFeatureRenderer<T extends Entity> extends FeatureRendere
 
 	@Override
 	public void render(T entity, float f, float g, float h, float i, float j, float k, float l) {
-		this.bindTexture(field_4890);
+		this.method_17164(field_4890);
 		GlStateManager.enableBlend();
 		GlStateManager.disableAlphaTest();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
@@ -32,7 +32,7 @@ public class PhantomEyesFeatureRenderer<T extends Entity> extends FeatureRendere
 		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, 61680.0F, 0.0F);
 		GlStateManager.enableLighting();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 		gameRenderer.method_3201(true);
 		this.getModel().render(entity, f, g, i, j, k, l);
 		gameRenderer.method_3201(false);

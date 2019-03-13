@@ -20,7 +20,7 @@ public class GameModeCommand {
 			if (gameMode != GameMode.INVALID) {
 				literalArgumentBuilder.then(
 					ServerCommandManager.literal(gameMode.getName())
-						.executes(commandContext -> method_13387(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
+						.executes(commandContext -> method_13387(commandContext, Collections.singleton(commandContext.getSource().method_9207()), gameMode))
 						.then(
 							ServerCommandManager.argument("target", EntityArgumentType.multiplePlayer())
 								.executes(commandContext -> method_13387(commandContext, EntityArgumentType.method_9312(commandContext, "target"), gameMode))
@@ -35,13 +35,13 @@ public class GameModeCommand {
 	private static void method_13390(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, GameMode gameMode) {
 		TextComponent textComponent = new TranslatableTextComponent("gameMode." + gameMode.getName());
 		if (serverCommandSource.getEntity() == serverPlayerEntity) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamemode.success.self", textComponent), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.gamemode.success.self", textComponent), true);
 		} else {
-			if (serverCommandSource.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-				serverPlayerEntity.appendCommandFeedback(new TranslatableTextComponent("gameMode.changed", textComponent));
+			if (serverCommandSource.method_9225().getGameRules().getBoolean("sendCommandFeedback")) {
+				serverPlayerEntity.method_9203(new TranslatableTextComponent("gameMode.changed", textComponent));
 			}
 
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamemode.success.other", serverPlayerEntity.getDisplayName(), textComponent), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.gamemode.success.other", serverPlayerEntity.method_5476(), textComponent), true);
 		}
 	}
 
@@ -49,8 +49,8 @@ public class GameModeCommand {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			if (serverPlayerEntity.interactionManager.getGameMode() != gameMode) {
-				serverPlayerEntity.setGameMode(gameMode);
+			if (serverPlayerEntity.field_13974.getGameMode() != gameMode) {
+				serverPlayerEntity.method_7336(gameMode);
 				method_13390(commandContext.getSource(), serverPlayerEntity, gameMode);
 				i++;
 			}

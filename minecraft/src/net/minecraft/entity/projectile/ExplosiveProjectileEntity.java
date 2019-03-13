@@ -51,7 +51,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		this.owner = livingEntity;
 		this.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
 		this.setPosition(this.x, this.y, this.z);
-		this.setVelocity(Vec3d.ZERO);
+		this.method_18799(Vec3d.ZERO);
 		d += this.random.nextGaussian() * 0.4;
 		e += this.random.nextGaussian() * 0.4;
 		f += this.random.nextGaussian() * 0.4;
@@ -68,7 +68,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
-		double e = this.getBoundingBox().averageDimension() * 4.0;
+		double e = this.method_5829().averageDimension() * 4.0;
 		if (Double.isNaN(e)) {
 			e = 4.0;
 		}
@@ -79,7 +79,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 	@Override
 	public void update() {
-		if (this.world.isClient || (this.owner == null || !this.owner.invalid) && this.world.isBlockLoaded(new BlockPos(this))) {
+		if (this.field_6002.isClient || (this.owner == null || !this.owner.invalid) && this.field_6002.method_8591(new BlockPos(this))) {
 			super.update();
 			if (this.method_7468()) {
 				this.setOnFireFor(1);
@@ -88,10 +88,10 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.field_7602++;
 			HitResult hitResult = class_1675.method_18076(this, true, this.field_7602 >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
 			if (hitResult.getType() != HitResult.Type.NONE) {
-				this.onCollision(hitResult);
+				this.method_7469(hitResult);
 			}
 
-			Vec3d vec3d = this.getVelocity();
+			Vec3d vec3d = this.method_18798();
 			this.x = this.x + vec3d.x;
 			this.y = this.y + vec3d.y;
 			this.z = this.z + vec3d.z;
@@ -100,14 +100,15 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			if (this.isInsideWater()) {
 				for (int i = 0; i < 4; i++) {
 					float g = 0.25F;
-					this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+					this.field_6002
+						.method_8406(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 				}
 
 				f = 0.8F;
 			}
 
-			this.setVelocity(vec3d.add(this.field_7601, this.field_7600, this.field_7599).multiply((double)f));
-			this.world.addParticle(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
+			this.method_18799(vec3d.add(this.field_7601, this.field_7600, this.field_7599).multiply((double)f));
+			this.field_6002.method_8406(this.method_7467(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 			this.setPosition(this.x, this.y, this.z);
 		} else {
 			this.invalidate();
@@ -118,7 +119,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return true;
 	}
 
-	protected ParticleParameters getParticleType() {
+	protected ParticleParameters method_7467() {
 		return ParticleTypes.field_11251;
 	}
 
@@ -126,20 +127,20 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return 0.95F;
 	}
 
-	protected abstract void onCollision(HitResult hitResult);
+	protected abstract void method_7469(HitResult hitResult);
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		Vec3d vec3d = this.getVelocity();
-		compoundTag.put("direction", this.toListTag(new double[]{vec3d.x, vec3d.y, vec3d.z}));
-		compoundTag.put("power", this.toListTag(new double[]{this.field_7601, this.field_7600, this.field_7599}));
+	public void method_5652(CompoundTag compoundTag) {
+		Vec3d vec3d = this.method_18798();
+		compoundTag.method_10566("direction", this.method_5846(new double[]{vec3d.x, vec3d.y, vec3d.z}));
+		compoundTag.method_10566("power", this.method_5846(new double[]{this.field_7601, this.field_7600, this.field_7599}));
 		compoundTag.putInt("life", this.field_7603);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
+	public void method_5749(CompoundTag compoundTag) {
 		if (compoundTag.containsKey("power", 9)) {
-			ListTag listTag = compoundTag.getList("power", 6);
+			ListTag listTag = compoundTag.method_10554("power", 6);
 			if (listTag.size() == 3) {
 				this.field_7601 = listTag.getDouble(0);
 				this.field_7600 = listTag.getDouble(1);
@@ -148,8 +149,8 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		}
 
 		this.field_7603 = compoundTag.getInt("life");
-		if (compoundTag.containsKey("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
-			ListTag listTag = compoundTag.getList("direction", 6);
+		if (compoundTag.containsKey("direction", 9) && compoundTag.method_10554("direction", 6).size() == 3) {
+			ListTag listTag = compoundTag.method_10554("direction", 6);
 			this.setVelocity(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
 		} else {
 			this.invalidate();
@@ -172,14 +173,14 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			return false;
 		} else {
 			this.scheduleVelocityUpdate();
-			if (damageSource.getAttacker() != null) {
-				Vec3d vec3d = damageSource.getAttacker().method_5720();
-				this.setVelocity(vec3d);
+			if (damageSource.method_5529() != null) {
+				Vec3d vec3d = damageSource.method_5529().method_5720();
+				this.method_18799(vec3d);
 				this.field_7601 = vec3d.x * 0.1;
 				this.field_7600 = vec3d.y * 0.1;
 				this.field_7599 = vec3d.z * 0.1;
-				if (damageSource.getAttacker() instanceof LivingEntity) {
-					this.owner = (LivingEntity)damageSource.getAttacker();
+				if (damageSource.method_5529() instanceof LivingEntity) {
+					this.owner = (LivingEntity)damageSource.method_5529();
 				}
 
 				return true;
@@ -201,7 +202,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<?> method_18002() {
 		int i = this.owner == null ? 0 : this.owner.getEntityId();
 		return new EntitySpawnS2CPacket(
 			this.getEntityId(),
@@ -211,7 +212,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.z,
 			this.pitch,
 			this.yaw,
-			this.getType(),
+			this.method_5864(),
 			i,
 			new Vec3d(this.field_7601, this.field_7600, this.field_7599)
 		);

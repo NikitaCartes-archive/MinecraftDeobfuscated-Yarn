@@ -19,9 +19,9 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Nameable;
 
 public class BannerBlockEntity extends BlockEntity implements Nameable {
-	private TextComponent customName;
+	private TextComponent field_11772;
 	private DyeColor baseColor = DyeColor.field_7952;
-	private ListTag patternListTag;
+	private ListTag field_11773;
 	private boolean patternListTagRead;
 	private List<BannerPattern> patterns;
 	private List<DyeColor> patternColors;
@@ -38,10 +38,10 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Environment(EnvType.CLIENT)
 	public void deserialize(ItemStack itemStack, DyeColor dyeColor) {
-		this.patternListTag = null;
-		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+		this.field_11773 = null;
+		CompoundTag compoundTag = itemStack.method_7941("BlockEntityTag");
 		if (compoundTag != null && compoundTag.containsKey("Patterns", 9)) {
-			this.patternListTag = compoundTag.getList("Patterns", 10).method_10612();
+			this.field_11773 = compoundTag.method_10554("Patterns", 10).method_10612();
 		}
 
 		this.baseColor = dyeColor;
@@ -49,52 +49,52 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 		this.patternColors = null;
 		this.patternCacheKey = "";
 		this.patternListTagRead = true;
-		this.customName = itemStack.hasDisplayName() ? itemStack.getDisplayName() : null;
+		this.field_11772 = itemStack.hasDisplayName() ? itemStack.method_7964() : null;
 	}
 
 	@Override
-	public TextComponent getName() {
-		return (TextComponent)(this.customName != null ? this.customName : new TranslatableTextComponent("block.minecraft.banner"));
+	public TextComponent method_5477() {
+		return (TextComponent)(this.field_11772 != null ? this.field_11772 : new TranslatableTextComponent("block.minecraft.banner"));
 	}
 
 	@Nullable
 	@Override
-	public TextComponent getCustomName() {
-		return this.customName;
+	public TextComponent method_5797() {
+		return this.field_11772;
 	}
 
-	public void setCustomName(TextComponent textComponent) {
-		this.customName = textComponent;
+	public void method_16842(TextComponent textComponent) {
+		this.field_11772 = textComponent;
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag compoundTag) {
-		super.toTag(compoundTag);
-		if (this.patternListTag != null) {
-			compoundTag.put("Patterns", this.patternListTag);
+	public CompoundTag method_11007(CompoundTag compoundTag) {
+		super.method_11007(compoundTag);
+		if (this.field_11773 != null) {
+			compoundTag.method_10566("Patterns", this.field_11773);
 		}
 
-		if (this.customName != null) {
-			compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.customName));
+		if (this.field_11772 != null) {
+			compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.field_11772));
 		}
 
 		return compoundTag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void method_11014(CompoundTag compoundTag) {
+		super.method_11014(compoundTag);
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.customName = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+			this.field_11772 = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
 		}
 
 		if (this.hasWorld()) {
-			this.baseColor = ((AbstractBannerBlock)this.getCachedState().getBlock()).getColor();
+			this.baseColor = ((AbstractBannerBlock)this.method_11010().getBlock()).getColor();
 		} else {
 			this.baseColor = null;
 		}
 
-		this.patternListTag = compoundTag.getList("Patterns", 10);
+		this.field_11773 = compoundTag.method_10554("Patterns", 10);
 		this.patterns = null;
 		this.patternColors = null;
 		this.patternCacheKey = null;
@@ -103,18 +103,18 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 6, this.toInitialChunkDataTag());
+	public BlockEntityUpdateS2CPacket method_16886() {
+		return new BlockEntityUpdateS2CPacket(this.field_11867, 6, this.method_16887());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.toTag(new CompoundTag());
+	public CompoundTag method_16887() {
+		return this.method_11007(new CompoundTag());
 	}
 
 	public static int getPatternCount(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
-		return compoundTag != null && compoundTag.containsKey("Patterns") ? compoundTag.getList("Patterns", 10).size() : 0;
+		CompoundTag compoundTag = itemStack.method_7941("BlockEntityTag");
+		return compoundTag != null && compoundTag.containsKey("Patterns") ? compoundTag.method_10554("Patterns", 10).size() : 0;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -143,16 +143,16 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 			} else {
 				this.patterns = Lists.<BannerPattern>newArrayList();
 				this.patternColors = Lists.<DyeColor>newArrayList();
-				DyeColor dyeColor = this.getColorForState(this::getCachedState);
+				DyeColor dyeColor = this.getColorForState(this::method_11010);
 				if (dyeColor == null) {
 					this.patternCacheKey = "banner_missing";
 				} else {
 					this.patterns.add(BannerPattern.BASE);
 					this.patternColors.add(dyeColor);
 					this.patternCacheKey = "b" + dyeColor.getId();
-					if (this.patternListTag != null) {
-						for (int i = 0; i < this.patternListTag.size(); i++) {
-							CompoundTag compoundTag = this.patternListTag.getCompoundTag(i);
+					if (this.field_11773 != null) {
+						for (int i = 0; i < this.field_11773.size(); i++) {
+							CompoundTag compoundTag = this.field_11773.getCompoundTag(i);
 							BannerPattern bannerPattern = BannerPattern.byId(compoundTag.getString("Pattern"));
 							if (bannerPattern != null) {
 								this.patterns.add(bannerPattern);
@@ -168,9 +168,9 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	public static void loadFromItemStack(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
+		CompoundTag compoundTag = itemStack.method_7941("BlockEntityTag");
 		if (compoundTag != null && compoundTag.containsKey("Patterns", 9)) {
-			ListTag listTag = compoundTag.getList("Patterns", 10);
+			ListTag listTag = compoundTag.method_10554("Patterns", 10);
 			if (!listTag.isEmpty()) {
 				listTag.method_10536(listTag.size() - 1);
 				if (listTag.isEmpty()) {
@@ -181,14 +181,14 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ItemStack getPickStack(BlockState blockState) {
+	public ItemStack method_10907(BlockState blockState) {
 		ItemStack itemStack = new ItemStack(StandingBannerBlock.method_9398(this.getColorForState(() -> blockState)));
-		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
-			itemStack.getOrCreateSubCompoundTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
+		if (this.field_11773 != null && !this.field_11773.isEmpty()) {
+			itemStack.method_7911("BlockEntityTag").method_10566("Patterns", this.field_11773.method_10612());
 		}
 
-		if (this.customName != null) {
-			itemStack.setDisplayName(this.customName);
+		if (this.field_11772 != null) {
+			itemStack.method_7977(this.field_11772);
 		}
 
 		return itemStack;

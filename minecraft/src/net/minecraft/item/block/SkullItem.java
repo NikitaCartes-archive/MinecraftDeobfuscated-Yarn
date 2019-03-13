@@ -18,10 +18,10 @@ public class SkullItem extends WallStandingBlockItem {
 	}
 
 	@Override
-	public TextComponent getTranslatedNameTrimmed(ItemStack itemStack) {
+	public TextComponent method_7864(ItemStack itemStack) {
 		if (itemStack.getItem() == Items.PLAYER_HEAD && itemStack.hasTag()) {
 			String string = null;
-			CompoundTag compoundTag = itemStack.getTag();
+			CompoundTag compoundTag = itemStack.method_7969();
 			if (compoundTag.containsKey("SkullOwner", 8)) {
 				string = compoundTag.getString("SkullOwner");
 			} else if (compoundTag.containsKey("SkullOwner", 10)) {
@@ -36,16 +36,16 @@ public class SkullItem extends WallStandingBlockItem {
 			}
 		}
 
-		return super.getTranslatedNameTrimmed(itemStack);
+		return super.method_7864(itemStack);
 	}
 
 	@Override
-	public boolean onTagDeserialized(CompoundTag compoundTag) {
-		super.onTagDeserialized(compoundTag);
+	public boolean method_7860(CompoundTag compoundTag) {
+		super.method_7860(compoundTag);
 		if (compoundTag.containsKey("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
 			GameProfile gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
 			gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-			compoundTag.put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
+			compoundTag.method_10566("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
 			return true;
 		} else {
 			return false;

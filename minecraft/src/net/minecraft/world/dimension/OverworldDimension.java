@@ -52,13 +52,13 @@ public class OverworldDimension extends Dimension {
 	}
 
 	@Override
-	public DimensionType getType() {
+	public DimensionType method_12460() {
 		return DimensionType.field_13072;
 	}
 
 	@Override
 	public ChunkGenerator<? extends ChunkGeneratorConfig> createChunkGenerator() {
-		LevelGeneratorType levelGeneratorType = this.world.getLevelProperties().getGeneratorType();
+		LevelGeneratorType levelGeneratorType = this.world.method_8401().getGeneratorType();
 		ChunkGeneratorType<FlatChunkGeneratorConfig, FlatChunkGenerator> chunkGeneratorType = ChunkGeneratorType.field_12766;
 		ChunkGeneratorType<DebugChunkGeneratorConfig, DebugChunkGenerator> chunkGeneratorType2 = ChunkGeneratorType.field_12768;
 		ChunkGeneratorType<CavesChunkGeneratorConfig, CavesChunkGenerator> chunkGeneratorType3 = ChunkGeneratorType.field_12765;
@@ -69,26 +69,26 @@ public class OverworldDimension extends Dimension {
 		BiomeSourceType<CheckerboardBiomeSourceConfig, CheckerboardBiomeSource> biomeSourceType3 = BiomeSourceType.CHECKERBOARD;
 		if (levelGeneratorType == LevelGeneratorType.FLAT) {
 			FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.fromDynamic(
-				new Dynamic<>(NbtOps.INSTANCE, this.world.getLevelProperties().getGeneratorOptions())
+				new Dynamic<>(NbtOps.INSTANCE, this.world.method_8401().method_169())
 			);
 			FixedBiomeSourceConfig fixedBiomeSourceConfig = biomeSourceType.getConfig().setBiome(flatChunkGeneratorConfig.getBiome());
 			return chunkGeneratorType.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig), flatChunkGeneratorConfig);
 		} else if (levelGeneratorType == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			FixedBiomeSourceConfig fixedBiomeSourceConfig2 = biomeSourceType.getConfig().setBiome(Biomes.field_9451);
-			return chunkGeneratorType2.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig2), chunkGeneratorType2.createSettings());
+			return chunkGeneratorType2.create(this.world, biomeSourceType.applyConfig(fixedBiomeSourceConfig2), chunkGeneratorType2.method_12117());
 		} else if (levelGeneratorType != LevelGeneratorType.BUFFET) {
-			OverworldChunkGeneratorConfig overworldChunkGeneratorConfig2 = chunkGeneratorType5.createSettings();
+			OverworldChunkGeneratorConfig overworldChunkGeneratorConfig2 = chunkGeneratorType5.method_12117();
 			VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig2 = biomeSourceType2.getConfig()
-				.setLevelProperties(this.world.getLevelProperties())
-				.setGeneratorSettings(overworldChunkGeneratorConfig2);
+				.method_9002(this.world.method_8401())
+				.method_9004(overworldChunkGeneratorConfig2);
 			return chunkGeneratorType5.create(this.world, biomeSourceType2.applyConfig(vanillaLayeredBiomeSourceConfig2), overworldChunkGeneratorConfig2);
 		} else {
 			BiomeSource biomeSource = null;
-			JsonElement jsonElement = Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, this.world.getLevelProperties().getGeneratorOptions());
+			JsonElement jsonElement = Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, this.world.method_8401().method_169());
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
 			if (jsonObject.has("biome_source") && jsonObject.getAsJsonObject("biome_source").has("type") && jsonObject.getAsJsonObject("biome_source").has("options")) {
 				BiomeSourceType<?, ?> biomeSourceType4 = Registry.BIOME_SOURCE_TYPE
-					.get(new Identifier(jsonObject.getAsJsonObject("biome_source").getAsJsonPrimitive("type").getAsString()));
+					.method_10223(new Identifier(jsonObject.getAsJsonObject("biome_source").getAsJsonPrimitive("type").getAsString()));
 				JsonObject jsonObject2 = jsonObject.getAsJsonObject("biome_source").getAsJsonObject("options");
 				Biome[] biomes = new Biome[]{Biomes.field_9423};
 				if (jsonObject2.has("biomes")) {
@@ -96,7 +96,7 @@ public class OverworldDimension extends Dimension {
 					biomes = jsonArray.size() > 0 ? new Biome[jsonArray.size()] : new Biome[]{Biomes.field_9423};
 
 					for (int i = 0; i < jsonArray.size(); i++) {
-						biomes[i] = (Biome)Registry.BIOME.getOrEmpty(new Identifier(jsonArray.get(i).getAsString())).orElse(Biomes.field_9423);
+						biomes[i] = (Biome)Registry.BIOME.method_17966(new Identifier(jsonArray.get(i).getAsString())).orElse(Biomes.field_9423);
 					}
 				}
 
@@ -113,8 +113,8 @@ public class OverworldDimension extends Dimension {
 
 				if (BiomeSourceType.VANILLA_LAYERED == biomeSourceType4) {
 					VanillaLayeredBiomeSourceConfig vanillaLayeredBiomeSourceConfig = biomeSourceType2.getConfig()
-						.setGeneratorSettings(new OverworldChunkGeneratorConfig())
-						.setLevelProperties(this.world.getLevelProperties());
+						.method_9004(new OverworldChunkGeneratorConfig())
+						.method_9002(this.world.method_8401());
 					biomeSource = biomeSourceType2.applyConfig(vanillaLayeredBiomeSourceConfig);
 				}
 			}
@@ -123,40 +123,40 @@ public class OverworldDimension extends Dimension {
 				biomeSource = biomeSourceType.applyConfig(biomeSourceType.getConfig().setBiome(Biomes.field_9423));
 			}
 
-			BlockState blockState = Blocks.field_10340.getDefaultState();
-			BlockState blockState2 = Blocks.field_10382.getDefaultState();
+			BlockState blockState = Blocks.field_10340.method_9564();
+			BlockState blockState2 = Blocks.field_10382.method_9564();
 			if (jsonObject.has("chunk_generator") && jsonObject.getAsJsonObject("chunk_generator").has("options")) {
 				if (jsonObject.getAsJsonObject("chunk_generator").getAsJsonObject("options").has("default_block")) {
 					String string = jsonObject.getAsJsonObject("chunk_generator").getAsJsonObject("options").getAsJsonPrimitive("default_block").getAsString();
-					blockState = Registry.BLOCK.get(new Identifier(string)).getDefaultState();
+					blockState = Registry.BLOCK.method_10223(new Identifier(string)).method_9564();
 				}
 
 				if (jsonObject.getAsJsonObject("chunk_generator").getAsJsonObject("options").has("default_fluid")) {
 					String string = jsonObject.getAsJsonObject("chunk_generator").getAsJsonObject("options").getAsJsonPrimitive("default_fluid").getAsString();
-					blockState2 = Registry.BLOCK.get(new Identifier(string)).getDefaultState();
+					blockState2 = Registry.BLOCK.method_10223(new Identifier(string)).method_9564();
 				}
 			}
 
 			if (jsonObject.has("chunk_generator") && jsonObject.getAsJsonObject("chunk_generator").has("type")) {
 				ChunkGeneratorType<?, ?> chunkGeneratorType6 = Registry.CHUNK_GENERATOR_TYPE
-					.get(new Identifier(jsonObject.getAsJsonObject("chunk_generator").getAsJsonPrimitive("type").getAsString()));
+					.method_10223(new Identifier(jsonObject.getAsJsonObject("chunk_generator").getAsJsonPrimitive("type").getAsString()));
 				if (ChunkGeneratorType.field_12765 == chunkGeneratorType6) {
-					CavesChunkGeneratorConfig cavesChunkGeneratorConfig = chunkGeneratorType3.createSettings();
+					CavesChunkGeneratorConfig cavesChunkGeneratorConfig = chunkGeneratorType3.method_12117();
 					cavesChunkGeneratorConfig.setDefaultBlock(blockState);
 					cavesChunkGeneratorConfig.setDefaultFluid(blockState2);
 					return chunkGeneratorType3.create(this.world, biomeSource, cavesChunkGeneratorConfig);
 				}
 
 				if (ChunkGeneratorType.field_12770 == chunkGeneratorType6) {
-					FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = chunkGeneratorType4.createSettings();
-					floatingIslandsChunkGeneratorConfig.withCenter(new BlockPos(0, 64, 0));
+					FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = chunkGeneratorType4.method_12117();
+					floatingIslandsChunkGeneratorConfig.method_12651(new BlockPos(0, 64, 0));
 					floatingIslandsChunkGeneratorConfig.setDefaultBlock(blockState);
 					floatingIslandsChunkGeneratorConfig.setDefaultFluid(blockState2);
 					return chunkGeneratorType4.create(this.world, biomeSource, floatingIslandsChunkGeneratorConfig);
 				}
 			}
 
-			OverworldChunkGeneratorConfig overworldChunkGeneratorConfig = chunkGeneratorType5.createSettings();
+			OverworldChunkGeneratorConfig overworldChunkGeneratorConfig = chunkGeneratorType5.method_12117();
 			overworldChunkGeneratorConfig.setDefaultBlock(blockState);
 			overworldChunkGeneratorConfig.setDefaultFluid(blockState2);
 			return chunkGeneratorType5.create(this.world, biomeSource, overworldChunkGeneratorConfig);
@@ -165,10 +165,10 @@ public class OverworldDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
+	public BlockPos method_12452(ChunkPos chunkPos, boolean bl) {
 		for (int i = chunkPos.getStartX(); i <= chunkPos.getEndX(); i++) {
 			for (int j = chunkPos.getStartZ(); j <= chunkPos.getEndZ(); j++) {
-				BlockPos blockPos = this.getTopSpawningBlockPosition(i, j, bl);
+				BlockPos blockPos = this.method_12444(i, j, bl);
 				if (blockPos != null) {
 					return blockPos;
 				}
@@ -180,26 +180,24 @@ public class OverworldDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
+	public BlockPos method_12444(int i, int j, boolean bl) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(i, 0, j);
-		Biome biome = this.world.getBiome(mutable);
-		BlockState blockState = biome.getSurfaceConfig().getTopMaterial();
-		if (bl && !blockState.getBlock().matches(BlockTags.field_15478)) {
+		Biome biome = this.world.method_8310(mutable);
+		BlockState blockState = biome.method_8722().getTopMaterial();
+		if (bl && !blockState.getBlock().method_9525(BlockTags.field_15478)) {
 			return null;
 		} else {
 			WorldChunk worldChunk = this.world.method_8497(i >> 4, j >> 4);
-			int k = worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, i & 15, j & 15);
+			int k = worldChunk.method_12005(Heightmap.Type.MOTION_BLOCKING, i & 15, j & 15);
 			if (k < 0) {
 				return null;
-			} else if (worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i & 15, j & 15) > worldChunk.sampleHeightmap(Heightmap.Type.OCEAN_FLOOR, i & 15, j & 15)
-				)
-			 {
+			} else if (worldChunk.method_12005(Heightmap.Type.WORLD_SURFACE, i & 15, j & 15) > worldChunk.method_12005(Heightmap.Type.OCEAN_FLOOR, i & 15, j & 15)) {
 				return null;
 			} else {
 				for (int l = k + 1; l >= 0; l--) {
 					mutable.set(i, l, j);
-					BlockState blockState2 = this.world.getBlockState(mutable);
-					if (!blockState2.getFluidState().isEmpty()) {
+					BlockState blockState2 = this.world.method_8320(mutable);
+					if (!blockState2.method_11618().isEmpty()) {
 						break;
 					}
 
@@ -215,18 +213,9 @@ public class OverworldDimension extends Dimension {
 
 	@Override
 	public float getSkyAngle(long l, float f) {
-		int i = (int)(l % 24000L);
-		float g = ((float)i + f) / 24000.0F - 0.25F;
-		if (g < 0.0F) {
-			g++;
-		}
-
-		if (g > 1.0F) {
-			g--;
-		}
-
-		float var7 = 1.0F - (float)((Math.cos((double)g * Math.PI) + 1.0) / 2.0);
-		return g + (var7 - g) / 3.0F;
+		double d = MathHelper.fractionalPart((double)l / 24000.0 - 0.25);
+		double e = 0.5 - Math.cos(d * Math.PI) / 2.0;
+		return (float)(d * 2.0 + e) / 3.0F;
 	}
 
 	@Override
@@ -236,7 +225,7 @@ public class OverworldDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d getFogColor(float f, float g) {
+	public Vec3d method_12445(float f, float g) {
 		float h = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
 		float i = 0.7529412F;

@@ -10,12 +10,13 @@ import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
 
 public class VillageGenerator {
-	public static void addPieces(
+	public static void method_16753(
 		ChunkGenerator<?> chunkGenerator,
 		StructureManager structureManager,
 		BlockPos blockPos,
@@ -28,14 +29,21 @@ public class VillageGenerator {
 		SavannaVillageData.initialize();
 		DesertVillageData.initialize();
 		TaigaVillageData.initialize();
-		StructurePoolBasedGenerator.addPieces(
-			villageFeatureConfig.startPool, villageFeatureConfig.size, VillageGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
+		StructurePoolBasedGenerator.method_16605(
+			villageFeatureConfig.field_16861, villageFeatureConfig.size, VillageGenerator.Piece::new, chunkGenerator, structureManager, blockPos, list, chunkRandom
 		);
 	}
 
 	public static class Piece extends PoolStructurePiece {
-		public Piece(StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, Rotation rotation) {
-			super(StructurePieceType.VILLAGE, structureManager, structurePoolElement, blockPos, i, rotation);
+		public Piece(
+			StructureManager structureManager,
+			StructurePoolElement structurePoolElement,
+			BlockPos blockPos,
+			int i,
+			Rotation rotation,
+			MutableIntBoundingBox mutableIntBoundingBox
+		) {
+			super(StructurePieceType.VILLAGE, structureManager, structurePoolElement, blockPos, i, rotation, mutableIntBoundingBox);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {

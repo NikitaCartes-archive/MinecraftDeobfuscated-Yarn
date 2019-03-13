@@ -37,7 +37,7 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 	}
 
 	public void method_12653(ServerLoginPacketListener serverLoginPacketListener) {
-		serverLoginPacketListener.onKey(this);
+		serverLoginPacketListener.method_12642(this);
 	}
 
 	public SecretKey method_12654(PrivateKey privateKey) {

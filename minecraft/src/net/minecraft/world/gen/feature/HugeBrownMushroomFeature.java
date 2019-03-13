@@ -29,7 +29,7 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 
 		int j = blockPos.getY();
 		if (j >= 1 && j + i + 1 < 256) {
-			Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+			Block block = iWorld.method_8320(blockPos.down()).getBlock();
 			if (!Block.isNaturalDirt(block) && block != Blocks.field_10219 && block != Blocks.field_10402) {
 				return false;
 			} else {
@@ -40,8 +40,8 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 
 					for (int m = -l; m <= l; m++) {
 						for (int n = -l; n <= l; n++) {
-							BlockState blockState = iWorld.getBlockState(mutable.set(blockPos).setOffset(m, k, n));
-							if (!blockState.isAir() && !blockState.matches(BlockTags.field_15503)) {
+							BlockState blockState = iWorld.method_8320(mutable.method_10101(blockPos).setOffset(m, k, n));
+							if (!blockState.isAir() && !blockState.method_11602(BlockTags.field_15503)) {
 								return false;
 							}
 						}
@@ -49,9 +49,9 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 				}
 
 				BlockState blockState2 = Blocks.field_10580
-					.getDefaultState()
-					.with(MushroomBlock.UP, Boolean.valueOf(true))
-					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
+					.method_9564()
+					.method_11657(MushroomBlock.field_11166, Boolean.valueOf(true))
+					.method_11657(MushroomBlock.field_11169, Boolean.valueOf(false));
 				int l = 3;
 
 				for (int m = -3; m <= 3; m++) {
@@ -63,19 +63,19 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 						boolean bl5 = bl || bl2;
 						boolean bl6 = bl3 || bl4;
 						if (!bl5 || !bl6) {
-							mutable.set(blockPos).setOffset(m, i, nx);
-							if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
+							mutable.method_10101(blockPos).setOffset(m, i, nx);
+							if (!iWorld.method_8320(mutable).method_11598(iWorld, mutable)) {
 								boolean bl7 = bl || bl6 && m == -2;
 								boolean bl8 = bl2 || bl6 && m == 2;
 								boolean bl9 = bl3 || bl5 && nx == -2;
 								boolean bl10 = bl4 || bl5 && nx == 2;
-								this.setBlockState(
+								this.method_13153(
 									iWorld,
 									mutable,
-									blockState2.with(MushroomBlock.WEST, Boolean.valueOf(bl7))
-										.with(MushroomBlock.EAST, Boolean.valueOf(bl8))
-										.with(MushroomBlock.NORTH, Boolean.valueOf(bl9))
-										.with(MushroomBlock.SOUTH, Boolean.valueOf(bl10))
+									blockState2.method_11657(MushroomBlock.field_11167, Boolean.valueOf(bl7))
+										.method_11657(MushroomBlock.field_11172, Boolean.valueOf(bl8))
+										.method_11657(MushroomBlock.field_11171, Boolean.valueOf(bl9))
+										.method_11657(MushroomBlock.field_11170, Boolean.valueOf(bl10))
 								);
 							}
 						}
@@ -83,14 +83,14 @@ public class HugeBrownMushroomFeature extends Feature<DefaultFeatureConfig> {
 				}
 
 				BlockState blockState3 = Blocks.field_10556
-					.getDefaultState()
-					.with(MushroomBlock.UP, Boolean.valueOf(false))
-					.with(MushroomBlock.DOWN, Boolean.valueOf(false));
+					.method_9564()
+					.method_11657(MushroomBlock.field_11166, Boolean.valueOf(false))
+					.method_11657(MushroomBlock.field_11169, Boolean.valueOf(false));
 
 				for (int nxx = 0; nxx < i; nxx++) {
-					mutable.set(blockPos).setOffset(Direction.UP, nxx);
-					if (!iWorld.getBlockState(mutable).isFullOpaque(iWorld, mutable)) {
-						this.setBlockState(iWorld, mutable, blockState3);
+					mutable.method_10101(blockPos).method_10104(Direction.UP, nxx);
+					if (!iWorld.method_8320(mutable).method_11598(iWorld, mutable)) {
+						this.method_13153(iWorld, mutable, blockState3);
 					}
 				}
 

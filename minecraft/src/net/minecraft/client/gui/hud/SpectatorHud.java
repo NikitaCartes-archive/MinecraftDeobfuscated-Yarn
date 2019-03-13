@@ -16,11 +16,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCallback {
-	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/widgets.png");
-	public static final Identifier SPECTATOR_TEX = new Identifier("textures/gui/spectator_widgets.png");
+	private static final Identifier field_2197 = new Identifier("textures/gui/widgets.png");
+	public static final Identifier field_2199 = new Identifier("textures/gui/spectator_widgets.png");
 	private final MinecraftClient client;
 	private long lastKeyPressTime;
-	private SpectatorMenu spectatorMenu;
+	private SpectatorMenu field_2200;
 
 	public SpectatorHud(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
@@ -28,10 +28,10 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 
 	public void onHotbarKeyPress(int i) {
 		this.lastKeyPressTime = SystemUtil.getMeasuringTimeMs();
-		if (this.spectatorMenu != null) {
-			this.spectatorMenu.setSelectedSlot(i);
+		if (this.field_2200 != null) {
+			this.field_2200.setSelectedSlot(i);
 		} else {
-			this.spectatorMenu = new SpectatorMenu(this);
+			this.field_2200 = new SpectatorMenu(this);
 		}
 	}
 
@@ -41,30 +41,30 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	}
 
 	public void draw(float f) {
-		if (this.spectatorMenu != null) {
+		if (this.field_2200 != null) {
 			float g = this.getSpectatorMenuHeight();
 			if (g <= 0.0F) {
-				this.spectatorMenu.close();
+				this.field_2200.close();
 			} else {
 				int i = this.client.window.getScaledWidth() / 2;
 				float h = this.zOffset;
 				this.zOffset = -90.0F;
 				float j = (float)this.client.window.getScaledHeight() - 22.0F * g;
-				SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
-				this.drawSpectatorMenu(g, i, j, spectatorMenuState);
+				SpectatorMenuState spectatorMenuState = this.field_2200.method_2772();
+				this.method_1975(g, i, j, spectatorMenuState);
 				this.zOffset = h;
 			}
 		}
 	}
 
-	protected void drawSpectatorMenu(float f, int i, float g, SpectatorMenuState spectatorMenuState) {
+	protected void method_1975(float f, int i, float g, SpectatorMenuState spectatorMenuState) {
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, f);
-		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
+		this.client.method_1531().method_4618(field_2197);
 		this.drawTexturedRect((float)(i - 91), g, 0, 0, 182, 22);
 		if (spectatorMenuState.getSelectedSlot() >= 0) {
 			this.drawTexturedRect((float)(i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20), g - 1.0F, 0, 22, 24, 22);
@@ -73,7 +73,7 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		GuiLighting.enableForItems();
 
 		for (int j = 0; j < 9; j++) {
-			this.drawSpectatorCommand(j, this.client.window.getScaledWidth() / 2 - 90 + j * 20 + 2, g + 3.0F, f, spectatorMenuState.getCommand(j));
+			this.method_1982(j, this.client.window.getScaledWidth() / 2 - 90 + j * 20 + 2, g + 3.0F, f, spectatorMenuState.getCommand(j));
 		}
 
 		GuiLighting.disable();
@@ -81,9 +81,9 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		GlStateManager.disableBlend();
 	}
 
-	private void drawSpectatorCommand(int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
-		this.client.getTextureManager().bindTexture(SPECTATOR_TEX);
-		if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
+	private void method_1982(int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
+		this.client.method_1531().method_4618(field_2199);
+		if (spectatorMenuCommand != SpectatorMenu.field_3260) {
 			int k = (int)(g * 255.0F);
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)j, f, 0.0F);
@@ -91,31 +91,29 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 			GlStateManager.color4f(h, h, h, g);
 			spectatorMenuCommand.renderIcon(h, k);
 			GlStateManager.popMatrix();
-			String string = String.valueOf(this.client.options.keysHotbar[i].getLocalizedName());
+			String string = String.valueOf(this.client.field_1690.keysHotbar[i].getLocalizedName());
 			if (k > 3 && spectatorMenuCommand.enabled()) {
-				this.client
-					.textRenderer
-					.drawWithShadow(string, (float)(j + 19 - 2 - this.client.textRenderer.getStringWidth(string)), f + 6.0F + 3.0F, 16777215 + (k << 24));
+				this.client.field_1772.drawWithShadow(string, (float)(j + 19 - 2 - this.client.field_1772.getStringWidth(string)), f + 6.0F + 3.0F, 16777215 + (k << 24));
 			}
 		}
 	}
 
 	public void draw() {
 		int i = (int)(this.getSpectatorMenuHeight() * 255.0F);
-		if (i > 3 && this.spectatorMenu != null) {
-			SpectatorMenuCommand spectatorMenuCommand = this.spectatorMenu.getSelectedCommand();
-			String string = spectatorMenuCommand == SpectatorMenu.BLANK_COMMAND
-				? this.spectatorMenu.getCurrentGroup().getPrompt().getFormattedText()
-				: spectatorMenuCommand.getName().getFormattedText();
+		if (i > 3 && this.field_2200 != null) {
+			SpectatorMenuCommand spectatorMenuCommand = this.field_2200.method_2774();
+			String string = spectatorMenuCommand == SpectatorMenu.field_3260
+				? this.field_2200.method_2776().method_2781().getFormattedText()
+				: spectatorMenuCommand.method_16892().getFormattedText();
 			if (string != null) {
-				int j = (this.client.window.getScaledWidth() - this.client.textRenderer.getStringWidth(string)) / 2;
+				int j = (this.client.window.getScaledWidth() - this.client.field_1772.getStringWidth(string)) / 2;
 				int k = this.client.window.getScaledHeight() - 35;
 				GlStateManager.pushMatrix();
 				GlStateManager.enableBlend();
 				GlStateManager.blendFuncSeparate(
 					GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 				);
-				this.client.textRenderer.drawWithShadow(string, (float)j, (float)k, 16777215 + (i << 24));
+				this.client.field_1772.drawWithShadow(string, (float)j, (float)k, 16777215 + (i << 24));
 				GlStateManager.disableBlend();
 				GlStateManager.popMatrix();
 			}
@@ -124,23 +122,23 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 
 	@Override
 	public void close(SpectatorMenu spectatorMenu) {
-		this.spectatorMenu = null;
+		this.field_2200 = null;
 		this.lastKeyPressTime = 0L;
 	}
 
 	public boolean method_1980() {
-		return this.spectatorMenu != null;
+		return this.field_2200 != null;
 	}
 
 	public void method_1976(double d) {
-		int i = this.spectatorMenu.getSelectedSlot() + (int)d;
+		int i = this.field_2200.getSelectedSlot() + (int)d;
 
-		while (i >= 0 && i <= 8 && (this.spectatorMenu.getCommand(i) == SpectatorMenu.BLANK_COMMAND || !this.spectatorMenu.getCommand(i).enabled())) {
+		while (i >= 0 && i <= 8 && (this.field_2200.method_2777(i) == SpectatorMenu.field_3260 || !this.field_2200.method_2777(i).enabled())) {
 			i = (int)((double)i + d);
 		}
 
 		if (i >= 0 && i <= 8) {
-			this.spectatorMenu.setSelectedSlot(i);
+			this.field_2200.setSelectedSlot(i);
 			this.lastKeyPressTime = SystemUtil.getMeasuringTimeMs();
 		}
 	}
@@ -148,12 +146,12 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	public void method_1983() {
 		this.lastKeyPressTime = SystemUtil.getMeasuringTimeMs();
 		if (this.method_1980()) {
-			int i = this.spectatorMenu.getSelectedSlot();
+			int i = this.field_2200.getSelectedSlot();
 			if (i != -1) {
-				this.spectatorMenu.setSelectedSlot(i);
+				this.field_2200.setSelectedSlot(i);
 			}
 		} else {
-			this.spectatorMenu = new SpectatorMenu(this);
+			this.field_2200 = new SpectatorMenu(this);
 		}
 	}
 }

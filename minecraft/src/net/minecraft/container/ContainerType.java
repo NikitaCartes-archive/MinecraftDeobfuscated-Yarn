@@ -6,8 +6,12 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.registry.Registry;
 
 public class ContainerType<T extends Container> {
-	public static final ContainerType<GenericContainer.Generic9x3> GENERIC_9X3 = register("generic_9x3", GenericContainer.Generic9x3::new);
-	public static final ContainerType<GenericContainer.Generic9x6> GENERIC_9X6 = register("generic_9x6", GenericContainer.Generic9x6::new);
+	public static final ContainerType<GenericContainer> field_18664 = register("generic_9x1", GenericContainer::method_19244);
+	public static final ContainerType<GenericContainer> field_18665 = register("generic_9x2", GenericContainer::method_19246);
+	public static final ContainerType<GenericContainer> GENERIC_9X3 = register("generic_9x3", GenericContainer::method_19248);
+	public static final ContainerType<GenericContainer> field_18666 = register("generic_9x4", GenericContainer::method_19249);
+	public static final ContainerType<GenericContainer> field_18667 = register("generic_9x5", GenericContainer::method_19250);
+	public static final ContainerType<GenericContainer> GENERIC_9X6 = register("generic_9x6", GenericContainer::method_19251);
 	public static final ContainerType<Generic3x3Container> GENERIC_3X3 = register("generic_3x3", Generic3x3Container::new);
 	public static final ContainerType<AnvilContainer> ANVIL = register("anvil", AnvilContainer::new);
 	public static final ContainerType<BeaconContainer> BEACON = register("beacon", BeaconContainer::new);

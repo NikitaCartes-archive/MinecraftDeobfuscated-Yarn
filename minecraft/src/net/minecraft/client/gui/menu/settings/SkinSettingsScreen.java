@@ -2,8 +2,8 @@ package net.minecraft.client.gui.menu.settings;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.options.GameOption;
 import net.minecraft.client.render.entity.PlayerModelPart;
@@ -35,14 +35,14 @@ public class SkinSettingsScreen extends Screen {
 				150,
 				20,
 				GameOption.field_18193,
-				GameOption.field_18193.method_18501(this.client.options)
+				GameOption.field_18193.method_18501(this.client.field_1690)
 			) {
 				@Override
-				public void onPressed(double d, double e) {
-					GameOption.field_18193.method_18500(SkinSettingsScreen.this.client.options, 1);
-					SkinSettingsScreen.this.client.options.write();
-					this.setText(GameOption.field_18193.method_18501(SkinSettingsScreen.this.client.options));
-					SkinSettingsScreen.this.client.options.onPlayerModelPartChange();
+				public void method_1826() {
+					GameOption.field_18193.method_18500(SkinSettingsScreen.this.client.field_1690, 1);
+					SkinSettingsScreen.this.client.field_1690.write();
+					this.setText(GameOption.field_18193.method_18501(SkinSettingsScreen.this.client.field_1690));
+					SkinSettingsScreen.this.client.field_1690.onPlayerModelPartChange();
 				}
 			}
 		);
@@ -50,17 +50,17 @@ public class SkinSettingsScreen extends Screen {
 			i++;
 		}
 
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 24 * (i >> 1), I18n.translate("gui.done")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 6 + 24 * (i >> 1), I18n.translate("gui.done")) {
 			@Override
-			public void onPressed(double d, double e) {
-				SkinSettingsScreen.this.client.openScreen(SkinSettingsScreen.this.parent);
+			public void method_1826() {
+				SkinSettingsScreen.this.client.method_1507(SkinSettingsScreen.this.parent);
 			}
 		});
 	}
 
 	@Override
 	public void onClosed() {
-		this.client.options.write();
+		this.client.field_1690.write();
 	}
 
 	@Override
@@ -72,17 +72,17 @@ public class SkinSettingsScreen extends Screen {
 
 	private String method_2248(PlayerModelPart playerModelPart) {
 		String string;
-		if (this.client.options.getEnabledPlayerModelParts().contains(playerModelPart)) {
+		if (this.client.field_1690.getEnabledPlayerModelParts().contains(playerModelPart)) {
 			string = I18n.translate("options.on");
 		} else {
 			string = I18n.translate("options.off");
 		}
 
-		return playerModelPart.getLocalizedName().getFormattedText() + ": " + string;
+		return playerModelPart.method_7428().getFormattedText() + ": " + string;
 	}
 
 	@Environment(EnvType.CLIENT)
-	class class_441 extends ButtonWidget {
+	class class_441 extends class_4185 {
 		private final PlayerModelPart field_2579;
 
 		private class_441(int i, int j, int k, int l, PlayerModelPart playerModelPart) {
@@ -91,8 +91,8 @@ public class SkinSettingsScreen extends Screen {
 		}
 
 		@Override
-		public void onPressed(double d, double e) {
-			SkinSettingsScreen.this.client.options.togglePlayerModelPart(this.field_2579);
+		public void method_1826() {
+			SkinSettingsScreen.this.client.field_1690.togglePlayerModelPart(this.field_2579);
 			this.setText(SkinSettingsScreen.this.method_2248(this.field_2579));
 		}
 	}

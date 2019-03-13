@@ -37,16 +37,16 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 		}
 	}
 
-	public ListTag toNbt() {
-		return ChunkSerializer.toNbt(this.scheduledPositions);
+	public ListTag method_12367() {
+		return ChunkSerializer.method_12393(this.scheduledPositions);
 	}
 
 	public void tick(TickScheduler<T> tickScheduler, Function<BlockPos, T> function) {
 		for (int i = 0; i < this.scheduledPositions.length; i++) {
 			if (this.scheduledPositions[i] != null) {
 				for (Short short_ : this.scheduledPositions[i]) {
-					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, i, this.pos);
-					tickScheduler.schedule(blockPos, (T)function.apply(blockPos), 0);
+					BlockPos blockPos = ProtoChunk.method_12314(short_, i, this.pos);
+					tickScheduler.method_8676(blockPos, (T)function.apply(blockPos), 0);
 				}
 
 				this.scheduledPositions[i].clear();
@@ -55,17 +55,17 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public boolean isScheduled(BlockPos blockPos, T object) {
+	public boolean method_8674(BlockPos blockPos, T object) {
 		return false;
 	}
 
 	@Override
-	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
-		Chunk.getList(this.scheduledPositions, blockPos.getY() >> 4).add(ProtoChunk.getPackedSectionRelative(blockPos));
+	public void method_8675(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
+		Chunk.getList(this.scheduledPositions, blockPos.getY() >> 4).add(ProtoChunk.method_12300(blockPos));
 	}
 
 	@Override
-	public boolean isTicking(BlockPos blockPos, T object) {
+	public boolean method_8677(BlockPos blockPos, T object) {
 		return false;
 	}
 }

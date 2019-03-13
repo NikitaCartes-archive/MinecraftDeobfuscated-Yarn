@@ -5,8 +5,7 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.api.EnvironmentInterface;
-import net.fabricmc.api.EnvironmentInterfaces;
+import net.minecraft.class_4151;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -42,35 +41,31 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
-@EnvironmentInterfaces({@EnvironmentInterface(
-		value = EnvType.CLIENT,
-		itf = VillagerDataContainer.class
-	)})
 public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataContainer {
-	private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
+	private static final TrackedData<Boolean> field_7423 = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<VillagerData> field_7420 = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
 	private int conversionTimer;
 	private UUID converter;
-	private CompoundTag offerData;
+	private CompoundTag field_17047;
 
 	public ZombieVillagerEntity(EntityType<? extends ZombieVillagerEntity> entityType, World world) {
 		super(entityType, world);
-		this.setVillagerData(this.getVillagerData().withProfession(Registry.VILLAGER_PROFESSION.getRandom(this.random)));
+		this.method_7195(this.getVillagerData().method_16921(Registry.VILLAGER_PROFESSION.getRandom(this.random)));
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(CONVERTING, false);
-		this.dataTracker.startTracking(VILLAGER_DATA, new VillagerData(VillagerType.field_17073, VillagerProfession.field_17051, 1));
+		this.field_6011.startTracking(field_7423, false);
+		this.field_6011.startTracking(field_7420, new VillagerData(VillagerType.field_17073, VillagerProfession.field_17051, 1));
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
-		compoundTag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
-		if (this.offerData != null) {
-			compoundTag.put("Offers", this.offerData);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
+		compoundTag.method_10566("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
+		if (this.field_17047 != null) {
+			compoundTag.method_10566("Offers", this.field_17047);
 		}
 
 		compoundTag.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
@@ -80,14 +75,14 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		if (compoundTag.containsKey("VillagerData", 10)) {
-			this.setVillagerData(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, compoundTag.getTag("VillagerData"))));
+			this.method_7195(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, compoundTag.method_10580("VillagerData"))));
 		}
 
 		if (compoundTag.containsKey("Offers", 10)) {
-			this.offerData = compoundTag.getCompound("Offers");
+			this.field_17047 = compoundTag.getCompound("Offers");
 		}
 
 		if (compoundTag.containsKey("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
@@ -97,11 +92,11 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 
 	@Override
 	public void update() {
-		if (!this.world.isClient && this.isConverting()) {
+		if (!this.field_6002.isClient && this.isValid() && this.isConverting()) {
 			int i = this.method_7194();
 			this.conversionTimer -= i;
 			if (this.conversionTimer <= 0) {
-				this.finishConversion((ServerWorld)this.world);
+				this.method_7197((ServerWorld)this.field_6002);
 			}
 		}
 
@@ -109,14 +104,14 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
 		if (itemStack.getItem() == Items.field_8463 && this.hasPotionEffect(StatusEffects.field_5911)) {
 			if (!playerEntity.abilities.creativeMode) {
 				itemStack.subtractAmount(1);
 			}
 
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				this.setConverting(playerEntity.getUuid(), this.random.nextInt(2401) + 3600);
 			}
 
@@ -137,16 +132,16 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	public boolean isConverting() {
-		return this.getDataTracker().get(CONVERTING);
+		return this.method_5841().get(field_7423);
 	}
 
 	protected void setConverting(@Nullable UUID uUID, int i) {
 		this.converter = uUID;
 		this.conversionTimer = i;
-		this.getDataTracker().set(CONVERTING, true);
+		this.method_5841().set(field_7423, true);
 		this.removeStatusEffect(StatusEffects.field_5911);
-		this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5910, i, Math.min(this.world.getDifficulty().getId() - 1, 0)));
-		this.world.summonParticle(this, (byte)16);
+		this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5910, i, Math.min(this.field_6002.getDifficulty().getId() - 1, 0)));
+		this.field_6002.summonParticle(this, (byte)16);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -154,13 +149,13 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	public void method_5711(byte b) {
 		if (b == 16) {
 			if (!this.isSilent()) {
-				this.world
-					.playSound(
+				this.field_6002
+					.method_8486(
 						this.x + 0.5,
 						this.y + 0.5,
 						this.z + 0.5,
 						SoundEvents.field_14905,
-						this.getSoundCategory(),
+						this.method_5634(),
 						1.0F + this.random.nextFloat(),
 						this.random.nextFloat() * 0.7F + 0.3F,
 						false
@@ -171,16 +166,15 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		}
 	}
 
-	protected void finishConversion(ServerWorld serverWorld) {
-		VillagerEntity villagerEntity = EntityType.VILLAGER.create(serverWorld);
+	protected void method_7197(ServerWorld serverWorld) {
+		VillagerEntity villagerEntity = EntityType.VILLAGER.method_5883(serverWorld);
 		villagerEntity.setPositionAndAngles(this);
-		villagerEntity.setVillagerData(this.getVillagerData());
-		if (this.offerData != null) {
-			villagerEntity.setRecipes(new TraderRecipeList(this.offerData));
+		villagerEntity.method_7221(this.getVillagerData());
+		if (this.field_17047 != null) {
+			villagerEntity.method_16917(new TraderRecipeList(this.field_17047));
 		}
 
-		villagerEntity.prepareEntityData(serverWorld, serverWorld.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);
-		villagerEntity.setRecentlyRescued();
+		villagerEntity.method_5943(serverWorld, serverWorld.method_8404(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);
 		if (this.isChild()) {
 			villagerEntity.setBreedingAge(-24000);
 		}
@@ -188,7 +182,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		this.invalidate();
 		villagerEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
-			villagerEntity.setCustomName(this.getCustomName());
+			villagerEntity.method_5665(this.method_5797());
 			villagerEntity.setCustomNameVisible(this.isCustomNameVisible());
 		}
 
@@ -196,12 +190,13 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		if (this.converter != null) {
 			PlayerEntity playerEntity = serverWorld.method_18470(this.converter);
 			if (playerEntity instanceof ServerPlayerEntity) {
-				Criterions.CURED_ZOMBIE_VILLAGER.handle((ServerPlayerEntity)playerEntity, this, villagerEntity);
+				Criterions.CURED_ZOMBIE_VILLAGER.method_8831((ServerPlayerEntity)playerEntity, this, villagerEntity);
+				serverWorld.method_19496(class_4151.field_18474, playerEntity, villagerEntity);
 			}
 		}
 
 		villagerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5916, 200, 0));
-		serverWorld.playEvent(null, 1027, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+		serverWorld.method_8444(null, 1027, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
 	}
 
 	protected int method_7194() {
@@ -213,7 +208,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			for (int k = (int)this.x - 4; k < (int)this.x + 4 && j < 14; k++) {
 				for (int l = (int)this.y - 4; l < (int)this.y + 4 && j < 14; l++) {
 					for (int m = (int)this.z - 4; m < (int)this.z + 4 && j < 14; m++) {
-						Block block = this.world.getBlockState(mutable.set(k, l, m)).getBlock();
+						Block block = this.field_6002.method_8320(mutable.set(k, l, m)).getBlock();
 						if (block == Blocks.field_10576 || block instanceof BedBlock) {
 							if (this.random.nextFloat() < 0.3F) {
 								i++;
@@ -235,57 +230,57 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	@Override
-	public SoundEvent getAmbientSound() {
+	public SoundEvent method_5994() {
 		return SoundEvents.field_15056;
 	}
 
 	@Override
-	public SoundEvent getHurtSound(DamageSource damageSource) {
+	public SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_14728;
 	}
 
 	@Override
-	public SoundEvent getDeathSound() {
+	public SoundEvent method_6002() {
 		return SoundEvents.field_14996;
 	}
 
 	@Override
-	public SoundEvent getSoundStep() {
+	public SoundEvent method_7207() {
 		return SoundEvents.field_14841;
 	}
 
 	@Override
-	protected ItemStack getSkull() {
+	protected ItemStack method_7215() {
 		return ItemStack.EMPTY;
 	}
 
-	public void setOfferData(CompoundTag compoundTag) {
-		this.offerData = compoundTag;
+	public void method_16916(CompoundTag compoundTag) {
+		this.field_17047 = compoundTag;
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (spawnType == SpawnType.field_16462 || spawnType == SpawnType.field_16465 || spawnType == SpawnType.field_16469) {
-			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(iWorld.getBiome(new BlockPos(this)))));
+			this.method_7195(this.getVillagerData().method_16922(VillagerType.method_16930(iWorld.method_8310(new BlockPos(this)))));
 		}
 
-		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
-	public void setVillagerData(VillagerData villagerData) {
+	public void method_7195(VillagerData villagerData) {
 		VillagerData villagerData2 = this.getVillagerData();
-		if (villagerData2.getProfession() != villagerData.getProfession()) {
-			this.offerData = null;
+		if (villagerData2.method_16924() != villagerData.method_16924()) {
+			this.field_17047 = null;
 		}
 
-		this.dataTracker.set(VILLAGER_DATA, villagerData);
+		this.field_6011.set(field_7420, villagerData);
 	}
 
 	@Override
 	public VillagerData getVillagerData() {
-		return this.dataTracker.get(VILLAGER_DATA);
+		return this.field_6011.get(field_7420);
 	}
 }

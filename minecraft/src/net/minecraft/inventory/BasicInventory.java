@@ -10,17 +10,17 @@ import net.minecraft.util.DefaultedList;
 
 public class BasicInventory implements Inventory, RecipeInputProvider {
 	private final int size;
-	private final DefaultedList<ItemStack> stackList;
+	private final DefaultedList<ItemStack> field_5828;
 	private List<InventoryListener> listeners;
 
 	public BasicInventory(int i) {
 		this.size = i;
-		this.stackList = DefaultedList.create(i, ItemStack.EMPTY);
+		this.field_5828 = DefaultedList.create(i, ItemStack.EMPTY);
 	}
 
 	public BasicInventory(ItemStack... itemStacks) {
 		this.size = itemStacks.length;
-		this.stackList = DefaultedList.create(ItemStack.EMPTY, itemStacks);
+		this.field_5828 = DefaultedList.create(ItemStack.EMPTY, itemStacks);
 	}
 
 	public void addListener(InventoryListener inventoryListener) {
@@ -36,13 +36,13 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public ItemStack getInvStack(int i) {
-		return i >= 0 && i < this.stackList.size() ? this.stackList.get(i) : ItemStack.EMPTY;
+	public ItemStack method_5438(int i) {
+		return i >= 0 && i < this.field_5828.size() ? this.field_5828.get(i) : ItemStack.EMPTY;
 	}
 
 	@Override
-	public ItemStack takeInvStack(int i, int j) {
-		ItemStack itemStack = Inventories.splitStack(this.stackList, i, j);
+	public ItemStack method_5434(int i, int j) {
+		ItemStack itemStack = Inventories.method_5430(this.field_5828, i, j);
 		if (!itemStack.isEmpty()) {
 			this.markDirty();
 		}
@@ -50,13 +50,13 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 		return itemStack;
 	}
 
-	public ItemStack add(ItemStack itemStack) {
+	public ItemStack method_5491(ItemStack itemStack) {
 		ItemStack itemStack2 = itemStack.copy();
 
 		for (int i = 0; i < this.size; i++) {
-			ItemStack itemStack3 = this.getInvStack(i);
+			ItemStack itemStack3 = this.method_5438(i);
 			if (itemStack3.isEmpty()) {
-				this.setInvStack(i, itemStack2);
+				this.method_5447(i, itemStack2);
 				this.markDirty();
 				return ItemStack.EMPTY;
 			}
@@ -83,19 +83,19 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public ItemStack removeInvStack(int i) {
-		ItemStack itemStack = this.stackList.get(i);
+	public ItemStack method_5441(int i) {
+		ItemStack itemStack = this.field_5828.get(i);
 		if (itemStack.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
-			this.stackList.set(i, ItemStack.EMPTY);
+			this.field_5828.set(i, ItemStack.EMPTY);
 			return itemStack;
 		}
 	}
 
 	@Override
-	public void setInvStack(int i, ItemStack itemStack) {
-		this.stackList.set(i, itemStack);
+	public void method_5447(int i, ItemStack itemStack) {
+		this.field_5828.set(i, itemStack);
 		if (!itemStack.isEmpty() && itemStack.getAmount() > this.getInvMaxStackAmount()) {
 			itemStack.setAmount(this.getInvMaxStackAmount());
 		}
@@ -110,7 +110,7 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 
 	@Override
 	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.stackList) {
+		for (ItemStack itemStack : this.field_5828) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -129,19 +129,19 @@ public class BasicInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+	public boolean method_5443(PlayerEntity playerEntity) {
 		return true;
 	}
 
 	@Override
 	public void clear() {
-		this.stackList.clear();
+		this.field_5828.clear();
 	}
 
 	@Override
 	public void provideRecipeInputs(RecipeFinder recipeFinder) {
-		for (ItemStack itemStack : this.stackList) {
-			recipeFinder.addItem(itemStack);
+		for (ItemStack itemStack : this.field_5828) {
+			recipeFinder.method_7400(itemStack);
 		}
 	}
 }

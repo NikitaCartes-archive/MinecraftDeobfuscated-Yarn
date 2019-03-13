@@ -1,160 +1,97 @@
 package net.minecraft.entity.ai.goal;
 
 import com.google.common.collect.Sets;
-import java.util.Iterator;
+import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Map;
 import java.util.Set;
-import javax.annotation.Nullable;
+import java.util.stream.Stream;
+import net.minecraft.class_4135;
 import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Goals {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Set<Goals.WeighedAiGoal> all = Sets.<Goals.WeighedAiGoal>newLinkedHashSet();
-	private final Set<Goals.WeighedAiGoal> executing = Sets.<Goals.WeighedAiGoal>newLinkedHashSet();
+	private static final class_4135 field_18410 = new class_4135(Integer.MAX_VALUE, new Goal() {
+		@Override
+		public boolean canStart() {
+			return false;
+		}
+	}) {
+		@Override
+		public boolean method_19056() {
+			return false;
+		}
+	};
+	private final Map<Goal.class_4134, class_4135> field_18411 = new EnumMap(Goal.class_4134.class);
+	private final Set<class_4135> all = Sets.<class_4135>newLinkedHashSet();
 	private final Profiler profiler;
-	private int timer;
+	private final EnumSet<Goal.class_4134> usedBits = EnumSet.noneOf(Goal.class_4134.class);
 	private int timeInterval = 3;
-	private int usedBits;
 
 	public Goals(Profiler profiler) {
 		this.profiler = profiler;
 	}
 
 	public void add(int i, Goal goal) {
-		this.all.add(new Goals.WeighedAiGoal(i, goal));
+		this.all.add(new class_4135(i, goal));
 	}
 
 	public void remove(Goal goal) {
-		Iterator<Goals.WeighedAiGoal> iterator = this.all.iterator();
-
-		while (iterator.hasNext()) {
-			Goals.WeighedAiGoal weighedAiGoal = (Goals.WeighedAiGoal)iterator.next();
-			Goal goal2 = weighedAiGoal.goal;
-			if (goal2 == goal) {
-				if (weighedAiGoal.executing) {
-					weighedAiGoal.executing = false;
-					weighedAiGoal.goal.onRemove();
-					this.executing.remove(weighedAiGoal);
-				}
-
-				iterator.remove();
-				return;
-			}
-		}
+		this.all.stream().filter(arg -> arg.method_19058() == goal).filter(class_4135::method_19056).forEach(class_4135::onRemove);
+		this.all.removeIf(arg -> arg.method_19058() == goal);
 	}
 
 	public void tick() {
-		this.profiler.push("goalSetup");
-		if (this.timer++ % this.timeInterval == 0) {
-			for (Goals.WeighedAiGoal weighedAiGoal : this.all) {
-				if (weighedAiGoal.executing) {
-					if (!this.canStart(weighedAiGoal) || !this.shouldContinueExecution(weighedAiGoal)) {
-						weighedAiGoal.executing = false;
-						weighedAiGoal.goal.onRemove();
-						this.executing.remove(weighedAiGoal);
-					}
-				} else if (this.canStart(weighedAiGoal) && weighedAiGoal.goal.canStart()) {
-					weighedAiGoal.executing = true;
-					weighedAiGoal.goal.start();
-					this.executing.add(weighedAiGoal);
-				}
+		this.profiler.push("goalCleanup");
+		this.method_19048()
+			.filter(arg -> !arg.method_19056() || arg.getControlBits().stream().anyMatch(this.usedBits::contains) || !arg.shouldContinue())
+			.forEach(Goal::onRemove);
+		this.field_18411.forEach((arg, arg2) -> {
+			if (!arg2.method_19056()) {
+				this.field_18411.remove(arg);
 			}
-		} else {
-			Iterator<Goals.WeighedAiGoal> iterator = this.executing.iterator();
-
-			while (iterator.hasNext()) {
-				Goals.WeighedAiGoal weighedAiGoalx = (Goals.WeighedAiGoal)iterator.next();
-				if (!this.shouldContinueExecution(weighedAiGoalx)) {
-					weighedAiGoalx.executing = false;
-					weighedAiGoalx.goal.onRemove();
-					iterator.remove();
-				}
-			}
-		}
-
+		});
 		this.profiler.pop();
-		if (!this.executing.isEmpty()) {
-			this.profiler.push("goalTick");
-
-			for (Goals.WeighedAiGoal weighedAiGoalx : this.executing) {
-				weighedAiGoalx.goal.tick();
-			}
-
-			this.profiler.pop();
-		}
+		this.profiler.push("goalUpdate");
+		this.all
+			.stream()
+			.filter(arg -> !arg.method_19056())
+			.filter(arg -> arg.getControlBits().stream().noneMatch(this.usedBits::contains))
+			.filter(arg -> arg.getControlBits().stream().allMatch(arg2 -> ((class_4135)this.field_18411.getOrDefault(arg2, field_18410)).method_19055(arg)))
+			.filter(class_4135::canStart)
+			.forEach(arg -> {
+				arg.getControlBits().forEach(arg2 -> {
+					class_4135 lv = (class_4135)this.field_18411.getOrDefault(arg2, field_18410);
+					lv.onRemove();
+					this.field_18411.put(arg2, arg);
+				});
+				arg.start();
+			});
+		this.profiler.pop();
+		this.profiler.push("goalTick");
+		this.method_19048().forEach(class_4135::tick);
+		this.profiler.pop();
 	}
 
-	private boolean shouldContinueExecution(Goals.WeighedAiGoal weighedAiGoal) {
-		return weighedAiGoal.goal.shouldContinue();
+	public Stream<class_4135> method_19048() {
+		return this.all.stream().filter(class_4135::method_19056);
 	}
 
-	private boolean canStart(Goals.WeighedAiGoal weighedAiGoal) {
-		if (this.executing.isEmpty()) {
-			return true;
-		} else if (this.isControlBitUsed(weighedAiGoal.goal.getControlBits())) {
-			return false;
-		} else {
-			for (Goals.WeighedAiGoal weighedAiGoal2 : this.executing) {
-				if (weighedAiGoal2 != weighedAiGoal) {
-					if (weighedAiGoal.priority >= weighedAiGoal2.priority) {
-						if (!this.areCompatible(weighedAiGoal, weighedAiGoal2)) {
-							return false;
-						}
-					} else if (!weighedAiGoal2.goal.canStop()) {
-						return false;
-					}
-				}
-			}
-
-			return true;
-		}
+	public void addBits(Goal.class_4134 arg) {
+		this.usedBits.add(arg);
 	}
 
-	private boolean areCompatible(Goals.WeighedAiGoal weighedAiGoal, Goals.WeighedAiGoal weighedAiGoal2) {
-		return (weighedAiGoal.goal.getControlBits() & weighedAiGoal2.goal.getControlBits()) == 0;
+	public void removeBits(Goal.class_4134 arg) {
+		this.usedBits.remove(arg);
 	}
 
-	public boolean isControlBitUsed(int i) {
-		return (this.usedBits & i) > 0;
-	}
-
-	public void addBits(int i) {
-		this.usedBits |= i;
-	}
-
-	public void removeBits(int i) {
-		this.usedBits &= ~i;
-	}
-
-	public void changeBits(int i, boolean bl) {
+	public void changeBits(Goal.class_4134 arg, boolean bl) {
 		if (bl) {
-			this.removeBits(i);
+			this.removeBits(arg);
 		} else {
-			this.addBits(i);
-		}
-	}
-
-	class WeighedAiGoal {
-		public final Goal goal;
-		public final int priority;
-		public boolean executing;
-
-		public WeighedAiGoal(int i, Goal goal) {
-			this.priority = i;
-			this.goal = goal;
-		}
-
-		public boolean equals(@Nullable Object object) {
-			if (this == object) {
-				return true;
-			} else {
-				return object != null && this.getClass() == object.getClass() ? this.goal.equals(((Goals.WeighedAiGoal)object).goal) : false;
-			}
-		}
-
-		public int hashCode() {
-			return this.goal.hashCode();
+			this.addBits(arg);
 		}
 	}
 }

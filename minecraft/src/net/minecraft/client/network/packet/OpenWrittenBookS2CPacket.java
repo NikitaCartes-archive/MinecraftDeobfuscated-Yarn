@@ -29,7 +29,7 @@ public class OpenWrittenBookS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public void method_17187(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onOpenWrittenBook(this);
+		clientPlayPacketListener.method_17186(this);
 	}
 
 	@Environment(EnvType.CLIENT)

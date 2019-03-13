@@ -17,10 +17,10 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 	public boolean method_12892(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig
 	) {
-		return decoratedFeatureConfig.decorator.generate(iWorld, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
+		return decoratedFeatureConfig.field_13398.method_14358(iWorld, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
 	}
 
 	public String toString() {
-		return String.format("< %s [%s] >", this.getClass().getSimpleName(), Registry.FEATURE.getId(this));
+		return String.format("< %s [%s] >", this.getClass().getSimpleName(), Registry.FEATURE.method_10221(this));
 	}
 }

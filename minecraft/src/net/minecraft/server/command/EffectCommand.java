@@ -138,14 +138,14 @@ public class EffectCommand {
 			throw GIVE_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
+				serverCommandSource.method_9226(
 					new TranslatableTextComponent(
-						"commands.effect.give.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).getDisplayName(), k / 20
+						"commands.effect.give.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).method_5476(), k / 20
 					),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(
+				serverCommandSource.method_9226(
 					new TranslatableTextComponent("commands.effect.give.success.multiple", statusEffect.method_5560(), collection.size(), k / 20), true
 				);
 			}
@@ -167,11 +167,11 @@ public class EffectCommand {
 			throw CLEAR_EVERYTHING_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent("commands.effect.clear.everything.success.single", ((Entity)collection.iterator().next()).getDisplayName()), true
+				serverCommandSource.method_9226(
+					new TranslatableTextComponent("commands.effect.clear.everything.success.single", ((Entity)collection.iterator().next()).method_5476()), true
 				);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.effect.clear.everything.success.multiple", collection.size()), true);
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.effect.clear.everything.success.multiple", collection.size()), true);
 			}
 
 			return i;
@@ -191,14 +191,14 @@ public class EffectCommand {
 			throw CLEAR_SPECIFIC_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
+				serverCommandSource.method_9226(
 					new TranslatableTextComponent(
-						"commands.effect.clear.specific.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).getDisplayName()
+						"commands.effect.clear.specific.success.single", statusEffect.method_5560(), ((Entity)collection.iterator().next()).method_5476()
 					),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(
+				serverCommandSource.method_9226(
 					new TranslatableTextComponent("commands.effect.clear.specific.success.multiple", statusEffect.method_5560(), collection.size()), true
 				);
 			}

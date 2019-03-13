@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.class_4185;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.audio.SoundLoader;
@@ -14,7 +15,6 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.WrittenBookScreen;
 import net.minecraft.client.gui.widget.BookPageButtonWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
@@ -45,21 +45,21 @@ public class EditBookScreen extends Screen {
 	private int highlightTo;
 	private long lastClickTime;
 	private int lastClickIndex = -1;
-	private BookPageButtonWidget buttonPreviousPage;
-	private BookPageButtonWidget buttonNextPage;
-	private ButtonWidget buttonDone;
-	private ButtonWidget buttonSign;
-	private ButtonWidget buttonFinalize;
-	private ButtonWidget buttonCancel;
+	private BookPageButtonWidget field_2843;
+	private BookPageButtonWidget field_2839;
+	private class_4185 buttonDone;
+	private class_4185 buttonSign;
+	private class_4185 buttonFinalize;
+	private class_4185 buttonCancel;
 	private final Hand hand;
 
 	public EditBookScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
 		this.player = playerEntity;
 		this.itemStack = itemStack;
 		this.hand = hand;
-		CompoundTag compoundTag = itemStack.getTag();
+		CompoundTag compoundTag = itemStack.method_7969();
 		if (compoundTag != null) {
-			ListTag listTag = compoundTag.getList("pages", 8).method_10612();
+			ListTag listTag = compoundTag.method_10554("pages", 8).method_10612();
 
 			for (int i = 0; i < listTag.size(); i++) {
 				this.pages.add(listTag.getString(i));
@@ -84,32 +84,32 @@ public class EditBookScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.buttonSign = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.signButton")) {
+		this.buttonSign = this.addButton(new class_4185(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.signButton")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				EditBookScreen.this.signing = true;
 				EditBookScreen.this.updateButtons();
 			}
 		});
-		this.buttonDone = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.done")) {
+		this.buttonDone = this.addButton(new class_4185(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.done")) {
 			@Override
-			public void onPressed(double d, double e) {
-				EditBookScreen.this.client.openScreen(null);
+			public void method_1826() {
+				EditBookScreen.this.client.method_1507(null);
 				EditBookScreen.this.finalizeBook(false);
 			}
 		});
-		this.buttonFinalize = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton")) {
+		this.buttonFinalize = this.addButton(new class_4185(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				if (EditBookScreen.this.signing) {
 					EditBookScreen.this.finalizeBook(true);
-					EditBookScreen.this.client.openScreen(null);
+					EditBookScreen.this.client.method_1507(null);
 				}
 			}
 		});
-		this.buttonCancel = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel")) {
+		this.buttonCancel = this.addButton(new class_4185(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				if (EditBookScreen.this.signing) {
 					EditBookScreen.this.signing = false;
 				}
@@ -119,25 +119,25 @@ public class EditBookScreen extends Screen {
 		});
 		int i = (this.screenWidth - 192) / 2;
 		int j = 2;
-		this.buttonPreviousPage = this.addButton(new BookPageButtonWidget(i + 116, 159, true) {
+		this.field_2843 = this.addButton(new BookPageButtonWidget(i + 116, 159, true) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				EditBookScreen.this.openNextPage();
 			}
 
 			@Override
-			public void playPressedSound(SoundLoader soundLoader) {
+			public void method_1832(SoundLoader soundLoader) {
 				EditBookScreen.this.playPageTurnSound();
 			}
 		});
-		this.buttonNextPage = this.addButton(new BookPageButtonWidget(i + 43, 159, false) {
+		this.field_2839 = this.addButton(new BookPageButtonWidget(i + 43, 159, false) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				EditBookScreen.this.openPreviousPage();
 			}
 
 			@Override
-			public void playPressedSound(SoundLoader soundLoader) {
+			public void method_1832(SoundLoader soundLoader) {
 				EditBookScreen.this.playPageTurnSound();
 			}
 		});
@@ -145,7 +145,7 @@ public class EditBookScreen extends Screen {
 	}
 
 	protected void playPageTurnSound() {
-		MinecraftClient.getInstance().getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
+		MinecraftClient.getInstance().method_1483().play(PositionedSoundInstance.method_4758(SoundEvents.field_17481, 1.0F));
 	}
 
 	private String stripFromatting(String string) {
@@ -194,7 +194,7 @@ public class EditBookScreen extends Screen {
 	}
 
 	private void updateButtons() {
-		this.buttonNextPage.visible = !this.signing && this.currentPage > 0;
+		this.field_2839.visible = !this.signing && this.currentPage > 0;
 		this.buttonDone.visible = !this.signing;
 		this.buttonSign.visible = !this.signing;
 		this.buttonCancel.visible = this.signing;
@@ -216,15 +216,15 @@ public class EditBookScreen extends Screen {
 			ListTag listTag = new ListTag();
 			this.pages.stream().map(StringTag::new).forEach(listTag::add);
 			if (!this.pages.isEmpty()) {
-				this.itemStack.setChildTag("pages", listTag);
+				this.itemStack.method_7959("pages", listTag);
 			}
 
 			if (bl) {
-				this.itemStack.setChildTag("author", new StringTag(this.player.getGameProfile().getName()));
-				this.itemStack.setChildTag("title", new StringTag(this.title.trim()));
+				this.itemStack.method_7959("author", new StringTag(this.player.getGameProfile().getName()));
+				this.itemStack.method_7959("title", new StringTag(this.title.trim()));
 			}
 
-			this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));
+			this.client.method_1562().method_2883(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));
 		}
 	}
 
@@ -307,10 +307,10 @@ public class EditBookScreen extends Screen {
 					this.applyUpArrowKey(string);
 					return true;
 				case 266:
-					this.buttonNextPage.onPressed(0.0, 0.0);
+					this.field_2839.method_1826();
 					return true;
 				case 267:
-					this.buttonPreviousPage.onPressed(0.0, 0.0);
+					this.field_2843.method_1826();
 					return true;
 				case 268:
 					this.moveCursorToTop(string);
@@ -455,7 +455,7 @@ public class EditBookScreen extends Screen {
 			case 335:
 				if (!this.title.isEmpty()) {
 					this.finalizeBook(true);
-					this.client.openScreen(null);
+					this.client.method_1507(null);
 				}
 
 				return true;
@@ -500,7 +500,7 @@ public class EditBookScreen extends Screen {
 	@Override
 	public void draw(int i, int j, float f) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
+		this.client.method_1531().method_4618(WrittenBookScreen.field_17117);
 		int k = (this.screenWidth - 192) / 2;
 		int l = 2;
 		this.drawTexturedRect(k, 2, 0, 0, 192, 192);
@@ -517,7 +517,7 @@ public class EditBookScreen extends Screen {
 			this.fontRenderer.draw(string2, (float)(k + 36 + (114 - m) / 2), 34.0F, 0);
 			int n = this.getStringWidth(string);
 			this.fontRenderer.draw(string, (float)(k + 36 + (114 - n) / 2), 50.0F, 0);
-			String string3 = I18n.translate("book.byAuthor", this.player.getName().getString());
+			String string3 = I18n.translate("book.byAuthor", this.player.method_5477().getString());
 			int o = this.getStringWidth(string3);
 			this.fontRenderer.draw(TextFormat.field_1063 + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
 			String string4 = I18n.translate("book.finalizeWarning");
@@ -615,7 +615,7 @@ public class EditBookScreen extends Screen {
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
 		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
-		bufferBuilder.begin(7, VertexFormats.POSITION);
+		bufferBuilder.method_1328(7, VertexFormats.field_1592);
 		bufferBuilder.vertex((double)position3.x, (double)position4.y, 0.0).next();
 		bufferBuilder.vertex((double)position4.x, (double)position4.y, 0.0).next();
 		bufferBuilder.vertex((double)position4.x, (double)position3.y, 0.0).next();

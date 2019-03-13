@@ -4,6 +4,7 @@ import com.mojang.util.UUIDTypeAdapter;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4186;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -87,7 +88,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 
 	public void render(int i, int j, float f) {
 		for (int k = 0; k < this.proxy.getButtons().size(); k++) {
-			((RealmsButton)this.proxy.getButtons().get(k)).render(i, j, f);
+			((class_4186)this.proxy.getButtons().get(k)).render(i, j, f);
 		}
 	}
 
@@ -104,18 +105,18 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public static void bindFace(String string, String string2) {
-		Identifier identifier = AbstractClientPlayerEntity.getSkinId(string2);
+		Identifier identifier = AbstractClientPlayerEntity.method_3124(string2);
 		if (identifier == null) {
-			identifier = DefaultSkinHelper.getTexture(UUIDTypeAdapter.fromString(string));
+			identifier = DefaultSkinHelper.method_4648(UUIDTypeAdapter.fromString(string));
 		}
 
-		AbstractClientPlayerEntity.loadSkin(identifier, string2);
-		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
+		AbstractClientPlayerEntity.method_3120(identifier, string2);
+		MinecraftClient.getInstance().method_1531().method_4618(identifier);
 	}
 
 	public static void bind(String string) {
 		Identifier identifier = new Identifier(string);
-		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
+		MinecraftClient.getInstance().method_1531().method_4618(identifier);
 	}
 
 	public void tick() {
@@ -161,11 +162,11 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 		return this.proxy.containsWidget(realmsGuiEventListener);
 	}
 
-	public void buttonsAdd(RealmsButton realmsButton) {
-		this.proxy.addButton(realmsButton);
+	public void buttonsAdd(class_4186<?> arg) {
+		this.proxy.addButton(arg);
 	}
 
-	public List<RealmsButton> buttons() {
+	public List<class_4186<?>> buttons() {
 		return this.proxy.getButtons();
 	}
 
@@ -174,11 +175,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	protected void focusOn(RealmsGuiEventListener realmsGuiEventListener) {
-		this.proxy.focusOn(realmsGuiEventListener.getProxy());
-	}
-
-	public void focusNext() {
-		this.proxy.focusNext();
+		this.proxy.method_18624(realmsGuiEventListener.getProxy());
 	}
 
 	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {
@@ -197,7 +194,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public List<String> getLocalizedStringWithLineWidth(String string, int i) {
-		return this.minecraft.textRenderer.wrapStringToWidthAsList(I18n.translate(string), i);
+		return this.minecraft.field_1772.wrapStringToWidthAsList(I18n.translate(string), i);
 	}
 
 	public RealmsAnvilLevelStorageSource getLevelStorageSource() {

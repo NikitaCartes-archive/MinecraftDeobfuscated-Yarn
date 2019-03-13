@@ -17,7 +17,7 @@ public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity
 	}
 
 	public void method_4179(EndermanEntity endermanEntity, float f, float g, float h, float i, float j, float k, float l) {
-		BlockState blockState = endermanEntity.getCarriedBlock();
+		BlockState blockState = endermanEntity.method_7027();
 		if (blockState != null) {
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.pushMatrix();
@@ -32,8 +32,8 @@ public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity
 			int p = n / 65536;
 			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)o, (float)p);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, 1.0F);
+			this.method_17164(SpriteAtlasTexture.field_5275);
+			MinecraftClient.getInstance().method_1541().renderDynamic(blockState, 1.0F);
 			GlStateManager.popMatrix();
 			GlStateManager.disableRescaleNormal();
 		}

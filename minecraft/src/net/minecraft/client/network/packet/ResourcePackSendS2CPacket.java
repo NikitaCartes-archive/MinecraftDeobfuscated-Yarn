@@ -35,7 +35,7 @@ public class ResourcePackSendS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public void method_11774(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onResourcePackSend(this);
+		clientPlayPacketListener.method_11141(this);
 	}
 
 	@Environment(EnvType.CLIENT)

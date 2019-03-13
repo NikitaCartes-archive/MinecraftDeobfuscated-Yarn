@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 public class BlankFont implements Font {
 	@Nullable
 	@Override
-	public RenderableGlyph getGlyph(char c) {
+	public RenderableGlyph method_2040(char c) {
 		return BlankGlyph.INSTANCE;
 	}
 }

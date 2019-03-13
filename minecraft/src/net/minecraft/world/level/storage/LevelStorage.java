@@ -121,8 +121,8 @@ public class LevelStorage {
 		return levelProperties != null && levelProperties.getVersion() != this.getCurrentVersion();
 	}
 
-	public boolean convertLevel(String string, ProgressListener progressListener) {
-		return AnvilLevelStorage.convertLevel(this.savesDirectory, this.dataFixer, string, progressListener);
+	public boolean method_17927(String string, ProgressListener progressListener) {
+		return AnvilLevelStorage.method_234(this.savesDirectory, this.dataFixer, string, progressListener);
 	}
 
 	@Nullable

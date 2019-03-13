@@ -13,7 +13,7 @@ public class FurnaceBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
+	protected TextComponent method_17823() {
 		return new TranslatableTextComponent("container.furnace");
 	}
 

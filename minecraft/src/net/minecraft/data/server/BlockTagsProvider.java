@@ -379,10 +379,39 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.field_16540,
 				Blocks.field_10008
 			);
+		this.method_10512(BlockTags.field_18831).add(Blocks.field_16333);
+		this.method_10512(BlockTags.field_18832).add(Blocks.field_16334);
+		this.method_10512(BlockTags.field_18833).add(Blocks.field_16336);
+		this.method_10512(BlockTags.field_18834).add(Blocks.field_10333);
+		this.method_10512(BlockTags.field_18835).add(Blocks.field_17563);
+		this.method_10512(BlockTags.field_18836).add(Blocks.field_16328);
+		this.method_10512(BlockTags.field_18837).add(Blocks.field_16331);
+		this.method_10512(BlockTags.field_18838).add(Blocks.field_10593);
+		this.method_10512(BlockTags.field_18839).add(Blocks.field_16330);
+		this.method_10512(BlockTags.field_18840).add(Blocks.field_16335);
+		this.method_10512(BlockTags.field_18842).add(Blocks.field_10083);
+		this.method_10512(BlockTags.field_18843).add(Blocks.field_16329);
+		this.method_10512(BlockTags.field_18844).add(Blocks.field_16337);
+		this.method_10512(BlockTags.field_18845)
+			.add(BlockTags.field_18831)
+			.add(BlockTags.field_18832)
+			.add(BlockTags.field_18833)
+			.add(BlockTags.field_18834)
+			.add(BlockTags.field_18835)
+			.add(BlockTags.field_18836)
+			.add(BlockTags.field_18837)
+			.add(BlockTags.field_18838)
+			.add(BlockTags.field_18839)
+			.add(BlockTags.field_18840)
+			.add(BlockTags.field_18842)
+			.add(BlockTags.field_18843)
+			.add(BlockTags.field_18844);
+		this.method_10512(BlockTags.field_18846).add(Blocks.field_16332);
+		this.method_10512(BlockTags.field_18847).add(BlockTags.field_18845).add(BlockTags.field_16443).add(BlockTags.field_18846);
 	}
 
 	@Override
-	protected Path getOutput(Identifier identifier) {
+	protected Path method_10510(Identifier identifier) {
 		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/blocks/" + identifier.getPath() + ".json");
 	}
 
@@ -393,6 +422,6 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 
 	@Override
 	protected void method_10511(TagContainer<Block> tagContainer) {
-		BlockTags.setContainer(tagContainer);
+		BlockTags.method_15070(tagContainer);
 	}
 }

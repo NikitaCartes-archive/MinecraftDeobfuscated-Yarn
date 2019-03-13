@@ -26,7 +26,7 @@ public class CrashReport {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final String message;
 	private final Throwable cause;
-	private final CrashReportSection systemDetailsSection = new CrashReportSection(this, "System Details");
+	private final CrashReportSection field_1092 = new CrashReportSection(this, "System Details");
 	private final List<CrashReportSection> otherSections = Lists.<CrashReportSection>newArrayList();
 	private File file;
 	private boolean hasStackTrace = true;
@@ -39,23 +39,15 @@ public class CrashReport {
 	}
 
 	private void fillSystemDetails() {
-		this.systemDetailsSection.add("Minecraft Version", (ICrashCallable<String>)(() -> SharedConstants.getGameVersion().getName()));
-		this.systemDetailsSection
-			.add(
-				"Operating System",
-				(ICrashCallable<String>)(() -> System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"))
+		this.field_1092.method_577("Minecraft Version", () -> SharedConstants.getGameVersion().getName());
+		this.field_1092
+			.method_577("Operating System", () -> System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ") version " + System.getProperty("os.version"));
+		this.field_1092.method_577("Java Version", () -> System.getProperty("java.version") + ", " + System.getProperty("java.vendor"));
+		this.field_1092
+			.method_577(
+				"Java VM Version", () -> System.getProperty("java.vm.name") + " (" + System.getProperty("java.vm.info") + "), " + System.getProperty("java.vm.vendor")
 			);
-		this.systemDetailsSection.add("Java Version", (ICrashCallable<String>)(() -> System.getProperty("java.version") + ", " + System.getProperty("java.vendor")));
-		this.systemDetailsSection
-			.add(
-				"Java VM Version",
-				(ICrashCallable<String>)(() -> System.getProperty("java.vm.name")
-						+ " ("
-						+ System.getProperty("java.vm.info")
-						+ "), "
-						+ System.getProperty("java.vm.vendor"))
-			);
-		this.systemDetailsSection.add("Memory", (ICrashCallable<String>)(() -> {
+		this.field_1092.method_577("Memory", () -> {
 			Runtime runtime = Runtime.getRuntime();
 			long l = runtime.maxMemory();
 			long m = runtime.totalMemory();
@@ -64,11 +56,11 @@ public class CrashReport {
 			long p = m / 1024L / 1024L;
 			long q = n / 1024L / 1024L;
 			return n + " bytes (" + q + " MB) / " + m + " bytes (" + p + " MB) up to " + l + " bytes (" + o + " MB)";
-		}));
-		this.systemDetailsSection.add("JVM Flags", (ICrashCallable<String>)(() -> {
+		});
+		this.field_1092.method_577("JVM Flags", () -> {
 			List<String> list = (List<String>)SystemUtil.getJVMFlags().collect(Collectors.toList());
 			return String.format("%d total; %s", list.size(), list.stream().collect(Collectors.joining(" ")));
-		}));
+		});
 	}
 
 	public String getMessage() {
@@ -102,7 +94,7 @@ public class CrashReport {
 			stringBuilder.append("\n\n");
 		}
 
-		this.systemDetailsSection.addStackTrace(stringBuilder);
+		this.field_1092.addStackTrace(stringBuilder);
 	}
 
 	public String getCauseAsString() {
@@ -191,15 +183,15 @@ public class CrashReport {
 		}
 	}
 
-	public CrashReportSection getSystemDetailsSection() {
-		return this.systemDetailsSection;
+	public CrashReportSection method_567() {
+		return this.field_1092;
 	}
 
-	public CrashReportSection addElement(String string) {
-		return this.addElement(string, 1);
+	public CrashReportSection method_562(String string) {
+		return this.method_556(string, 1);
 	}
 
-	public CrashReportSection addElement(String string, int i) {
+	public CrashReportSection method_556(String string, int i) {
 		CrashReportSection crashReportSection = new CrashReportSection(this, string);
 		if (this.hasStackTrace) {
 			int j = crashReportSection.method_579(i);

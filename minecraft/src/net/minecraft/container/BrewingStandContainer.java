@@ -17,8 +17,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 public class BrewingStandContainer extends Container {
 	private final Inventory inventory;
-	private final PropertyDelegate propertyDelegate;
-	private final Slot slotIngredient;
+	private final PropertyDelegate field_17292;
+	private final Slot field_7787;
 
 	public BrewingStandContainer(int i, PlayerInventory playerInventory) {
 		this(i, playerInventory, new BasicInventory(5), new ArrayPropertyDelegate(2));
@@ -27,73 +27,73 @@ public class BrewingStandContainer extends Container {
 	public BrewingStandContainer(int i, PlayerInventory playerInventory, Inventory inventory, PropertyDelegate propertyDelegate) {
 		super(ContainerType.BREWING_STAND, i);
 		checkContainerSize(inventory, 5);
-		checkContainerDataCount(propertyDelegate, 2);
+		method_17361(propertyDelegate, 2);
 		this.inventory = inventory;
-		this.propertyDelegate = propertyDelegate;
-		this.addSlot(new BrewingStandContainer.SlotPotion(inventory, 0, 56, 51));
-		this.addSlot(new BrewingStandContainer.SlotPotion(inventory, 1, 79, 58));
-		this.addSlot(new BrewingStandContainer.SlotPotion(inventory, 2, 102, 51));
-		this.slotIngredient = this.addSlot(new BrewingStandContainer.SlotIngredient(inventory, 3, 79, 17));
-		this.addSlot(new BrewingStandContainer.SlotFuel(inventory, 4, 17, 17));
-		this.addProperties(propertyDelegate);
+		this.field_17292 = propertyDelegate;
+		this.method_7621(new BrewingStandContainer.SlotPotion(inventory, 0, 56, 51));
+		this.method_7621(new BrewingStandContainer.SlotPotion(inventory, 1, 79, 58));
+		this.method_7621(new BrewingStandContainer.SlotPotion(inventory, 2, 102, 51));
+		this.field_7787 = this.method_7621(new BrewingStandContainer.SlotIngredient(inventory, 3, 79, 17));
+		this.method_7621(new BrewingStandContainer.SlotFuel(inventory, 4, 17, 17));
+		this.method_17360(propertyDelegate);
 
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 9; k++) {
-				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+				this.method_7621(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
 			}
 		}
 
 		for (int j = 0; j < 9; j++) {
-			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
+			this.method_7621(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return this.inventory.canPlayerUseInv(playerEntity);
+		return this.inventory.method_5443(playerEntity);
 	}
 
 	@Override
-	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
+	public ItemStack method_7601(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.getStack();
+			ItemStack itemStack2 = slot.method_7677();
 			itemStack = itemStack2.copy();
 			if ((i < 0 || i > 2) && i != 3 && i != 4) {
-				if (this.slotIngredient.canInsert(itemStack2)) {
-					if (!this.insertItem(itemStack2, 3, 4, false)) {
+				if (this.field_7787.method_7680(itemStack2)) {
+					if (!this.method_7616(itemStack2, 3, 4, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (BrewingStandContainer.SlotPotion.matches(itemStack) && itemStack.getAmount() == 1) {
-					if (!this.insertItem(itemStack2, 0, 3, false)) {
+				} else if (BrewingStandContainer.SlotPotion.method_7631(itemStack) && itemStack.getAmount() == 1) {
+					if (!this.method_7616(itemStack2, 0, 3, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (BrewingStandContainer.SlotFuel.matches(itemStack)) {
-					if (!this.insertItem(itemStack2, 4, 5, false)) {
+				} else if (BrewingStandContainer.SlotFuel.method_7630(itemStack)) {
+					if (!this.method_7616(itemStack2, 4, 5, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (i >= 5 && i < 32) {
-					if (!this.insertItem(itemStack2, 32, 41, false)) {
+					if (!this.method_7616(itemStack2, 32, 41, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (i >= 32 && i < 41) {
-					if (!this.insertItem(itemStack2, 5, 32, false)) {
+					if (!this.method_7616(itemStack2, 5, 32, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (!this.insertItem(itemStack2, 5, 41, false)) {
+				} else if (!this.method_7616(itemStack2, 5, 41, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else {
-				if (!this.insertItem(itemStack2, 5, 41, true)) {
+				if (!this.method_7616(itemStack2, 5, 41, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.method_7670(itemStack2, itemStack);
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.setStack(ItemStack.EMPTY);
+				slot.method_7673(ItemStack.EMPTY);
 			} else {
 				slot.markDirty();
 			}
@@ -102,7 +102,7 @@ public class BrewingStandContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			slot.onTakeItem(playerEntity, itemStack2);
+			slot.method_7667(playerEntity, itemStack2);
 		}
 
 		return itemStack;
@@ -110,12 +110,12 @@ public class BrewingStandContainer extends Container {
 
 	@Environment(EnvType.CLIENT)
 	public int method_17377() {
-		return this.propertyDelegate.get(1);
+		return this.field_17292.get(1);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public int method_17378() {
-		return this.propertyDelegate.get(0);
+		return this.field_17292.get(0);
 	}
 
 	static class SlotFuel extends Slot {
@@ -124,11 +124,11 @@ public class BrewingStandContainer extends Container {
 		}
 
 		@Override
-		public boolean canInsert(ItemStack itemStack) {
-			return matches(itemStack);
+		public boolean method_7680(ItemStack itemStack) {
+			return method_7630(itemStack);
 		}
 
-		public static boolean matches(ItemStack itemStack) {
+		public static boolean method_7630(ItemStack itemStack) {
 			return itemStack.getItem() == Items.field_8183;
 		}
 
@@ -144,7 +144,7 @@ public class BrewingStandContainer extends Container {
 		}
 
 		@Override
-		public boolean canInsert(ItemStack itemStack) {
+		public boolean method_7680(ItemStack itemStack) {
 			return BrewingRecipeRegistry.isValidIngredient(itemStack);
 		}
 
@@ -160,8 +160,8 @@ public class BrewingStandContainer extends Container {
 		}
 
 		@Override
-		public boolean canInsert(ItemStack itemStack) {
-			return matches(itemStack);
+		public boolean method_7680(ItemStack itemStack) {
+			return method_7631(itemStack);
 		}
 
 		@Override
@@ -170,17 +170,17 @@ public class BrewingStandContainer extends Container {
 		}
 
 		@Override
-		public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+		public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
 			Potion potion = PotionUtil.getPotion(itemStack);
 			if (playerEntity instanceof ServerPlayerEntity) {
-				Criterions.BREWED_POTION.handle((ServerPlayerEntity)playerEntity, potion);
+				Criterions.BREWED_POTION.method_8784((ServerPlayerEntity)playerEntity, potion);
 			}
 
-			super.onTakeItem(playerEntity, itemStack);
+			super.method_7667(playerEntity, itemStack);
 			return itemStack;
 		}
 
-		public static boolean matches(ItemStack itemStack) {
+		public static boolean method_7631(ItemStack itemStack) {
 			Item item = itemStack.getItem();
 			return item == Items.field_8574 || item == Items.field_8436 || item == Items.field_8150 || item == Items.field_8469;
 		}

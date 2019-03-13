@@ -16,14 +16,14 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 	public VideoSettingsListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, GameOption... gameOptions) {
 		super(minecraftClient, i, j, k, l, m);
 		this.field_2173 = false;
-		this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, GameOption.FULLSCREEN_RESOLUTION));
+		this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.field_1690, i, GameOption.field_1931));
 
 		for (int n = 0; n < gameOptions.length; n += 2) {
 			GameOption gameOption = gameOptions[n];
 			if (n < gameOptions.length - 1) {
-				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, gameOption, gameOptions[n + 1]));
+				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.field_1690, i, gameOption, gameOptions[n + 1]));
 			} else {
-				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, gameOption));
+				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.field_1690, i, gameOption));
 			}
 		}
 	}
@@ -42,20 +42,18 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 	public static class class_354 extends EntryListWidget.Entry<VideoSettingsListWidget.class_354> implements MultiInputListener {
 		private boolean field_18212;
 		private InputListener field_18213;
-		private List<ButtonWidget> field_18214;
+		private final List<ButtonWidget> field_18214;
 
 		private class_354(List<ButtonWidget> list) {
 			this.field_18214 = list;
 		}
 
 		public class_354(GameOptions gameOptions, int i, GameOption gameOption) {
-			this(ImmutableList.of(gameOption.createOptionButton(gameOptions, i / 2 - 155, 0, 310)));
+			this(ImmutableList.of(gameOption.method_18520(gameOptions, i / 2 - 155, 0, 310)));
 		}
 
 		public class_354(GameOptions gameOptions, int i, GameOption gameOption, GameOption gameOption2) {
-			this(
-				ImmutableList.of(gameOption.createOptionButton(gameOptions, i / 2 - 155, 0, 150), gameOption2.createOptionButton(gameOptions, i / 2 - 155 + 160, 0, 150))
-			);
+			this(ImmutableList.of(gameOption.method_18520(gameOptions, i / 2 - 155, 0, 150), gameOption2.method_18520(gameOptions, i / 2 - 155 + 160, 0, 150)));
 		}
 
 		@Override
@@ -82,13 +80,13 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 		}
 
 		@Override
-		public void setFocused(@Nullable InputListener inputListener) {
+		public void method_1967(@Nullable InputListener inputListener) {
 			this.field_18213 = inputListener;
 		}
 
 		@Nullable
 		@Override
-		public InputListener getFocused() {
+		public InputListener method_19357() {
 			return this.field_18213;
 		}
 

@@ -24,13 +24,13 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack2 = null;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack3 = craftingInventory.getInvStack(i);
+			ItemStack itemStack3 = craftingInventory.method_5438(i);
 			Item item = itemStack3.getItem();
 			if (item instanceof BannerItem) {
 				BannerItem bannerItem = (BannerItem)item;
 				if (dyeColor == null) {
-					dyeColor = bannerItem.getColor();
-				} else if (dyeColor != bannerItem.getColor()) {
+					dyeColor = bannerItem.method_7706();
+				} else if (dyeColor != bannerItem.method_7706()) {
 					return false;
 				}
 
@@ -56,7 +56,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack method_17702(CraftingInventory craftingInventory) {
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+			ItemStack itemStack = craftingInventory.method_5438(i);
 			if (!itemStack.isEmpty() && BannerBlockEntity.getPatternCount(itemStack) > 0) {
 				ItemStack itemStack2 = itemStack.copy();
 				itemStack2.setAmount(1);
@@ -71,7 +71,7 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.create(craftingInventory.getInvSize(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {
-			ItemStack itemStack = craftingInventory.getInvStack(i);
+			ItemStack itemStack = craftingInventory.method_5438(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem().hasRecipeRemainder()) {
 					defaultedList.set(i, new ItemStack(itemStack.getItem().getRecipeRemainder()));
@@ -87,8 +87,8 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.BANNER_DUPLICATE;
+	public RecipeSerializer<?> method_8119() {
+		return RecipeSerializer.field_9038;
 	}
 
 	@Environment(EnvType.CLIENT)

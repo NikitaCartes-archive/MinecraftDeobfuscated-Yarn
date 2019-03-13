@@ -37,7 +37,7 @@ public class DoubleGameOption extends GameOption {
 	}
 
 	@Override
-	public ButtonWidget createOptionButton(GameOptions gameOptions, int i, int j, int k) {
+	public ButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k) {
 		return new GameOptionSliderWidget(gameOptions, i, j, k, 20, this);
 	}
 

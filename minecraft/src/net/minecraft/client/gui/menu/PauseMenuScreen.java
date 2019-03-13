@@ -2,11 +2,11 @@ package net.minecraft.client.gui.menu;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.gui.CloseWorldScreen;
 import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.ingame.ConfirmChatLinkScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.util.SystemUtil;
@@ -17,93 +17,88 @@ public class PauseMenuScreen extends Screen {
 	protected void onInitialized() {
 		int i = -16;
 		int j = 98;
-		ButtonWidget buttonWidget = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 102, this.screenHeight / 4 + 120 + -16, 204, 20, I18n.translate("menu.returnToMenu")) {
-				@Override
-				public void onPressed(double d, double e) {
-					boolean bl = PauseMenuScreen.this.client.isInSingleplayer();
-					boolean bl2 = PauseMenuScreen.this.client.isConnectedToRealms();
-					this.enabled = false;
-					PauseMenuScreen.this.client.world.disconnect();
-					if (bl) {
-						PauseMenuScreen.this.client.method_18096(new CloseWorldScreen(I18n.translate("menu.savingLevel")));
-					} else {
-						PauseMenuScreen.this.client.openWorkingScreen();
-					}
-
-					if (bl) {
-						PauseMenuScreen.this.client.openScreen(new MainMenuScreen());
-					} else if (bl2) {
-						RealmsBridge realmsBridge = new RealmsBridge();
-						realmsBridge.switchToRealms(new MainMenuScreen());
-					} else {
-						PauseMenuScreen.this.client.openScreen(new MultiplayerScreen(new MainMenuScreen()));
-					}
-				}
-			}
-		);
-		if (!this.client.isInSingleplayer()) {
-			buttonWidget.setText(I18n.translate("menu.disconnect"));
-		}
-
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 102, this.screenHeight / 4 + 24 + -16, 204, 20, I18n.translate("menu.returnToGame")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 102, this.screenHeight / 4 + 24 + -16, 204, 20, I18n.translate("menu.returnToGame")) {
 			@Override
-			public void onPressed(double d, double e) {
-				PauseMenuScreen.this.client.openScreen(null);
-				PauseMenuScreen.this.client.mouse.lockCursor();
+			public void method_1826() {
+				PauseMenuScreen.this.client.method_1507(null);
+				PauseMenuScreen.this.client.field_1729.lockCursor();
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 102, this.screenHeight / 4 + 96 + -16, 98, 20, I18n.translate("menu.options")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 102, this.screenHeight / 4 + 48 + -16, 98, 20, I18n.translate("gui.advancements")) {
 			@Override
-			public void onPressed(double d, double e) {
-				PauseMenuScreen.this.client.openScreen(new SettingsScreen(PauseMenuScreen.this, PauseMenuScreen.this.client.options));
+			public void method_1826() {
+				PauseMenuScreen.this.client.method_1507(new AdvancementsScreen(PauseMenuScreen.this.client.field_1724.networkHandler.getAdvancementHandler()));
 			}
 		});
-		ButtonWidget buttonWidget2 = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight / 4 + 96 + -16, 98, 20, I18n.translate("menu.shareToLan")) {
-				@Override
-				public void onPressed(double d, double e) {
-					PauseMenuScreen.this.client.openScreen(new OpenToLanScreen(PauseMenuScreen.this));
-				}
-			}
-		);
-		buttonWidget2.enabled = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 102, this.screenHeight / 4 + 48 + -16, 98, 20, I18n.translate("gui.advancements")) {
+		this.addButton(new class_4185(this.screenWidth / 2 + 4, this.screenHeight / 4 + 48 + -16, 98, 20, I18n.translate("gui.stats")) {
 			@Override
-			public void onPressed(double d, double e) {
-				PauseMenuScreen.this.client.openScreen(new AdvancementsScreen(PauseMenuScreen.this.client.player.networkHandler.getAdvancementHandler()));
+			public void method_1826() {
+				PauseMenuScreen.this.client.method_1507(new StatsScreen(PauseMenuScreen.this, PauseMenuScreen.this.client.field_1724.method_3143()));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight / 4 + 48 + -16, 98, 20, I18n.translate("gui.stats")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 102, this.screenHeight / 4 + 72 + -16, 98, 20, I18n.translate("menu.sendFeedback")) {
 			@Override
-			public void onPressed(double d, double e) {
-				PauseMenuScreen.this.client.openScreen(new StatsScreen(PauseMenuScreen.this, PauseMenuScreen.this.client.player.getStats()));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 102, this.screenHeight / 4 + 72 + -16, 98, 20, I18n.translate("menu.sendFeedback")) {
-			@Override
-			public void onPressed(double d, double e) {
-				PauseMenuScreen.this.client.openScreen(new ConfirmChatLinkScreen((bl, i) -> {
+			public void method_1826() {
+				PauseMenuScreen.this.client.method_1507(new ConfirmChatLinkScreen((bl, i) -> {
 					if (bl) {
 						SystemUtil.getOperatingSystem().open("https://aka.ms/snapshotfeedback?ref=game");
 					}
 
-					PauseMenuScreen.this.client.openScreen(PauseMenuScreen.this);
+					PauseMenuScreen.this.client.method_1507(PauseMenuScreen.this);
 				}, "https://aka.ms/snapshotfeedback?ref=game", 0, true));
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight / 4 + 72 + -16, 98, 20, I18n.translate("menu.reportBugs")) {
+		this.addButton(new class_4185(this.screenWidth / 2 + 4, this.screenHeight / 4 + 72 + -16, 98, 20, I18n.translate("menu.reportBugs")) {
 			@Override
-			public void onPressed(double d, double e) {
-				PauseMenuScreen.this.client.openScreen(new ConfirmChatLinkScreen((bl, i) -> {
+			public void method_1826() {
+				PauseMenuScreen.this.client.method_1507(new ConfirmChatLinkScreen((bl, i) -> {
 					if (bl) {
 						SystemUtil.getOperatingSystem().open("https://aka.ms/snapshotbugs?ref=game");
 					}
 
-					PauseMenuScreen.this.client.openScreen(PauseMenuScreen.this);
+					PauseMenuScreen.this.client.method_1507(PauseMenuScreen.this);
 				}, "https://aka.ms/snapshotbugs?ref=game", 0, true));
 			}
 		});
+		this.addButton(new class_4185(this.screenWidth / 2 - 102, this.screenHeight / 4 + 96 + -16, 98, 20, I18n.translate("menu.options")) {
+			@Override
+			public void method_1826() {
+				PauseMenuScreen.this.client.method_1507(new SettingsScreen(PauseMenuScreen.this, PauseMenuScreen.this.client.field_1690));
+			}
+		});
+		class_4185 lv = this.addButton(new class_4185(this.screenWidth / 2 + 4, this.screenHeight / 4 + 96 + -16, 98, 20, I18n.translate("menu.shareToLan")) {
+			@Override
+			public void method_1826() {
+				PauseMenuScreen.this.client.method_1507(new OpenToLanScreen(PauseMenuScreen.this));
+			}
+		});
+		lv.enabled = this.client.isIntegratedServerRunning() && !this.client.method_1576().isRemote();
+		class_4185 lv2 = this.addButton(new class_4185(this.screenWidth / 2 - 102, this.screenHeight / 4 + 120 + -16, 204, 20, I18n.translate("menu.returnToMenu")) {
+			@Override
+			public void method_1826() {
+				boolean bl = PauseMenuScreen.this.client.isInSingleplayer();
+				boolean bl2 = PauseMenuScreen.this.client.isConnectedToRealms();
+				this.enabled = false;
+				PauseMenuScreen.this.client.field_1687.disconnect();
+				if (bl) {
+					PauseMenuScreen.this.client.method_18096(new CloseWorldScreen(I18n.translate("menu.savingLevel")));
+				} else {
+					PauseMenuScreen.this.client.openWorkingScreen();
+				}
+
+				if (bl) {
+					PauseMenuScreen.this.client.method_1507(new MainMenuScreen());
+				} else if (bl2) {
+					RealmsBridge realmsBridge = new RealmsBridge();
+					realmsBridge.switchToRealms(new MainMenuScreen());
+				} else {
+					PauseMenuScreen.this.client.method_1507(new MultiplayerScreen(new MainMenuScreen()));
+				}
+			}
+		});
+		if (!this.client.isInSingleplayer()) {
+			lv2.setText(I18n.translate("menu.disconnect"));
+		}
 	}
 
 	@Override

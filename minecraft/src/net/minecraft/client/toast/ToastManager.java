@@ -24,7 +24,7 @@ public class ToastManager extends DrawableHelper {
 	}
 
 	public void draw() {
-		if (!this.client.options.hudHidden) {
+		if (!this.client.field_1690.hudHidden) {
 			GuiLighting.disable();
 
 			for (int i = 0; i < this.visibleEntries.length; i++) {
@@ -95,7 +95,7 @@ public class ToastManager extends DrawableHelper {
 			long l = SystemUtil.getMeasuringTimeMs();
 			if (this.field_2243 == -1L) {
 				this.field_2243 = l;
-				this.field_2244.play(ToastManager.this.client.getSoundLoader());
+				this.field_2244.method_1988(ToastManager.this.client.method_1483());
 			}
 
 			if (this.field_2244 == Toast.Visibility.field_2210 && l - this.field_2243 <= 600L) {
@@ -104,12 +104,12 @@ public class ToastManager extends DrawableHelper {
 
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)i - 160.0F * this.method_2003(l), (float)(j * 32), (float)(500 + j));
-			Toast.Visibility visibility = this.instance.draw(ToastManager.this, l - this.field_2242);
+			Toast.Visibility visibility = this.instance.method_1986(ToastManager.this, l - this.field_2242);
 			GlStateManager.popMatrix();
 			if (visibility != this.field_2244) {
 				this.field_2243 = l - (long)((int)((1.0F - this.method_2003(l)) * 600.0F));
 				this.field_2244 = visibility;
-				this.field_2244.play(ToastManager.this.client.getSoundLoader());
+				this.field_2244.method_1988(ToastManager.this.client.method_1483());
 			}
 
 			return this.field_2244 == Toast.Visibility.field_2209 && l - this.field_2243 > 600L;

@@ -18,8 +18,8 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 		return this.context.getModel();
 	}
 
-	public void bindTexture(Identifier identifier) {
-		this.context.bindTexture(identifier);
+	public void method_17164(Identifier identifier) {
+		this.context.method_3924(identifier);
 	}
 
 	public void applyLightmapCoordinates(T entity) {

@@ -119,6 +119,11 @@ public abstract class AbstractListWidget extends ScreenComponent implements Draw
 		return Math.max(0, this.getMaxScrollPosition() - (this.y2 - this.y1 - 4));
 	}
 
+	public void method_19350(int i) {
+		this.scrollY = (double)(i * this.entryHeight + this.entryHeight / 2 - (this.y2 - this.y1) / 2);
+		this.clampScrollY();
+	}
+
 	public int getScrollY() {
 		return (int)this.scrollY;
 	}
@@ -144,10 +149,10 @@ public abstract class AbstractListWidget extends ScreenComponent implements Draw
 			GlStateManager.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BG);
+			this.client.method_1531().method_4618(DrawableHelper.field_2051);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			float g = 32.0F;
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.method_1328(7, VertexFormats.field_1575);
 			bufferBuilder.vertex((double)this.x1, (double)this.y2, 0.0)
 				.texture((double)((float)this.x1 / 32.0F), (double)((float)(this.y2 + (int)this.scrollY) / 32.0F))
 				.color(32, 32, 32, 255)
@@ -183,13 +188,13 @@ public abstract class AbstractListWidget extends ScreenComponent implements Draw
 			GlStateManager.shadeModel(7425);
 			GlStateManager.disableTexture();
 			int o = 4;
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.method_1328(7, VertexFormats.field_1575);
 			bufferBuilder.vertex((double)this.x1, (double)(this.y1 + 4), 0.0).texture(0.0, 1.0).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.x2, (double)(this.y1 + 4), 0.0).texture(1.0, 1.0).color(0, 0, 0, 0).next();
 			bufferBuilder.vertex((double)this.x2, (double)this.y1, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.x1, (double)this.y1, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 			tessellator.draw();
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.method_1328(7, VertexFormats.field_1575);
 			bufferBuilder.vertex((double)this.x1, (double)this.y2, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.x2, (double)this.y2, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
 			bufferBuilder.vertex((double)this.x2, (double)(this.y2 - 4), 0.0).texture(1.0, 0.0).color(0, 0, 0, 0).next();
@@ -204,19 +209,19 @@ public abstract class AbstractListWidget extends ScreenComponent implements Draw
 					r = this.y1;
 				}
 
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				bufferBuilder.vertex((double)k, (double)this.y2, 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
 				bufferBuilder.vertex((double)l, (double)this.y2, 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
 				bufferBuilder.vertex((double)l, (double)this.y1, 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
 				bufferBuilder.vertex((double)k, (double)this.y1, 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				bufferBuilder.vertex((double)k, (double)(r + q), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
 				bufferBuilder.vertex((double)l, (double)(r + q), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
 				bufferBuilder.vertex((double)l, (double)r, 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
 				bufferBuilder.vertex((double)k, (double)r, 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
 				tessellator.draw();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+				bufferBuilder.method_1328(7, VertexFormats.field_1575);
 				bufferBuilder.vertex((double)k, (double)(r + q - 1), 0.0).texture(0.0, 1.0).color(192, 192, 192, 255).next();
 				bufferBuilder.vertex((double)(l - 1), (double)(r + q - 1), 0.0).texture(1.0, 1.0).color(192, 192, 192, 255).next();
 				bufferBuilder.vertex((double)(l - 1), (double)r, 0.0).texture(1.0, 0.0).color(192, 192, 192, 255).next();
@@ -246,7 +251,7 @@ public abstract class AbstractListWidget extends ScreenComponent implements Draw
 				return true;
 			} else if (j != -1 && this.selectEntry(j, i, d, e)) {
 				if (this.getInputListeners().size() > j) {
-					this.setFocused((InputListener)this.getInputListeners().get(j));
+					this.method_18624((InputListener)this.getInputListeners().get(j));
 				}
 
 				this.method_1966(true);
@@ -261,8 +266,8 @@ public abstract class AbstractListWidget extends ScreenComponent implements Draw
 
 	@Override
 	public boolean mouseReleased(double d, double e, int i) {
-		if (this.getFocused() != null) {
-			this.getFocused().mouseReleased(d, e, i);
+		if (this.method_19357() != null) {
+			this.method_19357().mouseReleased(d, e, i);
 		}
 
 		return false;
@@ -301,23 +306,43 @@ public abstract class AbstractListWidget extends ScreenComponent implements Draw
 	}
 
 	@Override
-	public boolean mouseScrolled(double d) {
+	public boolean mouseScrolled(double d, double e, double f) {
 		if (!this.isVisible()) {
 			return false;
 		} else {
-			this.scrollY = this.scrollY - d * (double)this.entryHeight / 2.0;
+			this.scrollY = this.scrollY - f * (double)this.entryHeight / 2.0;
 			return true;
 		}
 	}
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		return !this.isVisible() ? false : super.keyPressed(i, j, k);
+		if (!this.isVisible()) {
+			return false;
+		} else if (super.keyPressed(i, j, k)) {
+			return true;
+		} else if (i == 264) {
+			this.method_19351(1);
+			return true;
+		} else if (i == 265) {
+			this.method_19351(-1);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	protected void method_19351(int i) {
 	}
 
 	@Override
 	public boolean charTyped(char c, int i) {
 		return !this.isVisible() ? false : super.charTyped(c, i);
+	}
+
+	@Override
+	public boolean method_19356(double d, double e) {
+		return this.isSelected(d, e);
 	}
 
 	public int getEntryWidth() {
@@ -339,23 +364,31 @@ public abstract class AbstractListWidget extends ScreenComponent implements Draw
 			if (this.field_2171 && this.isSelectedEntry(n)) {
 				int q = this.x1 + this.width / 2 - this.getEntryWidth() / 2;
 				int r = this.x1 + this.width / 2 + this.getEntryWidth() / 2;
-				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.disableTexture();
-				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
-				bufferBuilder.vertex((double)q, (double)(o + p + 2), 0.0).texture(0.0, 1.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)r, (double)(o + p + 2), 0.0).texture(1.0, 1.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)r, (double)(o - 2), 0.0).texture(1.0, 0.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)q, (double)(o - 2), 0.0).texture(0.0, 0.0).color(128, 128, 128, 255).next();
-				bufferBuilder.vertex((double)(q + 1), (double)(o + p + 1), 0.0).texture(0.0, 1.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)(r - 1), (double)(o + p + 1), 0.0).texture(1.0, 1.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)(r - 1), (double)(o - 1), 0.0).texture(1.0, 0.0).color(0, 0, 0, 255).next();
-				bufferBuilder.vertex((double)(q + 1), (double)(o - 1), 0.0).texture(0.0, 0.0).color(0, 0, 0, 255).next();
+				float g = this.method_19352() ? 1.0F : 0.5F;
+				GlStateManager.color4f(g, g, g, 1.0F);
+				bufferBuilder.method_1328(7, VertexFormats.field_1592);
+				bufferBuilder.vertex((double)q, (double)(o + p + 2), 0.0).next();
+				bufferBuilder.vertex((double)r, (double)(o + p + 2), 0.0).next();
+				bufferBuilder.vertex((double)r, (double)(o - 2), 0.0).next();
+				bufferBuilder.vertex((double)q, (double)(o - 2), 0.0).next();
+				tessellator.draw();
+				GlStateManager.color4f(0.0F, 0.0F, 0.0F, 1.0F);
+				bufferBuilder.method_1328(7, VertexFormats.field_1592);
+				bufferBuilder.vertex((double)(q + 1), (double)(o + p + 1), 0.0).next();
+				bufferBuilder.vertex((double)(r - 1), (double)(o + p + 1), 0.0).next();
+				bufferBuilder.vertex((double)(r - 1), (double)(o - 1), 0.0).next();
+				bufferBuilder.vertex((double)(q + 1), (double)(o - 1), 0.0).next();
 				tessellator.draw();
 				GlStateManager.enableTexture();
 			}
 
 			this.drawEntry(n, i, o, p, k, l, f);
 		}
+	}
+
+	protected boolean method_19352() {
+		return false;
 	}
 
 	protected int getScrollbarPosition() {
@@ -365,10 +398,10 @@ public abstract class AbstractListWidget extends ScreenComponent implements Draw
 	protected void renderCoverBackground(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BG);
+		this.client.method_1531().method_4618(DrawableHelper.field_2051);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+		bufferBuilder.method_1328(7, VertexFormats.field_1575);
 		bufferBuilder.vertex((double)this.x1, (double)j, 0.0).texture(0.0, (double)((float)j / 32.0F)).color(64, 64, 64, l).next();
 		bufferBuilder.vertex((double)(this.x1 + this.width), (double)j, 0.0)
 			.texture((double)((float)this.width / 32.0F), (double)((float)j / 32.0F))

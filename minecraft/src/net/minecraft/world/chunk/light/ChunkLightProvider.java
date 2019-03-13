@@ -19,14 +19,14 @@ import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.WorldNibbleStorage;
 
 public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S extends LightStorage<M>> extends LevelIndexedProcessor implements ChunkLightingView {
-	private static final Direction[] DIRECTIONS = Direction.values();
+	private static final Direction[] field_16513 = Direction.values();
 	protected final ChunkProvider chunkProvider;
 	protected final LightType type;
-	protected final S lightStorage;
+	protected final S field_15793;
 	private boolean field_15794;
-	private final BlockPos.Mutable srcMutablePos = new BlockPos.Mutable();
-	private final BlockPos.Mutable destMutablePos = new BlockPos.Mutable();
-	private final BlockPos.Mutable mutablePosGetLightBlockedBetween = new BlockPos.Mutable();
+	private final BlockPos.Mutable field_16514 = new BlockPos.Mutable();
+	private final BlockPos.Mutable field_16515 = new BlockPos.Mutable();
+	private final BlockPos.Mutable field_16512 = new BlockPos.Mutable();
 	private long[] field_17397 = new long[2];
 	private BlockView[] field_17398 = new BlockView[2];
 
@@ -34,14 +34,14 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		super(16, 256, 8192);
 		this.chunkProvider = chunkProvider;
 		this.type = lightType;
-		this.lightStorage = lightStorage;
+		this.field_15793 = lightStorage;
 		this.method_17530();
 	}
 
 	@Override
 	protected void scheduleNewUpdate(long l) {
-		this.lightStorage.updateAll();
-		if (this.lightStorage.hasChunk(ChunkSectionPos.toChunkLong(l))) {
+		this.field_15793.updateAll();
+		if (this.field_15793.hasChunk(ChunkSectionPos.toChunkLong(l))) {
 			super.scheduleNewUpdate(l);
 		}
 	}
@@ -74,21 +74,21 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	protected int getLightBlockedBetween(long l, long m) {
-		this.lightStorage.updateAll();
+		this.field_15793.updateAll();
 		if (!BlockPos.isHeightInvalid(l) && !BlockPos.isHeightInvalid(m)) {
-			this.srcMutablePos.setFromLong(l);
-			this.destMutablePos.setFromLong(m);
-			int i = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getX());
-			int j = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getZ());
-			int k = ChunkSectionPos.toChunkCoord(this.destMutablePos.getX());
-			int n = ChunkSectionPos.toChunkCoord(this.destMutablePos.getZ());
+			this.field_16514.setFromLong(l);
+			this.field_16515.setFromLong(m);
+			int i = ChunkSectionPos.toChunkCoord(this.field_16514.getX());
+			int j = ChunkSectionPos.toChunkCoord(this.field_16514.getZ());
+			int k = ChunkSectionPos.toChunkCoord(this.field_16515.getX());
+			int n = ChunkSectionPos.toChunkCoord(this.field_16515.getZ());
 			BlockView blockView = this.method_17529(k, n);
 			if (blockView == null) {
 				return 16;
 			} else {
-				BlockState blockState = blockView.getBlockState(this.destMutablePos);
+				BlockState blockState = blockView.method_8320(this.field_16515);
 				BlockView blockView2 = this.chunkProvider.getWorld();
-				int o = blockState.getLightSubtracted(blockView2, this.destMutablePos);
+				int o = blockState.method_11581(blockView2, this.field_16515);
 				if (!blockState.method_16386() && o >= 15) {
 					return 16;
 				} else {
@@ -102,21 +102,21 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 					if (blockView3 == null) {
 						return 16;
 					} else {
-						int p = Integer.signum(this.destMutablePos.getX() - this.srcMutablePos.getX());
-						int q = Integer.signum(this.destMutablePos.getY() - this.srcMutablePos.getY());
-						int r = Integer.signum(this.destMutablePos.getZ() - this.srcMutablePos.getZ());
-						Direction direction = Direction.fromVector(this.mutablePosGetLightBlockedBetween.set(p, q, r));
+						int p = Integer.signum(this.field_16515.getX() - this.field_16514.getX());
+						int q = Integer.signum(this.field_16515.getY() - this.field_16514.getY());
+						int r = Integer.signum(this.field_16515.getZ() - this.field_16514.getZ());
+						Direction direction = Direction.fromVector(this.field_16512.set(p, q, r));
 						if (direction == null) {
 							return 16;
 						} else {
-							BlockState blockState2 = blockView3.getBlockState(this.srcMutablePos);
+							BlockState blockState2 = blockView3.method_8320(this.field_16514);
 							boolean bl = blockState2.isFullBoundsCubeForCulling() && blockState2.method_16386();
 							boolean bl2 = blockState.isFullBoundsCubeForCulling() && blockState.method_16386();
 							if (!bl && !bl2) {
 								return o;
 							} else {
-								VoxelShape voxelShape = bl ? blockState2.method_11615(blockView2, this.srcMutablePos) : VoxelShapes.empty();
-								VoxelShape voxelShape2 = bl2 ? blockState.method_11615(blockView2, this.destMutablePos) : VoxelShapes.empty();
+								VoxelShape voxelShape = bl ? blockState2.method_11615(blockView2, this.field_16514) : VoxelShapes.method_1073();
+								VoxelShape voxelShape2 = bl2 ? blockState.method_11615(blockView2, this.field_16515) : VoxelShapes.method_1073();
 								return VoxelShapes.method_1080(voxelShape, voxelShape2, direction) ? 16 : o;
 							}
 						}
@@ -140,7 +140,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	@Override
 	protected int getCurrentLevelFor(long l) {
-		return l == Long.MAX_VALUE ? 0 : 15 - this.lightStorage.get(l);
+		return l == Long.MAX_VALUE ? 0 : 15 - this.field_15793.get(l);
 	}
 
 	protected int getCurrentLevelFromArray(ChunkNibbleArray chunkNibbleArray, long l) {
@@ -154,7 +154,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	@Override
 	protected void setLevelFor(long l, int i) {
-		this.lightStorage.set(l, Math.min(15, 15 - i));
+		this.field_15793.set(l, Math.min(15, 15 - i));
 	}
 
 	@Override
@@ -163,19 +163,19 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	public boolean hasUpdates() {
-		return this.hasLevelUpdates() || this.lightStorage.hasLevelUpdates() || this.lightStorage.hasLightUpdates();
+		return this.hasLevelUpdates() || this.field_15793.hasLevelUpdates() || this.field_15793.hasLightUpdates();
 	}
 
 	public int doLightUpdates(int i, boolean bl, boolean bl2) {
 		if (!this.field_15794) {
-			if (this.lightStorage.hasLevelUpdates()) {
-				i = this.lightStorage.updateLevels(i);
+			if (this.field_15793.hasLevelUpdates()) {
+				i = this.field_15793.updateLevels(i);
 				if (i == 0) {
 					return i;
 				}
 			}
 
-			this.lightStorage.processUpdates(this, bl, bl2);
+			this.field_15793.processUpdates(this, bl, bl2);
 		}
 
 		this.field_15794 = true;
@@ -188,36 +188,36 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 		}
 
 		this.field_15794 = false;
-		this.lightStorage.notifyChunkProvider();
+		this.field_15793.notifyChunkProvider();
 		return i;
 	}
 
 	protected void setSection(long l, ChunkNibbleArray chunkNibbleArray) {
-		this.lightStorage.scheduleToUpdate(l, chunkNibbleArray);
+		this.field_15793.scheduleToUpdate(l, chunkNibbleArray);
 	}
 
 	@Nullable
 	@Override
-	public ChunkNibbleArray getChunkLightArray(ChunkSectionPos chunkSectionPos) {
-		return this.lightStorage.getDataForChunk(chunkSectionPos.asLong(), false);
+	public ChunkNibbleArray method_15544(ChunkSectionPos chunkSectionPos) {
+		return this.field_15793.getDataForChunk(chunkSectionPos.asLong(), false);
 	}
 
 	@Override
-	public int getLightLevel(BlockPos blockPos) {
-		return this.lightStorage.getLight(blockPos.asLong());
+	public int method_15543(BlockPos blockPos) {
+		return this.field_15793.getLight(blockPos.asLong());
 	}
 
 	@Environment(EnvType.CLIENT)
 	public String method_15520(long l) {
-		return "" + this.lightStorage.getCurrentLevelFor(l);
+		return "" + this.field_15793.getCurrentLevelFor(l);
 	}
 
-	public void queueLightCheck(BlockPos blockPos) {
+	public void method_15513(BlockPos blockPos) {
 		long l = blockPos.asLong();
 		this.scheduleNewUpdate(l);
 
-		for (Direction direction : DIRECTIONS) {
-			this.scheduleNewUpdate(BlockPos.offset(l, direction));
+		for (Direction direction : field_16513) {
+			this.scheduleNewUpdate(BlockPos.method_10060(l, direction));
 		}
 	}
 
@@ -225,12 +225,12 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	@Override
-	public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
-		this.lightStorage.scheduleChunkLightUpdate(chunkSectionPos.asLong(), bl);
+	public void method_15551(ChunkSectionPos chunkSectionPos, boolean bl) {
+		this.field_15793.scheduleChunkLightUpdate(chunkSectionPos.asLong(), bl);
 	}
 
 	public void method_15512(ChunkPos chunkPos, boolean bl) {
 		long l = ChunkSectionPos.method_18693(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
-		this.lightStorage.method_15535(l, bl);
+		this.field_15793.method_15535(l, bl);
 	}
 }

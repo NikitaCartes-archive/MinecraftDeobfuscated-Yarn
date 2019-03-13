@@ -19,7 +19,7 @@ public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, 
 
 	public MooshroomEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new CowEntityModel<>(), 0.7F);
-		this.addFeature(new MooshroomMushroomFeatureRenderer<>(this));
+		this.method_4046(new MooshroomMushroomFeatureRenderer<>(this));
 	}
 
 	protected Identifier method_4066(MooshroomEntity mooshroomEntity) {

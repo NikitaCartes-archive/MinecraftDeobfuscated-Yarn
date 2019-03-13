@@ -22,7 +22,7 @@ public class NbtProvider implements DataProvider {
 	}
 
 	@Override
-	public void run(DataCache dataCache) throws IOException {
+	public void method_10319(DataCache dataCache) throws IOException {
 		Path path = this.root.getOutput();
 
 		for (Path path2 : this.root.getInputs()) {
@@ -43,7 +43,7 @@ public class NbtProvider implements DataProvider {
 	private void method_10493(Path path, String string, Path path2) {
 		try {
 			CompoundTag compoundTag = NbtIo.readCompressed(Files.newInputStream(path));
-			TextComponent textComponent = compoundTag.toTextComponent("    ", 0);
+			TextComponent textComponent = compoundTag.method_10710("    ", 0);
 			String string2 = textComponent.getString();
 			Path path3 = path2.resolve(string + ".snbt");
 			Files.createDirectories(path3.getParent());

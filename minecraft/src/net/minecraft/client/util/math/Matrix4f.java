@@ -7,10 +7,9 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public final class Matrix4f {
-	private final float[] components;
+	private final float[] components = new float[16];
 
 	public Matrix4f() {
-		this.components = new float[16];
 	}
 
 	public Matrix4f(Quaternion quaternion) {
@@ -38,28 +37,6 @@ public final class Matrix4f {
 		this.components[8] = 2.0F * (o + q);
 		this.components[6] = 2.0F * (n + p);
 		this.components[9] = 2.0F * (n - p);
-	}
-
-	public Matrix4f(float[] fs) {
-		this(fs, false);
-	}
-
-	public Matrix4f(float[] fs, boolean bl) {
-		if (bl) {
-			this.components = new float[16];
-
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
-					this.components[i * 4 + j] = fs[j * 4 + i];
-				}
-			}
-		} else {
-			this.components = Arrays.copyOf(fs, fs.length);
-		}
-	}
-
-	public Matrix4f(Matrix4f matrix4f) {
-		this.components = Arrays.copyOf(matrix4f.components, 16);
 	}
 
 	public boolean equals(Object object) {
@@ -127,91 +104,8 @@ public final class Matrix4f {
 		}
 	}
 
-	public void setIdentity() {
-		this.components[0] = 1.0F;
-		this.components[1] = 0.0F;
-		this.components[2] = 0.0F;
-		this.components[3] = 0.0F;
-		this.components[4] = 0.0F;
-		this.components[5] = 1.0F;
-		this.components[6] = 0.0F;
-		this.components[7] = 0.0F;
-		this.components[8] = 0.0F;
-		this.components[9] = 0.0F;
-		this.components[10] = 1.0F;
-		this.components[11] = 0.0F;
-		this.components[12] = 0.0F;
-		this.components[13] = 0.0F;
-		this.components[14] = 0.0F;
-		this.components[15] = 1.0F;
-	}
-
-	public float get(int i, int j) {
-		return this.components[i + 4 * j];
-	}
-
 	public void set(int i, int j, float f) {
 		this.components[i + 4 * j] = f;
-	}
-
-	public void multiply(Matrix4f matrix4f) {
-		float[] fs = Arrays.copyOf(this.components, 16);
-
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				this.components[i + j * 4] = 0.0F;
-
-				for (int k = 0; k < 4; k++) {
-					this.components[i + j * 4] = this.components[i + j * 4] + fs[i + k * 4] * matrix4f.components[k + j * 4];
-				}
-			}
-		}
-	}
-
-	public void multiply(float f) {
-		for (int i = 0; i < 16; i++) {
-			this.components[i] = this.components[i] * f;
-		}
-	}
-
-	public void add(Matrix4f matrix4f) {
-		for (int i = 0; i < 16; i++) {
-			this.components[i] = this.components[i] + matrix4f.components[i];
-		}
-	}
-
-	public void subtract(Matrix4f matrix4f) {
-		for (int i = 0; i < 16; i++) {
-			this.components[i] = this.components[i] - matrix4f.components[i];
-		}
-	}
-
-	public float method_4934() {
-		float f = 0.0F;
-
-		for (int i = 0; i < 4; i++) {
-			f += this.components[i + 4 * i];
-		}
-
-		return f;
-	}
-
-	public void method_4941() {
-		Matrix4f matrix4f = new Matrix4f();
-		Matrix4f matrix4f2 = new Matrix4f(this);
-		Matrix4f matrix4f3 = new Matrix4f(this);
-		matrix4f2.multiply(this);
-		matrix4f3.multiply(matrix4f2);
-		float f = this.method_4934();
-		float g = matrix4f2.method_4934();
-		float h = matrix4f3.method_4934();
-		this.multiply((g - f * f) / 2.0F);
-		matrix4f.setIdentity();
-		matrix4f.multiply((f * f * f - 3.0F * f * g + 2.0F * h) / 6.0F);
-		this.add(matrix4f);
-		matrix4f2.multiply(f);
-		this.add(matrix4f2);
-		this.subtract(matrix4f3);
 	}
 
 	public static Matrix4f method_4929(double d, float f, float g, float h) {

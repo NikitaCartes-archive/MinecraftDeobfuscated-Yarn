@@ -16,17 +16,17 @@ public class PhaseManager {
 	}
 
 	public void setPhase(PhaseType<?> phaseType) {
-		if (this.current == null || phaseType != this.current.getType()) {
+		if (this.current == null || phaseType != this.current.method_6849()) {
 			if (this.current != null) {
 				this.current.endPhase();
 			}
 
 			this.current = this.create((PhaseType<Phase>)phaseType);
-			if (!this.dragon.world.isClient) {
-				this.dragon.getDataTracker().set(EnderDragonEntity.PHASE_TYPE, phaseType.getTypeId());
+			if (!this.dragon.field_6002.isClient) {
+				this.dragon.method_5841().set(EnderDragonEntity.field_7013, phaseType.getTypeId());
 			}
 
-			LOGGER.debug("Dragon is now in phase {} on the {}", phaseType, this.dragon.world.isClient ? "client" : "server");
+			LOGGER.debug("Dragon is now in phase {} on the {}", phaseType, this.dragon.field_6002.isClient ? "client" : "server");
 			this.current.beginPhase();
 		}
 	}

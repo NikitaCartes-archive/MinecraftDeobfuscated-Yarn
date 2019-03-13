@@ -62,7 +62,7 @@ public abstract class VoxelShape {
 
 	public VoxelShape offset(double d, double e, double f) {
 		return (VoxelShape)(this.isEmpty()
-			? VoxelShapes.empty()
+			? VoxelShapes.method_1073()
 			: new ArrayVoxelShape(
 				this.shape,
 				new OffsetDoubleList(this.getIncludedPoints(Direction.Axis.X), d),
@@ -72,8 +72,10 @@ public abstract class VoxelShape {
 	}
 
 	public VoxelShape simplify() {
-		VoxelShape[] voxelShapes = new VoxelShape[]{VoxelShapes.empty()};
-		this.method_1089((d, e, f, g, h, i) -> voxelShapes[0] = VoxelShapes.combine(voxelShapes[0], VoxelShapes.cube(d, e, f, g, h, i), BooleanBiFunction.OR));
+		VoxelShape[] voxelShapes = new VoxelShape[]{VoxelShapes.method_1073()};
+		this.method_1089(
+			(d, e, f, g, h, i) -> voxelShapes[0] = VoxelShapes.method_1082(voxelShapes[0], VoxelShapes.method_1081(d, e, f, g, h, i), BooleanBiFunction.OR)
+		);
 		return voxelShapes[0];
 	}
 
@@ -149,7 +151,7 @@ public abstract class VoxelShape {
 	}
 
 	@Nullable
-	public BlockHitResult rayTrace(Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos) {
+	public BlockHitResult method_1092(Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos) {
 		if (this.isEmpty()) {
 			return null;
 		} else {
@@ -165,8 +167,8 @@ public abstract class VoxelShape {
 		}
 	}
 
-	public VoxelShape getFace(Direction direction) {
-		if (!this.isEmpty() && this != VoxelShapes.fullCube()) {
+	public VoxelShape method_1098(Direction direction) {
+		if (!this.isEmpty() && this != VoxelShapes.method_1077()) {
 			Direction.Axis axis = direction.getAxis();
 			Direction.AxisDirection axisDirection = direction.getDirection();
 			DoubleList doubleList = this.getIncludedPoints(axis);

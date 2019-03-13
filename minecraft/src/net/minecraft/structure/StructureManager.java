@@ -40,11 +40,11 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		this.server = minecraftServer;
 		this.dataFixer = dataFixer;
 		this.generatedPath = file.toPath().resolve("generated").normalize();
-		minecraftServer.getDataManager().registerListener(this);
+		minecraftServer.method_3809().registerListener(this);
 	}
 
-	public Structure getStructureOrBlank(Identifier identifier) {
-		Structure structure = this.getStructure(identifier);
+	public Structure method_15091(Identifier identifier) {
+		Structure structure = this.method_15094(identifier);
 		if (structure == null) {
 			structure = new Structure();
 			this.structures.put(identifier, structure);
@@ -54,10 +54,10 @@ public class StructureManager implements SynchronousResourceReloadListener {
 	}
 
 	@Nullable
-	public Structure getStructure(Identifier identifier) {
+	public Structure method_15094(Identifier identifier) {
 		return (Structure)this.structures.computeIfAbsent(identifier, identifierx -> {
-			Structure structure = this.loadStructureFromFile(identifierx);
-			return structure != null ? structure : this.loadStructureFromResource(identifierx);
+			Structure structure = this.method_15092(identifierx);
+			return structure != null ? structure : this.method_15088(identifierx);
 		});
 	}
 
@@ -67,16 +67,16 @@ public class StructureManager implements SynchronousResourceReloadListener {
 	}
 
 	@Nullable
-	private Structure loadStructureFromResource(Identifier identifier) {
+	private Structure method_15088(Identifier identifier) {
 		Identifier identifier2 = new Identifier(identifier.getNamespace(), "structures/" + identifier.getPath() + ".nbt");
 
 		try {
-			Resource resource = this.server.getDataManager().getResource(identifier2);
+			Resource resource = this.server.method_3809().getResource(identifier2);
 			Throwable var4 = null;
 
 			Structure var5;
 			try {
-				var5 = this.readStructure(resource.getInputStream());
+				var5 = this.method_15090(resource.getInputStream());
 			} catch (Throwable var16) {
 				var4 = var16;
 				throw var16;
@@ -104,11 +104,11 @@ public class StructureManager implements SynchronousResourceReloadListener {
 	}
 
 	@Nullable
-	private Structure loadStructureFromFile(Identifier identifier) {
+	private Structure method_15092(Identifier identifier) {
 		if (!this.generatedPath.toFile().isDirectory()) {
 			return null;
 		} else {
-			Path path = this.getAndCheckStructurePath(identifier, ".nbt");
+			Path path = this.method_15086(identifier, ".nbt");
 
 			try {
 				InputStream inputStream = new FileInputStream(path.toFile());
@@ -116,7 +116,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 
 				Structure var5;
 				try {
-					var5 = this.readStructure(inputStream);
+					var5 = this.method_15090(inputStream);
 				} catch (Throwable var16) {
 					var4 = var16;
 					throw var16;
@@ -144,23 +144,23 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		}
 	}
 
-	private Structure readStructure(InputStream inputStream) throws IOException {
+	private Structure method_15090(InputStream inputStream) throws IOException {
 		CompoundTag compoundTag = NbtIo.readCompressed(inputStream);
 		if (!compoundTag.containsKey("DataVersion", 99)) {
 			compoundTag.putInt("DataVersion", 500);
 		}
 
 		Structure structure = new Structure();
-		structure.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
+		structure.method_15183(TagHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
 		return structure;
 	}
 
-	public boolean saveStructure(Identifier identifier) {
+	public boolean method_15093(Identifier identifier) {
 		Structure structure = (Structure)this.structures.get(identifier);
 		if (structure == null) {
 			return false;
 		} else {
-			Path path = this.getAndCheckStructurePath(identifier, ".nbt");
+			Path path = this.method_15086(identifier, ".nbt");
 			Path path2 = path.getParent();
 			if (path2 == null) {
 				return false;
@@ -172,7 +172,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 					return false;
 				}
 
-				CompoundTag compoundTag = structure.toTag(new CompoundTag());
+				CompoundTag compoundTag = structure.method_15175(new CompoundTag());
 
 				try {
 					OutputStream outputStream = new FileOutputStream(path.toFile());
@@ -205,7 +205,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		}
 	}
 
-	private Path getStructurePath(Identifier identifier, String string) {
+	private Path method_15085(Identifier identifier, String string) {
 		try {
 			Path path = this.generatedPath.resolve(identifier.getNamespace());
 			Path path2 = path.resolve("structures");
@@ -215,11 +215,11 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		}
 	}
 
-	private Path getAndCheckStructurePath(Identifier identifier, String string) {
+	private Path method_15086(Identifier identifier, String string) {
 		if (identifier.getPath().contains("//")) {
 			throw new InvalidIdentifierException("Invalid resource path: " + identifier);
 		} else {
-			Path path = this.getStructurePath(identifier, string);
+			Path path = this.method_15085(identifier, string);
 			if (path.startsWith(this.generatedPath) && SystemUtil.isPathNormalized(path) && SystemUtil.isPathLegal(path)) {
 				return path;
 			} else {
@@ -228,7 +228,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public void unloadStructure(Identifier identifier) {
+	public void method_15087(Identifier identifier) {
 		this.structures.remove(identifier);
 	}
 }

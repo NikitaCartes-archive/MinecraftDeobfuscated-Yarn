@@ -18,14 +18,14 @@ public class PumpkinBlock extends GourdBlock {
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
 		if (itemStack.getItem() == Items.field_8868) {
 			if (!world.isClient) {
-				Direction direction = blockHitResult.getSide();
-				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? playerEntity.getHorizontalFacing().getOpposite() : direction;
-				world.playSound(null, blockPos, SoundEvents.field_14619, SoundCategory.field_15245, 1.0F, 1.0F);
-				world.setBlockState(blockPos, Blocks.field_10147.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), 11);
+				Direction direction = blockHitResult.method_17780();
+				Direction direction2 = direction.getAxis() == Direction.Axis.Y ? playerEntity.method_5735().getOpposite() : direction;
+				world.method_8396(null, blockPos, SoundEvents.field_14619, SoundCategory.field_15245, 1.0F, 1.0F);
+				world.method_8652(blockPos, Blocks.field_10147.method_9564().method_11657(CarvedPumpkinBlock.field_10748, direction2), 11);
 				ItemEntity itemEntity = new ItemEntity(
 					world,
 					(double)blockPos.getX() + 0.5 + (double)direction2.getOffsetX() * 0.65,
@@ -42,7 +42,7 @@ public class PumpkinBlock extends GourdBlock {
 
 			return true;
 		} else {
-			return super.activate(blockState, world, blockPos, playerEntity, hand, blockHitResult);
+			return super.method_9534(blockState, world, blockPos, playerEntity, hand, blockHitResult);
 		}
 	}
 

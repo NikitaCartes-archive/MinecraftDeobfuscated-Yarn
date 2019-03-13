@@ -14,11 +14,11 @@ public class SayCommand {
 					ServerCommandManager.argument("message", MessageArgumentType.create())
 						.executes(
 							commandContext -> {
-								TextComponent textComponent = MessageArgumentType.getMessageArgument(commandContext, "message");
+								TextComponent textComponent = MessageArgumentType.method_9339(commandContext, "message");
 								commandContext.getSource()
 									.getMinecraftServer()
-									.getPlayerManager()
-									.sendToAll(new TranslatableTextComponent("chat.type.announcement", commandContext.getSource().getDisplayName(), textComponent));
+									.method_3760()
+									.sendToAll(new TranslatableTextComponent("chat.type.announcement", commandContext.getSource().method_9223(), textComponent));
 								return 1;
 							}
 						)

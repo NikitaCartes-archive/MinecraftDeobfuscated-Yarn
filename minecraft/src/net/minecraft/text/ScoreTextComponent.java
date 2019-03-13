@@ -57,7 +57,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements class_2
 	private void method_10926(ServerCommandSource serverCommandSource) {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		if (minecraftServer != null && minecraftServer.method_3814() && ChatUtil.isEmpty(this.text)) {
-			Scoreboard scoreboard = minecraftServer.getScoreboard();
+			Scoreboard scoreboard = minecraftServer.method_3845();
 			ScoreboardObjective scoreboardObjective = scoreboard.method_1170(this.objective);
 			if (scoreboard.playerHasObjective(this.name, scoreboardObjective)) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(this.name, scoreboardObjective);
@@ -126,7 +126,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements class_2
 			+ ", siblings="
 			+ this.children
 			+ ", style="
-			+ this.getStyle()
+			+ this.method_10866()
 			+ '}';
 	}
 }

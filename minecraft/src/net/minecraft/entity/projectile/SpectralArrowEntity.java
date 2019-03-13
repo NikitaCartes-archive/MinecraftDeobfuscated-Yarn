@@ -28,13 +28,13 @@ public class SpectralArrowEntity extends ProjectileEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.world.isClient && !this.inGround) {
-			this.world.addParticle(ParticleTypes.field_11213, this.x, this.y, this.z, 0.0, 0.0, 0.0);
+		if (this.field_6002.isClient && !this.inGround) {
+			this.field_6002.method_8406(ParticleTypes.field_11213, this.x, this.y, this.z, 0.0, 0.0, 0.0);
 		}
 	}
 
 	@Override
-	protected ItemStack asItemStack() {
+	protected ItemStack method_7445() {
 		return new ItemStack(Items.field_8236);
 	}
 
@@ -46,16 +46,16 @@ public class SpectralArrowEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		if (compoundTag.containsKey("Duration")) {
 			this.duration = compoundTag.getInt("Duration");
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putInt("Duration", this.duration);
 	}
 }

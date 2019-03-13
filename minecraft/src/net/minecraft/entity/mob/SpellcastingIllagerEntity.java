@@ -1,5 +1,6 @@
 package net.minecraft.entity.mob;
 
+import java.util.EnumSet;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -26,18 +27,18 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_7373, (byte)0);
+		this.field_6011.startTracking(field_7373, (byte)0);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		this.spellTicks = compoundTag.getInt("SpellTicks");
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putInt("SpellTicks", this.spellTicks);
 	}
 
@@ -48,16 +49,16 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	}
 
 	public boolean method_7137() {
-		return this.world.isClient ? this.dataTracker.get(field_7373) > 0 : this.spellTicks > 0;
+		return this.field_6002.isClient ? this.field_6011.get(field_7373) > 0 : this.spellTicks > 0;
 	}
 
 	public void method_7138(SpellcastingIllagerEntity.class_1618 arg) {
 		this.field_7371 = arg;
-		this.dataTracker.set(field_7373, (byte)arg.field_7375);
+		this.field_6011.set(field_7373, (byte)arg.field_7375);
 	}
 
 	protected SpellcastingIllagerEntity.class_1618 method_7140() {
-		return !this.world.isClient ? this.field_7371 : SpellcastingIllagerEntity.class_1618.method_7144(this.dataTracker.get(field_7373));
+		return !this.field_6002.isClient ? this.field_7371 : SpellcastingIllagerEntity.class_1618.method_7144(this.field_6011.get(field_7373));
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.world.isClient && this.method_7137()) {
+		if (this.field_6002.isClient && this.method_7137()) {
 			SpellcastingIllagerEntity.class_1618 lv = this.method_7140();
 			double d = lv.field_7374[0];
 			double e = lv.field_7374[1];
@@ -79,8 +80,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 			float g = this.field_6283 * (float) (Math.PI / 180.0) + MathHelper.cos((float)this.age * 0.6662F) * 0.25F;
 			float h = MathHelper.cos(g);
 			float i = MathHelper.sin(g);
-			this.world.addParticle(ParticleTypes.field_11226, this.x + (double)h * 0.6, this.y + 1.8, this.z + (double)i * 0.6, d, e, f);
-			this.world.addParticle(ParticleTypes.field_11226, this.x - (double)h * 0.6, this.y + 1.8, this.z - (double)i * 0.6, d, e, f);
+			this.field_6002.method_8406(ParticleTypes.field_11226, this.x + (double)h * 0.6, this.y + 1.8, this.z + (double)i * 0.6, d, e, f);
+			this.field_6002.method_8406(ParticleTypes.field_11226, this.x - (double)h * 0.6, this.y + 1.8, this.z - (double)i * 0.6, d, e, f);
 		}
 	}
 
@@ -116,9 +117,9 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 			this.spellCooldown = this.getInitialCooldown();
 			SpellcastingIllagerEntity.this.spellTicks = this.getSpellTicks();
 			this.startTime = SpellcastingIllagerEntity.this.age + this.startTimeDelay();
-			SoundEvent soundEvent = this.getSoundPrepare();
+			SoundEvent soundEvent = this.method_7150();
 			if (soundEvent != null) {
-				SpellcastingIllagerEntity.this.playSound(soundEvent, 1.0F, 1.0F);
+				SpellcastingIllagerEntity.this.method_5783(soundEvent, 1.0F, 1.0F);
 			}
 
 			SpellcastingIllagerEntity.this.method_7138(this.method_7147());
@@ -129,7 +130,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 			this.spellCooldown--;
 			if (this.spellCooldown == 0) {
 				this.castSpell();
-				SpellcastingIllagerEntity.this.playSound(SpellcastingIllagerEntity.this.method_7142(), 1.0F, 1.0F);
+				SpellcastingIllagerEntity.this.method_5783(SpellcastingIllagerEntity.this.method_7142(), 1.0F, 1.0F);
 			}
 		}
 
@@ -144,14 +145,14 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		protected abstract int startTimeDelay();
 
 		@Nullable
-		protected abstract SoundEvent getSoundPrepare();
+		protected abstract SoundEvent method_7150();
 
 		protected abstract SpellcastingIllagerEntity.class_1618 method_7147();
 	}
 
 	public class LookAtTargetGoal extends Goal {
 		public LookAtTargetGoal() {
-			this.setControlBits(3);
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 
 		@Override
@@ -162,7 +163,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		@Override
 		public void start() {
 			super.start();
-			SpellcastingIllagerEntity.this.navigation.stop();
+			SpellcastingIllagerEntity.this.field_6189.stop();
 		}
 
 		@Override
@@ -174,7 +175,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		@Override
 		public void tick() {
 			if (SpellcastingIllagerEntity.this.getTarget() != null) {
-				SpellcastingIllagerEntity.this.getLookControl()
+				SpellcastingIllagerEntity.this.method_5988()
 					.lookAt(
 						SpellcastingIllagerEntity.this.getTarget(), (float)SpellcastingIllagerEntity.this.method_5986(), (float)SpellcastingIllagerEntity.this.method_5978()
 					);

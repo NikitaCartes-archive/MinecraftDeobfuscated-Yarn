@@ -23,7 +23,7 @@ public class RecipeResultCollection {
 		return !this.allResults.isEmpty();
 	}
 
-	public void initialize(RecipeBook recipeBook) {
+	public void method_2647(RecipeBook recipeBook) {
 		for (Recipe<?> recipe : this.allRecipes) {
 			if (recipeBook.contains(recipe)) {
 				this.allResults.add(recipe);
@@ -31,7 +31,7 @@ public class RecipeResultCollection {
 		}
 	}
 
-	public void computeCraftables(RecipeFinder recipeFinder, int i, int j, RecipeBook recipeBook) {
+	public void method_2649(RecipeFinder recipeFinder, int i, int j, RecipeBook recipeBook) {
 		for (int k = 0; k < this.allRecipes.size(); k++) {
 			Recipe<?> recipe = (Recipe<?>)this.allRecipes.get(k);
 			boolean bl = recipe.fits(i, j) && recipeBook.contains(recipe);
@@ -41,7 +41,7 @@ public class RecipeResultCollection {
 				this.fittableResults.remove(recipe);
 			}
 
-			if (bl && recipeFinder.findRecipe(recipe, null)) {
+			if (bl && recipeFinder.method_7402(recipe, null)) {
 				this.craftableResults.add(recipe);
 			} else {
 				this.craftableResults.remove(recipe);

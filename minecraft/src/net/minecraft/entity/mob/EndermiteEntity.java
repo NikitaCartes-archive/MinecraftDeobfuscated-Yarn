@@ -37,26 +37,26 @@ public class EndermiteEntity extends HostileEntity {
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0, false));
-		this.goalSelector.add(3, new class_1394(this, 1.0));
-		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(8, new LookAroundGoal(this));
-		this.targetSelector.add(1, new class_1399(this).method_6318());
-		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
+		this.field_6201.add(1, new SwimGoal(this));
+		this.field_6201.add(2, new MeleeAttackGoal(this, 1.0, false));
+		this.field_6201.add(3, new class_1394(this, 1.0));
+		this.field_6201.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.field_6201.add(8, new LookAroundGoal(this));
+		this.field_6185.add(1, new class_1399(this).method_6318());
+		this.field_6185.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
 		return 0.1F;
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
+		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
+		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+		this.method_5996(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
 	}
 
 	@Override
@@ -65,35 +65,35 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return SoundEvents.field_15137;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_14582;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_15230;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14678, 0.15F, 1.0F);
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+		this.method_5783(SoundEvents.field_14678, 0.15F, 1.0F);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		this.lifeTime = compoundTag.getInt("Lifetime");
 		this.playerSpawned = compoundTag.getBoolean("PlayerSpawned");
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putInt("Lifetime", this.lifeTime);
 		compoundTag.putBoolean("PlayerSpawned", this.playerSpawned);
 	}
@@ -126,10 +126,10 @@ public class EndermiteEntity extends HostileEntity {
 	@Override
 	public void updateMovement() {
 		super.updateMovement();
-		if (this.world.isClient) {
+		if (this.field_6002.isClient) {
 			for (int i = 0; i < 2; i++) {
-				this.world
-					.addParticle(
+				this.field_6002
+					.method_8406(
 						ParticleTypes.field_11214,
 						this.x + (this.random.nextDouble() - 0.5) * (double)this.getWidth(),
 						this.y + this.random.nextDouble() * (double)this.getHeight(),
@@ -156,9 +156,9 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
-		if (super.canSpawn(iWorld, spawnType)) {
-			PlayerEntity playerEntity = this.world.method_18462(field_18128, this);
+	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
+		if (super.method_5979(iWorld, spawnType)) {
+			PlayerEntity playerEntity = this.field_6002.method_18462(field_18128, this);
 			return playerEntity == null;
 		} else {
 			return false;
@@ -166,7 +166,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public EntityGroup getGroup() {
+	public EntityGroup method_6046() {
 		return EntityGroup.ARTHROPOD;
 	}
 }

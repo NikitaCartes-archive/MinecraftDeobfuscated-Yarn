@@ -14,11 +14,11 @@ import java.util.Objects;
 public interface DataProvider {
 	HashFunction SHA1 = Hashing.sha1();
 
-	void run(DataCache dataCache) throws IOException;
+	void method_10319(DataCache dataCache) throws IOException;
 
 	String getName();
 
-	static void writeToPath(Gson gson, DataCache dataCache, JsonElement jsonElement, Path path) throws IOException {
+	static void method_10320(Gson gson, DataCache dataCache, JsonElement jsonElement, Path path) throws IOException {
 		String string = gson.toJson(jsonElement);
 		String string2 = SHA1.hashUnencodedChars(string).toString();
 		if (!Objects.equals(dataCache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {

@@ -1,5 +1,10 @@
 package net.minecraft.world.chunk;
 
+import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 
 public class ChunkPos {
@@ -87,7 +92,7 @@ public class ChunkPos {
 		return this.z & 31;
 	}
 
-	public BlockPos toBlockPos(int i, int j, int k) {
+	public BlockPos method_8330(int i, int j, int k) {
 		return new BlockPos((this.x << 4) + i, j, (this.z << 4) + k);
 	}
 
@@ -95,7 +100,43 @@ public class ChunkPos {
 		return "[" + this.x + ", " + this.z + "]";
 	}
 
-	public BlockPos getCenterBlockPos() {
+	public BlockPos method_8323() {
 		return new BlockPos(this.x << 4, 0, this.z << 4);
+	}
+
+	public static Stream<ChunkPos> method_19280(ChunkPos chunkPos, int i) {
+		return method_19281(new ChunkPos(chunkPos.x - i, chunkPos.z - i), new ChunkPos(chunkPos.x + i, chunkPos.z + i));
+	}
+
+	public static Stream<ChunkPos> method_19281(ChunkPos chunkPos, ChunkPos chunkPos2) {
+		int i = Math.abs(chunkPos.x - chunkPos2.x) + 1;
+		int j = Math.abs(chunkPos.z - chunkPos2.z) + 1;
+		final int k = chunkPos.x < chunkPos2.x ? 1 : -1;
+		final int l = chunkPos.z < chunkPos2.z ? 1 : -1;
+		return StreamSupport.stream(new AbstractSpliterator<ChunkPos>((long)(i * j), 64) {
+			@Nullable
+			private ChunkPos field_18684;
+
+			public boolean tryAdvance(Consumer<? super ChunkPos> consumer) {
+				if (this.field_18684 == null) {
+					this.field_18684 = chunkPos;
+				} else {
+					int i = this.field_18684.x;
+					int j = this.field_18684.z;
+					if (i == chunkPos2.x) {
+						if (j == chunkPos2.z) {
+							return false;
+						}
+
+						this.field_18684 = new ChunkPos(chunkPos.x, j + l);
+					} else {
+						this.field_18684 = new ChunkPos(i + k, j);
+					}
+				}
+
+				consumer.accept(this.field_18684);
+				return true;
+			}
+		}, false);
 	}
 }

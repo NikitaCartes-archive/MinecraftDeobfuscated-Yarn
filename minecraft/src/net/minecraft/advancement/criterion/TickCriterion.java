@@ -12,12 +12,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class TickCriterion implements Criterion<TickCriterion.Conditions> {
-	public static final Identifier ID = new Identifier("tick");
+	public static final Identifier field_9758 = new Identifier("tick");
 	private final Map<PlayerAdvancementTracker, TickCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, TickCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return ID;
+		return field_9758;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.addCondition(conditionsContainer);
+		handler.method_9142(conditionsContainer);
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 	) {
 		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.removeCondition(conditionsContainer);
+			handler.method_9144(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -55,7 +55,7 @@ public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 		return new TickCriterion.Conditions();
 	}
 
-	public void handle(ServerPlayerEntity serverPlayerEntity) {
+	public void method_9141(ServerPlayerEntity serverPlayerEntity) {
 		TickCriterion.Handler handler = (TickCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
 			handler.handle();
@@ -64,33 +64,33 @@ public class TickCriterion implements Criterion<TickCriterion.Conditions> {
 
 	public static class Conditions extends AbstractCriterionConditions {
 		public Conditions() {
-			super(TickCriterion.ID);
+			super(TickCriterion.field_9758);
 		}
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker manager;
+		private final PlayerAdvancementTracker field_9761;
 		private final Set<Criterion.ConditionsContainer<TickCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<TickCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.manager = playerAdvancementTracker;
+			this.field_9761 = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void addCondition(Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer) {
+		public void method_9142(Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void removeCondition(Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer) {
+		public void method_9144(Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
 		public void handle() {
 			for (Criterion.ConditionsContainer<TickCriterion.Conditions> conditionsContainer : Lists.newArrayList(this.conditions)) {
-				conditionsContainer.apply(this.manager);
+				conditionsContainer.apply(this.field_9761);
 			}
 		}
 	}

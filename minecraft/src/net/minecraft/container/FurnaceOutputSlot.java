@@ -15,36 +15,36 @@ public class FurnaceOutputSlot extends Slot {
 	}
 
 	@Override
-	public boolean canInsert(ItemStack itemStack) {
+	public boolean method_7680(ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
-	public ItemStack takeStack(int i) {
+	public ItemStack method_7671(int i) {
 		if (this.hasStack()) {
-			this.amountCrafted = this.amountCrafted + Math.min(i, this.getStack().getAmount());
+			this.amountCrafted = this.amountCrafted + Math.min(i, this.method_7677().getAmount());
 		}
 
-		return super.takeStack(i);
+		return super.method_7671(i);
 	}
 
 	@Override
-	public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
-		this.onCrafted(itemStack);
-		super.onTakeItem(playerEntity, itemStack);
+	public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
+		this.method_7669(itemStack);
+		super.method_7667(playerEntity, itemStack);
 		return itemStack;
 	}
 
 	@Override
-	protected void onCrafted(ItemStack itemStack, int i) {
+	protected void method_7678(ItemStack itemStack, int i) {
 		this.amountCrafted += i;
-		this.onCrafted(itemStack);
+		this.method_7669(itemStack);
 	}
 
 	@Override
-	protected void onCrafted(ItemStack itemStack) {
-		itemStack.onCrafted(this.player.world, this.player, this.amountCrafted);
-		if (!this.player.world.isClient && this.inventory instanceof AbstractFurnaceBlockEntity) {
+	protected void method_7669(ItemStack itemStack) {
+		itemStack.method_7982(this.player.field_6002, this.player, this.amountCrafted);
+		if (!this.player.field_6002.isClient && this.inventory instanceof AbstractFurnaceBlockEntity) {
 			((AbstractFurnaceBlockEntity)this.inventory).dropExperience(this.player);
 		}
 

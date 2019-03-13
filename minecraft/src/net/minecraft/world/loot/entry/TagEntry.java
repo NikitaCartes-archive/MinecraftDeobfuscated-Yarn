@@ -17,25 +17,25 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.LootFunction;
 
 public class TagEntry extends LeafEntry {
-	private final Tag<Item> name;
+	private final Tag<Item> field_1005;
 	private final boolean expand;
 
 	private TagEntry(Tag<Item> tag, boolean bl, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
 		super(i, j, lootConditions, lootFunctions);
-		this.name = tag;
+		this.field_1005 = tag;
 		this.expand = bl;
 	}
 
 	@Override
 	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-		this.name.values().forEach(item -> consumer.accept(new ItemStack(item)));
+		this.field_1005.values().forEach(item -> consumer.accept(new ItemStack(item)));
 	}
 
 	private boolean method_447(LootContext lootContext, Consumer<LootChoice> consumer) {
 		if (!this.test(lootContext)) {
 			return false;
 		} else {
-			for (final Item item : this.name.values()) {
+			for (final Item item : this.field_1005.values()) {
 				consumer.accept(new LeafEntry.Choice() {
 					@Override
 					public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
@@ -53,7 +53,7 @@ public class TagEntry extends LeafEntry {
 		return this.expand ? this.method_447(lootContext, consumer) : super.expand(lootContext, consumer);
 	}
 
-	public static LeafEntry.Builder<?> create(Tag<Item> tag) {
+	public static LeafEntry.Builder<?> method_445(Tag<Item> tag) {
 		return create((i, j, lootConditions, lootFunctions) -> new TagEntry(tag, true, i, j, lootConditions, lootFunctions));
 	}
 
@@ -64,7 +64,7 @@ public class TagEntry extends LeafEntry {
 
 		public void method_451(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
 			super.method_442(jsonObject, tagEntry, jsonSerializationContext);
-			jsonObject.addProperty("name", tagEntry.name.getId().toString());
+			jsonObject.addProperty("name", tagEntry.field_1005.getId().toString());
 			jsonObject.addProperty("expand", tagEntry.expand);
 		}
 
@@ -72,7 +72,7 @@ public class TagEntry extends LeafEntry {
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			Tag<Item> tag = ItemTags.getContainer().get(identifier);
+			Tag<Item> tag = ItemTags.method_15106().get(identifier);
 			if (tag == null) {
 				throw new JsonParseException("Can't find tag: " + identifier);
 			} else {

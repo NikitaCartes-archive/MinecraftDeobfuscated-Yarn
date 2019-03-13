@@ -188,8 +188,8 @@
 		"url": "https://libraries.minecraft.net/com/paulscode/soundsystem/20120107/soundsystem-20120107.jar"
 	},
 	{
-		"sha1sum": "48fd510879dff266c3815947de66e3d4809f8668",
-		"name": "text2speech-1.10.3.jar",
-		"url": "https://libraries.minecraft.net/com/mojang/text2speech/1.10.3/text2speech-1.10.3.jar"
+		"sha1sum": "172fe3ccf0e7143cbbfba006554412c8e6fc81f2",
+		"name": "text2speech-1.11.2.jar",
+		"url": "https://libraries.minecraft.net/com/mojang/text2speech/1.11.2/text2speech-1.11.2.jar"
 	}
 ]

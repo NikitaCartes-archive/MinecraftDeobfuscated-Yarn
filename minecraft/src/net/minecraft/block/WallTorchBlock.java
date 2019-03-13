@@ -23,23 +23,23 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WallTorchBlock extends TorchBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty field_11731 = HorizontalFacingBlock.field_11177;
 	private static final Map<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.NORTH,
-			Block.createCuboidShape(5.5, 3.0, 11.0, 10.5, 13.0, 16.0),
+			Block.method_9541(5.5, 3.0, 11.0, 10.5, 13.0, 16.0),
 			Direction.SOUTH,
-			Block.createCuboidShape(5.5, 3.0, 0.0, 10.5, 13.0, 5.0),
+			Block.method_9541(5.5, 3.0, 0.0, 10.5, 13.0, 5.0),
 			Direction.WEST,
-			Block.createCuboidShape(11.0, 3.0, 5.5, 16.0, 13.0, 10.5),
+			Block.method_9541(11.0, 3.0, 5.5, 16.0, 13.0, 10.5),
 			Direction.EAST,
-			Block.createCuboidShape(0.0, 3.0, 5.5, 5.0, 13.0, 10.5)
+			Block.method_9541(0.0, 3.0, 5.5, 5.0, 13.0, 10.5)
 		)
 	);
 
 	protected WallTorchBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11731, Direction.NORTH));
 	}
 
 	@Override
@@ -48,35 +48,35 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return getBoundingShape(blockState);
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return method_10841(blockState);
 	}
 
-	public static VoxelShape getBoundingShape(BlockState blockState) {
-		return (VoxelShape)BOUNDING_SHAPES.get(blockState.get(FACING));
+	public static VoxelShape method_10841(BlockState blockState) {
+		return (VoxelShape)BOUNDING_SHAPES.get(blockState.method_11654(field_11731));
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = blockState.get(FACING);
-		BlockPos blockPos2 = blockPos.offset(direction.getOpposite());
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		Direction direction = blockState.method_11654(field_11731);
+		BlockPos blockPos2 = blockPos.method_10093(direction.getOpposite());
+		BlockState blockState2 = viewableWorld.method_8320(blockPos2);
+		return Block.method_9501(blockState2.method_11628(viewableWorld, blockPos2), direction) && !method_9581(blockState2.getBlock());
 	}
 
 	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.getDefaultState();
-		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
-		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		Direction[] directions = itemPlacementContext.getPlacementFacings();
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = this.method_9564();
+		ViewableWorld viewableWorld = itemPlacementContext.method_8045();
+		BlockPos blockPos = itemPlacementContext.method_8037();
+		Direction[] directions = itemPlacementContext.method_7718();
 
 		for (Direction direction : directions) {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
-				blockState = blockState.with(FACING, direction2);
-				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
+				blockState = blockState.method_11657(field_11731, direction2);
+				if (blockState.method_11591(viewableWorld, blockPos)) {
 					return blockState;
 				}
 			}
@@ -86,38 +86,38 @@ public class WallTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos) ? Blocks.field_10124.getDefaultState() : blockState;
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		return direction.getOpposite() == blockState.method_11654(field_11731) && !blockState.method_11591(iWorld, blockPos)
+			? Blocks.field_10124.method_9564()
+			: blockState;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		Direction direction = blockState.get(FACING);
+	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		Direction direction = blockState.method_11654(field_11731);
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 0.7;
 		double f = (double)blockPos.getZ() + 0.5;
 		double g = 0.22;
 		double h = 0.27;
 		Direction direction2 = direction.getOpposite();
-		world.addParticle(ParticleTypes.field_11251, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
-		world.addParticle(ParticleTypes.field_11240, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
+		world.method_8406(ParticleTypes.field_11251, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
+		world.method_8406(ParticleTypes.field_11240, d + 0.27 * (double)direction2.getOffsetX(), e + 0.22, f + 0.27 * (double)direction2.getOffsetZ(), 0.0, 0.0, 0.0);
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
+	public BlockState method_9598(BlockState blockState, Rotation rotation) {
+		return blockState.method_11657(field_11731, rotation.method_10503(blockState.method_11654(field_11731)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
+	public BlockState method_9569(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.method_10345(blockState.method_11654(field_11731)));
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_11731);
 	}
 }

@@ -30,12 +30,12 @@ public class ServerRecipeBook extends RecipeBook {
 		int i = 0;
 
 		for (Recipe<?> recipe : collection) {
-			Identifier identifier = recipe.getId();
+			Identifier identifier = recipe.method_8114();
 			if (!this.recipes.contains(identifier) && !recipe.isIgnoredInRecipeBook()) {
 				this.add(identifier);
 				this.display(identifier);
 				list.add(identifier);
-				Criterions.RECIPE_UNLOCKED.handle(serverPlayerEntity, recipe);
+				Criterions.RECIPE_UNLOCKED.method_9107(serverPlayerEntity, recipe);
 				i++;
 			}
 		}
@@ -49,7 +49,7 @@ public class ServerRecipeBook extends RecipeBook {
 		int i = 0;
 
 		for (Recipe<?> recipe : collection) {
-			Identifier identifier = recipe.getId();
+			Identifier identifier = recipe.method_8114();
 			if (this.recipes.contains(identifier)) {
 				this.remove(identifier);
 				list.add(identifier);
@@ -62,7 +62,7 @@ public class ServerRecipeBook extends RecipeBook {
 	}
 
 	private void sendUnlockRecipesPacket(UnlockRecipesS2CPacket.Action action, ServerPlayerEntity serverPlayerEntity, List<Identifier> list) {
-		serverPlayerEntity.networkHandler
+		serverPlayerEntity.field_13987
 			.sendPacket(
 				new UnlockRecipesS2CPacket(
 					action, list, Collections.emptyList(), this.guiOpen, this.filteringCraftable, this.furnaceGuiOpen, this.furnaceFilteringCraftable
@@ -82,14 +82,14 @@ public class ServerRecipeBook extends RecipeBook {
 			listTag.add(new StringTag(identifier.toString()));
 		}
 
-		compoundTag.put("recipes", listTag);
+		compoundTag.method_10566("recipes", listTag);
 		ListTag listTag2 = new ListTag();
 
 		for (Identifier identifier2 : this.toBeDisplayed) {
 			listTag2.add(new StringTag(identifier2.toString()));
 		}
 
-		compoundTag.put("toBeDisplayed", listTag2);
+		compoundTag.method_10566("toBeDisplayed", listTag2);
 		return compoundTag;
 	}
 
@@ -98,11 +98,11 @@ public class ServerRecipeBook extends RecipeBook {
 		this.filteringCraftable = compoundTag.getBoolean("isFilteringCraftable");
 		this.furnaceGuiOpen = compoundTag.getBoolean("isFurnaceGuiOpen");
 		this.furnaceFilteringCraftable = compoundTag.getBoolean("isFurnaceFilteringCraftable");
-		ListTag listTag = compoundTag.getList("recipes", 8);
+		ListTag listTag = compoundTag.method_10554("recipes", 8);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			Identifier identifier = new Identifier(listTag.getString(i));
-			Optional<? extends Recipe<?>> optional = this.manager.get(identifier);
+			Optional<? extends Recipe<?>> optional = this.manager.method_8130(identifier);
 			if (!optional.isPresent()) {
 				LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier);
 			} else {
@@ -110,11 +110,11 @@ public class ServerRecipeBook extends RecipeBook {
 			}
 		}
 
-		ListTag listTag2 = compoundTag.getList("toBeDisplayed", 8);
+		ListTag listTag2 = compoundTag.method_10554("toBeDisplayed", 8);
 
 		for (int j = 0; j < listTag2.size(); j++) {
 			Identifier identifier2 = new Identifier(listTag2.getString(j));
-			Optional<? extends Recipe<?>> optional2 = this.manager.get(identifier2);
+			Optional<? extends Recipe<?>> optional2 = this.manager.method_8130(identifier2);
 			if (!optional2.isPresent()) {
 				LOGGER.error("Tried to load unrecognized recipe: {} removed now.", identifier2);
 			} else {
@@ -124,7 +124,7 @@ public class ServerRecipeBook extends RecipeBook {
 	}
 
 	public void sendInitRecipesPacket(ServerPlayerEntity serverPlayerEntity) {
-		serverPlayerEntity.networkHandler
+		serverPlayerEntity.field_13987
 			.sendPacket(
 				new UnlockRecipesS2CPacket(
 					UnlockRecipesS2CPacket.Action.field_12416,

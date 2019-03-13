@@ -33,7 +33,7 @@ public class QueryEntityNbtC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	public void method_12243(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onQueryEntityNbt(this);
+		serverPlayPacketListener.method_12074(this);
 	}
 
 	public int getTransactionId() {

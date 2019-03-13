@@ -50,7 +50,7 @@ public class PlayerInputC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12369(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onPlayerInput(this);
+		serverPlayPacketListener.method_12067(this);
 	}
 
 	public float getSideways() {

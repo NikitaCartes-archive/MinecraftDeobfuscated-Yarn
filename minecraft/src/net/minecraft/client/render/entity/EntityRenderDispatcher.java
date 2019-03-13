@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -132,21 +133,18 @@ import net.minecraft.world.World;
 public class EntityRenderDispatcher {
 	private final Map<Class<? extends Entity>, EntityRenderer<? extends Entity>> renderers = Maps.<Class<? extends Entity>, EntityRenderer<? extends Entity>>newHashMap();
 	private final Map<String, PlayerEntityRenderer> skinMap = Maps.<String, PlayerEntityRenderer>newHashMap();
-	private final PlayerEntityRenderer playerRenderer;
+	private final PlayerEntityRenderer field_4683;
 	private TextRenderer fontRenderer;
 	private double renderPosX;
 	private double renderPosY;
 	private double renderPosZ;
-	public final TextureManager textureManager;
+	public final TextureManager field_4685;
 	public World world;
-	public Entity field_4686;
+	public class_4184 field_4686;
 	public Entity field_4678;
 	public float field_4679;
 	public float field_4677;
 	public GameOptions settings;
-	public double field_4695;
-	public double field_4694;
-	public double field_4693;
 	private boolean renderOutlines;
 	private boolean field_4681 = true;
 	private boolean field_4680;
@@ -156,7 +154,7 @@ public class EntityRenderDispatcher {
 	}
 
 	public EntityRenderDispatcher(TextureManager textureManager, ItemRenderer itemRenderer, ReloadableResourceManager reloadableResourceManager) {
-		this.textureManager = textureManager;
+		this.field_4685 = textureManager;
 		this.method_17145(CaveSpiderEntity.class, new CaveSpiderEntityRenderer(this));
 		this.method_17145(SpiderEntity.class, new SpiderEntityRenderer(this));
 		this.method_17145(PigEntity.class, new PigEntityRenderer(this));
@@ -255,8 +253,8 @@ public class EntityRenderDispatcher {
 		this.method_17145(TraderLlamaEntity.class, new LlamaEntityRenderer(this));
 		this.method_17145(LlamaSpitEntity.class, new LlamaSpitEntityRenderer(this));
 		this.method_17145(LightningEntity.class, new LightningEntityRenderer(this));
-		this.playerRenderer = new PlayerEntityRenderer(this);
-		this.skinMap.put("default", this.playerRenderer);
+		this.field_4683 = new PlayerEntityRenderer(this);
+		this.skinMap.put("default", this.field_4683);
 		this.skinMap.put("slim", new PlayerEntityRenderer(this, true));
 	}
 
@@ -266,10 +264,10 @@ public class EntityRenderDispatcher {
 		this.renderPosZ = f;
 	}
 
-	public <T extends Entity, U extends EntityRenderer<T>> U getRenderer(Class<? extends Entity> class_) {
+	public <T extends Entity, U extends EntityRenderer<T>> U method_3953(Class<? extends Entity> class_) {
 		EntityRenderer<? extends Entity> entityRenderer = (EntityRenderer<? extends Entity>)this.renderers.get(class_);
 		if (entityRenderer == null && class_ != Entity.class) {
-			entityRenderer = this.getRenderer(class_.getSuperclass());
+			entityRenderer = this.method_3953(class_.getSuperclass());
 			this.renderers.put(class_, entityRenderer);
 		}
 
@@ -277,40 +275,32 @@ public class EntityRenderDispatcher {
 	}
 
 	@Nullable
-	public <T extends Entity, U extends EntityRenderer<T>> U getRenderer(T entity) {
+	public <T extends Entity, U extends EntityRenderer<T>> U method_3957(T entity) {
 		if (entity instanceof AbstractClientPlayerEntity) {
 			String string = ((AbstractClientPlayerEntity)entity).method_3121();
 			PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.skinMap.get(string);
-			return (U)(playerEntityRenderer != null ? playerEntityRenderer : this.playerRenderer);
+			return (U)(playerEntityRenderer != null ? playerEntityRenderer : this.field_4683);
 		} else {
-			return this.getRenderer(entity.getClass());
+			return this.method_3953(entity.getClass());
 		}
 	}
 
-	public void method_3941(World world, TextRenderer textRenderer, Entity entity, Entity entity2, GameOptions gameOptions, float f) {
+	public void method_3941(World world, TextRenderer textRenderer, class_4184 arg, Entity entity, GameOptions gameOptions) {
 		this.world = world;
 		this.settings = gameOptions;
-		this.field_4686 = entity;
-		this.field_4678 = entity2;
+		this.field_4686 = arg;
+		this.field_4678 = entity;
 		this.fontRenderer = textRenderer;
-		if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
-			Direction direction = ((LivingEntity)entity).method_18401();
+		if (arg.method_19331() instanceof LivingEntity && ((LivingEntity)arg.method_19331()).isSleeping()) {
+			Direction direction = ((LivingEntity)arg.method_19331()).method_18401();
 			if (direction != null) {
 				this.field_4679 = direction.getOpposite().asRotation();
 				this.field_4677 = 0.0F;
 			}
 		} else {
-			this.field_4679 = MathHelper.lerp(f, entity.prevYaw, entity.yaw);
-			this.field_4677 = MathHelper.lerp(f, entity.prevPitch, entity.pitch);
+			this.field_4679 = arg.method_19330();
+			this.field_4677 = arg.method_19329();
 		}
-
-		if (gameOptions.perspective == 2) {
-			this.field_4679 += 180.0F;
-		}
-
-		this.field_4695 = MathHelper.lerp((double)f, entity.prevRenderX, entity.x);
-		this.field_4694 = MathHelper.lerp((double)f, entity.prevRenderY, entity.y);
-		this.field_4693 = MathHelper.lerp((double)f, entity.prevRenderZ, entity.z);
 	}
 
 	public void method_3945(float f) {
@@ -334,11 +324,11 @@ public class EntityRenderDispatcher {
 	}
 
 	public boolean hasSecondPass(Entity entity) {
-		return this.getRenderer(entity).hasSecondPass();
+		return this.method_3957(entity).hasSecondPass();
 	}
 
 	public boolean method_3950(Entity entity, VisibleRegion visibleRegion, double d, double e, double f) {
-		EntityRenderer<Entity> entityRenderer = this.getRenderer(entity);
+		EntityRenderer<Entity> entityRenderer = this.method_3957(entity);
 		return entityRenderer != null && entityRenderer.isVisible(entity, visibleRegion, d, e, f);
 	}
 
@@ -369,8 +359,8 @@ public class EntityRenderDispatcher {
 		EntityRenderer<Entity> entityRenderer = null;
 
 		try {
-			entityRenderer = this.getRenderer(entity);
-			if (entityRenderer != null && this.textureManager != null) {
+			entityRenderer = this.method_3957(entity);
+			if (entityRenderer != null && this.field_4685 != null) {
 				try {
 					entityRenderer.setRenderOutlines(this.renderOutlines);
 					entityRenderer.render(entity, d, e, f, g, h);
@@ -396,9 +386,9 @@ public class EntityRenderDispatcher {
 			}
 		} catch (Throwable var19) {
 			CrashReport crashReport = CrashReport.create(var19, "Rendering entity in world");
-			CrashReportSection crashReportSection = crashReport.addElement("Entity being rendered");
-			entity.populateCrashReport(crashReportSection);
-			CrashReportSection crashReportSection2 = crashReport.addElement("Renderer details");
+			CrashReportSection crashReportSection = crashReport.method_562("Entity being rendered");
+			entity.method_5819(crashReportSection);
+			CrashReportSection crashReportSection2 = crashReport.method_562("Renderer details");
 			crashReportSection2.add("Assigned renderer", entityRenderer);
 			crashReportSection2.add("Location", CrashReportSection.createPositionString(d, e, f));
 			crashReportSection2.add("Rotation", g);
@@ -427,8 +417,8 @@ public class EntityRenderDispatcher {
 		int k = i / 65536;
 		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)j, (float)k);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		EntityRenderer<Entity> entityRenderer = this.getRenderer(entity);
-		if (entityRenderer != null && this.textureManager != null) {
+		EntityRenderer<Entity> entityRenderer = this.method_3957(entity);
+		if (entityRenderer != null && this.field_4685 != null) {
 			entityRenderer.renderSecondPass(entity, d - this.renderPosX, e - this.renderPosY, g - this.renderPosZ, h, f);
 		}
 	}
@@ -440,7 +430,7 @@ public class EntityRenderDispatcher {
 		GlStateManager.disableCull();
 		GlStateManager.disableBlend();
 		float i = entity.getWidth() / 2.0F;
-		BoundingBox boundingBox = entity.getBoundingBox();
+		BoundingBox boundingBox = entity.method_5829();
 		WorldRenderer.drawBoxOutline(
 			boundingBox.minX - entity.x + d,
 			boundingBox.minY - entity.y + e,
@@ -458,7 +448,7 @@ public class EntityRenderDispatcher {
 				double j = (enderDragonPart.x - enderDragonPart.prevX) * (double)h;
 				double k = (enderDragonPart.y - enderDragonPart.prevY) * (double)h;
 				double l = (enderDragonPart.z - enderDragonPart.prevZ) * (double)h;
-				BoundingBox boundingBox2 = enderDragonPart.getBoundingBox();
+				BoundingBox boundingBox2 = enderDragonPart.method_5829();
 				WorldRenderer.drawBoxOutline(
 					boundingBox2.minX - this.renderPosX + j,
 					boundingBox2.minY - this.renderPosY + k,
@@ -492,8 +482,8 @@ public class EntityRenderDispatcher {
 
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		Vec3d vec3d = entity.getRotationVec(h);
-		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
+		Vec3d vec3d = entity.method_5828(h);
+		bufferBuilder.method_1328(3, VertexFormats.field_1576);
 		bufferBuilder.vertex(d, e + (double)entity.getStandingEyeHeight(), f).color(0, 0, 255, 255).next();
 		bufferBuilder.vertex(d + vec3d.x * 2.0, e + (double)entity.getStandingEyeHeight() + vec3d.y * 2.0, f + vec3d.z * 2.0).color(0, 0, 255, 255).next();
 		tessellator.draw();
@@ -512,10 +502,7 @@ public class EntityRenderDispatcher {
 	}
 
 	public double method_3959(double d, double e, double f) {
-		double g = d - this.field_4695;
-		double h = e - this.field_4694;
-		double i = f - this.field_4693;
-		return g * g + h * h + i * i;
+		return this.field_4686.method_19326().squaredDistanceTo(d, e, f);
 	}
 
 	public TextRenderer getFontRenderer() {

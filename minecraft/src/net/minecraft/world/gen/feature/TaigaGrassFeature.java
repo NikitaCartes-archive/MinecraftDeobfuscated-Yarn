@@ -17,7 +17,7 @@ public class TaigaGrassFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	public BlockState getGrass(Random random) {
-		return random.nextInt(5) > 0 ? Blocks.field_10112.getDefaultState() : Blocks.field_10479.getDefaultState();
+		return random.nextInt(5) > 0 ? Blocks.field_10112.method_9564() : Blocks.field_10479.method_9564();
 	}
 
 	public boolean method_14061(
@@ -25,9 +25,9 @@ public class TaigaGrassFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		BlockState blockState = this.getGrass(random);
 
-		for (BlockState blockState2 = iWorld.getBlockState(blockPos);
-			(blockState2.isAir() || blockState2.matches(BlockTags.field_15503)) && blockPos.getY() > 0;
-			blockState2 = iWorld.getBlockState(blockPos)
+		for (BlockState blockState2 = iWorld.method_8320(blockPos);
+			(blockState2.isAir() || blockState2.method_11602(BlockTags.field_15503)) && blockPos.getY() > 0;
+			blockState2 = iWorld.method_8320(blockPos)
 		) {
 			blockPos = blockPos.down();
 		}
@@ -36,8 +36,8 @@ public class TaigaGrassFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int j = 0; j < 128; j++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
-			if (iWorld.isAir(blockPos2) && blockState.canPlaceAt(iWorld, blockPos2)) {
-				iWorld.setBlockState(blockPos2, blockState, 2);
+			if (iWorld.method_8623(blockPos2) && blockState.method_11591(iWorld, blockPos2)) {
+				iWorld.method_8652(blockPos2, blockState, 2);
 				i++;
 			}
 		}

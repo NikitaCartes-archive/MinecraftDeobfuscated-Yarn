@@ -11,6 +11,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -41,6 +42,7 @@ public class PigZombieEntity extends ZombieEntity {
 	public PigZombieEntity(EntityType<? extends PigZombieEntity> entityType, World world) {
 		super(entityType, world);
 		this.fireImmune = true;
+		this.method_5941(PathNodeType.field_14, 8.0F);
 	}
 
 	@Override
@@ -53,18 +55,18 @@ public class PigZombieEntity extends ZombieEntity {
 
 	@Override
 	protected void method_7208() {
-		this.goalSelector.add(2, new class_1396(this, 1.0, false));
-		this.goalSelector.add(7, new class_1394(this, 1.0));
-		this.targetSelector.add(1, new PigZombieEntity.class_1592(this));
-		this.targetSelector.add(2, new PigZombieEntity.class_1591(this));
+		this.field_6201.add(2, new class_1396(this, 1.0, false));
+		this.field_6201.add(7, new class_1394(this, 1.0));
+		this.field_6185.add(1, new PigZombieEntity.class_1592(this));
+		this.field_6185.add(2, new PigZombieEntity.class_1591(this));
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(SPAWN_REINFORCEMENTS).setBaseValue(0.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
-		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(5.0);
+		this.method_5996(SPAWN_REINFORCEMENTS).setBaseValue(0.0);
+		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
+		this.method_5996(EntityAttributes.ATTACK_DAMAGE).setBaseValue(5.0);
 	}
 
 	@Override
@@ -74,23 +76,23 @@ public class PigZombieEntity extends ZombieEntity {
 
 	@Override
 	protected void mobTick() {
-		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
+		EntityAttributeInstance entityAttributeInstance = this.method_5996(EntityAttributes.MOVEMENT_SPEED);
 		if (this.method_7079()) {
-			if (!this.isChild() && !entityAttributeInstance.hasModifier(field_7307)) {
-				entityAttributeInstance.addModifier(field_7307);
+			if (!this.isChild() && !entityAttributeInstance.method_6196(field_7307)) {
+				entityAttributeInstance.method_6197(field_7307);
 			}
 
 			this.anger--;
-		} else if (entityAttributeInstance.hasModifier(field_7307)) {
-			entityAttributeInstance.removeModifier(field_7307);
+		} else if (entityAttributeInstance.method_6196(field_7307)) {
+			entityAttributeInstance.method_6202(field_7307);
 		}
 
 		if (this.field_7308 > 0 && --this.field_7308 == 0) {
-			this.playSound(SoundEvents.field_14852, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F);
+			this.method_5783(SoundEvents.field_14852, this.getSoundVolume() * 2.0F, ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 1.8F);
 		}
 
 		if (this.anger > 0 && this.angerTarget != null && this.getAttacker() == null) {
-			PlayerEntity playerEntity = this.world.method_18470(this.angerTarget);
+			PlayerEntity playerEntity = this.field_6002.method_18470(this.angerTarget);
 			this.setAttacker(playerEntity);
 			this.field_6258 = playerEntity;
 			this.playerHitTimer = this.getLastAttackedTime();
@@ -100,18 +102,18 @@ public class PigZombieEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
 		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
 	@Override
 	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this) && !viewableWorld.isInFluid(this.getBoundingBox());
+		return viewableWorld.method_8606(this) && !viewableWorld.method_8599(this.method_5829());
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putShort("Anger", (short)this.anger);
 		if (this.angerTarget != null) {
 			compoundTag.putString("HurtBy", this.angerTarget.toString());
@@ -121,13 +123,13 @@ public class PigZombieEntity extends ZombieEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		this.anger = compoundTag.getShort("Anger");
 		String string = compoundTag.getString("HurtBy");
 		if (!string.isEmpty()) {
 			this.angerTarget = UUID.fromString(string);
-			PlayerEntity playerEntity = this.world.method_18470(this.angerTarget);
+			PlayerEntity playerEntity = this.field_6002.method_18470(this.angerTarget);
 			this.setAttacker(playerEntity);
 			if (playerEntity != null) {
 				this.field_6258 = playerEntity;
@@ -141,7 +143,7 @@ public class PigZombieEntity extends ZombieEntity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			Entity entity = damageSource.getAttacker();
+			Entity entity = damageSource.method_5529();
 			if (entity instanceof PlayerEntity && !((PlayerEntity)entity).isCreative()) {
 				this.copyEntityData(entity);
 			}
@@ -163,32 +165,32 @@ public class PigZombieEntity extends ZombieEntity {
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return SoundEvents.field_14926;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_14710;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_14743;
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
 		return false;
 	}
 
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
-		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8845));
+		this.method_5673(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8845));
 	}
 
 	@Override
-	protected ItemStack getSkull() {
+	protected ItemStack method_7215() {
 		return ItemStack.EMPTY;
 	}
 

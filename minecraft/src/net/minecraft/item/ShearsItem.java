@@ -14,37 +14,37 @@ public class ShearsItem extends Item {
 	}
 
 	@Override
-	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+	public boolean method_7879(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (!world.isClient) {
 			itemStack.applyDamage(1, livingEntity);
 		}
 
 		Block block = blockState.getBlock();
-		return !blockState.matches(BlockTags.field_15503)
+		return !blockState.method_11602(BlockTags.field_15503)
 				&& block != Blocks.field_10343
 				&& block != Blocks.field_10479
 				&& block != Blocks.field_10112
 				&& block != Blocks.field_10428
 				&& block != Blocks.field_10597
 				&& block != Blocks.field_10589
-				&& !block.matches(BlockTags.field_15481)
-			? super.onBlockBroken(itemStack, world, blockState, blockPos, livingEntity)
+				&& !block.method_9525(BlockTags.field_15481)
+			? super.method_7879(itemStack, world, blockState, blockPos, livingEntity)
 			: true;
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState blockState) {
+	public boolean method_7856(BlockState blockState) {
 		Block block = blockState.getBlock();
 		return block == Blocks.field_10343 || block == Blocks.field_10091 || block == Blocks.field_10589;
 	}
 
 	@Override
-	public float getBlockBreakingSpeed(ItemStack itemStack, BlockState blockState) {
+	public float method_7865(ItemStack itemStack, BlockState blockState) {
 		Block block = blockState.getBlock();
-		if (block == Blocks.field_10343 || blockState.matches(BlockTags.field_15503)) {
+		if (block == Blocks.field_10343 || blockState.method_11602(BlockTags.field_15503)) {
 			return 15.0F;
 		} else {
-			return block.matches(BlockTags.field_15481) ? 5.0F : super.getBlockBreakingSpeed(itemStack, blockState);
+			return block.method_9525(BlockTags.field_15481) ? 5.0F : super.method_7865(itemStack, blockState);
 		}
 	}
 }

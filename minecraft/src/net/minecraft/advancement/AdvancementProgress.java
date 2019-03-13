@@ -48,7 +48,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 				boolean bl = false;
 
 				for (String string : strings) {
-					CriterionProgress criterionProgress = this.getCriterionProgress(string);
+					CriterionProgress criterionProgress = this.method_737(string);
 					if (criterionProgress != null && criterionProgress.isObtained()) {
 						bl = true;
 						break;
@@ -119,7 +119,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	@Nullable
-	public CriterionProgress getCriterionProgress(String string) {
+	public CriterionProgress method_737(String string) {
 		return (CriterionProgress)this.criteriaProgresses.get(string);
 	}
 
@@ -158,7 +158,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 			boolean bl = false;
 
 			for (String string : strings) {
-				CriterionProgress criterionProgress = this.getCriterionProgress(string);
+				CriterionProgress criterionProgress = this.method_737(string);
 				if (criterionProgress != null && criterionProgress.isObtained()) {
 					bl = true;
 					break;

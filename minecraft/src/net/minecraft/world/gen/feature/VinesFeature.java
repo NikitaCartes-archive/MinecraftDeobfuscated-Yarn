@@ -12,7 +12,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class VinesFeature extends Feature<DefaultFeatureConfig> {
-	private static final Direction[] DIRECTIONS = Direction.values();
+	private static final Direction[] field_17396 = Direction.values();
 
 	public VinesFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
@@ -24,13 +24,13 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 
 		for (int i = blockPos.getY(); i < 256; i++) {
-			mutable.set(blockPos);
+			mutable.method_10101(blockPos);
 			mutable.setOffset(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
 			mutable.setY(i);
-			if (iWorld.isAir(mutable)) {
-				for (Direction direction : DIRECTIONS) {
-					if (direction != Direction.DOWN && VineBlock.shouldConnectTo(iWorld, mutable, direction)) {
-						iWorld.setBlockState(mutable, Blocks.field_10597.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
+			if (iWorld.method_8623(mutable)) {
+				for (Direction direction : field_17396) {
+					if (direction != Direction.DOWN && VineBlock.method_10821(iWorld, mutable, direction)) {
+						iWorld.method_8652(mutable, Blocks.field_10597.method_9564().method_11657(VineBlock.method_10828(direction), Boolean.valueOf(true)), 2);
 						break;
 					}
 				}

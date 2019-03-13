@@ -35,7 +35,7 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 		for (PaintingMotive paintingMotive : Registry.MOTIVE) {
 			this.motive = paintingMotive;
-			this.setFacing(direction);
+			this.method_6892(direction);
 			if (this.method_6888()) {
 				list.add(paintingMotive);
 				int j = paintingMotive.getWidth() * paintingMotive.getTextureY();
@@ -58,26 +58,26 @@ public class PaintingEntity extends AbstractDecorationEntity {
 			this.motive = (PaintingMotive)list.get(this.random.nextInt(list.size()));
 		}
 
-		this.setFacing(direction);
+		this.method_6892(direction);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public PaintingEntity(World world, BlockPos blockPos, Direction direction, PaintingMotive paintingMotive) {
 		this(world, blockPos, direction);
 		this.motive = paintingMotive;
-		this.setFacing(direction);
+		this.method_6892(direction);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		compoundTag.putString("Motive", Registry.MOTIVE.getId(this.motive).toString());
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		compoundTag.putString("Motive", Registry.MOTIVE.method_10221(this.motive).toString());
+		super.method_5652(compoundTag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		this.motive = Registry.MOTIVE.get(Identifier.create(compoundTag.getString("Motive")));
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		this.motive = Registry.MOTIVE.method_10223(Identifier.create(compoundTag.getString("Motive")));
+		super.method_5749(compoundTag);
 	}
 
 	@Override
@@ -92,8 +92,8 @@ public class PaintingEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void copyEntityData(@Nullable Entity entity) {
-		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
-			this.playSound(SoundEvents.field_14809, 1.0F, 1.0F);
+		if (this.field_6002.getGameRules().getBoolean("doEntityDrops")) {
+			this.method_5783(SoundEvents.field_14809, 1.0F, 1.0F);
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
 				if (playerEntity.abilities.creativeMode) {
@@ -101,13 +101,13 @@ public class PaintingEntity extends AbstractDecorationEntity {
 				}
 			}
 
-			this.dropItem(Items.field_8892);
+			this.method_5706(Items.field_8892);
 		}
 	}
 
 	@Override
 	public void method_6894() {
-		this.playSound(SoundEvents.field_14875, 1.0F, 1.0F);
+		this.method_5783(SoundEvents.field_14875, 1.0F, 1.0F);
 	}
 
 	@Override
@@ -118,12 +118,12 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void setPositionAndRotations(double d, double e, double f, float g, float h, int i, boolean bl) {
-		BlockPos blockPos = this.blockPos.add(d - this.x, e - this.y, f - this.z);
+		BlockPos blockPos = this.field_7100.add(d - this.x, e - this.y, f - this.z);
 		this.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 	}
 
 	@Override
-	public Packet<?> createSpawnPacket() {
+	public Packet<?> method_18002() {
 		return new PaintingSpawnS2CPacket(this);
 	}
 }
