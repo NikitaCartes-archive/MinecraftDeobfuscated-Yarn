@@ -10,7 +10,7 @@ public class NetherStarItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasEnchantmentGlint(ItemStack itemStack) {
+	public boolean method_7886(ItemStack itemStack) {
 		return true;
 	}
 }

@@ -34,13 +34,13 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 		GlStateManager.rotatef(-this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef((float)(this.renderManager.settings.perspective == 2 ? -1 : 1) * this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-		this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+		this.method_3924(SpriteAtlasTexture.field_5275);
 		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(entity));
 		}
 
-		this.item.renderItem(entity.getItem(), ModelTransformation.Type.field_4318);
+		this.item.renderItem(entity.method_7495(), ModelTransformation.Type.field_4318);
 		if (this.renderOutlines) {
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
@@ -52,7 +52,7 @@ public class FlyingItemEntityRenderer<T extends Entity & FlyingItemEntity> exten
 	}
 
 	@Override
-	protected Identifier getTexture(Entity entity) {
-		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
+	protected Identifier method_3931(Entity entity) {
+		return SpriteAtlasTexture.field_5275;
 	}
 }

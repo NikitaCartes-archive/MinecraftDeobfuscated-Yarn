@@ -15,13 +15,13 @@ public class MinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public boolean interact(PlayerEntity playerEntity, Hand hand) {
+	public boolean method_5688(PlayerEntity playerEntity, Hand hand) {
 		if (playerEntity.isSneaking()) {
 			return false;
 		} else if (this.hasPassengers()) {
 			return true;
 		} else {
-			if (!this.world.isClient) {
+			if (!this.field_6002.isClient) {
 				playerEntity.startRiding(this);
 			}
 

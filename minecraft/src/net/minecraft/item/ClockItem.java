@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 public class ClockItem extends Item {
 	public ClockItem(Item.Settings settings) {
 		super(settings);
-		this.addProperty(new Identifier("time"), new ItemPropertyGetter() {
+		this.method_7863(new Identifier("time"), new ItemPropertyGetter() {
 			@Environment(EnvType.CLIENT)
 			private double field_7911;
 			@Environment(EnvType.CLIENT)
@@ -26,14 +26,14 @@ public class ClockItem extends Item {
 				boolean bl = livingEntity != null;
 				Entity entity = (Entity)(bl ? livingEntity : itemStack.getHoldingItemFrame());
 				if (world == null && entity != null) {
-					world = entity.world;
+					world = entity.field_6002;
 				}
 
 				if (world == null) {
 					return 0.0F;
 				} else {
 					double d;
-					if (world.dimension.hasVisibleSky()) {
+					if (world.field_9247.hasVisibleSky()) {
 						d = (double)world.getSkyAngle(1.0F);
 					} else {
 						d = Math.random();

@@ -26,50 +26,48 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 	}
 
 	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return Fluids.WATER.getState(false);
+	public FluidState method_9545(BlockState blockState) {
+		return Fluids.WATER.method_15729(false);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
-		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+		if (!blockState.method_11591(iWorld, blockPos)) {
+			return Blocks.field_10124.method_9564();
 		} else {
 			if (direction == Direction.UP) {
 				Block block = blockState2.getBlock();
 				if (block != this && block != this.kelpBlock) {
-					return this.kelpBlock.getPlacementState(iWorld);
+					return this.kelpBlock.method_10292(iWorld);
 				}
 			}
 
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
-			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			iWorld.method_8405().method_8676(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
+		BlockState blockState2 = viewableWorld.method_8320(blockPos2);
 		Block block = blockState2.getBlock();
-		return block != Blocks.field_10092 && (block == this || Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP));
+		return block != Blocks.field_10092 && (block == this || Block.method_9501(blockState2.method_11628(viewableWorld, blockPos2), Direction.UP));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return new ItemStack(Blocks.field_9993);
 	}
 
 	@Override
-	public boolean canFillWithFluid(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
+	public boolean method_10310(BlockView blockView, BlockPos blockPos, BlockState blockState, Fluid fluid) {
 		return false;
 	}
 
 	@Override
-	public boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+	public boolean method_10311(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
 		return false;
 	}
 }

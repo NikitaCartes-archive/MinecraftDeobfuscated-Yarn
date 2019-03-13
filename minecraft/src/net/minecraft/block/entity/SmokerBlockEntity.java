@@ -14,7 +14,7 @@ public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
+	protected TextComponent method_17823() {
 		return new TranslatableTextComponent("container.smoker");
 	}
 

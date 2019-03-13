@@ -38,7 +38,7 @@ public class SelectorTextComponent extends AbstractTextComponent implements clas
 	@Override
 	public TextComponent method_10890(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
 		return (TextComponent)(serverCommandSource != null && this.field_11790 != null
-			? EntitySelector.getNames(this.field_11790.getEntities(serverCommandSource))
+			? EntitySelector.method_9822(this.field_11790.getEntities(serverCommandSource))
 			: new StringTextComponent(""));
 	}
 
@@ -65,6 +65,6 @@ public class SelectorTextComponent extends AbstractTextComponent implements clas
 
 	@Override
 	public String toString() {
-		return "SelectorComponent{pattern='" + this.pattern + '\'' + ", siblings=" + this.children + ", style=" + this.getStyle() + '}';
+		return "SelectorComponent{pattern='" + this.pattern + '\'' + ", siblings=" + this.children + ", style=" + this.method_10866() + '}';
 	}
 }

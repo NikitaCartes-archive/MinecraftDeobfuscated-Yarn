@@ -28,11 +28,6 @@ public class StatType<T> implements Iterable<Stat<T>> {
 		return this.registry;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public int getStatCount() {
-		return this.stats.size();
-	}
-
 	public Iterator<Stat<T>> iterator() {
 		return this.stats.values().iterator();
 	}
@@ -43,6 +38,6 @@ public class StatType<T> implements Iterable<Stat<T>> {
 
 	@Environment(EnvType.CLIENT)
 	public String getTranslationKey() {
-		return "stat_type." + Registry.STAT_TYPE.getId(this).toString().replace(':', '.');
+		return "stat_type." + Registry.STAT_TYPE.method_10221(this).toString().replace(':', '.');
 	}
 }

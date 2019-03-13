@@ -56,7 +56,7 @@ public class BossBarCommand {
 		new TranslatableTextComponent("commands.bossbar.set.visibility.unchanged.visible")
 	);
 	public static final SuggestionProvider<ServerCommandSource> suggestionProvider = (commandContext, suggestionsBuilder) -> CommandSource.suggestIdentifiers(
-			commandContext.getSource().getMinecraftServer().getBossBarManager().getIds(), suggestionsBuilder
+			commandContext.getSource().getMinecraftServer().method_3837().getIds(), suggestionsBuilder
 		);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -72,8 +72,8 @@ public class BossBarCommand {
 										.executes(
 											commandContext -> addBossBar(
 													commandContext.getSource(),
-													ResourceLocationArgumentType.getIdentifierArgument(commandContext, "id"),
-													ComponentArgumentType.getComponentArgument(commandContext, "name")
+													ResourceLocationArgumentType.method_9443(commandContext, "id"),
+													ComponentArgumentType.method_9280(commandContext, "name")
 												)
 										)
 								)
@@ -98,9 +98,7 @@ public class BossBarCommand {
 										.then(
 											ServerCommandManager.argument("name", ComponentArgumentType.create())
 												.executes(
-													commandContext -> setName(
-															commandContext.getSource(), createBossBar(commandContext), ComponentArgumentType.getComponentArgument(commandContext, "name")
-														)
+													commandContext -> setName(commandContext.getSource(), createBossBar(commandContext), ComponentArgumentType.method_9280(commandContext, "name"))
 												)
 										)
 								)
@@ -212,14 +210,14 @@ public class BossBarCommand {
 	}
 
 	private static int getValue(ServerCommandSource serverCommandSource, CommandBossBar commandBossBar) {
-		serverCommandSource.sendFeedback(
+		serverCommandSource.method_9226(
 			new TranslatableTextComponent("commands.bossbar.get.value", commandBossBar.getTextComponent(), commandBossBar.getValue()), true
 		);
 		return commandBossBar.getValue();
 	}
 
 	private static int getMaxValue(ServerCommandSource serverCommandSource, CommandBossBar commandBossBar) {
-		serverCommandSource.sendFeedback(
+		serverCommandSource.method_9226(
 			new TranslatableTextComponent("commands.bossbar.get.max", commandBossBar.getTextComponent(), commandBossBar.getMaxValue()), true
 		);
 		return commandBossBar.getMaxValue();
@@ -227,24 +225,24 @@ public class BossBarCommand {
 
 	private static int isVisible(ServerCommandSource serverCommandSource, CommandBossBar commandBossBar) {
 		if (commandBossBar.isVisible()) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.get.visible.visible", commandBossBar.getTextComponent()), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.get.visible.visible", commandBossBar.getTextComponent()), true);
 			return 1;
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.get.visible.hidden", commandBossBar.getTextComponent()), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.get.visible.hidden", commandBossBar.getTextComponent()), true);
 			return 0;
 		}
 	}
 
 	private static int getPlayers(ServerCommandSource serverCommandSource, CommandBossBar commandBossBar) {
 		if (commandBossBar.getPlayers().isEmpty()) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.get.players.none", commandBossBar.getTextComponent()), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.get.players.none", commandBossBar.getTextComponent()), true);
 		} else {
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent(
 					"commands.bossbar.get.players.some",
 					commandBossBar.getTextComponent(),
 					commandBossBar.getPlayers().size(),
-					TextFormatter.join(commandBossBar.getPlayers(), PlayerEntity::getDisplayName)
+					TextFormatter.join(commandBossBar.getPlayers(), PlayerEntity::method_5476)
 				),
 				true
 			);
@@ -263,9 +261,9 @@ public class BossBarCommand {
 		} else {
 			commandBossBar.setVisible(bl);
 			if (bl) {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.set.visible.success.visible", commandBossBar.getTextComponent()), true);
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.set.visible.success.visible", commandBossBar.getTextComponent()), true);
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.set.visible.success.hidden", commandBossBar.getTextComponent()), true);
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.set.visible.success.hidden", commandBossBar.getTextComponent()), true);
 			}
 
 			return 0;
@@ -277,7 +275,7 @@ public class BossBarCommand {
 			throw SET_VALUE_UNCHANGED_EXCEPTION.create();
 		} else {
 			commandBossBar.setValue(i);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.set.value.success", commandBossBar.getTextComponent(), i), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.set.value.success", commandBossBar.getTextComponent(), i), true);
 			return i;
 		}
 	}
@@ -287,7 +285,7 @@ public class BossBarCommand {
 			throw SETMAX_UNCHANGED_EXCEPTION.create();
 		} else {
 			commandBossBar.setMaxValue(i);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.set.max.success", commandBossBar.getTextComponent(), i), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.set.max.success", commandBossBar.getTextComponent(), i), true);
 			return i;
 		}
 	}
@@ -297,7 +295,7 @@ public class BossBarCommand {
 			throw SET_COLOR_UNCHANGED_EXCEPTION.create();
 		} else {
 			commandBossBar.setColor(color);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.set.color.success", commandBossBar.getTextComponent()), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.set.color.success", commandBossBar.getTextComponent()), true);
 			return 0;
 		}
 	}
@@ -306,19 +304,19 @@ public class BossBarCommand {
 		if (commandBossBar.getOverlay().equals(overlay)) {
 			throw SET_STYLE_UNCHANGED_EXCEPTION.create();
 		} else {
-			commandBossBar.setOverlay(overlay);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.set.style.success", commandBossBar.getTextComponent()), true);
+			commandBossBar.method_5409(overlay);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.set.style.success", commandBossBar.getTextComponent()), true);
 			return 0;
 		}
 	}
 
 	private static int setName(ServerCommandSource serverCommandSource, CommandBossBar commandBossBar, TextComponent textComponent) throws CommandSyntaxException {
 		TextComponent textComponent2 = TextFormatter.method_10881(serverCommandSource, textComponent, null);
-		if (commandBossBar.getName().equals(textComponent2)) {
+		if (commandBossBar.method_5414().equals(textComponent2)) {
 			throw SET_NAME_UNCHANGED_EXCEPTION.create();
 		} else {
-			commandBossBar.setName(textComponent2);
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.set.name.success", commandBossBar.getTextComponent()), true);
+			commandBossBar.method_5413(textComponent2);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.set.name.success", commandBossBar.getTextComponent()), true);
 			return 0;
 		}
 	}
@@ -329,14 +327,14 @@ public class BossBarCommand {
 			throw SET_PLAYERS_UNCHANGED_EXCEPTION.create();
 		} else {
 			if (commandBossBar.getPlayers().isEmpty()) {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.set.players.success.none", commandBossBar.getTextComponent()), true);
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.set.players.success.none", commandBossBar.getTextComponent()), true);
 			} else {
-				serverCommandSource.sendFeedback(
+				serverCommandSource.method_9226(
 					new TranslatableTextComponent(
 						"commands.bossbar.set.players.success.some",
 						commandBossBar.getTextComponent(),
 						collection.size(),
-						TextFormatter.join(collection, PlayerEntity::getDisplayName)
+						TextFormatter.join(collection, PlayerEntity::method_5476)
 					),
 					true
 				);
@@ -347,11 +345,11 @@ public class BossBarCommand {
 	}
 
 	private static int listBossBars(ServerCommandSource serverCommandSource) {
-		Collection<CommandBossBar> collection = serverCommandSource.getMinecraftServer().getBossBarManager().getAll();
+		Collection<CommandBossBar> collection = serverCommandSource.getMinecraftServer().method_3837().getAll();
 		if (collection.isEmpty()) {
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.list.bars.none"), false);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.list.bars.none"), false);
 		} else {
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent("commands.bossbar.list.bars.some", collection.size(), TextFormatter.join(collection, CommandBossBar::getTextComponent)),
 				false
 			);
@@ -361,27 +359,27 @@ public class BossBarCommand {
 	}
 
 	private static int addBossBar(ServerCommandSource serverCommandSource, Identifier identifier, TextComponent textComponent) throws CommandSyntaxException {
-		BossBarManager bossBarManager = serverCommandSource.getMinecraftServer().getBossBarManager();
+		BossBarManager bossBarManager = serverCommandSource.getMinecraftServer().method_3837();
 		if (bossBarManager.get(identifier) != null) {
 			throw CREATE_FAILED_EXCEPTION.create(identifier.toString());
 		} else {
 			CommandBossBar commandBossBar = bossBarManager.add(identifier, TextFormatter.method_10881(serverCommandSource, textComponent, null));
-			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.create.success", commandBossBar.getTextComponent()), true);
+			serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.create.success", commandBossBar.getTextComponent()), true);
 			return bossBarManager.getAll().size();
 		}
 	}
 
 	private static int removeBossBar(ServerCommandSource serverCommandSource, CommandBossBar commandBossBar) {
-		BossBarManager bossBarManager = serverCommandSource.getMinecraftServer().getBossBarManager();
+		BossBarManager bossBarManager = serverCommandSource.getMinecraftServer().method_3837();
 		commandBossBar.clearPlayers();
 		bossBarManager.remove(commandBossBar);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.remove.success", commandBossBar.getTextComponent()), true);
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.bossbar.remove.success", commandBossBar.getTextComponent()), true);
 		return bossBarManager.getAll().size();
 	}
 
 	public static CommandBossBar createBossBar(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
-		Identifier identifier = ResourceLocationArgumentType.getIdentifierArgument(commandContext, "id");
-		CommandBossBar commandBossBar = commandContext.getSource().getMinecraftServer().getBossBarManager().get(identifier);
+		Identifier identifier = ResourceLocationArgumentType.method_9443(commandContext, "id");
+		CommandBossBar commandBossBar = commandContext.getSource().getMinecraftServer().method_3837().get(identifier);
 		if (commandBossBar == null) {
 			throw UNKNOWN_EXCEPTION.create(identifier.toString());
 		} else {

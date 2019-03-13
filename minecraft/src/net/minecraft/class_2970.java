@@ -16,10 +16,10 @@ public class class_2970 extends class_2969 {
 		this.field_13364 = false;
 		Item item = itemStack.getItem();
 		if (item instanceof BlockItem) {
-			Direction direction = blockPointer.getBlockState().get(DispenserBlock.FACING);
-			BlockPos blockPos = blockPointer.getBlockPos().offset(direction);
-			Direction direction2 = blockPointer.getWorld().isAir(blockPos.down()) ? direction : Direction.UP;
-			this.field_13364 = ((BlockItem)item).place(new AutomaticItemPlacementContext(blockPointer.getWorld(), blockPos, direction, itemStack, direction2))
+			Direction direction = blockPointer.getBlockState().method_11654(DispenserBlock.field_10918);
+			BlockPos blockPos = blockPointer.getBlockPos().method_10093(direction);
+			Direction direction2 = blockPointer.getWorld().method_8623(blockPos.down()) ? direction : Direction.UP;
+			this.field_13364 = ((BlockItem)item).method_7712(new AutomaticItemPlacementContext(blockPointer.getWorld(), blockPos, direction, itemStack, direction2))
 				== ActionResult.field_5812;
 			if (this.field_13364) {
 				itemStack.subtractAmount(1);

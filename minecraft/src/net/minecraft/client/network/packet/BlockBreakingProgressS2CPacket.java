@@ -37,7 +37,7 @@ public class BlockBreakingProgressS2CPacket implements Packet<ClientPlayPacketLi
 	}
 
 	public void method_11279(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onBlockDestroyProgress(this);
+		clientPlayPacketListener.method_11116(this);
 	}
 
 	@Environment(EnvType.CLIENT)

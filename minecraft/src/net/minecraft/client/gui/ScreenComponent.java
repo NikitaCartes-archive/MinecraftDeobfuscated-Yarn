@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public abstract class ScreenComponent extends DrawableHelper implements MultiInputListener {
 	@Nullable
-	private InputListener focused;
+	private InputListener field_2196;
 	private boolean field_2195;
 
 	@Override
@@ -22,12 +22,12 @@ public abstract class ScreenComponent extends DrawableHelper implements MultiInp
 
 	@Nullable
 	@Override
-	public InputListener getFocused() {
-		return this.focused;
+	public InputListener method_19357() {
+		return this.field_2196;
 	}
 
 	@Override
-	public void setFocused(@Nullable InputListener inputListener) {
-		this.focused = inputListener;
+	public void method_1967(@Nullable InputListener inputListener) {
+		this.field_2196 = inputListener;
 	}
 }

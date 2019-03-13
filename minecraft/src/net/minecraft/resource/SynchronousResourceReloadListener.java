@@ -6,7 +6,7 @@ import net.minecraft.util.profiler.Profiler;
 
 public interface SynchronousResourceReloadListener extends ResourceReloadListener {
 	@Override
-	default CompletableFuture<Void> apply(
+	default CompletableFuture<Void> method_18222(
 		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
 	) {
 		return helper.waitForAll(net.minecraft.util.Void.INSTANCE).thenRunAsync(() -> this.apply(resourceManager), executor2);

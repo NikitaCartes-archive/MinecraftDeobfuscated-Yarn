@@ -29,20 +29,20 @@ public class DesertVillageData {
 		ImmutableList<StructureProcessor> immutableList = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
-					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10467, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10361, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10415, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10549, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10262, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10168.getDefaultState())
+					new StructureProcessorRule(new TagMatchRuleTest(BlockTags.field_15495), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.method_9564()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10336), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.method_9564()),
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.field_10099), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10124.method_9564()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10467, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10361, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10415, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10549, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10262, 0.08F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10343.method_9564()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.method_9564()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10168.method_9564())
 				)
 			)
 		);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/town_centers"),
@@ -58,7 +58,7 @@ public class DesertVillageData {
 					StructurePool.Projection.RIGID
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/streets"),
@@ -79,7 +79,7 @@ public class DesertVillageData {
 					StructurePool.Projection.TERRAIN_MATCHING
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/zombie/streets"),
@@ -103,12 +103,12 @@ public class DesertVillageData {
 		ImmutableList<StructureProcessor> immutableList2 = ImmutableList.of(
 			new RuleStructureProcessor(
 				ImmutableList.of(
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.getDefaultState()),
-					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10168.getDefaultState())
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.2F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10341.method_9564()),
+					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.field_10293, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.field_10168.method_9564())
 				)
 			)
 		);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/houses"),
@@ -147,7 +147,7 @@ public class DesertVillageData {
 					StructurePool.Projection.RIGID
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/zombie/houses"),
@@ -186,7 +186,7 @@ public class DesertVillageData {
 					StructurePool.Projection.RIGID
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/terminators"),
@@ -198,7 +198,7 @@ public class DesertVillageData {
 					StructurePool.Projection.TERRAIN_MATCHING
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/zombie/terminators"),
@@ -210,79 +210,53 @@ public class DesertVillageData {
 					StructurePool.Projection.TERRAIN_MATCHING
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/decor"),
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/desert/desert_lamp_1"), 10),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13554, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_16797, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13554, FeatureConfig.field_13603)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_16797, FeatureConfig.field_13603)), 4),
 						Pair.of(EmptyPoolElement.INSTANCE, 10)
 					),
 					StructurePool.Projection.RIGID
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/zombie/decor"),
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/desert/desert_lamp_1", immutableList), 10),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13554, FeatureConfig.DEFAULT)), 4),
-						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_16797, FeatureConfig.DEFAULT)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_13554, FeatureConfig.field_13603)), 4),
+						new Pair<>(new FeaturePoolElement(new ConfiguredFeature<>(Feature.field_16797, FeatureConfig.field_13603)), 4),
 						Pair.of(EmptyPoolElement.INSTANCE, 10)
 					),
 					StructurePool.Projection.RIGID
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/villagers"),
 					new Identifier("empty"),
 					ImmutableList.of(
-						new Pair<>(new SinglePoolElement("village/plains/villagers/nitwit"), 1),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/unemployed"), 7),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/armorer"), 1),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/butcher"), 2),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/cartographer"), 1),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/cleric"), 1),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/farmer"), 8),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/fishermen"), 3),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/fletcher"), 2),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/leatherworker"), 3),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/librarian"), 2),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/shepherd"), 3),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/toolsmith"), 4),
-						new Pair<>(new SinglePoolElement("village/plains/villagers/weaponsmith"), 1)
+						new Pair<>(new SinglePoolElement("village/desert/villagers/nitwit"), 1), new Pair<>(new SinglePoolElement("village/desert/villagers/unemployed"), 10)
 					),
 					StructurePool.Projection.RIGID
 				)
 			);
-		StructurePoolBasedGenerator.REGISTRY
+		StructurePoolBasedGenerator.field_16666
 			.add(
 				new StructurePool(
 					new Identifier("village/desert/zombie/villagers"),
 					new Identifier("empty"),
 					ImmutableList.of(
 						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/nitwit"), 1),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/unemployed"), 7),
-						Pair.of(EmptyPoolElement.INSTANCE, 1),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/armorer"), 1),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/butcher"), 2),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/cartographer"), 1),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/cleric"), 1),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/farmer"), 8),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/fishermen"), 3),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/fletcher"), 2),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/leatherworker"), 3),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/librarian"), 2),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/shepherd"), 3),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/toolsmith"), 4),
-						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/weaponsmith"), 1)
+						new Pair<>(new SinglePoolElement("village/desert/zombie/villagers/unemployed"), 10)
 					),
 					StructurePool.Projection.RIGID
 				)

@@ -9,18 +9,18 @@ import net.minecraft.util.math.Direction;
 public class BakedQuad {
 	protected final int[] vertexData;
 	protected final int colorIndex;
-	protected final Direction face;
-	protected final Sprite sprite;
+	protected final Direction field_4173;
+	protected final Sprite field_4176;
 
 	public BakedQuad(int[] is, int i, Direction direction, Sprite sprite) {
 		this.vertexData = is;
 		this.colorIndex = i;
-		this.face = direction;
-		this.sprite = sprite;
+		this.field_4173 = direction;
+		this.field_4176 = sprite;
 	}
 
-	public Sprite getSprite() {
-		return this.sprite;
+	public Sprite method_3356() {
+		return this.field_4176;
 	}
 
 	public int[] getVertexData() {
@@ -35,7 +35,7 @@ public class BakedQuad {
 		return this.colorIndex;
 	}
 
-	public Direction getFace() {
-		return this.face;
+	public Direction method_3358() {
+		return this.field_4173;
 	}
 }

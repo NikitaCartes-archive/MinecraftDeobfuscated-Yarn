@@ -13,18 +13,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
 public class MapBannerInstance {
-	private final BlockPos pos;
+	private final BlockPos field_69;
 	private final DyeColor color;
 	@Nullable
-	private final TextComponent text;
+	private final TextComponent field_67;
 
 	public MapBannerInstance(BlockPos blockPos, DyeColor dyeColor, @Nullable TextComponent textComponent) {
-		this.pos = blockPos;
+		this.field_69 = blockPos;
 		this.color = dyeColor;
-		this.text = textComponent;
+		this.field_67 = textComponent;
 	}
 
-	public static MapBannerInstance fromNbt(CompoundTag compoundTag) {
+	public static MapBannerInstance method_67(CompoundTag compoundTag) {
 		BlockPos blockPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("Pos"));
 		DyeColor dyeColor = DyeColor.byName(compoundTag.getString("Color"), DyeColor.field_7952);
 		TextComponent textComponent = compoundTag.containsKey("Name") ? TextComponent.Serializer.fromJsonString(compoundTag.getString("Name")) : null;
@@ -32,20 +32,20 @@ public class MapBannerInstance {
 	}
 
 	@Nullable
-	public static MapBannerInstance fromWorldBlock(BlockView blockView, BlockPos blockPos) {
-		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+	public static MapBannerInstance method_73(BlockView blockView, BlockPos blockPos) {
+		BlockEntity blockEntity = blockView.method_8321(blockPos);
 		if (blockEntity instanceof BannerBlockEntity) {
 			BannerBlockEntity bannerBlockEntity = (BannerBlockEntity)blockEntity;
-			DyeColor dyeColor = bannerBlockEntity.getColorForState(() -> blockView.getBlockState(blockPos));
-			TextComponent textComponent = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.getCustomName() : null;
+			DyeColor dyeColor = bannerBlockEntity.getColorForState(() -> blockView.method_8320(blockPos));
+			TextComponent textComponent = bannerBlockEntity.hasCustomName() ? bannerBlockEntity.method_5797() : null;
 			return new MapBannerInstance(blockPos, dyeColor, textComponent);
 		} else {
 			return null;
 		}
 	}
 
-	public BlockPos getPos() {
-		return this.pos;
+	public BlockPos method_70() {
+		return this.field_69;
 	}
 
 	public MapIcon.Type method_72() {
@@ -87,8 +87,8 @@ public class MapBannerInstance {
 	}
 
 	@Nullable
-	public TextComponent getText() {
-		return this.text;
+	public TextComponent method_68() {
+		return this.field_67;
 	}
 
 	public boolean equals(Object object) {
@@ -96,28 +96,30 @@ public class MapBannerInstance {
 			return true;
 		} else if (object != null && this.getClass() == object.getClass()) {
 			MapBannerInstance mapBannerInstance = (MapBannerInstance)object;
-			return Objects.equals(this.pos, mapBannerInstance.pos) && this.color == mapBannerInstance.color && Objects.equals(this.text, mapBannerInstance.text);
+			return Objects.equals(this.field_69, mapBannerInstance.field_69)
+				&& this.color == mapBannerInstance.color
+				&& Objects.equals(this.field_67, mapBannerInstance.field_67);
 		} else {
 			return false;
 		}
 	}
 
 	public int hashCode() {
-		return Objects.hash(new Object[]{this.pos, this.color, this.text});
+		return Objects.hash(new Object[]{this.field_69, this.color, this.field_67});
 	}
 
-	public CompoundTag getNbt() {
+	public CompoundTag method_74() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.put("Pos", TagHelper.serializeBlockPos(this.pos));
+		compoundTag.method_10566("Pos", TagHelper.serializeBlockPos(this.field_69));
 		compoundTag.putString("Color", this.color.getName());
-		if (this.text != null) {
-			compoundTag.putString("Name", TextComponent.Serializer.toJsonString(this.text));
+		if (this.field_67 != null) {
+			compoundTag.putString("Name", TextComponent.Serializer.toJsonString(this.field_67));
 		}
 
 		return compoundTag;
 	}
 
 	public String method_71() {
-		return "banner-" + this.pos.getX() + "," + this.pos.getY() + "," + this.pos.getZ();
+		return "banner-" + this.field_69.getX() + "," + this.field_69.getY() + "," + this.field_69.getZ();
 	}
 }

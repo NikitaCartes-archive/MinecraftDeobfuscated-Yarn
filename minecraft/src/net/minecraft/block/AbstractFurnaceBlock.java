@@ -20,85 +20,85 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceBlock extends BlockWithEntity {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
+	public static final DirectionProperty field_11104 = HorizontalFacingBlock.field_11177;
+	public static final BooleanProperty field_11105 = RedstoneTorchBlock.field_11446;
 
 	protected AbstractFurnaceBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(LIT, Boolean.valueOf(false)));
+		this.method_9590(this.field_10647.method_11664().method_11657(field_11104, Direction.NORTH).method_11657(field_11105, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public int getLuminance(BlockState blockState) {
-		return blockState.get(LIT) ? super.getLuminance(blockState) : 0;
+	public int method_9593(BlockState blockState) {
+		return blockState.method_11654(field_11105) ? super.method_9593(blockState) : 0;
 	}
 
 	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient) {
-			this.openContainer(world, blockPos, playerEntity);
+			this.method_17025(world, blockPos, playerEntity);
 		}
 
 		return true;
 	}
 
-	protected abstract void openContainer(World world, BlockPos blockPos, PlayerEntity playerEntity);
+	protected abstract void method_17025(World world, BlockPos blockPos, PlayerEntity playerEntity);
 
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
+	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
+		return this.method_9564().method_11657(field_11104, itemPlacementContext.method_8042().getOpposite());
 	}
 
 	@Override
-	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+	public void method_9567(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
 		if (itemStack.hasDisplayName()) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof AbstractFurnaceBlockEntity) {
-				((AbstractFurnaceBlockEntity)blockEntity).setCustomName(itemStack.getDisplayName());
+				((AbstractFurnaceBlockEntity)blockEntity).method_17488(itemStack.method_7964());
 			}
 		}
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
+			BlockEntity blockEntity = world.method_8321(blockPos);
 			if (blockEntity instanceof AbstractFurnaceBlockEntity) {
-				ItemScatterer.spawn(world, blockPos, (AbstractFurnaceBlockEntity)blockEntity);
-				world.updateHorizontalAdjacent(blockPos, this);
+				ItemScatterer.method_5451(world, blockPos, (AbstractFurnaceBlockEntity)blockEntity);
+				world.method_8455(blockPos, this);
 			}
 
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+			super.method_9536(blockState, world, blockPos, blockState2, bl);
 		}
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState blockState) {
+	public boolean method_9498(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
-		return Container.calculateComparatorOutput(world.getBlockEntity(blockPos));
+	public int method_9572(BlockState blockState, World world, BlockPos blockPos) {
+		return Container.method_7608(world.method_8321(blockPos));
 	}
 
 	@Override
-	public BlockRenderType getRenderType(BlockState blockState) {
+	public BlockRenderType method_9604(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
+	public BlockState method_9598(BlockState blockState, Rotation rotation) {
+		return blockState.method_11657(field_11104, rotation.method_10503(blockState.method_11654(field_11104)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
+	public BlockState method_9569(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.method_10345(blockState.method_11654(field_11104)));
 	}
 
 	@Override
-	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, LIT);
+	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
+		builder.method_11667(field_11104, field_11105);
 	}
 }

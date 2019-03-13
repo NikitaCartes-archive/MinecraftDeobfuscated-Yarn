@@ -38,11 +38,11 @@ public class class_300 {
 
 	public void method_1405(int i, Consumer<CompoundTag> consumer) {
 		int j = this.method_1402(consumer);
-		this.field_1640.sendPacket(new QueryEntityNbtC2SPacket(j, i));
+		this.field_1640.method_2883(new QueryEntityNbtC2SPacket(j, i));
 	}
 
 	public void method_1403(BlockPos blockPos, Consumer<CompoundTag> consumer) {
 		int i = this.method_1402(consumer);
-		this.field_1640.sendPacket(new QueryBlockNbtC2SPacket(i, blockPos));
+		this.field_1640.method_2883(new QueryBlockNbtC2SPacket(i, blockPos));
 	}
 }

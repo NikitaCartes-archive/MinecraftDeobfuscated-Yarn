@@ -37,41 +37,41 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 
 	public void method_16940(ItemStack itemStack) {
 		if (itemStack.getItem() != this.method_16942() || itemStack.hasTag()) {
-			this.getDataTracker().set(field_17082, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
+			this.method_5841().set(field_17082, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
 		}
 	}
 
 	protected abstract Item method_16942();
 
 	protected ItemStack method_16943() {
-		return this.getDataTracker().get(field_17082);
+		return this.method_5841().get(field_17082);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getItem() {
+	public ItemStack method_7495() {
 		ItemStack itemStack = this.method_16943();
 		return itemStack.isEmpty() ? new ItemStack(this.method_16942()) : itemStack;
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(field_17082, ItemStack.EMPTY);
+		this.method_5841().startTracking(field_17082, ItemStack.EMPTY);
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		ItemStack itemStack = this.method_16943();
 		if (!itemStack.isEmpty()) {
-			compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
+			compoundTag.method_10566("Item", itemStack.method_7953(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
-		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
+		ItemStack itemStack = ItemStack.method_7915(compoundTag.getCompound("Item"));
 		this.method_16940(itemStack);
 	}
 }

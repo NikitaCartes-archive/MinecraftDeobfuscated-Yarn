@@ -14,25 +14,25 @@ import net.minecraft.util.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 
 public class StructureProcessorRule {
-	private final AbstractRuleTest inputPredicate;
-	private final AbstractRuleTest locationPredicate;
+	private final AbstractRuleTest field_16872;
+	private final AbstractRuleTest field_16873;
 	private final BlockState outputState;
 	@Nullable
-	private final CompoundTag tag;
+	private final CompoundTag field_16875;
 
 	public StructureProcessorRule(AbstractRuleTest abstractRuleTest, AbstractRuleTest abstractRuleTest2, BlockState blockState) {
 		this(abstractRuleTest, abstractRuleTest2, blockState, null);
 	}
 
 	public StructureProcessorRule(AbstractRuleTest abstractRuleTest, AbstractRuleTest abstractRuleTest2, BlockState blockState, @Nullable CompoundTag compoundTag) {
-		this.inputPredicate = abstractRuleTest;
-		this.locationPredicate = abstractRuleTest2;
+		this.field_16872 = abstractRuleTest;
+		this.field_16873 = abstractRuleTest2;
 		this.outputState = blockState;
-		this.tag = compoundTag;
+		this.field_16875 = compoundTag;
 	}
 
 	public boolean test(BlockState blockState, BlockState blockState2, Random random) {
-		return this.inputPredicate.test(blockState, random) && this.locationPredicate.test(blockState2, random);
+		return this.field_16872.test(blockState, random) && this.field_16873.test(blockState2, random);
 	}
 
 	public BlockState getOutputState() {
@@ -40,25 +40,26 @@ public class StructureProcessorRule {
 	}
 
 	@Nullable
-	public CompoundTag getTag() {
-		return this.tag;
+	public CompoundTag method_16760() {
+		return this.field_16875;
 	}
 
 	public <T> Dynamic<T> method_16764(DynamicOps<T> dynamicOps) {
 		T object = dynamicOps.createMap(
 			ImmutableMap.of(
 				dynamicOps.createString("input_predicate"),
-				this.inputPredicate.method_16767(dynamicOps).getValue(),
+				this.field_16872.method_16767(dynamicOps).getValue(),
 				dynamicOps.createString("location_predicate"),
-				this.locationPredicate.method_16767(dynamicOps).getValue(),
+				this.field_16873.method_16767(dynamicOps).getValue(),
 				dynamicOps.createString("output_state"),
 				BlockState.serialize(dynamicOps, this.outputState).getValue()
 			)
 		);
-		return this.tag == null
+		return this.field_16875 == null
 			? new Dynamic<>(dynamicOps, object)
 			: new Dynamic<>(
-				dynamicOps, dynamicOps.mergeInto(object, dynamicOps.createString("output_nbt"), new Dynamic<>(NbtOps.INSTANCE, this.tag).convert(dynamicOps).getValue())
+				dynamicOps,
+				dynamicOps.mergeInto(object, dynamicOps.createString("output_nbt"), new Dynamic<>(NbtOps.INSTANCE, this.field_16875).convert(dynamicOps).getValue())
 			);
 	}
 

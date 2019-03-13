@@ -21,8 +21,8 @@ public abstract class ResourcePackListWidget extends EntryListWidget<ResourcePac
 	protected void method_1940(int i, int j, Tessellator tessellator) {
 		String string = TextFormat.field_1073 + "" + TextFormat.field_1067 + this.getTitle();
 		this.field_3166
-			.textRenderer
-			.draw(string, (float)(i + this.width / 2 - this.field_3166.textRenderer.getStringWidth(string) / 2), (float)Math.min(this.y1 + 3, j), 16777215);
+			.field_1772
+			.draw(string, (float)(i + this.width / 2 - this.field_3166.field_1772.getStringWidth(string) / 2), (float)Math.min(this.y1 + 3, j), 16777215);
 	}
 
 	protected abstract String getTitle();

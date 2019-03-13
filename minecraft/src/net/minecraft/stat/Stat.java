@@ -9,27 +9,27 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class Stat<T> extends ScoreboardCriterion {
-	private final StatFormatter formatter;
+	private final StatFormatter field_15319;
 	private final T value;
-	private final StatType<T> type;
+	private final StatType<T> field_15321;
 
 	protected Stat(StatType<T> statType, T object, StatFormatter statFormatter) {
 		super(method_14950(statType, object));
-		this.type = statType;
-		this.formatter = statFormatter;
+		this.field_15321 = statType;
+		this.field_15319 = statFormatter;
 		this.value = object;
 	}
 
 	public static <T> String method_14950(StatType<T> statType, T object) {
-		return method_14952(Registry.STAT_TYPE.getId(statType)) + ":" + method_14952(statType.getRegistry().getId(object));
+		return method_14952(Registry.STAT_TYPE.method_10221(statType)) + ":" + method_14952(statType.getRegistry().method_10221(object));
 	}
 
 	private static <T> String method_14952(@Nullable Identifier identifier) {
 		return identifier.toString().replace(':', '.');
 	}
 
-	public StatType<T> getType() {
-		return this.type;
+	public StatType<T> method_14949() {
+		return this.field_15321;
 	}
 
 	public T getValue() {
@@ -38,7 +38,7 @@ public class Stat<T> extends ScoreboardCriterion {
 
 	@Environment(EnvType.CLIENT)
 	public String format(int i) {
-		return this.formatter.format(i);
+		return this.field_15319.format(i);
 	}
 
 	public boolean equals(Object object) {
@@ -50,6 +50,6 @@ public class Stat<T> extends ScoreboardCriterion {
 	}
 
 	public String toString() {
-		return "Stat{name=" + this.getName() + ", formatter=" + this.formatter + '}';
+		return "Stat{name=" + this.getName() + ", formatter=" + this.field_15319 + '}';
 	}
 }

@@ -26,7 +26,7 @@ public class LayeredTexture extends AbstractTexture {
 	}
 
 	@Override
-	public void load(ResourceManager resourceManager) throws IOException {
+	public void method_4625(ResourceManager resourceManager) throws IOException {
 		Iterator<String> iterator = this.locations.iterator();
 		String string = (String)iterator.next();
 

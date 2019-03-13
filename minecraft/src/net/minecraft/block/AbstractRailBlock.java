@@ -12,16 +12,16 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractRailBlock extends Block {
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
-	protected static final VoxelShape ASCENDING_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
+	protected static final VoxelShape field_9958 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+	protected static final VoxelShape field_9960 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	private final boolean allowCurves;
 
-	public static boolean isRail(World world, BlockPos blockPos) {
-		return isRail(world.getBlockState(blockPos));
+	public static boolean method_9479(World world, BlockPos blockPos) {
+		return method_9476(world.method_8320(blockPos));
 	}
 
-	public static boolean isRail(BlockState blockState) {
-		return blockState.matches(BlockTags.field_15463);
+	public static boolean method_9476(BlockState blockState) {
+		return blockState.method_11602(BlockTags.field_15463);
 	}
 
 	protected AbstractRailBlock(boolean bl, Block.Settings settings) {
@@ -34,79 +34,77 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		RailShape railShape = blockState.getBlock() == this ? blockState.get(this.getShapeProperty()) : null;
-		return railShape != null && railShape.isAscending() ? ASCENDING_SHAPE : SHAPE;
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		RailShape railShape = blockState.getBlock() == this ? blockState.method_11654(this.method_9474()) : null;
+		return railShape != null && railShape.isAscending() ? field_9960 : field_9958;
 	}
 
 	@Override
-	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return viewableWorld.getBlockState(blockPos2).hasSolidTopSurface(viewableWorld, blockPos2);
+		return viewableWorld.method_8320(blockPos2).method_11631(viewableWorld, blockPos2);
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (!world.isClient) {
-				blockState = this.updateBlockState(world, blockPos, blockState, true);
+				blockState = this.method_9475(world, blockPos, blockState, true);
 				if (this.allowCurves) {
-					blockState.neighborUpdate(world, blockPos, this, blockPos);
+					blockState.method_11622(world, blockPos, this, blockPos);
 				}
 			}
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
 		if (!world.isClient) {
-			RailShape railShape = blockState.get(this.getShapeProperty());
+			RailShape railShape = blockState.method_11654(this.method_9474());
 			boolean bl = false;
 			BlockPos blockPos3 = blockPos.down();
-			if (!world.getBlockState(blockPos3).hasSolidTopSurface(world, blockPos3)) {
+			if (!world.method_8320(blockPos3).method_11631(world, blockPos3)) {
 				bl = true;
 			}
 
 			BlockPos blockPos4 = blockPos.east();
-			if (railShape == RailShape.field_12667 && !world.getBlockState(blockPos4).hasSolidTopSurface(world, blockPos4)) {
+			if (railShape == RailShape.field_12667 && !world.method_8320(blockPos4).method_11631(world, blockPos4)) {
 				bl = true;
 			} else {
 				BlockPos blockPos5 = blockPos.west();
-				if (railShape == RailShape.field_12666 && !world.getBlockState(blockPos5).hasSolidTopSurface(world, blockPos5)) {
+				if (railShape == RailShape.field_12666 && !world.method_8320(blockPos5).method_11631(world, blockPos5)) {
 					bl = true;
 				} else {
 					BlockPos blockPos6 = blockPos.north();
-					if (railShape == RailShape.field_12670 && !world.getBlockState(blockPos6).hasSolidTopSurface(world, blockPos6)) {
+					if (railShape == RailShape.field_12670 && !world.method_8320(blockPos6).method_11631(world, blockPos6)) {
 						bl = true;
 					} else {
 						BlockPos blockPos7 = blockPos.south();
-						if (railShape == RailShape.field_12668 && !world.getBlockState(blockPos7).hasSolidTopSurface(world, blockPos7)) {
+						if (railShape == RailShape.field_12668 && !world.method_8320(blockPos7).method_11631(world, blockPos7)) {
 							bl = true;
 						}
 					}
 				}
 			}
 
-			if (bl && !world.isAir(blockPos)) {
-				dropStacks(blockState, world, blockPos);
-				world.clearBlockState(blockPos);
+			if (bl && !world.method_8623(blockPos)) {
+				method_9497(blockState, world, blockPos);
+				world.method_8650(blockPos);
 			} else {
-				this.updateBlockState(blockState, world, blockPos, block);
+				this.method_9477(blockState, world, blockPos, block);
 			}
 		}
 	}
 
-	protected void updateBlockState(BlockState blockState, World world, BlockPos blockPos, Block block) {
+	protected void method_9477(BlockState blockState, World world, BlockPos blockPos, Block block) {
 	}
 
-	protected BlockState updateBlockState(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
-		return world.isClient
-			? blockState
-			: new RailPlacementHelper(world, blockPos, blockState).updateBlockState(world.isReceivingRedstonePower(blockPos), bl).getBlockState();
+	protected BlockState method_9475(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+		return world.isClient ? blockState : new RailPlacementHelper(world, blockPos, blockState).updateBlockState(world.method_8479(blockPos), bl).method_10462();
 	}
 
 	@Override
-	public PistonBehavior getPistonBehavior(BlockState blockState) {
+	public PistonBehavior method_9527(BlockState blockState) {
 		return PistonBehavior.field_15974;
 	}
 
@@ -116,19 +114,19 @@ public abstract class AbstractRailBlock extends Block {
 	}
 
 	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!bl) {
-			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
-			if (((RailShape)blockState.get(this.getShapeProperty())).isAscending()) {
-				world.updateNeighborsAlways(blockPos.up(), this);
+			super.method_9536(blockState, world, blockPos, blockState2, bl);
+			if (((RailShape)blockState.method_11654(this.method_9474())).isAscending()) {
+				world.method_8452(blockPos.up(), this);
 			}
 
 			if (this.allowCurves) {
-				world.updateNeighborsAlways(blockPos, this);
-				world.updateNeighborsAlways(blockPos.down(), this);
+				world.method_8452(blockPos, this);
+				world.method_8452(blockPos.down(), this);
 			}
 		}
 	}
 
-	public abstract Property<RailShape> getShapeProperty();
+	public abstract Property<RailShape> method_9474();
 }

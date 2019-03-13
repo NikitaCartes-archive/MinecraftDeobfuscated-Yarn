@@ -12,14 +12,14 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEntityModel<GiantEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/zombie/zombie.png");
+	private static final Identifier field_4710 = new Identifier("textures/entity/zombie/zombie.png");
 	private final float field_4711;
 
 	public GiantEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, float f) {
 		super(entityRenderDispatcher, new GiantEntityModel(), 0.5F * f);
 		this.field_4711 = f;
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new GiantEntityModel(0.5F, true), new GiantEntityModel(1.0F, true)));
+		this.method_4046(new HeldItemFeatureRenderer<>(this));
+		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new GiantEntityModel(0.5F, true), new GiantEntityModel(1.0F, true)));
 	}
 
 	protected void method_3980(GiantEntity giantEntity, float f) {
@@ -27,6 +27,6 @@ public class GiantEntityRenderer extends MobEntityRenderer<GiantEntity, BipedEnt
 	}
 
 	protected Identifier method_3981(GiantEntity giantEntity) {
-		return SKIN;
+		return field_4710;
 	}
 }

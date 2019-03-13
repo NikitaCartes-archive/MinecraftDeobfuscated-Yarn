@@ -21,41 +21,41 @@ public class Slot {
 		this.yPosition = k;
 	}
 
-	public void onStackChanged(ItemStack itemStack, ItemStack itemStack2) {
+	public void method_7670(ItemStack itemStack, ItemStack itemStack2) {
 		int i = itemStack2.getAmount() - itemStack.getAmount();
 		if (i > 0) {
-			this.onCrafted(itemStack2, i);
+			this.method_7678(itemStack2, i);
 		}
 	}
 
-	protected void onCrafted(ItemStack itemStack, int i) {
+	protected void method_7678(ItemStack itemStack, int i) {
 	}
 
 	protected void onTake(int i) {
 	}
 
-	protected void onCrafted(ItemStack itemStack) {
+	protected void method_7669(ItemStack itemStack) {
 	}
 
-	public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+	public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
 		this.markDirty();
 		return itemStack;
 	}
 
-	public boolean canInsert(ItemStack itemStack) {
+	public boolean method_7680(ItemStack itemStack) {
 		return true;
 	}
 
-	public ItemStack getStack() {
-		return this.inventory.getInvStack(this.invSlot);
+	public ItemStack method_7677() {
+		return this.inventory.method_5438(this.invSlot);
 	}
 
 	public boolean hasStack() {
-		return !this.getStack().isEmpty();
+		return !this.method_7677().isEmpty();
 	}
 
-	public void setStack(ItemStack itemStack) {
-		this.inventory.setInvStack(this.invSlot, itemStack);
+	public void method_7673(ItemStack itemStack) {
+		this.inventory.method_5447(this.invSlot, itemStack);
 		this.markDirty();
 	}
 
@@ -67,7 +67,7 @@ public class Slot {
 		return this.inventory.getInvMaxStackAmount();
 	}
 
-	public int getMaxStackAmount(ItemStack itemStack) {
+	public int method_7676(ItemStack itemStack) {
 		return this.getMaxStackAmount();
 	}
 
@@ -77,8 +77,8 @@ public class Slot {
 		return null;
 	}
 
-	public ItemStack takeStack(int i) {
-		return this.inventory.takeInvStack(this.invSlot, i);
+	public ItemStack method_7671(int i) {
+		return this.inventory.method_5434(this.invSlot, i);
 	}
 
 	public boolean canTakeItems(PlayerEntity playerEntity) {

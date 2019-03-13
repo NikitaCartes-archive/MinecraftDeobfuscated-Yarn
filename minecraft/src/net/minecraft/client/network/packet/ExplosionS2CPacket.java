@@ -87,7 +87,7 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11480(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onExplosion(this);
+		clientPlayPacketListener.method_11124(this);
 	}
 
 	@Environment(EnvType.CLIENT)

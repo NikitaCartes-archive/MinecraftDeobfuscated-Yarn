@@ -34,7 +34,7 @@ public class EntitySetHeadYawS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public void method_11788(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEntitySetHeadYaw(this);
+		clientPlayPacketListener.method_11139(this);
 	}
 
 	@Environment(EnvType.CLIENT)

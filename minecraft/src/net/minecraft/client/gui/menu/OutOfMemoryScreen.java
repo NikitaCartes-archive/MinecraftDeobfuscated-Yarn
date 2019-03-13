@@ -2,24 +2,24 @@ package net.minecraft.client.gui.menu;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
 public class OutOfMemoryScreen extends Screen {
 	@Override
 	protected void onInitialized() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.toTitle")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 155, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.toTitle")) {
 			@Override
-			public void onPressed(double d, double e) {
-				OutOfMemoryScreen.this.client.openScreen(new MainMenuScreen());
+			public void method_1826() {
+				OutOfMemoryScreen.this.client.method_1507(new MainMenuScreen());
 			}
 		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 160, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("menu.quit")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 155 + 160, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("menu.quit")) {
 			@Override
-			public void onPressed(double d, double e) {
+			public void method_1826() {
 				OutOfMemoryScreen.this.client.scheduleStop();
 			}
 		});

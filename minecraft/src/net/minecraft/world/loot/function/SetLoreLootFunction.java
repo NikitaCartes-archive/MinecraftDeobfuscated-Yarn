@@ -37,7 +37,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.entity != null ? ImmutableSet.of(this.entity.getIdentifier()) : ImmutableSet.of();
+		return this.entity != null ? ImmutableSet.of(this.entity.method_315()) : ImmutableSet.of();
 	}
 
 	@Override
@@ -59,14 +59,14 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	private ListTag method_15964(ItemStack itemStack, boolean bl) {
 		CompoundTag compoundTag;
 		if (itemStack.hasTag()) {
-			compoundTag = itemStack.getTag();
+			compoundTag = itemStack.method_7969();
 		} else {
 			if (!bl) {
 				return null;
 			}
 
 			compoundTag = new CompoundTag();
-			itemStack.setTag(compoundTag);
+			itemStack.method_7980(compoundTag);
 		}
 
 		CompoundTag compoundTag2;
@@ -78,14 +78,14 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 			}
 
 			compoundTag2 = new CompoundTag();
-			compoundTag.put("display", compoundTag2);
+			compoundTag.method_10566("display", compoundTag2);
 		}
 
 		if (compoundTag2.containsKey("Lore", 9)) {
-			return compoundTag2.getList("Lore", 8);
+			return compoundTag2.method_10554("Lore", 8);
 		} else if (bl) {
 			ListTag listTag = new ListTag();
-			compoundTag2.put("Lore", listTag);
+			compoundTag2.method_10566("Lore", listTag);
 			return listTag;
 		} else {
 			return null;

@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.class_4051;
@@ -27,7 +28,7 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		super(mobEntity, bl, bl2);
 		this.field_6643 = class_;
 		this.reciprocalChance = i;
-		this.setControlBits(1);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
 		this.field_6642 = new class_4051().method_18418(this.getFollowRange()).method_18420(predicate);
 	}
 
@@ -41,14 +42,14 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		}
 	}
 
-	protected BoundingBox getSearchBox(double d) {
-		return this.entity.getBoundingBox().expand(d, 4.0, d);
+	protected BoundingBox method_6321(double d) {
+		return this.entity.method_5829().expand(d, 4.0, d);
 	}
 
 	protected void method_18415() {
 		if (this.field_6643 != PlayerEntity.class && this.field_6643 != ServerPlayerEntity.class) {
 			this.field_6644 = this.entity
-				.world
+				.field_6002
 				.method_18465(
 					this.field_6643,
 					this.field_6642,
@@ -56,11 +57,11 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 					this.entity.x,
 					this.entity.y + (double)this.entity.getStandingEyeHeight(),
 					this.entity.z,
-					this.getSearchBox(this.getFollowRange())
+					this.method_6321(this.getFollowRange())
 				);
 		} else {
 			this.field_6644 = this.entity
-				.world
+				.field_6002
 				.method_18463(this.field_6642, this.entity, this.entity.x, this.entity.y + (double)this.entity.getStandingEyeHeight(), this.entity.z);
 		}
 	}

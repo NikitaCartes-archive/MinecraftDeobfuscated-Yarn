@@ -16,11 +16,11 @@ public class LeashItem extends Item {
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.getWorld();
-		BlockPos blockPos = itemUsageContext.getBlockPos();
-		Block block = world.getBlockState(blockPos).getBlock();
-		if (block.matches(BlockTags.field_16584)) {
+	public ActionResult method_7884(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.method_8045();
+		BlockPos blockPos = itemUsageContext.method_8037();
+		Block block = world.method_8320(blockPos).getBlock();
+		if (block.method_9525(BlockTags.field_16584)) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
 			if (!world.isClient && playerEntity != null) {
 				method_7994(playerEntity, world, blockPos);

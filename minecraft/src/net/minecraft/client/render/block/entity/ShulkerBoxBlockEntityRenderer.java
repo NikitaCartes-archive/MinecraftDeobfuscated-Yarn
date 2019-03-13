@@ -22,9 +22,9 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 	public void method_3574(ShulkerBoxBlockEntity shulkerBoxBlockEntity, double d, double e, double f, float g, int i) {
 		Direction direction = Direction.UP;
 		if (shulkerBoxBlockEntity.hasWorld()) {
-			BlockState blockState = this.getWorld().getBlockState(shulkerBoxBlockEntity.getPos());
+			BlockState blockState = this.getWorld().method_8320(shulkerBoxBlockEntity.method_11016());
 			if (blockState.getBlock() instanceof ShulkerBoxBlock) {
-				direction = blockState.get(ShulkerBoxBlock.FACING);
+				direction = blockState.method_11654(ShulkerBoxBlock.field_11496);
 			}
 		}
 
@@ -33,7 +33,7 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		GlStateManager.depthMask(true);
 		GlStateManager.disableCull();
 		if (i >= 0) {
-			this.bindTexture(DESTROY_STAGE_TEXTURES[i]);
+			this.method_3566(field_4368[i]);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(4.0F, 4.0F, 1.0F);
@@ -42,9 +42,9 @@ public class ShulkerBoxBlockEntityRenderer extends BlockEntityRenderer<ShulkerBo
 		} else {
 			DyeColor dyeColor = shulkerBoxBlockEntity.getColor();
 			if (dyeColor == null) {
-				this.bindTexture(ShulkerEntityRenderer.field_4781);
+				this.method_3566(ShulkerEntityRenderer.field_4781);
 			} else {
-				this.bindTexture(ShulkerEntityRenderer.SKIN[dyeColor.getId()]);
+				this.method_3566(ShulkerEntityRenderer.field_4780[dyeColor.getId()]);
 			}
 		}
 

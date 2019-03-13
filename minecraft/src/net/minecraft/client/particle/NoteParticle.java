@@ -15,15 +15,15 @@ public class NoteParticle extends SpriteBillboardParticle {
 		this.velocityY *= 0.01F;
 		this.velocityZ *= 0.01F;
 		this.velocityY += 0.2;
-		this.colorRed = MathHelper.sin(((float)g + 0.0F) * (float) (Math.PI * 2)) * 0.65F + 0.35F;
-		this.colorGreen = MathHelper.sin(((float)g + 0.33333334F) * (float) (Math.PI * 2)) * 0.65F + 0.35F;
-		this.colorBlue = MathHelper.sin(((float)g + 0.6666667F) * (float) (Math.PI * 2)) * 0.65F + 0.35F;
+		this.colorRed = Math.max(0.0F, MathHelper.sin(((float)g + 0.0F) * (float) (Math.PI * 2)) * 0.65F + 0.35F);
+		this.colorGreen = Math.max(0.0F, MathHelper.sin(((float)g + 0.33333334F) * (float) (Math.PI * 2)) * 0.65F + 0.35F);
+		this.colorBlue = Math.max(0.0F, MathHelper.sin(((float)g + 0.6666667F) * (float) (Math.PI * 2)) * 0.65F + 0.35F);
 		this.scale *= 1.5F;
 		this.maxAge = 6;
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 

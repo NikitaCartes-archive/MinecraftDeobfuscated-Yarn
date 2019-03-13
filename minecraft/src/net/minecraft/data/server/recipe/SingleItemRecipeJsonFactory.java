@@ -19,7 +19,7 @@ public class SingleItemRecipeJsonFactory {
 	private final Item output;
 	private final Ingredient input;
 	private final int count;
-	private final SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.create();
+	private final SimpleAdvancement.Builder field_17693 = SimpleAdvancement.Builder.create();
 	private String group;
 	private final RecipeSerializer<?> serializer;
 
@@ -38,26 +38,26 @@ public class SingleItemRecipeJsonFactory {
 		return new SingleItemRecipeJsonFactory(RecipeSerializer.field_17640, ingredient, itemProvider, i);
 	}
 
-	public SingleItemRecipeJsonFactory create(String string, CriterionConditions criterionConditions) {
-		this.builder.criterion(string, criterionConditions);
+	public SingleItemRecipeJsonFactory method_17970(String string, CriterionConditions criterionConditions) {
+		this.field_17693.method_709(string, criterionConditions);
 		return this;
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer, String string) {
-		Identifier identifier = Registry.ITEM.getId(this.output);
+		Identifier identifier = Registry.ITEM.method_10221(this.output);
 		if (new Identifier(string).equals(identifier)) {
 			throw new IllegalStateException("Single Item Recipe " + string + " should remove its 'save' argument");
 		} else {
-			this.offerTo(consumer, new Identifier(string));
+			this.method_17972(consumer, new Identifier(string));
 		}
 	}
 
-	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
-		this.validate(identifier);
-		this.builder
-			.parent(new Identifier("recipes/root"))
-			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
-			.rewards(AdvancementRewards.Builder.recipe(identifier))
+	public void method_17972(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
+		this.method_17973(identifier);
+		this.field_17693
+			.method_708(new Identifier("recipes/root"))
+			.method_709("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
+			.method_703(AdvancementRewards.Builder.recipe(identifier))
 			.criteriaMerger(CriteriaMerger.OR);
 		consumer.accept(
 			new SingleItemRecipeJsonFactory.SingleItemRecipeJsonProvider(
@@ -67,26 +67,26 @@ public class SingleItemRecipeJsonFactory {
 				this.input,
 				this.output,
 				this.count,
-				this.builder,
+				this.field_17693,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())
 			)
 		);
 	}
 
-	private void validate(Identifier identifier) {
-		if (this.builder.getCriteria().isEmpty()) {
+	private void method_17973(Identifier identifier) {
+		if (this.field_17693.getCriteria().isEmpty()) {
 			throw new IllegalStateException("No way of obtaining recipe " + identifier);
 		}
 	}
 
 	public static class SingleItemRecipeJsonProvider implements RecipeJsonProvider {
-		private final Identifier recipeId;
+		private final Identifier field_17696;
 		private final String group;
 		private final Ingredient input;
 		private final Item output;
 		private final int count;
-		private final SimpleAdvancement.Builder builder;
-		private final Identifier advancementId;
+		private final SimpleAdvancement.Builder field_17701;
+		private final Identifier field_17702;
 		private final RecipeSerializer<?> serializer;
 
 		public SingleItemRecipeJsonProvider(
@@ -99,14 +99,14 @@ public class SingleItemRecipeJsonFactory {
 			SimpleAdvancement.Builder builder,
 			Identifier identifier2
 		) {
-			this.recipeId = identifier;
+			this.field_17696 = identifier;
 			this.serializer = recipeSerializer;
 			this.group = string;
 			this.input = ingredient;
 			this.output = item;
 			this.count = i;
-			this.builder = builder;
-			this.advancementId = identifier2;
+			this.field_17701 = builder;
+			this.field_17702 = identifier2;
 		}
 
 		@Override
@@ -116,13 +116,13 @@ public class SingleItemRecipeJsonFactory {
 			}
 
 			jsonObject.add("ingredient", this.input.toJson());
-			jsonObject.addProperty("result", Registry.ITEM.getId(this.output).toString());
+			jsonObject.addProperty("result", Registry.ITEM.method_10221(this.output).toString());
 			jsonObject.addProperty("count", this.count);
 		}
 
 		@Override
-		public Identifier getRecipeId() {
-			return this.recipeId;
+		public Identifier method_10417() {
+			return this.field_17696;
 		}
 
 		@Override
@@ -133,13 +133,13 @@ public class SingleItemRecipeJsonFactory {
 		@Nullable
 		@Override
 		public JsonObject toAdvancementJson() {
-			return this.builder.toJson();
+			return this.field_17701.toJson();
 		}
 
 		@Nullable
 		@Override
-		public Identifier getAdvancementId() {
-			return this.advancementId;
+		public Identifier method_10418() {
+			return this.field_17702;
 		}
 	}
 }

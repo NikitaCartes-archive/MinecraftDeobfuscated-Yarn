@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import net.minecraft.entity.mob.MobEntity;
 
 public class SwimGoal extends Goal {
@@ -7,8 +8,8 @@ public class SwimGoal extends Goal {
 
 	public SwimGoal(MobEntity mobEntity) {
 		this.entityMob = mobEntity;
-		this.setControlBits(4);
-		mobEntity.getNavigation().setCanSwim(true);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407));
+		mobEntity.method_5942().setCanSwim(true);
 	}
 
 	@Override
@@ -19,7 +20,7 @@ public class SwimGoal extends Goal {
 	@Override
 	public void tick() {
 		if (this.entityMob.getRand().nextFloat() < 0.8F) {
-			this.entityMob.getJumpControl().setActive();
+			this.entityMob.method_5993().setActive();
 		}
 	}
 }

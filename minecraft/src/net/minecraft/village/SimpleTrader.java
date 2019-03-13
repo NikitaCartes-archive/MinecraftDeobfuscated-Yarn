@@ -5,23 +5,23 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class SimpleTrader implements Trader {
-	private final TraderInventory traderInventory;
-	private final PlayerEntity player;
-	private TraderRecipeList recipeList = new TraderRecipeList();
+	private final TraderInventory field_7443;
+	private final PlayerEntity field_7441;
+	private TraderRecipeList field_7442 = new TraderRecipeList();
+	private int field_18525;
 
 	public SimpleTrader(PlayerEntity playerEntity) {
-		this.player = playerEntity;
-		this.traderInventory = new TraderInventory(this);
+		this.field_7441 = playerEntity;
+		this.field_7443 = new TraderInventory(this);
 	}
 
 	@Nullable
 	@Override
 	public PlayerEntity getCurrentCustomer() {
-		return this.player;
+		return this.field_7441;
 	}
 
 	@Override
@@ -29,18 +29,18 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public TraderRecipeList getRecipes() {
-		return this.recipeList;
+	public TraderRecipeList method_8264() {
+		return this.field_7442;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setServerRecipes(@Nullable TraderRecipeList traderRecipeList) {
-		this.recipeList = traderRecipeList;
+	public void method_8261(@Nullable TraderRecipeList traderRecipeList) {
+		this.field_7442 = traderRecipeList;
 	}
 
 	@Override
-	public void useRecipe(TraderRecipe traderRecipe) {
+	public void method_8262(TraderRecipe traderRecipe) {
 		traderRecipe.use();
 	}
 
@@ -49,12 +49,22 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public World getTraderWorld() {
-		return this.player.world;
+	public World method_8260() {
+		return this.field_7441.field_6002;
 	}
 
 	@Override
-	public BlockPos getTraderPos() {
-		return new BlockPos(this.player);
+	public int method_19269() {
+		return this.field_18525;
+	}
+
+	@Override
+	public void method_19271(int i) {
+		this.field_18525 = i;
+	}
+
+	@Override
+	public boolean method_19270() {
+		return true;
 	}
 }

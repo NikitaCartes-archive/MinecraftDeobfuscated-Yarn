@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends BipedEntityModel<T>, A extends BipedEntityModel<T>> extends FeatureRenderer<T, M> {
-	protected static final Identifier SKIN = new Identifier("textures/misc/enchanted_item_glint.png");
+	protected static final Identifier field_4827 = new Identifier("textures/misc/enchanted_item_glint.png");
 	protected final A modelLeggings;
 	protected final A modelBody;
 	private float alpha = 1.0F;
@@ -50,7 +50,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 	}
 
 	private void renderArmor(T livingEntity, float f, float g, float h, float i, float j, float k, float l, EquipmentSlot equipmentSlot) {
-		ItemStack itemStack = livingEntity.getEquippedStack(equipmentSlot);
+		ItemStack itemStack = livingEntity.method_6118(equipmentSlot);
 		if (itemStack.getItem() instanceof ArmorItem) {
 			ArmorItem armorItem = (ArmorItem)itemStack.getItem();
 			if (armorItem.getSlotType() == equipmentSlot) {
@@ -59,21 +59,21 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 				bipedEntityModel.method_17086(livingEntity, f, g, h);
 				this.method_4170(bipedEntityModel, equipmentSlot);
 				boolean bl = this.isLegs(equipmentSlot);
-				this.bindTexture(this.getArmorTexture(armorItem, bl));
+				this.method_17164(this.method_4168(armorItem, bl));
 				if (armorItem instanceof DyeableArmorItem) {
-					int m = ((DyeableArmorItem)armorItem).getColor(itemStack);
+					int m = ((DyeableArmorItem)armorItem).method_7800(itemStack);
 					float n = (float)(m >> 16 & 0xFF) / 255.0F;
 					float o = (float)(m >> 8 & 0xFF) / 255.0F;
 					float p = (float)(m & 0xFF) / 255.0F;
 					GlStateManager.color4f(this.red * n, this.green * o, this.blue * p, this.alpha);
 					bipedEntityModel.method_17088(livingEntity, f, g, i, j, k, l);
-					this.bindTexture(this.method_4174(armorItem, bl, "overlay"));
+					this.method_17164(this.method_4174(armorItem, bl, "overlay"));
 				}
 
 				GlStateManager.color4f(this.red, this.green, this.blue, this.alpha);
 				bipedEntityModel.method_17088(livingEntity, f, g, i, j, k, l);
 				if (!this.ignoreGlint && itemStack.hasEnchantments()) {
-					renderEnchantedGlint(this::bindTexture, livingEntity, bipedEntityModel, f, g, h, i, j, k, l);
+					renderEnchantedGlint(this::method_17164, livingEntity, bipedEntityModel, f, g, h, i, j, k, l);
 				}
 			}
 		}
@@ -91,8 +91,8 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		Consumer<Identifier> consumer, T entity, EntityModel<T> entityModel, float f, float g, float h, float i, float j, float k, float l
 	) {
 		float m = (float)entity.age + h;
-		consumer.accept(SKIN);
-		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
+		consumer.accept(field_4827);
+		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
 		gameRenderer.method_3201(true);
 		GlStateManager.enableBlend();
 		GlStateManager.depthFunc(514);
@@ -126,12 +126,12 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		gameRenderer.method_3201(false);
 	}
 
-	private Identifier getArmorTexture(ArmorItem armorItem, boolean bl) {
+	private Identifier method_4168(ArmorItem armorItem, boolean bl) {
 		return this.method_4174(armorItem, bl, null);
 	}
 
 	private Identifier method_4174(ArmorItem armorItem, boolean bl, @Nullable String string) {
-		String string2 = "textures/models/armor/" + armorItem.getMaterial().getName() + "_layer_" + (bl ? 2 : 1) + (string == null ? "" : "_" + string) + ".png";
+		String string2 = "textures/models/armor/" + armorItem.method_7686().getName() + "_layer_" + (bl ? 2 : 1) + (string == null ? "" : "_" + string) + ".png";
 		return (Identifier)ARMOR_TEXTURE_CACHE.computeIfAbsent(string2, Identifier::new);
 	}
 

@@ -40,7 +40,7 @@ public class DummyProfiler implements ReadableProfiler {
 	}
 
 	@Override
-	public ProfileResult getResults() {
+	public ProfileResult method_16064() {
 		return EmptyProfileResult.INSTANCE;
 	}
 }

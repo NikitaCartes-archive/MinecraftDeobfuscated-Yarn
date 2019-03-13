@@ -23,86 +23,86 @@ public class DisableableProfiler implements Profiler {
 
 	@Override
 	public void startTick() {
-		this.controller.profiler.startTick();
-		this.field_16271.profiler.startTick();
+		this.controller.field_16272.startTick();
+		this.field_16271.field_16272.startTick();
 	}
 
 	@Override
 	public void endTick() {
-		this.controller.profiler.endTick();
-		this.field_16271.profiler.endTick();
+		this.controller.field_16272.endTick();
+		this.field_16271.field_16272.endTick();
 	}
 
 	@Override
 	public void push(String string) {
-		this.controller.profiler.push(string);
-		this.field_16271.profiler.push(string);
+		this.controller.field_16272.push(string);
+		this.field_16271.field_16272.push(string);
 	}
 
 	@Override
 	public void push(Supplier<String> supplier) {
-		this.controller.profiler.push(supplier);
-		this.field_16271.profiler.push(supplier);
+		this.controller.field_16272.push(supplier);
+		this.field_16271.field_16272.push(supplier);
 	}
 
 	@Override
 	public void pop() {
-		this.controller.profiler.pop();
-		this.field_16271.profiler.pop();
+		this.controller.field_16272.pop();
+		this.field_16271.field_16272.pop();
 	}
 
 	@Override
 	public void swap(String string) {
-		this.controller.profiler.swap(string);
-		this.field_16271.profiler.swap(string);
+		this.controller.field_16272.swap(string);
+		this.field_16271.field_16272.swap(string);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void swap(Supplier<String> supplier) {
-		this.controller.profiler.swap(supplier);
-		this.field_16271.profiler.swap(supplier);
+		this.controller.field_16272.swap(supplier);
+		this.field_16271.field_16272.swap(supplier);
 	}
 
 	public interface ProfilerController {
 		boolean isEnabled();
 
-		ProfileResult disable();
+		ProfileResult method_16058();
 
 		@Environment(EnvType.CLIENT)
-		ProfileResult getResults();
+		ProfileResult method_16059();
 
 		void enable();
 	}
 
 	class ProfilerControllerImpl implements DisableableProfiler.ProfilerController {
-		protected ReadableProfiler profiler = DummyProfiler.INSTANCE;
+		protected ReadableProfiler field_16272 = DummyProfiler.INSTANCE;
 
 		private ProfilerControllerImpl() {
 		}
 
 		@Override
 		public boolean isEnabled() {
-			return this.profiler != DummyProfiler.INSTANCE;
+			return this.field_16272 != DummyProfiler.INSTANCE;
 		}
 
 		@Override
-		public ProfileResult disable() {
-			ProfileResult profileResult = this.profiler.getResults();
-			this.profiler = DummyProfiler.INSTANCE;
+		public ProfileResult method_16058() {
+			ProfileResult profileResult = this.field_16272.method_16064();
+			this.field_16272 = DummyProfiler.INSTANCE;
 			return profileResult;
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ProfileResult getResults() {
-			return this.profiler.getResults();
+		public ProfileResult method_16059() {
+			return this.field_16272.method_16064();
 		}
 
 		@Override
 		public void enable() {
-			if (this.profiler == DummyProfiler.INSTANCE) {
-				this.profiler = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), DisableableProfiler.this.tickSupplier);
+			if (this.field_16272 == DummyProfiler.INSTANCE) {
+				this.field_16272 = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), DisableableProfiler.this.tickSupplier);
 			}
 		}
 	}

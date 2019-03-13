@@ -14,16 +14,16 @@ import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 
 public class SetTagLootFunction extends ConditionalLootFunction {
-	private final CompoundTag tag;
+	private final CompoundTag field_1138;
 
 	private SetTagLootFunction(LootCondition[] lootConditions, CompoundTag compoundTag) {
 		super(lootConditions);
-		this.tag = compoundTag;
+		this.field_1138 = compoundTag;
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		itemStack.getOrCreateTag().copyFrom(this.tag);
+		itemStack.method_7948().copyFrom(this.field_1138);
 		return itemStack;
 	}
 
@@ -38,7 +38,7 @@ public class SetTagLootFunction extends ConditionalLootFunction {
 
 		public void method_678(JsonObject jsonObject, SetTagLootFunction setTagLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, setTagLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("tag", setTagLootFunction.tag.toString());
+			jsonObject.addProperty("tag", setTagLootFunction.field_1138.toString());
 		}
 
 		public SetTagLootFunction method_679(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {

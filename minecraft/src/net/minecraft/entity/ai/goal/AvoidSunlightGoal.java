@@ -13,18 +13,16 @@ public class AvoidSunlightGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.owner.world.isDaylight()
-			&& this.owner.getEquippedStack(EquipmentSlot.HEAD).isEmpty()
-			&& this.owner.getNavigation() instanceof EntityMobNavigation;
+		return this.owner.field_6002.isDaylight() && this.owner.method_6118(EquipmentSlot.HEAD).isEmpty() && this.owner.method_5942() instanceof EntityMobNavigation;
 	}
 
 	@Override
 	public void start() {
-		((EntityMobNavigation)this.owner.getNavigation()).setAvoidSunlight(true);
+		((EntityMobNavigation)this.owner.method_5942()).setAvoidSunlight(true);
 	}
 
 	@Override
 	public void onRemove() {
-		((EntityMobNavigation)this.owner.getNavigation()).setAvoidSunlight(false);
+		((EntityMobNavigation)this.owner.method_5942()).setAvoidSunlight(false);
 	}
 }

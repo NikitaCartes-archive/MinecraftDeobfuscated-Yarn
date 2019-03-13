@@ -13,7 +13,7 @@ public class ScoreboardPlayerScore {
 				: scoreboardPlayerScore2.getPlayerName().compareToIgnoreCase(scoreboardPlayerScore.getPlayerName());
 		}
 	};
-	private final Scoreboard scoreboard;
+	private final Scoreboard field_1407;
 	@Nullable
 	private final ScoreboardObjective objective;
 	private final String playerName;
@@ -22,7 +22,7 @@ public class ScoreboardPlayerScore {
 	private boolean forceUpdate;
 
 	public ScoreboardPlayerScore(Scoreboard scoreboard, ScoreboardObjective scoreboardObjective, String string) {
-		this.scoreboard = scoreboard;
+		this.field_1407 = scoreboard;
 		this.objective = scoreboardObjective;
 		this.playerName = string;
 		this.locked = true;
@@ -30,7 +30,7 @@ public class ScoreboardPlayerScore {
 	}
 
 	public void incrementScore(int i) {
-		if (this.objective.getCriterion().isReadOnly()) {
+		if (this.objective.method_1116().isReadOnly()) {
 			throw new IllegalStateException("Cannot modify read-only score");
 		} else {
 			this.setScore(this.getScore() + i);
@@ -54,7 +54,7 @@ public class ScoreboardPlayerScore {
 		this.score = i;
 		if (j != i || this.forceUpdate) {
 			this.forceUpdate = false;
-			this.getScoreboard().updateScore(this);
+			this.method_1122().updateScore(this);
 		}
 	}
 
@@ -67,8 +67,8 @@ public class ScoreboardPlayerScore {
 		return this.playerName;
 	}
 
-	public Scoreboard getScoreboard() {
-		return this.scoreboard;
+	public Scoreboard method_1122() {
+		return this.field_1407;
 	}
 
 	public boolean isLocked() {

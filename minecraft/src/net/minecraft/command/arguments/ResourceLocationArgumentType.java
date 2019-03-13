@@ -30,9 +30,9 @@ public class ResourceLocationArgumentType implements ArgumentType<Identifier> {
 		return new ResourceLocationArgumentType();
 	}
 
-	public static SimpleAdvancement getAdvancementArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static SimpleAdvancement method_9439(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		Identifier identifier = commandContext.getArgument(string, Identifier.class);
-		SimpleAdvancement simpleAdvancement = commandContext.getSource().getMinecraftServer().getAdvancementManager().get(identifier);
+		SimpleAdvancement simpleAdvancement = commandContext.getSource().getMinecraftServer().method_3851().get(identifier);
 		if (simpleAdvancement == null) {
 			throw UNKNOWN_ADVANCEMENT_EXCEPTION.create(identifier);
 		} else {
@@ -43,10 +43,10 @@ public class ResourceLocationArgumentType implements ArgumentType<Identifier> {
 	public static Recipe<?> getRecipeArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		RecipeManager recipeManager = commandContext.getSource().getMinecraftServer().getRecipeManager();
 		Identifier identifier = commandContext.getArgument(string, Identifier.class);
-		return (Recipe<?>)recipeManager.get(identifier).orElseThrow(() -> UNKNOWN_RECIPE_EXCEPTION.create(identifier));
+		return (Recipe<?>)recipeManager.method_8130(identifier).orElseThrow(() -> UNKNOWN_RECIPE_EXCEPTION.create(identifier));
 	}
 
-	public static Identifier getIdentifierArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static Identifier method_9443(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, Identifier.class);
 	}
 

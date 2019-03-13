@@ -48,7 +48,7 @@ public class MoveControl {
 
 	public void tick() {
 		if (this.state == MoveControl.State.field_6376) {
-			float f = (float)this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
+			float f = (float)this.entity.method_5996(EntityAttributes.MOVEMENT_SPEED).getValue();
 			float g = (float)this.speed * f;
 			float h = this.field_6368;
 			float i = this.field_6373;
@@ -64,12 +64,12 @@ public class MoveControl {
 			float l = MathHelper.cos(this.entity.yaw * (float) (Math.PI / 180.0));
 			float m = h * l - i * k;
 			float n = i * l + h * k;
-			EntityNavigation entityNavigation = this.entity.getNavigation();
+			EntityNavigation entityNavigation = this.entity.method_5942();
 			if (entityNavigation != null) {
-				PathNodeMaker pathNodeMaker = entityNavigation.getNodeMaker();
+				PathNodeMaker pathNodeMaker = entityNavigation.method_6342();
 				if (pathNodeMaker != null
 					&& pathNodeMaker.getPathNodeType(
-							this.entity.world, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
+							this.entity.field_6002, MathHelper.floor(this.entity.x + (double)m), MathHelper.floor(this.entity.y), MathHelper.floor(this.entity.z + (double)n)
 						)
 						!= PathNodeType.field_12) {
 					this.field_6368 = 1.0F;
@@ -95,13 +95,13 @@ public class MoveControl {
 
 			float n = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
 			this.entity.yaw = this.method_6238(this.entity.yaw, n, 90.0F);
-			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+			this.entity.setMovementSpeed((float)(this.speed * this.entity.method_5996(EntityAttributes.MOVEMENT_SPEED).getValue()));
 			if (o > (double)this.entity.stepHeight && d * d + e * e < (double)Math.max(1.0F, this.entity.getWidth())) {
-				this.entity.getJumpControl().setActive();
+				this.entity.method_5993().setActive();
 				this.state = MoveControl.State.field_6379;
 			}
 		} else if (this.state == MoveControl.State.field_6379) {
-			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue()));
+			this.entity.setMovementSpeed((float)(this.speed * this.entity.method_5996(EntityAttributes.MOVEMENT_SPEED).getValue()));
 			if (this.entity.onGround) {
 				this.state = MoveControl.State.field_6377;
 			}

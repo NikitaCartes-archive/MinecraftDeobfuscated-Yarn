@@ -22,7 +22,7 @@ public class RconServer extends RconBase {
 
 	public RconServer(DedicatedServer dedicatedServer) {
 		super(dedicatedServer, "RCON Listener");
-		ServerPropertiesHandler serverPropertiesHandler = dedicatedServer.getProperties();
+		ServerPropertiesHandler serverPropertiesHandler = dedicatedServer.method_16705();
 		this.port = serverPropertiesHandler.rconPort;
 		this.password = serverPropertiesHandler.rconPassword;
 		this.hostname = dedicatedServer.getHostname();

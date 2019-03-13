@@ -18,7 +18,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 	}
 
 	public void method_4194(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.HAND_MAIN);
+		ItemStack itemStack = pandaEntity.method_6118(EquipmentSlot.HAND_MAIN);
 		if (pandaEntity.method_6535() && !itemStack.isEmpty() && !pandaEntity.method_6524()) {
 			float m = -0.6F;
 			float n = 1.4F;
@@ -29,7 +29,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.1F, n, m);
-			MinecraftClient.getInstance().getItemRenderer().renderHeldItem(itemStack, pandaEntity, ModelTransformation.Type.field_4318, false);
+			MinecraftClient.getInstance().method_1480().renderHeldItem(itemStack, pandaEntity, ModelTransformation.Type.field_4318, false);
 			GlStateManager.popMatrix();
 		}
 	}

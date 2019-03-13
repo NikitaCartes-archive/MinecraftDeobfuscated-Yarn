@@ -34,7 +34,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -80,9 +80,9 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 			if (!blockState.isAir() && blockState.getRenderType() == BlockRenderType.field_11455) {
 				return null;
 			} else {
-				int j = MinecraftClient.getInstance().getBlockColorMap().method_1691(blockState, world, new BlockPos(d, e, f));
+				int j = MinecraftClient.getInstance().method_1505().method_1691(blockState, world, new BlockPos(d, e, f));
 				if (blockState.getBlock() instanceof FallingBlock) {
-					j = ((FallingBlock)blockState.getBlock()).getColor(blockState);
+					j = ((FallingBlock)blockState.getBlock()).method_10130(blockState);
 				}
 
 				float k = (float)(j >> 16 & 0xFF) / 255.0F;

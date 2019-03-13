@@ -16,7 +16,7 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Float float_ = lootContext.get(LootContextParameters.field_1225);
+		Float float_ = lootContext.method_296(LootContextParameters.field_1225);
 		if (float_ != null) {
 			Random random = lootContext.getRandom();
 			float f = 1.0F / float_;

@@ -15,10 +15,10 @@ public class WetSpongeBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		Direction direction = Direction.random(random);
-		BlockPos blockPos2 = blockPos.offset(direction);
-		if (direction != Direction.UP && !world.getBlockState(blockPos2).hasSolidTopSurface(world, blockPos2)) {
+		BlockPos blockPos2 = blockPos.method_10093(direction);
+		if (direction != Direction.UP && !world.method_8320(blockPos2).method_11631(world, blockPos2)) {
 			double d = (double)blockPos.getX();
 			double e = (double)blockPos.getY();
 			double f = (double)blockPos.getZ();
@@ -45,7 +45,7 @@ public class WetSpongeBlock extends Block {
 				}
 			}
 
-			world.addParticle(ParticleTypes.field_11232, d, e, f, 0.0, 0.0, 0.0);
+			world.method_8406(ParticleTypes.field_11232, d, e, f, 0.0, 0.0, 0.0);
 		}
 	}
 }

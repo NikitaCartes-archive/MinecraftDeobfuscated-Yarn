@@ -1,5 +1,6 @@
 package net.minecraft;
 
+import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.TameableEntity;
@@ -10,7 +11,7 @@ public class class_1386 extends Goal {
 
 	public class_1386(TameableEntity tameableEntity) {
 		this.field_6597 = tameableEntity;
-		this.setControlBits(5);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 	}
 
 	@Override
@@ -33,7 +34,7 @@ public class class_1386 extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6597.getNavigation().stop();
+		this.field_6597.method_5942().stop();
 		this.field_6597.setSitting(true);
 	}
 

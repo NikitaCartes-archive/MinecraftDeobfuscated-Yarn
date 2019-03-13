@@ -80,7 +80,7 @@ public class Tag<T> {
 			return new Tag.Builder<>();
 		}
 
-		public Tag.Builder<T> add(Tag.Entry<T> entry) {
+		public Tag.Builder<T> method_15149(Tag.Entry<T> entry) {
 			this.entries.add(entry);
 			return this;
 		}

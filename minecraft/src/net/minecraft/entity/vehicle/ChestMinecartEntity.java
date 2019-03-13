@@ -23,8 +23,8 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
-			this.dropItem(Blocks.field_10034);
+		if (this.field_6002.getGameRules().getBoolean("doEntityDrops")) {
+			this.method_5706(Blocks.field_10034);
 		}
 	}
 
@@ -39,8 +39,8 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 	}
 
 	@Override
-	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.NORTH);
+	public BlockState method_7517() {
+		return Blocks.field_10034.method_9564().method_11657(ChestBlock.field_10768, Direction.NORTH);
 	}
 
 	@Override
@@ -50,6 +50,6 @@ public class ChestMinecartEntity extends StorageMinecartEntity {
 
 	@Override
 	public Container method_17357(int i, PlayerInventory playerInventory) {
-		return new GenericContainer.Generic9x3(i, playerInventory, this);
+		return GenericContainer.method_19245(i, playerInventory, this);
 	}
 }

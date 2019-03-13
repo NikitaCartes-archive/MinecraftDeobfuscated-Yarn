@@ -54,7 +54,7 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 	}
 
 	public boolean method_14029(IWorld iWorld, BlockPos blockPos) {
-		StructureStart structureStart = this.isInsideStructure(iWorld, blockPos, true);
+		StructureStart structureStart = this.method_14025(iWorld, blockPos, true);
 		if (structureStart != StructureStart.DEFAULT && structureStart instanceof SwampHutFeature.Start && !structureStart.getChildren().isEmpty()) {
 			StructurePiece structurePiece = (StructurePiece)structureStart.getChildren().get(0);
 			return structurePiece instanceof SwampHutGenerator;
@@ -69,7 +69,7 @@ public class SwampHutFeature extends AbstractTempleFeature<DefaultFeatureConfig>
 		}
 
 		@Override
-		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			SwampHutGenerator swampHutGenerator = new SwampHutGenerator(this.random, i * 16, j * 16);
 			this.children.add(swampHutGenerator);
 			this.setBoundingBoxFromChildren();

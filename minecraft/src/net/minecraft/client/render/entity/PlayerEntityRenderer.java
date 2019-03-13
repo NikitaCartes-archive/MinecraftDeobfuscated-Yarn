@@ -37,19 +37,19 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 
 	public PlayerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, boolean bl) {
 		super(entityRenderDispatcher, new PlayerEntityModel<>(0.0F, bl), 0.5F);
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F)));
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
-		this.addFeature(new StuckArrowsFeatureRenderer<>(this));
-		this.addFeature(new Deadmau5FeatureRenderer(this));
-		this.addFeature(new CapeFeatureRenderer(this));
-		this.addFeature(new HeadFeatureRenderer<>(this));
-		this.addFeature(new ElytraFeatureRenderer<>(this));
-		this.addFeature(new ShoulderParrotFeatureRenderer<>(this));
-		this.addFeature(new TridentRiptideFeatureRenderer<>(this));
+		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new BipedEntityModel(0.5F), new BipedEntityModel(1.0F)));
+		this.method_4046(new HeldItemFeatureRenderer<>(this));
+		this.method_4046(new StuckArrowsFeatureRenderer<>(this));
+		this.method_4046(new Deadmau5FeatureRenderer(this));
+		this.method_4046(new CapeFeatureRenderer(this));
+		this.method_4046(new HeadFeatureRenderer<>(this));
+		this.method_4046(new ElytraFeatureRenderer<>(this));
+		this.method_4046(new ShoulderParrotFeatureRenderer<>(this));
+		this.method_4046(new TridentRiptideFeatureRenderer<>(this));
 	}
 
 	public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
-		if (!abstractClientPlayerEntity.method_7340() || this.renderManager.field_4686 == abstractClientPlayerEntity) {
+		if (!abstractClientPlayerEntity.method_7340() || this.renderManager.field_4686.method_19331() == abstractClientPlayerEntity) {
 			double i = e;
 			if (abstractClientPlayerEntity.isSneaking()) {
 				i = e - 0.125;
@@ -66,18 +66,18 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		PlayerEntityModel<AbstractClientPlayerEntity> playerEntityModel = this.getModel();
 		if (abstractClientPlayerEntity.isSpectator()) {
 			playerEntityModel.setVisible(false);
-			playerEntityModel.head.visible = true;
-			playerEntityModel.headwear.visible = true;
+			playerEntityModel.field_3398.visible = true;
+			playerEntityModel.field_3394.visible = true;
 		} else {
-			ItemStack itemStack = abstractClientPlayerEntity.getMainHandStack();
-			ItemStack itemStack2 = abstractClientPlayerEntity.getOffHandStack();
+			ItemStack itemStack = abstractClientPlayerEntity.method_6047();
+			ItemStack itemStack2 = abstractClientPlayerEntity.method_6079();
 			playerEntityModel.setVisible(true);
-			playerEntityModel.headwear.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.HEAD);
-			playerEntityModel.bodyOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.BODY);
-			playerEntityModel.leftLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_LEG);
-			playerEntityModel.rightLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_LEG);
-			playerEntityModel.leftArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_ARM);
-			playerEntityModel.rightArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_ARM);
+			playerEntityModel.field_3394.visible = abstractClientPlayerEntity.method_7348(PlayerModelPart.HEAD);
+			playerEntityModel.field_3483.visible = abstractClientPlayerEntity.method_7348(PlayerModelPart.BODY);
+			playerEntityModel.field_3482.visible = abstractClientPlayerEntity.method_7348(PlayerModelPart.LEFT_LEG);
+			playerEntityModel.field_3479.visible = abstractClientPlayerEntity.method_7348(PlayerModelPart.RIGHT_LEG);
+			playerEntityModel.field_3484.visible = abstractClientPlayerEntity.method_7348(PlayerModelPart.LEFT_ARM);
+			playerEntityModel.field_3486.visible = abstractClientPlayerEntity.method_7348(PlayerModelPart.RIGHT_ARM);
 			playerEntityModel.isSneaking = abstractClientPlayerEntity.isSneaking();
 			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN);
 			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF);
@@ -97,7 +97,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		if (!itemStack3.isEmpty()) {
 			armPose = BipedEntityModel.ArmPose.field_3410;
 			if (abstractClientPlayerEntity.method_6014() > 0) {
-				UseAction useAction = itemStack3.getUseAction();
+				UseAction useAction = itemStack3.method_7976();
 				if (useAction == UseAction.field_8949) {
 					armPose = BipedEntityModel.ArmPose.field_3406;
 				} else if (useAction == UseAction.field_8953) {
@@ -109,14 +109,14 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				}
 			} else {
 				boolean bl = itemStack.getItem() == Items.field_8399;
-				boolean bl2 = CrossbowItem.isCharged(itemStack);
+				boolean bl2 = CrossbowItem.method_7781(itemStack);
 				boolean bl3 = itemStack2.getItem() == Items.field_8399;
-				boolean bl4 = CrossbowItem.isCharged(itemStack2);
+				boolean bl4 = CrossbowItem.method_7781(itemStack2);
 				if (bl && bl2) {
 					armPose = BipedEntityModel.ArmPose.field_3408;
 				}
 
-				if (bl3 && bl4 && itemStack.getItem().getUseAction(itemStack) == UseAction.field_8952) {
+				if (bl3 && bl4 && itemStack.getItem().method_7853(itemStack) == UseAction.field_8952) {
 					armPose = BipedEntityModel.ArmPose.field_3408;
 				}
 			}
@@ -136,12 +136,12 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 
 	protected void method_4213(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, String string, double g) {
 		if (g < 100.0) {
-			Scoreboard scoreboard = abstractClientPlayerEntity.getScoreboard();
+			Scoreboard scoreboard = abstractClientPlayerEntity.method_7327();
 			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(2);
 			if (scoreboardObjective != null) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
 				this.renderEntityLabel(
-					abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().getFormattedText(), d, e, f, 64
+					abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.method_1114().getFormattedText(), d, e, f, 64
 				);
 				e += (double)(9.0F * 1.15F * 0.025F);
 			}
@@ -161,10 +161,10 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.field_3396 = 0.0F;
 		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		playerEntityModel.armRight.pitch = 0.0F;
-		playerEntityModel.armRight.render(0.0625F);
-		playerEntityModel.rightArmOverlay.pitch = 0.0F;
-		playerEntityModel.rightArmOverlay.render(0.0625F);
+		playerEntityModel.field_3401.pitch = 0.0F;
+		playerEntityModel.field_3401.render(0.0625F);
+		playerEntityModel.field_3486.pitch = 0.0F;
+		playerEntityModel.field_3486.render(0.0625F);
 		GlStateManager.disableBlend();
 	}
 
@@ -179,10 +179,10 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		playerEntityModel.swingProgress = 0.0F;
 		playerEntityModel.field_3396 = 0.0F;
 		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
-		playerEntityModel.armLeft.pitch = 0.0F;
-		playerEntityModel.armLeft.render(0.0625F);
-		playerEntityModel.leftArmOverlay.pitch = 0.0F;
-		playerEntityModel.leftArmOverlay.render(0.0625F);
+		playerEntityModel.field_3390.pitch = 0.0F;
+		playerEntityModel.field_3390.render(0.0625F);
+		playerEntityModel.field_3484.pitch = 0.0F;
+		playerEntityModel.field_3484.render(0.0625F);
 		GlStateManager.disableBlend();
 	}
 
@@ -196,10 +196,10 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				GlStateManager.rotatef(k * (-90.0F - abstractClientPlayerEntity.pitch), 1.0F, 0.0F, 0.0F);
 			}
 
-			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
-			Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
-			double d = Entity.squaredHorizontalLength(vec3d2);
-			double e = Entity.squaredHorizontalLength(vec3d);
+			Vec3d vec3d = abstractClientPlayerEntity.method_5828(h);
+			Vec3d vec3d2 = abstractClientPlayerEntity.method_18798();
+			double d = Entity.method_17996(vec3d2);
+			double e = Entity.method_17996(vec3d);
 			if (d > 0.0 && e > 0.0) {
 				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / (Math.sqrt(d) * Math.sqrt(e));
 				double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;

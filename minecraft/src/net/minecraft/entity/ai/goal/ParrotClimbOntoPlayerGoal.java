@@ -4,19 +4,19 @@ import net.minecraft.entity.passive.ParrotBaseEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class ParrotClimbOntoPlayerGoal extends Goal {
-	private final ParrotBaseEntity parrot;
-	private ServerPlayerEntity parrotOwner;
+	private final ParrotBaseEntity field_6478;
+	private ServerPlayerEntity field_6479;
 	private boolean mounted;
 
 	public ParrotClimbOntoPlayerGoal(ParrotBaseEntity parrotBaseEntity) {
-		this.parrot = parrotBaseEntity;
+		this.field_6478 = parrotBaseEntity;
 	}
 
 	@Override
 	public boolean canStart() {
-		ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.parrot.getOwner();
+		ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.field_6478.getOwner();
 		boolean bl = serverPlayerEntity != null && !serverPlayerEntity.isSpectator() && !serverPlayerEntity.abilities.flying && !serverPlayerEntity.isInsideWater();
-		return !this.parrot.isSitting() && bl && this.parrot.method_6626();
+		return !this.field_6478.isSitting() && bl && this.field_6478.method_6626();
 	}
 
 	@Override
@@ -26,15 +26,15 @@ public class ParrotClimbOntoPlayerGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.parrotOwner = (ServerPlayerEntity)this.parrot.getOwner();
+		this.field_6479 = (ServerPlayerEntity)this.field_6478.getOwner();
 		this.mounted = false;
 	}
 
 	@Override
 	public void tick() {
-		if (!this.mounted && !this.parrot.isSitting() && !this.parrot.isLeashed()) {
-			if (this.parrot.getBoundingBox().intersects(this.parrotOwner.getBoundingBox())) {
-				this.mounted = this.parrot.mountOnto(this.parrotOwner);
+		if (!this.mounted && !this.field_6478.isSitting() && !this.field_6478.isLeashed()) {
+			if (this.field_6478.method_5829().intersects(this.field_6479.method_5829())) {
+				this.mounted = this.field_6478.method_6627(this.field_6479);
 			}
 		}
 	}

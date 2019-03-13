@@ -25,8 +25,8 @@ public final class ConstantLootTableRange implements LootTableRange {
 	}
 
 	@Override
-	public Identifier getType() {
-		return CONSTANT;
+	public Identifier method_365() {
+		return field_968;
 	}
 
 	public static ConstantLootTableRange create(int i) {

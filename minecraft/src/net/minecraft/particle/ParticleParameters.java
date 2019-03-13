@@ -5,15 +5,15 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.util.PacketByteBuf;
 
 public interface ParticleParameters {
-	ParticleType<?> getType();
+	ParticleType<?> method_10295();
 
-	void write(PacketByteBuf packetByteBuf);
+	void method_10294(PacketByteBuf packetByteBuf);
 
 	String asString();
 
 	public interface Factory<T extends ParticleParameters> {
-		T read(ParticleType<T> particleType, StringReader stringReader) throws CommandSyntaxException;
+		T method_10296(ParticleType<T> particleType, StringReader stringReader) throws CommandSyntaxException;
 
-		T read(ParticleType<T> particleType, PacketByteBuf packetByteBuf);
+		T method_10297(ParticleType<T> particleType, PacketByteBuf packetByteBuf);
 	}
 }

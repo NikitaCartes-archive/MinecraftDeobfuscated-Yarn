@@ -18,7 +18,7 @@ public class Rotation {
 		this(listTag.getFloat(0), listTag.getFloat(1), listTag.getFloat(2));
 	}
 
-	public ListTag serialize() {
+	public ListTag method_10255() {
 		ListTag listTag = new ListTag();
 		listTag.add(new FloatTag(this.x));
 		listTag.add(new FloatTag(this.y));

@@ -11,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer {
-	private static final Identifier BEAM_TEXTURE = new Identifier("textures/entity/end_gateway_beam.png");
+	private static final Identifier field_4409 = new Identifier("textures/entity/end_gateway_beam.png");
 
 	@Override
 	public void method_3591(EndPortalBlockEntity endPortalBlockEntity, double d, double e, double f, float g, int i) {
@@ -19,7 +19,7 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer 
 		EndGatewayBlockEntity endGatewayBlockEntity = (EndGatewayBlockEntity)endPortalBlockEntity;
 		if (endGatewayBlockEntity.isRecentlyGenerated() || endGatewayBlockEntity.needsCooldownBeforeTeleporting()) {
 			GlStateManager.alphaFunc(516, 0.1F);
-			this.bindTexture(BEAM_TEXTURE);
+			this.method_3566(field_4409);
 			float h = endGatewayBlockEntity.isRecentlyGenerated()
 				? endGatewayBlockEntity.getRecentlyGeneratedBeamHeight(g)
 				: endGatewayBlockEntity.getCooldownBeamHeight(g);

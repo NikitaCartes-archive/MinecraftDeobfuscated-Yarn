@@ -14,28 +14,28 @@ import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextType;
 
 public class InvertedLootCondition implements LootCondition {
-	private final LootCondition term;
+	private final LootCondition field_1283;
 
 	private InvertedLootCondition(LootCondition lootCondition) {
-		this.term = lootCondition;
+		this.field_1283 = lootCondition;
 	}
 
 	public final boolean method_888(LootContext lootContext) {
-		return !this.term.test(lootContext);
+		return !this.field_1283.test(lootContext);
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.term.getRequiredParameters();
+		return this.field_1283.getRequiredParameters();
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		LootCondition.super.check(lootTableReporter, function, set, lootContextType);
-		this.term.check(lootTableReporter, function, set, lootContextType);
+	public void method_292(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		LootCondition.super.method_292(lootTableReporter, function, set, lootContextType);
+		this.field_1283.method_292(lootTableReporter, function, set, lootContextType);
 	}
 
-	public static LootCondition.Builder create(LootCondition.Builder builder) {
+	public static LootCondition.Builder method_889(LootCondition.Builder builder) {
 		InvertedLootCondition invertedLootCondition = new InvertedLootCondition(builder.build());
 		return () -> invertedLootCondition;
 	}
@@ -46,7 +46,7 @@ public class InvertedLootCondition implements LootCondition {
 		}
 
 		public void method_892(JsonObject jsonObject, InvertedLootCondition invertedLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.add("term", jsonSerializationContext.serialize(invertedLootCondition.term));
+			jsonObject.add("term", jsonSerializationContext.serialize(invertedLootCondition.field_1283));
 		}
 
 		public InvertedLootCondition method_891(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {

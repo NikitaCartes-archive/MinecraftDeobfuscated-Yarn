@@ -11,14 +11,14 @@ public class GameOptionSliderWidget extends SliderWidget {
 	private final DoubleGameOption option;
 
 	public GameOptionSliderWidget(GameOptions gameOptions, int i, int j, int k, int l, DoubleGameOption doubleGameOption) {
-		super(gameOptions, i, j, k, l, (float)doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions)));
+		super(gameOptions, i, j, k, l, (double)((float)doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions))));
 		this.option = doubleGameOption;
 		this.updateText();
 	}
 
 	@Override
 	public void drawButton(int i, int j, float f) {
-		if (this.option == GameOption.FULLSCREEN_RESOLUTION) {
+		if (this.option == GameOption.field_1931) {
 			this.updateText();
 		}
 

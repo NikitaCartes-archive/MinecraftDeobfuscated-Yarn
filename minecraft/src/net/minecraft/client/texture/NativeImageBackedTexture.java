@@ -23,7 +23,7 @@ public class NativeImageBackedTexture extends AbstractTexture implements AutoClo
 	}
 
 	@Override
-	public void load(ResourceManager resourceManager) throws IOException {
+	public void method_4625(ResourceManager resourceManager) throws IOException {
 	}
 
 	public void upload() {

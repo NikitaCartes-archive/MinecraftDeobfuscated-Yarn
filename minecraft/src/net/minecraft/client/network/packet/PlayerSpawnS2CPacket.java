@@ -20,7 +20,7 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	private double z;
 	private byte yaw;
 	private byte pitch;
-	private DataTracker dataTracker;
+	private DataTracker field_12016;
 	private List<DataTracker.Entry<?>> trackedValues;
 
 	public PlayerSpawnS2CPacket() {
@@ -34,7 +34,7 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.z = playerEntity.z;
 		this.yaw = (byte)((int)(playerEntity.yaw * 256.0F / 360.0F));
 		this.pitch = (byte)((int)(playerEntity.pitch * 256.0F / 360.0F));
-		this.dataTracker = playerEntity.getDataTracker();
+		this.field_12016 = playerEntity.method_5841();
 	}
 
 	@Override
@@ -58,11 +58,11 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeDouble(this.z);
 		packetByteBuf.writeByte(this.yaw);
 		packetByteBuf.writeByte(this.pitch);
-		this.dataTracker.serializePacket(packetByteBuf);
+		this.field_12016.serializePacket(packetByteBuf);
 	}
 
 	public void method_11235(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onPlayerSpawn(this);
+		clientPlayPacketListener.method_11097(this);
 	}
 
 	@Nullable

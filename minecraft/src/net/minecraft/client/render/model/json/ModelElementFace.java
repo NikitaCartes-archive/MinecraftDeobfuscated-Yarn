@@ -14,16 +14,16 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class ModelElementFace {
-	public final Direction cullFace;
+	public final Direction field_4225;
 	public final int tintIndex;
 	public final String textureId;
-	public final ModelElementTexture textureData;
+	public final ModelElementTexture field_4227;
 
 	public ModelElementFace(@Nullable Direction direction, int i, String string, ModelElementTexture modelElementTexture) {
-		this.cullFace = direction;
+		this.field_4225 = direction;
 		this.tintIndex = i;
 		this.textureId = string;
-		this.textureData = modelElementTexture;
+		this.field_4227 = modelElementTexture;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -33,7 +33,7 @@ public class ModelElementFace {
 
 		public ModelElementFace method_3397(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			Direction direction = this.deserializeCullFace(jsonObject);
+			Direction direction = this.method_3398(jsonObject);
 			int i = this.deserializeTintIndex(jsonObject);
 			String string = this.deserializeTexture(jsonObject);
 			ModelElementTexture modelElementTexture = jsonDeserializationContext.deserialize(jsonObject, ModelElementTexture.class);
@@ -49,7 +49,7 @@ public class ModelElementFace {
 		}
 
 		@Nullable
-		private Direction deserializeCullFace(JsonObject jsonObject) {
+		private Direction method_3398(JsonObject jsonObject) {
 			String string = JsonHelper.getString(jsonObject, "cullface", "");
 			return Direction.byName(string);
 		}

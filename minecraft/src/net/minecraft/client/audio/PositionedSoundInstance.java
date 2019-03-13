@@ -13,19 +13,19 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		this(soundEvent, soundCategory, f, g, (float)blockPos.getX() + 0.5F, (float)blockPos.getY() + 0.5F, (float)blockPos.getZ() + 0.5F);
 	}
 
-	public static PositionedSoundInstance master(SoundEvent soundEvent, float f) {
-		return master(soundEvent, f, 0.25F);
+	public static PositionedSoundInstance method_4758(SoundEvent soundEvent, float f) {
+		return method_4757(soundEvent, f, 0.25F);
 	}
 
-	public static PositionedSoundInstance master(SoundEvent soundEvent, float f, float g) {
+	public static PositionedSoundInstance method_4757(SoundEvent soundEvent, float f, float g) {
 		return new PositionedSoundInstance(soundEvent, SoundCategory.field_15250, g, f, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F);
 	}
 
-	public static PositionedSoundInstance music(SoundEvent soundEvent) {
+	public static PositionedSoundInstance method_4759(SoundEvent soundEvent) {
 		return new PositionedSoundInstance(soundEvent, SoundCategory.field_15253, 1.0F, 1.0F, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F);
 	}
 
-	public static PositionedSoundInstance record(SoundEvent soundEvent, float f, float g, float h) {
+	public static PositionedSoundInstance method_4760(SoundEvent soundEvent, float f, float g, float h) {
 		return new PositionedSoundInstance(soundEvent, SoundCategory.field_15247, 4.0F, 1.0F, false, 0, SoundInstance.AttenuationType.LINEAR, f, g, h);
 	}
 
@@ -68,6 +68,6 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		this.z = k;
 		this.repeat = bl;
 		this.repeatDelay = i;
-		this.attenuationType = attenuationType;
+		this.field_5440 = attenuationType;
 	}
 }

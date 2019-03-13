@@ -64,8 +64,8 @@ public class BlockEntityType<T extends BlockEntity> {
 	private final Type<?> type;
 
 	@Nullable
-	public static Identifier getId(BlockEntityType<?> blockEntityType) {
-		return Registry.BLOCK_ENTITY.getId(blockEntityType);
+	public static Identifier method_11033(BlockEntityType<?> blockEntityType) {
+		return Registry.BLOCK_ENTITY.method_10221(blockEntityType);
 	}
 
 	private static <T extends BlockEntity> BlockEntityType<T> create(String string, BlockEntityType.Builder<T> builder) {

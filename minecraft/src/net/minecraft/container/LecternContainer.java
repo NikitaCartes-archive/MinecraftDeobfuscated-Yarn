@@ -18,17 +18,17 @@ public class LecternContainer extends Container {
 	public LecternContainer(int i, Inventory inventory, PropertyDelegate propertyDelegate) {
 		super(ContainerType.LECTERN, i);
 		checkContainerSize(inventory, 1);
-		checkContainerDataCount(propertyDelegate, 1);
+		method_17361(propertyDelegate, 1);
 		this.inventory = inventory;
 		this.propertyDelegate = propertyDelegate;
-		this.addSlot(new Slot(inventory, 0, 0, 0) {
+		this.method_7621(new Slot(inventory, 0, 0, 0) {
 			@Override
 			public void markDirty() {
 				super.markDirty();
 				LecternContainer.this.onContentChanged(this.inventory);
 			}
 		});
-		this.addProperties(propertyDelegate);
+		this.method_17360(propertyDelegate);
 	}
 
 	@Override
@@ -54,10 +54,10 @@ public class LecternContainer extends Container {
 						return false;
 					}
 
-					ItemStack itemStack = this.inventory.removeInvStack(0);
+					ItemStack itemStack = this.inventory.method_5441(0);
 					this.inventory.markDirty();
-					if (!playerEntity.inventory.insertStack(itemStack)) {
-						playerEntity.dropItem(itemStack, false);
+					if (!playerEntity.inventory.method_7394(itemStack)) {
+						playerEntity.method_7328(itemStack, false);
 					}
 
 					return true;
@@ -75,12 +75,12 @@ public class LecternContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return this.inventory.canPlayerUseInv(playerEntity);
+		return this.inventory.method_5443(playerEntity);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ItemStack getBookItem() {
-		return this.inventory.getInvStack(0);
+	public ItemStack method_17418() {
+		return this.inventory.method_5438(0);
 	}
 
 	@Environment(EnvType.CLIENT)

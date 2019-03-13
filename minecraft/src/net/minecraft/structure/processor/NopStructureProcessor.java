@@ -16,7 +16,7 @@ public class NopStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo process(
+	public Structure.StructureBlockInfo method_15110(
 		ViewableWorld viewableWorld,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
@@ -27,7 +27,7 @@ public class NopStructureProcessor extends StructureProcessor {
 	}
 
 	@Override
-	protected StructureProcessorType getType() {
+	protected StructureProcessorType method_16772() {
 		return StructureProcessorType.field_16987;
 	}
 

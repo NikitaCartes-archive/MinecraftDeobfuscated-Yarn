@@ -13,7 +13,7 @@ public class GeneralForestFlowerFeature extends FlowerFeature {
 	}
 
 	@Override
-	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
-		return Blocks.field_10548.getDefaultState();
+	public BlockState method_13175(Random random, BlockPos blockPos) {
+		return Blocks.field_10548.method_9564();
 	}
 }

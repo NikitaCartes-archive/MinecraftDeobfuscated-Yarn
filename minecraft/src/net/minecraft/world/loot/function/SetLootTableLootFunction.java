@@ -17,12 +17,12 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextType;
 
 public class SetLootTableLootFunction extends ConditionalLootFunction {
-	private final Identifier id;
+	private final Identifier field_1116;
 	private final long seed;
 
 	private SetLootTableLootFunction(LootCondition[] lootConditions, Identifier identifier, long l) {
 		super(lootConditions);
-		this.id = identifier;
+		this.field_1116 = identifier;
 		this.seed = l;
 	}
 
@@ -32,28 +32,28 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 			return itemStack;
 		} else {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putString("LootTable", this.id.toString());
+			compoundTag.putString("LootTable", this.field_1116.toString());
 			if (this.seed != 0L) {
 				compoundTag.putLong("LootTableSeed", this.seed);
 			}
 
-			itemStack.getOrCreateTag().put("BlockEntityTag", compoundTag);
+			itemStack.method_7948().method_10566("BlockEntityTag", compoundTag);
 			return itemStack;
 		}
 	}
 
 	@Override
-	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		if (set.contains(this.id)) {
-			lootTableReporter.report("Table " + this.id + " is recursively called");
+	public void method_292(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		if (set.contains(this.field_1116)) {
+			lootTableReporter.report("Table " + this.field_1116 + " is recursively called");
 		} else {
-			super.check(lootTableReporter, function, set, lootContextType);
-			LootSupplier lootSupplier = (LootSupplier)function.apply(this.id);
+			super.method_292(lootTableReporter, function, set, lootContextType);
+			LootSupplier lootSupplier = (LootSupplier)function.apply(this.field_1116);
 			if (lootSupplier == null) {
-				lootTableReporter.report("Unknown loot table called " + this.id);
+				lootTableReporter.report("Unknown loot table called " + this.field_1116);
 			} else {
-				Set<Identifier> set2 = ImmutableSet.<Identifier>builder().addAll(set).add(this.id).build();
-				lootSupplier.check(lootTableReporter.makeChild("->{" + this.id + "}"), function, set2, lootContextType);
+				Set<Identifier> set2 = ImmutableSet.<Identifier>builder().addAll(set).add(this.field_1116).build();
+				lootSupplier.method_330(lootTableReporter.makeChild("->{" + this.field_1116 + "}"), function, set2, lootContextType);
 			}
 		}
 	}
@@ -65,7 +65,7 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 
 		public void method_626(JsonObject jsonObject, SetLootTableLootFunction setLootTableLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, setLootTableLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("name", setLootTableLootFunction.id.toString());
+			jsonObject.addProperty("name", setLootTableLootFunction.field_1116.toString());
 			if (setLootTableLootFunction.seed != 0L) {
 				jsonObject.addProperty("seed", setLootTableLootFunction.seed);
 			}

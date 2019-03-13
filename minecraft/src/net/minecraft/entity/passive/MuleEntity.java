@@ -12,25 +12,25 @@ public class MuleEntity extends AbstractDonkeyEntity {
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
-		super.getAmbientSound();
+	protected SoundEvent method_5994() {
+		super.method_5994();
 		return SoundEvents.field_14614;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
-		super.getDeathSound();
+	protected SoundEvent method_6002() {
+		super.method_6002();
 		return SoundEvents.field_15158;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		super.getHurtSound(damageSource);
+	protected SoundEvent method_6011(DamageSource damageSource) {
+		super.method_6011(damageSource);
 		return SoundEvents.field_14900;
 	}
 
 	@Override
 	protected void method_6705() {
-		this.playSound(SoundEvents.field_15063, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+		this.method_5783(SoundEvents.field_15063, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 }

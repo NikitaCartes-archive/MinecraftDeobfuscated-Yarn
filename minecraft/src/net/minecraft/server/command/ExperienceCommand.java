@@ -134,9 +134,7 @@ public class ExperienceCommand {
 
 	private static int method_13328(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, ExperienceCommand.class_3055 arg) {
 		int i = arg.field_13645.applyAsInt(serverPlayerEntity);
-		serverCommandSource.sendFeedback(
-			new TranslatableTextComponent("commands.experience.query." + arg.field_13643, serverPlayerEntity.getDisplayName(), i), false
-		);
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.experience.query." + arg.field_13643, serverPlayerEntity.method_5476(), i), false);
 		return i;
 	}
 
@@ -148,14 +146,14 @@ public class ExperienceCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent(
-					"commands.experience.add." + arg.field_13643 + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+					"commands.experience.add." + arg.field_13643 + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).method_5476()
 				),
 				true
 			);
 		} else {
-			serverCommandSource.sendFeedback(
+			serverCommandSource.method_9226(
 				new TranslatableTextComponent("commands.experience.add." + arg.field_13643 + ".success.multiple", i, collection.size()), true
 			);
 		}
@@ -178,14 +176,14 @@ public class ExperienceCommand {
 			throw SET_POINT_INVALID_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.sendFeedback(
+				serverCommandSource.method_9226(
 					new TranslatableTextComponent(
-						"commands.experience.set." + arg.field_13643 + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+						"commands.experience.set." + arg.field_13643 + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).method_5476()
 					),
 					true
 				);
 			} else {
-				serverCommandSource.sendFeedback(
+				serverCommandSource.method_9226(
 					new TranslatableTextComponent("commands.experience.set." + arg.field_13643 + ".success.multiple", i, collection.size()), true
 				);
 			}

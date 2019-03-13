@@ -15,9 +15,9 @@ public final class WoodedBadlandsPlateauBiome extends Biome {
 	public WoodedBadlandsPlateauBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.WOODED_BADLANDS, SurfaceBuilder.BADLANDS_CONFIG)
+				.method_8737(SurfaceBuilder.WOODED_BADLANDS, SurfaceBuilder.field_15672)
 				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.MESA)
+				.method_8738(Biome.Category.MESA)
 				.depth(1.5F)
 				.scale(0.025F)
 				.temperature(2.0F)
@@ -26,8 +26,8 @@ public final class WoodedBadlandsPlateauBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.MESA));
-		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.MESA));
+		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -55,13 +55,13 @@ public final class WoodedBadlandsPlateauBiome extends Biome {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getFoliageColorAt(BlockPos blockPos) {
+	public int method_8698(BlockPos blockPos) {
 		return 10387789;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getGrassColorAt(BlockPos blockPos) {
+	public int method_8711(BlockPos blockPos) {
 		return 9470285;
 	}
 }

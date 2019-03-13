@@ -8,7 +8,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class FlowerBlock extends PlantBlock {
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 10.0, 11.0);
+	protected static final VoxelShape field_11085 = Block.method_9541(5.0, 0.0, 5.0, 11.0, 10.0, 11.0);
 	private final StatusEffect effectInStew;
 	private final int effectInStewDuration;
 
@@ -19,9 +19,9 @@ public class FlowerBlock extends PlantBlock {
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
-		return SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		Vec3d vec3d = blockState.method_11599(blockView, blockPos);
+		return field_11085.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override

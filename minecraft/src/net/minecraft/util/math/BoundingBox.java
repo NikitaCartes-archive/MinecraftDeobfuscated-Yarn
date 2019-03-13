@@ -43,6 +43,17 @@ public class BoundingBox {
 		this(vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
 	}
 
+	public static BoundingBox method_19316(MutableIntBoundingBox mutableIntBoundingBox) {
+		return new BoundingBox(
+			(double)mutableIntBoundingBox.minX,
+			(double)mutableIntBoundingBox.minY,
+			(double)mutableIntBoundingBox.minZ,
+			(double)(mutableIntBoundingBox.maxX + 1),
+			(double)(mutableIntBoundingBox.maxY + 1),
+			(double)(mutableIntBoundingBox.maxZ + 1)
+		);
+	}
+
 	public double method_1001(Direction.Axis axis) {
 		return axis.choose(this.minX, this.minY, this.minZ);
 	}
@@ -187,7 +198,7 @@ public class BoundingBox {
 		return new BoundingBox(this.minX + d, this.minY + e, this.minZ + f, this.maxX + d, this.maxY + e, this.maxZ + f);
 	}
 
-	public BoundingBox offset(BlockPos blockPos) {
+	public BoundingBox method_996(BlockPos blockPos) {
 		return new BoundingBox(
 			this.minX + (double)blockPos.getX(),
 			this.minY + (double)blockPos.getY(),
@@ -198,7 +209,7 @@ public class BoundingBox {
 		);
 	}
 
-	public BoundingBox offset(Vec3d vec3d) {
+	public BoundingBox method_997(Vec3d vec3d) {
 		return this.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
@@ -211,7 +222,7 @@ public class BoundingBox {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean intersects(Vec3d vec3d, Vec3d vec3d2) {
+	public boolean method_993(Vec3d vec3d, Vec3d vec3d2) {
 		return this.intersects(
 			Math.min(vec3d.x, vec3d2.x),
 			Math.min(vec3d.y, vec3d2.y),
@@ -222,7 +233,7 @@ public class BoundingBox {
 		);
 	}
 
-	public boolean contains(Vec3d vec3d) {
+	public boolean method_1006(Vec3d vec3d) {
 		return this.contains(vec3d.x, vec3d.y, vec3d.z);
 	}
 
@@ -257,7 +268,7 @@ public class BoundingBox {
 		return this.expand(-d);
 	}
 
-	public Optional<Vec3d> rayTrace(Vec3d vec3d, Vec3d vec3d2) {
+	public Optional<Vec3d> method_992(Vec3d vec3d, Vec3d vec3d2) {
 		double[] ds = new double[]{1.0};
 		double d = vec3d2.x - vec3d.x;
 		double e = vec3d2.y - vec3d.y;
@@ -280,7 +291,7 @@ public class BoundingBox {
 		double f = vec3d2.z - vec3d.z;
 
 		for(BoundingBox boundingBox : iterable) {
-			direction = method_1007(boundingBox.offset(blockPos), vec3d, ds, direction, d, e, f);
+			direction = method_1007(boundingBox.method_996(blockPos), vec3d, ds, direction, d, e, f);
 		}
 
 		if (direction == null) {
@@ -433,7 +444,7 @@ public class BoundingBox {
 			|| Double.isNaN(this.maxZ);
 	}
 
-	public Vec3d getCenter() {
+	public Vec3d method_1005() {
 		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
 	}
 }

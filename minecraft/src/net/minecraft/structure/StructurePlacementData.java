@@ -16,7 +16,7 @@ import net.minecraft.world.gen.ChunkRandom;
 public class StructurePlacementData {
 	private Mirror mirror = Mirror.NONE;
 	private Rotation rotation = Rotation.ROT_0;
-	private BlockPos position = BlockPos.ORIGIN;
+	private BlockPos field_15566 = BlockPos.ORIGIN;
 	private boolean ignoreEntities;
 	@Nullable
 	private ChunkPos chunkPosition;
@@ -37,7 +37,7 @@ public class StructurePlacementData {
 		StructurePlacementData structurePlacementData = new StructurePlacementData();
 		structurePlacementData.mirror = this.mirror;
 		structurePlacementData.rotation = this.rotation;
-		structurePlacementData.position = this.position;
+		structurePlacementData.field_15566 = this.field_15566;
 		structurePlacementData.ignoreEntities = this.ignoreEntities;
 		structurePlacementData.chunkPosition = this.chunkPosition;
 		structurePlacementData.boundingBox = this.boundingBox;
@@ -61,8 +61,8 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData setPosition(BlockPos blockPos) {
-		this.position = blockPos;
+	public StructurePlacementData method_15119(BlockPos blockPos) {
+		this.field_15566 = blockPos;
 		return this;
 	}
 
@@ -101,12 +101,12 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public StructurePlacementData addProcessor(StructureProcessor structureProcessor) {
+	public StructurePlacementData method_16184(StructureProcessor structureProcessor) {
 		this.processors.add(structureProcessor);
 		return this;
 	}
 
-	public StructurePlacementData removeProcessor(StructureProcessor structureProcessor) {
+	public StructurePlacementData method_16664(StructureProcessor structureProcessor) {
 		this.processors.remove(structureProcessor);
 		return this;
 	}
@@ -119,11 +119,11 @@ public class StructurePlacementData {
 		return this.rotation;
 	}
 
-	public BlockPos getPosition() {
-		return this.position;
+	public BlockPos method_15134() {
+		return this.field_15566;
 	}
 
-	public Random getRandom(@Nullable BlockPos blockPos) {
+	public Random method_15115(@Nullable BlockPos blockPos) {
 		if (this.random != null) {
 			return this.random;
 		} else if (this.seed != null) {
@@ -169,7 +169,7 @@ public class StructurePlacementData {
 		if (this.field_15572 != null && this.field_15572 >= 0 && this.field_15572 < list.size()) {
 			return (List<Structure.StructureBlockInfo>)list.get(this.field_15572);
 		} else {
-			this.field_15572 = this.getRandom(blockPos).nextInt(list.size());
+			this.field_15572 = this.method_15115(blockPos).nextInt(list.size());
 			return (List<Structure.StructureBlockInfo>)list.get(this.field_15572);
 		}
 	}

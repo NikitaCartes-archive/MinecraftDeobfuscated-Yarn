@@ -18,13 +18,13 @@ public enum PlayerModelPart {
 	private final int id;
 	private final int bitFlag;
 	private final String name;
-	private final TextComponent localizedName;
+	private final TextComponent field_7567;
 
 	private PlayerModelPart(int j, String string2) {
 		this.id = j;
 		this.bitFlag = 1 << j;
 		this.name = string2;
-		this.localizedName = new TranslatableTextComponent("options.modelPart." + string2);
+		this.field_7567 = new TranslatableTextComponent("options.modelPart." + string2);
 	}
 
 	public int getBitFlag() {
@@ -35,7 +35,7 @@ public enum PlayerModelPart {
 		return this.name;
 	}
 
-	public TextComponent getLocalizedName() {
-		return this.localizedName;
+	public TextComponent method_7428() {
+		return this.field_7567;
 	}
 }

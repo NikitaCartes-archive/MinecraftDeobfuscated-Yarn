@@ -21,7 +21,7 @@ import net.minecraft.world.GameMode;
 @Environment(EnvType.CLIENT)
 public class Realms {
 	public static boolean isTouchScreen() {
-		return MinecraftClient.getInstance().options.touchscreen;
+		return MinecraftClient.getInstance().field_1690.touchscreen;
 	}
 
 	public static Proxy getProxy() {
@@ -29,12 +29,12 @@ public class Realms {
 	}
 
 	public static String sessionId() {
-		Session session = MinecraftClient.getInstance().getSession();
+		Session session = MinecraftClient.getInstance().method_1548();
 		return session == null ? null : session.getSessionId();
 	}
 
 	public static String userName() {
-		Session session = MinecraftClient.getInstance().getSession();
+		Session session = MinecraftClient.getInstance().method_1548();
 		return session == null ? null : session.getUsername();
 	}
 
@@ -43,15 +43,15 @@ public class Realms {
 	}
 
 	public static String getSessionId() {
-		return MinecraftClient.getInstance().getSession().getSessionId();
+		return MinecraftClient.getInstance().method_1548().getSessionId();
 	}
 
 	public static String getUUID() {
-		return MinecraftClient.getInstance().getSession().getUuid();
+		return MinecraftClient.getInstance().method_1548().getUuid();
 	}
 
 	public static String getName() {
-		return MinecraftClient.getInstance().getSession().getUsername();
+		return MinecraftClient.getInstance().method_1548().getUsername();
 	}
 
 	public static String uuidToName(String string) {
@@ -74,7 +74,7 @@ public class Realms {
 	}
 
 	public static void setScreenDirect(RealmsScreen realmsScreen) {
-		MinecraftClient.getInstance().openScreen(realmsScreen.getProxy());
+		MinecraftClient.getInstance().method_1507(realmsScreen.getProxy());
 	}
 
 	public static String getGameDirectoryPath() {
@@ -102,19 +102,19 @@ public class Realms {
 	}
 
 	public static CompletableFuture<?> downloadResourcePack(String string, String string2) {
-		return MinecraftClient.getInstance().getResourcePackDownloader().download(string, string2);
+		return MinecraftClient.getInstance().method_1516().download(string, string2);
 	}
 
 	public static void clearResourcePack() {
-		MinecraftClient.getInstance().getResourcePackDownloader().clear();
+		MinecraftClient.getInstance().method_1516().clear();
 	}
 
 	public static boolean getRealmsNotificationsEnabled() {
-		return MinecraftClient.getInstance().options.realmsNotifications;
+		return MinecraftClient.getInstance().field_1690.realmsNotifications;
 	}
 
 	public static boolean inTitleScreen() {
-		return MinecraftClient.getInstance().currentScreen != null && MinecraftClient.getInstance().currentScreen instanceof MainMenuScreen;
+		return MinecraftClient.getInstance().field_1755 != null && MinecraftClient.getInstance().field_1755 instanceof MainMenuScreen;
 	}
 
 	public static void deletePlayerTag(File file) {

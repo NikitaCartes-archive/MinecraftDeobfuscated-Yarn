@@ -9,8 +9,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
 public class CustomPayloadC2SPacket implements Packet<ServerPlayPacketListener> {
-	public static final Identifier BRAND = new Identifier("brand");
-	private Identifier channel;
+	public static final Identifier field_12831 = new Identifier("brand");
+	private Identifier field_12830;
 	private PacketByteBuf data;
 
 	public CustomPayloadC2SPacket() {
@@ -18,13 +18,13 @@ public class CustomPayloadC2SPacket implements Packet<ServerPlayPacketListener> 
 
 	@Environment(EnvType.CLIENT)
 	public CustomPayloadC2SPacket(Identifier identifier, PacketByteBuf packetByteBuf) {
-		this.channel = identifier;
+		this.field_12830 = identifier;
 		this.data = packetByteBuf;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.channel = packetByteBuf.readIdentifier();
+		this.field_12830 = packetByteBuf.method_10810();
 		int i = packetByteBuf.readableBytes();
 		if (i >= 0 && i <= 32767) {
 			this.data = new PacketByteBuf(packetByteBuf.readBytes(i));
@@ -35,12 +35,12 @@ public class CustomPayloadC2SPacket implements Packet<ServerPlayPacketListener> 
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeIdentifier(this.channel);
+		packetByteBuf.method_10812(this.field_12830);
 		packetByteBuf.writeBytes(this.data);
 	}
 
 	public void method_12199(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onCustomPayload(this);
+		serverPlayPacketListener.method_12075(this);
 		if (this.data != null) {
 			this.data.release();
 		}

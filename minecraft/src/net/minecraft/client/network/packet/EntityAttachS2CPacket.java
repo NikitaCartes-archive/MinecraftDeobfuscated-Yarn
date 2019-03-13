@@ -34,7 +34,7 @@ public class EntityAttachS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11811(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEntityAttach(this);
+		clientPlayPacketListener.method_11110(this);
 	}
 
 	@Environment(EnvType.CLIENT)

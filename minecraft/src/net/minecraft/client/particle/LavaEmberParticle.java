@@ -20,7 +20,7 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -45,7 +45,7 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 		this.prevPosZ = this.posZ;
 		float f = (float)this.age / (float)this.maxAge;
 		if (this.random.nextFloat() > f) {
-			this.world.addParticle(ParticleTypes.field_11251, this.posX, this.posY, this.posZ, this.velocityX, this.velocityY, this.velocityZ);
+			this.world.method_8406(ParticleTypes.field_11251, this.posX, this.posY, this.posZ, this.velocityX, this.velocityY, this.velocityZ);
 		}
 
 		if (this.age++ >= this.maxAge) {

@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SilverfishEntityRenderer extends MobEntityRenderer<SilverfishEntity, SilverfishEntityModel<SilverfishEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/silverfish.png");
+	private static final Identifier field_4779 = new Identifier("textures/entity/silverfish.png");
 
 	public SilverfishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SilverfishEntityModel<>(), 0.3F);
@@ -19,6 +19,6 @@ public class SilverfishEntityRenderer extends MobEntityRenderer<SilverfishEntity
 	}
 
 	protected Identifier method_4108(SilverfishEntity silverfishEntity) {
-		return SKIN;
+		return field_4779;
 	}
 }

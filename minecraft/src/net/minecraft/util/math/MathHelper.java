@@ -319,7 +319,7 @@ public class MathHelper {
 	}
 
 	public static double fractionalPart(double d) {
-		return d - Math.floor(d);
+		return d - (double)lfloor(d);
 	}
 
 	public static long hashCode(Vec3i vec3i) {

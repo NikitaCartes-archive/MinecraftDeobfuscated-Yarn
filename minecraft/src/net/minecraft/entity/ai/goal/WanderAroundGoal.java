@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import javax.annotation.Nullable;
 import net.minecraft.class_1414;
 import net.minecraft.entity.mob.MobEntityWithAi;
@@ -22,7 +23,7 @@ public class WanderAroundGoal extends Goal {
 		this.owner = mobEntityWithAi;
 		this.speed = d;
 		this.chance = i;
-		this.setControlBits(1);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class WanderAroundGoal extends Goal {
 				}
 			}
 
-			Vec3d vec3d = this.getWanderTarget();
+			Vec3d vec3d = this.method_6302();
 			if (vec3d == null) {
 				return false;
 			} else {
@@ -54,18 +55,18 @@ public class WanderAroundGoal extends Goal {
 	}
 
 	@Nullable
-	protected Vec3d getWanderTarget() {
+	protected Vec3d method_6302() {
 		return class_1414.method_6375(this.owner, 10, 7);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.owner.getNavigation().isIdle();
+		return !this.owner.method_5942().isIdle();
 	}
 
 	@Override
 	public void start() {
-		this.owner.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
+		this.owner.method_5942().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
 	}
 
 	public void method_6304() {

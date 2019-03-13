@@ -16,7 +16,7 @@ public class DirectionProperty extends EnumProperty<Direction> {
 		return create(string, (Collection<Direction>)Arrays.stream(Direction.values()).filter(predicate).collect(Collectors.toList()));
 	}
 
-	public static DirectionProperty create(String string, Direction... directions) {
+	public static DirectionProperty method_11845(String string, Direction... directions) {
 		return create(string, Lists.<Direction>newArrayList(directions));
 	}
 

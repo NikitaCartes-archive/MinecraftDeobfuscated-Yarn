@@ -60,7 +60,7 @@ public class UnderwaterRavineCarver extends RavineCarver {
 	}
 
 	@Override
-	protected boolean carveAtPoint(
+	protected boolean method_16581(
 		Chunk chunk,
 		BitSet bitSet,
 		Random random,
@@ -77,6 +77,6 @@ public class UnderwaterRavineCarver extends RavineCarver {
 		int p,
 		AtomicBoolean atomicBoolean
 	) {
-		return UnderwaterCaveCarver.carveAtPoint(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
+		return UnderwaterCaveCarver.method_16138(this, chunk, bitSet, random, mutable, i, j, k, l, m, n, o, p);
 	}
 }

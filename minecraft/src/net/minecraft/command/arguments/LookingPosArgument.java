@@ -21,8 +21,8 @@ public class LookingPosArgument implements PosArgument {
 
 	@Override
 	public Vec3d toAbsolutePos(ServerCommandSource serverCommandSource) {
-		Vec2f vec2f = serverCommandSource.getRotation();
-		Vec3d vec3d = serverCommandSource.getEntityAnchor().positionAt(serverCommandSource);
+		Vec2f vec2f = serverCommandSource.method_9210();
+		Vec3d vec3d = serverCommandSource.getEntityAnchor().method_9299(serverCommandSource);
 		float f = MathHelper.cos((vec2f.y + 90.0F) * (float) (Math.PI / 180.0));
 		float g = MathHelper.sin((vec2f.y + 90.0F) * (float) (Math.PI / 180.0));
 		float h = MathHelper.cos(-vec2f.x * (float) (Math.PI / 180.0));

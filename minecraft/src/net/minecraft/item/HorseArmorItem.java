@@ -15,7 +15,7 @@ public class HorseArmorItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier getHorseArmorTexture() {
+	public Identifier method_18454() {
 		return new Identifier(this.texture);
 	}
 

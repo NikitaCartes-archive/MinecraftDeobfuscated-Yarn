@@ -198,7 +198,7 @@ public class GlFramebuffer {
 			float k = (float)this.viewHeight / (float)this.texHeight;
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
+			bufferBuilder.method_1328(7, VertexFormats.field_1575);
 			bufferBuilder.vertex(0.0, (double)g, 0.0).texture(0.0, 0.0).color(255, 255, 255, 255).next();
 			bufferBuilder.vertex((double)f, (double)g, 0.0).texture((double)h, 0.0).color(255, 255, 255, 255).next();
 			bufferBuilder.vertex((double)f, 0.0, 0.0).texture((double)h, (double)k).color(255, 255, 255, 255).next();

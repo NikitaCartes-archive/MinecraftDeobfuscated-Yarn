@@ -48,7 +48,7 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11439(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onInventory(this);
+		clientPlayPacketListener.method_11153(this);
 	}
 
 	@Environment(EnvType.CLIENT)

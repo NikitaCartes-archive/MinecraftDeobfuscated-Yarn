@@ -12,7 +12,7 @@ import net.minecraft.text.TranslatableTextComponent;
 
 @Environment(EnvType.CLIENT)
 public class IntegratedPlayerManager extends PlayerManager {
-	private CompoundTag userData;
+	private CompoundTag field_5514;
 
 	public IntegratedPlayerManager(IntegratedServer integratedServer) {
 		super(integratedServer, 8);
@@ -21,8 +21,8 @@ public class IntegratedPlayerManager extends PlayerManager {
 
 	@Override
 	protected void savePlayerData(ServerPlayerEntity serverPlayerEntity) {
-		if (serverPlayerEntity.getName().getString().equals(this.method_4811().getUserName())) {
-			this.userData = serverPlayerEntity.toTag(new CompoundTag());
+		if (serverPlayerEntity.method_5477().getString().equals(this.method_4811().getUserName())) {
+			this.field_5514 = serverPlayerEntity.method_5647(new CompoundTag());
 		}
 
 		super.savePlayerData(serverPlayerEntity);
@@ -41,6 +41,6 @@ public class IntegratedPlayerManager extends PlayerManager {
 
 	@Override
 	public CompoundTag getUserData() {
-		return this.userData;
+		return this.field_5514;
 	}
 }

@@ -28,7 +28,7 @@ public class FillCommand {
 	private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("commands.fill.toobig", object, object2)
 	);
-	private static final BlockArgument field_13648 = new BlockArgument(Blocks.field_10124.getDefaultState(), Collections.emptySet(), null);
+	private static final BlockArgument field_13648 = new BlockArgument(Blocks.field_10124.method_9564(), Collections.emptySet(), null);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.fill.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -44,9 +44,7 @@ public class FillCommand {
 										.executes(
 											commandContext -> method_13354(
 													commandContext.getSource(),
-													new MutableIntBoundingBox(
-														BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
-													),
+													new MutableIntBoundingBox(BlockPosArgumentType.method_9696(commandContext, "from"), BlockPosArgumentType.method_9696(commandContext, "to")),
 													BlockArgumentType.method_9655(commandContext, "block"),
 													FillCommand.class_3058.field_13655,
 													null
@@ -57,9 +55,7 @@ public class FillCommand {
 												.executes(
 													commandContext -> method_13354(
 															commandContext.getSource(),
-															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
-															),
+															new MutableIntBoundingBox(BlockPosArgumentType.method_9696(commandContext, "from"), BlockPosArgumentType.method_9696(commandContext, "to")),
 															BlockArgumentType.method_9655(commandContext, "block"),
 															FillCommand.class_3058.field_13655,
 															null
@@ -70,9 +66,7 @@ public class FillCommand {
 														.executes(
 															commandContext -> method_13354(
 																	commandContext.getSource(),
-																	new MutableIntBoundingBox(
-																		BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
-																	),
+																	new MutableIntBoundingBox(BlockPosArgumentType.method_9696(commandContext, "from"), BlockPosArgumentType.method_9696(commandContext, "to")),
 																	BlockArgumentType.method_9655(commandContext, "block"),
 																	FillCommand.class_3058.field_13655,
 																	BlockPredicateArgumentType.getPredicateArgument(commandContext, "filter")
@@ -85,12 +79,10 @@ public class FillCommand {
 												.executes(
 													commandContext -> method_13354(
 															commandContext.getSource(),
-															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
-															),
+															new MutableIntBoundingBox(BlockPosArgumentType.method_9696(commandContext, "from"), BlockPosArgumentType.method_9696(commandContext, "to")),
 															BlockArgumentType.method_9655(commandContext, "block"),
 															FillCommand.class_3058.field_13655,
-															cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
+															cachedBlockPosition -> cachedBlockPosition.getWorld().method_8623(cachedBlockPosition.method_11683())
 														)
 												)
 										)
@@ -99,9 +91,7 @@ public class FillCommand {
 												.executes(
 													commandContext -> method_13354(
 															commandContext.getSource(),
-															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
-															),
+															new MutableIntBoundingBox(BlockPosArgumentType.method_9696(commandContext, "from"), BlockPosArgumentType.method_9696(commandContext, "to")),
 															BlockArgumentType.method_9655(commandContext, "block"),
 															FillCommand.class_3058.field_13652,
 															null
@@ -113,9 +103,7 @@ public class FillCommand {
 												.executes(
 													commandContext -> method_13354(
 															commandContext.getSource(),
-															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
-															),
+															new MutableIntBoundingBox(BlockPosArgumentType.method_9696(commandContext, "from"), BlockPosArgumentType.method_9696(commandContext, "to")),
 															BlockArgumentType.method_9655(commandContext, "block"),
 															FillCommand.class_3058.field_13656,
 															null
@@ -127,9 +115,7 @@ public class FillCommand {
 												.executes(
 													commandContext -> method_13354(
 															commandContext.getSource(),
-															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
-															),
+															new MutableIntBoundingBox(BlockPosArgumentType.method_9696(commandContext, "from"), BlockPosArgumentType.method_9696(commandContext, "to")),
 															BlockArgumentType.method_9655(commandContext, "block"),
 															FillCommand.class_3058.field_13651,
 															null
@@ -154,7 +140,7 @@ public class FillCommand {
 			throw TOOBIG_EXCEPTION.create(32768, i);
 		} else {
 			List<BlockPos> list = Lists.<BlockPos>newArrayList();
-			ServerWorld serverWorld = serverCommandSource.getWorld();
+			ServerWorld serverWorld = serverCommandSource.method_9225();
 			int j = 0;
 
 			for(BlockPos blockPos : BlockPos.iterateBoxPositions(
@@ -168,9 +154,9 @@ public class FillCommand {
 				if (predicate == null || predicate.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
 					BlockArgument blockArgument2 = arg.field_13654.filter(mutableIntBoundingBox, blockPos, blockArgument, serverWorld);
 					if (blockArgument2 != null) {
-						BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
+						BlockEntity blockEntity = serverWorld.method_8321(blockPos);
 						Clearable.clear(blockEntity);
-						if (blockArgument2.setBlockState(serverWorld, blockPos, 2)) {
+						if (blockArgument2.method_9495(serverWorld, blockPos, 2)) {
 							list.add(blockPos.toImmutable());
 							++j;
 						}
@@ -179,14 +165,14 @@ public class FillCommand {
 			}
 
 			for(BlockPos blockPos : list) {
-				Block block = serverWorld.getBlockState(blockPos).getBlock();
-				serverWorld.updateNeighbors(blockPos, block);
+				Block block = serverWorld.method_8320(blockPos).getBlock();
+				serverWorld.method_8408(blockPos, block);
 			}
 
 			if (j == 0) {
 				throw FAILED_EXCEPTION.create();
 			} else {
-				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.fill.success", j), true);
+				serverCommandSource.method_9226(new TranslatableTextComponent("commands.fill.success", j), true);
 				return j;
 			}
 		}
@@ -215,7 +201,7 @@ public class FillCommand {
 					: blockArgument
 		),
 		field_13651((mutableIntBoundingBox, blockPos, blockArgument, serverWorld) -> {
-			serverWorld.breakBlock(blockPos, true);
+			serverWorld.method_8651(blockPos, true);
 			return blockArgument;
 		});
 

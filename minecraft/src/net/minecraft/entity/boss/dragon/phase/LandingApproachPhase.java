@@ -21,7 +21,7 @@ public class LandingApproachPhase extends AbstractPhase {
 	}
 
 	@Override
-	public PhaseType<LandingApproachPhase> getType() {
+	public PhaseType<LandingApproachPhase> method_6849() {
 		return PhaseType.LANDING_APPROACH;
 	}
 
@@ -41,15 +41,15 @@ public class LandingApproachPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d getTarget() {
+	public Vec3d method_6851() {
 		return this.field_7048;
 	}
 
 	private void method_6844() {
 		if (this.field_7047 == null || this.field_7047.isFinished()) {
 			int i = this.dragon.method_6818();
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-			PlayerEntity playerEntity = this.dragon.world.method_18461(field_18122, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			BlockPos blockPos = this.dragon.field_6002.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.field_13600);
+			PlayerEntity playerEntity = this.dragon.field_6002.method_18461(field_18122, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			int j;
 			if (playerEntity != null) {
 				Vec3d vec3d = new Vec3d(playerEntity.x, 0.0, playerEntity.z).normalize();
@@ -67,13 +67,13 @@ public class LandingApproachPhase extends AbstractPhase {
 
 		this.method_6845();
 		if (this.field_7047 != null && this.field_7047.isFinished()) {
-			this.dragon.getPhaseManager().setPhase(PhaseType.LANDING);
+			this.dragon.method_6831().setPhase(PhaseType.LANDING);
 		}
 	}
 
 	private void method_6845() {
 		if (this.field_7047 != null && !this.field_7047.isFinished()) {
-			Vec3d vec3d = this.field_7047.getCurrentPosition();
+			Vec3d vec3d = this.field_7047.method_35();
 			this.field_7047.next();
 			double d = vec3d.x;
 			double e = vec3d.z;

@@ -21,7 +21,7 @@ public class ListCommand {
 	}
 
 	private static int method_13437(ServerCommandSource serverCommandSource) {
-		return method_13434(serverCommandSource, PlayerEntity::getDisplayName);
+		return method_13434(serverCommandSource, PlayerEntity::method_5476);
 	}
 
 	private static int method_13436(ServerCommandSource serverCommandSource) {
@@ -29,12 +29,10 @@ public class ListCommand {
 	}
 
 	private static int method_13434(ServerCommandSource serverCommandSource, Function<ServerPlayerEntity, TextComponent> function) {
-		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
+		PlayerManager playerManager = serverCommandSource.getMinecraftServer().method_3760();
 		List<ServerPlayerEntity> list = playerManager.getPlayerList();
 		TextComponent textComponent = TextFormatter.join(list, function);
-		serverCommandSource.sendFeedback(
-			new TranslatableTextComponent("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), textComponent), false
-		);
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.list.players", list.size(), playerManager.getMaxPlayerCount(), textComponent), false);
 		return list.size();
 	}
 }

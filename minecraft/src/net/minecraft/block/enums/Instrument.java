@@ -28,11 +28,11 @@ public enum Instrument implements StringRepresentable {
 	field_18289("pling", SoundEvents.field_14622);
 
 	private final String name;
-	private final SoundEvent sound;
+	private final SoundEvent field_12649;
 
 	private Instrument(String string2, SoundEvent soundEvent) {
 		this.name = string2;
-		this.sound = soundEvent;
+		this.field_12649 = soundEvent;
 	}
 
 	@Override
@@ -40,8 +40,8 @@ public enum Instrument implements StringRepresentable {
 		return this.name;
 	}
 
-	public SoundEvent getSound() {
-		return this.sound;
+	public SoundEvent method_11886() {
+		return this.field_12649;
 	}
 
 	public static Instrument fromBlockState(BlockState blockState) {
@@ -50,7 +50,7 @@ public enum Instrument implements StringRepresentable {
 			return field_12650;
 		} else if (block == Blocks.field_10205) {
 			return field_12644;
-		} else if (block.matches(BlockTags.field_15481)) {
+		} else if (block.method_9525(BlockTags.field_15481)) {
 			return field_12654;
 		} else if (block == Blocks.field_10225) {
 			return field_12647;
@@ -69,7 +69,7 @@ public enum Instrument implements StringRepresentable {
 		} else if (block == Blocks.field_10171) {
 			return field_18289;
 		} else {
-			Material material = blockState.getMaterial();
+			Material material = blockState.method_11620();
 			if (material == Material.STONE) {
 				return field_12653;
 			} else if (material == Material.SAND) {

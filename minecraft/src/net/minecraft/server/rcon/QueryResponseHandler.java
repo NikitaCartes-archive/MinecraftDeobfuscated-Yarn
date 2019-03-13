@@ -39,7 +39,7 @@ public class QueryResponseHandler extends RconBase {
 
 	public QueryResponseHandler(DedicatedServer dedicatedServer) {
 		super(dedicatedServer, "Query Listener");
-		this.queryPort = dedicatedServer.getProperties().queryPort;
+		this.queryPort = dedicatedServer.method_16705().queryPort;
 		this.hostname = dedicatedServer.getHostname();
 		this.field_14457 = dedicatedServer.getPort();
 		this.field_14445 = dedicatedServer.getMotd();

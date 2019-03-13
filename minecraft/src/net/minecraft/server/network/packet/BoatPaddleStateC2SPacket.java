@@ -30,7 +30,7 @@ public class BoatPaddleStateC2SPacket implements Packet<ServerPlayPacketListener
 	}
 
 	public void method_12283(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onBoatPaddleState(this);
+		serverPlayPacketListener.method_12064(this);
 	}
 
 	public boolean isLeftPaddling() {

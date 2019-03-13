@@ -115,7 +115,7 @@ public class ProfilerSystem implements ReadableProfiler {
 	}
 
 	@Override
-	public ProfileResult getResults() {
+	public ProfileResult method_16064() {
 		return new ProfileResultImpl(this.nameDurationMap, this.field_15732, this.field_15729, SystemUtil.getMeasuringTimeNano(), this.field_16266.getAsInt());
 	}
 }

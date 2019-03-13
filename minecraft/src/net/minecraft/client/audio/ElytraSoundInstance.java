@@ -27,7 +27,7 @@ public class ElytraSoundInstance extends MovingSoundInstance {
 			this.x = (float)this.player.x;
 			this.y = (float)this.player.y;
 			this.z = (float)this.player.z;
-			float f = (float)this.player.getVelocity().lengthSquared();
+			float f = (float)this.player.method_18798().lengthSquared();
 			if ((double)f >= 1.0E-7) {
 				this.volume = MathHelper.clamp(f / 4.0F, 0.0F, 1.0F);
 			} else {

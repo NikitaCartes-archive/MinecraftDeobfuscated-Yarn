@@ -24,14 +24,14 @@ public abstract class ChunkRendererList {
 		this.cameraZ = f;
 	}
 
-	public void translateToOrigin(ChunkRenderer chunkRenderer) {
-		BlockPos blockPos = chunkRenderer.getOrigin();
+	public void method_3157(ChunkRenderer chunkRenderer) {
+		BlockPos blockPos = chunkRenderer.method_3670();
 		GlStateManager.translatef(
 			(float)((double)blockPos.getX() - this.cameraX), (float)((double)blockPos.getY() - this.cameraY), (float)((double)blockPos.getZ() - this.cameraZ)
 		);
 	}
 
-	public void add(ChunkRenderer chunkRenderer, BlockRenderLayer blockRenderLayer) {
+	public void method_3159(ChunkRenderer chunkRenderer, BlockRenderLayer blockRenderLayer) {
 		this.chunkRenderers.add(chunkRenderer);
 	}
 

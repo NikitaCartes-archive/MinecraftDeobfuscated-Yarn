@@ -21,7 +21,7 @@ public class BlastingRecipe extends CookingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> getSerializer() {
-		return RecipeSerializer.BLASTING;
+	public RecipeSerializer<?> method_8119() {
+		return RecipeSerializer.field_17084;
 	}
 }

@@ -27,16 +27,16 @@ public class TutorialToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility draw(ToastManager toastManager, long l) {
-		toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
+	public Toast.Visibility method_1986(ToastManager toastManager, long l) {
+		toastManager.getGame().method_1531().method_4618(field_2207);
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 		toastManager.drawTexturedRect(0, 0, 0, 96, 160, 32);
 		this.type.drawIcon(toastManager, 6, 6);
 		if (this.description == null) {
-			toastManager.getGame().textRenderer.draw(this.title, 30.0F, 12.0F, -11534256);
+			toastManager.getGame().field_1772.draw(this.title, 30.0F, 12.0F, -11534256);
 		} else {
-			toastManager.getGame().textRenderer.draw(this.title, 30.0F, 7.0F, -11534256);
-			toastManager.getGame().textRenderer.draw(this.description, 30.0F, 18.0F, -16777216);
+			toastManager.getGame().field_1772.draw(this.title, 30.0F, 7.0F, -11534256);
+			toastManager.getGame().field_1772.draw(this.description, 30.0F, 18.0F, -16777216);
 		}
 
 		if (this.field_2222) {

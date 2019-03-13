@@ -1,8 +1,13 @@
 package net.minecraft.entity.effect;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.Difficulty;
 
 public class StatusEffects {
 	public static final StatusEffect field_5904 = register(
@@ -80,7 +85,27 @@ public class StatusEffects {
 	public static final StatusEffect field_5906 = register(28, "slow_falling", new StatusEffect(StatusEffectType.field_18271, 16773073));
 	public static final StatusEffect field_5927 = register(29, "conduit_power", new StatusEffect(StatusEffectType.field_18271, 1950417));
 	public static final StatusEffect field_5900 = register(30, "dolphins_grace", new StatusEffect(StatusEffectType.field_18271, 8954814));
-	public static final StatusEffect field_16595 = register(31, "bad_omen", new StatusEffect(StatusEffectType.field_18273, 745784));
+	public static final StatusEffect field_16595 = register(31, "bad_omen", new StatusEffect(StatusEffectType.field_18273, 745784) {
+		@Override
+		public boolean canApplyUpdateEffect(int i, int j) {
+			return true;
+		}
+
+		@Override
+		public void method_5572(LivingEntity livingEntity, int i) {
+			if (livingEntity instanceof ServerPlayerEntity) {
+				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
+				ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
+				if (serverWorld.getDifficulty() == Difficulty.PEACEFUL) {
+					return;
+				}
+
+				if (serverWorld.method_19500(new BlockPos(livingEntity))) {
+					serverWorld.method_19495().method_16540(serverPlayerEntity);
+				}
+			}
+		}
+	});
 
 	private static StatusEffect register(int i, String string, StatusEffect statusEffect) {
 		return Registry.register(Registry.STATUS_EFFECT, i, string, statusEffect);

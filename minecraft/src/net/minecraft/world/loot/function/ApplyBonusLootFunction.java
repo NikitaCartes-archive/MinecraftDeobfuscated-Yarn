@@ -38,7 +38,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		ItemStack itemStack2 = lootContext.get(LootContextParameters.field_1229);
+		ItemStack itemStack2 = lootContext.method_296(LootContextParameters.field_1229);
 		if (itemStack2 != null) {
 			int i = EnchantmentHelper.getLevel(this.enchantment, itemStack2);
 			int j = this.formula.getValue(lootContext.getRandom(), itemStack.getAmount(), i);
@@ -48,30 +48,30 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> binomialWithBonusCount(Enchantment enchantment, float f, int i) {
+	public static ConditionalLootFunction.Builder<?> method_463(Enchantment enchantment, float f, int i) {
 		return create(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.BinomialWithBonusCount(i, f)));
 	}
 
-	public static ConditionalLootFunction.Builder<?> oreDrops(Enchantment enchantment) {
+	public static ConditionalLootFunction.Builder<?> method_455(Enchantment enchantment) {
 		return create(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.OreDrops()));
 	}
 
-	public static ConditionalLootFunction.Builder<?> one(Enchantment enchantment) {
+	public static ConditionalLootFunction.Builder<?> method_456(Enchantment enchantment) {
 		return create(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(1)));
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(Enchantment enchantment, int i) {
+	public static ConditionalLootFunction.Builder<?> method_461(Enchantment enchantment, int i) {
 		return create(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(i)));
 	}
 
 	static {
-		FACTORIES.put(ApplyBonusLootFunction.BinomialWithBonusCount.ID, ApplyBonusLootFunction.BinomialWithBonusCount::fromJson);
-		FACTORIES.put(ApplyBonusLootFunction.OreDrops.ID, ApplyBonusLootFunction.OreDrops::fromJson);
-		FACTORIES.put(ApplyBonusLootFunction.UniformBonusCount.ID, ApplyBonusLootFunction.UniformBonusCount::fromJson);
+		FACTORIES.put(ApplyBonusLootFunction.BinomialWithBonusCount.field_1013, ApplyBonusLootFunction.BinomialWithBonusCount::fromJson);
+		FACTORIES.put(ApplyBonusLootFunction.OreDrops.field_1015, ApplyBonusLootFunction.OreDrops::fromJson);
+		FACTORIES.put(ApplyBonusLootFunction.UniformBonusCount.field_1016, ApplyBonusLootFunction.UniformBonusCount::fromJson);
 	}
 
 	static final class BinomialWithBonusCount implements ApplyBonusLootFunction.Formula {
-		public static final Identifier ID = new Identifier("binomial_with_bonus_count");
+		public static final Identifier field_1013 = new Identifier("binomial_with_bonus_count");
 		private final int field_1014;
 		private final float field_1012;
 
@@ -104,8 +104,8 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		}
 
 		@Override
-		public Identifier getId() {
-			return ID;
+		public Identifier method_466() {
+			return field_1013;
 		}
 	}
 
@@ -116,8 +116,8 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 		public void method_469(JsonObject jsonObject, ApplyBonusLootFunction applyBonusLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, applyBonusLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(applyBonusLootFunction.enchantment).toString());
-			jsonObject.addProperty("formula", applyBonusLootFunction.formula.getId().toString());
+			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.method_10221(applyBonusLootFunction.enchantment).toString());
+			jsonObject.addProperty("formula", applyBonusLootFunction.formula.method_466().toString());
 			JsonObject jsonObject2 = new JsonObject();
 			applyBonusLootFunction.formula.toJson(jsonObject2, jsonSerializationContext);
 			if (jsonObject2.size() > 0) {
@@ -128,7 +128,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		public ApplyBonusLootFunction method_470(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
 			Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
-				.getOrEmpty(identifier)
+				.method_17966(identifier)
 				.orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
 			Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "formula"));
 			ApplyBonusLootFunction.FormulaFactory formulaFactory = (ApplyBonusLootFunction.FormulaFactory)ApplyBonusLootFunction.FACTORIES.get(identifier2);
@@ -152,7 +152,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 		void toJson(JsonObject jsonObject, JsonSerializationContext jsonSerializationContext);
 
-		Identifier getId();
+		Identifier method_466();
 	}
 
 	interface FormulaFactory {
@@ -160,7 +160,7 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	}
 
 	static final class OreDrops implements ApplyBonusLootFunction.Formula {
-		public static final Identifier ID = new Identifier("ore_drops");
+		public static final Identifier field_1015 = new Identifier("ore_drops");
 
 		private OreDrops() {
 		}
@@ -188,13 +188,13 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		}
 
 		@Override
-		public Identifier getId() {
-			return ID;
+		public Identifier method_466() {
+			return field_1015;
 		}
 	}
 
 	static final class UniformBonusCount implements ApplyBonusLootFunction.Formula {
-		public static final Identifier ID = new Identifier("uniform_bonus_count");
+		public static final Identifier field_1016 = new Identifier("uniform_bonus_count");
 		private final int field_1017;
 
 		public UniformBonusCount(int i) {
@@ -217,8 +217,8 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 		}
 
 		@Override
-		public Identifier getId() {
-			return ID;
+		public Identifier method_466() {
+			return field_1016;
 		}
 	}
 }

@@ -33,14 +33,14 @@ public class BubbleColumnUpParticle extends SpriteBillboardParticle {
 			this.velocityX *= 0.85F;
 			this.velocityY *= 0.85F;
 			this.velocityZ *= 0.85F;
-			if (!this.world.getFluidState(new BlockPos(this.posX, this.posY, this.posZ)).matches(FluidTags.field_15517)) {
+			if (!this.world.method_8316(new BlockPos(this.posX, this.posY, this.posZ)).method_15767(FluidTags.field_15517)) {
 				this.markDead();
 			}
 		}
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 

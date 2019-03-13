@@ -82,8 +82,8 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 		}
 
 		if (entity != null) {
-			Vec3d vec3d = entity.getCameraPosVec(0.0F);
-			Vec3d vec3d2 = guardianEntity.getCameraPosVec(0.0F);
+			Vec3d vec3d = entity.method_5836(0.0F);
+			Vec3d vec3d2 = guardianEntity.method_5836(0.0F);
 			double d = vec3d.y - vec3d2.y;
 			if (d > 0.0) {
 				this.field_3381.rotationPointY = 0.0F;
@@ -91,7 +91,7 @@ public class GuardianEntityModel extends EntityModel<GuardianEntity> {
 				this.field_3381.rotationPointY = 1.0F;
 			}
 
-			Vec3d vec3d3 = guardianEntity.getRotationVec(0.0F);
+			Vec3d vec3d3 = guardianEntity.method_5828(0.0F);
 			vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);
 			Vec3d vec3d4 = new Vec3d(vec3d2.x - vec3d.x, 0.0, vec3d2.z - vec3d.z).normalize().rotateY((float) (Math.PI / 2));
 			double e = vec3d3.dotProduct(vec3d4);

@@ -14,17 +14,17 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return SoundEvents.field_15200;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_15069;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_14877;
 	}
 
@@ -36,12 +36,12 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	@Override
 	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
 		super.dropEquipment(damageSource, i, bl);
-		Entity entity = damageSource.getAttacker();
+		Entity entity = damageSource.method_5529();
 		if (entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.method_7008()) {
 				creeperEntity.method_7002();
-				this.dropItem(Items.SKELETON_SKULL);
+				this.method_5706(Items.SKELETON_SKULL);
 			}
 		}
 	}

@@ -6,14 +6,14 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class DeadCoralFanBlock extends CoralParentBlock {
-	private static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
+	private static final VoxelShape field_9932 = Block.method_9541(2.0, 0.0, 2.0, 14.0, 4.0, 14.0);
 
 	protected DeadCoralFanBlock(Block.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return SHAPE;
+	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return field_9932;
 	}
 }

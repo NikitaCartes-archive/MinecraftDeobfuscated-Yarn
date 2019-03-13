@@ -26,8 +26,8 @@ public class WeightedBakedModel implements BakedModel {
 	}
 
 	@Override
-	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
-		return WeightedPicker.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight).model.getQuads(blockState, direction, random);
+	public List<BakedQuad> method_4707(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
+		return WeightedPicker.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight).model.method_4707(blockState, direction, random);
 	}
 
 	@Override

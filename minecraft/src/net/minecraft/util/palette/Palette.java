@@ -13,11 +13,11 @@ public interface Palette<T> {
 	T getByIndex(int i);
 
 	@Environment(EnvType.CLIENT)
-	void fromPacket(PacketByteBuf packetByteBuf);
+	void method_12289(PacketByteBuf packetByteBuf);
 
-	void toPacket(PacketByteBuf packetByteBuf);
+	void method_12287(PacketByteBuf packetByteBuf);
 
 	int getPacketSize();
 
-	void fromTag(ListTag listTag);
+	void method_12286(ListTag listTag);
 }

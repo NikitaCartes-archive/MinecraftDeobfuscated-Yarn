@@ -23,26 +23,26 @@ import org.apache.logging.log4j.Logger;
 
 public class SetNameLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final TextComponent name;
+	private final TextComponent field_16228;
 	@Nullable
 	private final LootContext.EntityTarget entityTarget;
 
 	private SetNameLootFunction(LootCondition[] lootConditions, @Nullable TextComponent textComponent, @Nullable LootContext.EntityTarget entityTarget) {
 		super(lootConditions);
-		this.name = textComponent;
+		this.field_16228 = textComponent;
 		this.entityTarget = entityTarget;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.entityTarget != null ? ImmutableSet.of(this.entityTarget.getIdentifier()) : ImmutableSet.of();
+		return this.entityTarget != null ? ImmutableSet.of(this.entityTarget.method_315()) : ImmutableSet.of();
 	}
 
 	public static UnaryOperator<TextComponent> method_16190(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
 		if (entityTarget != null) {
-			Entity entity = lootContext.get(entityTarget.getIdentifier());
+			Entity entity = lootContext.method_296(entityTarget.method_315());
 			if (entity != null) {
-				ServerCommandSource serverCommandSource = entity.getCommandSource().withLevel(2);
+				ServerCommandSource serverCommandSource = entity.method_5671().withLevel(2);
 				return textComponent -> {
 					try {
 						return TextFormatter.method_10881(serverCommandSource, textComponent, entity);
@@ -59,8 +59,8 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		if (this.name != null) {
-			itemStack.setDisplayName((TextComponent)method_16190(lootContext, this.entityTarget).apply(this.name));
+		if (this.field_16228 != null) {
+			itemStack.method_7977((TextComponent)method_16190(lootContext, this.entityTarget).apply(this.field_16228));
 		}
 
 		return itemStack;
@@ -73,8 +73,8 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 
 		public void method_630(JsonObject jsonObject, SetNameLootFunction setNameLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, setNameLootFunction, jsonSerializationContext);
-			if (setNameLootFunction.name != null) {
-				jsonObject.add("name", TextComponent.Serializer.toJson(setNameLootFunction.name));
+			if (setNameLootFunction.field_16228 != null) {
+				jsonObject.add("name", TextComponent.Serializer.toJson(setNameLootFunction.field_16228));
 			}
 
 			if (setNameLootFunction.entityTarget != null) {

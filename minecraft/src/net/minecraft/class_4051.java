@@ -68,7 +68,7 @@ public class class_4051 {
 						return false;
 					}
 
-					if (!livingEntity.method_5973(livingEntity2.getType())) {
+					if (!livingEntity.method_5973(livingEntity2.method_5864())) {
 						return false;
 					}
 				}
@@ -86,7 +86,7 @@ public class class_4051 {
 					}
 				}
 
-				if (!this.field_18096 && livingEntity instanceof MobEntity && !((MobEntity)livingEntity).getVisibilityCache().canSee(livingEntity2)) {
+				if (!this.field_18096 && livingEntity instanceof MobEntity && !((MobEntity)livingEntity).method_5985().canSee(livingEntity2)) {
 					return false;
 				}
 			}

@@ -29,7 +29,7 @@ public class PickFromInventoryC2SPacket implements Packet<ServerPlayPacketListen
 	}
 
 	public void method_12292(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onPickFromInventory(this);
+		serverPlayPacketListener.method_12084(this);
 	}
 
 	public int getSlot() {

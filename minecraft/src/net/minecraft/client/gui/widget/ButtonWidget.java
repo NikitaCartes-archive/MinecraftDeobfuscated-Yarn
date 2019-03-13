@@ -22,18 +22,19 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class ButtonWidget extends DrawableHelper implements Drawable, InputListener {
-	public static final Identifier WIDGET_TEX = new Identifier("textures/gui/widgets.png");
+	public static final Identifier field_2072 = new Identifier("textures/gui/widgets.png");
 	protected int width;
 	protected int height;
 	public int x;
 	public int y;
 	private String text;
+	private boolean field_18727;
 	private boolean hovered;
 	public boolean enabled = true;
 	public boolean visible = true;
-	private boolean pressed;
 	protected float opacity = 1.0F;
 	protected long nextNarrationTime = Long.MAX_VALUE;
+	private boolean field_18728;
 
 	public ButtonWidget(int i, int j, String string) {
 		this(i, j, 200, 20, string);
@@ -61,10 +62,17 @@ public abstract class ButtonWidget extends DrawableHelper implements Drawable, I
 	@Override
 	public void draw(int i, int j, float f) {
 		if (this.visible) {
-			boolean bl = this.hovered;
 			this.hovered = i >= this.x && j >= this.y && i < this.x + this.width && j < this.y + this.height;
-			if (bl != this.hovered) {
-				this.onHoveredChanged(i, j, this.hovered);
+			if (this.field_18727 != this.isHovered()) {
+				if (this.isHovered()) {
+					if (this.field_18728) {
+						this.nextNarrationTime = SystemUtil.getMeasuringTimeMs() + 200L;
+					} else {
+						this.nextNarrationTime = SystemUtil.getMeasuringTimeMs() + 750L;
+					}
+				} else {
+					this.nextNarrationTime = Long.MAX_VALUE;
+				}
 			}
 
 			if (this.visible) {
@@ -72,16 +80,17 @@ public abstract class ButtonWidget extends DrawableHelper implements Drawable, I
 			}
 
 			this.narrateIfNecessary();
+			this.field_18727 = this.isHovered();
 		}
 	}
 
 	protected void narrateIfNecessary() {
-		if (this.enabled && this.hovered && SystemUtil.getMeasuringTimeMs() > this.nextNarrationTime) {
+		if (this.enabled && this.isHovered() && SystemUtil.getMeasuringTimeMs() > this.nextNarrationTime) {
 			String string = this.getNarrationString();
 			if (!string.isEmpty()) {
 				NarratorManager narratorManager = NarratorManager.INSTANCE;
 				narratorManager.clear();
-				narratorManager.onChatMessage(ChatMessageType.field_11735, new StringTextComponent(string));
+				narratorManager.method_1794(ChatMessageType.field_11735, new StringTextComponent(string));
 				this.nextNarrationTime = Long.MAX_VALUE;
 			}
 		}
@@ -91,18 +100,10 @@ public abstract class ButtonWidget extends DrawableHelper implements Drawable, I
 		return this.text.isEmpty() ? "" : I18n.translate("gui.narrate.button", this.getText());
 	}
 
-	public void onHoveredChanged(int i, int j, boolean bl) {
-		if (bl) {
-			this.nextNarrationTime = SystemUtil.getMeasuringTimeMs() + 750L;
-		} else {
-			this.nextNarrationTime = Long.MAX_VALUE;
-		}
-	}
-
 	public void drawButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		TextRenderer textRenderer = minecraftClient.textRenderer;
-		minecraftClient.getTextureManager().bindTexture(WIDGET_TEX);
+		TextRenderer textRenderer = minecraftClient.field_1772;
+		minecraftClient.method_1531().method_4618(field_2072);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.opacity);
 		int k = this.getTextureId(this.isHovered());
 		GlStateManager.enableBlend();
@@ -126,29 +127,13 @@ public abstract class ButtonWidget extends DrawableHelper implements Drawable, I
 	protected void drawBackground(MinecraftClient minecraftClient, int i, int j) {
 	}
 
-	public void onPressed(double d, double e) {
-		this.pressed = true;
+	public void method_19347(double d, double e) {
 	}
 
 	public void onReleased(double d, double e) {
-		this.pressed = false;
 	}
 
 	protected void onDragged(double d, double e, double f, double g) {
-	}
-
-	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		if (i == 0) {
-			boolean bl = this.isSelected(d, e);
-			if (bl) {
-				this.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
-				this.onPressed(d, e);
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	@Override
@@ -176,14 +161,29 @@ public abstract class ButtonWidget extends DrawableHelper implements Drawable, I
 	}
 
 	public boolean isHovered() {
-		return this.hovered;
+		return this.hovered || this.field_18728;
+	}
+
+	@Override
+	public void setHasFocus(boolean bl) {
+		this.field_18728 = bl;
+	}
+
+	@Override
+	public boolean hasFocus() {
+		return this.enabled && this.visible;
+	}
+
+	@Override
+	public boolean method_19356(double d, double e) {
+		return this.enabled && this.visible && d >= (double)this.x && e >= (double)this.y && d < (double)(this.x + this.width) && e < (double)(this.y + this.height);
 	}
 
 	public void onHover(int i, int j) {
 	}
 
-	public void playPressedSound(SoundLoader soundLoader) {
-		soundLoader.play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+	public void method_1832(SoundLoader soundLoader) {
+		soundLoader.play(PositionedSoundInstance.method_4758(SoundEvents.field_15015, 1.0F));
 	}
 
 	public int getWidth() {

@@ -11,43 +11,43 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
 public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
-	private Identifier soundId;
-	private SoundCategory category;
+	private Identifier field_12676;
+	private SoundCategory field_12677;
 
 	public StopSoundS2CPacket() {
 	}
 
 	public StopSoundS2CPacket(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
-		this.soundId = identifier;
-		this.category = soundCategory;
+		this.field_12676 = identifier;
+		this.field_12677 = soundCategory;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		int i = packetByteBuf.readByte();
 		if ((i & 1) > 0) {
-			this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
+			this.field_12677 = packetByteBuf.readEnumConstant(SoundCategory.class);
 		}
 
 		if ((i & 2) > 0) {
-			this.soundId = packetByteBuf.readIdentifier();
+			this.field_12676 = packetByteBuf.method_10810();
 		}
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		if (this.category != null) {
-			if (this.soundId != null) {
+		if (this.field_12677 != null) {
+			if (this.field_12676 != null) {
 				packetByteBuf.writeByte(3);
-				packetByteBuf.writeEnumConstant(this.category);
-				packetByteBuf.writeIdentifier(this.soundId);
+				packetByteBuf.writeEnumConstant(this.field_12677);
+				packetByteBuf.method_10812(this.field_12676);
 			} else {
 				packetByteBuf.writeByte(1);
-				packetByteBuf.writeEnumConstant(this.category);
+				packetByteBuf.writeEnumConstant(this.field_12677);
 			}
-		} else if (this.soundId != null) {
+		} else if (this.field_12676 != null) {
 			packetByteBuf.writeByte(2);
-			packetByteBuf.writeIdentifier(this.soundId);
+			packetByteBuf.method_10812(this.field_12676);
 		} else {
 			packetByteBuf.writeByte(0);
 		}
@@ -55,17 +55,17 @@ public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public Identifier getSoundId() {
-		return this.soundId;
+	public Identifier method_11904() {
+		return this.field_12676;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public SoundCategory getCategory() {
-		return this.category;
+	public SoundCategory method_11903() {
+		return this.field_12677;
 	}
 
 	public void method_11905(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onStopSound(this);
+		clientPlayPacketListener.method_11082(this);
 	}
 }

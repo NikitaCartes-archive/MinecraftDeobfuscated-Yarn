@@ -23,7 +23,7 @@ public class ForestRockDecorator extends Decorator<CountDecoratorConfig> {
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(16);
-			return iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k));
+			return iWorld.method_8598(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k));
 		});
 	}
 }

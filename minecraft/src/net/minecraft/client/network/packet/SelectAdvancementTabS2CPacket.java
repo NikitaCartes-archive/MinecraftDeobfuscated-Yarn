@@ -11,37 +11,37 @@ import net.minecraft.util.PacketByteBuf;
 
 public class SelectAdvancementTabS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Nullable
-	private Identifier tabId;
+	private Identifier field_12440;
 
 	public SelectAdvancementTabS2CPacket() {
 	}
 
 	public SelectAdvancementTabS2CPacket(@Nullable Identifier identifier) {
-		this.tabId = identifier;
+		this.field_12440 = identifier;
 	}
 
 	public void method_11794(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onSelectAdvancementTab(this);
+		clientPlayPacketListener.method_11161(this);
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		if (packetByteBuf.readBoolean()) {
-			this.tabId = packetByteBuf.readIdentifier();
+			this.field_12440 = packetByteBuf.method_10810();
 		}
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeBoolean(this.tabId != null);
-		if (this.tabId != null) {
-			packetByteBuf.writeIdentifier(this.tabId);
+		packetByteBuf.writeBoolean(this.field_12440 != null);
+		if (this.field_12440 != null) {
+			packetByteBuf.method_10812(this.field_12440);
 		}
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public Identifier getTabId() {
-		return this.tabId;
+	public Identifier method_11793() {
+		return this.field_12440;
 	}
 }

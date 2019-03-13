@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BrewingStandScreen extends ContainerScreen<BrewingStandContainer> {
-	private static final Identifier TEXTURE = new Identifier("textures/gui/container/brewing_stand.png");
+	private static final Identifier field_2823 = new Identifier("textures/gui/container/brewing_stand.png");
 	private static final int[] field_2824 = new int[]{29, 24, 20, 16, 11, 6, 0};
 
 	public BrewingStandScreen(BrewingStandContainer brewingStandContainer, PlayerInventory playerInventory, TextComponent textComponent) {
@@ -29,14 +29,16 @@ public class BrewingStandScreen extends ContainerScreen<BrewingStandContainer> {
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.fontRenderer
-			.draw(this.name.getFormattedText(), (float)(this.width / 2 - this.fontRenderer.getStringWidth(this.name.getFormattedText()) / 2), 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+			.draw(
+				this.field_17411.getFormattedText(), (float)(this.width / 2 - this.fontRenderer.getStringWidth(this.field_17411.getFormattedText()) / 2), 6.0F, 4210752
+			);
+		this.fontRenderer.draw(this.playerInventory.method_5476().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
+		this.client.method_1531().method_4618(field_2823);
 		int k = (this.screenWidth - this.width) / 2;
 		int l = (this.screenHeight - this.height) / 2;
 		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);

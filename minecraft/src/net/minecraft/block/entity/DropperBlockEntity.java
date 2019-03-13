@@ -9,7 +9,7 @@ public class DropperBlockEntity extends DispenserBlockEntity {
 	}
 
 	@Override
-	protected TextComponent getContainerName() {
+	protected TextComponent method_17823() {
 		return new TranslatableTextComponent("container.dropper");
 	}
 }

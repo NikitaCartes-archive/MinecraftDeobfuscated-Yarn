@@ -15,7 +15,7 @@ public class EndGatewayFeatureConfig implements FeatureConfig {
 		this.exact = bl;
 	}
 
-	public static EndGatewayFeatureConfig createConfig(BlockPos blockPos, boolean bl) {
+	public static EndGatewayFeatureConfig method_18034(BlockPos blockPos, boolean bl) {
 		return new EndGatewayFeatureConfig(Optional.of(blockPos), bl);
 	}
 

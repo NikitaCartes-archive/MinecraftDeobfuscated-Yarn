@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import java.util.function.Predicate;
 import net.minecraft.class_1414;
 import net.minecraft.class_4051;
@@ -37,8 +38,8 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 		this.field_6385 = d;
 		this.field_6395 = e;
 		this.field_6388 = predicate2;
-		this.field_6394 = mobEntityWithAi.getNavigation();
-		this.setControlBits(1);
+		this.field_6394 = mobEntityWithAi.method_5942();
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		this.field_18084 = new class_4051().method_18418((double)f).method_18420(predicate2.and(predicate));
 	}
 
@@ -49,7 +50,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	@Override
 	public boolean canStart() {
 		this.field_6390 = this.field_6391
-			.world
+			.field_6002
 			.method_18465(
 				this.field_6392,
 				this.field_18084,
@@ -57,7 +58,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 				this.field_6391.x,
 				this.field_6391.y,
 				this.field_6391.z,
-				this.field_6391.getBoundingBox().expand((double)this.field_6386, 3.0, (double)this.field_6386)
+				this.field_6391.method_5829().expand((double)this.field_6386, 3.0, (double)this.field_6386)
 			);
 		if (this.field_6390 == null) {
 			return false;
@@ -68,7 +69,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 			} else if (this.field_6390.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.field_6390.squaredDistanceTo(this.field_6391)) {
 				return false;
 			} else {
-				this.field_6387 = this.field_6394.findPathTo(vec3d.x, vec3d.y, vec3d.z);
+				this.field_6387 = this.field_6394.method_6352(vec3d.x, vec3d.y, vec3d.z);
 				return this.field_6387 != null;
 			}
 		}
@@ -81,7 +82,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6394.startMovingAlong(this.field_6387, this.field_6385);
+		this.field_6394.method_6334(this.field_6387, this.field_6385);
 	}
 
 	@Override
@@ -92,9 +93,9 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	@Override
 	public void tick() {
 		if (this.field_6391.squaredDistanceTo(this.field_6390) < 49.0) {
-			this.field_6391.getNavigation().setSpeed(this.field_6395);
+			this.field_6391.method_5942().setSpeed(this.field_6395);
 		} else {
-			this.field_6391.getNavigation().setSpeed(this.field_6385);
+			this.field_6391.method_5942().setSpeed(this.field_6385);
 		}
 	}
 }

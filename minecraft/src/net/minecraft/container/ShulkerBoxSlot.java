@@ -11,7 +11,7 @@ public class ShulkerBoxSlot extends Slot {
 	}
 
 	@Override
-	public boolean canInsert(ItemStack itemStack) {
+	public boolean method_7680(ItemStack itemStack) {
 		return !(Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock);
 	}
 }

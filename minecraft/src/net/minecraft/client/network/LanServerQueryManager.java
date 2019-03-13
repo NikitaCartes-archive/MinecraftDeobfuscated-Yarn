@@ -24,13 +24,13 @@ public class LanServerQueryManager {
 
 	@Environment(EnvType.CLIENT)
 	public static class LanServerDetector extends Thread {
-		private final LanServerQueryManager.LanServerEntryList entryList;
+		private final LanServerQueryManager.LanServerEntryList field_5533;
 		private final InetAddress multicastAddress;
 		private final MulticastSocket socket;
 
 		public LanServerDetector(LanServerQueryManager.LanServerEntryList lanServerEntryList) throws IOException {
 			super("LanServerDetector #" + LanServerQueryManager.THREAD_ID.incrementAndGet());
-			this.entryList = lanServerEntryList;
+			this.field_5533 = lanServerEntryList;
 			this.setDaemon(true);
 			this.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LanServerQueryManager.LOGGER));
 			this.socket = new MulticastSocket(4445);
@@ -56,7 +56,7 @@ public class LanServerQueryManager {
 
 				String string = new String(datagramPacket.getData(), datagramPacket.getOffset(), datagramPacket.getLength(), StandardCharsets.UTF_8);
 				LanServerQueryManager.LOGGER.debug("{}: {}", datagramPacket.getAddress(), string);
-				this.entryList.addServer(string, datagramPacket.getAddress());
+				this.field_5533.addServer(string, datagramPacket.getAddress());
 			}
 
 			try {

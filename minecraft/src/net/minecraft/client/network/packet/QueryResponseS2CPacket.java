@@ -23,31 +23,31 @@ public class QueryResponseS2CPacket implements Packet<ClientQueryPacketListener>
 		.registerTypeHierarchyAdapter(Style.class, new Style.Serializer())
 		.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
 		.create();
-	private ServerMetadata metadata;
+	private ServerMetadata field_13281;
 
 	public QueryResponseS2CPacket() {
 	}
 
 	public QueryResponseS2CPacket(ServerMetadata serverMetadata) {
-		this.metadata = serverMetadata;
+		this.field_13281 = serverMetadata;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.metadata = JsonHelper.deserialize(GSON, packetByteBuf.readString(32767), ServerMetadata.class);
+		this.field_13281 = JsonHelper.deserialize(GSON, packetByteBuf.readString(32767), ServerMetadata.class);
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeString(GSON.toJson(this.metadata));
+		packetByteBuf.writeString(GSON.toJson(this.field_13281));
 	}
 
 	public void method_12671(ClientQueryPacketListener clientQueryPacketListener) {
-		clientQueryPacketListener.onResponse(this);
+		clientQueryPacketListener.method_12667(this);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ServerMetadata getServerMetadata() {
-		return this.metadata;
+	public ServerMetadata method_12672() {
+		return this.field_13281;
 	}
 }

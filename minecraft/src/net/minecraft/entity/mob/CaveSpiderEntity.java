@@ -25,7 +25,7 @@ public class CaveSpiderEntity extends SpiderEntity {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(12.0);
+		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(12.0);
 	}
 
 	@Override
@@ -33,9 +33,9 @@ public class CaveSpiderEntity extends SpiderEntity {
 		if (super.attack(entity)) {
 			if (entity instanceof LivingEntity) {
 				int i = 0;
-				if (this.world.getDifficulty() == Difficulty.NORMAL) {
+				if (this.field_6002.getDifficulty() == Difficulty.NORMAL) {
 					i = 7;
-				} else if (this.world.getDifficulty() == Difficulty.HARD) {
+				} else if (this.field_6002.getDifficulty() == Difficulty.HARD) {
 					i = 15;
 				}
 
@@ -52,14 +52,14 @@ public class CaveSpiderEntity extends SpiderEntity {
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		return entityData;
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
 		return 0.45F;
 	}
 }

@@ -42,7 +42,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class SpiderEntity extends HostileEntity {
-	private static final TrackedData<Byte> SPIDER_FLAGS = DataTracker.registerData(SpiderEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Byte> field_7403 = DataTracker.registerData(SpiderEntity.class, TrackedDataHandlerRegistry.BYTE);
 
 	public SpiderEntity(EntityType<? extends SpiderEntity> entityType, World world) {
 		super(entityType, world);
@@ -50,15 +50,15 @@ public class SpiderEntity extends HostileEntity {
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(1, new SwimGoal(this));
-		this.goalSelector.add(3, new PounceAtTargetGoal(this, 0.4F));
-		this.goalSelector.add(4, new SpiderEntity.class_1629(this));
-		this.goalSelector.add(5, new class_1394(this, 0.8));
-		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-		this.goalSelector.add(6, new LookAroundGoal(this));
-		this.targetSelector.add(1, new class_1399(this));
-		this.targetSelector.add(2, new SpiderEntity.class_1631(this, PlayerEntity.class));
-		this.targetSelector.add(3, new SpiderEntity.class_1631(this, IronGolemEntity.class));
+		this.field_6201.add(1, new SwimGoal(this));
+		this.field_6201.add(3, new PounceAtTargetGoal(this, 0.4F));
+		this.field_6201.add(4, new SpiderEntity.class_1629(this));
+		this.field_6201.add(5, new class_1394(this, 0.8));
+		this.field_6201.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.field_6201.add(6, new LookAroundGoal(this));
+		this.field_6185.add(1, new class_1399(this));
+		this.field_6185.add(2, new SpiderEntity.class_1631(this, PlayerEntity.class));
+		this.field_6185.add(3, new SpiderEntity.class_1631(this, IronGolemEntity.class));
 	}
 
 	@Override
@@ -67,20 +67,20 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	protected EntityNavigation createNavigation(World world) {
+	protected EntityNavigation method_5965(World world) {
 		return new SpiderNavigation(this, world);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(SPIDER_FLAGS, (byte)0);
+		this.field_6011.startTracking(field_7403, (byte)0);
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		if (!this.world.isClient) {
+		if (!this.field_6002.isClient) {
 			this.setCanClimb(this.horizontalCollision);
 		}
 	}
@@ -88,28 +88,28 @@ public class SpiderEntity extends HostileEntity {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(16.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
+		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(16.0);
+		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
+	protected SoundEvent method_5994() {
 		return SoundEvents.field_15170;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
+	protected SoundEvent method_6011(DamageSource damageSource) {
 		return SoundEvents.field_14657;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
+	protected SoundEvent method_6002() {
 		return SoundEvents.field_14579;
 	}
 
 	@Override
-	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(SoundEvents.field_14760, 0.15F, 1.0F);
+	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+		this.method_5783(SoundEvents.field_14760, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -118,14 +118,14 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public void slowMovement(BlockState blockState, Vec3d vec3d) {
+	public void method_5844(BlockState blockState, Vec3d vec3d) {
 		if (blockState.getBlock() != Blocks.field_10343) {
-			super.slowMovement(blockState, vec3d);
+			super.method_5844(blockState, vec3d);
 		}
 	}
 
 	@Override
-	public EntityGroup getGroup() {
+	public EntityGroup method_6046() {
 		return EntityGroup.ARTHROPOD;
 	}
 
@@ -135,30 +135,30 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	public boolean getCanClimb() {
-		return (this.dataTracker.get(SPIDER_FLAGS) & 1) != 0;
+		return (this.field_6011.get(field_7403) & 1) != 0;
 	}
 
 	public void setCanClimb(boolean bl) {
-		byte b = this.dataTracker.get(SPIDER_FLAGS);
+		byte b = this.field_6011.get(field_7403);
 		if (bl) {
 			b = (byte)(b | 1);
 		} else {
 			b = (byte)(b & -2);
 		}
 
-		this.dataTracker.set(SPIDER_FLAGS, b);
+		this.field_6011.set(field_7403, b);
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getRandom().nextInt(100) == 0) {
-			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
+			SkeletonEntity skeletonEntity = EntityType.SKELETON.method_5883(this.field_6002);
 			skeletonEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
-			skeletonEntity.prepareEntityData(iWorld, localDifficulty, spawnType, null, null);
+			skeletonEntity.method_5943(iWorld, localDifficulty, spawnType, null, null);
 			iWorld.spawnEntity(skeletonEntity);
 			skeletonEntity.startRiding(this);
 		}
@@ -181,7 +181,7 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
+	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
 		return 0.65F;
 	}
 

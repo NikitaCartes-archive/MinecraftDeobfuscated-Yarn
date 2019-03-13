@@ -17,12 +17,12 @@ public class class_478 implements ContainerListener {
 	}
 
 	@Override
-	public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
+	public void method_7634(Container container, DefaultedList<ItemStack> defaultedList) {
 	}
 
 	@Override
-	public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
-		this.field_2876.interactionManager.method_2909(itemStack, i);
+	public void method_7635(Container container, int i, ItemStack itemStack) {
+		this.field_2876.field_1761.method_2909(itemStack, i);
 	}
 
 	@Override

@@ -49,12 +49,25 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.entries.clear();
 	}
 
+	public void method_19349(E entry) {
+		int i = entry.getY() - this.y1 - 4 - this.getEntryHeight();
+		if (i < 0) {
+			this.scroll(i);
+		}
+
+		int j = this.y2 - entry.getY() - this.getEntryHeight() - this.getEntryHeight();
+		if (j < 0) {
+			this.scroll(-j);
+		}
+	}
+
 	private E getEntry(int i) {
 		return (E)this.getInputListeners().get(i);
 	}
 
-	protected final void addEntry(E entry) {
+	protected final int addEntry(E entry) {
 		this.entries.add(entry);
+		return this.entries.size() - 1;
 	}
 
 	@Override
@@ -120,7 +133,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			return this.field_2143;
 		}
 
-		protected int getY() {
+		public int getY() {
 			return this.parent.y1 + 4 - this.parent.getScrollY() + this.field_2143 * this.parent.entryHeight + this.parent.field_2174;
 		}
 
@@ -132,5 +145,10 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 
 		public abstract void draw(int i, int j, int k, int l, boolean bl, float f);
+
+		@Override
+		public boolean method_19356(double d, double e) {
+			return this.parent.getSelectedEntry(d, e) == this.field_2143;
+		}
 	}
 }

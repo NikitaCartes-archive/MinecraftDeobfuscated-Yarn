@@ -48,6 +48,6 @@ public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketList
 	}
 
 	public void method_12645(ServerLoginPacketListener serverLoginPacketListener) {
-		serverLoginPacketListener.onQueryResponse(this);
+		serverLoginPacketListener.method_12640(this);
 	}
 }

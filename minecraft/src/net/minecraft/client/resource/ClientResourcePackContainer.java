@@ -21,7 +21,7 @@ public class ClientResourcePackContainer extends ResourcePackContainer {
 	@Nullable
 	private final NativeImage icon;
 	@Nullable
-	private Identifier iconId;
+	private Identifier field_5320;
 
 	public ClientResourcePackContainer(
 		String string,
@@ -78,15 +78,15 @@ public class ClientResourcePackContainer extends ResourcePackContainer {
 	}
 
 	public void drawIcon(TextureManager textureManager) {
-		if (this.iconId == null) {
+		if (this.field_5320 == null) {
 			if (this.icon == null) {
-				this.iconId = new Identifier("textures/misc/unknown_pack.png");
+				this.field_5320 = new Identifier("textures/misc/unknown_pack.png");
 			} else {
-				this.iconId = textureManager.registerDynamicTexture("texturepackicon", new NativeImageBackedTexture(this.icon));
+				this.field_5320 = textureManager.method_4617("texturepackicon", new NativeImageBackedTexture(this.icon));
 			}
 		}
 
-		textureManager.bindTexture(this.iconId);
+		textureManager.method_4618(this.field_5320);
 	}
 
 	@Override

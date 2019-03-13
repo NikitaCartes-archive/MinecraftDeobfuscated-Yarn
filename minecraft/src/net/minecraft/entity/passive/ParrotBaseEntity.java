@@ -12,10 +12,10 @@ public abstract class ParrotBaseEntity extends TameableEntity {
 		super(entityType, world);
 	}
 
-	public boolean mountOnto(ServerPlayerEntity serverPlayerEntity) {
+	public boolean method_6627(ServerPlayerEntity serverPlayerEntity) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("id", this.getSavedEntityId());
-		this.toTag(compoundTag);
+		this.method_5647(compoundTag);
 		if (serverPlayerEntity.method_7298(compoundTag)) {
 			this.invalidate();
 			return true;

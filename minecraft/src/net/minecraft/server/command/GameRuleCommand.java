@@ -31,13 +31,13 @@ public class GameRuleCommand {
 	private static int method_13394(ServerCommandSource serverCommandSource, String string, CommandContext<ServerCommandSource> commandContext) {
 		GameRules.Value value = serverCommandSource.getMinecraftServer().getGameRules().get(string);
 		value.getType().method_8370(commandContext, "value", value);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamerule.set", string, value.getString()), true);
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.gamerule.set", string, value.getString()), true);
 		return value.getInteger();
 	}
 
 	private static int method_13397(ServerCommandSource serverCommandSource, String string) {
 		GameRules.Value value = serverCommandSource.getMinecraftServer().getGameRules().get(string);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamerule.query", string, value.getString()), false);
+		serverCommandSource.method_9226(new TranslatableTextComponent("commands.gamerule.query", string, value.getString()), false);
 		return value.getInteger();
 	}
 }

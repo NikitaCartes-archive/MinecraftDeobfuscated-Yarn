@@ -20,12 +20,12 @@ public enum Mirror {
 		}
 	}
 
-	public Rotation getRotation(Direction direction) {
+	public Rotation method_10345(Direction direction) {
 		Direction.Axis axis = direction.getAxis();
 		return (this != LEFT_RIGHT || axis != Direction.Axis.Z) && (this != FRONT_BACK || axis != Direction.Axis.X) ? Rotation.ROT_0 : Rotation.ROT_180;
 	}
 
-	public Direction apply(Direction direction) {
+	public Direction method_10343(Direction direction) {
 		if (this == FRONT_BACK && direction.getAxis() == Direction.Axis.X) {
 			return direction.getOpposite();
 		} else {

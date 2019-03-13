@@ -61,12 +61,12 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	private <T extends ParticleParameters> T method_11542(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
-		return particleType.getParametersFactory().read(particleType, packetByteBuf);
+		return particleType.getParametersFactory().method_10297(particleType, packetByteBuf);
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeInt(Registry.PARTICLE_TYPE.getRawId(this.field_12259.getType()));
+		packetByteBuf.writeInt(Registry.PARTICLE_TYPE.getRawId(this.field_12259.method_10295()));
 		packetByteBuf.writeBoolean(this.longDistance);
 		packetByteBuf.writeFloat(this.x);
 		packetByteBuf.writeFloat(this.y);
@@ -76,7 +76,7 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeFloat(this.offsetZ);
 		packetByteBuf.writeFloat(this.field_12260);
 		packetByteBuf.writeInt(this.particleCount);
-		this.field_12259.write(packetByteBuf);
+		this.field_12259.method_10294(packetByteBuf);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -130,6 +130,6 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11553(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onParticle(this);
+		clientPlayPacketListener.method_11077(this);
 	}
 }

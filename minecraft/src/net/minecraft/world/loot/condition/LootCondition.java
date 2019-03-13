@@ -15,25 +15,25 @@ public interface LootCondition extends ParameterConsumer, Predicate<LootContext>
 		LootCondition build();
 
 		default LootCondition.Builder invert() {
-			return InvertedLootCondition.create(this);
+			return InvertedLootCondition.method_889(this);
 		}
 
 		default AlternativeLootCondition.Builder or(LootCondition.Builder builder) {
-			return AlternativeLootCondition.or(this, builder);
+			return AlternativeLootCondition.method_826(this, builder);
 		}
 	}
 
 	public abstract static class Factory<T extends LootCondition> {
-		private final Identifier id;
+		private final Identifier field_1284;
 		private final Class<T> conditionClass;
 
 		protected Factory(Identifier identifier, Class<T> class_) {
-			this.id = identifier;
+			this.field_1284 = identifier;
 			this.conditionClass = class_;
 		}
 
-		public Identifier getId() {
-			return this.id;
+		public Identifier method_894() {
+			return this.field_1284;
 		}
 
 		public Class<T> getConditionClass() {

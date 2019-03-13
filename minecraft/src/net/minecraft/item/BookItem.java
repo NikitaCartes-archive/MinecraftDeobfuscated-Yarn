@@ -6,7 +6,7 @@ public class BookItem extends Item {
 	}
 
 	@Override
-	public boolean isTool(ItemStack itemStack) {
+	public boolean method_7870(ItemStack itemStack) {
 		return itemStack.getAmount() == 1;
 	}
 

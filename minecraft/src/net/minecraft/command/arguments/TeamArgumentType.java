@@ -28,7 +28,7 @@ public class TeamArgumentType implements ArgumentType<String> {
 
 	public static ScoreboardTeam getTeamArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		String string2 = commandContext.getArgument(string, String.class);
-		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
+		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().method_3845();
 		ScoreboardTeam scoreboardTeam = scoreboard.getTeam(string2);
 		if (scoreboardTeam == null) {
 			throw UNKNOWN_TEAM_EXCEPTION.create(string2);

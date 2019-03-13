@@ -25,22 +25,24 @@ public class GravityStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo process(
+	public Structure.StructureBlockInfo method_15110(
 		ViewableWorld viewableWorld,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData structurePlacementData
 	) {
-		int i = viewableWorld.getTop(this.heightmap, structureBlockInfo2.pos.getX(), structureBlockInfo2.pos.getZ()) + this.offset;
-		int j = structureBlockInfo.pos.getY();
+		int i = viewableWorld.method_8589(this.heightmap, structureBlockInfo2.field_15597.getX(), structureBlockInfo2.field_15597.getZ()) + this.offset;
+		int j = structureBlockInfo.field_15597.getY();
 		return new Structure.StructureBlockInfo(
-			new BlockPos(structureBlockInfo2.pos.getX(), i + j, structureBlockInfo2.pos.getZ()), structureBlockInfo2.state, structureBlockInfo2.tag
+			new BlockPos(structureBlockInfo2.field_15597.getX(), i + j, structureBlockInfo2.field_15597.getZ()),
+			structureBlockInfo2.state,
+			structureBlockInfo2.field_15595
 		);
 	}
 
 	@Override
-	protected StructureProcessorType getType() {
+	protected StructureProcessorType method_16772() {
 		return StructureProcessorType.field_16989;
 	}
 

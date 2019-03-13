@@ -11,7 +11,7 @@ public interface Font extends Closeable {
 	}
 
 	@Nullable
-	default RenderableGlyph getGlyph(char c) {
+	default RenderableGlyph method_2040(char c) {
 		return null;
 	}
 }

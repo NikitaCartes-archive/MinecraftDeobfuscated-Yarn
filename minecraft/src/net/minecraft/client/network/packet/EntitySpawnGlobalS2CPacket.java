@@ -48,7 +48,7 @@ public class EntitySpawnGlobalS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	public void method_11188(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEntitySpawnGlobal(this);
+		clientPlayPacketListener.method_11156(this);
 	}
 
 	@Environment(EnvType.CLIENT)

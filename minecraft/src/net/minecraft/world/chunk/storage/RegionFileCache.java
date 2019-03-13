@@ -12,6 +12,11 @@ import net.minecraft.world.chunk.ChunkPos;
 
 public abstract class RegionFileCache implements AutoCloseable {
 	protected final Long2ObjectLinkedOpenHashMap<RegionFile> cachedRegionFiles = new Long2ObjectLinkedOpenHashMap<>();
+	private final File field_18690;
+
+	protected RegionFileCache(File file) {
+		this.field_18690 = file;
+	}
 
 	private RegionFile getRegionFile(ChunkPos chunkPos) throws IOException {
 		long l = ChunkPos.toLong(chunkPos.getRegionX(), chunkPos.getRegionZ());
@@ -23,20 +28,19 @@ public abstract class RegionFileCache implements AutoCloseable {
 				this.cachedRegionFiles.removeLast();
 			}
 
-			File file = this.getRegionDir();
-			if (!file.exists()) {
-				file.mkdirs();
+			if (!this.field_18690.exists()) {
+				this.field_18690.mkdirs();
 			}
 
-			File file2 = new File(file, "r." + chunkPos.getRegionX() + "." + chunkPos.getRegionZ() + ".mca");
-			RegionFile regionFile2 = new RegionFile(file2);
+			File file = new File(this.field_18690, "r." + chunkPos.getRegionX() + "." + chunkPos.getRegionZ() + ".mca");
+			RegionFile regionFile2 = new RegionFile(file);
 			this.cachedRegionFiles.putAndMoveToFirst(l, regionFile2);
 			return regionFile2;
 		}
 	}
 
 	@Nullable
-	public CompoundTag readChunkTag(ChunkPos chunkPos) throws IOException {
+	public CompoundTag method_17911(ChunkPos chunkPos) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
 		DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);
 		Throwable var5 = null;
@@ -68,7 +72,7 @@ public abstract class RegionFileCache implements AutoCloseable {
 		return (CompoundTag)var6;
 	}
 
-	protected void writeChunkTag(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
+	protected void method_17910(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
 		DataOutputStream dataOutputStream = regionFile.getChunkDataOutputStream(chunkPos);
 		Throwable var5 = null;
@@ -98,6 +102,4 @@ public abstract class RegionFileCache implements AutoCloseable {
 			regionFile.close();
 		}
 	}
-
-	protected abstract File getRegionDir();
 }

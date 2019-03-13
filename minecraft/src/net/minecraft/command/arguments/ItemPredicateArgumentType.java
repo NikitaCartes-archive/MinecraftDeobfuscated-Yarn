@@ -42,7 +42,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		} else {
 			Identifier identifier = itemStringReader.method_9790();
 			return commandContext -> {
-				Tag<Item> tag = commandContext.getSource().getMinecraftServer().getTagManager().items().get(identifier);
+				Tag<Item> tag = commandContext.getSource().getMinecraftServer().method_3801().items().get(identifier);
 				if (tag == null) {
 					throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
 				} else {
@@ -79,15 +79,15 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	static class ItemPredicate implements Predicate<ItemStack> {
 		private final Item item;
 		@Nullable
-		private final CompoundTag compound;
+		private final CompoundTag field_10814;
 
 		public ItemPredicate(Item item, @Nullable CompoundTag compoundTag) {
 			this.item = item;
-			this.compound = compoundTag;
+			this.field_10814 = compoundTag;
 		}
 
 		public boolean method_9806(ItemStack itemStack) {
-			return itemStack.getItem() == this.item && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
+			return itemStack.getItem() == this.item && TagHelper.method_10687(this.field_10814, itemStack.method_7969(), true);
 		}
 	}
 
@@ -96,17 +96,17 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	}
 
 	static class TagPredicate implements Predicate<ItemStack> {
-		private final Tag<Item> tag;
+		private final Tag<Item> field_10815;
 		@Nullable
-		private final CompoundTag compound;
+		private final CompoundTag field_10816;
 
 		public TagPredicate(Tag<Item> tag, @Nullable CompoundTag compoundTag) {
-			this.tag = tag;
-			this.compound = compoundTag;
+			this.field_10815 = tag;
+			this.field_10816 = compoundTag;
 		}
 
 		public boolean method_9807(ItemStack itemStack) {
-			return this.tag.contains(itemStack.getItem()) && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
+			return this.field_10815.contains(itemStack.getItem()) && TagHelper.method_10687(this.field_10816, itemStack.method_7969(), true);
 		}
 	}
 }

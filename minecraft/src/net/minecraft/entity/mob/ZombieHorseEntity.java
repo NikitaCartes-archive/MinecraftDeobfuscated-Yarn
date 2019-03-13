@@ -24,54 +24,54 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(15.0);
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
-		this.getAttributeInstance(ATTR_JUMP_STRENGTH).setBaseValue(this.method_6774());
+		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(15.0);
+		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
+		this.method_5996(ATTR_JUMP_STRENGTH).setBaseValue(this.method_6774());
 	}
 
 	@Override
-	public EntityGroup getGroup() {
+	public EntityGroup method_6046() {
 		return EntityGroup.UNDEAD;
 	}
 
 	@Override
-	protected SoundEvent getAmbientSound() {
-		super.getAmbientSound();
+	protected SoundEvent method_5994() {
+		super.method_5994();
 		return SoundEvents.field_15154;
 	}
 
 	@Override
-	protected SoundEvent getDeathSound() {
-		super.getDeathSound();
+	protected SoundEvent method_6002() {
+		super.method_6002();
 		return SoundEvents.field_14543;
 	}
 
 	@Override
-	protected SoundEvent getHurtSound(DamageSource damageSource) {
-		super.getHurtSound(damageSource);
+	protected SoundEvent method_6011(DamageSource damageSource) {
+		super.method_6011(damageSource);
 		return SoundEvents.field_15179;
 	}
 
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.ZOMBIE_HORSE.create(this.world);
+		return EntityType.ZOMBIE_HORSE.method_5883(this.field_6002);
 	}
 
 	@Override
-	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
 		if (itemStack.getItem() instanceof SpawnEggItem) {
-			return super.interactMob(playerEntity, hand);
+			return super.method_5992(playerEntity, hand);
 		} else if (!this.isTame()) {
 			return false;
 		} else if (this.isChild()) {
-			return super.interactMob(playerEntity, hand);
+			return super.method_5992(playerEntity, hand);
 		} else if (playerEntity.isSneaking()) {
 			this.method_6722(playerEntity);
 			return true;
 		} else if (this.hasPassengers()) {
-			return super.interactMob(playerEntity, hand);
+			return super.method_5992(playerEntity, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
 				if (!this.isSaddled() && itemStack.getItem() == Items.field_8175) {

@@ -31,7 +31,7 @@ import net.minecraft.world.gen.feature.Feature;
 public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvancement>> {
 	public void method_10346(Consumer<SimpleAdvancement> consumer) {
 		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Builder.create()
-			.display(
+			.method_697(
 				Blocks.field_9986,
 				new TranslatableTextComponent("advancements.nether.root.title"),
 				new TranslatableTextComponent("advancements.nether.root.description"),
@@ -41,11 +41,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				false,
 				false
 			)
-			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13076))
+			.method_709("entered_nether", ChangedDimensionCriterion.Conditions.method_8799(DimensionType.field_13076))
 			.build(consumer, "nether/root");
 		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement)
-			.display(
+			.method_697(
 				Items.field_8814,
 				new TranslatableTextComponent("advancements.nether.return_to_sender.title"),
 				new TranslatableTextComponent("advancements.nether.return_to_sender.description"),
@@ -55,18 +55,18 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.rewards(AdvancementRewards.Builder.experience(50))
-			.criterion(
+			.method_703(AdvancementRewards.Builder.experience(50))
+			.method_709(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.method_9001(
 					EntityPredicate.Builder.create().type(EntityType.GHAST),
-					DamageSourcePredicate.Builder.create().projectile(true).directEntity(EntityPredicate.Builder.create().type(EntityType.FIREBALL))
+					DamageSourcePredicate.Builder.create().projectile(true).method_8854(EntityPredicate.Builder.create().type(EntityType.FIREBALL))
 				)
 			)
 			.build(consumer, "nether/return_to_sender");
 		SimpleAdvancement simpleAdvancement3 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement)
-			.display(
+			.method_697(
 				Blocks.field_10266,
 				new TranslatableTextComponent("advancements.nether.find_fortress.title"),
 				new TranslatableTextComponent("advancements.nether.find_fortress.description"),
@@ -76,11 +76,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("fortress", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9017(Feature.NETHER_BRIDGE)))
+			.method_709("fortress", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9017(Feature.field_13569)))
 			.build(consumer, "nether/find_fortress");
 		SimpleAdvancement simpleAdvancement4 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement)
-			.display(
+			.method_697(
 				Items.field_8895,
 				new TranslatableTextComponent("advancements.nether.fast_travel.title"),
 				new TranslatableTextComponent("advancements.nether.fast_travel.description"),
@@ -90,12 +90,12 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion("travelled", NetherTravelCriterion.Conditions.distance(DistancePredicate.method_8860(NumberRange.Float.atLeast(7000.0F))))
+			.method_703(AdvancementRewards.Builder.experience(100))
+			.method_709("travelled", NetherTravelCriterion.Conditions.distance(DistancePredicate.method_8860(NumberRange.Float.atLeast(7000.0F))))
 			.build(consumer, "nether/fast_travel");
 		SimpleAdvancement simpleAdvancement5 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement2)
-			.display(
+			.method_697(
 				Items.field_8070,
 				new TranslatableTextComponent("advancements.nether.uneasy_alliance.title"),
 				new TranslatableTextComponent("advancements.nether.uneasy_alliance.description"),
@@ -105,17 +105,17 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion(
+			.method_703(AdvancementRewards.Builder.experience(100))
+			.method_709(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createKill(
-					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.method_9016(DimensionType.field_13072))
+					EntityPredicate.Builder.create().type(EntityType.GHAST).method_8918(LocationPredicate.method_9016(DimensionType.field_13072))
 				)
 			)
 			.build(consumer, "nether/uneasy_alliance");
 		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement3)
-			.display(
+			.method_697(
 				Blocks.field_10177,
 				new TranslatableTextComponent("advancements.nether.get_wither_skull.title"),
 				new TranslatableTextComponent("advancements.nether.get_wither_skull.description"),
@@ -125,11 +125,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("wither_skull", InventoryChangedCriterion.Conditions.items(Blocks.field_10177))
+			.method_709("wither_skull", InventoryChangedCriterion.Conditions.method_8959(Blocks.field_10177))
 			.build(consumer, "nether/get_wither_skull");
 		SimpleAdvancement simpleAdvancement7 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement6)
-			.display(
+			.method_697(
 				Items.field_8137,
 				new TranslatableTextComponent("advancements.nether.summon_wither.title"),
 				new TranslatableTextComponent("advancements.nether.summon_wither.description"),
@@ -139,11 +139,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("summoned", SummonedEntityCriterion.Conditions.method_9129(EntityPredicate.Builder.create().type(EntityType.WITHER)))
+			.method_709("summoned", SummonedEntityCriterion.Conditions.method_9129(EntityPredicate.Builder.create().type(EntityType.WITHER)))
 			.build(consumer, "nether/summon_wither");
 		SimpleAdvancement simpleAdvancement8 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement3)
-			.display(
+			.method_697(
 				Items.field_8894,
 				new TranslatableTextComponent("advancements.nether.obtain_blaze_rod.title"),
 				new TranslatableTextComponent("advancements.nether.obtain_blaze_rod.description"),
@@ -153,11 +153,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("blaze_rod", InventoryChangedCriterion.Conditions.items(Items.field_8894))
+			.method_709("blaze_rod", InventoryChangedCriterion.Conditions.method_8959(Items.field_8894))
 			.build(consumer, "nether/obtain_blaze_rod");
 		SimpleAdvancement simpleAdvancement9 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement7)
-			.display(
+			.method_697(
 				Blocks.field_10327,
 				new TranslatableTextComponent("advancements.nether.create_beacon.title"),
 				new TranslatableTextComponent("advancements.nether.create_beacon.description"),
@@ -167,11 +167,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.Integer.atLeast(1)))
+			.method_709("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.Integer.atLeast(1)))
 			.build(consumer, "nether/create_beacon");
 		SimpleAdvancement simpleAdvancement10 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement9)
-			.display(
+			.method_697(
 				Blocks.field_10327,
 				new TranslatableTextComponent("advancements.nether.create_full_beacon.title"),
 				new TranslatableTextComponent("advancements.nether.create_full_beacon.description"),
@@ -181,11 +181,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.Integer.exactly(4)))
+			.method_709("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.Integer.exactly(4)))
 			.build(consumer, "nether/create_full_beacon");
 		SimpleAdvancement simpleAdvancement11 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement8)
-			.display(
+			.method_697(
 				Items.field_8574,
 				new TranslatableTextComponent("advancements.nether.brew_potion.title"),
 				new TranslatableTextComponent("advancements.nether.brew_potion.description"),
@@ -195,11 +195,11 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("potion", BrewedPotionCriterion.Conditions.any())
+			.method_709("potion", BrewedPotionCriterion.Conditions.any())
 			.build(consumer, "nether/brew_potion");
 		SimpleAdvancement simpleAdvancement12 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement11)
-			.display(
+			.method_697(
 				Items.field_8103,
 				new TranslatableTextComponent("advancements.nether.all_potions.title"),
 				new TranslatableTextComponent("advancements.nether.all_potions.description"),
@@ -209,8 +209,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion(
+			.method_703(AdvancementRewards.Builder.experience(100))
+			.method_709(
 				"all_effects",
 				EffectsChangedCriterion.Conditions.method_8869(
 					EntityEffectPredicate.create()
@@ -232,7 +232,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 			.build(consumer, "nether/all_potions");
 		SimpleAdvancement simpleAdvancement13 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement12)
-			.display(
+			.method_697(
 				Items.field_8550,
 				new TranslatableTextComponent("advancements.nether.all_effects.title"),
 				new TranslatableTextComponent("advancements.nether.all_effects.description"),
@@ -242,8 +242,8 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				true
 			)
-			.rewards(AdvancementRewards.Builder.experience(1000))
-			.criterion(
+			.method_703(AdvancementRewards.Builder.experience(1000))
+			.method_709(
 				"all_effects",
 				EffectsChangedCriterion.Conditions.method_8869(
 					EntityEffectPredicate.create()
@@ -272,6 +272,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 						.withEffect(StatusEffects.field_5900)
 						.withEffect(StatusEffects.field_5922)
 						.withEffect(StatusEffects.field_5919)
+						.withEffect(StatusEffects.field_16595)
 				)
 			)
 			.build(consumer, "nether/all_effects");

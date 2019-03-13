@@ -30,8 +30,8 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 			int p = n / 65536;
 			GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)o, (float)p);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
-			MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(Blocks.field_10449.getDefaultState(), 1.0F);
+			this.method_17164(SpriteAtlasTexture.field_5275);
+			MinecraftClient.getInstance().method_1541().renderDynamic(Blocks.field_10449.method_9564(), 1.0F);
 			GlStateManager.popMatrix();
 			GlStateManager.disableRescaleNormal();
 		}

@@ -34,7 +34,7 @@ public class EntityStatusS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11471(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onEntityStatus(this);
+		clientPlayPacketListener.method_11148(this);
 	}
 
 	@Environment(EnvType.CLIENT)

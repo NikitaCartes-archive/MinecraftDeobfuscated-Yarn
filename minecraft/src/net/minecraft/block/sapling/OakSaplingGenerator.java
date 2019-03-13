@@ -10,7 +10,7 @@ import net.minecraft.world.gen.feature.OakTreeFeature;
 public class OakSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> method_11430(Random random) {
 		return (AbstractTreeFeature<DefaultFeatureConfig>)(random.nextInt(10) == 0
 			? new LargeOakTreeFeature(DefaultFeatureConfig::deserialize, true)
 			: new OakTreeFeature(DefaultFeatureConfig::deserialize, true));

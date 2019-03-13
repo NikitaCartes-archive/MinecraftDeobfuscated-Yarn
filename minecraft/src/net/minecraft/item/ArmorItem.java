@@ -28,29 +28,29 @@ public class ArmorItem extends Item {
 		UUID.fromString("9F3D476D-C118-4544-8365-64846904B48E"),
 		UUID.fromString("2AD3F246-FEE1-4E67-B886-69FD380BB150")
 	};
-	public static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior() {
+	public static final DispenserBehavior field_7879 = new ItemDispenserBehavior() {
 		@Override
 		protected ItemStack dispenseStack(BlockPointer blockPointer, ItemStack itemStack) {
-			ItemStack itemStack2 = ArmorItem.dispenseArmor(blockPointer, itemStack);
+			ItemStack itemStack2 = ArmorItem.method_7684(blockPointer, itemStack);
 			return itemStack2.isEmpty() ? super.dispenseStack(blockPointer, itemStack) : itemStack2;
 		}
 	};
 	protected final EquipmentSlot slot;
 	protected final int protection;
 	protected final float toughness;
-	protected final ArmorMaterial type;
+	protected final ArmorMaterial field_7881;
 
-	public static ItemStack dispenseArmor(BlockPointer blockPointer, ItemStack itemStack) {
-		BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
+	public static ItemStack method_7684(BlockPointer blockPointer, ItemStack itemStack) {
+		BlockPos blockPos = blockPointer.getBlockPos().method_10093(blockPointer.getBlockState().method_11654(DispenserBlock.field_10918));
 		List<LivingEntity> list = blockPointer.getWorld()
 			.method_8390(LivingEntity.class, new BoundingBox(blockPos), EntityPredicates.EXCEPT_SPECTATOR.and(new EntityPredicates.CanPickup(itemStack)));
 		if (list.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
 			LivingEntity livingEntity = (LivingEntity)list.get(0);
-			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+			EquipmentSlot equipmentSlot = MobEntity.method_5953(itemStack);
 			ItemStack itemStack2 = itemStack.split(1);
-			livingEntity.setEquippedStack(equipmentSlot, itemStack2);
+			livingEntity.method_5673(equipmentSlot, itemStack2);
 			if (livingEntity instanceof MobEntity) {
 				((MobEntity)livingEntity).setEquipmentDropChance(equipmentSlot, 2.0F);
 				((MobEntity)livingEntity).setPersistent();
@@ -62,11 +62,11 @@ public class ArmorItem extends Item {
 
 	public ArmorItem(ArmorMaterial armorMaterial, EquipmentSlot equipmentSlot, Item.Settings settings) {
 		super(settings.durabilityIfNotSet(armorMaterial.getDurability(equipmentSlot)));
-		this.type = armorMaterial;
+		this.field_7881 = armorMaterial;
 		this.slot = equipmentSlot;
 		this.protection = armorMaterial.getProtectionAmount(equipmentSlot);
 		this.toughness = armorMaterial.getToughness();
-		DispenserBlock.registerBehavior(this, DISPENSER_BEHAVIOR);
+		DispenserBlock.method_10009(this, field_7879);
 	}
 
 	public EquipmentSlot getSlotType() {
@@ -75,25 +75,25 @@ public class ArmorItem extends Item {
 
 	@Override
 	public int getEnchantability() {
-		return this.type.getEnchantability();
+		return this.field_7881.getEnchantability();
 	}
 
-	public ArmorMaterial getMaterial() {
-		return this.type;
-	}
-
-	@Override
-	public boolean canRepair(ItemStack itemStack, ItemStack itemStack2) {
-		return this.type.getRepairIngredient().method_8093(itemStack2) || super.canRepair(itemStack, itemStack2);
+	public ArmorMaterial method_7686() {
+		return this.field_7881;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
-		ItemStack itemStack2 = playerEntity.getEquippedStack(equipmentSlot);
+	public boolean method_7878(ItemStack itemStack, ItemStack itemStack2) {
+		return this.field_7881.method_7695().method_8093(itemStack2) || super.method_7878(itemStack, itemStack2);
+	}
+
+	@Override
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
+		EquipmentSlot equipmentSlot = MobEntity.method_5953(itemStack);
+		ItemStack itemStack2 = playerEntity.method_6118(equipmentSlot);
 		if (itemStack2.isEmpty()) {
-			playerEntity.setEquippedStack(equipmentSlot, itemStack.copy());
+			playerEntity.method_5673(equipmentSlot, itemStack.copy());
 			itemStack.setAmount(0);
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 		} else {

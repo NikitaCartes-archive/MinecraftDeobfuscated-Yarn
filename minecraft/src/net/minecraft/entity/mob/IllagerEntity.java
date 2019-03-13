@@ -20,28 +20,28 @@ public abstract class IllagerEntity extends RaiderEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_7206, (byte)0);
+		this.field_6011.startTracking(field_7206, (byte)0);
 	}
 
 	@Environment(EnvType.CLIENT)
 	protected boolean method_6991(int i) {
-		int j = this.dataTracker.get(field_7206);
+		int j = this.field_6011.get(field_7206);
 		return (j & i) != 0;
 	}
 
 	protected void method_6992(int i, boolean bl) {
-		int j = this.dataTracker.get(field_7206);
+		int j = this.field_6011.get(field_7206);
 		if (bl) {
 			j |= i;
 		} else {
 			j &= ~i;
 		}
 
-		this.dataTracker.set(field_7206, (byte)(j & 0xFF));
+		this.field_6011.set(field_7206, (byte)(j & 0xFF));
 	}
 
 	@Override
-	public EntityGroup getGroup() {
+	public EntityGroup method_6046() {
 		return EntityGroup.ILLAGER;
 	}
 

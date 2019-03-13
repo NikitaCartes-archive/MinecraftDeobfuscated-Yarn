@@ -25,7 +25,7 @@ public abstract class AbstractFilenameResourcePack implements ResourcePack {
 		this.base = file;
 	}
 
-	private static String getFilename(ResourceType resourceType, Identifier identifier) {
+	private static String method_14395(ResourceType resourceType, Identifier identifier) {
 		return String.format("%s/%s/%s", resourceType.getName(), identifier.getNamespace(), identifier.getPath());
 	}
 
@@ -34,13 +34,13 @@ public abstract class AbstractFilenameResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public InputStream open(ResourceType resourceType, Identifier identifier) throws IOException {
-		return this.openFilename(getFilename(resourceType, identifier));
+	public InputStream method_14405(ResourceType resourceType, Identifier identifier) throws IOException {
+		return this.openFilename(method_14395(resourceType, identifier));
 	}
 
 	@Override
-	public boolean contains(ResourceType resourceType, Identifier identifier) {
-		return this.containsFilename(getFilename(resourceType, identifier));
+	public boolean method_14411(ResourceType resourceType, Identifier identifier) {
+		return this.containsFilename(method_14395(resourceType, identifier));
 	}
 
 	protected abstract InputStream openFilename(String string) throws IOException;
@@ -63,12 +63,35 @@ public abstract class AbstractFilenameResourcePack implements ResourcePack {
 
 	@Nullable
 	@Override
-	public <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
-		return parseMetadata(resourceMetadataReader, this.openFilename("pack.mcmeta"));
+	public <T> T method_14407(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
+		InputStream inputStream = this.openFilename("pack.mcmeta");
+		Throwable var3 = null;
+
+		Object var4;
+		try {
+			var4 = method_14392(resourceMetadataReader, inputStream);
+		} catch (Throwable var13) {
+			var3 = var13;
+			throw var13;
+		} finally {
+			if (inputStream != null) {
+				if (var3 != null) {
+					try {
+						inputStream.close();
+					} catch (Throwable var12) {
+						var3.addSuppressed(var12);
+					}
+				} else {
+					inputStream.close();
+				}
+			}
+		}
+
+		return (T)var4;
 	}
 
 	@Nullable
-	public static <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader, InputStream inputStream) {
+	public static <T> T method_14392(ResourceMetadataReader<T> resourceMetadataReader, InputStream inputStream) {
 		JsonObject jsonObject;
 		try {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));

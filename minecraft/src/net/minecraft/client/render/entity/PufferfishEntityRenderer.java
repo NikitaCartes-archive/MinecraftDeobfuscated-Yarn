@@ -21,7 +21,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 	private final LargePufferfishEntityModel<PufferfishEntity> largeModel = new LargePufferfishEntityModel<>();
 
 	public PufferfishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new LargePufferfishEntityModel<>(), 0.1F);
+		super(entityRenderDispatcher, new LargePufferfishEntityModel<>(), 0.2F);
 		this.field_4765 = 3;
 	}
 

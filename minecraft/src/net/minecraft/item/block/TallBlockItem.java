@@ -12,8 +12,8 @@ public class TallBlockItem extends BlockItem {
 	}
 
 	@Override
-	protected boolean setBlockState(ItemPlacementContext itemPlacementContext, BlockState blockState) {
-		itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getBlockPos().up(), Blocks.field_10124.getDefaultState(), 27);
-		return super.setBlockState(itemPlacementContext, blockState);
+	protected boolean method_7708(ItemPlacementContext itemPlacementContext, BlockState blockState) {
+		itemPlacementContext.method_8045().method_8652(itemPlacementContext.method_8037().up(), Blocks.field_10124.method_9564(), 27);
+		return super.method_7708(itemPlacementContext, blockState);
 	}
 }

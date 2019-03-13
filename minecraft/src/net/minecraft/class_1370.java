@@ -1,5 +1,6 @@
 package net.minecraft;
 
+import java.util.EnumSet;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.BlockPos;
@@ -15,7 +16,7 @@ public class class_1370 extends Goal {
 	public class_1370(MobEntityWithAi mobEntityWithAi, double d) {
 		this.field_6536 = mobEntityWithAi;
 		this.field_6537 = d;
-		this.setControlBits(1);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 	}
 
 	@Override
@@ -38,11 +39,11 @@ public class class_1370 extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.field_6536.getNavigation().isIdle();
+		return !this.field_6536.method_5942().isIdle();
 	}
 
 	@Override
 	public void start() {
-		this.field_6536.getNavigation().startMovingTo(this.field_6535, this.field_6534, this.field_6533, this.field_6537);
+		this.field_6536.method_5942().startMovingTo(this.field_6535, this.field_6534, this.field_6533, this.field_6537);
 	}
 }

@@ -4,24 +4,24 @@ import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 
 public class BlockAction {
-	private final BlockPos pos;
-	private final Block block;
+	private final BlockPos field_9173;
+	private final Block field_9172;
 	private final int type;
 	private final int data;
 
 	public BlockAction(BlockPos blockPos, Block block, int i, int j) {
-		this.pos = blockPos;
-		this.block = block;
+		this.field_9173 = blockPos;
+		this.field_9172 = block;
 		this.type = i;
 		this.data = j;
 	}
 
-	public BlockPos getPos() {
-		return this.pos;
+	public BlockPos method_8306() {
+		return this.field_9173;
 	}
 
-	public Block getBlock() {
-		return this.block;
+	public Block method_8309() {
+		return this.field_9172;
 	}
 
 	public int getType() {
@@ -37,11 +37,14 @@ public class BlockAction {
 			return false;
 		} else {
 			BlockAction blockAction = (BlockAction)object;
-			return this.pos.equals(blockAction.pos) && this.type == blockAction.type && this.data == blockAction.data && this.block == blockAction.block;
+			return this.field_9173.equals(blockAction.field_9173)
+				&& this.type == blockAction.type
+				&& this.data == blockAction.data
+				&& this.field_9172 == blockAction.field_9172;
 		}
 	}
 
 	public String toString() {
-		return "TE(" + this.pos + ")," + this.type + "," + this.data + "," + this.block;
+		return "TE(" + this.field_9173 + ")," + this.type + "," + this.data + "," + this.field_9172;
 	}
 }

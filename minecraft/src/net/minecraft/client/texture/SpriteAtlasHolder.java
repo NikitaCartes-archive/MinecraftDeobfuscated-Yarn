@@ -13,19 +13,19 @@ public abstract class SpriteAtlasHolder extends SupplyingResourceReloadListener<
 
 	public SpriteAtlasHolder(TextureManager textureManager, Identifier identifier, String string) {
 		this.atlas = new SpriteAtlasTexture(string);
-		textureManager.registerTextureUpdateable(identifier, this.atlas);
+		textureManager.method_4620(identifier, this.atlas);
 	}
 
 	protected abstract Iterable<Identifier> getSprites();
 
-	protected Sprite getSprite(Identifier identifier) {
-		return this.atlas.getSprite(identifier);
+	protected Sprite method_18667(Identifier identifier) {
+		return this.atlas.method_4608(identifier);
 	}
 
 	protected SpriteAtlasTexture.Data method_18668(ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("stitching");
-		SpriteAtlasTexture.Data data = this.atlas.stitch(resourceManager, this.getSprites(), profiler);
+		SpriteAtlasTexture.Data data = this.atlas.method_18163(resourceManager, this.getSprites(), profiler);
 		profiler.pop();
 		profiler.endTick();
 		return data;

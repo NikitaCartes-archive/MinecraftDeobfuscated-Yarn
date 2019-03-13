@@ -8,7 +8,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class VillagerResourceMetadata {
-	public static final VillagerResourceMetadataReader READER = new VillagerResourceMetadataReader();
+	public static final VillagerResourceMetadataReader field_17158 = new VillagerResourceMetadataReader();
 	private final VillagerResourceMetadata.HatType hatType;
 
 	public VillagerResourceMetadata(VillagerResourceMetadata.HatType hatType) {

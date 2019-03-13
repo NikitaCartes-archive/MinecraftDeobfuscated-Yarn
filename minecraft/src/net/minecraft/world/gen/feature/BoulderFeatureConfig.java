@@ -31,7 +31,7 @@ public class BoulderFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> BoulderFeatureConfig deserialize(Dynamic<T> dynamic) {
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.method_9564());
 		int i = dynamic.get("start_radius").asInt(0);
 		return new BoulderFeatureConfig(blockState, i);
 	}

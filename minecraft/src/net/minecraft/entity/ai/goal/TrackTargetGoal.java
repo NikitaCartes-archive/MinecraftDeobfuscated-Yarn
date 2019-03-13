@@ -45,8 +45,8 @@ public abstract class TrackTargetGoal extends Goal {
 		} else if (!livingEntity.isValid()) {
 			return false;
 		} else {
-			AbstractScoreboardTeam abstractScoreboardTeam = this.entity.getScoreboardTeam();
-			AbstractScoreboardTeam abstractScoreboardTeam2 = livingEntity.getScoreboardTeam();
+			AbstractScoreboardTeam abstractScoreboardTeam = this.entity.method_5781();
+			AbstractScoreboardTeam abstractScoreboardTeam2 = livingEntity.method_5781();
 			if (abstractScoreboardTeam != null && abstractScoreboardTeam2 == abstractScoreboardTeam) {
 				return false;
 			} else {
@@ -55,7 +55,7 @@ public abstract class TrackTargetGoal extends Goal {
 					return false;
 				} else {
 					if (this.checkVisibility) {
-						if (this.entity.getVisibilityCache().canSee(livingEntity)) {
+						if (this.entity.method_5985().canSee(livingEntity)) {
 							this.timeWithoutVisibility = 0;
 						} else if (++this.timeWithoutVisibility > this.maxTimeWithoutVisibility) {
 							return false;
@@ -74,7 +74,7 @@ public abstract class TrackTargetGoal extends Goal {
 	}
 
 	protected double getFollowRange() {
-		EntityAttributeInstance entityAttributeInstance = this.entity.getAttributeInstance(EntityAttributes.FOLLOW_RANGE);
+		EntityAttributeInstance entityAttributeInstance = this.entity.method_5996(EntityAttributes.FOLLOW_RANGE);
 		return entityAttributeInstance == null ? 16.0 : entityAttributeInstance.getValue();
 	}
 
@@ -91,7 +91,7 @@ public abstract class TrackTargetGoal extends Goal {
 		this.field_6664 = null;
 	}
 
-	protected boolean canTrack(@Nullable LivingEntity livingEntity, class_4051 arg) {
+	protected boolean method_6328(@Nullable LivingEntity livingEntity, class_4051 arg) {
 		if (livingEntity == null) {
 			return false;
 		} else if (!arg.method_18419(this.entity, livingEntity)) {
@@ -119,7 +119,7 @@ public abstract class TrackTargetGoal extends Goal {
 
 	private boolean canNavigateToEntity(LivingEntity livingEntity) {
 		this.checkCanNavigateCooldown = 10 + this.entity.getRand().nextInt(5);
-		Path path = this.entity.getNavigation().findPathTo(livingEntity);
+		Path path = this.entity.method_5942().method_6349(livingEntity);
 		if (path == null) {
 			return false;
 		} else {

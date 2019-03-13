@@ -2,6 +2,7 @@ package net.minecraft.world.chunk.storage;
 
 import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
+import java.io.File;
 import java.io.IOException;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
@@ -13,26 +14,27 @@ import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 
-public abstract class VersionedRegionFileCache extends RegionFileCache {
+public class VersionedRegionFileCache extends RegionFileCache {
 	protected final DataFixer dataFixer;
 	@Nullable
-	private FeatureUpdater featureUpdater;
+	private FeatureUpdater field_17654;
 
-	public VersionedRegionFileCache(DataFixer dataFixer) {
+	public VersionedRegionFileCache(File file, DataFixer dataFixer) {
+		super(file);
 		this.dataFixer = dataFixer;
 	}
 
-	public CompoundTag updateChunkTag(DimensionType dimensionType, Supplier<PersistentStateManager> supplier, CompoundTag compoundTag) {
-		int i = getDataVersion(compoundTag);
+	public CompoundTag method_17907(DimensionType dimensionType, Supplier<PersistentStateManager> supplier, CompoundTag compoundTag) {
+		int i = method_17908(compoundTag);
 		int j = 1493;
 		if (i < 1493) {
 			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.CHUNK, compoundTag, i, 1493);
 			if (compoundTag.getCompound("Level").getBoolean("hasLegacyStructureData")) {
-				if (this.featureUpdater == null) {
-					this.featureUpdater = FeatureUpdater.create(dimensionType, (PersistentStateManager)supplier.get());
+				if (this.field_17654 == null) {
+					this.field_17654 = FeatureUpdater.method_14745(dimensionType, (PersistentStateManager)supplier.get());
 				}
 
-				compoundTag = this.featureUpdater.getUpdatedReferences(compoundTag);
+				compoundTag = this.field_17654.method_14735(compoundTag);
 			}
 		}
 
@@ -44,15 +46,15 @@ public abstract class VersionedRegionFileCache extends RegionFileCache {
 		return compoundTag;
 	}
 
-	public static int getDataVersion(CompoundTag compoundTag) {
+	public static int method_17908(CompoundTag compoundTag) {
 		return compoundTag.containsKey("DataVersion", 99) ? compoundTag.getInt("DataVersion") : -1;
 	}
 
 	@Override
-	public void writeChunkTag(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
-		super.writeChunkTag(chunkPos, compoundTag);
-		if (this.featureUpdater != null) {
-			this.featureUpdater.markResolved(chunkPos.toLong());
+	public void method_17910(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {
+		super.method_17910(chunkPos, compoundTag);
+		if (this.field_17654 != null) {
+			this.field_17654.markResolved(chunkPos.toLong());
 		}
 	}
 }

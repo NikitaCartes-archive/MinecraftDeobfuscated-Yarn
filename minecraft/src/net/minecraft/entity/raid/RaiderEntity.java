@@ -1,5 +1,6 @@
 package net.minecraft.entity.raid;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
@@ -15,19 +16,20 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.PatrolEntity;
 import net.minecraft.entity.passive.GolemEntity;
+import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.village.VillageProperties;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldVillageManager;
 
 public abstract class RaiderEntity extends PatrolEntity {
 	private static final Predicate<ItemEntity> OBTAINABLE_ILLAGER_BANNER_ITEM = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isValid()
-			&& ItemStack.areEqual(itemEntity.getStack(), Raid.ILLAGER_BANNER);
+			&& ItemStack.areEqual(itemEntity.method_6983(), Raid.field_16609);
+	@Nullable
 	protected Raid raid;
 	private int wave;
 	private boolean hasRaidGoal;
@@ -49,13 +51,13 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 	@Override
 	public void updateMovement() {
-		if (!this.world.isClient) {
+		if (this.field_6002 instanceof ServerWorld && this.isValid()) {
 			Raid raid = this.getRaid();
 			if (raid == null) {
-				if (this.world.getTime() % 20L == 0L) {
-					Raid raid2 = this.getOnGoingRaid();
-					if (raid2 != null && RaidManager.isValidRaiderFor(this, this.raid)) {
-						raid2.addRaider(raid2.getGroupsSpawned(), this, null, true);
+				if (this.field_6002.getTime() % 20L == 0L) {
+					Raid raid2 = ((ServerWorld)this.field_6002).method_19502(new BlockPos(this));
+					if (raid2 != null && RaidManager.isValidRaiderFor(this, raid2)) {
+						raid2.method_16516(raid2.getGroupsSpawned(), this, null, true);
 					}
 				}
 			} else {
@@ -76,19 +78,30 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		if (!this.world.isClient) {
+		if (this.field_6002 instanceof ServerWorld) {
 			if (this.getRaid() != null) {
 				if (this.isPatrolLeader()) {
 					this.getRaid().removeLeader(this.getWave());
 				}
 
-				this.getRaid().removeFromWave(this, false);
+				this.getRaid().method_16510(this, false);
 			}
 
-			if (this.isPatrolLeader() && this.getRaid() == null && this.getOnGoingRaid() == null) {
-				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
-				if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.ILLAGER_BANNER) && damageSource.getAttacker() instanceof PlayerEntity) {
-					PlayerEntity playerEntity = (PlayerEntity)damageSource.getAttacker();
+			if (this.isPatrolLeader() && this.getRaid() == null && ((ServerWorld)this.field_6002).method_19502(new BlockPos(this)) == null) {
+				ItemStack itemStack = this.method_6118(EquipmentSlot.HEAD);
+				PlayerEntity playerEntity = null;
+				Entity entity = damageSource.method_5529();
+				if (entity instanceof PlayerEntity) {
+					playerEntity = (PlayerEntity)entity;
+				} else if (entity instanceof WolfEntity) {
+					WolfEntity wolfEntity = (WolfEntity)entity;
+					LivingEntity livingEntity = wolfEntity.getOwner();
+					if (wolfEntity.isTamed() && livingEntity instanceof PlayerEntity) {
+						playerEntity = (PlayerEntity)livingEntity;
+					}
+				}
+
+				if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.field_16609) && playerEntity != null) {
 					StatusEffectInstance statusEffectInstance = playerEntity.getPotionEffect(StatusEffects.field_16595);
 					int i = Raid.getBadOmenLevel(this.random, this.isRaidCenterSet());
 					if (statusEffectInstance != null) {
@@ -108,25 +121,11 @@ public abstract class RaiderEntity extends PatrolEntity {
 		super.onDeath(damageSource);
 	}
 
-	@Nullable
-	private Raid getOnGoingRaid() {
-		WorldVillageManager worldVillageManager = this.world.getVillageManager();
-		Raid raid = null;
-		if (worldVillageManager != null) {
-			VillageProperties villageProperties = worldVillageManager.getNearestVillage(new BlockPos(this.x, this.y, this.z), 0);
-			if (villageProperties != null) {
-				raid = villageProperties.getRaid();
-			}
-		}
-
-		return raid != null && raid.isOnGoing() ? raid : null;
-	}
-
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.goalSelector.add(2, new RaiderEntity.PickupBannerAsLeaderGoal<>(this));
-		this.goalSelector.add(3, new MoveToRaidCenterGoal<>(this));
+		this.field_6201.add(2, new RaiderEntity.PickupBannerAsLeaderGoal<>(this));
+		this.field_6201.add(3, new MoveToRaidCenterGoal<>(this));
 	}
 
 	@Override
@@ -138,6 +137,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		this.raid = raid;
 	}
 
+	@Nullable
 	public Raid getRaid() {
 		return this.raid;
 	}
@@ -155,8 +155,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag compoundTag) {
-		super.writeCustomDataToTag(compoundTag);
+	public void method_5652(CompoundTag compoundTag) {
+		super.method_5652(compoundTag);
 		compoundTag.putInt("Wave", this.wave);
 		compoundTag.putBoolean("HasRaidGoal", this.hasRaidGoal);
 		if (this.raid != null) {
@@ -165,40 +165,43 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag compoundTag) {
-		super.readCustomDataFromTag(compoundTag);
+	public void method_5749(CompoundTag compoundTag) {
+		super.method_5749(compoundTag);
 		this.wave = compoundTag.getInt("Wave");
 		this.hasRaidGoal = compoundTag.getBoolean("HasRaidGoal");
 		if (compoundTag.containsKey("RaidId", 3)) {
-			this.raid = this.world.getRaidManager().getRaid(compoundTag.getInt("RaidId"));
+			if (this.field_6002 instanceof ServerWorld) {
+				this.raid = ((ServerWorld)this.field_6002).method_19495().getRaid(compoundTag.getInt("RaidId"));
+			}
+
 			if (this.raid != null) {
-				this.raid.addToWave(this.wave, this, false);
+				this.raid.method_16487(this.wave, this, false);
 				if (this.isPatrolLeader()) {
-					this.raid.setRaidLeader(this.wave, this);
+					this.raid.method_16491(this.wave, this);
 				}
 			}
 		}
 	}
 
 	@Override
-	protected void pickupItem(ItemEntity itemEntity) {
-		ItemStack itemStack = itemEntity.getStack();
-		boolean bl = this.hasActiveRaid() && this.getRaid().getLeader(this.getWave()) != null;
-		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.ILLAGER_BANNER)) {
+	protected void method_5949(ItemEntity itemEntity) {
+		ItemStack itemStack = itemEntity.method_6983();
+		boolean bl = this.hasActiveRaid() && this.getRaid().method_16496(this.getWave()) != null;
+		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.field_16609)) {
 			EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
-			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
+			ItemStack itemStack2 = this.method_6118(equipmentSlot);
 			double d = (double)this.method_5929(equipmentSlot);
 			if (!itemStack2.isEmpty() && (double)(this.random.nextFloat() - 0.1F) < d) {
-				this.dropStack(itemStack2);
+				this.method_5775(itemStack2);
 			}
 
-			this.setEquippedStack(equipmentSlot, itemStack);
+			this.method_5673(equipmentSlot, itemStack);
 			this.pickUpEntity(itemEntity, itemStack.getAmount());
 			itemEntity.invalidate();
-			this.getRaid().setRaidLeader(this.getWave(), this);
+			this.getRaid().method_16491(this.getWave(), this);
 			this.setPatrolLeader(true);
 		} else {
-			super.pickupItem(itemEntity);
+			super.method_5949(itemEntity);
 		}
 	}
 
@@ -225,7 +228,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		public PickupBannerAsLeaderGoal(T raiderEntity2) {
 			this.field_16603 = raiderEntity2;
-			this.setControlBits(1);
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override
@@ -233,16 +236,16 @@ public abstract class RaiderEntity extends PatrolEntity {
 			Raid raid = this.field_16603.getRaid();
 			if (!RaiderEntity.this.hasActiveRaid()
 				|| !this.field_16603.canLead()
-				|| ItemStack.areEqual(this.field_16603.getEquippedStack(EquipmentSlot.HEAD), Raid.ILLAGER_BANNER)) {
+				|| ItemStack.areEqual(this.field_16603.method_6118(EquipmentSlot.HEAD), Raid.field_16609)) {
 				return false;
-			} else if (raid.getLeader(this.field_16603.getWave()) != null && raid.getLeader(this.field_16603.getWave()).isValid()) {
+			} else if (raid.method_16496(this.field_16603.getWave()) != null && raid.method_16496(this.field_16603.getWave()).isValid()) {
 				return false;
 			} else {
 				List<ItemEntity> list = this.field_16603
-					.world
-					.method_8390(ItemEntity.class, this.field_16603.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
+					.field_6002
+					.method_8390(ItemEntity.class, this.field_16603.method_5829().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
 				if (!list.isEmpty()) {
-					this.field_16603.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
+					this.field_16603.method_5942().startMovingTo((Entity)list.get(0), 1.2F);
 				}
 
 				return !list.isEmpty();
@@ -251,12 +254,12 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		@Override
 		public void tick() {
-			if (this.field_16603.squaredDistanceTo(this.field_16603.getNavigation().getTargetPos()) < 2.0) {
+			if (this.field_16603.method_5831(this.field_16603.method_5942().method_6355()) < 2.0) {
 				List<ItemEntity> list = this.field_16603
-					.world
-					.method_8390(ItemEntity.class, this.field_16603.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
+					.field_6002
+					.method_8390(ItemEntity.class, this.field_16603.method_5829().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
 				if (!list.isEmpty()) {
-					this.field_16603.pickupItem((ItemEntity)list.get(0));
+					this.field_16603.method_5949((ItemEntity)list.get(0));
 				}
 			}
 		}

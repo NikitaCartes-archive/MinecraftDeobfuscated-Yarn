@@ -138,10 +138,10 @@ public class ServerCommandManager {
 			try {
 				return this.dispatcher.execute(stringReader, serverCommandSource);
 			} catch (CommandException var13) {
-				serverCommandSource.sendError(var13.getMessageComponent());
+				serverCommandSource.method_9213(var13.method_9199());
 				return 0;
 			} catch (CommandSyntaxException var14) {
-				serverCommandSource.sendError(TextFormatter.message(var14.getRawMessage()));
+				serverCommandSource.method_9213(TextFormatter.message(var14.getRawMessage()));
 				if (var14.getInput() != null && var14.getCursor() >= 0) {
 					i = Math.min(var14.getInput().length(), var14.getCursor());
 					TextComponent textComponent = new StringTextComponent("")
@@ -159,7 +159,7 @@ public class ServerCommandManager {
 					}
 
 					textComponent.append(new TranslatableTextComponent("command.context.here").applyFormat(new TextFormat[]{TextFormat.field_1061, TextFormat.field_1056}));
-					serverCommandSource.sendError(textComponent);
+					serverCommandSource.method_9213(textComponent);
 				}
 			} catch (Exception var15) {
 				TextComponent textComponent3 = new StringTextComponent(var15.getMessage() == null ? var15.getClass().getName() : var15.getMessage());
@@ -176,7 +176,7 @@ public class ServerCommandManager {
 					}
 				}
 
-				serverCommandSource.sendError(
+				serverCommandSource.method_9213(
 					new TranslatableTextComponent("command.failed").modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, textComponent3)))
 				);
 				return 0;
@@ -190,12 +190,12 @@ public class ServerCommandManager {
 		return i;
 	}
 
-	public void sendCommandTree(ServerPlayerEntity serverPlayerEntity) {
+	public void method_9241(ServerPlayerEntity serverPlayerEntity) {
 		Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> map = Maps.<CommandNode<ServerCommandSource>, CommandNode<CommandSource>>newHashMap();
 		RootCommandNode<CommandSource> rootCommandNode = new RootCommandNode<>();
 		map.put(this.dispatcher.getRoot(), rootCommandNode);
-		this.method_9239(this.dispatcher.getRoot(), rootCommandNode, serverPlayerEntity.getCommandSource(), map);
-		serverPlayerEntity.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
+		this.method_9239(this.dispatcher.getRoot(), rootCommandNode, serverPlayerEntity.method_5671(), map);
+		serverPlayerEntity.field_13987.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
 	}
 
 	private void method_9239(

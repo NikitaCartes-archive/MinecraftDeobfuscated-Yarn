@@ -21,7 +21,7 @@ public class IcebergDecorator extends Decorator<ChanceDecoratorConfig> {
 		if (random.nextFloat() < 1.0F / (float)chanceDecoratorConfig.chance) {
 			int i = random.nextInt(8) + 4;
 			int j = random.nextInt(8) + 4;
-			return Stream.of(iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(i, 0, j)));
+			return Stream.of(iWorld.method_8598(Heightmap.Type.MOTION_BLOCKING, blockPos.add(i, 0, j)));
 		} else {
 			return Stream.empty();
 		}

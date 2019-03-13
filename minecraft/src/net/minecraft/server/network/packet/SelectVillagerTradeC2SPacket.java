@@ -29,7 +29,7 @@ public class SelectVillagerTradeC2SPacket implements Packet<ServerPlayPacketList
 	}
 
 	public void method_12430(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onVillagerTradeSelect(this);
+		serverPlayPacketListener.method_12080(this);
 	}
 
 	public int method_12431() {

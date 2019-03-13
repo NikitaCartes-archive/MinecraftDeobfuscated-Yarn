@@ -19,7 +19,7 @@ public class NbtTagArgumentType implements ArgumentType<Tag> {
 		return new NbtTagArgumentType();
 	}
 
-	public static <S> Tag getNbtTagArgument(CommandContext<S> commandContext, String string) {
+	public static <S> Tag method_9390(CommandContext<S> commandContext, String string) {
 		return commandContext.getArgument(string, Tag.class);
 	}
 

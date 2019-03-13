@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
+import java.util.EnumSet;
 import net.minecraft.class_4051;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -12,7 +13,7 @@ public class AttackWithOwnerGoal extends TrackTargetGoal {
 	public AttackWithOwnerGoal(TameableEntity tameableEntity) {
 		super(tameableEntity, false);
 		this.owner = tameableEntity;
-		this.setControlBits(1);
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
 	}
 
 	@Override
@@ -26,7 +27,7 @@ public class AttackWithOwnerGoal extends TrackTargetGoal {
 			} else {
 				this.attacking = livingEntity.getAttacking();
 				int i = livingEntity.getLastAttackTime();
-				return i != this.lastAttackTime && this.canTrack(this.attacking, class_4051.field_18092) && this.owner.method_6178(this.attacking, livingEntity);
+				return i != this.lastAttackTime && this.method_6328(this.attacking, class_4051.field_18092) && this.owner.method_6178(this.attacking, livingEntity);
 			}
 		}
 	}

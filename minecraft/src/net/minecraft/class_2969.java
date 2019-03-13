@@ -8,6 +8,6 @@ public abstract class class_2969 extends ItemDispenserBehavior {
 
 	@Override
 	protected void playSound(BlockPointer blockPointer) {
-		blockPointer.getWorld().playEvent(this.field_13364 ? 1000 : 1001, blockPointer.getBlockPos(), 0);
+		blockPointer.getWorld().method_8535(this.field_13364 ? 1000 : 1001, blockPointer.getBlockPos(), 0);
 	}
 }

@@ -12,10 +12,10 @@ public class StructurePoolRegistry {
 	}
 
 	public void add(StructurePool structurePool) {
-		this.pools.put(structurePool.getId(), structurePool);
+		this.pools.put(structurePool.method_16629(), structurePool);
 	}
 
-	public StructurePool get(Identifier identifier) {
+	public StructurePool method_16639(Identifier identifier) {
 		StructurePool structurePool = (StructurePool)this.pools.get(identifier);
 		return structurePool != null ? structurePool : StructurePool.INVALID;
 	}

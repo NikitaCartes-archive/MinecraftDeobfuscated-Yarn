@@ -2,8 +2,8 @@ package net.minecraft.client.gui.menu;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
@@ -19,10 +19,10 @@ public class ErrorScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 140, I18n.translate("gui.cancel")) {
+		this.addButton(new class_4185(this.screenWidth / 2 - 100, 140, I18n.translate("gui.cancel")) {
 			@Override
-			public void onPressed(double d, double e) {
-				ErrorScreen.this.client.openScreen(null);
+			public void method_1826() {
+				ErrorScreen.this.client.method_1507(null);
 			}
 		});
 	}

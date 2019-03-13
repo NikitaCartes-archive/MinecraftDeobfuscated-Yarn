@@ -13,10 +13,10 @@ import org.apache.logging.log4j.MarkerManager;
 public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Marker MARKER = MarkerManager.getMarker("PACKET_SENT", ClientConnection.MARKER_NETWORK_PACKETS);
-	private final NetworkSide side;
+	private final NetworkSide field_11720;
 
 	public PacketEncoder(NetworkSide networkSide) {
-		this.side = networkSide;
+		this.field_11720 = networkSide;
 	}
 
 	protected void method_10838(ChannelHandlerContext channelHandlerContext, Packet<?> packet, ByteBuf byteBuf) throws Exception {
@@ -24,7 +24,7 @@ public class PacketEncoder extends MessageToByteEncoder<Packet<?>> {
 		if (networkState == null) {
 			throw new RuntimeException("ConnectionProtocol unknown: " + packet);
 		} else {
-			Integer integer = networkState.getPacketId(this.side, packet);
+			Integer integer = networkState.method_10781(this.field_11720, packet);
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug(
 					MARKER, "OUT: [{}:{}] {}", channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get(), integer, packet.getClass().getName()

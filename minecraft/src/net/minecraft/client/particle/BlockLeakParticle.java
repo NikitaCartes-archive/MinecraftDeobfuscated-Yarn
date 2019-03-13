@@ -25,13 +25,13 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet getTextureSheet() {
+	public ParticleTextureSheet method_18122() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Override
 	public int getColorMultiplier(float f) {
-		return this.field_3789.matches(FluidTags.field_15518) ? 240 : super.getColorMultiplier(f);
+		return this.field_3789.method_15791(FluidTags.field_15518) ? 240 : super.getColorMultiplier(f);
 	}
 
 	@Override
@@ -49,8 +49,8 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 				this.velocityY *= 0.98F;
 				this.velocityZ *= 0.98F;
 				BlockPos blockPos = new BlockPos(this.posX, this.posY, this.posZ);
-				FluidState fluidState = this.world.getFluidState(blockPos);
-				if (fluidState.getFluid() == this.field_3789 && this.posY < (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos))) {
+				FluidState fluidState = this.world.method_8316(blockPos);
+				if (fluidState.getFluid() == this.field_3789 && this.posY < (double)((float)blockPos.getY() + fluidState.method_15763(this.world, blockPos))) {
 					this.markDead();
 				}
 			}
@@ -126,7 +126,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 		protected void method_18822() {
 			if (this.onGround) {
 				this.markDead();
-				this.world.addParticle(this.field_18292, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
+				this.world.method_8406(this.field_18292, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
 			}
 		}
 	}
@@ -146,7 +146,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 		protected void method_18821() {
 			if (this.maxAge-- <= 0) {
 				this.markDead();
-				this.world.addParticle(this.field_18293, this.posX, this.posY, this.posZ, this.velocityX, this.velocityY, this.velocityZ);
+				this.world.method_8406(this.field_18293, this.posX, this.posY, this.posZ, this.velocityX, this.velocityY, this.velocityZ);
 			}
 		}
 

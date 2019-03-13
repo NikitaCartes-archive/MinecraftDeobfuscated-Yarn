@@ -30,11 +30,11 @@ public class SpectatorTeleportC2SPacket implements Packet<ServerPlayPacketListen
 	}
 
 	public void method_12542(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onSpectatorTeleport(this);
+		serverPlayPacketListener.method_12073(this);
 	}
 
 	@Nullable
-	public Entity getTarget(ServerWorld serverWorld) {
+	public Entity method_12541(ServerWorld serverWorld) {
 		return serverWorld.getEntity(this.targetUuid);
 	}
 }

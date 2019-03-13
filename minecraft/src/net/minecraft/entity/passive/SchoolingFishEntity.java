@@ -23,7 +23,7 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.goalSelector.add(5, new FollowGroupLeaderGoal(this));
+		this.field_6201.add(5, new FollowGroupLeaderGoal(this));
 	}
 
 	@Override
@@ -70,8 +70,8 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	@Override
 	public void update() {
 		super.update();
-		if (this.hasOtherFishInGroup() && this.world.random.nextInt(200) == 1) {
-			List<FishEntity> list = this.world.method_18467(this.getClass(), this.getBoundingBox().expand(8.0, 8.0, 8.0));
+		if (this.hasOtherFishInGroup() && this.field_6002.random.nextInt(200) == 1) {
+			List<FishEntity> list = this.field_6002.method_18467(this.getClass(), this.method_5829().expand(8.0, 8.0, 8.0));
 			if (list.size() <= 1) {
 				this.groupSize = 1;
 			}
@@ -88,7 +88,7 @@ public abstract class SchoolingFishEntity extends FishEntity {
 
 	public void moveTowardLeader() {
 		if (this.hasLeader()) {
-			this.getNavigation().startMovingTo(this.leader, 1.0);
+			this.method_5942().startMovingTo(this.leader, 1.0);
 		}
 	}
 
@@ -100,10 +100,10 @@ public abstract class SchoolingFishEntity extends FishEntity {
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData method_5943(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (entityData == null) {
 			entityData = new SchoolingFishEntity.Data(this);
 		} else {

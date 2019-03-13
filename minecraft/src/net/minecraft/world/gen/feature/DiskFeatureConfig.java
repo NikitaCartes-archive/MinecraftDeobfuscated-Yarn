@@ -40,7 +40,7 @@ public class DiskFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> DiskFeatureConfig deserialize(Dynamic<T> dynamic) {
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.method_9564());
 		int i = dynamic.get("radius").asInt(0);
 		int j = dynamic.get("y_size").asInt(0);
 		List<BlockState> list = dynamic.get("targets").asList(BlockState::deserialize);

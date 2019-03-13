@@ -12,7 +12,7 @@ import net.minecraft.util.PacketByteBuf;
 
 public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener> {
 	private AdvancementTabC2SPacket.Action action;
-	private Identifier tabToOpen;
+	private Identifier field_13020;
 
 	public AdvancementTabC2SPacket() {
 	}
@@ -20,12 +20,12 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	@Environment(EnvType.CLIENT)
 	public AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action action, @Nullable Identifier identifier) {
 		this.action = action;
-		this.tabToOpen = identifier;
+		this.field_13020 = identifier;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static AdvancementTabC2SPacket open(SimpleAdvancement simpleAdvancement) {
-		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.field_13024, simpleAdvancement.getId());
+	public static AdvancementTabC2SPacket method_12418(SimpleAdvancement simpleAdvancement) {
+		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.field_13024, simpleAdvancement.method_688());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -37,7 +37,7 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.action = packetByteBuf.readEnumConstant(AdvancementTabC2SPacket.Action.class);
 		if (this.action == AdvancementTabC2SPacket.Action.field_13024) {
-			this.tabToOpen = packetByteBuf.readIdentifier();
+			this.field_13020 = packetByteBuf.method_10810();
 		}
 	}
 
@@ -45,20 +45,20 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.action);
 		if (this.action == AdvancementTabC2SPacket.Action.field_13024) {
-			packetByteBuf.writeIdentifier(this.tabToOpen);
+			packetByteBuf.method_10812(this.field_13020);
 		}
 	}
 
 	public void method_12417(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onAdvancementTab(this);
+		serverPlayPacketListener.method_12058(this);
 	}
 
 	public AdvancementTabC2SPacket.Action getAction() {
 		return this.action;
 	}
 
-	public Identifier getTabToOpen() {
-		return this.tabToOpen;
+	public Identifier method_12416() {
+		return this.field_13020;
 	}
 
 	public static enum Action {

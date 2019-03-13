@@ -12,8 +12,8 @@ import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.Validate;
 
 public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
-	private SoundEvent sound;
-	private SoundCategory category;
+	private SoundEvent field_12661;
+	private SoundCategory field_12660;
 	private int fixedX;
 	private int fixedY;
 	private int fixedZ;
@@ -25,8 +25,8 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public PlaySoundS2CPacket(SoundEvent soundEvent, SoundCategory soundCategory, double d, double e, double f, float g, float h) {
 		Validate.notNull(soundEvent, "sound");
-		this.sound = soundEvent;
-		this.category = soundCategory;
+		this.field_12661 = soundEvent;
+		this.field_12660 = soundCategory;
 		this.fixedX = (int)(d * 8.0);
 		this.fixedY = (int)(e * 8.0);
 		this.fixedZ = (int)(f * 8.0);
@@ -36,8 +36,8 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.sound = Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
-		this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
+		this.field_12661 = Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
+		this.field_12660 = packetByteBuf.readEnumConstant(SoundCategory.class);
 		this.fixedX = packetByteBuf.readInt();
 		this.fixedY = packetByteBuf.readInt();
 		this.fixedZ = packetByteBuf.readInt();
@@ -47,8 +47,8 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(Registry.SOUND_EVENT.getRawId(this.sound));
-		packetByteBuf.writeEnumConstant(this.category);
+		packetByteBuf.writeVarInt(Registry.SOUND_EVENT.getRawId(this.field_12661));
+		packetByteBuf.writeEnumConstant(this.field_12660);
 		packetByteBuf.writeInt(this.fixedX);
 		packetByteBuf.writeInt(this.fixedY);
 		packetByteBuf.writeInt(this.fixedZ);
@@ -57,13 +57,13 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent getSound() {
-		return this.sound;
+	public SoundEvent method_11894() {
+		return this.field_12661;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundCategory getCategory() {
-		return this.category;
+	public SoundCategory method_11888() {
+		return this.field_12660;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -92,6 +92,6 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11895(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onPlaySound(this);
+		clientPlayPacketListener.method_11146(this);
 	}
 }

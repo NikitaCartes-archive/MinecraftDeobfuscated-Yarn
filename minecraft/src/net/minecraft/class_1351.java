@@ -14,9 +14,9 @@ public class class_1351 extends FollowOwnerGoal {
 	@Override
 	protected boolean method_6263(int i, int j, int k, int l, int m) {
 		BlockPos blockPos = new BlockPos(i + l, k - 1, j + m);
-		BlockState blockState = this.world.getBlockState(blockPos);
-		return (blockState.hasSolidTopSurface(this.world, blockPos) || blockState.matches(BlockTags.field_15503))
-			&& this.world.isAir(new BlockPos(i + l, k, j + m))
-			&& this.world.isAir(new BlockPos(i + l, k + 1, j + m));
+		BlockState blockState = this.field_6445.method_8320(blockPos);
+		return (blockState.method_11631(this.field_6445, blockPos) || blockState.method_11602(BlockTags.field_15503))
+			&& this.field_6445.method_8623(new BlockPos(i + l, k, j + m))
+			&& this.field_6445.method_8623(new BlockPos(i + l, k + 1, j + m));
 	}
 }

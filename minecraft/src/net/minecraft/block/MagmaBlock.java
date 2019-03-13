@@ -26,41 +26,39 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
+	public void method_9591(World world, BlockPos blockPos, Entity entity) {
 		if (!entity.isFireImmune() && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
 			entity.damage(DamageSource.HOT_FLOOR, 1.0F);
 		}
 
-		super.onSteppedOn(world, blockPos, entity);
+		super.method_9591(world, blockPos, entity);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int getBlockBrightness(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
+	public int method_9546(BlockState blockState, ExtendedBlockView extendedBlockView, BlockPos blockPos) {
 		return 15728880;
 	}
 
 	@Override
-	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BubbleColumnBlock.method_9657(world, blockPos.up(), true);
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(
-		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
-	) {
+	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
 		if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10382) {
-			iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
+			iWorld.method_8397().method_8676(blockPos, this, this.getTickRate(iWorld));
 		}
 
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void method_9514(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BlockPos blockPos2 = blockPos.up();
-		if (world.getFluidState(blockPos).matches(FluidTags.field_15517)) {
-			world.playSound(
+		if (world.method_8316(blockPos).method_15767(FluidTags.field_15517)) {
+			world.method_8396(
 				null, blockPos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
 			);
 			if (world instanceof ServerWorld) {
@@ -78,17 +76,17 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
-		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+		world.method_8397().method_8676(blockPos, this, this.getTickRate(world));
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState blockState, Entity entity) {
+	public boolean method_9523(BlockState blockState, Entity entity) {
 		return entity.isFireImmune();
 	}
 
 	@Override
-	public boolean shouldPostProcess(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean method_9552(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 }

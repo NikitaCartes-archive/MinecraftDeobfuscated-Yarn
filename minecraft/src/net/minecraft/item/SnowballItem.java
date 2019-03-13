@@ -16,23 +16,23 @@ public class SnowballItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
+	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.method_5998(hand);
 		if (!playerEntity.abilities.creativeMode) {
 			itemStack.subtractAmount(1);
 		}
 
-		world.playSound(
+		world.method_8465(
 			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14873, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
 			SnowballEntity snowballEntity = new SnowballEntity(world, playerEntity);
 			snowballEntity.method_16940(itemStack);
-			snowballEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
+			snowballEntity.method_19207(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(snowballEntity);
 		}
 
-		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+		playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 }

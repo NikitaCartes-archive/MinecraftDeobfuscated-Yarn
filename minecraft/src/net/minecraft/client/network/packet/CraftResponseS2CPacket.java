@@ -11,19 +11,19 @@ import net.minecraft.util.PacketByteBuf;
 
 public class CraftResponseS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int syncId;
-	private Identifier recipeId;
+	private Identifier field_12332;
 
 	public CraftResponseS2CPacket() {
 	}
 
 	public CraftResponseS2CPacket(int i, Recipe<?> recipe) {
 		this.syncId = i;
-		this.recipeId = recipe.getId();
+		this.field_12332 = recipe.method_8114();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier getRecipeId() {
-		return this.recipeId;
+	public Identifier method_11684() {
+		return this.field_12332;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -34,16 +34,16 @@ public class CraftResponseS2CPacket implements Packet<ClientPlayPacketListener> 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.syncId = packetByteBuf.readByte();
-		this.recipeId = packetByteBuf.readIdentifier();
+		this.field_12332 = packetByteBuf.method_10810();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeByte(this.syncId);
-		packetByteBuf.writeIdentifier(this.recipeId);
+		packetByteBuf.method_10812(this.field_12332);
 	}
 
 	public void method_11686(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onCraftResponse(this);
+		clientPlayPacketListener.method_11090(this);
 	}
 }

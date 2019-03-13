@@ -70,7 +70,7 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new EnchantWithLevelsLootFunction(this.getConditions(), this.field_1028, this.field_1029);
+			return new EnchantWithLevelsLootFunction(this.method_526(), this.field_1028, this.field_1029);
 		}
 	}
 }

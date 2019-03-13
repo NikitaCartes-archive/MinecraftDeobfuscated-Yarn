@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ToggleButtonWidget extends ButtonWidget {
-	protected Identifier texture;
+	protected Identifier field_2193;
 	protected boolean toggled;
 	protected int u;
 	protected int v;
@@ -20,12 +20,12 @@ public class ToggleButtonWidget extends ButtonWidget {
 		this.toggled = bl;
 	}
 
-	public void setTextureUV(int i, int j, int k, int l, Identifier identifier) {
+	public void method_1962(int i, int j, int k, int l, Identifier identifier) {
 		this.u = i;
 		this.v = j;
 		this.pressedUOffset = k;
 		this.hoverVOffset = l;
-		this.texture = identifier;
+		this.field_2193 = identifier;
 	}
 
 	public void setToggled(boolean bl) {
@@ -44,7 +44,7 @@ public class ToggleButtonWidget extends ButtonWidget {
 	@Override
 	public void drawButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.getTextureManager().bindTexture(this.texture);
+		minecraftClient.method_1531().method_4618(this.field_2193);
 		GlStateManager.disableDepthTest();
 		int k = this.u;
 		int l = this.v;
@@ -58,5 +58,22 @@ public class ToggleButtonWidget extends ButtonWidget {
 
 		this.drawTexturedRect(this.x, this.y, k, l, this.width, this.height);
 		GlStateManager.enableDepthTest();
+	}
+
+	@Override
+	public boolean mouseClicked(double d, double e, int i) {
+		if (this.enabled && this.visible) {
+			if (i == 0) {
+				boolean bl = this.isSelected(d, e);
+				if (bl) {
+					this.method_1832(MinecraftClient.getInstance().method_1483());
+					return true;
+				}
+			}
+
+			return false;
+		} else {
+			return false;
+		}
 	}
 }

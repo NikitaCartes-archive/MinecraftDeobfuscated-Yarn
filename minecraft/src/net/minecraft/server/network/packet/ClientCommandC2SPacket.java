@@ -43,7 +43,7 @@ public class ClientCommandC2SPacket implements Packet<ServerPlayPacketListener> 
 	}
 
 	public void method_12364(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.onClientCommand(this);
+		serverPlayPacketListener.method_12045(this);
 	}
 
 	public ClientCommandC2SPacket.Mode getMode() {

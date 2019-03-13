@@ -18,8 +18,8 @@ public class ChorusPlantFeature extends Feature<DefaultFeatureConfig> {
 	public boolean method_12843(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		if (iWorld.isAir(blockPos.up()) && iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10471) {
-			ChorusFlowerBlock.generate(iWorld, blockPos.up(), random, 8);
+		if (iWorld.method_8623(blockPos.up()) && iWorld.method_8320(blockPos).getBlock() == Blocks.field_10471) {
+			ChorusFlowerBlock.method_9744(iWorld, blockPos.up(), random, 8);
 			return true;
 		} else {
 			return false;

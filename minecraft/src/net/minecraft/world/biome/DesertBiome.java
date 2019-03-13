@@ -14,9 +14,9 @@ public final class DesertBiome extends Biome {
 	public DesertBiome() {
 		super(
 			new Biome.Settings()
-				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG)
+				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15694)
 				.precipitation(Biome.Precipitation.NONE)
-				.category(Biome.Category.DESERT)
+				.method_8738(Biome.Category.DESERT)
 				.depth(0.125F)
 				.scale(0.05F)
 				.temperature(2.0F)
@@ -25,11 +25,11 @@ public final class DesertBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.addStructureFeature(Feature.VILLAGE, new VillageFeatureConfig("village/desert/town_centers", 6));
-		this.addStructureFeature(Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004));
-		this.addStructureFeature(Feature.DESERT_PYRAMID, FeatureConfig.DEFAULT);
-		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
+		this.method_8710(Feature.field_13587, new VillageFeatureConfig("village/desert/town_centers", 6));
+		this.method_8710(Feature.field_16655, new PillagerOutpostFeatureConfig(0.004));
+		this.method_8710(Feature.field_13515, FeatureConfig.field_13603);
+		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDesertLakes(this);

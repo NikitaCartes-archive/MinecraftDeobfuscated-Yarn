@@ -20,13 +20,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.ChunkPos;
 
 public class PortalForcer {
-	private static final PortalBlock PORTAL_BLOCK = (PortalBlock)Blocks.field_10316;
-	private final ServerWorld world;
+	private static final PortalBlock field_9288 = (PortalBlock)Blocks.field_10316;
+	private final ServerWorld field_9286;
 	private final Random random;
 	private final Long2ObjectMap<PortalForcer.class_1947> field_9287 = new Long2ObjectOpenHashMap<>(4096);
 
 	public PortalForcer(ServerWorld serverWorld) {
-		this.world = serverWorld;
+		this.field_9286 = serverWorld;
 		this.random = new Random(serverWorld.getSeed());
 	}
 
@@ -34,17 +34,17 @@ public class PortalForcer {
 		Vec3d vec3d = entity.method_5656();
 		Direction direction = entity.method_5843();
 		long l = ChunkPos.toLong(MathHelper.floor(entity.x), MathHelper.floor(entity.z));
-		Pair<Vec3d, Pair<Vec3d, Integer>> pair = this.method_18475(new BlockPos(entity), entity.getVelocity(), l, direction, vec3d.x, vec3d.y);
+		Pair<Vec3d, Pair<Vec3d, Integer>> pair = this.method_18475(new BlockPos(entity), entity.method_18798(), l, direction, vec3d.x, vec3d.y);
 		if (pair == null) {
 			return false;
 		} else {
 			Vec3d vec3d2 = pair.getFirst();
 			Vec3d vec3d3 = pair.getSecond().getFirst();
-			entity.setVelocity(vec3d3);
+			entity.method_18799(vec3d3);
 			entity.yaw = f + (float)((Integer)pair.getSecond().getSecond()).intValue();
 			if (entity instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)entity).networkHandler.teleportRequest(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
-				((ServerPlayerEntity)entity).networkHandler.syncWithPlayerPosition();
+				((ServerPlayerEntity)entity).field_13987.teleportRequest(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
+				((ServerPlayerEntity)entity).field_13987.syncWithPlayerPosition();
 			} else {
 				entity.setPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
 			}
@@ -61,7 +61,7 @@ public class PortalForcer {
 		if (this.field_9287.containsKey(l)) {
 			PortalForcer.class_1947 lv = this.field_9287.get(l);
 			blockPos2 = lv;
-			lv.field_9290 = this.world.getTime();
+			lv.field_9290 = this.field_9286.getTime();
 			bl = false;
 		} else {
 			double f = Double.MAX_VALUE;
@@ -69,10 +69,10 @@ public class PortalForcer {
 			for(int j = -128; j <= 128; ++j) {
 				BlockPos blockPos4;
 				for(int k = -128; k <= 128; ++k) {
-					for(BlockPos blockPos3 = blockPos.add(j, this.world.getEffectiveHeight() - 1 - blockPos.getY(), k); blockPos3.getY() >= 0; blockPos3 = blockPos4) {
+					for(BlockPos blockPos3 = blockPos.add(j, this.field_9286.getEffectiveHeight() - 1 - blockPos.getY(), k); blockPos3.getY() >= 0; blockPos3 = blockPos4) {
 						blockPos4 = blockPos3.down();
-						if (this.world.getBlockState(blockPos3).getBlock() == PORTAL_BLOCK) {
-							for(blockPos4 = blockPos3.down(); this.world.getBlockState(blockPos4).getBlock() == PORTAL_BLOCK; blockPos4 = blockPos4.down()) {
+						if (this.field_9286.method_8320(blockPos3).getBlock() == field_9288) {
+							for(blockPos4 = blockPos3.down(); this.field_9286.method_8320(blockPos4).getBlock() == field_9288; blockPos4 = blockPos4.down()) {
 								blockPos3 = blockPos4;
 							}
 
@@ -91,10 +91,10 @@ public class PortalForcer {
 			return null;
 		} else {
 			if (bl) {
-				this.field_9287.put(l, new PortalForcer.class_1947(blockPos2, this.world.getTime()));
+				this.field_9287.put(l, new PortalForcer.class_1947(blockPos2, this.field_9286.getTime()));
 			}
 
-			BlockPattern.Result result = PORTAL_BLOCK.method_10350(this.world, blockPos2);
+			BlockPattern.Result result = field_9288.method_10350(this.field_9286, blockPos2);
 			return result.method_18478(direction, blockPos2, e, vec3d, d);
 		}
 	}
@@ -119,9 +119,9 @@ public class PortalForcer {
 				double f = (double)s + 0.5 - entity.z;
 
 				label279:
-				for(int t = this.world.getEffectiveHeight() - 1; t >= 0; --t) {
-					if (this.world.isAir(mutable.set(r, t, s))) {
-						while(t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
+				for(int t = this.field_9286.getEffectiveHeight() - 1; t >= 0; --t) {
+					if (this.field_9286.method_8623(mutable.set(r, t, s))) {
+						while(t > 0 && this.field_9286.method_8623(mutable.set(r, t - 1, s))) {
 							--t;
 						}
 
@@ -140,7 +140,7 @@ public class PortalForcer {
 										int ab = t + z;
 										int ac = s + (y - 1) * w - x * v;
 										mutable.set(aa, ab, ac);
-										if (z < 0 && !this.world.getBlockState(mutable).getMaterial().method_15799() || z >= 0 && !this.world.isAir(mutable)) {
+										if (z < 0 && !this.field_9286.method_8320(mutable).method_11620().method_15799() || z >= 0 && !this.field_9286.method_8623(mutable)) {
 											continue label279;
 										}
 									}
@@ -170,9 +170,9 @@ public class PortalForcer {
 					double f = (double)s + 0.5 - entity.z;
 
 					label216:
-					for(int t = this.world.getEffectiveHeight() - 1; t >= 0; --t) {
-						if (this.world.isAir(mutable.set(r, t, s))) {
-							while(t > 0 && this.world.isAir(mutable.set(r, t - 1, s))) {
+					for(int t = this.field_9286.getEffectiveHeight() - 1; t >= 0; --t) {
+						if (this.field_9286.method_8623(mutable.set(r, t, s))) {
+							while(t > 0 && this.field_9286.method_8623(mutable.set(r, t - 1, s))) {
 								--t;
 							}
 
@@ -186,7 +186,7 @@ public class PortalForcer {
 										int aa = t + y;
 										int ab = s + (x - 1) * w;
 										mutable.set(z, aa, ab);
-										if (y < 0 && !this.world.getBlockState(mutable).getMaterial().method_15799() || y >= 0 && !this.world.isAir(mutable)) {
+										if (y < 0 && !this.field_9286.method_8320(mutable).method_11620().method_15799() || y >= 0 && !this.field_9286.method_8623(mutable)) {
 											continue label216;
 										}
 									}
@@ -219,7 +219,7 @@ public class PortalForcer {
 		}
 
 		if (d < 0.0) {
-			n = MathHelper.clamp(n, 70, this.world.getEffectiveHeight() - 10);
+			n = MathHelper.clamp(n, 70, this.field_9286.getEffectiveHeight() - 10);
 			ae = n;
 
 			for(int t = -1; t <= 1; ++t) {
@@ -230,7 +230,7 @@ public class PortalForcer {
 						int y = s + (u - 1) * ag - t * af;
 						boolean bl = v < 0;
 						mutable.set(w, x, y);
-						this.world.setBlockState(mutable, bl ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState());
+						this.field_9286.method_8501(mutable, bl ? Blocks.field_10540.method_9564() : Blocks.field_10124.method_9564());
 					}
 				}
 			}
@@ -240,17 +240,17 @@ public class PortalForcer {
 			for(int u = -1; u < 4; ++u) {
 				if (t == -1 || t == 2 || u == -1 || u == 3) {
 					mutable.set(ad + t * af, ae + u, s + t * ag);
-					this.world.setBlockState(mutable, Blocks.field_10540.getDefaultState(), 3);
+					this.field_9286.method_8652(mutable, Blocks.field_10540.method_9564(), 3);
 				}
 			}
 		}
 
-		BlockState blockState = PORTAL_BLOCK.getDefaultState().with(PortalBlock.AXIS, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
+		BlockState blockState = field_9288.method_9564().method_11657(PortalBlock.field_11310, af == 0 ? Direction.Axis.Z : Direction.Axis.X);
 
 		for(int u = 0; u < 2; ++u) {
 			for(int v = 0; v < 3; ++v) {
 				mutable.set(ad + u * af, ae + v, s + u * ag);
-				this.world.setBlockState(mutable, blockState, 18);
+				this.field_9286.method_8652(mutable, blockState, 18);
 			}
 		}
 

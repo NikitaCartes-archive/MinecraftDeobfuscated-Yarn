@@ -28,9 +28,9 @@ public class ParrotMoveControl extends MoveControl {
 			this.entity.yaw = this.method_6238(this.entity.yaw, h, 10.0F);
 			float i;
 			if (this.entity.onGround) {
-				i = (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
+				i = (float)(this.speed * this.entity.method_5996(EntityAttributes.MOVEMENT_SPEED).getValue());
 			} else {
-				i = (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.FLYING_SPEED).getValue());
+				i = (float)(this.speed * this.entity.method_5996(EntityAttributes.FLYING_SPEED).getValue());
 			}
 
 			this.entity.setMovementSpeed(i);

@@ -11,7 +11,7 @@ public class TurtleEntityRenderer extends MobEntityRenderer<TurtleEntity, Entity
 	private static final Identifier field_4798 = new Identifier("textures/entity/turtle/big_sea_turtle.png");
 
 	public TurtleEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new EntityModelTurtle<>(0.0F), 0.35F);
+		super(entityRenderDispatcher, new EntityModelTurtle<>(0.0F), 0.7F);
 	}
 
 	public void method_4138(TurtleEntity turtleEntity, double d, double e, double f, float g, float h) {

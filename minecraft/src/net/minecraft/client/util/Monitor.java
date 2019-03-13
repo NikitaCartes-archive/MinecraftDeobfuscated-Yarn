@@ -11,15 +11,15 @@ import org.lwjgl.glfw.GLFWVidMode.Buffer;
 
 @Environment(EnvType.CLIENT)
 public final class Monitor {
-	private final MonitorTracker monitorTracker;
+	private final MonitorTracker field_1801;
 	private final long handle;
 	private final List<VideoMode> videoModes;
-	private VideoMode currentVideoMode;
+	private VideoMode field_1802;
 	private int x;
 	private int y;
 
 	public Monitor(MonitorTracker monitorTracker, long l) {
-		this.monitorTracker = monitorTracker;
+		this.field_1801 = monitorTracker;
 		this.handle = l;
 		this.videoModes = Lists.<VideoMode>newArrayList();
 		this.populateVideoModes();
@@ -43,10 +43,10 @@ public final class Monitor {
 		this.x = is[0];
 		this.y = js[0];
 		GLFWVidMode gLFWVidMode = GLFW.glfwGetVideoMode(this.handle);
-		this.currentVideoMode = new VideoMode(gLFWVidMode);
+		this.field_1802 = new VideoMode(gLFWVidMode);
 	}
 
-	public VideoMode findClosestVideoMode(Optional<VideoMode> optional) {
+	public VideoMode method_1614(Optional<VideoMode> optional) {
 		if (optional.isPresent()) {
 			VideoMode videoMode = (VideoMode)optional.get();
 
@@ -57,7 +57,7 @@ public final class Monitor {
 			}
 		}
 
-		return this.getCurrentVideoMode();
+		return this.method_1617();
 	}
 
 	public int findClosestVideoModeIndex(Optional<VideoMode> optional) {
@@ -71,11 +71,11 @@ public final class Monitor {
 			}
 		}
 
-		return this.videoModes.indexOf(this.getCurrentVideoMode());
+		return this.videoModes.indexOf(this.method_1617());
 	}
 
-	public VideoMode getCurrentVideoMode() {
-		return this.currentVideoMode;
+	public VideoMode method_1617() {
+		return this.field_1802;
 	}
 
 	public int getViewportX() {
@@ -86,7 +86,7 @@ public final class Monitor {
 		return this.y;
 	}
 
-	public VideoMode getVideoMode(int i) {
+	public VideoMode method_1620(int i) {
 		return (VideoMode)this.videoModes.get(i);
 	}
 
@@ -99,6 +99,6 @@ public final class Monitor {
 	}
 
 	public String toString() {
-		return String.format("Monitor[%s %sx%s %s]", this.handle, this.x, this.y, this.currentVideoMode);
+		return String.format("Monitor[%s %sx%s %s]", this.handle, this.x, this.y, this.field_1802);
 	}
 }

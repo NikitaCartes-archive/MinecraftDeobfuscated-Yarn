@@ -11,11 +11,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
-	private static final Identifier SKIN = new Identifier("textures/entity/slime/slime.png");
+	private static final Identifier field_4784 = new Identifier("textures/entity/slime/slime.png");
 
 	public SlimeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SlimeEntityModel<>(16), 0.25F);
-		this.addFeature(new SlimeOverlayFeatureRenderer<>(this));
+		this.method_4046(new SlimeOverlayFeatureRenderer<>(this));
 	}
 
 	public void method_4117(SlimeEntity slimeEntity, double d, double e, double f, float g, float h) {
@@ -33,6 +33,6 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 	}
 
 	protected Identifier method_4116(SlimeEntity slimeEntity) {
-		return SKIN;
+		return field_4784;
 	}
 }

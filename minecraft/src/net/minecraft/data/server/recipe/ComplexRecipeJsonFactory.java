@@ -30,7 +30,7 @@ public class ComplexRecipeJsonFactory {
 			}
 
 			@Override
-			public Identifier getRecipeId() {
+			public Identifier method_10417() {
 				return new Identifier(string);
 			}
 
@@ -41,7 +41,7 @@ public class ComplexRecipeJsonFactory {
 			}
 
 			@Override
-			public Identifier getAdvancementId() {
+			public Identifier method_10418() {
 				return new Identifier("");
 			}
 		});

@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballEntity> {
-	private static final Identifier SKIN = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
+	private static final Identifier field_4661 = new Identifier("textures/entity/enderdragon/dragon_fireball.png");
 
 	public DragonFireballEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -35,7 +35,7 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(dragonFireballEntity));
 		}
 
-		bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL);
+		bufferBuilder.method_1328(7, VertexFormats.field_1589);
 		bufferBuilder.vertex(-0.5, -0.25, 0.0).texture(0.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 		bufferBuilder.vertex(0.5, -0.25, 0.0).texture(1.0, 1.0).normal(0.0F, 1.0F, 0.0F).next();
 		bufferBuilder.vertex(0.5, 0.75, 0.0).texture(1.0, 0.0).normal(0.0F, 1.0F, 0.0F).next();
@@ -52,6 +52,6 @@ public class DragonFireballEntityRenderer extends EntityRenderer<DragonFireballE
 	}
 
 	protected Identifier method_3905(DragonFireballEntity dragonFireballEntity) {
-		return SKIN;
+		return field_4661;
 	}
 }

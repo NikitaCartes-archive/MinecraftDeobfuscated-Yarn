@@ -52,7 +52,7 @@ public enum Rotation {
 		}
 	}
 
-	public Direction rotate(Direction direction) {
+	public Direction method_10503(Direction direction) {
 		if (direction.getAxis() == Direction.Axis.Y) {
 			return direction;
 		} else {

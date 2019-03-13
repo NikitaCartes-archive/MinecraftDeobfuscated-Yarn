@@ -41,7 +41,7 @@ public class DustParticleParameters implements ParticleParameters {
 	}
 
 	@Override
-	public void write(PacketByteBuf packetByteBuf) {
+	public void method_10294(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeFloat(this.red);
 		packetByteBuf.writeFloat(this.green);
 		packetByteBuf.writeFloat(this.blue);
@@ -50,11 +50,13 @@ public class DustParticleParameters implements ParticleParameters {
 
 	@Override
 	public String asString() {
-		return String.format(Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.getId(this.getType()), this.red, this.green, this.blue, this.alpha);
+		return String.format(
+			Locale.ROOT, "%s %.2f %.2f %.2f %.2f", Registry.PARTICLE_TYPE.method_10221(this.method_10295()), this.red, this.green, this.blue, this.alpha
+		);
 	}
 
 	@Override
-	public ParticleType<DustParticleParameters> getType() {
+	public ParticleType<DustParticleParameters> method_10295() {
 		return ParticleTypes.field_11212;
 	}
 

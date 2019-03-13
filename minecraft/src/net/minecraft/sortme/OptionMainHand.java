@@ -9,10 +9,10 @@ public enum OptionMainHand {
 	field_6182(new TranslatableTextComponent("options.mainHand.left")),
 	field_6183(new TranslatableTextComponent("options.mainHand.right"));
 
-	private final TextComponent name;
+	private final TextComponent field_6181;
 
 	private OptionMainHand(TextComponent textComponent) {
-		this.name = textComponent;
+		this.field_6181 = textComponent;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -21,6 +21,6 @@ public enum OptionMainHand {
 	}
 
 	public String toString() {
-		return this.name.getString();
+		return this.field_6181.getString();
 	}
 }

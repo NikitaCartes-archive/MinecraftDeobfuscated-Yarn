@@ -6,7 +6,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class Sound implements SoundContainer<Sound> {
-	private final Identifier id;
+	private final Identifier field_5469;
 	private final float volume;
 	private final float pitch;
 	private final int weight;
@@ -16,7 +16,7 @@ public class Sound implements SoundContainer<Sound> {
 	private final int field_5463;
 
 	public Sound(String string, float f, float g, int i, Sound.RegistrationType registrationType, boolean bl, boolean bl2, int j) {
-		this.id = new Identifier(string);
+		this.field_5469 = new Identifier(string);
 		this.volume = f;
 		this.pitch = g;
 		this.weight = i;
@@ -26,12 +26,12 @@ public class Sound implements SoundContainer<Sound> {
 		this.field_5463 = j;
 	}
 
-	public Identifier getIdentifier() {
-		return this.id;
+	public Identifier method_4767() {
+		return this.field_5469;
 	}
 
-	public Identifier getLocation() {
-		return new Identifier(this.id.getNamespace(), "sounds/" + this.id.getPath() + ".ogg");
+	public Identifier method_4766() {
+		return new Identifier(this.field_5469.getNamespace(), "sounds/" + this.field_5469.getPath() + ".ogg");
 	}
 
 	public float getVolume() {

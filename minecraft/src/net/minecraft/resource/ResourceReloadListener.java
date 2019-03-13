@@ -5,7 +5,7 @@ import java.util.concurrent.Executor;
 import net.minecraft.util.profiler.Profiler;
 
 public interface ResourceReloadListener {
-	CompletableFuture<Void> apply(
+	CompletableFuture<Void> method_18222(
 		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
 	);
 

@@ -9,15 +9,15 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends ZombieEntityModel<T>> extends BipedEntityRenderer<T, M> {
-	private static final Identifier SKIN = new Identifier("textures/entity/zombie/zombie.png");
+	private static final Identifier field_4819 = new Identifier("textures/entity/zombie/zombie.png");
 
 	protected ZombieBaseEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, M zombieEntityModel, M zombieEntityModel2, M zombieEntityModel3) {
 		super(entityRenderDispatcher, zombieEntityModel, 0.5F);
-		this.addFeature(new ArmorBipedFeatureRenderer<>(this, zombieEntityModel2, zombieEntityModel3));
+		this.method_4046(new ArmorBipedFeatureRenderer<>(this, zombieEntityModel2, zombieEntityModel3));
 	}
 
 	protected Identifier method_4163(ZombieEntity zombieEntity) {
-		return SKIN;
+		return field_4819;
 	}
 
 	protected void method_17144(T zombieEntity, float f, float g, float h) {
