@@ -9,7 +9,7 @@ import net.minecraft.util.registry.Registry;
 @Environment(EnvType.CLIENT)
 public class StatusEffectSpriteManager extends SpriteAtlasHolder {
 	public StatusEffectSpriteManager(TextureManager textureManager) {
-		super(textureManager, SpriteAtlasTexture.field_18229, "textures/mob_effect");
+		super(textureManager, SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX, "textures/mob_effect");
 	}
 
 	@Override
@@ -18,6 +18,6 @@ public class StatusEffectSpriteManager extends SpriteAtlasHolder {
 	}
 
 	public Sprite getSprite(StatusEffect statusEffect) {
-		return this.method_18667(Registry.STATUS_EFFECT.method_10221(statusEffect));
+		return this.getSprite(Registry.STATUS_EFFECT.getId(statusEffect));
 	}
 }

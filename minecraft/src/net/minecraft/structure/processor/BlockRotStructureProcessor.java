@@ -24,19 +24,19 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo method_15110(
+	public Structure.StructureBlockInfo process(
 		ViewableWorld viewableWorld,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData structurePlacementData
 	) {
-		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.field_15597));
+		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
 		return !(this.integrity >= 1.0F) && !(random.nextFloat() <= this.integrity) ? null : structureBlockInfo2;
 	}
 
 	@Override
-	protected StructureProcessorType method_16772() {
+	protected StructureProcessorType getType() {
 		return StructureProcessorType.field_16988;
 	}
 

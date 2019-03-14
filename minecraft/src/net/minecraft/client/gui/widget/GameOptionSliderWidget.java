@@ -18,7 +18,7 @@ public class GameOptionSliderWidget extends SliderWidget {
 
 	@Override
 	public void drawButton(int i, int j, float f) {
-		if (this.option == GameOption.field_1931) {
+		if (this.option == GameOption.FULLSCREEN_RESOLUTION) {
 			this.updateText();
 		}
 

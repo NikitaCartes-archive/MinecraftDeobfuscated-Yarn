@@ -55,7 +55,7 @@ public class ZipResourcePack extends AbstractFilenameResourcePack {
 	}
 
 	@Override
-	public Set<String> method_14406(ResourceType resourceType) {
+	public Set<String> getNamespaces(ResourceType resourceType) {
 		ZipFile zipFile;
 		try {
 			zipFile = this.getZipFile();
@@ -98,7 +98,7 @@ public class ZipResourcePack extends AbstractFilenameResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> method_14408(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
+	public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
 		ZipFile zipFile;
 		try {
 			zipFile = this.getZipFile();

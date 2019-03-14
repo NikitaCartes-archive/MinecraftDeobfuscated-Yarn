@@ -15,7 +15,7 @@ public interface VerticalEntityPosition {
 
 	boolean isSneaking();
 
-	boolean method_16192(VoxelShape voxelShape, BlockPos blockPos, boolean bl);
+	boolean isAboveBlock(VoxelShape voxelShape, BlockPos blockPos, boolean bl);
 
 	boolean method_17785(Item item);
 }

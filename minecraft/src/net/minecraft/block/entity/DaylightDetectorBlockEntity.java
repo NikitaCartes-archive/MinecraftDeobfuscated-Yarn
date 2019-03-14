@@ -13,10 +13,10 @@ public class DaylightDetectorBlockEntity extends BlockEntity implements Tickable
 	@Override
 	public void tick() {
 		if (this.world != null && !this.world.isClient && this.world.getTime() % 20L == 0L) {
-			BlockState blockState = this.method_11010();
+			BlockState blockState = this.getCachedState();
 			Block block = blockState.getBlock();
 			if (block instanceof DaylightDetectorBlock) {
-				DaylightDetectorBlock.method_9983(blockState, this.world, this.field_11867);
+				DaylightDetectorBlock.updateState(blockState, this.world, this.pos);
 			}
 		}
 	}

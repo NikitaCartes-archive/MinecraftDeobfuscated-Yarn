@@ -10,15 +10,15 @@ public class ComparatorBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag method_11007(CompoundTag compoundTag) {
-		super.method_11007(compoundTag);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
 		compoundTag.putInt("OutputSignal", this.outputSignal);
 		return compoundTag;
 	}
 
 	@Override
-	public void method_11014(CompoundTag compoundTag) {
-		super.method_11014(compoundTag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		this.outputSignal = compoundTag.getInt("OutputSignal");
 	}
 

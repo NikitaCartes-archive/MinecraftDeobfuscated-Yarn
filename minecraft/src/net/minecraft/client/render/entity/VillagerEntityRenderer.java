@@ -13,17 +13,17 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class VillagerEntityRenderer extends MobEntityRenderer<VillagerEntity, VillagerEntityModel<VillagerEntity>> {
-	private static final Identifier field_4807 = new Identifier("textures/entity/villager/villager.png");
+	private static final Identifier VILLAGER_SKIN = new Identifier("textures/entity/villager/villager.png");
 
 	public VillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager reloadableResourceManager) {
 		super(entityRenderDispatcher, new VillagerEntityModel<>(0.0F), 0.5F);
-		this.method_4046(new HeadFeatureRenderer<>(this));
-		this.method_4046(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "villager"));
-		this.method_4046(new VillagerHeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeadFeatureRenderer<>(this));
+		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "villager"));
+		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 
 	protected Identifier method_4151(VillagerEntity villagerEntity) {
-		return field_4807;
+		return VILLAGER_SKIN;
 	}
 
 	protected void method_4149(VillagerEntity villagerEntity, float f) {

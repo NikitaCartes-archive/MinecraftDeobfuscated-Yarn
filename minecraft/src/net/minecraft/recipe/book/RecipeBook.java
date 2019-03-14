@@ -32,7 +32,7 @@ public class RecipeBook {
 
 	public void add(Recipe<?> recipe) {
 		if (!recipe.isIgnoredInRecipeBook()) {
-			this.add(recipe.method_8114());
+			this.add(recipe.getId());
 		}
 	}
 
@@ -41,12 +41,12 @@ public class RecipeBook {
 	}
 
 	public boolean contains(@Nullable Recipe<?> recipe) {
-		return recipe == null ? false : this.recipes.contains(recipe.method_8114());
+		return recipe == null ? false : this.recipes.contains(recipe.getId());
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void remove(Recipe<?> recipe) {
-		this.remove(recipe.method_8114());
+		this.remove(recipe.getId());
 	}
 
 	protected void remove(Identifier identifier) {
@@ -56,15 +56,15 @@ public class RecipeBook {
 
 	@Environment(EnvType.CLIENT)
 	public boolean shouldDisplay(Recipe<?> recipe) {
-		return this.toBeDisplayed.contains(recipe.method_8114());
+		return this.toBeDisplayed.contains(recipe.getId());
 	}
 
 	public void onRecipeDisplayed(Recipe<?> recipe) {
-		this.toBeDisplayed.remove(recipe.method_8114());
+		this.toBeDisplayed.remove(recipe.getId());
 	}
 
 	public void display(Recipe<?> recipe) {
-		this.display(recipe.method_8114());
+		this.display(recipe.getId());
 	}
 
 	protected void display(Identifier identifier) {

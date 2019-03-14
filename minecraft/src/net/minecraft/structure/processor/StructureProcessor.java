@@ -11,7 +11,7 @@ import net.minecraft.world.ViewableWorld;
 
 public abstract class StructureProcessor {
 	@Nullable
-	public abstract Structure.StructureBlockInfo method_15110(
+	public abstract Structure.StructureBlockInfo process(
 		ViewableWorld viewableWorld,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
@@ -19,7 +19,7 @@ public abstract class StructureProcessor {
 		StructurePlacementData structurePlacementData
 	);
 
-	protected abstract StructureProcessorType method_16772();
+	protected abstract StructureProcessorType getType();
 
 	protected abstract <T> Dynamic<T> method_16666(DynamicOps<T> dynamicOps);
 
@@ -29,7 +29,7 @@ public abstract class StructureProcessor {
 			dynamicOps.mergeInto(
 				this.method_16666(dynamicOps).getValue(),
 				dynamicOps.createString("processor_type"),
-				dynamicOps.createString(Registry.STRUCTURE_PROCESSOR.method_10221(this.method_16772()).toString())
+				dynamicOps.createString(Registry.STRUCTURE_PROCESSOR.getId(this.getType()).toString())
 			)
 		);
 	}

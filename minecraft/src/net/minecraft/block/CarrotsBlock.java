@@ -10,15 +10,15 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class CarrotsBlock extends CropBlock {
-	private static final VoxelShape[] field_10737 = new VoxelShape[]{
-		Block.method_9541(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
-		Block.method_9541(0.0, 0.0, 0.0, 16.0, 3.0, 16.0),
-		Block.method_9541(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
-		Block.method_9541(0.0, 0.0, 0.0, 16.0, 5.0, 16.0),
-		Block.method_9541(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
-		Block.method_9541(0.0, 0.0, 0.0, 16.0, 7.0, 16.0),
-		Block.method_9541(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),
-		Block.method_9541(0.0, 0.0, 0.0, 16.0, 9.0, 16.0)
+	private static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 3.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 5.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 6.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 7.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0),
+		Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0)
 	};
 
 	public CarrotsBlock(Block.Settings settings) {
@@ -32,7 +32,7 @@ public class CarrotsBlock extends CropBlock {
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10737[blockState.method_11654(this.method_9824())];
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return AGE_TO_SHAPE[blockState.get(this.getAgeProperty())];
 	}
 }

@@ -114,8 +114,8 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 
 			this.blendState = deserializeBlendState(JsonHelper.getObject(jsonObject, "blend", null));
 			this.useCullFace = JsonHelper.getBoolean(jsonObject, "cull", true);
-			this.vertexShader = method_16036(resourceManager, GlShader.Type.VERTEX, string2);
-			this.fragmentShader = method_16036(resourceManager, GlShader.Type.FRAGMENT, string3);
+			this.vertexShader = getShader(resourceManager, GlShader.Type.VERTEX, string2);
+			this.fragmentShader = getShader(resourceManager, GlShader.Type.FRAGMENT, string3);
 			this.programRef = GlProgramManager.getInstance().createProgram();
 			GlProgramManager.getInstance().linkProgram(this);
 			this.finalizeUniformsAndSamplers();
@@ -136,7 +136,7 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		this.markUniformsDirty();
 	}
 
-	public static GlShader method_16036(ResourceManager resourceManager, GlShader.Type type, String string) throws IOException {
+	public static GlShader getShader(ResourceManager resourceManager, GlShader.Type type, String string) throws IOException {
 		GlShader glShader = (GlShader)type.getLoadedShaders().get(string);
 		if (glShader == null) {
 			Identifier identifier = new Identifier("shaders/program/" + string + type.getFileExtension());
@@ -384,12 +384,12 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	}
 
 	@Override
-	public GlShader method_1274() {
+	public GlShader getVertexShader() {
 		return this.vertexShader;
 	}
 
 	@Override
-	public GlShader method_1278() {
+	public GlShader getFragmentShader() {
 		return this.fragmentShader;
 	}
 

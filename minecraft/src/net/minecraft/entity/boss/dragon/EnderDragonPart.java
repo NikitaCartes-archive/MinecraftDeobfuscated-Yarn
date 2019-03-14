@@ -8,15 +8,15 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 
 public class EnderDragonPart extends Entity {
-	public final EnderDragonEntity field_7007;
+	public final EnderDragonEntity owner;
 	public final String name;
 	private final EntitySize field_18119;
 
 	public EnderDragonPart(EnderDragonEntity enderDragonEntity, String string, float f, float g) {
-		super(enderDragonEntity.method_5864(), enderDragonEntity.field_6002);
+		super(enderDragonEntity.getType(), enderDragonEntity.world);
 		this.field_18119 = EntitySize.resizeable(f, g);
 		this.refreshSize();
-		this.field_7007 = enderDragonEntity;
+		this.owner = enderDragonEntity;
 		this.name = string;
 	}
 
@@ -25,11 +25,11 @@ public class EnderDragonPart extends Entity {
 	}
 
 	@Override
-	protected void method_5749(CompoundTag compoundTag) {
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 	}
 
 	@Override
-	protected void method_5652(CompoundTag compoundTag) {
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
 	}
 
 	@Override
@@ -39,21 +39,21 @@ public class EnderDragonPart extends Entity {
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		return this.isInvulnerableTo(damageSource) ? false : this.field_7007.damagePart(this, damageSource, f);
+		return this.isInvulnerableTo(damageSource) ? false : this.owner.damagePart(this, damageSource, f);
 	}
 
 	@Override
 	public boolean isPartOf(Entity entity) {
-		return this == entity || this.field_7007 == entity;
+		return this == entity || this.owner == entity;
 	}
 
 	@Override
-	public Packet<?> method_18002() {
+	public Packet<?> createSpawnPacket() {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public EntitySize method_18377(EntityPose entityPose) {
+	public EntitySize getSize(EntityPose entityPose) {
 		return this.field_18119;
 	}
 }

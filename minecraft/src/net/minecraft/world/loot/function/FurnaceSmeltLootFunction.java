@@ -25,9 +25,9 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 		if (itemStack.isEmpty()) {
 			return itemStack;
 		} else {
-			Optional<SmeltingRecipe> optional = lootContext.method_299()
+			Optional<SmeltingRecipe> optional = lootContext.getWorld()
 				.getRecipeManager()
-				.method_8132(RecipeType.SMELTING, new BasicInventory(itemStack), lootContext.method_299());
+				.get(RecipeType.SMELTING, new BasicInventory(itemStack), lootContext.getWorld());
 			if (optional.isPresent()) {
 				ItemStack itemStack2 = ((SmeltingRecipe)optional.get()).getOutput();
 				if (!itemStack2.isEmpty()) {

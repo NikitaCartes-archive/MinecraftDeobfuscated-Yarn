@@ -19,9 +19,9 @@ public final class FrozenOceanBiome extends Biome {
 	public FrozenOceanBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.FROZEN_OCEAN, SurfaceBuilder.field_15677)
+				.configureSurfaceBuilder(SurfaceBuilder.FROZEN_OCEAN, SurfaceBuilder.GRASS_CONFIG)
 				.precipitation(Biome.Precipitation.SNOW)
-				.method_8738(Biome.Category.OCEAN)
+				.category(Biome.Category.OCEAN)
 				.depth(-1.0F)
 				.scale(0.1F)
 				.temperature(0.0F)
@@ -30,9 +30,9 @@ public final class FrozenOceanBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13536, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.method_8710(Feature.field_13589, new ShipwreckFeatureConfig(false));
+		this.addStructureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(false));
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -65,20 +65,20 @@ public final class FrozenOceanBiome extends Biome {
 	}
 
 	@Override
-	public float method_8707(BlockPos blockPos) {
+	public float getTemperature(BlockPos blockPos) {
 		float f = this.getTemperature();
 		double d = field_9487.sample((double)blockPos.getX() * 0.05, (double)blockPos.getZ() * 0.05);
-		double e = field_9324.sample((double)blockPos.getX() * 0.2, (double)blockPos.getZ() * 0.2);
+		double e = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.2, (double)blockPos.getZ() * 0.2);
 		double g = d + e;
 		if (g < 0.3) {
-			double h = field_9324.sample((double)blockPos.getX() * 0.09, (double)blockPos.getZ() * 0.09);
+			double h = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.09, (double)blockPos.getZ() * 0.09);
 			if (h < 0.8) {
 				f = 0.2F;
 			}
 		}
 
 		if (blockPos.getY() > 64) {
-			float i = (float)(field_9335.sample((double)((float)blockPos.getX() / 8.0F), (double)((float)blockPos.getZ() / 8.0F)) * 4.0);
+			float i = (float)(TEMPERATURE_NOISE.sample((double)((float)blockPos.getX() / 8.0F), (double)((float)blockPos.getZ() / 8.0F)) * 4.0);
 			return f - (i + (float)blockPos.getY() - 64.0F) * 0.05F / 30.0F;
 		} else {
 			return f;

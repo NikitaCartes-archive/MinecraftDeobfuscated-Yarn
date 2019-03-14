@@ -39,7 +39,7 @@ public class EntityPassengersSetS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	public void method_11842(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11080(this);
+		clientPlayPacketListener.onEntityPassengersSet(this);
 	}
 
 	@Environment(EnvType.CLIENT)

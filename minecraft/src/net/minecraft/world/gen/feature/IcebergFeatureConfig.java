@@ -21,7 +21,7 @@ public class IcebergFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> IcebergFeatureConfig deserialize(Dynamic<T> dynamic) {
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.method_9564());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
 		return new IcebergFeatureConfig(blockState);
 	}
 }

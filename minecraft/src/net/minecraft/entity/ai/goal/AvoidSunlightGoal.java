@@ -1,7 +1,7 @@
 package net.minecraft.entity.ai.goal;
 
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.ai.pathing.EntityMobNavigation;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
 
 public class AvoidSunlightGoal extends Goal {
@@ -13,16 +13,16 @@ public class AvoidSunlightGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.owner.field_6002.isDaylight() && this.owner.method_6118(EquipmentSlot.HEAD).isEmpty() && this.owner.method_5942() instanceof EntityMobNavigation;
+		return this.owner.world.isDaylight() && this.owner.getEquippedStack(EquipmentSlot.HEAD).isEmpty() && this.owner.getNavigation() instanceof MobNavigation;
 	}
 
 	@Override
 	public void start() {
-		((EntityMobNavigation)this.owner.method_5942()).setAvoidSunlight(true);
+		((MobNavigation)this.owner.getNavigation()).setAvoidSunlight(true);
 	}
 
 	@Override
 	public void onRemove() {
-		((EntityMobNavigation)this.owner.method_5942()).setAvoidSunlight(false);
+		((MobNavigation)this.owner.getNavigation()).setAvoidSunlight(false);
 	}
 }

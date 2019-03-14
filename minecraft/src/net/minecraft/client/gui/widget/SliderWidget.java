@@ -10,12 +10,12 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class SliderWidget extends ButtonWidget {
+public abstract class SliderWidget extends AbstractButtonWidget {
 	protected final GameOptions gameOptions;
 	protected double progress;
 
 	protected SliderWidget(int i, int j, int k, int l, double d) {
-		this(MinecraftClient.getInstance().field_1690, i, j, k, l, d);
+		this(MinecraftClient.getInstance().options, i, j, k, l, d);
 	}
 
 	protected SliderWidget(GameOptions gameOptions, int i, int j, int k, int l, double d) {
@@ -36,7 +36,7 @@ public abstract class SliderWidget extends ButtonWidget {
 
 	@Override
 	protected void drawBackground(MinecraftClient minecraftClient, int i, int j) {
-		minecraftClient.method_1531().method_4618(field_2072);
+		minecraftClient.getTextureManager().bindTexture(WIDGET_TEX);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawTexturedRect(this.x + (int)(this.progress * (double)(this.width - 8)), this.y, 0, 66, 4, 20);
 		this.drawTexturedRect(this.x + (int)(this.progress * (double)(this.width - 8)) + 4, this.y, 196, 66, 4, 20);
@@ -47,7 +47,7 @@ public abstract class SliderWidget extends ButtonWidget {
 		if (i == 0) {
 			boolean bl = this.isSelected(d, e);
 			if (bl) {
-				this.method_1832(MinecraftClient.getInstance().method_1483());
+				this.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
 				this.changeProgress(d);
 				return true;
 			}
@@ -98,12 +98,12 @@ public abstract class SliderWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void method_1832(SoundLoader soundLoader) {
+	public void playPressedSound(SoundLoader soundLoader) {
 	}
 
 	@Override
 	public void onReleased(double d, double e) {
-		super.method_1832(MinecraftClient.getInstance().method_1483());
+		super.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
 	}
 
 	protected abstract void updateText();

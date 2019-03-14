@@ -28,7 +28,7 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 	}
 
 	public static ColumnPosArgumentType.SimpleColumnPos parseSimple(CommandContext<ServerCommandSource> commandContext, String string) {
-		BlockPos blockPos = commandContext.<PosArgument>getArgument(string, PosArgument.class).method_9704(commandContext.getSource());
+		BlockPos blockPos = commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
 		return new ColumnPosArgumentType.SimpleColumnPos(blockPos.getX(), blockPos.getZ());
 	}
 

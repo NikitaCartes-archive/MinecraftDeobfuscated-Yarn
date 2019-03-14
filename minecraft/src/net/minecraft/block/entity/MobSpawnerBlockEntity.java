@@ -15,25 +15,25 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
 		public void method_8273(int i) {
-			MobSpawnerBlockEntity.this.world.method_8427(MobSpawnerBlockEntity.this.field_11867, Blocks.field_10260, i, 0);
+			MobSpawnerBlockEntity.this.world.addBlockAction(MobSpawnerBlockEntity.this.pos, Blocks.field_10260, i, 0);
 		}
 
 		@Override
-		public World method_8271() {
+		public World getWorld() {
 			return MobSpawnerBlockEntity.this.world;
 		}
 
 		@Override
-		public BlockPos method_8276() {
-			return MobSpawnerBlockEntity.this.field_11867;
+		public BlockPos getPos() {
+			return MobSpawnerBlockEntity.this.pos;
 		}
 
 		@Override
-		public void method_8277(MobSpawnerEntry mobSpawnerEntry) {
-			super.method_8277(mobSpawnerEntry);
-			if (this.method_8271() != null) {
-				BlockState blockState = this.method_8271().method_8320(this.method_8276());
-				this.method_8271().method_8413(MobSpawnerBlockEntity.this.field_11867, blockState, blockState, 4);
+		public void setSpawnEntry(MobSpawnerEntry mobSpawnerEntry) {
+			super.setSpawnEntry(mobSpawnerEntry);
+			if (this.getWorld() != null) {
+				BlockState blockState = this.getWorld().getBlockState(this.getPos());
+				this.getWorld().updateListeners(MobSpawnerBlockEntity.this.pos, blockState, blockState, 4);
 			}
 		}
 	};
@@ -43,15 +43,15 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void method_11014(CompoundTag compoundTag) {
-		super.method_11014(compoundTag);
-		this.logic.method_8280(compoundTag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		this.logic.deserialize(compoundTag);
 	}
 
 	@Override
-	public CompoundTag method_11007(CompoundTag compoundTag) {
-		super.method_11007(compoundTag);
-		this.logic.method_8272(compoundTag);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		this.logic.serialize(compoundTag);
 		return compoundTag;
 	}
 
@@ -62,13 +62,13 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket method_16886() {
-		return new BlockEntityUpdateS2CPacket(this.field_11867, 1, this.method_16887());
+	public BlockEntityUpdateS2CPacket toUpdatePacket() {
+		return new BlockEntityUpdateS2CPacket(this.pos, 1, this.toInitialChunkDataTag());
 	}
 
 	@Override
-	public CompoundTag method_16887() {
-		CompoundTag compoundTag = this.method_11007(new CompoundTag());
+	public CompoundTag toInitialChunkDataTag() {
+		CompoundTag compoundTag = this.toTag(new CompoundTag());
 		compoundTag.remove("SpawnPotentials");
 		return compoundTag;
 	}

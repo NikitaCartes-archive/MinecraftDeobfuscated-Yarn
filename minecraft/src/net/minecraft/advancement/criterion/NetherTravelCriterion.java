@@ -18,14 +18,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Conditions> {
-	private static final Identifier field_9717 = new Identifier("nether_travel");
+	private static final Identifier ID = new Identifier("nether_travel");
 	private final Map<PlayerAdvancementTracker, NetherTravelCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, NetherTravelCriterion.Handler>newHashMap(
 		
 	);
 
 	@Override
 	public Identifier getId() {
-		return field_9717;
+		return ID;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.method_9081(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 	) {
 		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.method_9083(conditionsContainer);
+			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -66,10 +66,10 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 		return new NetherTravelCriterion.Conditions(locationPredicate, locationPredicate2, distancePredicate);
 	}
 
-	public void method_9080(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d) {
 		NetherTravelCriterion.Handler handler = (NetherTravelCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.method_9084(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z);
+			handler.handle(serverPlayerEntity.getServerWorld(), vec3d, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z);
 		}
 	}
 
@@ -79,7 +79,7 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 		private final DistancePredicate distance;
 
 		public Conditions(LocationPredicate locationPredicate, LocationPredicate locationPredicate2, DistancePredicate distancePredicate) {
-			super(NetherTravelCriterion.field_9717);
+			super(NetherTravelCriterion.ID);
 			this.entered = locationPredicate;
 			this.exited = locationPredicate2;
 			this.distance = distancePredicate;
@@ -89,10 +89,10 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 			return new NetherTravelCriterion.Conditions(LocationPredicate.ANY, LocationPredicate.ANY, distancePredicate);
 		}
 
-		public boolean method_9086(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
-			if (!this.entered.method_9018(serverWorld, vec3d.x, vec3d.y, vec3d.z)) {
+		public boolean matches(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
+			if (!this.entered.test(serverWorld, vec3d.x, vec3d.y, vec3d.z)) {
 				return false;
-			} else if (!this.exited.method_9018(serverWorld, d, e, f)) {
+			} else if (!this.exited.test(serverWorld, d, e, f)) {
 				return false;
 			} else {
 				return this.distance.test(vec3d.x, vec3d.y, vec3d.z, d, e, f);
@@ -110,32 +110,32 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker field_9720;
+		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>>newHashSet(
 			
 		);
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9720 = playerAdvancementTracker;
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void method_9081(Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer) {
+		public void addCondition(Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_9083(Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer) {
+		public void removeCondition(Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_9084(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
+		public void handle(ServerWorld serverWorld, Vec3d vec3d, double d, double e, double f) {
 			List<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>> list = null;
 
 			for(Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.method_797().method_9086(serverWorld, vec3d, d, e, f)) {
+				if (conditionsContainer.getConditions().matches(serverWorld, vec3d, d, e, f)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<NetherTravelCriterion.Conditions>>newArrayList();
 					}
@@ -146,7 +146,7 @@ public class NetherTravelCriterion implements Criterion<NetherTravelCriterion.Co
 
 			if (list != null) {
 				for(Criterion.ConditionsContainer<NetherTravelCriterion.Conditions> conditionsContainer : list) {
-					conditionsContainer.apply(this.field_9720);
+					conditionsContainer.apply(this.manager);
 				}
 			}
 		}

@@ -8,5 +8,5 @@ import net.minecraft.resource.ResourceManager;
 @Environment(EnvType.CLIENT)
 public interface FontLoader {
 	@Nullable
-	Font method_2039(ResourceManager resourceManager);
+	Font load(ResourceManager resourceManager);
 }

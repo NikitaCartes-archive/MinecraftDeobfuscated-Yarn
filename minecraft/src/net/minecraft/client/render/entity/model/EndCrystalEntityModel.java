@@ -8,19 +8,19 @@ import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class EndCrystalEntityModel<T extends Entity> extends EntityModel<T> {
-	private final Cuboid field_3640;
-	private final Cuboid field_3642 = new Cuboid(this, "glass");
-	private final Cuboid field_3641;
+	private final Cuboid cube;
+	private final Cuboid glass = new Cuboid(this, "glass");
+	private final Cuboid base;
 
 	public EndCrystalEntityModel(float f, boolean bl) {
-		this.field_3642.setTextureOffset(0, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8);
-		this.field_3640 = new Cuboid(this, "cube");
-		this.field_3640.setTextureOffset(32, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8);
+		this.glass.setTextureOffset(0, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8);
+		this.cube = new Cuboid(this, "cube");
+		this.cube.setTextureOffset(32, 0).addBox(-4.0F, -4.0F, -4.0F, 8, 8, 8);
 		if (bl) {
-			this.field_3641 = new Cuboid(this, "base");
-			this.field_3641.setTextureOffset(0, 16).addBox(-6.0F, 0.0F, -6.0F, 12, 4, 12);
+			this.base = new Cuboid(this, "base");
+			this.base.setTextureOffset(0, 16).addBox(-6.0F, 0.0F, -6.0F, 12, 4, 12);
 		} else {
-			this.field_3641 = null;
+			this.base = null;
 		}
 	}
 
@@ -29,23 +29,23 @@ public class EndCrystalEntityModel<T extends Entity> extends EntityModel<T> {
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef(2.0F, 2.0F, 2.0F);
 		GlStateManager.translatef(0.0F, -0.5F, 0.0F);
-		if (this.field_3641 != null) {
-			this.field_3641.render(k);
+		if (this.base != null) {
+			this.base.render(k);
 		}
 
 		GlStateManager.rotatef(g, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(0.0F, 0.8F + h, 0.0F);
 		GlStateManager.rotatef(60.0F, 0.7071F, 0.0F, 0.7071F);
-		this.field_3642.render(k);
+		this.glass.render(k);
 		float l = 0.875F;
 		GlStateManager.scalef(0.875F, 0.875F, 0.875F);
 		GlStateManager.rotatef(60.0F, 0.7071F, 0.0F, 0.7071F);
 		GlStateManager.rotatef(g, 0.0F, 1.0F, 0.0F);
-		this.field_3642.render(k);
+		this.glass.render(k);
 		GlStateManager.scalef(0.875F, 0.875F, 0.875F);
 		GlStateManager.rotatef(60.0F, 0.7071F, 0.0F, 0.7071F);
 		GlStateManager.rotatef(g, 0.0F, 1.0F, 0.0F);
-		this.field_3640.render(k);
+		this.cube.render(k);
 		GlStateManager.popMatrix();
 	}
 }

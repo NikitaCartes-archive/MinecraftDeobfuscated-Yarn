@@ -21,7 +21,7 @@ public class ChanceHeightmapDecorator extends Decorator<ChanceDecoratorConfig> {
 		if (random.nextFloat() < 1.0F / (float)chanceDecoratorConfig.chance) {
 			int i = random.nextInt(16);
 			int j = random.nextInt(16);
-			BlockPos blockPos2 = iWorld.method_8598(Heightmap.Type.MOTION_BLOCKING, blockPos.add(i, 0, j));
+			BlockPos blockPos2 = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(i, 0, j));
 			return Stream.of(blockPos2);
 		} else {
 			return Stream.empty();

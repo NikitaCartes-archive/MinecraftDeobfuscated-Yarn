@@ -15,7 +15,7 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	@Nullable
 	private String objectiveName;
 	private int score;
-	private ServerScoreboard.UpdateMode field_12612;
+	private ServerScoreboard.UpdateMode mode;
 
 	public ScoreboardPlayerUpdateS2CPacket() {
 	}
@@ -27,17 +27,17 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 			this.playerName = string2;
 			this.objectiveName = string;
 			this.score = i;
-			this.field_12612 = updateMode;
+			this.mode = updateMode;
 		}
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.playerName = packetByteBuf.readString(40);
-		this.field_12612 = packetByteBuf.readEnumConstant(ServerScoreboard.UpdateMode.class);
+		this.mode = packetByteBuf.readEnumConstant(ServerScoreboard.UpdateMode.class);
 		String string = packetByteBuf.readString(16);
 		this.objectiveName = Objects.equals(string, "") ? null : string;
-		if (this.field_12612 != ServerScoreboard.UpdateMode.field_13430) {
+		if (this.mode != ServerScoreboard.UpdateMode.field_13430) {
 			this.score = packetByteBuf.readVarInt();
 		}
 	}
@@ -45,15 +45,15 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeString(this.playerName);
-		packetByteBuf.writeEnumConstant(this.field_12612);
+		packetByteBuf.writeEnumConstant(this.mode);
 		packetByteBuf.writeString(this.objectiveName == null ? "" : this.objectiveName);
-		if (this.field_12612 != ServerScoreboard.UpdateMode.field_13430) {
+		if (this.mode != ServerScoreboard.UpdateMode.field_13430) {
 			packetByteBuf.writeVarInt(this.score);
 		}
 	}
 
 	public void method_11866(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11118(this);
+		clientPlayPacketListener.onScoreboardPlayerUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -73,7 +73,7 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ServerScoreboard.UpdateMode method_11863() {
-		return this.field_12612;
+	public ServerScoreboard.UpdateMode getUpdateMode() {
+		return this.mode;
 	}
 }

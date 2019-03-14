@@ -15,23 +15,23 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ArmorStandEntityRenderer extends LivingEntityRenderer<ArmorStandEntity, ArmorStandArmorEntityModel> {
-	public static final Identifier field_4642 = new Identifier("textures/entity/armorstand/wood.png");
+	public static final Identifier TEX = new Identifier("textures/entity/armorstand/wood.png");
 
 	public ArmorStandEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new ArmorStandEntityModel(), 0.0F);
-		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new ArmorStandArmorEntityModel(0.5F), new ArmorStandArmorEntityModel(1.0F)));
-		this.method_4046(new HeldItemFeatureRenderer<>(this));
-		this.method_4046(new ElytraFeatureRenderer<>(this));
-		this.method_4046(new HeadFeatureRenderer<>(this));
+		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new ArmorStandArmorEntityModel(0.5F), new ArmorStandArmorEntityModel(1.0F)));
+		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new ElytraFeatureRenderer<>(this));
+		this.addFeature(new HeadFeatureRenderer<>(this));
 	}
 
 	protected Identifier method_3880(ArmorStandEntity armorStandEntity) {
-		return field_4642;
+		return TEX;
 	}
 
 	protected void method_3877(ArmorStandEntity armorStandEntity, float f, float g, float h) {
 		GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
-		float i = (float)(armorStandEntity.field_6002.getTime() - armorStandEntity.field_7112) + h;
+		float i = (float)(armorStandEntity.world.getTime() - armorStandEntity.field_7112) + h;
 		if (i < 5.0F) {
 			GlStateManager.rotatef(MathHelper.sin(i / 1.5F * (float) Math.PI) * 3.0F, 0.0F, 1.0F, 0.0F);
 		}

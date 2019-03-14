@@ -10,22 +10,22 @@ import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class PaintingManager extends SpriteAtlasHolder {
-	private static final Identifier field_18032 = new Identifier("back");
+	private static final Identifier PAINTING_BACK_ID = new Identifier("back");
 
 	public PaintingManager(TextureManager textureManager) {
-		super(textureManager, SpriteAtlasTexture.field_18031, "textures/painting");
+		super(textureManager, SpriteAtlasTexture.PAINTING_ATLAS_TEX, "textures/painting");
 	}
 
 	@Override
 	protected Iterable<Identifier> getSprites() {
-		return Iterables.concat(Registry.MOTIVE.getIds(), Collections.singleton(field_18032));
+		return Iterables.concat(Registry.MOTIVE.getIds(), Collections.singleton(PAINTING_BACK_ID));
 	}
 
 	public Sprite getPaintingSprite(PaintingMotive paintingMotive) {
-		return this.method_18667(Registry.MOTIVE.method_10221(paintingMotive));
+		return this.getSprite(Registry.MOTIVE.getId(paintingMotive));
 	}
 
 	public Sprite getBackSprite() {
-		return this.method_18667(field_18032);
+		return this.getSprite(PAINTING_BACK_ID);
 	}
 }

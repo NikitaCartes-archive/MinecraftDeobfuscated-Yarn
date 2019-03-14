@@ -15,20 +15,20 @@ public class DummyClientTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	@Override
-	public boolean method_8674(BlockPos blockPos, T object) {
+	public boolean isScheduled(BlockPos blockPos, T object) {
 		return false;
 	}
 
 	@Override
-	public void method_8676(BlockPos blockPos, T object, int i) {
+	public void schedule(BlockPos blockPos, T object, int i) {
 	}
 
 	@Override
-	public void method_8675(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
+	public void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
 	}
 
 	@Override
-	public boolean method_8677(BlockPos blockPos, T object) {
+	public boolean isTicking(BlockPos blockPos, T object) {
 		return false;
 	}
 }

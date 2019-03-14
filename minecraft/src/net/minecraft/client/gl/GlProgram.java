@@ -9,7 +9,7 @@ public interface GlProgram {
 
 	void markUniformsDirty();
 
-	GlShader method_1274();
+	GlShader getVertexShader();
 
-	GlShader method_1278();
+	GlShader getFragmentShader();
 }

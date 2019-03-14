@@ -6,11 +6,11 @@ import com.mojang.datafixers.types.DynamicOps;
 
 public class MineshaftFeatureConfig implements FeatureConfig {
 	public final double probability;
-	public final MineshaftFeature.Type field_13694;
+	public final MineshaftFeature.Type type;
 
 	public MineshaftFeatureConfig(double d, MineshaftFeature.Type type) {
 		this.probability = d;
-		this.field_13694 = type;
+		this.type = type;
 	}
 
 	@Override
@@ -22,7 +22,7 @@ public class MineshaftFeatureConfig implements FeatureConfig {
 					dynamicOps.createString("probability"),
 					dynamicOps.createDouble(this.probability),
 					dynamicOps.createString("type"),
-					dynamicOps.createString(this.field_13694.getName())
+					dynamicOps.createString(this.type.getName())
 				)
 			)
 		);

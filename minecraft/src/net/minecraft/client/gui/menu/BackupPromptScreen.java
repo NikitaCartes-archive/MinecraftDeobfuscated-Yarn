@@ -4,13 +4,13 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
 public class BackupPromptScreen extends Screen {
-	private final Screen field_2360;
+	private final Screen parent;
 	protected final BackupPromptScreen.Callback callback;
 	protected final String title;
 	private final String subtitle;
@@ -20,7 +20,7 @@ public class BackupPromptScreen extends Screen {
 	protected final String cancelText;
 
 	public BackupPromptScreen(Screen screen, BackupPromptScreen.Callback callback, String string, String string2) {
-		this.field_2360 = screen;
+		this.parent = screen;
 		this.callback = callback;
 		this.title = string;
 		this.subtitle = string2;
@@ -34,22 +34,22 @@ public class BackupPromptScreen extends Screen {
 		super.onInitialized();
 		this.wrappedText.clear();
 		this.wrappedText.addAll(this.fontRenderer.wrapStringToWidthAsList(this.subtitle, this.screenWidth - 50));
-		this.addButton(new class_4185(this.screenWidth / 2 - 155, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.confirmText) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.confirmText) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				BackupPromptScreen.this.callback.proceed(true);
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 - 155 + 160, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.skipText) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 160, 100 + (this.wrappedText.size() + 1) * 9, 150, 20, this.skipText) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				BackupPromptScreen.this.callback.proceed(false);
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 - 155 + 80, 124 + (this.wrappedText.size() + 1) * 9, 150, 20, this.cancelText) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 80, 124 + (this.wrappedText.size() + 1) * 9, 150, 20, this.cancelText) {
 			@Override
-			public void method_1826() {
-				BackupPromptScreen.this.client.method_1507(BackupPromptScreen.this.field_2360);
+			public void onPressed() {
+				BackupPromptScreen.this.client.openScreen(BackupPromptScreen.this.parent);
 			}
 		});
 	}
@@ -76,7 +76,7 @@ public class BackupPromptScreen extends Screen {
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (i == 256) {
-			this.client.method_1507(this.field_2360);
+			this.client.openScreen(this.parent);
 			return true;
 		} else {
 			return super.keyPressed(i, j, k);

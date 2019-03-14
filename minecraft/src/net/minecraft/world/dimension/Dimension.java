@@ -15,7 +15,7 @@ import net.minecraft.world.level.LevelGeneratorType;
 public abstract class Dimension {
 	public static final float[] MOON_PHASE_TO_SIZE = new float[]{1.0F, 0.75F, 0.5F, 0.25F, 0.0F, 0.25F, 0.5F, 0.75F};
 	protected final World world;
-	private final DimensionType field_13055;
+	private final DimensionType type;
 	protected boolean waterVaporizes;
 	protected boolean isNether;
 	protected final float[] lightLevelToBrightness = new float[16];
@@ -23,7 +23,7 @@ public abstract class Dimension {
 
 	public Dimension(World world, DimensionType dimensionType) {
 		this.world = world;
-		this.field_13055 = dimensionType;
+		this.type = dimensionType;
 		this.initializeLightLevelToBrightness();
 	}
 
@@ -71,13 +71,13 @@ public abstract class Dimension {
 	}
 
 	@Nullable
-	public BlockPos method_12466() {
+	public BlockPos getForcedSpawnPoint() {
 		return null;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public double getHorizonShadingRatio() {
-		return this.world.method_8401().getGeneratorType() == LevelGeneratorType.FLAT ? 1.0 : 0.03125;
+		return this.world.getLevelProperties().getGeneratorType() == LevelGeneratorType.FLAT ? 1.0 : 0.03125;
 	}
 
 	public boolean doesWaterVaporize() {
@@ -85,7 +85,7 @@ public abstract class Dimension {
 	}
 
 	public boolean hasSkyLight() {
-		return this.field_13055.hasSkyLight();
+		return this.type.hasSkyLight();
 	}
 
 	public boolean isNether() {
@@ -109,22 +109,22 @@ public abstract class Dimension {
 	public abstract ChunkGenerator<?> createChunkGenerator();
 
 	@Nullable
-	public abstract BlockPos method_12452(ChunkPos chunkPos, boolean bl);
+	public abstract BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl);
 
 	@Nullable
-	public abstract BlockPos method_12444(int i, int j, boolean bl);
+	public abstract BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl);
 
 	public abstract float getSkyAngle(long l, float f);
 
 	public abstract boolean hasVisibleSky();
 
 	@Environment(EnvType.CLIENT)
-	public abstract Vec3d method_12445(float f, float g);
+	public abstract Vec3d getFogColor(float f, float g);
 
 	public abstract boolean canPlayersSleep();
 
 	@Environment(EnvType.CLIENT)
 	public abstract boolean shouldRenderFog(int i, int j);
 
-	public abstract DimensionType method_12460();
+	public abstract DimensionType getType();
 }

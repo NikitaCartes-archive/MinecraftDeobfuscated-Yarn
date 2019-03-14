@@ -27,7 +27,7 @@ public enum GameMode {
 		return this.name;
 	}
 
-	public TextComponent method_8383() {
+	public TextComponent getTextComponent() {
 		return new TranslatableTextComponent("gameMode." + this.name);
 	}
 

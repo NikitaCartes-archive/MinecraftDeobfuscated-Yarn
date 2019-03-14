@@ -7,26 +7,26 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 
 public interface ChunkLightingView extends LightingView {
 	@Nullable
-	ChunkNibbleArray method_15544(ChunkSectionPos chunkSectionPos);
+	ChunkNibbleArray getChunkLightArray(ChunkSectionPos chunkSectionPos);
 
-	int method_15543(BlockPos blockPos);
+	int getLightLevel(BlockPos blockPos);
 
 	public static enum Empty implements ChunkLightingView {
 		field_15812;
 
 		@Nullable
 		@Override
-		public ChunkNibbleArray method_15544(ChunkSectionPos chunkSectionPos) {
+		public ChunkNibbleArray getChunkLightArray(ChunkSectionPos chunkSectionPos) {
 			return null;
 		}
 
 		@Override
-		public int method_15543(BlockPos blockPos) {
+		public int getLightLevel(BlockPos blockPos) {
 			return 0;
 		}
 
 		@Override
-		public void method_15551(ChunkSectionPos chunkSectionPos, boolean bl) {
+		public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
 		}
 	}
 }

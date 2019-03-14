@@ -18,8 +18,8 @@ public class CatCollarFeatureRenderer extends FeatureRenderer<CatEntity, CatEnti
 
 	public void method_16047(CatEntity catEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (catEntity.isTamed() && !catEntity.isInvisible()) {
-			this.method_17164(field_16260);
-			float[] fs = catEntity.method_16096().getColorComponents();
+			this.bindTexture(field_16260);
+			float[] fs = catEntity.getCollarColor().getColorComponents();
 			GlStateManager.color3f(fs[0], fs[1], fs[2]);
 			this.getModel().method_17081(this.field_16261);
 			this.field_16261.method_17074(catEntity, f, g, h);

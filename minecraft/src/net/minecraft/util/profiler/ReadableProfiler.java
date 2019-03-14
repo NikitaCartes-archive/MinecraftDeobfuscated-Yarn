@@ -21,5 +21,5 @@ public interface ReadableProfiler extends Profiler {
 	@Override
 	void swap(Supplier<String> supplier);
 
-	ProfileResult method_16064();
+	ProfileResult getResults();
 }

@@ -13,29 +13,29 @@ final class PlayerChunkWatchingManager {
 		return this.watchingPlayers.stream();
 	}
 
-	public void method_14085(long l, ServerPlayerEntity serverPlayerEntity, boolean bl) {
+	public void add(long l, ServerPlayerEntity serverPlayerEntity, boolean bl) {
 		(bl ? this.notWatchingPlayers : this.watchingPlayers).add(serverPlayerEntity);
 	}
 
-	public void method_14084(long l, ServerPlayerEntity serverPlayerEntity) {
+	public void remove(long l, ServerPlayerEntity serverPlayerEntity) {
 		this.watchingPlayers.remove(serverPlayerEntity);
 		this.notWatchingPlayers.remove(serverPlayerEntity);
 	}
 
-	public void method_14086(ServerPlayerEntity serverPlayerEntity) {
+	public void disableWatch(ServerPlayerEntity serverPlayerEntity) {
 		this.notWatchingPlayers.add(serverPlayerEntity);
 		this.watchingPlayers.remove(serverPlayerEntity);
 	}
 
-	public void method_14087(ServerPlayerEntity serverPlayerEntity) {
+	public void enableWatch(ServerPlayerEntity serverPlayerEntity) {
 		this.notWatchingPlayers.remove(serverPlayerEntity);
 		this.watchingPlayers.add(serverPlayerEntity);
 	}
 
-	public boolean method_14082(ServerPlayerEntity serverPlayerEntity) {
+	public boolean isWatchDisabled(ServerPlayerEntity serverPlayerEntity) {
 		return !this.watchingPlayers.contains(serverPlayerEntity);
 	}
 
-	public void method_14081(long l, long m, ServerPlayerEntity serverPlayerEntity) {
+	public void movePlayer(long l, long m, ServerPlayerEntity serverPlayerEntity) {
 	}
 }

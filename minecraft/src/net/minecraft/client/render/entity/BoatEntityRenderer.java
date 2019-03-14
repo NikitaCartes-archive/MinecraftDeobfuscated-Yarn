@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
-	private static final Identifier[] field_4648 = new Identifier[]{
+	private static final Identifier[] SKIN = new Identifier[]{
 		new Identifier("textures/entity/boat/oak.png"),
 		new Identifier("textures/entity/boat/spruce.png"),
 		new Identifier("textures/entity/boat/birch.png"),
@@ -70,7 +70,7 @@ public class BoatEntityRenderer extends EntityRenderer<BoatEntity> {
 	}
 
 	protected Identifier method_3891(BoatEntity boatEntity) {
-		return field_4648[boatEntity.getBoatType().ordinal()];
+		return SKIN[boatEntity.getBoatType().ordinal()];
 	}
 
 	@Override

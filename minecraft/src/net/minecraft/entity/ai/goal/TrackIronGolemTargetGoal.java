@@ -5,13 +5,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 
 public class TrackIronGolemTargetGoal extends TrackTargetGoal {
-	private final IronGolemEntity field_6629;
+	private final IronGolemEntity ironGolem;
 	private LivingEntity target;
 
 	public TrackIronGolemTargetGoal(IronGolemEntity ironGolemEntity) {
 		super(ironGolemEntity, false, true);
-		this.field_6629 = ironGolemEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
+		this.ironGolem = ironGolemEntity;
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18408));
 	}
 
 	@Override
@@ -21,7 +21,7 @@ public class TrackIronGolemTargetGoal extends TrackTargetGoal {
 
 	@Override
 	public void start() {
-		this.field_6629.setTarget(this.target);
+		this.ironGolem.setTarget(this.target);
 		super.start();
 	}
 }

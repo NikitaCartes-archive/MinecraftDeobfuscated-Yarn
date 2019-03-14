@@ -34,7 +34,7 @@ public class QueryBlockNbtC2SPacket implements Packet<ServerPlayPacketListener> 
 	}
 
 	public void method_12095(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12072(this);
+		serverPlayPacketListener.onQueryBlockNbt(this);
 	}
 
 	public int getTransactionId() {

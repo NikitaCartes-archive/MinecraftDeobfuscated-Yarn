@@ -17,7 +17,7 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	public boolean method_14165(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		BlockPos blockPos2 = iWorld.method_8395();
+		BlockPos blockPos2 = iWorld.getSpawnPos();
 		int i = 16;
 		double d = blockPos2.squaredDistanceTo(blockPos.add(8, blockPos2.getY(), 8));
 		if (d > 1024.0) {
@@ -32,9 +32,9 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 					if (j >= blockPos3.getZ() && j <= blockPos4.getZ() && k >= blockPos3.getX() && k <= blockPos4.getX()) {
 						mutable.set(k, mutable.getY(), j);
 						if (blockPos2.getX() == k && blockPos2.getZ() == j) {
-							iWorld.method_8652(mutable, Blocks.field_10445.method_9564(), 2);
+							iWorld.setBlockState(mutable, Blocks.field_10445.getDefaultState(), 2);
 						} else {
-							iWorld.method_8652(mutable, Blocks.field_10340.method_9564(), 2);
+							iWorld.setBlockState(mutable, Blocks.field_10340.getDefaultState(), 2);
 						}
 					}
 				}

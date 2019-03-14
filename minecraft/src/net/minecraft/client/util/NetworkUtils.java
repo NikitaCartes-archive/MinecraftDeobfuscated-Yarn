@@ -38,7 +38,7 @@ public class NetworkUtils {
 	);
 
 	@Environment(EnvType.CLIENT)
-	public static CompletableFuture<?> method_15301(
+	public static CompletableFuture<?> download(
 		File file, String string, Map<String, String> map, int i, @Nullable ProgressListener progressListener, Proxy proxy
 	) {
 		return CompletableFuture.supplyAsync(() -> {

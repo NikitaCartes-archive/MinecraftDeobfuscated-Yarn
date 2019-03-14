@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
-	private static final Identifier field_17673 = new Identifier("textures/gui/container/stonecutter.png");
+	private static final Identifier TEXTURE = new Identifier("textures/gui/container/stonecutter.png");
 	private float scrollAmount;
 	private boolean mouseClicked;
 	private int scrollOffset;
@@ -37,15 +37,15 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.field_17411.getFormattedText(), 8.0F, 4.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.method_5476().getFormattedText(), 8.0F, (float)(this.height - 94), 4210752);
+		this.fontRenderer.draw(this.name.getFormattedText(), 8.0F, 4.0F, 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 94), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		this.drawBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.method_1531().method_4618(field_17673);
+		this.client.getTextureManager().bindTexture(TEXTURE);
 		int k = this.left;
 		int l = this.top;
 		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
@@ -84,7 +84,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 			int n = i + m % 4 * 16;
 			int o = m / 4;
 			int p = j + o * 18 + 2;
-			this.client.method_1480().renderGuiItem(((StonecuttingRecipe)list.get(l)).getOutput(), n, p);
+			this.client.getItemRenderer().renderGuiItem(((StonecuttingRecipe)list.get(l)).getOutput(), n, p);
 		}
 
 		GuiLighting.disable();
@@ -102,9 +102,9 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 				int n = m - this.scrollOffset;
 				double f = d - (double)(j + n % 4 * 16);
 				double g = e - (double)(k + n / 4 * 18);
-				if (f >= 0.0 && g >= 0.0 && f < 16.0 && g < 18.0 && this.container.onButtonClick(this.client.field_1724, m)) {
-					MinecraftClient.getInstance().method_1483().play(PositionedSoundInstance.method_4758(SoundEvents.field_17711, 1.0F));
-					this.client.field_1761.clickButton(this.container.syncId, m);
+				if (f >= 0.0 && g >= 0.0 && f < 16.0 && g < 18.0 && this.container.onButtonClick(this.client.player, m)) {
+					MinecraftClient.getInstance().getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_17711, 1.0F));
+					this.client.interactionManager.clickButton(this.container.syncId, m);
 					return true;
 				}
 			}

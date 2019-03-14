@@ -11,11 +11,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, CreeperEntityModel<CreeperEntity>> {
-	private static final Identifier field_4653 = new Identifier("textures/entity/creeper/creeper.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/creeper/creeper.png");
 
 	public CreeperEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new CreeperEntityModel<>(), 0.5F);
-		this.method_4046(new CreeperChargeFeatureRenderer(this));
+		this.addFeature(new CreeperChargeFeatureRenderer(this));
 	}
 
 	protected void method_3900(CreeperEntity creeperEntity, float f) {
@@ -41,6 +41,6 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 	}
 
 	protected Identifier method_3899(CreeperEntity creeperEntity) {
-		return field_4653;
+		return SKIN;
 	}
 }

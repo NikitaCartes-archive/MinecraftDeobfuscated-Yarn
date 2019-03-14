@@ -20,14 +20,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
 
 public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCriterion.Conditions> {
-	private static final Identifier field_9655 = new Identifier("killed_by_crossbow");
+	private static final Identifier ID = new Identifier("killed_by_crossbow");
 	private final Map<PlayerAdvancementTracker, KilledByCrossbowCriterion.class_2077> field_9656 = Maps.<PlayerAdvancementTracker, KilledByCrossbowCriterion.class_2077>newHashMap(
 		
 	);
 
 	@Override
 	public Identifier getId() {
-		return field_9655;
+		return ID;
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 		private final NumberRange.Integer uniqueEntityTypes;
 
 		public Conditions(EntityPredicate[] entityPredicates, NumberRange.Integer integer) {
-			super(KilledByCrossbowCriterion.field_9655);
+			super(KilledByCrossbowCriterion.ID);
 			this.victims = entityPredicates;
 			this.uniqueEntityTypes = integer;
 		}
@@ -100,7 +100,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 			return new KilledByCrossbowCriterion.Conditions(entityPredicates, integer);
 		}
 
-		public boolean method_8988(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
+		public boolean matches(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
 			if (this.victims.length > 0) {
 				List<Entity> list = Lists.<Entity>newArrayList(collection);
 
@@ -110,7 +110,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 
 					while(iterator.hasNext()) {
 						Entity entity = (Entity)iterator.next();
-						if (entityPredicate.method_8914(serverPlayerEntity, entity)) {
+						if (entityPredicate.test(serverPlayerEntity, entity)) {
 							iterator.remove();
 							bl = true;
 							break;
@@ -129,7 +129,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 				Set<EntityType<?>> set = Sets.<EntityType<?>>newHashSet();
 
 				for(Entity entity2 : collection) {
-					set.add(entity2.method_5864());
+					set.add(entity2.getType());
 				}
 
 				return this.uniqueEntityTypes.test(set.size()) && this.uniqueEntityTypes.test(i);
@@ -171,7 +171,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 			List<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>> list = null;
 
 			for(Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer : this.field_9657) {
-				if (conditionsContainer.method_797().method_8988(serverPlayerEntity, collection, i)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, collection, i)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>>newArrayList();
 					}

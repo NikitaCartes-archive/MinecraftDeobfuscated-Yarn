@@ -3,17 +3,17 @@ package net.minecraft.world.loot.context;
 import net.minecraft.util.Identifier;
 
 public class LootContextParameter<T> {
-	private final Identifier field_1162;
+	private final Identifier id;
 
 	public LootContextParameter(Identifier identifier) {
-		this.field_1162 = identifier;
+		this.id = identifier;
 	}
 
-	public Identifier method_746() {
-		return this.field_1162;
+	public Identifier getIdentifier() {
+		return this.id;
 	}
 
 	public String toString() {
-		return "<parameter " + this.field_1162 + ">";
+		return "<parameter " + this.id + ">";
 	}
 }

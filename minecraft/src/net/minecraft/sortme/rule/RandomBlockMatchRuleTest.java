@@ -19,7 +19,7 @@ public class RandomBlockMatchRuleTest extends AbstractRuleTest {
 	}
 
 	public <T> RandomBlockMatchRuleTest(Dynamic<T> dynamic) {
-		this(Registry.BLOCK.method_10223(new Identifier(dynamic.get("block").asString(""))), dynamic.get("probability").asFloat(1.0F));
+		this(Registry.BLOCK.get(new Identifier(dynamic.get("block").asString(""))), dynamic.get("probability").asFloat(1.0F));
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class RandomBlockMatchRuleTest extends AbstractRuleTest {
 	}
 
 	@Override
-	protected RuleTest method_16766() {
+	protected RuleTest getRuleTest() {
 		return RuleTest.field_16980;
 	}
 
@@ -39,7 +39,7 @@ public class RandomBlockMatchRuleTest extends AbstractRuleTest {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("block"),
-					dynamicOps.createString(Registry.BLOCK.method_10221(this.block).toString()),
+					dynamicOps.createString(Registry.BLOCK.getId(this.block).toString()),
 					dynamicOps.createString("probability"),
 					dynamicOps.createFloat(this.probability)
 				)

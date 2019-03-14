@@ -21,18 +21,18 @@ public class MusicTracker {
 	}
 
 	public void method_18669() {
-		MusicTracker.MusicType musicType = this.client.method_1544();
+		MusicTracker.MusicType musicType = this.client.getMusicType();
 		if (this.current != null) {
-			if (!musicType.method_4861().getId().equals(this.current.method_4775())) {
-				this.client.method_1483().stop(this.current);
+			if (!musicType.getSound().getId().equals(this.current.getId())) {
+				this.client.getSoundLoader().stop(this.current);
 				this.timeUntilNextSong = MathHelper.nextInt(this.random, 0, musicType.getMinDelay() / 2);
 				this.field_5573 = false;
 			}
 
-			if (!this.field_5573 && !this.client.method_1483().isPlaying(this.current)) {
+			if (!this.field_5573 && !this.client.getSoundLoader().isPlaying(this.current)) {
 				this.current = null;
 				this.timeUntilNextSong = Math.min(MathHelper.nextInt(this.random, musicType.getMinDelay(), musicType.getMaxDelay()), this.timeUntilNextSong);
-			} else if (this.client.method_1483().isPlaying(this.current)) {
+			} else if (this.client.getSoundLoader().isPlaying(this.current)) {
 				this.field_5573 = false;
 			}
 		}
@@ -44,15 +44,15 @@ public class MusicTracker {
 	}
 
 	public void play(MusicTracker.MusicType musicType) {
-		this.current = PositionedSoundInstance.method_4759(musicType.method_4861());
-		this.client.method_1483().play(this.current);
+		this.current = PositionedSoundInstance.music(musicType.getSound());
+		this.client.getSoundLoader().play(this.current);
 		this.timeUntilNextSong = Integer.MAX_VALUE;
 		this.field_5573 = true;
 	}
 
 	public void stop() {
 		if (this.current != null) {
-			this.client.method_1483().stop(this.current);
+			this.client.getSoundLoader().stop(this.current);
 			this.current = null;
 			this.timeUntilNextSong = 0;
 			this.field_5573 = false;
@@ -60,7 +60,7 @@ public class MusicTracker {
 	}
 
 	public boolean isPlayingType(MusicTracker.MusicType musicType) {
-		return this.current == null ? false : musicType.method_4861().getId().equals(this.current.method_4775());
+		return this.current == null ? false : musicType.getSound().getId().equals(this.current.getId());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -74,18 +74,18 @@ public class MusicTracker {
 		field_5583(SoundEvents.field_14631, 6000, 24000),
 		field_5576(SoundEvents.field_15198, 12000, 24000);
 
-		private final SoundEvent field_5577;
+		private final SoundEvent sound;
 		private final int minDelay;
 		private final int maxDelay;
 
 		private MusicType(SoundEvent soundEvent, int j, int k) {
-			this.field_5577 = soundEvent;
+			this.sound = soundEvent;
 			this.minDelay = j;
 			this.maxDelay = k;
 		}
 
-		public SoundEvent method_4861() {
-			return this.field_5577;
+		public SoundEvent getSound() {
+			return this.sound;
 		}
 
 		public int getMinDelay() {

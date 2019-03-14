@@ -81,7 +81,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 		return this.commandsAllowed;
 	}
 
-	public TextComponent method_258() {
+	public TextComponent getVersionTextComponent() {
 		return (TextComponent)(ChatUtil.isEmpty(this.versionName)
 			? new TranslatableTextComponent("selectWorld.versionUnknown")
 			: new StringTextComponent(this.versionName));

@@ -4,15 +4,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
 public abstract class SpecialCraftingRecipe implements CraftingRecipe {
-	private final Identifier field_9009;
+	private final Identifier id;
 
 	public SpecialCraftingRecipe(Identifier identifier) {
-		this.field_9009 = identifier;
+		this.id = identifier;
 	}
 
 	@Override
-	public Identifier method_8114() {
-		return this.field_9009;
+	public Identifier getId() {
+		return this.id;
 	}
 
 	@Override

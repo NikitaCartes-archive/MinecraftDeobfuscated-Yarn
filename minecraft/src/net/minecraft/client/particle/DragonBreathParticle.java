@@ -2,7 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -10,9 +9,9 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class DragonBreathParticle extends SpriteBillboardParticle {
 	private boolean field_3792;
-	private final class_4002 field_17793;
+	private final SpriteProvider field_17793;
 
-	private DragonBreathParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
+	private DragonBreathParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
 		super(world, d, e, f);
 		this.velocityX = g;
 		this.velocityY = h;
@@ -24,8 +23,8 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 		this.maxAge = (int)(20.0 / ((double)this.random.nextFloat() * 0.8 + 0.2));
 		this.field_3792 = false;
 		this.collidesWithWorld = false;
-		this.field_17793 = arg;
-		this.method_18142(arg);
+		this.field_17793 = spriteProvider;
+		this.method_18142(spriteProvider);
 	}
 
 	@Override
@@ -61,7 +60,7 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -72,10 +71,10 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17794;
+		private final SpriteProvider field_17794;
 
-		public Factory(class_4002 arg) {
-			this.field_17794 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17794 = spriteProvider;
 		}
 
 		public Particle method_3019(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

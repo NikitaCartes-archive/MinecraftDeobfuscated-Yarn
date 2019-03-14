@@ -10,9 +10,9 @@ public class ArrowItem extends Item {
 		super(settings);
 	}
 
-	public ProjectileEntity method_7702(World world, ItemStack itemStack, LivingEntity livingEntity) {
+	public ProjectileEntity createEntityArrow(World world, ItemStack itemStack, LivingEntity livingEntity) {
 		ArrowEntity arrowEntity = new ArrowEntity(world, livingEntity);
-		arrowEntity.method_7459(itemStack);
+		arrowEntity.initFromStack(itemStack);
 		return arrowEntity;
 	}
 }

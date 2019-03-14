@@ -26,7 +26,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		float i = (float)enderCrystalEntity.field_7034 + h;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e, (float)f);
-		this.method_3924(field_4663);
+		this.bindTexture(field_4663);
 		float j = MathHelper.sin(i * 0.2F) / 2.0F + 0.5F;
 		j = j * j + j;
 		if (this.renderOutlines) {
@@ -34,7 +34,7 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(enderCrystalEntity));
 		}
 
-		if (enderCrystalEntity.method_6836()) {
+		if (enderCrystalEntity.getShowBottom()) {
 			this.field_4662.render(enderCrystalEntity, 0.0F, i * 3.0F, j * 0.2F, 0.0F, 0.0F, 0.0625F);
 		} else {
 			this.field_4664.render(enderCrystalEntity, 0.0F, i * 3.0F, j * 0.2F, 0.0F, 0.0F, 0.0625F);
@@ -46,9 +46,9 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 		}
 
 		GlStateManager.popMatrix();
-		BlockPos blockPos = enderCrystalEntity.method_6838();
+		BlockPos blockPos = enderCrystalEntity.getBeamTarget();
 		if (blockPos != null) {
-			this.method_3924(EnderDragonEntityRenderer.field_4668);
+			this.bindTexture(EnderDragonEntityRenderer.CRYSTAL_BEAM);
 			float k = (float)blockPos.getX() + 0.5F;
 			float l = (float)blockPos.getY() + 0.5F;
 			float m = (float)blockPos.getZ() + 0.5F;
@@ -78,6 +78,6 @@ public class EnderCrystalEntityRenderer extends EntityRenderer<EnderCrystalEntit
 	}
 
 	public boolean method_3907(EnderCrystalEntity enderCrystalEntity, VisibleRegion visibleRegion, double d, double e, double f) {
-		return super.isVisible(enderCrystalEntity, visibleRegion, d, e, f) || enderCrystalEntity.method_6838() != null;
+		return super.isVisible(enderCrystalEntity, visibleRegion, d, e, f) || enderCrystalEntity.getBeamTarget() != null;
 	}
 }

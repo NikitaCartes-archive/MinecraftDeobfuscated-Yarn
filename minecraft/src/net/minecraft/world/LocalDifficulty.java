@@ -10,10 +10,10 @@ public class LocalDifficulty {
 
 	public LocalDifficulty(Difficulty difficulty, long l, long m, float f) {
 		this.globalDifficulty = difficulty;
-		this.localDifficulty = this.method_5456(difficulty, l, m, f);
+		this.localDifficulty = this.setLocalDifficulty(difficulty, l, m, f);
 	}
 
-	public Difficulty method_5454() {
+	public Difficulty getGlobalDifficulty() {
 		return this.globalDifficulty;
 	}
 
@@ -33,7 +33,7 @@ public class LocalDifficulty {
 		}
 	}
 
-	private float method_5456(Difficulty difficulty, long l, long m, float f) {
+	private float setLocalDifficulty(Difficulty difficulty, long l, long m, float f) {
 		if (difficulty == Difficulty.PEACEFUL) {
 			return 0.0F;
 		} else {

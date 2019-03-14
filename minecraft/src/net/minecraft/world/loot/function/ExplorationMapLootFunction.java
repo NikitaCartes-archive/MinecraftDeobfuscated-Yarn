@@ -52,15 +52,15 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		if (itemStack.getItem() != Items.field_8895) {
 			return itemStack;
 		} else {
-			BlockPos blockPos = lootContext.method_296(LootContextParameters.field_1232);
+			BlockPos blockPos = lootContext.get(LootContextParameters.field_1232);
 			if (blockPos != null) {
-				ServerWorld serverWorld = lootContext.method_299();
-				BlockPos blockPos2 = serverWorld.method_8487(this.destination, blockPos, this.searchRadius, this.skipExistingChunks);
+				ServerWorld serverWorld = lootContext.getWorld();
+				BlockPos blockPos2 = serverWorld.locateStructure(this.destination, blockPos, this.searchRadius, this.skipExistingChunks);
 				if (blockPos2 != null) {
 					ItemStack itemStack2 = FilledMapItem.method_8005(serverWorld, blockPos2.getX(), blockPos2.getZ(), this.zoom, true, true);
 					FilledMapItem.method_8002(serverWorld, itemStack2);
 					MapState.method_110(itemStack2, blockPos2, "+", this.decoration);
-					itemStack2.method_7977(new TranslatableTextComponent("filled_map." + this.destination.toLowerCase(Locale.ROOT)));
+					itemStack2.setDisplayName(new TranslatableTextComponent("filled_map." + this.destination.toLowerCase(Locale.ROOT)));
 					return itemStack2;
 				}
 			}
@@ -106,7 +106,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new ExplorationMapLootFunction(this.method_526(), this.destination, this.decoration, this.zoom, this.searchRadius, this.skipExistingChunks);
+			return new ExplorationMapLootFunction(this.getConditions(), this.destination, this.decoration, this.zoom, this.searchRadius, this.skipExistingChunks);
 		}
 	}
 

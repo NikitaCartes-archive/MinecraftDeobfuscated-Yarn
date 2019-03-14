@@ -14,17 +14,17 @@ public class AsyncTexture extends ResourceTexture {
 
 	public AsyncTexture(ResourceManager resourceManager, Identifier identifier, Executor executor) {
 		super(identifier);
-		this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.method_18156(resourceManager, identifier), executor);
+		this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, identifier), executor);
 	}
 
 	@Override
-	protected ResourceTexture.TextureData method_18153(ResourceManager resourceManager) {
+	protected ResourceTexture.TextureData loadTextureData(ResourceManager resourceManager) {
 		if (this.future != null) {
 			ResourceTexture.TextureData textureData = (ResourceTexture.TextureData)this.future.join();
 			this.future = null;
 			return textureData;
 		} else {
-			return ResourceTexture.TextureData.method_18156(resourceManager, this.field_5224);
+			return ResourceTexture.TextureData.load(resourceManager, this.location);
 		}
 	}
 
@@ -33,10 +33,8 @@ public class AsyncTexture extends ResourceTexture {
 	}
 
 	@Override
-	public void method_18169(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
-		this.future = CompletableFuture.supplyAsync(
-			() -> ResourceTexture.TextureData.method_18156(resourceManager, this.field_5224), SystemUtil.getServerWorkerExecutor()
-		);
-		this.future.thenRunAsync(() -> textureManager.method_4616(this.field_5224, this), executor);
+	public void registerTexture(TextureManager textureManager, ResourceManager resourceManager, Identifier identifier, Executor executor) {
+		this.future = CompletableFuture.supplyAsync(() -> ResourceTexture.TextureData.load(resourceManager, this.location), SystemUtil.getServerWorkerExecutor());
+		this.future.thenRunAsync(() -> textureManager.registerTexture(this.location, this), executor);
 	}
 }

@@ -18,12 +18,12 @@ public abstract class AbstractRuleTest {
 			dynamicOps.mergeInto(
 				this.method_16769(dynamicOps).getValue(),
 				dynamicOps.createString("predicate_type"),
-				dynamicOps.createString(Registry.RULE_TEST.method_10221(this.method_16766()).toString())
+				dynamicOps.createString(Registry.RULE_TEST.getId(this.getRuleTest()).toString())
 			)
 		);
 	}
 
-	protected abstract RuleTest method_16766();
+	protected abstract RuleTest getRuleTest();
 
 	protected abstract <T> Dynamic<T> method_16769(DynamicOps<T> dynamicOps);
 }

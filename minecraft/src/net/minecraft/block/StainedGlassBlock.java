@@ -14,7 +14,7 @@ public class StainedGlassBlock extends TransparentBlock {
 	}
 
 	@Override
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 
@@ -28,24 +28,24 @@ public class StainedGlassBlock extends TransparentBlock {
 	}
 
 	@Override
-	public boolean method_9521(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 
 	@Override
-	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (!world.isClient) {
-				BeaconBlock.method_9463(world, blockPos);
+				BeaconBlock.onStainedGlassAdded(world, blockPos);
 			}
 		}
 	}
 
 	@Override
-	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
 			if (!world.isClient) {
-				BeaconBlock.method_9463(world, blockPos);
+				BeaconBlock.onStainedGlassAdded(world, blockPos);
 			}
 		}
 	}

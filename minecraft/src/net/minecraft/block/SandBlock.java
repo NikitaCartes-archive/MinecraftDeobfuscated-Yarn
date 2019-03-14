@@ -13,7 +13,7 @@ public class SandBlock extends FallingBlock {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int method_10130(BlockState blockState) {
+	public int getColor(BlockState blockState) {
 		return this.color;
 	}
 }

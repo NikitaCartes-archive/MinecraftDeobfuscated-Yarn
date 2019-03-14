@@ -22,22 +22,22 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 	}
 
 	@Override
-	public void method_10839(TextComponent textComponent) {
+	public void onDisconnected(TextComponent textComponent) {
 	}
 
 	@Override
-	public void method_12698(QueryRequestC2SPacket queryRequestC2SPacket) {
+	public void onRequest(QueryRequestC2SPacket queryRequestC2SPacket) {
 		if (this.responseSent) {
-			this.client.method_10747(REQUEST_HANDLED);
+			this.client.disconnect(REQUEST_HANDLED);
 		} else {
 			this.responseSent = true;
-			this.client.method_10743(new QueryResponseS2CPacket(this.server.method_3765()));
+			this.client.sendPacket(new QueryResponseS2CPacket(this.server.getServerMetadata()));
 		}
 	}
 
 	@Override
-	public void method_12697(QueryPingC2SPacket queryPingC2SPacket) {
-		this.client.method_10743(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
-		this.client.method_10747(REQUEST_HANDLED);
+	public void onPing(QueryPingC2SPacket queryPingC2SPacket) {
+		this.client.sendPacket(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
+		this.client.disconnect(REQUEST_HANDLED);
 	}
 }

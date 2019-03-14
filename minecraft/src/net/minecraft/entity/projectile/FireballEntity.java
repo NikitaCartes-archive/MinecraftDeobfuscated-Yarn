@@ -2,7 +2,6 @@ package net.minecraft.entity.projectile;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3855;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -13,7 +12,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
-public class FireballEntity extends class_3855 {
+public class FireballEntity extends AbstractFireballEntity {
 	public int explosionPower = 1;
 
 	public FireballEntity(EntityType<? extends FireballEntity> entityType, World world) {
@@ -30,30 +29,30 @@ public class FireballEntity extends class_3855 {
 	}
 
 	@Override
-	protected void method_7469(HitResult hitResult) {
-		if (!this.field_6002.isClient) {
+	protected void onCollision(HitResult hitResult) {
+		if (!this.world.isClient) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
-				entity.damage(DamageSource.method_5521(this, this.owner), 6.0F);
-				this.method_5723(this.owner, entity);
+				entity.damage(DamageSource.explosiveProjectile(this, this.owner), 6.0F);
+				this.dealDamage(this.owner, entity);
 			}
 
-			boolean bl = this.field_6002.getGameRules().getBoolean("mobGriefing");
-			this.field_6002
+			boolean bl = this.world.getGameRules().getBoolean("mobGriefing");
+			this.world
 				.createExplosion(null, this.x, this.y, this.z, (float)this.explosionPower, bl, bl ? Explosion.class_4179.field_18687 : Explosion.class_4179.field_18685);
 			this.invalidate();
 		}
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("ExplosionPower", this.explosionPower);
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("ExplosionPower", 99)) {
 			this.explosionPower = compoundTag.getInt("ExplosionPower");
 		}

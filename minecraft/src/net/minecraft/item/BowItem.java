@@ -19,21 +19,21 @@ import net.minecraft.world.World;
 public class BowItem extends BaseBowItem {
 	public BowItem(Item.Settings settings) {
 		super(settings);
-		this.method_7863(new Identifier("pull"), (itemStack, world, livingEntity) -> {
+		this.addProperty(new Identifier("pull"), (itemStack, world, livingEntity) -> {
 			if (livingEntity == null) {
 				return 0.0F;
 			} else {
-				return livingEntity.method_6030().getItem() != Items.field_8102 ? 0.0F : (float)(itemStack.getMaxUseTime() - livingEntity.method_6014()) / 20.0F;
+				return livingEntity.getActiveItem().getItem() != Items.field_8102 ? 0.0F : (float)(itemStack.getMaxUseTime() - livingEntity.method_6014()) / 20.0F;
 			}
 		});
-		this.method_7863(
+		this.addProperty(
 			new Identifier("pulling"),
-			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.method_6030() == itemStack ? 1.0F : 0.0F
+			(itemStack, world, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
 	}
 
 	@Override
-	public void method_7840(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
+	public void onItemStopUsing(ItemStack itemStack, World world, LivingEntity livingEntity, int i) {
 		if (livingEntity instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)livingEntity;
 			boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.field_9125, itemStack) > 0;
@@ -43,13 +43,13 @@ public class BowItem extends BaseBowItem {
 					itemStack2 = new ItemStack(Items.field_8107);
 				}
 
-				int j = this.method_7881(itemStack) - i;
+				int j = this.getMaxUseTime(itemStack) - i;
 				float f = method_7722(j);
 				if (!((double)f < 0.1)) {
 					boolean bl2 = bl && itemStack2.getItem() == Items.field_8107;
 					if (!world.isClient) {
 						ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.field_8107);
-						ProjectileEntity projectileEntity = arrowItem.method_7702(world, itemStack2, playerEntity);
+						ProjectileEntity projectileEntity = arrowItem.createEntityArrow(world, itemStack2, playerEntity);
 						projectileEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
 						if (f == 1.0F) {
 							projectileEntity.setCritical(true);
@@ -77,7 +77,7 @@ public class BowItem extends BaseBowItem {
 						world.spawnEntity(projectileEntity);
 					}
 
-					world.method_8465(
+					world.playSound(
 						null,
 						playerEntity.x,
 						playerEntity.y,
@@ -90,11 +90,11 @@ public class BowItem extends BaseBowItem {
 					if (!bl2 && !playerEntity.abilities.creativeMode) {
 						itemStack2.subtractAmount(1);
 						if (itemStack2.isEmpty()) {
-							playerEntity.inventory.method_7378(itemStack2);
+							playerEntity.inventory.removeOne(itemStack2);
 						}
 					}
 
-					playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
+					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 				}
 			}
 		}
@@ -111,18 +111,18 @@ public class BowItem extends BaseBowItem {
 	}
 
 	@Override
-	public int method_7881(ItemStack itemStack) {
+	public int getMaxUseTime(ItemStack itemStack) {
 		return 72000;
 	}
 
 	@Override
-	public UseAction method_7853(ItemStack itemStack) {
+	public UseAction getUseAction(ItemStack itemStack) {
 		return UseAction.field_8953;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		boolean bl = !playerEntity.method_18808(itemStack).isEmpty();
 		if (playerEntity.abilities.creativeMode || bl) {
 			playerEntity.setCurrentHand(hand);

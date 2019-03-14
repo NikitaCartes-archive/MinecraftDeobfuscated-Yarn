@@ -29,7 +29,7 @@ public class ServerEntry {
 		this.local = bl;
 	}
 
-	public CompoundTag method_2992() {
+	public CompoundTag serialize() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("name", this.name);
 		compoundTag.putString("ip", this.address);
@@ -54,7 +54,7 @@ public class ServerEntry {
 		this.resourcePackState = resourcePackState;
 	}
 
-	public static ServerEntry method_2993(CompoundTag compoundTag) {
+	public static ServerEntry deserialize(CompoundTag compoundTag) {
 		ServerEntry serverEntry = new ServerEntry(compoundTag.getString("name"), compoundTag.getString("ip"), false);
 		if (compoundTag.containsKey("icon", 8)) {
 			serverEntry.setIcon(compoundTag.getString("icon"));
@@ -100,14 +100,14 @@ public class ServerEntry {
 		DISABLED("disabled"),
 		PROMPT("prompt");
 
-		private final TextComponent field_3765;
+		private final TextComponent component;
 
 		private ResourcePackState(String string2) {
-			this.field_3765 = new TranslatableTextComponent("addServer.resourcePack." + string2);
+			this.component = new TranslatableTextComponent("addServer.resourcePack." + string2);
 		}
 
-		public TextComponent method_2997() {
-			return this.field_3765;
+		public TextComponent getComponent() {
+			return this.component;
 		}
 	}
 }

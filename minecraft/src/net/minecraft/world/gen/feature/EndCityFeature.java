@@ -22,8 +22,8 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	@Override
 	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.method_12109().getEndCityDistance();
-		int n = chunkGenerator.method_12109().getEndCitySeparation();
+		int m = chunkGenerator.getConfig().getEndCityDistance();
+		int n = chunkGenerator.getConfig().getEndCitySeparation();
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
@@ -42,8 +42,8 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
-			Biome biome = chunkGenerator.getBiomeSource().method_8758(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-			if (!chunkGenerator.method_12097(biome, Feature.field_13553)) {
+			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+			if (!chunkGenerator.hasStructure(biome, Feature.END_CITY)) {
 				return false;
 			} else {
 				int k = getGenerationHeight(i, j, chunkGenerator);
@@ -85,10 +85,10 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 		int m = (i << 4) + 7;
 		int n = (j << 4) + 7;
-		int o = chunkGenerator.method_18028(m, n, Heightmap.Type.WORLD_SURFACE_WG);
-		int p = chunkGenerator.method_18028(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
-		int q = chunkGenerator.method_18028(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
-		int r = chunkGenerator.method_18028(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+		int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
+		int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+		int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
+		int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
 		return Math.min(Math.min(o, p), Math.min(q, r));
 	}
 
@@ -98,12 +98,12 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
 			int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator);
 			if (k >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, k, j * 16 + 8);
-				EndCityGenerator.method_14679(structureManager, blockPos, rotation, this.children, this.random);
+				EndCityGenerator.addPieces(structureManager, blockPos, rotation, this.children, this.random);
 				this.setBoundingBoxFromChildren();
 			}
 		}

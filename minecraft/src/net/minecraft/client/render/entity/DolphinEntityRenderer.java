@@ -14,7 +14,7 @@ public class DolphinEntityRenderer extends MobEntityRenderer<DolphinEntity, Dolp
 
 	public DolphinEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new DolphinEntityModel<>(), 0.7F);
-		this.method_4046(new DolphinHeldItemFeatureRenderer(this));
+		this.addFeature(new DolphinHeldItemFeatureRenderer(this));
 	}
 
 	protected Identifier method_3903(DolphinEntity dolphinEntity) {

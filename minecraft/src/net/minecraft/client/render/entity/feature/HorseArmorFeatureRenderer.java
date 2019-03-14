@@ -18,14 +18,14 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 	}
 
 	public void method_18658(HorseEntity horseEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = horseEntity.method_6786();
+		ItemStack itemStack = horseEntity.getArmorType();
 		if (itemStack.getItem() instanceof HorseArmorItem) {
 			HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
 			this.getModel().method_17081(this.model);
 			this.model.method_17084(horseEntity, f, g, h);
-			this.method_17164(horseArmorItem.method_18454());
+			this.bindTexture(horseArmorItem.getHorseArmorTexture());
 			if (horseArmorItem instanceof DyeableHorseArmorItem) {
-				int m = ((DyeableHorseArmorItem)horseArmorItem).method_7800(itemStack);
+				int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
 				float n = (float)(m >> 16 & 0xFF) / 255.0F;
 				float o = (float)(m >> 8 & 0xFF) / 255.0F;
 				float p = (float)(m & 0xFF) / 255.0F;

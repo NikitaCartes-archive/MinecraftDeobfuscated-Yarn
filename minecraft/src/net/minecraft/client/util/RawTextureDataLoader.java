@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class RawTextureDataLoader {
 	@Deprecated
-	public static int[] method_16049(ResourceManager resourceManager, Identifier identifier) throws IOException {
+	public static int[] loadRawTextureData(ResourceManager resourceManager, Identifier identifier) throws IOException {
 		Resource resource = resourceManager.getResource(identifier);
 		Throwable var3 = null;
 

@@ -37,8 +37,8 @@ public class CommandBlockMinecartScreen extends AbstractCommandBlockScreen {
 		if (commandBlockExecutor instanceof CommandBlockMinecartEntity.class_1698) {
 			CommandBlockMinecartEntity.class_1698 lv = (CommandBlockMinecartEntity.class_1698)commandBlockExecutor;
 			this.client
-				.method_1562()
-				.method_2883(
+				.getNetworkHandler()
+				.sendPacket(
 					new UpdateCommandBlockMinecartC2SPacket(lv.method_7569().getEntityId(), this.consoleCommandTextField.getText(), commandBlockExecutor.isTrackingOutput())
 				);
 		}

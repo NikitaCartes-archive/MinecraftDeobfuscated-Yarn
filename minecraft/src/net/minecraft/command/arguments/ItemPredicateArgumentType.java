@@ -42,7 +42,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		} else {
 			Identifier identifier = itemStringReader.method_9790();
 			return commandContext -> {
-				Tag<Item> tag = commandContext.getSource().getMinecraftServer().method_3801().items().get(identifier);
+				Tag<Item> tag = commandContext.getSource().getMinecraftServer().getTagManager().items().get(identifier);
 				if (tag == null) {
 					throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
 				} else {
@@ -79,15 +79,15 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	static class ItemPredicate implements Predicate<ItemStack> {
 		private final Item item;
 		@Nullable
-		private final CompoundTag field_10814;
+		private final CompoundTag compound;
 
 		public ItemPredicate(Item item, @Nullable CompoundTag compoundTag) {
 			this.item = item;
-			this.field_10814 = compoundTag;
+			this.compound = compoundTag;
 		}
 
 		public boolean method_9806(ItemStack itemStack) {
-			return itemStack.getItem() == this.item && TagHelper.method_10687(this.field_10814, itemStack.method_7969(), true);
+			return itemStack.getItem() == this.item && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
 		}
 	}
 
@@ -96,17 +96,17 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	}
 
 	static class TagPredicate implements Predicate<ItemStack> {
-		private final Tag<Item> field_10815;
+		private final Tag<Item> tag;
 		@Nullable
-		private final CompoundTag field_10816;
+		private final CompoundTag compound;
 
 		public TagPredicate(Tag<Item> tag, @Nullable CompoundTag compoundTag) {
-			this.field_10815 = tag;
-			this.field_10816 = compoundTag;
+			this.tag = tag;
+			this.compound = compoundTag;
 		}
 
 		public boolean method_9807(ItemStack itemStack) {
-			return this.field_10815.contains(itemStack.getItem()) && TagHelper.method_10687(this.field_10816, itemStack.method_7969(), true);
+			return this.tag.contains(itemStack.getItem()) && TagHelper.areTagsEqual(this.compound, itemStack.getTag(), true);
 		}
 	}
 }

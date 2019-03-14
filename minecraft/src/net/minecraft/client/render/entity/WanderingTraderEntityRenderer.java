@@ -11,16 +11,16 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTraderEntity, VillagerEntityModel<WanderingTraderEntity>> {
-	private static final Identifier field_17739 = new Identifier("textures/entity/wandering_trader.png");
+	private static final Identifier TEXTURE = new Identifier("textures/entity/wandering_trader.png");
 
 	public WanderingTraderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new VillagerEntityModel<>(0.0F), 0.5F);
-		this.method_4046(new HeadFeatureRenderer<>(this));
-		this.method_4046(new VillagerHeldItemFeatureRenderer<>(this));
+		this.addFeature(new HeadFeatureRenderer<>(this));
+		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}
 
 	protected Identifier method_18045(WanderingTraderEntity wanderingTraderEntity) {
-		return field_17739;
+		return TEXTURE;
 	}
 
 	protected void method_18046(WanderingTraderEntity wanderingTraderEntity, float f) {

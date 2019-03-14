@@ -3,8 +3,8 @@ package net.minecraft.client.gui.menu;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.Identifier;
@@ -12,23 +12,23 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class DemoScreen extends Screen {
-	private static final Identifier field_2447 = new Identifier("textures/gui/demo_background.png");
+	private static final Identifier DEMO_BG = new Identifier("textures/gui/demo_background.png");
 
 	@Override
 	protected void onInitialized() {
 		int i = -16;
-		this.addButton(new class_4185(this.screenWidth / 2 - 116, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.buy")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 116, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.buy")) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				this.enabled = false;
 				SystemUtil.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 + 2, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later")) {
 			@Override
-			public void method_1826() {
-				DemoScreen.this.client.method_1507(null);
-				DemoScreen.this.client.field_1729.lockCursor();
+			public void onPressed() {
+				DemoScreen.this.client.openScreen(null);
+				DemoScreen.this.client.mouse.lockCursor();
 			}
 		});
 	}
@@ -37,7 +37,7 @@ public class DemoScreen extends Screen {
 	public void drawBackground() {
 		super.drawBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.method_1531().method_4618(field_2447);
+		this.client.getTextureManager().bindTexture(DEMO_BG);
 		int i = (this.screenWidth - 248) / 2;
 		int j = (this.screenHeight - 166) / 2;
 		this.drawTexturedRect(i, j, 0, 0, 248, 166);
@@ -50,7 +50,7 @@ public class DemoScreen extends Screen {
 		int l = (this.screenHeight - 166) / 2 + 8;
 		this.fontRenderer.draw(I18n.translate("demo.help.title"), (float)k, (float)l, 2039583);
 		l += 12;
-		GameOptions gameOptions = this.client.field_1690;
+		GameOptions gameOptions = this.client.options;
 		this.fontRenderer
 			.draw(
 				I18n.translate(

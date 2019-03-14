@@ -23,7 +23,7 @@ public class BakedModelManager extends SupplyingResourceReloadListener<ModelLoad
 		this.blockStateMaps = new BlockModels(this);
 	}
 
-	public BakedModel method_4742(ModelIdentifier modelIdentifier) {
+	public BakedModel getModel(ModelIdentifier modelIdentifier) {
 		return (BakedModel)this.modelMap.getOrDefault(modelIdentifier, this.missingModel);
 	}
 
@@ -47,7 +47,7 @@ public class BakedModelManager extends SupplyingResourceReloadListener<ModelLoad
 		profiler.push("upload");
 		modelLoader.method_18177(profiler);
 		this.modelMap = modelLoader.getBakedModelMap();
-		this.missingModel = (BakedModel)this.modelMap.get(ModelLoader.field_5374);
+		this.missingModel = (BakedModel)this.modelMap.get(ModelLoader.MISSING);
 		profiler.swap("cache");
 		this.blockStateMaps.reload();
 		profiler.pop();

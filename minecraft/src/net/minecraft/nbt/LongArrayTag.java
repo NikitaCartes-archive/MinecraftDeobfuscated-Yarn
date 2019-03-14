@@ -99,7 +99,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public TextComponent method_10710(String string, int i) {
+	public TextComponent toTextComponent(String string, int i) {
 		TextComponent textComponent = new StringTextComponent("L").applyFormat(RED);
 		TextComponent textComponent2 = new StringTextComponent("[").append(textComponent).append(";");
 
@@ -138,7 +138,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public boolean method_10535(int i, Tag tag) {
+	public boolean setTag(int i, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
 			this.value[i] = ((AbstractNumberTag)tag).getLong();
 			return true;
@@ -148,7 +148,7 @@ public class LongArrayTag extends AbstractListTag<LongTag> {
 	}
 
 	@Override
-	public boolean method_10533(int i, Tag tag) {
+	public boolean addTag(int i, Tag tag) {
 		if (tag instanceof AbstractNumberTag) {
 			this.value = ArrayUtils.add(this.value, i, ((AbstractNumberTag)tag).getLong());
 			return true;

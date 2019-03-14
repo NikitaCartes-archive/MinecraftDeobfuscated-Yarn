@@ -10,11 +10,11 @@ import net.minecraft.client.render.VertexFormat;
 @Environment(EnvType.CLIENT)
 public class GlBuffer {
 	private int id;
-	private final VertexFormat field_1595;
+	private final VertexFormat format;
 	private int vertexCount;
 
 	public GlBuffer(VertexFormat vertexFormat) {
-		this.field_1595 = vertexFormat;
+		this.format = vertexFormat;
 		this.id = GLX.glGenBuffers();
 	}
 
@@ -26,7 +26,7 @@ public class GlBuffer {
 		this.bind();
 		GLX.glBufferData(GLX.GL_ARRAY_BUFFER, byteBuffer, 35044);
 		unbind();
-		this.vertexCount = byteBuffer.limit() / this.field_1595.getVertexSize();
+		this.vertexCount = byteBuffer.limit() / this.format.getVertexSize();
 	}
 
 	public void draw(int i) {

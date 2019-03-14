@@ -92,7 +92,7 @@ public class ChunkPos {
 		return this.z & 31;
 	}
 
-	public BlockPos method_8330(int i, int j, int k) {
+	public BlockPos toBlockPos(int i, int j, int k) {
 		return new BlockPos((this.x << 4) + i, j, (this.z << 4) + k);
 	}
 
@@ -100,15 +100,15 @@ public class ChunkPos {
 		return "[" + this.x + ", " + this.z + "]";
 	}
 
-	public BlockPos method_8323() {
+	public BlockPos getCenterBlockPos() {
 		return new BlockPos(this.x << 4, 0, this.z << 4);
 	}
 
-	public static Stream<ChunkPos> method_19280(ChunkPos chunkPos, int i) {
-		return method_19281(new ChunkPos(chunkPos.x - i, chunkPos.z - i), new ChunkPos(chunkPos.x + i, chunkPos.z + i));
+	public static Stream<ChunkPos> streamPositions(ChunkPos chunkPos, int i) {
+		return streamPositions(new ChunkPos(chunkPos.x - i, chunkPos.z - i), new ChunkPos(chunkPos.x + i, chunkPos.z + i));
 	}
 
-	public static Stream<ChunkPos> method_19281(ChunkPos chunkPos, ChunkPos chunkPos2) {
+	public static Stream<ChunkPos> streamPositions(ChunkPos chunkPos, ChunkPos chunkPos2) {
 		int i = Math.abs(chunkPos.x - chunkPos2.x) + 1;
 		int j = Math.abs(chunkPos.z - chunkPos2.z) + 1;
 		final int k = chunkPos.x < chunkPos2.x ? 1 : -1;

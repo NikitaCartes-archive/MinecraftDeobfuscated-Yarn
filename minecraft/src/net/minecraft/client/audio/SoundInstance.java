@@ -8,14 +8,14 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public interface SoundInstance {
-	Identifier method_4775();
+	Identifier getId();
 
 	@Nullable
-	WeightedSoundSet method_4783(SoundLoader soundLoader);
+	WeightedSoundSet getAccess(SoundLoader soundLoader);
 
 	Sound getSound();
 
-	SoundCategory method_4774();
+	SoundCategory getCategory();
 
 	boolean isRepeatable();
 

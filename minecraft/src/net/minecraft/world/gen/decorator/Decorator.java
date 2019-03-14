@@ -104,7 +104,7 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 		return (DC)this.configDeserializer.apply(dynamic);
 	}
 
-	protected <FC extends FeatureConfig> boolean method_15927(
+	protected <FC extends FeatureConfig> boolean generate(
 		IWorld iWorld,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		Random random,
@@ -113,14 +113,14 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 		ConfiguredFeature<FC> configuredFeature
 	) {
 		AtomicBoolean atomicBoolean = new AtomicBoolean(false);
-		this.method_14452(iWorld, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
-			boolean bl = configuredFeature.method_12862(iWorld, chunkGenerator, random, blockPosx);
+		this.getPositions(iWorld, chunkGenerator, random, decoratorConfig, blockPos).forEach(blockPosx -> {
+			boolean bl = configuredFeature.generate(iWorld, chunkGenerator, random, blockPosx);
 			atomicBoolean.set(atomicBoolean.get() || bl);
 		});
 		return atomicBoolean.get();
 	}
 
-	public abstract Stream<BlockPos> method_14452(
+	public abstract Stream<BlockPos> getPositions(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, DC decoratorConfig, BlockPos blockPos
 	);
 

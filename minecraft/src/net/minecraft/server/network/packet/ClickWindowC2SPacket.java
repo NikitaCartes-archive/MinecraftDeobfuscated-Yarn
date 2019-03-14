@@ -31,7 +31,7 @@ public class ClickWindowC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12191(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12076(this);
+		serverPlayPacketListener.onClickWindow(this);
 	}
 
 	@Override

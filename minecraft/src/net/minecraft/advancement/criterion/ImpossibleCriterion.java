@@ -6,11 +6,11 @@ import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.util.Identifier;
 
 public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Conditions> {
-	private static final Identifier field_9624 = new Identifier("impossible");
+	private static final Identifier ID = new Identifier("impossible");
 
 	@Override
 	public Identifier getId() {
-		return field_9624;
+		return ID;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class ImpossibleCriterion implements Criterion<ImpossibleCriterion.Condit
 
 	public static class Conditions extends AbstractCriterionConditions {
 		public Conditions() {
-			super(ImpossibleCriterion.field_9624);
+			super(ImpossibleCriterion.ID);
 		}
 	}
 }

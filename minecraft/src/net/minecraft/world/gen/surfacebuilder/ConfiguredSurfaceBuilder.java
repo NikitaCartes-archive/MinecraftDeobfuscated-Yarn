@@ -6,23 +6,23 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public class ConfiguredSurfaceBuilder<SC extends SurfaceConfig> {
-	public final SurfaceBuilder<SC> field_15610;
-	public final SC field_15611;
+	public final SurfaceBuilder<SC> surfaceBuilder;
+	public final SC config;
 
 	public ConfiguredSurfaceBuilder(SurfaceBuilder<SC> surfaceBuilder, SC surfaceConfig) {
-		this.field_15610 = surfaceBuilder;
-		this.field_15611 = surfaceConfig;
+		this.surfaceBuilder = surfaceBuilder;
+		this.config = surfaceConfig;
 	}
 
 	public void generate(Random random, Chunk chunk, Biome biome, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m) {
-		this.field_15610.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, this.field_15611);
+		this.surfaceBuilder.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, this.config);
 	}
 
 	public void initSeed(long l) {
-		this.field_15610.initSeed(l);
+		this.surfaceBuilder.initSeed(l);
 	}
 
-	public SC method_15197() {
-		return this.field_15611;
+	public SC getConfig() {
+		return this.config;
 	}
 }

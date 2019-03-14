@@ -13,7 +13,7 @@ public class PlayerAbilities {
 	private float flySpeed = 0.05F;
 	private float walkSpeed = 0.1F;
 
-	public void method_7251(CompoundTag compoundTag) {
+	public void serialize(CompoundTag compoundTag) {
 		CompoundTag compoundTag2 = new CompoundTag();
 		compoundTag2.putBoolean("invulnerable", this.invulnerable);
 		compoundTag2.putBoolean("flying", this.flying);
@@ -22,10 +22,10 @@ public class PlayerAbilities {
 		compoundTag2.putBoolean("mayBuild", this.allowModifyWorld);
 		compoundTag2.putFloat("flySpeed", this.flySpeed);
 		compoundTag2.putFloat("walkSpeed", this.walkSpeed);
-		compoundTag.method_10566("abilities", compoundTag2);
+		compoundTag.put("abilities", compoundTag2);
 	}
 
-	public void method_7249(CompoundTag compoundTag) {
+	public void deserialize(CompoundTag compoundTag) {
 		if (compoundTag.containsKey("abilities", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("abilities");
 			this.invulnerable = compoundTag2.getBoolean("invulnerable");

@@ -9,7 +9,7 @@ public class GlassBlock extends TransparentBlock {
 	}
 
 	@Override
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 
@@ -19,7 +19,7 @@ public class GlassBlock extends TransparentBlock {
 	}
 
 	@Override
-	public boolean method_9521(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
 	}
 }

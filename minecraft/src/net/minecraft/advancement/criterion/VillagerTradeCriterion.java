@@ -18,14 +18,14 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.Conditions> {
-	private static final Identifier field_9762 = new Identifier("villager_trade");
+	private static final Identifier ID = new Identifier("villager_trade");
 	private final Map<PlayerAdvancementTracker, VillagerTradeCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, VillagerTradeCriterion.Handler>newHashMap(
 		
 	);
 
 	@Override
 	public Identifier getId() {
-		return field_9762;
+		return ID;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.method_9150(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 	) {
 		VillagerTradeCriterion.Handler handler = (VillagerTradeCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.method_9152(conditionsContainer);
+			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -65,10 +65,10 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 		return new VillagerTradeCriterion.Conditions(entityPredicate, itemPredicate);
 	}
 
-	public void method_9146(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
 		VillagerTradeCriterion.Handler handler = (VillagerTradeCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.method_9149(serverPlayerEntity, abstractTraderEntity, itemStack);
+			handler.handle(serverPlayerEntity, abstractTraderEntity, itemStack);
 		}
 	}
 
@@ -77,7 +77,7 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 		private final ItemPredicate villager;
 
 		public Conditions(EntityPredicate entityPredicate, ItemPredicate itemPredicate) {
-			super(VillagerTradeCriterion.field_9762);
+			super(VillagerTradeCriterion.ID);
 			this.item = entityPredicate;
 			this.villager = itemPredicate;
 		}
@@ -86,8 +86,8 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 			return new VillagerTradeCriterion.Conditions(EntityPredicate.ANY, ItemPredicate.ANY);
 		}
 
-		public boolean method_9154(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
-			if (!this.item.method_8914(serverPlayerEntity, abstractTraderEntity)) {
+		public boolean matches(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
+			if (!this.item.test(serverPlayerEntity, abstractTraderEntity)) {
 				return false;
 			} else {
 				return this.villager.test(itemStack);
@@ -104,32 +104,32 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker field_9765;
+		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions>>newHashSet(
 			
 		);
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9765 = playerAdvancementTracker;
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void method_9150(Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer) {
+		public void addCondition(Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_9152(Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer) {
+		public void removeCondition(Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_9149(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, AbstractTraderEntity abstractTraderEntity, ItemStack itemStack) {
 			List<Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions>> list = null;
 
 			for(Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.method_797().method_9154(serverPlayerEntity, abstractTraderEntity, itemStack)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, abstractTraderEntity, itemStack)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions>>newArrayList();
 					}
@@ -140,7 +140,7 @@ public class VillagerTradeCriterion implements Criterion<VillagerTradeCriterion.
 
 			if (list != null) {
 				for(Criterion.ConditionsContainer<VillagerTradeCriterion.Conditions> conditionsContainer : list) {
-					conditionsContainer.apply(this.field_9765);
+					conditionsContainer.apply(this.manager);
 				}
 			}
 		}

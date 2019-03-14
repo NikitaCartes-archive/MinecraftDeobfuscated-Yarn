@@ -2,11 +2,10 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3968;
 import net.minecraft.entity.mob.ZombieEntity;
 
 @Environment(EnvType.CLIENT)
-public class ZombieEntityModel<T extends ZombieEntity> extends class_3968<T> {
+public class ZombieEntityModel<T extends ZombieEntity> extends AbstractZombieModel<T> {
 	public ZombieEntityModel() {
 		this(0.0F, false);
 	}

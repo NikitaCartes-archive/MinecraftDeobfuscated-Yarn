@@ -29,21 +29,21 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public boolean method_7885(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public boolean beforeBlockBreak(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		return !playerEntity.isCreative();
 	}
 
 	@Override
-	public float method_7865(ItemStack itemStack, BlockState blockState) {
+	public float getBlockBreakingSpeed(ItemStack itemStack, BlockState blockState) {
 		Block block = blockState.getBlock();
 		if (block == Blocks.field_10343) {
 			return 15.0F;
 		} else {
-			Material material = blockState.method_11620();
+			Material material = blockState.getMaterial();
 			return material != Material.PLANT
 					&& material != Material.REPLACEABLE_PLANT
 					&& material != Material.UNUSED_PLANT
-					&& !blockState.method_11602(BlockTags.field_15503)
+					&& !blockState.matches(BlockTags.field_15503)
 					&& material != Material.PUMPKIN
 				? 1.0F
 				: 1.5F;
@@ -51,14 +51,14 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public boolean method_7873(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
+	public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
 		itemStack.applyDamage(1, livingEntity2);
 		return true;
 	}
 
 	@Override
-	public boolean method_7879(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
-		if (blockState.method_11579(world, blockPos) != 0.0F) {
+	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
+		if (blockState.getHardness(world, blockPos) != 0.0F) {
 			itemStack.applyDamage(2, livingEntity);
 		}
 
@@ -66,7 +66,7 @@ public class SwordItem extends ToolItem {
 	}
 
 	@Override
-	public boolean method_7856(BlockState blockState) {
+	public boolean isEffectiveOn(BlockState blockState) {
 		return blockState.getBlock() == Blocks.field_10343;
 	}
 

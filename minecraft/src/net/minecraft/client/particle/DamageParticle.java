@@ -2,7 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -55,16 +54,16 @@ public class DamageParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class DefaultFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17790;
+		private final SpriteProvider field_17790;
 
-		public DefaultFactory(class_4002 arg) {
-			this.field_17790 = arg;
+		public DefaultFactory(SpriteProvider spriteProvider) {
+			this.field_17790 = spriteProvider;
 		}
 
 		public Particle method_3013(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -77,10 +76,10 @@ public class DamageParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class EnchantedHitFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17791;
+		private final SpriteProvider field_17791;
 
-		public EnchantedHitFactory(class_4002 arg) {
-			this.field_17791 = arg;
+		public EnchantedHitFactory(SpriteProvider spriteProvider) {
+			this.field_17791 = spriteProvider;
 		}
 
 		public Particle method_3014(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -94,10 +93,10 @@ public class DamageParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class class_3939 implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_18291;
+		private final SpriteProvider field_18291;
 
-		public class_3939(class_4002 arg) {
-			this.field_18291 = arg;
+		public class_3939(SpriteProvider spriteProvider) {
+			this.field_18291 = spriteProvider;
 		}
 
 		public Particle method_17580(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

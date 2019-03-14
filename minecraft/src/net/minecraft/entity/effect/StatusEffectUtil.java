@@ -17,11 +17,11 @@ public final class StatusEffectUtil {
 		}
 	}
 
-	public static boolean method_5576(LivingEntity livingEntity) {
+	public static boolean hasHaste(LivingEntity livingEntity) {
 		return livingEntity.hasPotionEffect(StatusEffects.field_5917) || livingEntity.hasPotionEffect(StatusEffects.field_5927);
 	}
 
-	public static int method_5575(LivingEntity livingEntity) {
+	public static int getHasteAmplifier(LivingEntity livingEntity) {
 		int i = 0;
 		int j = 0;
 		if (livingEntity.hasPotionEffect(StatusEffects.field_5917)) {
@@ -35,7 +35,7 @@ public final class StatusEffectUtil {
 		return Math.max(i, j);
 	}
 
-	public static boolean method_5574(LivingEntity livingEntity) {
+	public static boolean hasWaterBreathing(LivingEntity livingEntity) {
 		return livingEntity.hasPotionEffect(StatusEffects.field_5923) || livingEntity.hasPotionEffect(StatusEffects.field_5927);
 	}
 }

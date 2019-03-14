@@ -99,7 +99,7 @@ public class EntityAttributeModifier {
 			return this.id;
 		}
 
-		public static EntityAttributeModifier.Operation method_6190(int i) {
+		public static EntityAttributeModifier.Operation fromId(int i) {
 			if (i >= 0 && i < VALUES.length) {
 				return VALUES[i];
 			} else {

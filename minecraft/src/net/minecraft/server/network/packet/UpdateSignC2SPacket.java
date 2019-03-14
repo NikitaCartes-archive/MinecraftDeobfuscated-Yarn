@@ -44,7 +44,7 @@ public class UpdateSignC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12509(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12071(this);
+		serverPlayPacketListener.onSignUpdate(this);
 	}
 
 	public BlockPos getPos() {

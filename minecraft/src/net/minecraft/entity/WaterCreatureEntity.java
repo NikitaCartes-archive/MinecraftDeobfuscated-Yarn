@@ -17,7 +17,7 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public EntityGroup method_6046() {
+	public EntityGroup getGroup() {
 		return EntityGroup.AQUATIC;
 	}
 
@@ -37,8 +37,8 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	protected int method_6110(PlayerEntity playerEntity) {
-		return 1 + this.field_6002.random.nextInt(3);
+	protected int getCurrentExperience(PlayerEntity playerEntity) {
+		return 1 + this.world.random.nextInt(3);
 	}
 
 	protected void method_6673(int i) {
@@ -66,7 +66,7 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public boolean method_5931(PlayerEntity playerEntity) {
+	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
 		return false;
 	}
 }

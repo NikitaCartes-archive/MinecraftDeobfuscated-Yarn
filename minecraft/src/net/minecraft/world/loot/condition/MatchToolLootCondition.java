@@ -25,7 +25,7 @@ public class MatchToolLootCondition implements LootCondition {
 	}
 
 	public boolean method_946(LootContext lootContext) {
-		ItemStack itemStack = lootContext.method_296(LootContextParameters.field_1229);
+		ItemStack itemStack = lootContext.get(LootContextParameters.field_1229);
 		return itemStack != null && this.predicate.test(itemStack);
 	}
 

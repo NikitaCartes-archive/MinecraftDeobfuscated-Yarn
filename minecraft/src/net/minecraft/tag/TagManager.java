@@ -61,7 +61,7 @@ public class TagManager implements ResourceReloadListener {
 	}
 
 	@Override
-	public CompletableFuture<Void> method_18222(
+	public CompletableFuture<Void> apply(
 		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
 	) {
 		CompletableFuture<Map<Identifier, Tag.Builder<Block>>> completableFuture = this.blocks.prepareReload(resourceManager, executor);
@@ -85,10 +85,10 @@ public class TagManager implements ResourceReloadListener {
 				this.items.applyReload(arg.field_17939);
 				this.fluids.applyReload(arg.field_17940);
 				this.entities.applyReload(arg.field_17941);
-				BlockTags.method_15070(this.blocks);
-				ItemTags.method_15103(this.items);
-				FluidTags.method_15096(this.fluids);
-				EntityTags.method_15078(this.entities);
+				BlockTags.setContainer(this.blocks);
+				ItemTags.setContainer(this.items);
+				FluidTags.setContainer(this.fluids);
+				EntityTags.setContainer(this.entities);
 			}, executor2);
 	}
 

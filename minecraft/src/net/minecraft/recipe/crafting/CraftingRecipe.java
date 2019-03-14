@@ -6,7 +6,7 @@ import net.minecraft.recipe.RecipeType;
 
 public interface CraftingRecipe extends Recipe<CraftingInventory> {
 	@Override
-	default RecipeType<?> method_17716() {
+	default RecipeType<?> getType() {
 		return RecipeType.CRAFTING;
 	}
 }

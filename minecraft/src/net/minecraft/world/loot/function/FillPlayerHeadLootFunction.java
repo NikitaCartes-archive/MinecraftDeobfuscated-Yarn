@@ -28,16 +28,16 @@ public class FillPlayerHeadLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.entity.method_315());
+		return ImmutableSet.of(this.entity.getIdentifier());
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
 		if (itemStack.getItem() == Items.PLAYER_HEAD) {
-			Entity entity = lootContext.method_296(this.entity.method_315());
+			Entity entity = lootContext.get(this.entity.getIdentifier());
 			if (entity instanceof PlayerEntity) {
 				GameProfile gameProfile = ((PlayerEntity)entity).getGameProfile();
-				itemStack.method_7948().method_10566("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
+				itemStack.getOrCreateTag().put("SkullOwner", TagHelper.serializeProfile(new CompoundTag(), gameProfile));
 			}
 		}
 

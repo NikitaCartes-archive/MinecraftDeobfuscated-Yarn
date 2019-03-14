@@ -10,35 +10,35 @@ import net.minecraft.world.World;
 
 public class ItemUsageContext {
 	protected final PlayerEntity player;
-	protected final BlockHitResult field_17543;
-	protected final World field_8945;
+	protected final BlockHitResult hitResult;
+	protected final World world;
 	protected final ItemStack stack;
 
 	public ItemUsageContext(PlayerEntity playerEntity, ItemStack itemStack, BlockHitResult blockHitResult) {
-		this(playerEntity.field_6002, playerEntity, itemStack, blockHitResult);
+		this(playerEntity.world, playerEntity, itemStack, blockHitResult);
 	}
 
 	protected ItemUsageContext(World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockHitResult blockHitResult) {
 		this.player = playerEntity;
-		this.field_17543 = blockHitResult;
+		this.hitResult = blockHitResult;
 		this.stack = itemStack;
-		this.field_8945 = world;
+		this.world = world;
 	}
 
-	public BlockPos method_8037() {
-		return this.field_17543.method_17777();
+	public BlockPos getBlockPos() {
+		return this.hitResult.getBlockPos();
 	}
 
-	public Direction method_8038() {
-		return this.field_17543.method_17780();
+	public Direction getFacing() {
+		return this.hitResult.getSide();
 	}
 
-	public Vec3d method_17698() {
-		return this.field_17543.method_17784();
+	public Vec3d getPos() {
+		return this.hitResult.getPos();
 	}
 
 	public boolean method_17699() {
-		return this.field_17543.method_17781();
+		return this.hitResult.method_17781();
 	}
 
 	public ItemStack getItemStack() {
@@ -50,12 +50,12 @@ public class ItemUsageContext {
 		return this.player;
 	}
 
-	public World method_8045() {
-		return this.field_8945;
+	public World getWorld() {
+		return this.world;
 	}
 
-	public Direction method_8042() {
-		return this.player == null ? Direction.NORTH : this.player.method_5735();
+	public Direction getPlayerHorizontalFacing() {
+		return this.player == null ? Direction.NORTH : this.player.getHorizontalFacing();
 	}
 
 	public boolean isPlayerSneaking() {

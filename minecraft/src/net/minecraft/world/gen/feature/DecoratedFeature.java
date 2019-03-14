@@ -21,10 +21,10 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 		BlockPos blockPos,
 		DecoratedFeatureConfig decoratedFeatureConfig
 	) {
-		return decoratedFeatureConfig.field_13398.method_14358(iWorld, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
+		return decoratedFeatureConfig.decorator.generate(iWorld, chunkGenerator, random, blockPos, decoratedFeatureConfig.feature);
 	}
 
 	public String toString() {
-		return String.format("< %s [%s] >", this.getClass().getSimpleName(), Registry.FEATURE.method_10221(this));
+		return String.format("< %s [%s] >", this.getClass().getSimpleName(), Registry.FEATURE.getId(this));
 	}
 }

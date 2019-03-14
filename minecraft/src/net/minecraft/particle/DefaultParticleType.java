@@ -21,16 +21,16 @@ public class DefaultParticleType extends ParticleType<DefaultParticleType> imple
 	}
 
 	@Override
-	public ParticleType<DefaultParticleType> method_10295() {
+	public ParticleType<DefaultParticleType> getType() {
 		return this;
 	}
 
 	@Override
-	public void method_10294(PacketByteBuf packetByteBuf) {
+	public void write(PacketByteBuf packetByteBuf) {
 	}
 
 	@Override
 	public String asString() {
-		return Registry.PARTICLE_TYPE.method_10221(this).toString();
+		return Registry.PARTICLE_TYPE.getId(this).toString();
 	}
 }

@@ -5,7 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.text.TextComponent;
 
 public class DamageRecord {
-	private final DamageSource field_5837;
+	private final DamageSource damageSource;
 	private final int entityAge;
 	private final float damage;
 	private final float entityHealth;
@@ -13,7 +13,7 @@ public class DamageRecord {
 	private final float fallDistance;
 
 	public DamageRecord(DamageSource damageSource, int i, float f, float g, String string, float h) {
-		this.field_5837 = damageSource;
+		this.damageSource = damageSource;
 		this.entityAge = i;
 		this.damage = g;
 		this.entityHealth = f;
@@ -21,8 +21,8 @@ public class DamageRecord {
 		this.fallDistance = h;
 	}
 
-	public DamageSource method_5499() {
-		return this.field_5837;
+	public DamageSource getDamageSource() {
+		return this.damageSource;
 	}
 
 	public float getDamage() {
@@ -30,7 +30,7 @@ public class DamageRecord {
 	}
 
 	public boolean isAttackerLiving() {
-		return this.field_5837.method_5529() instanceof LivingEntity;
+		return this.damageSource.getAttacker() instanceof LivingEntity;
 	}
 
 	@Nullable
@@ -39,11 +39,11 @@ public class DamageRecord {
 	}
 
 	@Nullable
-	public TextComponent method_5498() {
-		return this.method_5499().method_5529() == null ? null : this.method_5499().method_5529().method_5476();
+	public TextComponent getAttackerName() {
+		return this.getDamageSource().getAttacker() == null ? null : this.getDamageSource().getAttacker().getDisplayName();
 	}
 
 	public float getFallDistance() {
-		return this.field_5837 == DamageSource.OUT_OF_WORLD ? Float.MAX_VALUE : this.fallDistance;
+		return this.damageSource == DamageSource.OUT_OF_WORLD ? Float.MAX_VALUE : this.fallDistance;
 	}
 }

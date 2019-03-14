@@ -17,20 +17,20 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class BannerTexture extends AbstractTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Identifier field_5209;
+	private final Identifier filename;
 	private final List<String> patternNames;
 	private final List<DyeColor> dyes;
 
 	public BannerTexture(Identifier identifier, List<String> list, List<DyeColor> list2) {
-		this.field_5209 = identifier;
+		this.filename = identifier;
 		this.patternNames = list;
 		this.dyes = list2;
 	}
 
 	@Override
-	public void method_4625(ResourceManager resourceManager) throws IOException {
+	public void load(ResourceManager resourceManager) throws IOException {
 		try {
-			Resource resource = resourceManager.getResource(this.field_5209);
+			Resource resource = resourceManager.getResource(this.filename);
 			Throwable var3 = null;
 
 			try (

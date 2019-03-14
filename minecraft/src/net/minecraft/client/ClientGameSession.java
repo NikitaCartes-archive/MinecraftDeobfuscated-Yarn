@@ -19,7 +19,7 @@ public class ClientGameSession implements GameSession {
 
 	public ClientGameSession(ClientWorld clientWorld, ClientPlayerEntity clientPlayerEntity, ClientPlayNetworkHandler clientPlayNetworkHandler) {
 		this.playerCount = clientPlayNetworkHandler.getScoreboardEntries().size();
-		this.remoteServer = !clientPlayNetworkHandler.method_2872().isLocal();
+		this.remoteServer = !clientPlayNetworkHandler.getClientConnection().isLocal();
 		this.difficulty = clientWorld.getDifficulty().getTranslationKey();
 		ScoreboardEntry scoreboardEntry = clientPlayNetworkHandler.method_2871(clientPlayerEntity.getUuid());
 		if (scoreboardEntry != null) {
@@ -28,7 +28,7 @@ public class ClientGameSession implements GameSession {
 			this.gameMode = "unknown";
 		}
 
-		this.sessionId = clientPlayNetworkHandler.method_16690();
+		this.sessionId = clientPlayNetworkHandler.getSessionId();
 	}
 
 	@Override

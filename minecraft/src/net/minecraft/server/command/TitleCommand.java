@@ -37,7 +37,7 @@ public class TitleCommand {
 											commandContext -> method_13802(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
-													ComponentArgumentType.method_9280(commandContext, "title"),
+													ComponentArgumentType.getComponentArgument(commandContext, "title"),
 													TitleS2CPacket.Action.field_12630
 												)
 										)
@@ -51,7 +51,7 @@ public class TitleCommand {
 											commandContext -> method_13802(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
-													ComponentArgumentType.method_9280(commandContext, "title"),
+													ComponentArgumentType.getComponentArgument(commandContext, "title"),
 													TitleS2CPacket.Action.field_12632
 												)
 										)
@@ -65,7 +65,7 @@ public class TitleCommand {
 											commandContext -> method_13802(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
-													ComponentArgumentType.method_9280(commandContext, "title"),
+													ComponentArgumentType.getComponentArgument(commandContext, "title"),
 													TitleS2CPacket.Action.field_12627
 												)
 										)
@@ -100,15 +100,15 @@ public class TitleCommand {
 		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.HIDE, null);
 
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.field_13987.sendPacket(titleS2CPacket);
+			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
-				new TranslatableTextComponent("commands.title.cleared.single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableTextComponent("commands.title.cleared.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.title.cleared.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.title.cleared.multiple", collection.size()), true);
 		}
 
 		return collection.size();
@@ -118,15 +118,15 @@ public class TitleCommand {
 		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.RESET, null);
 
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.field_13987.sendPacket(titleS2CPacket);
+			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
-				new TranslatableTextComponent("commands.title.reset.single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableTextComponent("commands.title.reset.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.title.reset.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.title.reset.multiple", collection.size()), true);
 		}
 
 		return collection.size();
@@ -136,18 +136,19 @@ public class TitleCommand {
 		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent, TitleS2CPacket.Action action
 	) throws CommandSyntaxException {
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.field_13987.sendPacket(new TitleS2CPacket(action, TextFormatter.method_10881(serverCommandSource, textComponent, serverPlayerEntity)));
+			serverPlayerEntity.networkHandler
+				.sendPacket(new TitleS2CPacket(action, TextFormatter.method_10881(serverCommandSource, textComponent, serverPlayerEntity)));
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent(
-					"commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()
+					"commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.title.show." + action.name().toLowerCase(Locale.ROOT) + ".multiple", collection.size()), true
 			);
 		}
@@ -159,15 +160,15 @@ public class TitleCommand {
 		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(i, j, k);
 
 		for(ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.field_13987.sendPacket(titleS2CPacket);
+			serverPlayerEntity.networkHandler.sendPacket(titleS2CPacket);
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
-				new TranslatableTextComponent("commands.title.times.single", ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableTextComponent("commands.title.times.single", ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.title.times.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.title.times.multiple", collection.size()), true);
 		}
 
 		return collection.size();

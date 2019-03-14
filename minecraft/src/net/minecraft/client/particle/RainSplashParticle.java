@@ -2,7 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -21,7 +20,7 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -50,10 +49,10 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 			BlockPos blockPos = new BlockPos(this.posX, this.posY, this.posZ);
 			double d = Math.max(
 				this.world
-					.method_8320(blockPos)
-					.method_11628(this.world, blockPos)
+					.getBlockState(blockPos)
+					.getCollisionShape(this.world, blockPos)
 					.method_1102(Direction.Axis.Y, this.posX - (double)blockPos.getX(), this.posZ - (double)blockPos.getZ()),
-				(double)this.world.method_8316(blockPos).method_15763(this.world, blockPos)
+				(double)this.world.getFluidState(blockPos).getHeight(this.world, blockPos)
 			);
 			if (d > 0.0 && this.posY < (double)blockPos.getY() + d) {
 				this.markDead();
@@ -63,10 +62,10 @@ public class RainSplashParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17891;
+		private final SpriteProvider field_17891;
 
-		public Factory(class_4002 arg) {
-			this.field_17891 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17891 = spriteProvider;
 		}
 
 		public Particle method_3116(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

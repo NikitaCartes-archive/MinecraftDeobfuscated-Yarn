@@ -20,8 +20,8 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
-		return super.method_5979(iWorld, spawnType) && (spawnType == SpawnType.field_16469 || iWorld.method_8311(new BlockPos(this)));
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return super.canSpawn(iWorld, spawnType) && (spawnType == SpawnType.field_16469 || iWorld.isSkyVisible(new BlockPos(this)));
 	}
 
 	@Override
@@ -30,30 +30,30 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
-	protected SoundEvent method_5994() {
+	protected SoundEvent getAmbientSound() {
 		return SoundEvents.field_14680;
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_15196;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_14892;
 	}
 
 	@Override
-	protected SoundEvent method_7207() {
+	protected SoundEvent getStepSound() {
 		return SoundEvents.field_15046;
 	}
 
 	@Override
 	public boolean attack(Entity entity) {
 		boolean bl = super.attack(entity);
-		if (bl && this.method_6047().isEmpty() && entity instanceof LivingEntity) {
-			float f = this.field_6002.method_8404(new BlockPos(this)).getLocalDifficulty();
+		if (bl && this.getMainHandStack().isEmpty() && entity instanceof LivingEntity) {
+			float f = this.world.getLocalDifficulty(new BlockPos(this)).getLocalDifficulty();
 			((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5903, 140 * (int)f));
 		}
 
@@ -68,11 +68,11 @@ public class HuskEntity extends ZombieEntity {
 	@Override
 	protected void method_7218() {
 		this.method_7200(EntityType.ZOMBIE);
-		this.field_6002.method_8444(null, 1041, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+		this.world.playEvent(null, 1041, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
 	}
 
 	@Override
-	protected ItemStack method_7215() {
+	protected ItemStack getSkull() {
 		return ItemStack.EMPTY;
 	}
 }

@@ -11,7 +11,7 @@ public class BedItem extends BlockItem {
 	}
 
 	@Override
-	protected boolean method_7708(ItemPlacementContext itemPlacementContext, BlockState blockState) {
-		return itemPlacementContext.method_8045().method_8652(itemPlacementContext.method_8037(), blockState, 26);
+	protected boolean setBlockState(ItemPlacementContext itemPlacementContext, BlockState blockState) {
+		return itemPlacementContext.getWorld().setBlockState(itemPlacementContext.getBlockPos(), blockState, 26);
 	}
 }

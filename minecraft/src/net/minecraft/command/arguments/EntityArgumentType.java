@@ -85,7 +85,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 	}
 
 	public static ServerPlayerEntity method_9315(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).method_9811(commandContext.getSource());
+		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getPlayer(commandContext.getSource());
 	}
 
 	public static EntityArgumentType multiplePlayer() {

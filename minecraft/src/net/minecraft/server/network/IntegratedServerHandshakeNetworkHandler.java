@@ -20,11 +20,11 @@ public class IntegratedServerHandshakeNetworkHandler implements ServerHandshakeP
 
 	@Override
 	public void onHandshake(HandshakeC2SPacket handshakeC2SPacket) {
-		this.client.method_10750(handshakeC2SPacket.getIntendedState());
-		this.client.method_10763(new ServerLoginNetworkHandler(this.server, this.client));
+		this.client.setState(handshakeC2SPacket.getIntendedState());
+		this.client.setPacketListener(new ServerLoginNetworkHandler(this.server, this.client));
 	}
 
 	@Override
-	public void method_10839(TextComponent textComponent) {
+	public void onDisconnected(TextComponent textComponent) {
 	}
 }

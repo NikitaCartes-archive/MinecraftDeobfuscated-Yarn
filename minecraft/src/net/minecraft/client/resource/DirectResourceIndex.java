@@ -25,7 +25,7 @@ public class DirectResourceIndex extends ResourceIndex {
 	}
 
 	@Override
-	public File method_4630(Identifier identifier) {
+	public File getResource(Identifier identifier) {
 		return new File(this.assetDir, identifier.toString().replace(':', '/'));
 	}
 

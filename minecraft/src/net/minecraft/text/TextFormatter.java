@@ -13,13 +13,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class TextFormatter {
-	public static TextComponent method_10889(TextComponent textComponent, Style style) {
+	public static TextComponent addStyle(TextComponent textComponent, Style style) {
 		if (style.isEmpty()) {
 			return textComponent;
 		} else {
-			return textComponent.method_10866().isEmpty()
-				? textComponent.method_10862(style.clone())
-				: new StringTextComponent("").append(textComponent).method_10862(style.clone());
+			return textComponent.getStyle().isEmpty()
+				? textComponent.setStyle(style.clone())
+				: new StringTextComponent("").append(textComponent).setStyle(style.clone());
 		}
 	}
 
@@ -32,7 +32,7 @@ public class TextFormatter {
 			textComponent2.append(method_10881(serverCommandSource, textComponent3, entity));
 		}
 
-		return method_10889(textComponent2, textComponent.method_10866());
+		return addStyle(textComponent2, textComponent.getStyle());
 	}
 
 	public static TextComponent profile(GameProfile gameProfile) {

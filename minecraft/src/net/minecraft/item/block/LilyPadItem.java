@@ -31,41 +31,41 @@ public class LilyPadItem extends BlockItem {
 	}
 
 	@Override
-	public ActionResult method_7884(ItemUsageContext itemUsageContext) {
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
 		return ActionResult.PASS;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
-		HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 		if (hitResult.getType() == HitResult.Type.NONE) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
 			if (hitResult.getType() == HitResult.Type.BLOCK) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
-				BlockPos blockPos = blockHitResult.method_17777();
-				Direction direction = blockHitResult.method_17780();
-				if (!world.method_8505(playerEntity, blockPos) || !playerEntity.method_7343(blockPos.method_10093(direction), direction, itemStack)) {
+				BlockPos blockPos = blockHitResult.getBlockPos();
+				Direction direction = blockHitResult.getSide();
+				if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceBlock(blockPos.offset(direction), direction, itemStack)) {
 					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				}
 
 				BlockPos blockPos2 = blockPos.up();
-				BlockState blockState = world.method_8320(blockPos);
-				Material material = blockState.method_11620();
-				FluidState fluidState = world.method_8316(blockPos);
-				if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.method_8623(blockPos2)) {
-					world.method_8652(blockPos2, Blocks.field_10588.method_9564(), 11);
+				BlockState blockState = world.getBlockState(blockPos);
+				Material material = blockState.getMaterial();
+				FluidState fluidState = world.getFluidState(blockPos);
+				if ((fluidState.getFluid() == Fluids.WATER || material == Material.ICE) && world.isAir(blockPos2)) {
+					world.setBlockState(blockPos2, Blocks.field_10588.getDefaultState(), 11);
 					if (playerEntity instanceof ServerPlayerEntity) {
-						Criterions.PLACED_BLOCK.method_9087((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
+						Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
 					}
 
 					if (!playerEntity.abilities.creativeMode) {
 						itemStack.subtractAmount(1);
 					}
 
-					playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
-					world.method_8396(playerEntity, blockPos, SoundEvents.field_15173, SoundCategory.field_15245, 1.0F, 1.0F);
+					playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
+					world.playSound(playerEntity, blockPos, SoundEvents.field_15173, SoundCategory.field_15245, 1.0F, 1.0F);
 					return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 				}
 			}

@@ -2,20 +2,19 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SquidInkParticle extends AnimatedParticle {
-	private SquidInkParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
-		super(world, d, e, f, arg, 0.0F);
+	private SquidInkParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+		super(world, d, e, f, spriteProvider, 0.0F);
 		this.scale = 0.5F;
 		this.setColorAlpha(1.0F);
 		this.setColor(0.0F, 0.0F, 0.0F);
 		this.maxAge = (int)((double)(this.scale * 12.0F) / (Math.random() * 0.8F + 0.2F));
-		this.method_18142(arg);
+		this.method_18142(spriteProvider);
 		this.collidesWithWorld = false;
 		this.velocityX = g;
 		this.velocityY = h;
@@ -37,7 +36,7 @@ public class SquidInkParticle extends AnimatedParticle {
 			}
 
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.world.method_8320(new BlockPos(this.posX, this.posY, this.posZ)).isAir()) {
+			if (this.world.getBlockState(new BlockPos(this.posX, this.posY, this.posZ)).isAir()) {
 				this.velocityY -= 0.008F;
 			}
 
@@ -53,10 +52,10 @@ public class SquidInkParticle extends AnimatedParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17878;
+		private final SpriteProvider field_17878;
 
-		public Factory(class_4002 arg) {
-			this.field_17878 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17878 = spriteProvider;
 		}
 
 		public Particle method_3105(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

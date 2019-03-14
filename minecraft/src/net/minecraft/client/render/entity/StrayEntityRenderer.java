@@ -8,15 +8,15 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class StrayEntityRenderer extends SkeletonEntityRenderer {
-	private static final Identifier field_4790 = new Identifier("textures/entity/skeleton/stray.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/skeleton/stray.png");
 
 	public StrayEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
-		this.method_4046(new StrayOverlayFeatureRenderer<>(this));
+		this.addFeature(new StrayOverlayFeatureRenderer<>(this));
 	}
 
 	@Override
 	protected Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
-		return field_4790;
+		return SKIN;
 	}
 }

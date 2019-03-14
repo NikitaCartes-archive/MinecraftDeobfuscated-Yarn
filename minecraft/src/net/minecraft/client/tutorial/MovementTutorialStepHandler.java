@@ -10,17 +10,17 @@ import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class MovementTutorialStepHandler implements TutorialStepHandler {
-	private static final TextComponent field_5624 = new TranslatableTextComponent(
+	private static final TextComponent MOVE_TITLE = new TranslatableTextComponent(
 		"tutorial.move.title",
-		TutorialManager.method_4913("forward"),
-		TutorialManager.method_4913("left"),
-		TutorialManager.method_4913("back"),
-		TutorialManager.method_4913("right")
+		TutorialManager.getKeybindName("forward"),
+		TutorialManager.getKeybindName("left"),
+		TutorialManager.getKeybindName("back"),
+		TutorialManager.getKeybindName("right")
 	);
-	private static final TextComponent field_5617 = new TranslatableTextComponent("tutorial.move.description", TutorialManager.method_4913("jump"));
-	private static final TextComponent field_5621 = new TranslatableTextComponent("tutorial.look.title");
-	private static final TextComponent field_5614 = new TranslatableTextComponent("tutorial.look.description");
-	private final TutorialManager field_5618;
+	private static final TextComponent MOVE_DESCRIPTION = new TranslatableTextComponent("tutorial.move.description", TutorialManager.getKeybindName("jump"));
+	private static final TextComponent LOOK_TITLE = new TranslatableTextComponent("tutorial.look.title");
+	private static final TextComponent LOOK_DESCRIPTION = new TranslatableTextComponent("tutorial.look.description");
+	private final TutorialManager manager;
 	private TutorialToast field_5622;
 	private TutorialToast field_5623;
 	private int ticks;
@@ -32,7 +32,7 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	private int field_5625 = -1;
 
 	public MovementTutorialStepHandler(TutorialManager tutorialManager) {
-		this.field_5618 = tutorialManager;
+		this.manager = tutorialManager;
 	}
 
 	@Override
@@ -67,10 +67,10 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 		}
 
 		if (this.field_5626 != -1 && this.field_5625 != -1) {
-			if (this.field_5618.getGameMode() == GameMode.field_9215) {
-				this.field_5618.method_4910(TutorialStep.FIND_TREE);
+			if (this.manager.getGameMode() == GameMode.field_9215) {
+				this.manager.setStep(TutorialStep.FIND_TREE);
 			} else {
-				this.field_5618.method_4910(TutorialStep.NONE);
+				this.manager.setStep(TutorialStep.NONE);
 			}
 		}
 
@@ -84,11 +84,11 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 
 		if (this.ticks >= 100) {
 			if (this.field_5626 == -1 && this.field_5622 == null) {
-				this.field_5622 = new TutorialToast(TutorialToast.Type.field_2230, field_5624, field_5617, true);
-				this.field_5618.getClient().method_1566().add(this.field_5622);
+				this.field_5622 = new TutorialToast(TutorialToast.Type.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
+				this.manager.getClient().getToastManager().add(this.field_5622);
 			} else if (this.field_5626 != -1 && this.ticks - this.field_5626 >= 20 && this.field_5625 == -1 && this.field_5623 == null) {
-				this.field_5623 = new TutorialToast(TutorialToast.Type.field_2237, field_5621, field_5614, true);
-				this.field_5618.getClient().method_1566().add(this.field_5623);
+				this.field_5623 = new TutorialToast(TutorialToast.Type.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
+				this.manager.getClient().getToastManager().add(this.field_5623);
 			}
 		}
 	}

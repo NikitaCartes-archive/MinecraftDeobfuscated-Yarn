@@ -20,24 +20,24 @@ public class EmptyPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
 		return Collections.emptyList();
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
+	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
 		return MutableIntBoundingBox.empty();
 	}
 
 	@Override
-	public boolean method_16626(
+	public boolean generate(
 		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	) {
 		return true;
 	}
 
 	@Override
-	public StructurePoolElementType method_16757() {
+	public StructurePoolElementType getType() {
 		return StructurePoolElementType.EMPTY_POOL_ELEMENT;
 	}
 

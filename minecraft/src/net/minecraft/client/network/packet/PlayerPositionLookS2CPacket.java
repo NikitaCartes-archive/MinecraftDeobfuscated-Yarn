@@ -54,7 +54,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public void method_11740(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11157(this);
+		clientPlayPacketListener.onPlayerPositionLook(this);
 	}
 
 	@Environment(EnvType.CLIENT)

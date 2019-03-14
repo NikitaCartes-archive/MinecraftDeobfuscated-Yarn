@@ -2,18 +2,17 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class FireSmokeParticle extends SpriteBillboardParticle {
-	private final class_4002 field_17868;
+	private final SpriteProvider field_17868;
 
-	protected FireSmokeParticle(World world, double d, double e, double f, double g, double h, double i, float j, class_4002 arg) {
+	protected FireSmokeParticle(World world, double d, double e, double f, double g, double h, double i, float j, SpriteProvider spriteProvider) {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
-		this.field_17868 = arg;
+		this.field_17868 = spriteProvider;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
@@ -28,11 +27,11 @@ public class FireSmokeParticle extends SpriteBillboardParticle {
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.maxAge = (int)((float)this.maxAge * j);
 		this.maxAge = Math.max(this.maxAge, 1);
-		this.method_18142(arg);
+		this.method_18142(spriteProvider);
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -69,10 +68,10 @@ public class FireSmokeParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17869;
+		private final SpriteProvider field_17869;
 
-		public Factory(class_4002 arg) {
-			this.field_17869 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17869 = spriteProvider;
 		}
 
 		public Particle method_3101(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

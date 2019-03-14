@@ -6,5 +6,5 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public interface FlyingItemEntity {
-	ItemStack method_7495();
+	ItemStack getItem();
 }

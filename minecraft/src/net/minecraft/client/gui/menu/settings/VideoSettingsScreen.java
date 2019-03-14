@@ -2,8 +2,8 @@ package net.minecraft.client.gui.menu.settings;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.VideoSettingsListWidget;
 import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
@@ -17,20 +17,20 @@ public class VideoSettingsScreen extends Screen {
 	private VideoSettingsListWidget field_2639;
 	private static final GameOption[] MENU_OPTIONS = new GameOption[]{
 		GameOption.GRAPHICS,
-		GameOption.field_1933,
+		GameOption.RENDER_DISTANCE,
 		GameOption.AO,
-		GameOption.field_1935,
+		GameOption.FRAMERATE_LIMIT,
 		GameOption.VSYNC,
 		GameOption.VIEW_BOBBING,
 		GameOption.GUI_SCALE,
-		GameOption.field_18192,
-		GameOption.field_1945,
-		GameOption.RENDER_CLOUDS,
+		GameOption.ATTACK_INDICATOR,
+		GameOption.GAMMA,
+		GameOption.CLOUDS,
 		GameOption.FULLSCREEN,
 		GameOption.PARTICLES,
-		GameOption.field_18190,
+		GameOption.MIPMAP_LEVELS,
 		GameOption.ENTITY_SHADOWS,
-		GameOption.field_18189
+		GameOption.BIOME_BLEND_RADIUS
 	};
 
 	public VideoSettingsScreen(Screen screen, GameOptions gameOptions) {
@@ -41,12 +41,12 @@ public class VideoSettingsScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.title = I18n.translate("options.videoTitle");
-		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight - 27, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 27, I18n.translate("gui.done")) {
 			@Override
-			public void method_1826() {
-				VideoSettingsScreen.this.client.field_1690.write();
+			public void onPressed() {
+				VideoSettingsScreen.this.client.options.write();
 				VideoSettingsScreen.this.client.window.method_4475();
-				VideoSettingsScreen.this.client.method_1507(VideoSettingsScreen.this.parent);
+				VideoSettingsScreen.this.client.openScreen(VideoSettingsScreen.this.parent);
 			}
 		});
 		this.field_2639 = new VideoSettingsListWidget(this.client, this.screenWidth, this.screenHeight, 32, this.screenHeight - 32, 25, MENU_OPTIONS);
@@ -55,7 +55,7 @@ public class VideoSettingsScreen extends Screen {
 
 	@Override
 	public void onClosed() {
-		this.client.field_1690.write();
+		this.client.options.write();
 	}
 
 	@Override

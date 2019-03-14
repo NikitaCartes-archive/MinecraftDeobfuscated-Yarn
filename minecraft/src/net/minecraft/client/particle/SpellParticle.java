@@ -3,18 +3,17 @@ package net.minecraft.client.particle;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SpellParticle extends SpriteBillboardParticle {
 	private static final Random RANDOM = new Random();
-	private final class_4002 field_17870;
+	private final SpriteProvider field_17870;
 
-	private SpellParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
+	private SpellParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
 		super(world, d, e, f, 0.5 - RANDOM.nextDouble(), h, 0.5 - RANDOM.nextDouble());
-		this.field_17870 = arg;
+		this.field_17870 = spriteProvider;
 		this.velocityY *= 0.2F;
 		if (g == 0.0 && i == 0.0) {
 			this.velocityX *= 0.1F;
@@ -24,11 +23,11 @@ public class SpellParticle extends SpriteBillboardParticle {
 		this.scale *= 0.75F;
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.collidesWithWorld = false;
-		this.method_18142(arg);
+		this.method_18142(spriteProvider);
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
 	}
 
@@ -60,10 +59,10 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class DefaultFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17874;
+		private final SpriteProvider field_17874;
 
-		public DefaultFactory(class_4002 arg) {
-			this.field_17874 = arg;
+		public DefaultFactory(SpriteProvider spriteProvider) {
+			this.field_17874 = spriteProvider;
 		}
 
 		public Particle method_3099(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -73,10 +72,10 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class EntityAmbientFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17871;
+		private final SpriteProvider field_17871;
 
-		public EntityAmbientFactory(class_4002 arg) {
-			this.field_17871 = arg;
+		public EntityAmbientFactory(SpriteProvider spriteProvider) {
+			this.field_17871 = spriteProvider;
 		}
 
 		public Particle method_3096(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -89,10 +88,10 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class EntityFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17873;
+		private final SpriteProvider field_17873;
 
-		public EntityFactory(class_4002 arg) {
-			this.field_17873 = arg;
+		public EntityFactory(SpriteProvider spriteProvider) {
+			this.field_17873 = spriteProvider;
 		}
 
 		public Particle method_3098(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -104,10 +103,10 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class InstantFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17872;
+		private final SpriteProvider field_17872;
 
-		public InstantFactory(class_4002 arg) {
-			this.field_17872 = arg;
+		public InstantFactory(SpriteProvider spriteProvider) {
+			this.field_17872 = spriteProvider;
 		}
 
 		public Particle method_3097(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -117,10 +116,10 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class WitchFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17875;
+		private final SpriteProvider field_17875;
 
-		public WitchFactory(class_4002 arg) {
-			this.field_17875 = arg;
+		public WitchFactory(SpriteProvider spriteProvider) {
+			this.field_17875 = spriteProvider;
 		}
 
 		public Particle method_3100(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

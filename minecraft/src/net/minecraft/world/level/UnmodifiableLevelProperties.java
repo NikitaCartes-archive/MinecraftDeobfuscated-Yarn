@@ -13,97 +13,97 @@ import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.timer.Timer;
 
 public class UnmodifiableLevelProperties extends LevelProperties {
-	private final LevelProperties field_139;
+	private final LevelProperties properties;
 
 	public UnmodifiableLevelProperties(LevelProperties levelProperties) {
-		this.field_139 = levelProperties;
+		this.properties = levelProperties;
 	}
 
 	@Override
-	public CompoundTag method_163(@Nullable CompoundTag compoundTag) {
-		return this.field_139.method_163(compoundTag);
+	public CompoundTag cloneWorldTag(@Nullable CompoundTag compoundTag) {
+		return this.properties.cloneWorldTag(compoundTag);
 	}
 
 	@Override
 	public long getSeed() {
-		return this.field_139.getSeed();
+		return this.properties.getSeed();
 	}
 
 	@Override
 	public int getSpawnX() {
-		return this.field_139.getSpawnX();
+		return this.properties.getSpawnX();
 	}
 
 	@Override
 	public int getSpawnY() {
-		return this.field_139.getSpawnY();
+		return this.properties.getSpawnY();
 	}
 
 	@Override
 	public int getSpawnZ() {
-		return this.field_139.getSpawnZ();
+		return this.properties.getSpawnZ();
 	}
 
 	@Override
 	public long getTime() {
-		return this.field_139.getTime();
+		return this.properties.getTime();
 	}
 
 	@Override
 	public long getTimeOfDay() {
-		return this.field_139.getTimeOfDay();
+		return this.properties.getTimeOfDay();
 	}
 
 	@Override
-	public CompoundTag method_226() {
-		return this.field_139.method_226();
+	public CompoundTag getPlayerData() {
+		return this.properties.getPlayerData();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public int getDimension() {
-		return this.field_139.getDimension();
+		return this.properties.getDimension();
 	}
 
 	@Override
 	public String getLevelName() {
-		return this.field_139.getLevelName();
+		return this.properties.getLevelName();
 	}
 
 	@Override
 	public int getVersion() {
-		return this.field_139.getVersion();
+		return this.properties.getVersion();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public long getLastPlayed() {
-		return this.field_139.getLastPlayed();
+		return this.properties.getLastPlayed();
 	}
 
 	@Override
 	public boolean isThundering() {
-		return this.field_139.isThundering();
+		return this.properties.isThundering();
 	}
 
 	@Override
 	public int getThunderTime() {
-		return this.field_139.getThunderTime();
+		return this.properties.getThunderTime();
 	}
 
 	@Override
 	public boolean isRaining() {
-		return this.field_139.isRaining();
+		return this.properties.isRaining();
 	}
 
 	@Override
 	public int getRainTime() {
-		return this.field_139.getRainTime();
+		return this.properties.getRainTime();
 	}
 
 	@Override
 	public GameMode getGameMode() {
-		return this.field_139.getGameMode();
+		return this.properties.getGameMode();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -130,7 +130,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public void method_187(BlockPos blockPos) {
+	public void setSpawnPos(BlockPos blockPos) {
 	}
 
 	@Override
@@ -159,17 +159,17 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 
 	@Override
 	public boolean hasStructures() {
-		return this.field_139.hasStructures();
+		return this.properties.hasStructures();
 	}
 
 	@Override
 	public boolean isHardcore() {
-		return this.field_139.isHardcore();
+		return this.properties.isHardcore();
 	}
 
 	@Override
 	public LevelGeneratorType getGeneratorType() {
-		return this.field_139.getGeneratorType();
+		return this.properties.getGeneratorType();
 	}
 
 	@Override
@@ -178,7 +178,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 
 	@Override
 	public boolean areCommandsAllowed() {
-		return this.field_139.areCommandsAllowed();
+		return this.properties.areCommandsAllowed();
 	}
 
 	@Override
@@ -187,7 +187,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 
 	@Override
 	public boolean isInitialized() {
-		return this.field_139.isInitialized();
+		return this.properties.isInitialized();
 	}
 
 	@Override
@@ -196,12 +196,12 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 
 	@Override
 	public GameRules getGameRules() {
-		return this.field_139.getGameRules();
+		return this.properties.getGameRules();
 	}
 
 	@Override
 	public Difficulty getDifficulty() {
-		return this.field_139.getDifficulty();
+		return this.properties.getDifficulty();
 	}
 
 	@Override
@@ -210,7 +210,7 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 
 	@Override
 	public boolean isDifficultyLocked() {
-		return this.field_139.isDifficultyLocked();
+		return this.properties.isDifficultyLocked();
 	}
 
 	@Override
@@ -218,17 +218,17 @@ public class UnmodifiableLevelProperties extends LevelProperties {
 	}
 
 	@Override
-	public Timer<MinecraftServer> method_143() {
-		return this.field_139.method_143();
+	public Timer<MinecraftServer> getScheduledEvents() {
+		return this.properties.getScheduledEvents();
 	}
 
 	@Override
-	public void method_160(DimensionType dimensionType, CompoundTag compoundTag) {
-		this.field_139.method_160(dimensionType, compoundTag);
+	public void setWorldData(DimensionType dimensionType, CompoundTag compoundTag) {
+		this.properties.setWorldData(dimensionType, compoundTag);
 	}
 
 	@Override
-	public CompoundTag method_170(DimensionType dimensionType) {
-		return this.field_139.method_170(dimensionType);
+	public CompoundTag getWorldData(DimensionType dimensionType) {
+		return this.properties.getWorldData(dimensionType);
 	}
 }

@@ -19,7 +19,7 @@ public class SignEditorOpenS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	public void method_11676(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11108(this);
+		clientPlayPacketListener.onSignEditorOpen(this);
 	}
 
 	@Override

@@ -148,11 +148,11 @@ public class PacketByteBuf extends ByteBuf {
 		return ChunkSectionPos.from(this.readLong());
 	}
 
-	public TextComponent method_10808() {
+	public TextComponent readTextComponent() {
 		return TextComponent.Serializer.fromJsonString(this.readString(262144));
 	}
 
-	public PacketByteBuf method_10805(TextComponent textComponent) {
+	public PacketByteBuf writeTextComponent(TextComponent textComponent) {
 		return this.writeString(TextComponent.Serializer.toJsonString(textComponent), 262144);
 	}
 
@@ -267,7 +267,7 @@ public class PacketByteBuf extends ByteBuf {
 			this.writeByte(itemStack.getAmount());
 			CompoundTag compoundTag = null;
 			if (item.canDamage() || item.requiresClientSync()) {
-				compoundTag = itemStack.method_7969();
+				compoundTag = itemStack.getTag();
 			}
 
 			this.writeCompoundTag(compoundTag);
@@ -283,7 +283,7 @@ public class PacketByteBuf extends ByteBuf {
 			int i = this.readVarInt();
 			int j = this.readByte();
 			ItemStack itemStack = new ItemStack(Item.byRawId(i), j);
-			itemStack.method_7980(this.readCompoundTag());
+			itemStack.setTag(this.readCompoundTag());
 			return itemStack;
 		}
 	}
@@ -320,11 +320,11 @@ public class PacketByteBuf extends ByteBuf {
 		}
 	}
 
-	public Identifier method_10810() {
+	public Identifier readIdentifier() {
 		return new Identifier(this.readString(32767));
 	}
 
-	public PacketByteBuf method_10812(Identifier identifier) {
+	public PacketByteBuf writeIdentifier(Identifier identifier) {
 		this.writeString(identifier.toString());
 		return this;
 	}
@@ -351,10 +351,10 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	public void method_17813(BlockHitResult blockHitResult) {
-		BlockPos blockPos = blockHitResult.method_17777();
+		BlockPos blockPos = blockHitResult.getBlockPos();
 		this.writeBlockPos(blockPos);
-		this.writeEnumConstant(blockHitResult.method_17780());
-		Vec3d vec3d = blockHitResult.method_17784();
+		this.writeEnumConstant(blockHitResult.getSide());
+		Vec3d vec3d = blockHitResult.getPos();
 		this.writeFloat((float)(vec3d.x - (double)blockPos.getX()));
 		this.writeFloat((float)(vec3d.y - (double)blockPos.getY()));
 		this.writeFloat((float)(vec3d.z - (double)blockPos.getZ()));

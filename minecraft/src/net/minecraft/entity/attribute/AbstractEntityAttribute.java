@@ -6,7 +6,7 @@ public abstract class AbstractEntityAttribute implements EntityAttribute {
 	private final EntityAttribute parent;
 	private final String id;
 	private final double defaultValue;
-	private boolean field_6338;
+	private boolean tracked;
 
 	protected AbstractEntityAttribute(@Nullable EntityAttribute entityAttribute, String string, double d) {
 		this.parent = entityAttribute;
@@ -28,12 +28,12 @@ public abstract class AbstractEntityAttribute implements EntityAttribute {
 	}
 
 	@Override
-	public boolean method_6168() {
-		return this.field_6338;
+	public boolean isTracked() {
+		return this.tracked;
 	}
 
-	public AbstractEntityAttribute method_6212(boolean bl) {
-		this.field_6338 = bl;
+	public AbstractEntityAttribute setTracked(boolean bl) {
+		this.tracked = bl;
 		return this;
 	}
 

@@ -2,42 +2,40 @@ package net.minecraft.client.gui.widget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
-import net.minecraft.class_4187;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.realms.RealmsButton;
+import net.minecraft.client.gui.menu.RealmsButton;
 
 @Environment(EnvType.CLIENT)
-public class RealmsButtonWidget extends class_4185 implements class_4187<RealmsButton> {
-	private final RealmsButton realmsButton;
+public class RealmsButtonWidget extends ButtonWidget implements RealmsButton<net.minecraft.realms.RealmsButton> {
+	private final net.minecraft.realms.RealmsButton realmsButton;
 
-	public RealmsButtonWidget(RealmsButton realmsButton, int i, int j, String string) {
+	public RealmsButtonWidget(net.minecraft.realms.RealmsButton realmsButton, int i, int j, String string) {
 		super(i, j, string);
 		this.realmsButton = realmsButton;
 	}
 
-	public RealmsButtonWidget(RealmsButton realmsButton, int i, int j, String string, int k, int l) {
+	public RealmsButtonWidget(net.minecraft.realms.RealmsButton realmsButton, int i, int j, String string, int k, int l) {
 		super(i, j, k, l, string);
 		this.realmsButton = realmsButton;
 	}
 
 	@Override
-	public boolean method_2067() {
+	public boolean isEnabled() {
 		return this.enabled;
 	}
 
 	@Override
-	public void method_2062(boolean bl) {
+	public void setEnabled(boolean bl) {
 		this.enabled = bl;
 	}
 
 	@Override
-	public boolean method_19358() {
+	public boolean isVisible() {
 		return this.visible;
 	}
 
 	@Override
-	public void method_19360(boolean bl) {
+	public void setVisible(boolean bl) {
 		this.visible = bl;
 	}
 
@@ -56,7 +54,7 @@ public class RealmsButtonWidget extends class_4185 implements class_4187<RealmsB
 	}
 
 	@Override
-	public void method_1826() {
+	public void onPressed() {
 		this.realmsButton.onPress();
 	}
 
@@ -70,7 +68,7 @@ public class RealmsButtonWidget extends class_4185 implements class_4187<RealmsB
 		this.realmsButton.renderBg(i, j);
 	}
 
-	public RealmsButton method_2064() {
+	public net.minecraft.realms.RealmsButton method_2064() {
 		return this.realmsButton;
 	}
 

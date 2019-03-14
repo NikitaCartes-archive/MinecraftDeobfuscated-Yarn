@@ -21,7 +21,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.world.World;
 
 public class FireworkStarRecipe extends SpecialCraftingRecipe {
-	private static final Ingredient field_9011 = Ingredient.method_8091(
+	private static final Ingredient field_9011 = Ingredient.ofItems(
 		Items.field_8814,
 		Items.field_8153,
 		Items.field_8397,
@@ -32,8 +32,8 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		Items.DRAGON_HEAD,
 		Items.ZOMBIE_HEAD
 	);
-	private static final Ingredient field_9010 = Ingredient.method_8091(Items.field_8477);
-	private static final Ingredient field_9014 = Ingredient.method_8091(Items.field_8601);
+	private static final Ingredient field_9010 = Ingredient.ofItems(Items.field_8477);
+	private static final Ingredient field_9014 = Ingredient.ofItems(Items.field_8601);
 	private static final Map<Item, FireworkItem.Type> field_9013 = SystemUtil.consume(Maps.newHashMap(), hashMap -> {
 		hashMap.put(Items.field_8814, FireworkItem.Type.field_7977);
 		hashMap.put(Items.field_8153, FireworkItem.Type.field_7970);
@@ -45,7 +45,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		hashMap.put(Items.DRAGON_HEAD, FireworkItem.Type.field_7974);
 		hashMap.put(Items.ZOMBIE_HEAD, FireworkItem.Type.field_7974);
 	});
-	private static final Ingredient field_9012 = Ingredient.method_8091(Items.field_8054);
+	private static final Ingredient field_9012 = Ingredient.ofItems(Items.field_8054);
 
 	public FireworkStarRecipe(Identifier identifier) {
 		super(identifier);
@@ -59,7 +59,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 		boolean bl5 = false;
 
 		for(int i = 0; i < craftingInventory.getInvSize(); ++i) {
-			ItemStack itemStack = craftingInventory.method_5438(i);
+			ItemStack itemStack = craftingInventory.getInvStack(i);
 			if (!itemStack.isEmpty()) {
 				if (field_9011.method_8093(itemStack)) {
 					if (bl3) {
@@ -100,12 +100,12 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack method_17712(CraftingInventory craftingInventory) {
 		ItemStack itemStack = new ItemStack(Items.field_8450);
-		CompoundTag compoundTag = itemStack.method_7911("Explosion");
+		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("Explosion");
 		FireworkItem.Type type = FireworkItem.Type.field_7976;
 		List<Integer> list = Lists.newArrayList();
 
 		for(int i = 0; i < craftingInventory.getInvSize(); ++i) {
-			ItemStack itemStack2 = craftingInventory.method_5438(i);
+			ItemStack itemStack2 = craftingInventory.getInvStack(i);
 			if (!itemStack2.isEmpty()) {
 				if (field_9011.method_8093(itemStack2)) {
 					type = (FireworkItem.Type)field_9013.get(itemStack2.getItem());
@@ -136,7 +136,7 @@ public class FireworkStarRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9036;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.FIREWORK_STAR;
 	}
 }

@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<EnchantingTableBlockEntity> {
-	private static final Identifier field_4369 = new Identifier("textures/entity/enchanting_table_book.png");
+	private static final Identifier BOOK_TEX = new Identifier("textures/entity/enchanting_table_book.png");
 	private final BookModel book = new BookModel();
 
 	public void method_3571(EnchantingTableBlockEntity enchantingTableBlockEntity, double d, double e, double f, float g, int i) {
@@ -31,7 +31,7 @@ public class EnchantingTableBlockEntityRenderer extends BlockEntityRenderer<Ench
 		float k = enchantingTableBlockEntity.field_11963 + j * g;
 		GlStateManager.rotatef(-k * (180.0F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(80.0F, 0.0F, 0.0F, 1.0F);
-		this.method_3566(field_4369);
+		this.bindTexture(BOOK_TEX);
 		float l = MathHelper.lerp(g, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle) + 0.25F;
 		float m = MathHelper.lerp(g, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle) + 0.75F;
 		l = (l - (float)MathHelper.fastFloor((double)l)) * 1.6F - 0.3F;

@@ -46,7 +46,7 @@ public class LootManager implements SynchronousResourceReloadListener {
 	public static final int lootTablesLength = "loot_tables/".length();
 	public static final int jsonLength = ".json".length();
 
-	public LootSupplier method_367(Identifier identifier) {
+	public LootSupplier getSupplier(Identifier identifier) {
 		return (LootSupplier)this.suppliers.getOrDefault(identifier, LootSupplier.EMPTY);
 	}
 
@@ -88,17 +88,15 @@ public class LootManager implements SynchronousResourceReloadListener {
 			}
 		}
 
-		this.suppliers.put(LootTables.field_844, LootSupplier.EMPTY);
+		this.suppliers.put(LootTables.EMPTY, LootSupplier.EMPTY);
 		LootTableReporter lootTableReporter = new LootTableReporter();
-		this.suppliers.forEach((identifierx, lootSupplierx) -> method_369(lootTableReporter, identifierx, lootSupplierx, this.suppliers::get));
+		this.suppliers.forEach((identifierx, lootSupplierx) -> check(lootTableReporter, identifierx, lootSupplierx, this.suppliers::get));
 		lootTableReporter.getMessages().forEach((stringx, string2) -> LOGGER.warn("Found validation problem in " + stringx + ": " + string2));
 	}
 
-	public static void method_369(
-		LootTableReporter lootTableReporter, Identifier identifier, LootSupplier lootSupplier, Function<Identifier, LootSupplier> function
-	) {
+	public static void check(LootTableReporter lootTableReporter, Identifier identifier, LootSupplier lootSupplier, Function<Identifier, LootSupplier> function) {
 		Set<Identifier> set = ImmutableSet.of(identifier);
-		lootSupplier.method_330(lootTableReporter.makeChild("{" + identifier.toString() + "}"), function, set, lootSupplier.method_322());
+		lootSupplier.check(lootTableReporter.makeChild("{" + identifier.toString() + "}"), function, set, lootSupplier.getType());
 	}
 
 	public static JsonElement toJson(LootSupplier lootSupplier) {

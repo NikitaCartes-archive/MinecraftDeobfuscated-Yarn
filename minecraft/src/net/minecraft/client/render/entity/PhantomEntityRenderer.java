@@ -14,7 +14,7 @@ public class PhantomEntityRenderer extends MobEntityRenderer<PhantomEntity, Phan
 
 	public PhantomEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new PhantomEntityModel<>(), 0.75F);
-		this.method_4046(new PhantomEyesFeatureRenderer<>(this));
+		this.addFeature(new PhantomEyesFeatureRenderer<>(this));
 	}
 
 	protected Identifier method_4090(PhantomEntity phantomEntity) {

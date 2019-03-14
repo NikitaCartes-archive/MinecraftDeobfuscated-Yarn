@@ -23,7 +23,7 @@ public class LookControl {
 		if (entity instanceof LivingEntity) {
 			this.lookY = entity.y + (double)entity.getStandingEyeHeight();
 		} else {
-			this.lookY = (entity.method_5829().minY + entity.method_5829().maxY) / 2.0;
+			this.lookY = (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
 		}
 
 		this.lookZ = entity.z;
@@ -58,7 +58,7 @@ public class LookControl {
 		}
 
 		float j = MathHelper.wrapDegrees(this.entity.headYaw - this.entity.field_6283);
-		if (!this.entity.method_5942().isIdle()) {
+		if (!this.entity.getNavigation().isIdle()) {
 			if (j < -75.0F) {
 				this.entity.headYaw = this.entity.field_6283 - 75.0F;
 			}

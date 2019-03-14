@@ -7,5 +7,5 @@ import net.fabricmc.api.Environment;
 public interface TickableSoundInstance extends SoundInstance {
 	boolean isDone();
 
-	void method_16896();
+	void tick();
 }

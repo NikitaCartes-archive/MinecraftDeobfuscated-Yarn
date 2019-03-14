@@ -18,9 +18,9 @@ public abstract class PersistentState {
 		this.key = string;
 	}
 
-	public abstract void method_77(CompoundTag compoundTag);
+	public abstract void fromTag(CompoundTag compoundTag);
 
-	public abstract CompoundTag method_75(CompoundTag compoundTag);
+	public abstract CompoundTag toTag(CompoundTag compoundTag);
 
 	public void markDirty() {
 		this.setDirty(true);
@@ -41,7 +41,7 @@ public abstract class PersistentState {
 	public void method_17919(File file) {
 		if (this.isDirty()) {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.method_10566("data", this.method_75(new CompoundTag()));
+			compoundTag.put("data", this.toTag(new CompoundTag()));
 			compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 
 			try {

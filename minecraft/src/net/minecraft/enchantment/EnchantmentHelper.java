@@ -31,8 +31,8 @@ public class EnchantmentHelper {
 		if (itemStack.isEmpty()) {
 			return 0;
 		} else {
-			Identifier identifier = Registry.ENCHANTMENT.method_10221(enchantment);
-			ListTag listTag = itemStack.method_7921();
+			Identifier identifier = Registry.ENCHANTMENT.getId(enchantment);
+			ListTag listTag = itemStack.getEnchantmentList();
 
 			for(int i = 0; i < listTag.size(); ++i) {
 				CompoundTag compoundTag = listTag.getCompoundTag(i);
@@ -48,11 +48,11 @@ public class EnchantmentHelper {
 
 	public static Map<Enchantment, Integer> getEnchantments(ItemStack itemStack) {
 		Map<Enchantment, Integer> map = Maps.newLinkedHashMap();
-		ListTag listTag = itemStack.getItem() == Items.field_8598 ? EnchantedBookItem.method_7806(itemStack) : itemStack.method_7921();
+		ListTag listTag = itemStack.getItem() == Items.field_8598 ? EnchantedBookItem.getEnchantmentTag(itemStack) : itemStack.getEnchantmentList();
 
 		for(int i = 0; i < listTag.size(); ++i) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
-			Registry.ENCHANTMENT.method_17966(Identifier.create(compoundTag.getString("id"))).ifPresent(enchantment -> {
+			Registry.ENCHANTMENT.getOrEmpty(Identifier.create(compoundTag.getString("id"))).ifPresent(enchantment -> {
 			});
 		}
 
@@ -67,11 +67,11 @@ public class EnchantmentHelper {
 			if (enchantment != null) {
 				int i = entry.getValue();
 				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putString("id", String.valueOf(Registry.ENCHANTMENT.method_10221(enchantment)));
+				compoundTag.putString("id", String.valueOf(Registry.ENCHANTMENT.getId(enchantment)));
 				compoundTag.putShort("lvl", (short)i);
 				listTag.add(compoundTag);
 				if (itemStack.getItem() == Items.field_8598) {
-					EnchantedBookItem.method_7807(itemStack, new InfoEnchantment(enchantment, i));
+					EnchantedBookItem.addEnchantment(itemStack, new InfoEnchantment(enchantment, i));
 				}
 			}
 		}
@@ -79,18 +79,18 @@ public class EnchantmentHelper {
 		if (listTag.isEmpty()) {
 			itemStack.removeSubTag("Enchantments");
 		} else if (itemStack.getItem() != Items.field_8598) {
-			itemStack.method_7959("Enchantments", listTag);
+			itemStack.setChildTag("Enchantments", listTag);
 		}
 	}
 
 	private static void accept(EnchantmentHelper.Consumer consumer, ItemStack itemStack) {
 		if (!itemStack.isEmpty()) {
-			ListTag listTag = itemStack.method_7921();
+			ListTag listTag = itemStack.getEnchantmentList();
 
 			for(int i = 0; i < listTag.size(); ++i) {
 				String string = listTag.getCompoundTag(i).getString("id");
 				int j = listTag.getCompoundTag(i).getInt("lvl");
-				Registry.ENCHANTMENT.method_17966(Identifier.create(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
+				Registry.ENCHANTMENT.getOrEmpty(Identifier.create(string)).ifPresent(enchantment -> consumer.accept(enchantment, j));
 			}
 		}
 	}
@@ -125,7 +125,7 @@ public class EnchantmentHelper {
 		}
 
 		if (entity instanceof PlayerEntity) {
-			accept(consumer, livingEntity.method_6047());
+			accept(consumer, livingEntity.getMainHandStack());
 		}
 	}
 
@@ -136,7 +136,7 @@ public class EnchantmentHelper {
 		}
 
 		if (livingEntity instanceof PlayerEntity) {
-			accept(consumer, livingEntity.method_6047());
+			accept(consumer, livingEntity.getMainHandStack());
 		}
 	}
 
@@ -263,9 +263,9 @@ public class EnchantmentHelper {
 
 		for(InfoEnchantment infoEnchantment : list) {
 			if (bl2) {
-				EnchantedBookItem.method_7807(itemStack, infoEnchantment);
+				EnchantedBookItem.addEnchantment(itemStack, infoEnchantment);
 			} else {
-				itemStack.method_7978(infoEnchantment.enchantment, infoEnchantment.level);
+				itemStack.addEnchantment(infoEnchantment.enchantment, infoEnchantment.level);
 			}
 		}
 
@@ -291,7 +291,7 @@ public class EnchantmentHelper {
 					list2 = getHighestApplicableEnchantmentsAtPower(i, itemStack, bl);
 
 					for(InfoEnchantment infoEnchantment : list) {
-						method_8231(list2, infoEnchantment);
+						remove(list2, infoEnchantment);
 					}
 
 					if (list2.isEmpty()) {
@@ -307,7 +307,7 @@ public class EnchantmentHelper {
 		}
 	}
 
-	public static void method_8231(List<InfoEnchantment> list, InfoEnchantment infoEnchantment) {
+	public static void remove(List<InfoEnchantment> list, InfoEnchantment infoEnchantment) {
 		Iterator<InfoEnchantment> iterator = list.iterator();
 
 		while(iterator.hasNext()) {
@@ -333,7 +333,7 @@ public class EnchantmentHelper {
 		boolean bl2 = itemStack.getItem() == Items.field_8529;
 
 		for(Enchantment enchantment : Registry.ENCHANTMENT) {
-			if ((!enchantment.isLootOnly() || bl) && (enchantment.field_9083.isAcceptableItem(item) || bl2)) {
+			if ((!enchantment.isLootOnly() || bl) && (enchantment.type.isAcceptableItem(item) || bl2)) {
 				for(int j = enchantment.getMaximumLevel(); j > enchantment.getMinimumLevel() - 1; --j) {
 					if (i >= enchantment.getMinimumPower(j)) {
 						list.add(new InfoEnchantment(enchantment, j));

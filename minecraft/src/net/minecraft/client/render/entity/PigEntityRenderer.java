@@ -9,14 +9,14 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PigEntityRenderer extends MobEntityRenderer<PigEntity, PigEntityModel<PigEntity>> {
-	private static final Identifier field_4755 = new Identifier("textures/entity/pig/pig.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/pig/pig.png");
 
 	public PigEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new PigEntityModel<>(), 0.7F);
-		this.method_4046(new PigSaddleFeatureRenderer(this));
+		this.addFeature(new PigSaddleFeatureRenderer(this));
 	}
 
 	protected Identifier method_4087(PigEntity pigEntity) {
-		return field_4755;
+		return SKIN;
 	}
 }

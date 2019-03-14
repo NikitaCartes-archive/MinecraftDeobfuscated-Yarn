@@ -45,51 +45,51 @@ public class DamageSource {
 	private boolean explosive;
 	public final String name;
 
-	public static DamageSource method_5511(LivingEntity livingEntity) {
+	public static DamageSource mob(LivingEntity livingEntity) {
 		return new EntityDamageSource("mob", livingEntity);
 	}
 
-	public static DamageSource method_5519(Entity entity, LivingEntity livingEntity) {
+	public static DamageSource mobProjectile(Entity entity, LivingEntity livingEntity) {
 		return new ProjectileDamageSource("mob", entity, livingEntity);
 	}
 
-	public static DamageSource method_5532(PlayerEntity playerEntity) {
+	public static DamageSource player(PlayerEntity playerEntity) {
 		return new EntityDamageSource("player", playerEntity);
 	}
 
-	public static DamageSource method_5522(ProjectileEntity projectileEntity, @Nullable Entity entity) {
+	public static DamageSource arrow(ProjectileEntity projectileEntity, @Nullable Entity entity) {
 		return new ProjectileDamageSource("arrow", projectileEntity, entity).setProjectile();
 	}
 
-	public static DamageSource method_5520(Entity entity, @Nullable Entity entity2) {
+	public static DamageSource trident(Entity entity, @Nullable Entity entity2) {
 		return new ProjectileDamageSource("trident", entity, entity2).setProjectile();
 	}
 
-	public static DamageSource method_5521(ExplosiveProjectileEntity explosiveProjectileEntity, @Nullable Entity entity) {
+	public static DamageSource explosiveProjectile(ExplosiveProjectileEntity explosiveProjectileEntity, @Nullable Entity entity) {
 		return entity == null
 			? new ProjectileDamageSource("onFire", explosiveProjectileEntity, explosiveProjectileEntity).setFire().setProjectile()
 			: new ProjectileDamageSource("fireball", explosiveProjectileEntity, entity).setFire().setProjectile();
 	}
 
-	public static DamageSource method_5524(Entity entity, @Nullable Entity entity2) {
+	public static DamageSource thrownProjectile(Entity entity, @Nullable Entity entity2) {
 		return new ProjectileDamageSource("thrown", entity, entity2).setProjectile();
 	}
 
-	public static DamageSource method_5536(Entity entity, @Nullable Entity entity2) {
+	public static DamageSource magic(Entity entity, @Nullable Entity entity2) {
 		return new ProjectileDamageSource("indirectMagic", entity, entity2).setBypassesArmor().setUsesMagic();
 	}
 
-	public static DamageSource method_5513(Entity entity) {
+	public static DamageSource thorns(Entity entity) {
 		return new EntityDamageSource("thorns", entity).method_5550().setUsesMagic();
 	}
 
-	public static DamageSource method_5531(@Nullable Explosion explosion) {
+	public static DamageSource explosion(@Nullable Explosion explosion) {
 		return explosion != null && explosion.getCausingEntity() != null
 			? new EntityDamageSource("explosion.player", explosion.getCausingEntity()).setScaledWithDifficulty().setExplosive()
 			: new DamageSource("explosion").setScaledWithDifficulty().setExplosive();
 	}
 
-	public static DamageSource method_5512(@Nullable LivingEntity livingEntity) {
+	public static DamageSource explosion(@Nullable LivingEntity livingEntity) {
 		return livingEntity != null
 			? new EntityDamageSource("explosion.player", livingEntity).setScaledWithDifficulty().setExplosive()
 			: new DamageSource("explosion").setScaledWithDifficulty().setExplosive();
@@ -138,12 +138,12 @@ public class DamageSource {
 	}
 
 	@Nullable
-	public Entity method_5526() {
-		return this.method_5529();
+	public Entity getSource() {
+		return this.getAttacker();
 	}
 
 	@Nullable
-	public Entity method_5529() {
+	public Entity getAttacker() {
 		return null;
 	}
 
@@ -169,13 +169,13 @@ public class DamageSource {
 		return this;
 	}
 
-	public TextComponent method_5506(LivingEntity livingEntity) {
+	public TextComponent getDeathMessage(LivingEntity livingEntity) {
 		LivingEntity livingEntity2 = livingEntity.method_6124();
 		String string = "death.attack." + this.name;
 		String string2 = string + ".player";
 		return livingEntity2 != null
-			? new TranslatableTextComponent(string2, livingEntity.method_5476(), livingEntity2.method_5476())
-			: new TranslatableTextComponent(string, livingEntity.method_5476());
+			? new TranslatableTextComponent(string2, livingEntity.getDisplayName(), livingEntity2.getDisplayName())
+			: new TranslatableTextComponent(string, livingEntity.getDisplayName());
 	}
 
 	public boolean isFire() {
@@ -205,7 +205,7 @@ public class DamageSource {
 	}
 
 	public boolean isSourceCreativePlayer() {
-		Entity entity = this.method_5529();
+		Entity entity = this.getAttacker();
 		return entity instanceof PlayerEntity && ((PlayerEntity)entity).abilities.creativeMode;
 	}
 

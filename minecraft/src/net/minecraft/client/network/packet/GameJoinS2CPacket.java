@@ -65,7 +65,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11567(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11120(this);
+		clientPlayPacketListener.onGameJoin(this);
 	}
 
 	@Environment(EnvType.CLIENT)

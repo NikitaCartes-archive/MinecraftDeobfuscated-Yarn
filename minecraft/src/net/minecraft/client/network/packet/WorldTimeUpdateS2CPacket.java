@@ -38,7 +38,7 @@ public class WorldTimeUpdateS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public void method_11872(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11079(this);
+		clientPlayPacketListener.onWorldTimeUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

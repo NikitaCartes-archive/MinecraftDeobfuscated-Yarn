@@ -5,12 +5,12 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
@@ -28,17 +28,17 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 
 @Environment(EnvType.CLIENT)
 public class CustomizeFlatLevelScreen extends Screen {
-	private final NewLevelScreen field_2422;
+	private final NewLevelScreen parent;
 	private FlatChunkGeneratorConfig config = FlatChunkGeneratorConfig.getDefaultConfig();
 	private String titleText;
 	private String tileText;
 	private String heightText;
 	private CustomizeFlatLevelScreen.class_4192 field_2424;
-	private class_4185 widgetButtonRemoveLayer;
+	private ButtonWidget widgetButtonRemoveLayer;
 	public int widgetButtonAddLayer = -1;
 
 	public CustomizeFlatLevelScreen(NewLevelScreen newLevelScreen, CompoundTag compoundTag) {
-		this.field_2422 = newLevelScreen;
+		this.parent = newLevelScreen;
 		this.method_2144(compoundTag);
 	}
 
@@ -66,9 +66,9 @@ public class CustomizeFlatLevelScreen extends Screen {
 		this.field_2424 = new CustomizeFlatLevelScreen.class_4192();
 		this.listeners.add(this.field_2424);
 		this.widgetButtonRemoveLayer = this.addButton(
-			new class_4185(this.screenWidth / 2 - 155, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.flat.removeLayer")) {
+			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.flat.removeLayer")) {
 				@Override
-				public void method_1826() {
+				public void onPressed() {
 					if (CustomizeFlatLevelScreen.this.method_2147()) {
 						List<FlatChunkGeneratorLayer> list = CustomizeFlatLevelScreen.this.config.getLayers();
 						int i = list.size() - CustomizeFlatLevelScreen.this.widgetButtonAddLayer - 1;
@@ -80,27 +80,27 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 			}
 		);
-		this.addButton(new class_4185(this.screenWidth / 2 + 5, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.presets")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.presets")) {
 			@Override
-			public void method_1826() {
-				CustomizeFlatLevelScreen.this.client.method_1507(new NewLevelPresetsScreen(CustomizeFlatLevelScreen.this));
+			public void onPressed() {
+				CustomizeFlatLevelScreen.this.client.openScreen(new NewLevelPresetsScreen(CustomizeFlatLevelScreen.this));
 				CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done")) {
 			@Override
-			public void method_1826() {
-				CustomizeFlatLevelScreen.this.field_2422.field_3200 = CustomizeFlatLevelScreen.this.method_2140();
-				CustomizeFlatLevelScreen.this.client.method_1507(CustomizeFlatLevelScreen.this.field_2422);
+			public void onPressed() {
+				CustomizeFlatLevelScreen.this.parent.field_3200 = CustomizeFlatLevelScreen.this.method_2140();
+				CustomizeFlatLevelScreen.this.client.openScreen(CustomizeFlatLevelScreen.this.parent);
 				CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
-			public void method_1826() {
-				CustomizeFlatLevelScreen.this.client.method_1507(CustomizeFlatLevelScreen.this.field_2422);
+			public void onPressed() {
+				CustomizeFlatLevelScreen.this.client.openScreen(CustomizeFlatLevelScreen.this.parent);
 				CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
 				CustomizeFlatLevelScreen.this.method_2145();
 			}
@@ -163,7 +163,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 		@Override
 		protected boolean method_19352() {
-			return CustomizeFlatLevelScreen.this.method_19357() == this;
+			return CustomizeFlatLevelScreen.this.getFocused() == this;
 		}
 
 		@Override
@@ -215,7 +215,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			}
 
 			ItemStack itemStack = new ItemStack(item);
-			String string = item.method_7864(itemStack).getFormattedText();
+			String string = item.getTranslatedNameTrimmed(itemStack).getFormattedText();
 			this.method_19375(this.getX(), this.getY(), itemStack);
 			CustomizeFlatLevelScreen.this.fontRenderer.draw(string, (float)(this.getX() + 18 + 5), (float)(this.getY() + 3), 16777215);
 			String string2;
@@ -247,7 +247,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			GlStateManager.enableRescaleNormal();
 			if (!itemStack.isEmpty()) {
 				GuiLighting.enableForItems();
-				CustomizeFlatLevelScreen.this.field_2560.renderGuiItemIcon(itemStack, i + 2, j + 2);
+				CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(itemStack, i + 2, j + 2);
 				GuiLighting.disable();
 			}
 
@@ -260,14 +260,14 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 		private void method_19374(int i, int j, int k, int l) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			CustomizeFlatLevelScreen.this.client.method_1531().method_4618(DrawableHelper.field_2052);
+			CustomizeFlatLevelScreen.this.client.getTextureManager().bindTexture(DrawableHelper.STAT_ICONS);
 			float f = 0.0078125F;
 			float g = 0.0078125F;
 			int m = 18;
 			int n = 18;
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			bufferBuilder.method_1328(7, VertexFormats.field_1585);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 			bufferBuilder.vertex((double)(i + 0), (double)(j + 18), (double)CustomizeFlatLevelScreen.this.zOffset)
 				.texture((double)((float)(k + 0) * 0.0078125F), (double)((float)(l + 18) * 0.0078125F))
 				.next();

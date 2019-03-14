@@ -23,7 +23,7 @@ import net.minecraft.world.gen.feature.Feature;
 public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvancement>> {
 	public void method_10347(Consumer<SimpleAdvancement> consumer) {
 		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Builder.create()
-			.method_697(
+			.display(
 				Blocks.field_10219,
 				new TranslatableTextComponent("advancements.story.root.title"),
 				new TranslatableTextComponent("advancements.story.root.description"),
@@ -33,11 +33,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				false,
 				false
 			)
-			.method_709("crafting_table", InventoryChangedCriterion.Conditions.method_8959(Blocks.field_9980))
+			.criterion("crafting_table", InventoryChangedCriterion.Conditions.items(Blocks.field_9980))
 			.build(consumer, "story/root");
 		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement)
-			.method_697(
+			.display(
 				Items.field_8647,
 				new TranslatableTextComponent("advancements.story.mine_stone.title"),
 				new TranslatableTextComponent("advancements.story.mine_stone.description"),
@@ -47,11 +47,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("get_stone", InventoryChangedCriterion.Conditions.method_8959(Blocks.field_10445))
+			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(Blocks.field_10445))
 			.build(consumer, "story/mine_stone");
 		SimpleAdvancement simpleAdvancement3 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement2)
-			.method_697(
+			.display(
 				Items.field_8387,
 				new TranslatableTextComponent("advancements.story.upgrade_tools.title"),
 				new TranslatableTextComponent("advancements.story.upgrade_tools.description"),
@@ -61,11 +61,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("stone_pickaxe", InventoryChangedCriterion.Conditions.method_8959(Items.field_8387))
+			.criterion("stone_pickaxe", InventoryChangedCriterion.Conditions.items(Items.field_8387))
 			.build(consumer, "story/upgrade_tools");
 		SimpleAdvancement simpleAdvancement4 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement3)
-			.method_697(
+			.display(
 				Items.field_8620,
 				new TranslatableTextComponent("advancements.story.smelt_iron.title"),
 				new TranslatableTextComponent("advancements.story.smelt_iron.description"),
@@ -75,11 +75,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("iron", InventoryChangedCriterion.Conditions.method_8959(Items.field_8620))
+			.criterion("iron", InventoryChangedCriterion.Conditions.items(Items.field_8620))
 			.build(consumer, "story/smelt_iron");
 		SimpleAdvancement simpleAdvancement5 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement4)
-			.method_697(
+			.display(
 				Items.field_8403,
 				new TranslatableTextComponent("advancements.story.iron_tools.title"),
 				new TranslatableTextComponent("advancements.story.iron_tools.description"),
@@ -89,11 +89,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("iron_pickaxe", InventoryChangedCriterion.Conditions.method_8959(Items.field_8403))
+			.criterion("iron_pickaxe", InventoryChangedCriterion.Conditions.items(Items.field_8403))
 			.build(consumer, "story/iron_tools");
 		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement5)
-			.method_697(
+			.display(
 				Items.field_8477,
 				new TranslatableTextComponent("advancements.story.mine_diamond.title"),
 				new TranslatableTextComponent("advancements.story.mine_diamond.description"),
@@ -103,11 +103,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("diamond", InventoryChangedCriterion.Conditions.method_8959(Items.field_8477))
+			.criterion("diamond", InventoryChangedCriterion.Conditions.items(Items.field_8477))
 			.build(consumer, "story/mine_diamond");
 		SimpleAdvancement simpleAdvancement7 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement4)
-			.method_697(
+			.display(
 				Items.field_8187,
 				new TranslatableTextComponent("advancements.story.lava_bucket.title"),
 				new TranslatableTextComponent("advancements.story.lava_bucket.description"),
@@ -117,11 +117,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("lava_bucket", InventoryChangedCriterion.Conditions.method_8959(Items.field_8187))
+			.criterion("lava_bucket", InventoryChangedCriterion.Conditions.items(Items.field_8187))
 			.build(consumer, "story/lava_bucket");
 		SimpleAdvancement simpleAdvancement8 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement4)
-			.method_697(
+			.display(
 				Items.field_8523,
 				new TranslatableTextComponent("advancements.story.obtain_armor.title"),
 				new TranslatableTextComponent("advancements.story.obtain_armor.description"),
@@ -132,14 +132,14 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				false
 			)
 			.criteriaMerger(CriteriaMerger.OR)
-			.method_709("iron_helmet", InventoryChangedCriterion.Conditions.method_8959(Items.field_8743))
-			.method_709("iron_chestplate", InventoryChangedCriterion.Conditions.method_8959(Items.field_8523))
-			.method_709("iron_leggings", InventoryChangedCriterion.Conditions.method_8959(Items.field_8396))
-			.method_709("iron_boots", InventoryChangedCriterion.Conditions.method_8959(Items.field_8660))
+			.criterion("iron_helmet", InventoryChangedCriterion.Conditions.items(Items.field_8743))
+			.criterion("iron_chestplate", InventoryChangedCriterion.Conditions.items(Items.field_8523))
+			.criterion("iron_leggings", InventoryChangedCriterion.Conditions.items(Items.field_8396))
+			.criterion("iron_boots", InventoryChangedCriterion.Conditions.items(Items.field_8660))
 			.build(consumer, "story/obtain_armor");
 		SimpleAdvancement simpleAdvancement9 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement6)
-			.method_697(
+			.display(
 				Items.field_8598,
 				new TranslatableTextComponent("advancements.story.enchant_item.title"),
 				new TranslatableTextComponent("advancements.story.enchant_item.description"),
@@ -149,11 +149,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("enchanted_item", EnchantedItemCriterion.Conditions.any())
+			.criterion("enchanted_item", EnchantedItemCriterion.Conditions.any())
 			.build(consumer, "story/enchant_item");
 		SimpleAdvancement simpleAdvancement10 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement7)
-			.method_697(
+			.display(
 				Blocks.field_10540,
 				new TranslatableTextComponent("advancements.story.form_obsidian.title"),
 				new TranslatableTextComponent("advancements.story.form_obsidian.description"),
@@ -163,11 +163,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("obsidian", InventoryChangedCriterion.Conditions.method_8959(Blocks.field_10540))
+			.criterion("obsidian", InventoryChangedCriterion.Conditions.items(Blocks.field_10540))
 			.build(consumer, "story/form_obsidian");
 		SimpleAdvancement simpleAdvancement11 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement8)
-			.method_697(
+			.display(
 				Items.field_8255,
 				new TranslatableTextComponent("advancements.story.deflect_arrow.title"),
 				new TranslatableTextComponent("advancements.story.deflect_arrow.description"),
@@ -177,16 +177,16 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709(
+			.criterion(
 				"deflected_projectile",
 				EntityHurtPlayerCriterion.Conditions.method_8908(
-					DamagePredicate.Builder.create().method_8842(DamageSourcePredicate.Builder.create().projectile(true)).blocked(true)
+					DamagePredicate.Builder.create().type(DamageSourcePredicate.Builder.create().projectile(true)).blocked(true)
 				)
 			)
 			.build(consumer, "story/deflect_arrow");
 		SimpleAdvancement simpleAdvancement12 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement6)
-			.method_697(
+			.display(
 				Items.field_8058,
 				new TranslatableTextComponent("advancements.story.shiny_gear.title"),
 				new TranslatableTextComponent("advancements.story.shiny_gear.description"),
@@ -197,14 +197,14 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				false
 			)
 			.criteriaMerger(CriteriaMerger.OR)
-			.method_709("diamond_helmet", InventoryChangedCriterion.Conditions.method_8959(Items.field_8805))
-			.method_709("diamond_chestplate", InventoryChangedCriterion.Conditions.method_8959(Items.field_8058))
-			.method_709("diamond_leggings", InventoryChangedCriterion.Conditions.method_8959(Items.field_8348))
-			.method_709("diamond_boots", InventoryChangedCriterion.Conditions.method_8959(Items.field_8285))
+			.criterion("diamond_helmet", InventoryChangedCriterion.Conditions.items(Items.field_8805))
+			.criterion("diamond_chestplate", InventoryChangedCriterion.Conditions.items(Items.field_8058))
+			.criterion("diamond_leggings", InventoryChangedCriterion.Conditions.items(Items.field_8348))
+			.criterion("diamond_boots", InventoryChangedCriterion.Conditions.items(Items.field_8285))
 			.build(consumer, "story/shiny_gear");
 		SimpleAdvancement simpleAdvancement13 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement10)
-			.method_697(
+			.display(
 				Items.field_8884,
 				new TranslatableTextComponent("advancements.story.enter_the_nether.title"),
 				new TranslatableTextComponent("advancements.story.enter_the_nether.description"),
@@ -214,11 +214,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("entered_nether", ChangedDimensionCriterion.Conditions.method_8799(DimensionType.field_13076))
+			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13076))
 			.build(consumer, "story/enter_the_nether");
 		SimpleAdvancement simpleAdvancement14 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement13)
-			.method_697(
+			.display(
 				Items.field_8463,
 				new TranslatableTextComponent("advancements.story.cure_zombie_villager.title"),
 				new TranslatableTextComponent("advancements.story.cure_zombie_villager.description"),
@@ -228,11 +228,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("cured_zombie", CuredZombieVillagerCriterion.Conditions.any())
+			.criterion("cured_zombie", CuredZombieVillagerCriterion.Conditions.any())
 			.build(consumer, "story/cure_zombie_villager");
 		SimpleAdvancement simpleAdvancement15 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement13)
-			.method_697(
+			.display(
 				Items.field_8449,
 				new TranslatableTextComponent("advancements.story.follow_ender_eye.title"),
 				new TranslatableTextComponent("advancements.story.follow_ender_eye.description"),
@@ -242,11 +242,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("in_stronghold", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9017(Feature.field_13565)))
+			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9017(Feature.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
 		SimpleAdvancement simpleAdvancement16 = SimpleAdvancement.Builder.create()
 			.parent(simpleAdvancement15)
-			.method_697(
+			.display(
 				Blocks.field_10471,
 				new TranslatableTextComponent("advancements.story.enter_the_end.title"),
 				new TranslatableTextComponent("advancements.story.enter_the_end.description"),
@@ -256,7 +256,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.method_709("entered_end", ChangedDimensionCriterion.Conditions.method_8799(DimensionType.field_13078))
+			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13078))
 			.build(consumer, "story/enter_the_end");
 	}
 }

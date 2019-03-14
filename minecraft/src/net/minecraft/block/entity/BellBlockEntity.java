@@ -6,7 +6,7 @@ import net.minecraft.util.math.Direction;
 public class BellBlockEntity extends BlockEntity implements Tickable {
 	public int ringTicks;
 	public boolean isRinging;
-	public Direction field_17097;
+	public Direction lastSideHit;
 
 	public BellBlockEntity() {
 		super(BlockEntityType.BELL);
@@ -15,7 +15,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 	@Override
 	public boolean onBlockAction(int i, int j) {
 		if (i == 1) {
-			this.field_17097 = Direction.byId(j);
+			this.lastSideHit = Direction.byId(j);
 			this.ringTicks = 0;
 			this.isRinging = true;
 			return true;
@@ -36,8 +36,8 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		}
 	}
 
-	public void method_17031(Direction direction) {
-		this.field_17097 = direction;
+	public void activate(Direction direction) {
+		this.lastSideHit = direction;
 		if (this.isRinging) {
 			this.ringTicks = 0;
 		} else {
@@ -45,7 +45,7 @@ public class BellBlockEntity extends BlockEntity implements Tickable {
 		}
 
 		if (!this.world.isClient) {
-			this.world.method_8427(this.method_11016(), this.method_11010().getBlock(), 1, direction.getId());
+			this.world.addBlockAction(this.getPos(), this.getCachedState().getBlock(), 1, direction.getId());
 		}
 	}
 }

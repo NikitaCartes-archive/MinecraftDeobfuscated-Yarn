@@ -7,17 +7,17 @@ import net.minecraft.text.TextComponent;
 @Environment(EnvType.CLIENT)
 public class ChatHudLine {
 	private final int tickCreated;
-	private final TextComponent field_1651;
+	private final TextComponent contents;
 	private final int id;
 
 	public ChatHudLine(int i, TextComponent textComponent, int j) {
-		this.field_1651 = textComponent;
+		this.contents = textComponent;
 		this.tickCreated = i;
 		this.id = j;
 	}
 
-	public TextComponent method_1412() {
-		return this.field_1651;
+	public TextComponent getContents() {
+		return this.contents;
 	}
 
 	public int getTickCreated() {

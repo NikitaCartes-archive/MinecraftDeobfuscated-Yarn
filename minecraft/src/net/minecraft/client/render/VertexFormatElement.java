@@ -14,7 +14,7 @@ public class VertexFormatElement {
 	private final int count;
 
 	public VertexFormatElement(int i, VertexFormatElement.Format format, VertexFormatElement.Type type, int j) {
-		if (this.method_1383(i, type)) {
+		if (this.isValidType(i, type)) {
 			this.type = type;
 		} else {
 			LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
@@ -26,7 +26,7 @@ public class VertexFormatElement {
 		this.count = j;
 	}
 
-	private final boolean method_1383(int i, VertexFormatElement.Type type) {
+	private final boolean isValidType(int i, VertexFormatElement.Type type) {
 		return i == 0 || type == VertexFormatElement.Type.UV;
 	}
 

@@ -24,13 +24,13 @@ public class HoeItem extends ToolItem {
 	protected static final Map<Block, BlockState> BLOCK_TRANSFORMATIONS_MAP = Maps.<Block, BlockState>newHashMap(
 		ImmutableMap.of(
 			Blocks.field_10219,
-			Blocks.field_10362.method_9564(),
+			Blocks.field_10362.getDefaultState(),
 			Blocks.field_10194,
-			Blocks.field_10362.method_9564(),
+			Blocks.field_10362.getDefaultState(),
 			Blocks.field_10566,
-			Blocks.field_10362.method_9564(),
+			Blocks.field_10362.getDefaultState(),
 			Blocks.field_10253,
-			Blocks.field_10566.method_9564()
+			Blocks.field_10566.getDefaultState()
 		)
 	);
 
@@ -40,16 +40,16 @@ public class HoeItem extends ToolItem {
 	}
 
 	@Override
-	public ActionResult method_7884(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.method_8045();
-		BlockPos blockPos = itemUsageContext.method_8037();
-		if (itemUsageContext.method_8038() != Direction.DOWN && world.method_8320(blockPos.up()).isAir()) {
-			BlockState blockState = (BlockState)BLOCK_TRANSFORMATIONS_MAP.get(world.method_8320(blockPos).getBlock());
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
+		if (itemUsageContext.getFacing() != Direction.DOWN && world.getBlockState(blockPos.up()).isAir()) {
+			BlockState blockState = (BlockState)BLOCK_TRANSFORMATIONS_MAP.get(world.getBlockState(blockPos).getBlock());
 			if (blockState != null) {
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
-				world.method_8396(playerEntity, blockPos, SoundEvents.field_14846, SoundCategory.field_15245, 1.0F, 1.0F);
+				world.playSound(playerEntity, blockPos, SoundEvents.field_14846, SoundCategory.field_15245, 1.0F, 1.0F);
 				if (!world.isClient) {
-					world.method_8652(blockPos, blockState, 11);
+					world.setBlockState(blockPos, blockState, 11);
 					if (playerEntity != null) {
 						itemUsageContext.getItemStack().applyDamage(1, playerEntity);
 					}
@@ -63,7 +63,7 @@ public class HoeItem extends ToolItem {
 	}
 
 	@Override
-	public boolean method_7873(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
+	public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
 		itemStack.applyDamage(1, livingEntity2);
 		return true;
 	}

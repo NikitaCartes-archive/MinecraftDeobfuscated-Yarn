@@ -2,10 +2,10 @@ package net.minecraft.client.gui.ingame;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.server.network.packet.UpdateJigsawC2SPacket;
@@ -31,22 +31,19 @@ public class JigsawBlockScreen extends Screen {
 
 	private void onDone() {
 		this.updateServer();
-		this.client.method_1507(null);
+		this.client.openScreen(null);
 	}
 
 	private void onCancel() {
-		this.client.method_1507(null);
+		this.client.openScreen(null);
 	}
 
 	private void updateServer() {
 		this.client
-			.method_1562()
-			.method_2883(
+			.getNetworkHandler()
+			.sendPacket(
 				new UpdateJigsawC2SPacket(
-					this.jigsaw.method_11016(),
-					new Identifier(this.attachmentTypeField.getText()),
-					new Identifier(this.targetPoolField.getText()),
-					this.finalStateField.getText()
+					this.jigsaw.getPos(), new Identifier(this.attachmentTypeField.getText()), new Identifier(this.targetPoolField.getText()), this.finalStateField.getText()
 				)
 			);
 	}
@@ -59,31 +56,31 @@ public class JigsawBlockScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(new class_4185(this.screenWidth / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done")) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				JigsawBlockScreen.this.onDone();
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				JigsawBlockScreen.this.onCancel();
 			}
 		});
 		this.targetPoolField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 40, 300, 20);
 		this.targetPoolField.setMaxLength(128);
-		this.targetPoolField.setText(this.jigsaw.method_16382().toString());
+		this.targetPoolField.setText(this.jigsaw.getTargetPool().toString());
 		this.listeners.add(this.targetPoolField);
 		this.attachmentTypeField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 80, 300, 20);
 		this.attachmentTypeField.setMaxLength(128);
-		this.attachmentTypeField.setText(this.jigsaw.method_16381().toString());
+		this.attachmentTypeField.setText(this.jigsaw.getAttachmentType().toString());
 		this.listeners.add(this.attachmentTypeField);
 		this.finalStateField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 120, 300, 20);
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.listeners.add(this.finalStateField);
-		this.method_18624(this.targetPoolField);
+		this.focusOn(this.targetPoolField);
 	}
 
 	@Override

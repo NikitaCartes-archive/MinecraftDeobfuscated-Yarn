@@ -30,7 +30,7 @@ public class PaintingMotive {
 	public static final PaintingMotive field_7158 = register("skeleton", 64, 48);
 	public static final PaintingMotive field_7140 = register("donkey_kong", 64, 48);
 	private final int width;
-	private final int textureY;
+	private final int height;
 
 	private static PaintingMotive register(String string, int i, int j) {
 		return Registry.register(Registry.MOTIVE, string, new PaintingMotive(i, j));
@@ -38,14 +38,14 @@ public class PaintingMotive {
 
 	public PaintingMotive(int i, int j) {
 		this.width = i;
-		this.textureY = j;
+		this.height = j;
 	}
 
 	public int getWidth() {
 		return this.width;
 	}
 
-	public int getTextureY() {
-		return this.textureY;
+	public int getHeight() {
+		return this.height;
 	}
 }

@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
@@ -20,10 +20,10 @@ public class ItemPickupParticle extends Particle {
 	private int field_3826;
 	private final int field_3825;
 	private final float field_3822;
-	private final EntityRenderDispatcher field_3824 = MinecraftClient.getInstance().method_1561();
+	private final EntityRenderDispatcher field_3824 = MinecraftClient.getInstance().getEntityRenderManager();
 
 	public ItemPickupParticle(World world, Entity entity, Entity entity2, float f) {
-		this(world, entity, entity2, f, entity.method_18798());
+		this(world, entity, entity2, f, entity.getVelocity());
 	}
 
 	private ItemPickupParticle(World world, Entity entity, Entity entity2, float f, Vec3d vec3d) {
@@ -35,12 +35,12 @@ public class ItemPickupParticle extends Particle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.CUSTOM;
 	}
 
 	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, class_4184 arg, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
 		float l = ((float)this.field_3826 + f) / (float)this.field_3825;
 		l *= l;
 		double d = this.field_3823.x;

@@ -29,7 +29,7 @@ public class CookingRecipeSerializer<T extends CookingRecipe> implements RecipeS
 		String string2 = JsonHelper.getString(jsonObject, "result");
 		Identifier identifier2 = new Identifier(string2);
 		ItemStack itemStack = new ItemStack(
-			(ItemProvider)Registry.ITEM.method_17966(identifier2).orElseThrow(() -> new IllegalStateException("Item: " + string2 + " does not exist"))
+			(ItemProvider)Registry.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new IllegalStateException("Item: " + string2 + " does not exist"))
 		);
 		float f = JsonHelper.getFloat(jsonObject, "experience", 0.0F);
 		int i = JsonHelper.getInt(jsonObject, "cookingtime", this.cookingTime);
@@ -38,7 +38,7 @@ public class CookingRecipeSerializer<T extends CookingRecipe> implements RecipeS
 
 	public T method_17737(Identifier identifier, PacketByteBuf packetByteBuf) {
 		String string = packetByteBuf.readString(32767);
-		Ingredient ingredient = Ingredient.method_8086(packetByteBuf);
+		Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 		ItemStack itemStack = packetByteBuf.readItemStack();
 		float f = packetByteBuf.readFloat();
 		int i = packetByteBuf.readVarInt();
@@ -47,7 +47,7 @@ public class CookingRecipeSerializer<T extends CookingRecipe> implements RecipeS
 
 	public void method_17735(PacketByteBuf packetByteBuf, T cookingRecipe) {
 		packetByteBuf.writeString(cookingRecipe.group);
-		cookingRecipe.field_9061.method_8088(packetByteBuf);
+		cookingRecipe.input.write(packetByteBuf);
 		packetByteBuf.writeItemStack(cookingRecipe.output);
 		packetByteBuf.writeFloat(cookingRecipe.experience);
 		packetByteBuf.writeVarInt(cookingRecipe.cookTime);

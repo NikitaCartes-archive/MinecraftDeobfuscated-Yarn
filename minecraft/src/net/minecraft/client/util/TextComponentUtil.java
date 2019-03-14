@@ -13,10 +13,10 @@ import net.minecraft.text.TextFormat;
 @Environment(EnvType.CLIENT)
 public class TextComponentUtil {
 	public static String method_1849(String string, boolean bl) {
-		return !bl && !MinecraftClient.getInstance().field_1690.chatColors ? TextFormat.stripFormatting(string) : string;
+		return !bl && !MinecraftClient.getInstance().options.chatColors ? TextFormat.stripFormatting(string) : string;
 	}
 
-	public static List<TextComponent> method_1850(TextComponent textComponent, int i, TextRenderer textRenderer, boolean bl, boolean bl2) {
+	public static List<TextComponent> wrapLines(TextComponent textComponent, int i, TextRenderer textRenderer, boolean bl, boolean bl2) {
 		int j = 0;
 		TextComponent textComponent2 = new StringTextComponent("");
 		List<TextComponent> list = Lists.<TextComponent>newArrayList();
@@ -30,15 +30,15 @@ public class TextComponentUtil {
 				int l = string.indexOf(10);
 				String string2 = string.substring(l + 1);
 				string = string.substring(0, l + 1);
-				TextComponent textComponent4 = new StringTextComponent(string2).method_10862(textComponent3.method_10866().clone());
+				TextComponent textComponent4 = new StringTextComponent(string2).setStyle(textComponent3.getStyle().clone());
 				list2.add(k + 1, textComponent4);
 				bl3 = true;
 			}
 
-			String string3 = method_1849(textComponent3.method_10866().getFormatString() + string, bl2);
+			String string3 = method_1849(textComponent3.getStyle().getFormatString() + string, bl2);
 			String string2 = string3.endsWith("\n") ? string3.substring(0, string3.length() - 1) : string3;
 			int m = textRenderer.getStringWidth(string2);
-			TextComponent textComponent5 = new StringTextComponent(string2).method_10862(textComponent3.method_10866().clone());
+			TextComponent textComponent5 = new StringTextComponent(string2).setStyle(textComponent3.getStyle().clone());
 			if (j + m > i) {
 				String string4 = textRenderer.trimToWidth(string3, i - j, false);
 				String string5 = string4.length() < string3.length() ? string3.substring(string4.length()) : null;
@@ -56,13 +56,13 @@ public class TextComponentUtil {
 						string5 = string3;
 					}
 
-					TextComponent textComponent6 = new StringTextComponent(string5).method_10862(textComponent3.method_10866().clone());
+					TextComponent textComponent6 = new StringTextComponent(string5).setStyle(textComponent3.getStyle().clone());
 					list2.add(k + 1, textComponent6);
 				}
 
 				m = textRenderer.getStringWidth(string4);
 				textComponent5 = new StringTextComponent(string4);
-				textComponent5.method_10862(textComponent3.method_10866().clone());
+				textComponent5.setStyle(textComponent3.getStyle().clone());
 				bl3 = true;
 			}
 

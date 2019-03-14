@@ -12,7 +12,7 @@ public class Model {
 	public int textureWidth = 64;
 	public int textureHeight = 32;
 
-	public Cuboid method_17101(Random random) {
+	public Cuboid getRandomCuboid(Random random) {
 		return (Cuboid)this.cuboidList.get(random.nextInt(this.cuboidList.size()));
 	}
 }

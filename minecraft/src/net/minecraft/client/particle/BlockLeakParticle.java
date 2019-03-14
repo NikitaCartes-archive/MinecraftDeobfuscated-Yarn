@@ -2,7 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -25,13 +24,13 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Override
 	public int getColorMultiplier(float f) {
-		return this.field_3789.method_15791(FluidTags.field_15518) ? 240 : super.getColorMultiplier(f);
+		return this.field_3789.matches(FluidTags.field_15518) ? 240 : super.getColorMultiplier(f);
 	}
 
 	@Override
@@ -49,8 +48,8 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 				this.velocityY *= 0.98F;
 				this.velocityZ *= 0.98F;
 				BlockPos blockPos = new BlockPos(this.posX, this.posY, this.posZ);
-				FluidState fluidState = this.world.method_8316(blockPos);
-				if (fluidState.getFluid() == this.field_3789 && this.posY < (double)((float)blockPos.getY() + fluidState.method_15763(this.world, blockPos))) {
+				FluidState fluidState = this.world.getFluidState(blockPos);
+				if (fluidState.getFluid() == this.field_3789 && this.posY < (double)((float)blockPos.getY() + fluidState.getHeight(this.world, blockPos))) {
 					this.markDead();
 				}
 			}
@@ -68,10 +67,10 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class LavaFactory implements ParticleFactory<DefaultParticleType> {
-		protected final class_4002 field_18295;
+		protected final SpriteProvider field_18295;
 
-		public LavaFactory(class_4002 arg) {
-			this.field_18295 = arg;
+		public LavaFactory(SpriteProvider spriteProvider) {
+			this.field_18295 = spriteProvider;
 		}
 
 		public Particle method_3017(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -83,10 +82,10 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class WaterFactory implements ParticleFactory<DefaultParticleType> {
-		protected final class_4002 field_18297;
+		protected final SpriteProvider field_18297;
 
-		public WaterFactory(class_4002 arg) {
-			this.field_18297 = arg;
+		public WaterFactory(SpriteProvider spriteProvider) {
+			this.field_18297 = spriteProvider;
 		}
 
 		public Particle method_3018(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -126,7 +125,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 		protected void method_18822() {
 			if (this.onGround) {
 				this.markDead();
-				this.world.method_8406(this.field_18292, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
+				this.world.addParticle(this.field_18292, this.posX, this.posY, this.posZ, 0.0, 0.0, 0.0);
 			}
 		}
 	}
@@ -146,7 +145,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 		protected void method_18821() {
 			if (this.maxAge-- <= 0) {
 				this.markDead();
-				this.world.method_8406(this.field_18293, this.posX, this.posY, this.posZ, this.velocityX, this.velocityY, this.velocityZ);
+				this.world.addParticle(this.field_18293, this.posX, this.posY, this.posZ, this.velocityX, this.velocityY, this.velocityZ);
 			}
 		}
 
@@ -168,10 +167,10 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class class_4086 implements ParticleFactory<DefaultParticleType> {
-		protected final class_4002 field_18294;
+		protected final SpriteProvider field_18294;
 
-		public class_4086(class_4002 arg) {
-			this.field_18294 = arg;
+		public class_4086(SpriteProvider spriteProvider) {
+			this.field_18294 = spriteProvider;
 		}
 
 		public Particle method_18823(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -184,10 +183,10 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class class_4087 implements ParticleFactory<DefaultParticleType> {
-		protected final class_4002 field_18296;
+		protected final SpriteProvider field_18296;
 
-		public class_4087(class_4002 arg) {
-			this.field_18296 = arg;
+		public class_4087(SpriteProvider spriteProvider) {
+			this.field_18296 = spriteProvider;
 		}
 
 		public Particle method_18824(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -200,10 +199,10 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class class_4088 implements ParticleFactory<DefaultParticleType> {
-		protected final class_4002 field_18298;
+		protected final SpriteProvider field_18298;
 
-		public class_4088(class_4002 arg) {
-			this.field_18298 = arg;
+		public class_4088(SpriteProvider spriteProvider) {
+			this.field_18298 = spriteProvider;
 		}
 
 		public Particle method_18825(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

@@ -31,7 +31,7 @@ public class ClampedEntityAttribute extends AbstractEntityAttribute {
 	}
 
 	@Override
-	public double method_6165(double d) {
+	public double clamp(double d) {
 		return MathHelper.clamp(d, this.minValue, this.maxValue);
 	}
 }

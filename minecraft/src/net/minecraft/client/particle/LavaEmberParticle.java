@@ -2,7 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.world.World;
@@ -20,7 +19,7 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -45,7 +44,7 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 		this.prevPosZ = this.posZ;
 		float f = (float)this.age / (float)this.maxAge;
 		if (this.random.nextFloat() > f) {
-			this.world.method_8406(ParticleTypes.field_11251, this.posX, this.posY, this.posZ, this.velocityX, this.velocityY, this.velocityZ);
+			this.world.addParticle(ParticleTypes.field_11251, this.posX, this.posY, this.posZ, this.velocityX, this.velocityY, this.velocityZ);
 		}
 
 		if (this.age++ >= this.maxAge) {
@@ -65,10 +64,10 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17818;
+		private final SpriteProvider field_17818;
 
-		public Factory(class_4002 arg) {
-			this.field_17818 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17818 = spriteProvider;
 		}
 
 		public Particle method_3039(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

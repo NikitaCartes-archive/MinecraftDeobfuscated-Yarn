@@ -7,15 +7,15 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class DefaultSkinHelper {
-	private static final Identifier field_5301 = new Identifier("textures/entity/steve.png");
-	private static final Identifier field_5300 = new Identifier("textures/entity/alex.png");
+	private static final Identifier STEVE_SKIN = new Identifier("textures/entity/steve.png");
+	private static final Identifier ALEX_SKIN = new Identifier("textures/entity/alex.png");
 
-	public static Identifier method_4649() {
-		return field_5301;
+	public static Identifier getTexture() {
+		return STEVE_SKIN;
 	}
 
-	public static Identifier method_4648(UUID uUID) {
-		return shouldUseSlimModel(uUID) ? field_5300 : field_5301;
+	public static Identifier getTexture(UUID uUID) {
+		return shouldUseSlimModel(uUID) ? ALEX_SKIN : STEVE_SKIN;
 	}
 
 	public static String getModel(UUID uUID) {

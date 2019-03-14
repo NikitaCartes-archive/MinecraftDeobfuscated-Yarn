@@ -11,12 +11,12 @@ import net.minecraft.entity.mob.IllagerEntity;
 public abstract class IllagerEntityRenderer<T extends IllagerEntity> extends MobEntityRenderer<T, EvilVillagerEntityModel<T>> {
 	protected IllagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, EvilVillagerEntityModel<T> evilVillagerEntityModel, float f) {
 		super(entityRenderDispatcher, evilVillagerEntityModel, f);
-		this.method_4046(new HeadFeatureRenderer<>(this));
+		this.addFeature(new HeadFeatureRenderer<>(this));
 	}
 
 	public IllagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new EvilVillagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
-		this.method_4046(new HeadFeatureRenderer<>(this));
+		this.addFeature(new HeadFeatureRenderer<>(this));
 	}
 
 	protected void method_16460(T illagerEntity, float f) {

@@ -33,7 +33,7 @@ public class RequestCommandCompletionsC2SPacket implements Packet<ServerPlayPack
 	}
 
 	public void method_12147(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12059(this);
+		serverPlayPacketListener.onRequestCommandCompletions(this);
 	}
 
 	public int getCompletionId() {

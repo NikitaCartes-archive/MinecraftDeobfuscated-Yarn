@@ -2,7 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
@@ -36,7 +35,7 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -83,10 +82,10 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class EnchantFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17803;
+		private final SpriteProvider field_17803;
 
-		public EnchantFactory(class_4002 arg) {
-			this.field_17803 = arg;
+		public EnchantFactory(SpriteProvider spriteProvider) {
+			this.field_17803 = spriteProvider;
 		}
 
 		public Particle method_3021(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -98,10 +97,10 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class NautilusFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17804;
+		private final SpriteProvider field_17804;
 
-		public NautilusFactory(class_4002 arg) {
-			this.field_17804 = arg;
+		public NautilusFactory(SpriteProvider spriteProvider) {
+			this.field_17804 = spriteProvider;
 		}
 
 		public Particle method_3020(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

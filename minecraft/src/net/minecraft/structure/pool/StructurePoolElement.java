@@ -15,25 +15,27 @@ import net.minecraft.world.IWorld;
 
 public abstract class StructurePoolElement {
 	@Nullable
-	private volatile StructurePool.Projection field_16862 = null;
+	private volatile StructurePool.Projection projection = null;
 
 	protected StructurePoolElement(StructurePool.Projection projection) {
-		this.field_16862 = projection;
+		this.projection = projection;
 	}
 
 	protected StructurePoolElement(Dynamic<?> dynamic) {
-		this.field_16862 = StructurePool.Projection.getById(dynamic.get("projection").asString(StructurePool.Projection.RIGID.getId()));
+		this.projection = StructurePool.Projection.getById(dynamic.get("projection").asString(StructurePool.Projection.RIGID.getId()));
 	}
 
-	public abstract List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random);
+	public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(
+		StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random
+	);
 
-	public abstract MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation);
+	public abstract MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, Rotation rotation);
 
-	public abstract boolean method_16626(
+	public abstract boolean generate(
 		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	);
 
-	public abstract StructurePoolElementType method_16757();
+	public abstract StructurePoolElementType getType();
 
 	public void method_16756(
 		IWorld iWorld,
@@ -45,13 +47,13 @@ public abstract class StructurePoolElement {
 	) {
 	}
 
-	public StructurePoolElement method_16622(StructurePool.Projection projection) {
-		this.field_16862 = projection;
+	public StructurePoolElement setProjection(StructurePool.Projection projection) {
+		this.projection = projection;
 		return this;
 	}
 
-	public StructurePool.Projection method_16624() {
-		StructurePool.Projection projection = this.field_16862;
+	public StructurePool.Projection getProjection() {
+		StructurePool.Projection projection = this.projection;
 		if (projection == null) {
 			throw new IllegalStateException();
 		} else {
@@ -64,9 +66,9 @@ public abstract class StructurePoolElement {
 	public <T> Dynamic<T> method_16755(DynamicOps<T> dynamicOps) {
 		T object = this.method_16625(dynamicOps).getValue();
 		T object2 = dynamicOps.mergeInto(
-			object, dynamicOps.createString("element_type"), dynamicOps.createString(Registry.STRUCTURE_POOL_ELEMENT.method_10221(this.method_16757()).toString())
+			object, dynamicOps.createString("element_type"), dynamicOps.createString(Registry.STRUCTURE_POOL_ELEMENT.getId(this.getType()).toString())
 		);
-		return new Dynamic<>(dynamicOps, dynamicOps.mergeInto(object2, dynamicOps.createString("projection"), dynamicOps.createString(this.field_16862.getId())));
+		return new Dynamic<>(dynamicOps, dynamicOps.mergeInto(object2, dynamicOps.createString("projection"), dynamicOps.createString(this.projection.getId())));
 	}
 
 	public int method_19308() {

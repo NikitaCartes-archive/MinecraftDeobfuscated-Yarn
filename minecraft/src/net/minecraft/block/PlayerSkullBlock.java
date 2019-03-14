@@ -18,14 +18,14 @@ public class PlayerSkullBlock extends SkullBlock {
 	}
 
 	@Override
-	public void method_9567(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		super.method_9567(world, blockPos, blockState, livingEntity, itemStack);
-		BlockEntity blockEntity = world.method_8321(blockPos);
+	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+		super.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof SkullBlockEntity) {
 			SkullBlockEntity skullBlockEntity = (SkullBlockEntity)blockEntity;
 			GameProfile gameProfile = null;
 			if (itemStack.hasTag()) {
-				CompoundTag compoundTag = itemStack.method_7969();
+				CompoundTag compoundTag = itemStack.getTag();
 				if (compoundTag.containsKey("SkullOwner", 10)) {
 					gameProfile = TagHelper.deserializeProfile(compoundTag.getCompound("SkullOwner"));
 				} else if (compoundTag.containsKey("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {

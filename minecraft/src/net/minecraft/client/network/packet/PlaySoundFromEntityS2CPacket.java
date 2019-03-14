@@ -13,8 +13,8 @@ import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.Validate;
 
 public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketListener> {
-	private SoundEvent field_12642;
-	private SoundCategory field_12641;
+	private SoundEvent sound;
+	private SoundCategory category;
 	private int entityId;
 	private float volume;
 	private float pitch;
@@ -24,8 +24,8 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 
 	public PlaySoundFromEntityS2CPacket(SoundEvent soundEvent, SoundCategory soundCategory, Entity entity, float f, float g) {
 		Validate.notNull(soundEvent, "sound");
-		this.field_12642 = soundEvent;
-		this.field_12641 = soundCategory;
+		this.sound = soundEvent;
+		this.category = soundCategory;
 		this.entityId = entity.getEntityId();
 		this.volume = f;
 		this.pitch = g;
@@ -33,8 +33,8 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_12642 = Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
-		this.field_12641 = packetByteBuf.readEnumConstant(SoundCategory.class);
+		this.sound = Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
+		this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
 		this.entityId = packetByteBuf.readVarInt();
 		this.volume = packetByteBuf.readFloat();
 		this.pitch = packetByteBuf.readFloat();
@@ -42,21 +42,21 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(Registry.SOUND_EVENT.getRawId(this.field_12642));
-		packetByteBuf.writeEnumConstant(this.field_12641);
+		packetByteBuf.writeVarInt(Registry.SOUND_EVENT.getRawId(this.sound));
+		packetByteBuf.writeEnumConstant(this.category);
 		packetByteBuf.writeVarInt(this.entityId);
 		packetByteBuf.writeFloat(this.volume);
 		packetByteBuf.writeFloat(this.pitch);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent method_11882() {
-		return this.field_12642;
+	public SoundEvent getSound() {
+		return this.sound;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundCategory method_11881() {
-		return this.field_12641;
+	public SoundCategory getCategory() {
+		return this.category;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -75,6 +75,6 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	public void method_11884(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11125(this);
+		clientPlayPacketListener.onPlaySoundFromEntity(this);
 	}
 }

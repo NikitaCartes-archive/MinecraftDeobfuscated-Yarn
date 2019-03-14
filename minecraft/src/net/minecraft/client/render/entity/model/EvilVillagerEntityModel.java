@@ -2,15 +2,13 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3881;
-import net.minecraft.class_3882;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.mob.IllagerEntity;
-import net.minecraft.sortme.OptionMainHand;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityModel<T> implements class_3881, class_3882 {
+public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityModel<T> implements ModelWithArms, ModelWithHead {
 	protected final Cuboid field_3422;
 	private final Cuboid field_3419;
 	protected final Cuboid field_3425;
@@ -118,7 +116,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 			this.field_3417.roll = 0.0F;
 			this.field_3426.yaw = (float) (Math.PI / 20);
 			this.field_3417.yaw = (float) (-Math.PI / 20);
-			if (illagerEntity.getMainHand() == OptionMainHand.field_6183) {
+			if (illagerEntity.getMainHand() == AbsoluteHand.field_6183) {
 				this.field_3426.pitch = -1.8849558F + MathHelper.cos(h * 0.09F) * 0.15F;
 				this.field_3417.pitch = -0.0F + MathHelper.cos(h * 0.19F) * 0.5F;
 				this.field_3426.pitch += l * 2.2F - m * 0.4F;
@@ -171,8 +169,8 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 		super.animateModel(illagerEntity, f, g, h);
 	}
 
-	private Cuboid method_2813(OptionMainHand optionMainHand) {
-		return optionMainHand == OptionMainHand.field_6182 ? this.field_3417 : this.field_3426;
+	private Cuboid method_2813(AbsoluteHand absoluteHand) {
+		return absoluteHand == AbsoluteHand.field_6182 ? this.field_3417 : this.field_3426;
 	}
 
 	public Cuboid method_2812() {
@@ -185,7 +183,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 	}
 
 	@Override
-	public void method_2803(float f, OptionMainHand optionMainHand) {
-		this.method_2813(optionMainHand).applyTransform(0.0625F);
+	public void setArmAngle(float f, AbsoluteHand absoluteHand) {
+		this.method_2813(absoluteHand).applyTransform(0.0625F);
 	}
 }

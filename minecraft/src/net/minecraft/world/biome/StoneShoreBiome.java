@@ -12,9 +12,9 @@ public final class StoneShoreBiome extends Biome {
 	public StoneShoreBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15670)
+				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.STONE_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
-				.method_8738(Biome.Category.NONE)
+				.category(Biome.Category.NONE)
 				.depth(0.1F)
 				.scale(0.8F)
 				.temperature(0.2F)
@@ -23,8 +23,8 @@ public final class StoneShoreBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

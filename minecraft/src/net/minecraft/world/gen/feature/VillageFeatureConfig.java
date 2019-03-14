@@ -6,11 +6,11 @@ import com.mojang.datafixers.types.DynamicOps;
 import net.minecraft.util.Identifier;
 
 public class VillageFeatureConfig implements FeatureConfig {
-	public final Identifier field_16861;
+	public final Identifier startPool;
 	public final int size;
 
 	public VillageFeatureConfig(String string, int i) {
-		this.field_16861 = new Identifier(string);
+		this.startPool = new Identifier(string);
 		this.size = i;
 	}
 
@@ -21,7 +21,7 @@ public class VillageFeatureConfig implements FeatureConfig {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("start_pool"),
-					dynamicOps.createString(this.field_16861.toString()),
+					dynamicOps.createString(this.startPool.toString()),
 					dynamicOps.createString("size"),
 					dynamicOps.createInt(this.size)
 				)

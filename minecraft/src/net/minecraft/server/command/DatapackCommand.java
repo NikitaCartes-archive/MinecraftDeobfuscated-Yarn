@@ -62,7 +62,7 @@ public class DatapackCommand {
 												.executes(
 													commandContext -> method_13114(
 															(ServerCommandSource)commandContext.getSource(),
-															method_13127(commandContext, "name", true),
+															getPackContainer(commandContext, "name", true),
 															(list, resourcePackContainer) -> resourcePackContainer.getSortingDirection()
 																	.locate(list, resourcePackContainer, resourcePackContainerx -> resourcePackContainerx, false)
 														)
@@ -75,8 +75,8 @@ public class DatapackCommand {
 															.executes(
 																commandContext -> method_13114(
 																		commandContext.getSource(),
-																		method_13127(commandContext, "name", true),
-																		(list, resourcePackContainer) -> list.add(list.indexOf(method_13127(commandContext, "existing", false)) + 1, resourcePackContainer)
+																		getPackContainer(commandContext, "name", true),
+																		(list, resourcePackContainer) -> list.add(list.indexOf(getPackContainer(commandContext, "existing", false)) + 1, resourcePackContainer)
 																	)
 															)
 													)
@@ -89,21 +89,21 @@ public class DatapackCommand {
 														.executes(
 															commandContext -> method_13114(
 																	commandContext.getSource(),
-																	method_13127(commandContext, "name", true),
-																	(list, resourcePackContainer) -> list.add(list.indexOf(method_13127(commandContext, "existing", false)), resourcePackContainer)
+																	getPackContainer(commandContext, "name", true),
+																	(list, resourcePackContainer) -> list.add(list.indexOf(getPackContainer(commandContext, "existing", false)), resourcePackContainer)
 																)
 														)
 												)
 										))
 									.then(
 										ServerCommandManager.literal("last")
-											.executes(commandContext -> method_13114(commandContext.getSource(), method_13127(commandContext, "name", true), List::add))
+											.executes(commandContext -> method_13114(commandContext.getSource(), getPackContainer(commandContext, "name", true), List::add))
 									))
 								.then(
 									ServerCommandManager.literal("first")
 										.executes(
 											commandContext -> method_13114(
-													commandContext.getSource(), method_13127(commandContext, "name", true), (list, resourcePackContainer) -> list.add(0, resourcePackContainer)
+													commandContext.getSource(), getPackContainer(commandContext, "name", true), (list, resourcePackContainer) -> list.add(0, resourcePackContainer)
 												)
 										)
 								)
@@ -114,7 +114,7 @@ public class DatapackCommand {
 						.then(
 							ServerCommandManager.argument("name", StringArgumentType.string())
 								.suggests(field_13506)
-								.executes(commandContext -> method_13140(commandContext.getSource(), method_13127(commandContext, "name", false)))
+								.executes(commandContext -> method_13140(commandContext.getSource(), getPackContainer(commandContext, "name", false)))
 						)
 				)
 				.then(
@@ -131,12 +131,12 @@ public class DatapackCommand {
 		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(resourcePackContainerManager.getEnabledContainers());
 		arg.apply(list, resourcePackContainer);
 		resourcePackContainerManager.setEnabled(list);
-		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().method_3847(DimensionType.field_13072).method_8401();
+		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().getWorld(DimensionType.field_13072).getLevelProperties();
 		levelProperties.getEnabledDataPacks().clear();
 		resourcePackContainerManager.getEnabledContainers()
 			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
 		levelProperties.getDisabledDataPacks().remove(resourcePackContainer.getName());
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.datapack.enable.success", resourcePackContainer.getInformationText(true)), true);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.datapack.enable.success", resourcePackContainer.getInformationText(true)), true);
 		serverCommandSource.getMinecraftServer().reload();
 		return resourcePackContainerManager.getEnabledContainers().size();
 	}
@@ -146,12 +146,12 @@ public class DatapackCommand {
 		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList(resourcePackContainerManager.getEnabledContainers());
 		list.remove(resourcePackContainer);
 		resourcePackContainerManager.setEnabled(list);
-		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().method_3847(DimensionType.field_13072).method_8401();
+		LevelProperties levelProperties = serverCommandSource.getMinecraftServer().getWorld(DimensionType.field_13072).getLevelProperties();
 		levelProperties.getEnabledDataPacks().clear();
 		resourcePackContainerManager.getEnabledContainers()
 			.forEach(resourcePackContainerx -> levelProperties.getEnabledDataPacks().add(resourcePackContainerx.getName()));
 		levelProperties.getDisabledDataPacks().add(resourcePackContainer.getName());
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.datapack.disable.success", resourcePackContainer.getInformationText(true)), true);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.datapack.disable.success", resourcePackContainer.getInformationText(true)), true);
 		serverCommandSource.getMinecraftServer().reload();
 		return resourcePackContainerManager.getEnabledContainers().size();
 	}
@@ -163,9 +163,9 @@ public class DatapackCommand {
 	private static int executeAvailable(ServerCommandSource serverCommandSource) {
 		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().method_3836();
 		if (resourcePackContainerManager.getDisabledContainers().isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.datapack.list.available.none"), false);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.datapack.list.available.none"), false);
 		} else {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent(
 					"commands.datapack.list.available.success",
 					resourcePackContainerManager.getDisabledContainers().size(),
@@ -181,9 +181,9 @@ public class DatapackCommand {
 	private static int executeEnabled(ServerCommandSource serverCommandSource) {
 		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = serverCommandSource.getMinecraftServer().method_3836();
 		if (resourcePackContainerManager.getEnabledContainers().isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.datapack.list.enabled.none"), false);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.datapack.list.enabled.none"), false);
 		} else {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent(
 					"commands.datapack.list.enabled.success",
 					resourcePackContainerManager.getEnabledContainers().size(),
@@ -196,10 +196,10 @@ public class DatapackCommand {
 		return resourcePackContainerManager.getEnabledContainers().size();
 	}
 
-	private static ResourcePackContainer method_13127(CommandContext<ServerCommandSource> commandContext, String string, boolean bl) throws CommandSyntaxException {
+	private static ResourcePackContainer getPackContainer(CommandContext<ServerCommandSource> commandContext, String string, boolean bl) throws CommandSyntaxException {
 		String string2 = StringArgumentType.getString(commandContext, string);
 		ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = commandContext.getSource().getMinecraftServer().method_3836();
-		ResourcePackContainer resourcePackContainer = resourcePackContainerManager.method_14449(string2);
+		ResourcePackContainer resourcePackContainer = resourcePackContainerManager.getContainer(string2);
 		if (resourcePackContainer == null) {
 			throw field_13503.create(string2);
 		} else {

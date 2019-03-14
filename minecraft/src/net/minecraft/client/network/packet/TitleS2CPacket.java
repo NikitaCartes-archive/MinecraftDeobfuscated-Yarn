@@ -41,7 +41,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627
 			)
 		 {
-			this.text = packetByteBuf.method_10808();
+			this.text = packetByteBuf.readTextComponent();
 		}
 
 		if (this.action == TitleS2CPacket.Action.DISPLAY) {
@@ -57,7 +57,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 		if (this.action == TitleS2CPacket.Action.field_12630 || this.action == TitleS2CPacket.Action.field_12632 || this.action == TitleS2CPacket.Action.field_12627
 			)
 		 {
-			packetByteBuf.method_10805(this.text);
+			packetByteBuf.writeTextComponent(this.text);
 		}
 
 		if (this.action == TitleS2CPacket.Action.DISPLAY) {
@@ -68,7 +68,7 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11879(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11103(this);
+		clientPlayPacketListener.onTitle(this);
 	}
 
 	@Environment(EnvType.CLIENT)

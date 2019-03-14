@@ -22,30 +22,30 @@ public abstract class FlyingEntity extends MobEntity {
 	}
 
 	@Override
-	public void method_6091(Vec3d vec3d) {
+	public void travel(Vec3d vec3d) {
 		if (this.isInsideWater()) {
-			this.method_5724(0.02F, vec3d);
-			this.method_5784(MovementType.field_6308, this.method_18798());
-			this.method_18799(this.method_18798().multiply(0.8F));
+			this.updateVelocity(0.02F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.8F));
 		} else if (this.isTouchingLava()) {
-			this.method_5724(0.02F, vec3d);
-			this.method_5784(MovementType.field_6308, this.method_18798());
-			this.method_18799(this.method_18798().multiply(0.5));
+			this.updateVelocity(0.02F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.5));
 		} else {
 			float f = 0.91F;
 			if (this.onGround) {
-				f = this.field_6002.method_8320(new BlockPos(this.x, this.method_5829().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
 			}
 
 			float g = 0.16277137F / (f * f * f);
 			f = 0.91F;
 			if (this.onGround) {
-				f = this.field_6002.method_8320(new BlockPos(this.x, this.method_5829().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.91F;
 			}
 
-			this.method_5724(this.onGround ? 0.1F * g : 0.02F, vec3d);
-			this.method_5784(MovementType.field_6308, this.method_18798());
-			this.method_18799(this.method_18798().multiply((double)f));
+			this.updateVelocity(this.onGround ? 0.1F * g : 0.02F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply((double)f));
 		}
 
 		this.field_6211 = this.field_6225;

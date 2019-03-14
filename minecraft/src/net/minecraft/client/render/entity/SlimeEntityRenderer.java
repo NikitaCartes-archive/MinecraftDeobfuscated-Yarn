@@ -11,11 +11,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEntityModel<SlimeEntity>> {
-	private static final Identifier field_4784 = new Identifier("textures/entity/slime/slime.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/slime/slime.png");
 
 	public SlimeEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SlimeEntityModel<>(16), 0.25F);
-		this.method_4046(new SlimeOverlayFeatureRenderer<>(this));
+		this.addFeature(new SlimeOverlayFeatureRenderer<>(this));
 	}
 
 	public void method_4117(SlimeEntity slimeEntity, double d, double e, double f, float g, float h) {
@@ -27,12 +27,12 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 		float g = 0.999F;
 		GlStateManager.scalef(0.999F, 0.999F, 0.999F);
 		float h = (float)slimeEntity.getSize();
-		float i = MathHelper.lerp(f, slimeEntity.field_7387, slimeEntity.field_7388) / (h * 0.5F + 1.0F);
+		float i = MathHelper.lerp(f, slimeEntity.sizeZ, slimeEntity.sizeY) / (h * 0.5F + 1.0F);
 		float j = 1.0F / (i + 1.0F);
 		GlStateManager.scalef(j * h, 1.0F / j * h, j * h);
 	}
 
 	protected Identifier method_4116(SlimeEntity slimeEntity) {
-		return field_4784;
+		return SKIN;
 	}
 }

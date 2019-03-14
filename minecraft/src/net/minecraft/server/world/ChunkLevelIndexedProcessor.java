@@ -14,7 +14,7 @@ public abstract class ChunkLevelIndexedProcessor extends LevelIndexedProcessor {
 	}
 
 	@Override
-	protected void processLevelAt(long l, int i, boolean bl) {
+	protected void processLevel(long l, int i, boolean bl) {
 		ChunkPos chunkPos = new ChunkPos(l);
 		int j = chunkPos.x;
 		int k = chunkPos.z;
@@ -44,7 +44,7 @@ public abstract class ChunkLevelIndexedProcessor extends LevelIndexedProcessor {
 				}
 
 				if (q != m) {
-					int r = this.getBaseLevelFor(q, l, this.getCurrentLevelFor(q));
+					int r = this.getBaseLevel(q, l, this.getLevel(q));
 					if (j > r) {
 						j = r;
 					}
@@ -60,11 +60,11 @@ public abstract class ChunkLevelIndexedProcessor extends LevelIndexedProcessor {
 	}
 
 	@Override
-	protected int getBaseLevelFor(long l, long m, int i) {
-		return l == ChunkPos.INVALID ? this.getLevel(m) : i + 1;
+	protected int getBaseLevel(long l, long m, int i) {
+		return l == ChunkPos.INVALID ? this.getBaseLevel(m) : i + 1;
 	}
 
-	protected abstract int getLevel(long l);
+	protected abstract int getBaseLevel(long l);
 
 	public void scheduleNewLevelUpdate(long l, int i, boolean bl) {
 		this.scheduleNewLevelUpdate(ChunkPos.INVALID, l, i, bl);

@@ -17,7 +17,7 @@ import net.minecraft.world.chunk.WorldChunk;
 public class SafeWorldView implements ExtendedBlockView {
 	protected final int chunkXOffset;
 	protected final int chunkZOffset;
-	protected final BlockPos field_4481;
+	protected final BlockPos offset;
 	protected final int xSize;
 	protected final int ySize;
 	protected final int zSize;
@@ -27,7 +27,7 @@ public class SafeWorldView implements ExtendedBlockView {
 	protected final World world;
 
 	@Nullable
-	public static SafeWorldView method_3689(World world, BlockPos blockPos, BlockPos blockPos2, int i) {
+	public static SafeWorldView create(World world, BlockPos blockPos, BlockPos blockPos2, int i) {
 		int j = blockPos.getX() - i >> 4;
 		int k = blockPos.getZ() - i >> 4;
 		int l = blockPos2.getX() + i >> 4;
@@ -66,7 +66,7 @@ public class SafeWorldView implements ExtendedBlockView {
 		this.chunkXOffset = i;
 		this.chunkZOffset = j;
 		this.chunks = worldChunks;
-		this.field_4481 = blockPos;
+		this.offset = blockPos;
 		this.xSize = blockPos2.getX() - blockPos.getX() + 1;
 		this.ySize = blockPos2.getY() - blockPos.getY() + 1;
 		this.zSize = blockPos2.getZ() - blockPos.getZ() + 1;
@@ -77,55 +77,55 @@ public class SafeWorldView implements ExtendedBlockView {
 			int k = (blockPos3.getX() >> 4) - i;
 			int l = (blockPos3.getZ() >> 4) - j;
 			WorldChunk worldChunk = worldChunks[k][l];
-			int m = this.method_3691(blockPos3);
-			this.blockStates[m] = worldChunk.method_8320(blockPos3);
-			this.fluidStates[m] = worldChunk.method_8316(blockPos3);
+			int m = this.getIndex(blockPos3);
+			this.blockStates[m] = worldChunk.getBlockState(blockPos3);
+			this.fluidStates[m] = worldChunk.getFluidState(blockPos3);
 		}
 	}
 
-	protected final int method_3691(BlockPos blockPos) {
+	protected final int getIndex(BlockPos blockPos) {
 		return this.getIndex(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 
 	protected int getIndex(int i, int j, int k) {
-		int l = i - this.field_4481.getX();
-		int m = j - this.field_4481.getY();
-		int n = k - this.field_4481.getZ();
+		int l = i - this.offset.getX();
+		int m = j - this.offset.getY();
+		int n = k - this.offset.getZ();
 		return n * this.xSize * this.ySize + m * this.xSize + l;
 	}
 
 	@Override
-	public BlockState method_8320(BlockPos blockPos) {
-		return this.blockStates[this.method_3691(blockPos)];
+	public BlockState getBlockState(BlockPos blockPos) {
+		return this.blockStates[this.getIndex(blockPos)];
 	}
 
 	@Override
-	public FluidState method_8316(BlockPos blockPos) {
-		return this.fluidStates[this.method_3691(blockPos)];
+	public FluidState getFluidState(BlockPos blockPos) {
+		return this.fluidStates[this.getIndex(blockPos)];
 	}
 
 	@Override
-	public int method_8314(LightType lightType, BlockPos blockPos) {
-		return this.world.method_8314(lightType, blockPos);
+	public int getLightLevel(LightType lightType, BlockPos blockPos) {
+		return this.world.getLightLevel(lightType, blockPos);
 	}
 
 	@Override
-	public Biome method_8310(BlockPos blockPos) {
+	public Biome getBiome(BlockPos blockPos) {
 		int i = (blockPos.getX() >> 4) - this.chunkXOffset;
 		int j = (blockPos.getZ() >> 4) - this.chunkZOffset;
-		return this.chunks[i][j].method_16552(blockPos);
+		return this.chunks[i][j].getBiome(blockPos);
 	}
 
 	@Nullable
 	@Override
-	public BlockEntity method_8321(BlockPos blockPos) {
-		return this.method_3688(blockPos, WorldChunk.CreationType.field_12860);
+	public BlockEntity getBlockEntity(BlockPos blockPos) {
+		return this.getBlockEntity(blockPos, WorldChunk.CreationType.field_12860);
 	}
 
 	@Nullable
-	public BlockEntity method_3688(BlockPos blockPos, WorldChunk.CreationType creationType) {
+	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
 		int i = (blockPos.getX() >> 4) - this.chunkXOffset;
 		int j = (blockPos.getZ() >> 4) - this.chunkZOffset;
-		return this.chunks[i][j].method_12201(blockPos, creationType);
+		return this.chunks[i][j].getBlockEntity(blockPos, creationType);
 	}
 }

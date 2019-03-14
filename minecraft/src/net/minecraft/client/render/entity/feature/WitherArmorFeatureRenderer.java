@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WitherArmorFeatureRenderer extends FeatureRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
-	private static final Identifier field_4910 = new Identifier("textures/entity/wither/wither_armor.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither_armor.png");
 	private final WitherEntityModel<WitherEntity> field_4909 = new WitherEntityModel<>(0.5F);
 
 	public WitherArmorFeatureRenderer(FeatureRendererContext<WitherEntity, WitherEntityModel<WitherEntity>> featureRendererContext) {
@@ -22,7 +22,7 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<WitherEntity, Wi
 	public void method_4207(WitherEntity witherEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (witherEntity.isAtHalfHealth()) {
 			GlStateManager.depthMask(!witherEntity.isInvisible());
-			this.method_17164(field_4910);
+			this.bindTexture(SKIN);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.loadIdentity();
 			float m = (float)witherEntity.age + h;
@@ -37,7 +37,7 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<WitherEntity, Wi
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			this.field_4909.method_17128(witherEntity, f, g, h);
 			this.getModel().method_17081(this.field_4909);
-			GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
+			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 			gameRenderer.method_3201(true);
 			this.field_4909.method_17129(witherEntity, f, g, i, j, k, l);
 			gameRenderer.method_3201(false);

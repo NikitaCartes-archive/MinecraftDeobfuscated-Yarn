@@ -10,14 +10,14 @@ import java.util.Set;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 
 @Environment(EnvType.CLIENT)
-public class NeighborUpdateDebugRenderer implements DebugRenderer.DebugRenderer {
+public class NeighborUpdateDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient field_4622;
 	private final Map<Long, Map<BlockPos, Integer>> field_4623 = Maps.newTreeMap(Ordering.natural().reverse());
 
@@ -42,11 +42,11 @@ public class NeighborUpdateDebugRenderer implements DebugRenderer.DebugRenderer 
 
 	@Override
 	public void render(long l) {
-		long m = this.field_4622.field_1687.getTime();
-		class_4184 lv = this.field_4622.field_1773.method_19418();
-		double d = lv.method_19326().x;
-		double e = lv.method_19326().y;
-		double f = lv.method_19326().z;
+		long m = this.field_4622.world.getTime();
+		Camera camera = this.field_4622.gameRenderer.method_19418();
+		double d = camera.getPos().x;
+		double e = camera.getPos().y;
+		double f = camera.getPos().z;
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO

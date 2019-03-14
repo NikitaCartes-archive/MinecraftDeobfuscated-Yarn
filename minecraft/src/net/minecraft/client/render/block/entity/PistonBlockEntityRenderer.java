@@ -22,15 +22,15 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEntity> {
-	private final BlockRenderManager manager = MinecraftClient.getInstance().method_1541();
+	private final BlockRenderManager manager = MinecraftClient.getInstance().getBlockRenderManager();
 
 	public void method_3576(PistonBlockEntity pistonBlockEntity, double d, double e, double f, float g, int i) {
-		BlockPos blockPos = pistonBlockEntity.method_11016().method_10093(pistonBlockEntity.method_11506().getOpposite());
-		BlockState blockState = pistonBlockEntity.method_11495();
+		BlockPos blockPos = pistonBlockEntity.getPos().offset(pistonBlockEntity.method_11506().getOpposite());
+		BlockState blockState = pistonBlockEntity.getPushedBlock();
 		if (!blockState.isAir() && !(pistonBlockEntity.getProgress(g) >= 1.0F)) {
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			this.method_3566(SpriteAtlasTexture.field_5275);
+			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			GuiLighting.disable();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.enableBlend();
@@ -41,7 +41,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 				GlStateManager.shadeModel(7424);
 			}
 
-			bufferBuilder.method_1328(7, VertexFormats.field_1582);
+			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_LMAP);
 			bufferBuilder.setOffset(
 				d - (double)blockPos.getX() + (double)pistonBlockEntity.getRenderOffsetX(g),
 				e - (double)blockPos.getY() + (double)pistonBlockEntity.getRenderOffsetY(g),
@@ -49,19 +49,19 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 			);
 			World world = this.getWorld();
 			if (blockState.getBlock() == Blocks.field_10379 && pistonBlockEntity.getProgress(g) <= 4.0F) {
-				blockState = blockState.method_11657(PistonHeadBlock.field_12227, Boolean.valueOf(true));
+				blockState = blockState.with(PistonHeadBlock.field_12227, Boolean.valueOf(true));
 				this.method_3575(blockPos, blockState, bufferBuilder, world, false);
 			} else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
 				PistonType pistonType = blockState.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637;
 				BlockState blockState2 = Blocks.field_10379
-					.method_9564()
-					.method_11657(PistonHeadBlock.field_12224, pistonType)
-					.method_11657(PistonHeadBlock.field_10927, blockState.method_11654(PistonBlock.field_10927));
-				blockState2 = blockState2.method_11657(PistonHeadBlock.field_12227, Boolean.valueOf(pistonBlockEntity.getProgress(g) >= 0.5F));
+					.getDefaultState()
+					.with(PistonHeadBlock.field_12224, pistonType)
+					.with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
+				blockState2 = blockState2.with(PistonHeadBlock.field_12227, Boolean.valueOf(pistonBlockEntity.getProgress(g) >= 0.5F));
 				this.method_3575(blockPos, blockState2, bufferBuilder, world, false);
-				BlockPos blockPos2 = blockPos.method_10093(pistonBlockEntity.method_11506());
+				BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.method_11506());
 				bufferBuilder.setOffset(d - (double)blockPos2.getX(), e - (double)blockPos2.getY(), f - (double)blockPos2.getZ());
-				blockState = blockState.method_11657(PistonBlock.field_12191, Boolean.valueOf(true));
+				blockState = blockState.with(PistonBlock.field_12191, Boolean.valueOf(true));
 				this.method_3575(blockPos2, blockState, bufferBuilder, world, true);
 			} else {
 				this.method_3575(blockPos, blockState, bufferBuilder, world, false);
@@ -75,7 +75,7 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 
 	private boolean method_3575(BlockPos blockPos, BlockState blockState, BufferBuilder bufferBuilder, World world, boolean bl) {
 		return this.manager
-			.method_3350()
-			.method_3374(world, this.manager.method_3349(blockState), blockState, blockPos, bufferBuilder, bl, new Random(), blockState.method_11617(blockPos));
+			.getModelRenderer()
+			.tesselate(world, this.manager.getModel(blockState), blockState, blockPos, bufferBuilder, bl, new Random(), blockState.getRenderingSeed(blockPos));
 	}
 }

@@ -2,7 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +20,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -34,7 +33,7 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 			this.markDead();
 		} else {
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (!this.world.method_8316(new BlockPos(this.posX, this.posY, this.posZ)).method_15767(FluidTags.field_15517)) {
+			if (!this.world.getFluidState(new BlockPos(this.posX, this.posY, this.posZ)).matches(FluidTags.field_15517)) {
 				this.markDead();
 			}
 		}
@@ -42,10 +41,10 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class UnderwaterFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17879;
+		private final SpriteProvider field_17879;
 
-		public UnderwaterFactory(class_4002 arg) {
-			this.field_17879 = arg;
+		public UnderwaterFactory(SpriteProvider spriteProvider) {
+			this.field_17879 = spriteProvider;
 		}
 
 		public Particle method_3104(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

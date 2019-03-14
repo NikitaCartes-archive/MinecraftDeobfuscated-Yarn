@@ -9,7 +9,7 @@ import net.minecraft.world.gen.feature.SavannaTreeFeature;
 public class AcaciaSaplingGenerator extends SaplingGenerator {
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> method_11430(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random) {
 		return new SavannaTreeFeature(DefaultFeatureConfig::deserialize, true);
 	}
 }

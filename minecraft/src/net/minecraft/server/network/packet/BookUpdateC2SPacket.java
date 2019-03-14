@@ -39,7 +39,7 @@ public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12236(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12053(this);
+		serverPlayPacketListener.onBookUpdate(this);
 	}
 
 	public ItemStack stack() {

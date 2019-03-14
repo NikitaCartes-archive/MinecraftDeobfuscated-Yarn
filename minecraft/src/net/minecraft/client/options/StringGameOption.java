@@ -4,7 +4,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 
 @Environment(EnvType.CLIENT)
@@ -24,10 +24,10 @@ public class StringGameOption extends GameOption {
 	}
 
 	@Override
-	public ButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k) {
+	public AbstractButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k) {
 		return new OptionButtonWidget(i, j, k, 20, this, this.method_18501(gameOptions)) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				StringGameOption.this.method_18500(gameOptions, 1);
 				this.setText(StringGameOption.this.method_18501(gameOptions));
 			}

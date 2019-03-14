@@ -92,7 +92,7 @@ public class StatusEffects {
 		}
 
 		@Override
-		public void method_5572(LivingEntity livingEntity, int i) {
+		public void applyUpdateEffect(LivingEntity livingEntity, int i) {
 			if (livingEntity instanceof ServerPlayerEntity) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 				ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
@@ -101,7 +101,7 @@ public class StatusEffects {
 				}
 
 				if (serverWorld.method_19500(new BlockPos(livingEntity))) {
-					serverWorld.method_19495().method_16540(serverPlayerEntity);
+					serverWorld.getRaidManager().startRaid(serverPlayerEntity);
 				}
 			}
 		}

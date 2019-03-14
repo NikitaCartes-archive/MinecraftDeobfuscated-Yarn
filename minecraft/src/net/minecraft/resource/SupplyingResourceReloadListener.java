@@ -9,7 +9,7 @@ import net.minecraft.util.profiler.Profiler;
 @Environment(EnvType.CLIENT)
 public abstract class SupplyingResourceReloadListener<T> implements ResourceReloadListener {
 	@Override
-	public final CompletableFuture<Void> method_18222(
+	public final CompletableFuture<Void> apply(
 		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
 	) {
 		return CompletableFuture.supplyAsync(() -> this.load(resourceManager, profiler), executor)

@@ -8,9 +8,9 @@ public enum Rarity {
 	field_8903(TextFormat.field_1075),
 	field_8904(TextFormat.field_1076);
 
-	public final TextFormat field_8908;
+	public final TextFormat formatting;
 
 	private Rarity(TextFormat textFormat) {
-		this.field_8908 = textFormat;
+		this.formatting = textFormat;
 	}
 }

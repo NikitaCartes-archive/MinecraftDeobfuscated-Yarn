@@ -12,14 +12,14 @@ public class MapIcon {
 	private byte x;
 	private byte z;
 	private byte angle;
-	private final TextComponent field_78;
+	private final TextComponent text;
 
 	public MapIcon(MapIcon.Type type, byte b, byte c, byte d, @Nullable TextComponent textComponent) {
 		this.type = type;
 		this.x = b;
 		this.z = c;
 		this.angle = d;
-		this.field_78 = textComponent;
+		this.text = textComponent;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -49,8 +49,8 @@ public class MapIcon {
 	}
 
 	@Nullable
-	public TextComponent method_88() {
-		return this.field_78;
+	public TextComponent getText() {
+		return this.text;
 	}
 
 	public boolean equals(Object object) {
@@ -69,7 +69,7 @@ public class MapIcon {
 			} else if (this.z != mapIcon.z) {
 				return false;
 			} else {
-				return Objects.equals(this.field_78, mapIcon.field_78);
+				return Objects.equals(this.text, mapIcon.text);
 			}
 		}
 	}
@@ -79,7 +79,7 @@ public class MapIcon {
 		i = 31 * i + this.x;
 		i = 31 * i + this.z;
 		i = 31 * i + this.angle;
-		return 31 * i + Objects.hashCode(this.field_78);
+		return 31 * i + Objects.hashCode(this.text);
 	}
 
 	public static enum Type {
