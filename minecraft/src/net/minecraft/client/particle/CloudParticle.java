@@ -2,7 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BoundingBox;
@@ -11,11 +10,11 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class CloudParticle extends SpriteBillboardParticle {
-	private final class_4002 field_17862;
+	private final SpriteProvider field_17862;
 
-	private CloudParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
+	private CloudParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
-		this.field_17862 = arg;
+		this.field_17862 = spriteProvider;
 		float j = 2.5F;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
@@ -31,11 +30,11 @@ public class CloudParticle extends SpriteBillboardParticle {
 		int l = (int)(8.0 / (Math.random() * 0.8 + 0.3));
 		this.maxAge = (int)Math.max((float)l * 2.5F, 1.0F);
 		this.collidesWithWorld = false;
-		this.method_18142(arg);
+		this.method_18142(spriteProvider);
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
 	}
 
@@ -59,10 +58,10 @@ public class CloudParticle extends SpriteBillboardParticle {
 			this.velocityZ *= 0.96F;
 			PlayerEntity playerEntity = this.world.method_18459(this.posX, this.posY, this.posZ, 2.0, false);
 			if (playerEntity != null) {
-				BoundingBox boundingBox = playerEntity.method_5829();
+				BoundingBox boundingBox = playerEntity.getBoundingBox();
 				if (this.posY > boundingBox.minY) {
 					this.posY = this.posY + (boundingBox.minY - this.posY) * 0.2;
-					this.velocityY = this.velocityY + (playerEntity.method_18798().y - this.velocityY) * 0.2;
+					this.velocityY = this.velocityY + (playerEntity.getVelocity().y - this.velocityY) * 0.2;
 					this.setPos(this.posX, this.posY, this.posZ);
 				}
 			}
@@ -76,10 +75,10 @@ public class CloudParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class CloudFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17863;
+		private final SpriteProvider field_17863;
 
-		public CloudFactory(class_4002 arg) {
-			this.field_17863 = arg;
+		public CloudFactory(SpriteProvider spriteProvider) {
+			this.field_17863 = spriteProvider;
 		}
 
 		public Particle method_3088(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -89,10 +88,10 @@ public class CloudParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class SneezeFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17864;
+		private final SpriteProvider field_17864;
 
-		public SneezeFactory(class_4002 arg) {
-			this.field_17864 = arg;
+		public SneezeFactory(SpriteProvider spriteProvider) {
+			this.field_17864 = spriteProvider;
 		}
 
 		public Particle method_3089(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

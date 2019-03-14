@@ -28,7 +28,7 @@ public class LoginCompressionS2CPacket implements Packet<ClientLoginPacketListen
 	}
 
 	public void method_12633(ClientLoginPacketListener clientLoginPacketListener) {
-		clientLoginPacketListener.method_12585(this);
+		clientLoginPacketListener.onCompression(this);
 	}
 
 	@Environment(EnvType.CLIENT)

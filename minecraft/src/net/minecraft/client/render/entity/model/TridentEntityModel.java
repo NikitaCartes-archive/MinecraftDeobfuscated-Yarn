@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class TridentEntityModel extends Model {
-	public static final Identifier field_3592 = new Identifier("textures/entity/trident.png");
+	public static final Identifier TEXTURE = new Identifier("textures/entity/trident.png");
 	private final Cuboid field_3593;
 
 	public TridentEntityModel() {

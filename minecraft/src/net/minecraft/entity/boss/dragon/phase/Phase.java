@@ -14,7 +14,7 @@ public interface Phase {
 
 	void method_6855();
 
-	void method_6850(EnderCrystalEntity enderCrystalEntity, BlockPos blockPos, DamageSource damageSource, @Nullable PlayerEntity playerEntity);
+	void crystalDestroyed(EnderCrystalEntity enderCrystalEntity, BlockPos blockPos, DamageSource damageSource, @Nullable PlayerEntity playerEntity);
 
 	void beginPhase();
 
@@ -24,10 +24,10 @@ public interface Phase {
 
 	float method_6847();
 
-	PhaseType<? extends Phase> method_6849();
+	PhaseType<? extends Phase> getType();
 
 	@Nullable
-	Vec3d method_6851();
+	Vec3d getTarget();
 
 	float modifyDamageTaken(DamageSource damageSource, float f);
 }

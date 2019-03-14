@@ -11,13 +11,13 @@ public interface Inventory extends Clearable {
 
 	boolean isInvEmpty();
 
-	ItemStack method_5438(int i);
+	ItemStack getInvStack(int i);
 
-	ItemStack method_5434(int i, int j);
+	ItemStack takeInvStack(int i, int j);
 
-	ItemStack method_5441(int i);
+	ItemStack removeInvStack(int i);
 
-	void method_5447(int i, ItemStack itemStack);
+	void setInvStack(int i, ItemStack itemStack);
 
 	default int getInvMaxStackAmount() {
 		return 64;
@@ -25,23 +25,23 @@ public interface Inventory extends Clearable {
 
 	void markDirty();
 
-	boolean method_5443(PlayerEntity playerEntity);
+	boolean canPlayerUseInv(PlayerEntity playerEntity);
 
-	default void method_5435(PlayerEntity playerEntity) {
+	default void onInvOpen(PlayerEntity playerEntity) {
 	}
 
-	default void method_5432(PlayerEntity playerEntity) {
+	default void onInvClose(PlayerEntity playerEntity) {
 	}
 
-	default boolean method_5437(int i, ItemStack itemStack) {
+	default boolean isValidInvStack(int i, ItemStack itemStack) {
 		return true;
 	}
 
-	default int method_18861(Item item) {
+	default int getInvAmountOf(Item item) {
 		int i = 0;
 
 		for (int j = 0; j < this.getInvSize(); j++) {
-			ItemStack itemStack = this.method_5438(j);
+			ItemStack itemStack = this.getInvStack(j);
 			if (itemStack.getItem().equals(item)) {
 				i += itemStack.getAmount();
 			}
@@ -52,7 +52,7 @@ public interface Inventory extends Clearable {
 
 	default boolean method_18862(Set<Item> set) {
 		for (int i = 0; i < this.getInvSize(); i++) {
-			ItemStack itemStack = this.method_5438(i);
+			ItemStack itemStack = this.getInvStack(i);
 			if (set.contains(itemStack.getItem()) && itemStack.getAmount() > 0) {
 				return true;
 			}

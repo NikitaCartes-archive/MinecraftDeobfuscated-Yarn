@@ -16,14 +16,14 @@ public class DefaultEntityRenderer extends EntityRenderer<Entity> {
 	@Override
 	public void render(Entity entity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
-		renderBox(entity.method_5829(), d - entity.prevRenderX, e - entity.prevRenderY, f - entity.prevRenderZ);
+		renderBox(entity.getBoundingBox(), d - entity.prevRenderX, e - entity.prevRenderY, f - entity.prevRenderZ);
 		GlStateManager.popMatrix();
 		super.render(entity, d, e, f, g, h);
 	}
 
 	@Nullable
 	@Override
-	protected Identifier method_3931(Entity entity) {
+	protected Identifier getTexture(Entity entity) {
 		return null;
 	}
 }

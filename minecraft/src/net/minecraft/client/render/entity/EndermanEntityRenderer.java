@@ -12,17 +12,17 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, EndermanEntityModel<EndermanEntity>> {
-	private static final Identifier field_4666 = new Identifier("textures/entity/enderman/enderman.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/enderman/enderman.png");
 	private final Random field_4667 = new Random();
 
 	public EndermanEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new EndermanEntityModel<>(0.0F), 0.5F);
-		this.method_4046(new EndermanEyesFeatureRenderer<>(this));
-		this.method_4046(new EndermanBlockFeatureRenderer(this));
+		this.addFeature(new EndermanEyesFeatureRenderer<>(this));
+		this.addFeature(new EndermanBlockFeatureRenderer(this));
 	}
 
 	public void method_3911(EndermanEntity endermanEntity, double d, double e, double f, float g, float h) {
-		BlockState blockState = endermanEntity.method_7027();
+		BlockState blockState = endermanEntity.getCarriedBlock();
 		EndermanEntityModel<EndermanEntity> endermanEntityModel = this.getModel();
 		endermanEntityModel.carryingBlock = blockState != null;
 		endermanEntityModel.angry = endermanEntity.isAngry();
@@ -36,6 +36,6 @@ public class EndermanEntityRenderer extends MobEntityRenderer<EndermanEntity, En
 	}
 
 	protected Identifier method_3912(EndermanEntity endermanEntity) {
-		return field_4666;
+		return SKIN;
 	}
 }

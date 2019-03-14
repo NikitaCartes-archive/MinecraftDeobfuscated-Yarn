@@ -16,14 +16,14 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public class VillagerHeldItemFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, VillagerEntityModel<T>> {
-	private final ItemRenderer itemRenderer = MinecraftClient.getInstance().method_1480();
+	private final ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
 
 	public VillagerHeldItemFeatureRenderer(FeatureRendererContext<T, VillagerEntityModel<T>> featureRendererContext) {
 		super(featureRendererContext);
 	}
 
 	public void method_18147(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
-		ItemStack itemStack = livingEntity.method_6118(EquipmentSlot.HAND_MAIN);
+		ItemStack itemStack = livingEntity.getEquippedStack(EquipmentSlot.HAND_MAIN);
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			Block block = Block.getBlockFromItem(item);

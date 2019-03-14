@@ -19,12 +19,12 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 
 	public TropicalFishEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new TropicalFishEntityModelA<>(), 0.15F);
-		this.method_4046(new TropicalFishSomethingFeatureRenderer(this));
+		this.addFeature(new TropicalFishSomethingFeatureRenderer(this));
 	}
 
 	@Nullable
 	protected Identifier method_4141(TropicalFishEntity tropicalFishEntity) {
-		return tropicalFishEntity.method_6650();
+		return tropicalFishEntity.getShapeId();
 	}
 
 	public void method_4140(TropicalFishEntity tropicalFishEntity, double d, double e, double f, float g, float h) {

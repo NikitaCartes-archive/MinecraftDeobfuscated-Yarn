@@ -23,43 +23,43 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.Heightmap;
 
 public class ReadOnlyChunk extends ProtoChunk {
-	private final WorldChunk field_12866;
+	private final WorldChunk wrapped;
 
 	public ReadOnlyChunk(WorldChunk worldChunk) {
 		super(worldChunk.getPos(), UpgradeData.NO_UPGRADE_DATA);
-		this.field_12866 = worldChunk;
+		this.wrapped = worldChunk;
 	}
 
 	@Nullable
 	@Override
-	public BlockEntity method_8321(BlockPos blockPos) {
-		return this.field_12866.method_8321(blockPos);
+	public BlockEntity getBlockEntity(BlockPos blockPos) {
+		return this.wrapped.getBlockEntity(blockPos);
 	}
 
 	@Nullable
 	@Override
-	public BlockState method_8320(BlockPos blockPos) {
-		return this.field_12866.method_8320(blockPos);
+	public BlockState getBlockState(BlockPos blockPos) {
+		return this.wrapped.getBlockState(blockPos);
 	}
 
 	@Override
-	public FluidState method_8316(BlockPos blockPos) {
-		return this.field_12866.method_8316(blockPos);
+	public FluidState getFluidState(BlockPos blockPos) {
+		return this.wrapped.getFluidState(blockPos);
 	}
 
 	@Override
 	public int getMaxLightLevel() {
-		return this.field_12866.getMaxLightLevel();
+		return this.wrapped.getMaxLightLevel();
 	}
 
 	@Nullable
 	@Override
-	public BlockState method_12010(BlockPos blockPos, BlockState blockState, boolean bl) {
+	public BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl) {
 		return null;
 	}
 
 	@Override
-	public void method_12007(BlockPos blockPos, BlockEntity blockEntity) {
+	public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
 	}
 
 	@Override
@@ -71,21 +71,21 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public ChunkSection[] method_12006() {
-		return this.field_12866.method_12006();
+	public ChunkSection[] getSectionArray() {
+		return this.wrapped.getSectionArray();
 	}
 
 	@Nullable
 	@Override
-	public LightingProvider method_12023() {
-		return this.field_12866.method_12023();
+	public LightingProvider getLightingProvider() {
+		return this.wrapped.getLightingProvider();
 	}
 
 	@Override
-	public void method_12037(Heightmap.Type type, long[] ls) {
+	public void setHeightmap(Heightmap.Type type, long[] ls) {
 	}
 
-	private Heightmap.Type method_12239(Heightmap.Type type) {
+	private Heightmap.Type transformHeightmapType(Heightmap.Type type) {
 		if (type == Heightmap.Type.WORLD_SURFACE_WG) {
 			return Heightmap.Type.WORLD_SURFACE;
 		} else {
@@ -94,13 +94,13 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public int method_12005(Heightmap.Type type, int i, int j) {
-		return this.field_12866.method_12005(this.method_12239(type), i, j);
+	public int sampleHeightmap(Heightmap.Type type, int i, int j) {
+		return this.wrapped.sampleHeightmap(this.transformHeightmapType(type), i, j);
 	}
 
 	@Override
 	public ChunkPos getPos() {
-		return this.field_12866.getPos();
+		return this.wrapped.getPos();
 	}
 
 	@Override
@@ -109,17 +109,17 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Nullable
 	@Override
-	public StructureStart method_12181(String string) {
-		return this.field_12866.method_12181(string);
+	public StructureStart getStructureStart(String string) {
+		return this.wrapped.getStructureStart(string);
 	}
 
 	@Override
-	public void method_12184(String string, StructureStart structureStart) {
+	public void setStructureStart(String string, StructureStart structureStart) {
 	}
 
 	@Override
 	public Map<String, StructureStart> getStructureStarts() {
-		return this.field_12866.getStructureStarts();
+		return this.wrapped.getStructureStarts();
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public LongSet getStructureReferences(String string) {
-		return this.field_12866.getStructureReferences(string);
+		return this.wrapped.getStructureReferences(string);
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public Map<String, LongSet> getStructureReferences() {
-		return this.field_12866.getStructureReferences();
+		return this.wrapped.getStructureReferences();
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public Biome[] getBiomeArray() {
-		return this.field_12866.getBiomeArray();
+		return this.wrapped.getBiomeArray();
 	}
 
 	@Override
@@ -159,26 +159,26 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public ChunkStatus method_12009() {
-		return this.field_12866.method_12009();
+	public ChunkStatus getStatus() {
+		return this.wrapped.getStatus();
 	}
 
 	@Override
-	public void method_12041(BlockPos blockPos) {
+	public void removeBlockEntity(BlockPos blockPos) {
 	}
 
 	@Override
-	public void method_12039(BlockPos blockPos) {
+	public void markBlockForPostProcessing(BlockPos blockPos) {
 	}
 
 	@Override
-	public void method_12042(CompoundTag compoundTag) {
+	public void addPendingBlockEntityTag(CompoundTag compoundTag) {
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag method_12024(BlockPos blockPos) {
-		return this.field_12866.method_12024(blockPos);
+	public CompoundTag getBlockEntityTagAt(BlockPos blockPos) {
+		return this.wrapped.getBlockEntityTagAt(blockPos);
 	}
 
 	@Override
@@ -187,35 +187,35 @@ public class ReadOnlyChunk extends ProtoChunk {
 
 	@Override
 	public Stream<BlockPos> getLightSourcesStream() {
-		return this.field_12866.getLightSourcesStream();
+		return this.wrapped.getLightSourcesStream();
 	}
 
 	@Override
 	public ChunkTickScheduler<Block> method_12303() {
-		return new ChunkTickScheduler<>(block -> block.method_9564().isAir(), Registry.BLOCK::method_10221, Registry.BLOCK::method_10223, this.getPos());
+		return new ChunkTickScheduler<>(block -> block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, this.getPos());
 	}
 
 	@Override
 	public ChunkTickScheduler<Fluid> method_12313() {
-		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, Registry.FLUID::method_10221, Registry.FLUID::method_10223, this.getPos());
+		return new ChunkTickScheduler<>(fluid -> fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this.getPos());
 	}
 
 	@Override
-	public BitSet method_12025(GenerationStep.Carver carver) {
-		return this.field_12866.method_12025(carver);
+	public BitSet getCarvingMask(GenerationStep.Carver carver) {
+		return this.wrapped.getCarvingMask(carver);
 	}
 
-	public WorldChunk method_12240() {
-		return this.field_12866;
+	public WorldChunk getWrappedChunk() {
+		return this.wrapped;
 	}
 
 	@Override
 	public boolean isLightOn() {
-		return this.field_12866.isLightOn();
+		return this.wrapped.isLightOn();
 	}
 
 	@Override
 	public void setLightOn(boolean bl) {
-		this.field_12866.setLightOn(bl);
+		this.wrapped.setLightOn(bl);
 	}
 }

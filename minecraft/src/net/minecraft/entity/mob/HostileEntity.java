@@ -26,7 +26,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	public SoundCategory method_5634() {
+	public SoundCategory getSoundCategory() {
 		return SoundCategory.field_15251;
 	}
 
@@ -47,18 +47,18 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	@Override
 	public void update() {
 		super.update();
-		if (!this.field_6002.isClient && this.field_6002.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
 			this.invalidate();
 		}
 	}
 
 	@Override
-	protected SoundEvent method_5737() {
+	protected SoundEvent getSwimSound() {
 		return SoundEvents.field_14630;
 	}
 
 	@Override
-	protected SoundEvent method_5625() {
+	protected SoundEvent getSplashSound() {
 		return SoundEvents.field_14836;
 	}
 
@@ -68,44 +68,44 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_14994;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_14899;
 	}
 
 	@Override
-	protected SoundEvent method_6041(int i) {
+	protected SoundEvent getFallSound(int i) {
 		return i > 4 ? SoundEvents.field_15157 : SoundEvents.field_14754;
 	}
 
 	@Override
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return 0.5F - viewableWorld.method_8610(blockPos);
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return 0.5F - viewableWorld.getBrightness(blockPos);
 	}
 
 	protected boolean checkLightLevelForSpawn() {
-		BlockPos blockPos = new BlockPos(this.x, this.method_5829().minY, this.z);
-		if (this.field_6002.method_8314(LightType.SKY, blockPos) > this.random.nextInt(32)) {
+		BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
+		if (this.world.getLightLevel(LightType.SKY, blockPos) > this.random.nextInt(32)) {
 			return false;
 		} else {
-			int i = this.field_6002.isThundering() ? this.field_6002.method_8603(blockPos, 10) : this.field_6002.method_8602(blockPos);
+			int i = this.world.isThundering() ? this.world.method_8603(blockPos, 10) : this.world.getLightLevel(blockPos);
 			return i <= this.random.nextInt(8);
 		}
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
-		return iWorld.getDifficulty() != Difficulty.PEACEFUL && this.checkLightLevelForSpawn() && super.method_5979(iWorld, spawnType);
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		return iWorld.getDifficulty() != Difficulty.PEACEFUL && this.checkLightLevelForSpawn() && super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_6127().register(EntityAttributes.ATTACK_DAMAGE);
+		this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE);
 	}
 
 	@Override

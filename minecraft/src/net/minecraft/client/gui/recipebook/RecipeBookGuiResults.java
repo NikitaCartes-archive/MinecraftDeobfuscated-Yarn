@@ -16,7 +16,7 @@ import net.minecraft.recipe.book.RecipeBook;
 @Environment(EnvType.CLIENT)
 public class RecipeBookGuiResults {
 	private final List<AnimatedResultButton> resultButtons = Lists.<AnimatedResultButton>newArrayListWithCapacity(20);
-	private AnimatedResultButton field_3129;
+	private AnimatedResultButton hoveredResultButton;
 	private final RecipeAlternatesWidget alternatesWidget = new RecipeAlternatesWidget();
 	private MinecraftClient client;
 	private final List<RecipeDisplayListener> recipeDisplayListeners = Lists.<RecipeDisplayListener>newArrayList();
@@ -25,9 +25,9 @@ public class RecipeBookGuiResults {
 	private ToggleButtonWidget prevPageButton;
 	private int pageCount;
 	private int currentPage;
-	private RecipeBook field_3136;
+	private RecipeBook recipeBook;
 	private Recipe<?> lastClickedRecipe;
-	private RecipeResultCollection field_3133;
+	private RecipeResultCollection resultCollection;
 
 	public RecipeBookGuiResults() {
 		for (int i = 0; i < 20; i++) {
@@ -37,16 +37,16 @@ public class RecipeBookGuiResults {
 
 	public void initialize(MinecraftClient minecraftClient, int i, int j) {
 		this.client = minecraftClient;
-		this.field_3136 = minecraftClient.field_1724.getRecipeBook();
+		this.recipeBook = minecraftClient.player.getRecipeBook();
 
 		for (int k = 0; k < this.resultButtons.size(); k++) {
 			((AnimatedResultButton)this.resultButtons.get(k)).setPos(i + 11 + 25 * (k % 5), j + 31 + 25 * (k / 5));
 		}
 
 		this.nextPageButton = new ToggleButtonWidget(i + 93, j + 137, 12, 17, false);
-		this.nextPageButton.method_1962(1, 208, 13, 18, RecipeBookGui.field_3097);
+		this.nextPageButton.setTextureUV(1, 208, 13, 18, RecipeBookGui.TEXTURE);
 		this.prevPageButton = new ToggleButtonWidget(i + 38, j + 137, 12, 17, true);
-		this.prevPageButton.method_1962(1, 208, 13, 18, RecipeBookGui.field_3097);
+		this.prevPageButton.setTextureUV(1, 208, 13, 18, RecipeBookGui.TEXTURE);
 	}
 
 	public void setGui(RecipeBookGui recipeBookGui) {
@@ -71,7 +71,7 @@ public class RecipeBookGuiResults {
 			AnimatedResultButton animatedResultButton = (AnimatedResultButton)this.resultButtons.get(j);
 			if (i + j < this.resultCollections.size()) {
 				RecipeResultCollection recipeResultCollection = (RecipeResultCollection)this.resultCollections.get(i + j);
-				animatedResultButton.method_2640(recipeResultCollection, this);
+				animatedResultButton.showResultCollection(recipeResultCollection, this);
 				animatedResultButton.visible = true;
 			} else {
 				animatedResultButton.visible = false;
@@ -89,17 +89,17 @@ public class RecipeBookGuiResults {
 	public void draw(int i, int j, int k, int l, float f) {
 		if (this.pageCount > 1) {
 			String string = this.currentPage + 1 + "/" + this.pageCount;
-			int m = this.client.field_1772.getStringWidth(string);
-			this.client.field_1772.draw(string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
+			int m = this.client.textRenderer.getStringWidth(string);
+			this.client.textRenderer.draw(string, (float)(i - m / 2 + 73), (float)(j + 141), -1);
 		}
 
 		GuiLighting.disable();
-		this.field_3129 = null;
+		this.hoveredResultButton = null;
 
 		for (AnimatedResultButton animatedResultButton : this.resultButtons) {
 			animatedResultButton.draw(k, l, f);
 			if (animatedResultButton.visible && animatedResultButton.isHovered()) {
-				this.field_3129 = animatedResultButton;
+				this.hoveredResultButton = animatedResultButton;
 			}
 		}
 
@@ -109,8 +109,8 @@ public class RecipeBookGuiResults {
 	}
 
 	public void drawTooltip(int i, int j) {
-		if (this.client.field_1755 != null && this.field_3129 != null && !this.alternatesWidget.isVisible()) {
-			this.client.field_1755.drawTooltip(this.field_3129.method_2644(this.client.field_1755), i, j);
+		if (this.client.currentScreen != null && this.hoveredResultButton != null && !this.alternatesWidget.isVisible()) {
+			this.client.currentScreen.drawTooltip(this.hoveredResultButton.method_2644(this.client.currentScreen), i, j);
 		}
 	}
 
@@ -120,8 +120,8 @@ public class RecipeBookGuiResults {
 	}
 
 	@Nullable
-	public RecipeResultCollection method_2635() {
-		return this.field_3133;
+	public RecipeResultCollection getLastClickedResults() {
+		return this.resultCollection;
 	}
 
 	public void hideAlternates() {
@@ -130,11 +130,11 @@ public class RecipeBookGuiResults {
 
 	public boolean mouseClicked(double d, double e, int i, int j, int k, int l, int m) {
 		this.lastClickedRecipe = null;
-		this.field_3133 = null;
+		this.resultCollection = null;
 		if (this.alternatesWidget.isVisible()) {
 			if (this.alternatesWidget.mouseClicked(d, e, i)) {
 				this.lastClickedRecipe = this.alternatesWidget.getLastClickedRecipe();
-				this.field_3133 = this.alternatesWidget.method_2614();
+				this.resultCollection = this.alternatesWidget.getResults();
 			} else {
 				this.alternatesWidget.setVisible(false);
 			}
@@ -153,12 +153,12 @@ public class RecipeBookGuiResults {
 				if (animatedResultButton.mouseClicked(d, e, i)) {
 					if (i == 0) {
 						this.lastClickedRecipe = animatedResultButton.currentRecipe();
-						this.field_3133 = animatedResultButton.method_2645();
+						this.resultCollection = animatedResultButton.getResultCollection();
 					} else if (i == 1 && !this.alternatesWidget.isVisible() && !animatedResultButton.hasResults()) {
 						this.alternatesWidget
-							.method_2617(
+							.showAlternatesForResult(
 								this.client,
-								animatedResultButton.method_2645(),
+								animatedResultButton.getResultCollection(),
 								animatedResultButton.x,
 								animatedResultButton.y,
 								j + l / 2,
@@ -185,7 +185,7 @@ public class RecipeBookGuiResults {
 		return this.client;
 	}
 
-	public RecipeBook method_2633() {
-		return this.field_3136;
+	public RecipeBook getRecipeBook() {
+		return this.recipeBook;
 	}
 }

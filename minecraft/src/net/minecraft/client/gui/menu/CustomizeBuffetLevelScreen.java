@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +25,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private static final List<Identifier> field_2436 = (List<Identifier>)Registry.CHUNK_GENERATOR_TYPE
 		.getIds()
 		.stream()
-		.filter(identifier -> Registry.CHUNK_GENERATOR_TYPE.method_10223(identifier).isBuffetScreenOption())
+		.filter(identifier -> Registry.CHUNK_GENERATOR_TYPE.get(identifier).isBuffetScreenOption())
 		.collect(Collectors.toList());
 	private final NewLevelScreen field_2437;
 	private final List<Identifier> field_2440 = Lists.<Identifier>newArrayList();
@@ -33,7 +33,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private String field_2442;
 	private CustomizeBuffetLevelScreen.class_4190 field_2441;
 	private int field_2439;
-	private class_4185 field_2438;
+	private ButtonWidget field_2438;
 
 	public CustomizeBuffetLevelScreen(NewLevelScreen newLevelScreen, CompoundTag compoundTag) {
 		this.field_2437 = newLevelScreen;
@@ -45,8 +45,8 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		}
 
 		Arrays.sort(this.field_2435, (identifierx, identifier2) -> {
-			String string = Registry.BIOME.method_10223(identifierx).method_8693().getString();
-			String string2 = Registry.BIOME.method_10223(identifier2).method_8693().getString();
+			String string = Registry.BIOME.get(identifierx).getTextComponent().getString();
+			String string2 = Registry.BIOME.get(identifier2).getTextComponent().getString();
 			return string.compareTo(string2);
 		});
 		this.method_2161(compoundTag);
@@ -65,7 +65,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		}
 
 		if (compoundTag.containsKey("biome_source", 10) && compoundTag.getCompound("biome_source").containsKey("biomes", 9)) {
-			ListTag listTag = compoundTag.getCompound("biome_source").method_10554("biomes", 8);
+			ListTag listTag = compoundTag.getCompound("biome_source").getList("biomes", 8);
 
 			for (int ix = 0; ix < listTag.size(); ix++) {
 				this.field_2440.add(new Identifier(listTag.getString(ix)));
@@ -76,7 +76,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private CompoundTag method_2153() {
 		CompoundTag compoundTag = new CompoundTag();
 		CompoundTag compoundTag2 = new CompoundTag();
-		compoundTag2.putString("type", Registry.BIOME_SOURCE_TYPE.method_10221(BiomeSourceType.FIXED).toString());
+		compoundTag2.putString("type", Registry.BIOME_SOURCE_TYPE.getId(BiomeSourceType.FIXED).toString());
 		CompoundTag compoundTag3 = new CompoundTag();
 		ListTag listTag = new ListTag();
 
@@ -84,16 +84,16 @@ public class CustomizeBuffetLevelScreen extends Screen {
 			listTag.add(new StringTag(identifier.toString()));
 		}
 
-		compoundTag3.method_10566("biomes", listTag);
-		compoundTag2.method_10566("options", compoundTag3);
+		compoundTag3.put("biomes", listTag);
+		compoundTag2.put("options", compoundTag3);
 		CompoundTag compoundTag4 = new CompoundTag();
 		CompoundTag compoundTag5 = new CompoundTag();
 		compoundTag4.putString("type", ((Identifier)field_2436.get(this.field_2439)).toString());
 		compoundTag5.putString("default_block", "minecraft:stone");
 		compoundTag5.putString("default_fluid", "minecraft:water");
-		compoundTag4.method_10566("options", compoundTag5);
-		compoundTag.method_10566("biome_source", compoundTag2);
-		compoundTag.method_10566("chunk_generator", compoundTag4);
+		compoundTag4.put("options", compoundTag5);
+		compoundTag.put("biome_source", compoundTag2);
+		compoundTag.put("chunk_generator", compoundTag4);
 		return compoundTag;
 	}
 
@@ -102,17 +102,17 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.field_2442 = I18n.translate("createWorld.customize.buffet.title");
 		this.addButton(
-			new class_4185(
+			new ButtonWidget(
 				(this.screenWidth - 200) / 2,
 				40,
 				200,
 				20,
 				I18n.translate("createWorld.customize.buffet.generatortype")
 					+ " "
-					+ I18n.translate(SystemUtil.method_646("generator", (Identifier)field_2436.get(this.field_2439)))
+					+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)field_2436.get(this.field_2439)))
 			) {
 				@Override
-				public void method_1826() {
+				public void onPressed() {
 					CustomizeBuffetLevelScreen.this.field_2439++;
 					if (CustomizeBuffetLevelScreen.this.field_2439 >= CustomizeBuffetLevelScreen.field_2436.size()) {
 						CustomizeBuffetLevelScreen.this.field_2439 = 0;
@@ -121,24 +121,26 @@ public class CustomizeBuffetLevelScreen extends Screen {
 					this.setText(
 						I18n.translate("createWorld.customize.buffet.generatortype")
 							+ " "
-							+ I18n.translate(SystemUtil.method_646("generator", (Identifier)CustomizeBuffetLevelScreen.field_2436.get(CustomizeBuffetLevelScreen.this.field_2439)))
+							+ I18n.translate(
+								SystemUtil.createTranslationKey("generator", (Identifier)CustomizeBuffetLevelScreen.field_2436.get(CustomizeBuffetLevelScreen.this.field_2439))
+							)
 					);
 				}
 			}
 		);
 		this.field_2441 = new CustomizeBuffetLevelScreen.class_4190();
 		this.listeners.add(this.field_2441);
-		this.field_2438 = this.addButton(new class_4185(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done")) {
+		this.field_2438 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done")) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				CustomizeBuffetLevelScreen.this.field_2437.field_3200 = CustomizeBuffetLevelScreen.this.method_2153();
-				CustomizeBuffetLevelScreen.this.client.method_1507(CustomizeBuffetLevelScreen.this.field_2437);
+				CustomizeBuffetLevelScreen.this.client.openScreen(CustomizeBuffetLevelScreen.this.field_2437);
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
-			public void method_1826() {
-				CustomizeBuffetLevelScreen.this.client.method_1507(CustomizeBuffetLevelScreen.this.field_2437);
+			public void onPressed() {
+				CustomizeBuffetLevelScreen.this.client.openScreen(CustomizeBuffetLevelScreen.this.field_2437);
 			}
 		});
 		this.method_2151();
@@ -187,7 +189,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 
 		@Override
 		protected boolean method_19352() {
-			return CustomizeBuffetLevelScreen.this.method_19357() == this;
+			return CustomizeBuffetLevelScreen.this.getFocused() == this;
 		}
 
 		@Override
@@ -225,7 +227,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			CustomizeBuffetLevelScreen.this.drawString(
 				CustomizeBuffetLevelScreen.this.fontRenderer,
-				Registry.BIOME.method_10223(CustomizeBuffetLevelScreen.this.field_2435[this.field_2143]).method_8693().getString(),
+				Registry.BIOME.get(CustomizeBuffetLevelScreen.this.field_2435[this.field_2143]).getTextComponent().getString(),
 				this.getX() + 5,
 				this.getY() + 2,
 				16777215

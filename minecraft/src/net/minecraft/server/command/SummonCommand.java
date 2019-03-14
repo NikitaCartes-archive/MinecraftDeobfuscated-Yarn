@@ -32,8 +32,8 @@ public class SummonCommand {
 						.executes(
 							commandContext -> method_13694(
 									commandContext.getSource(),
-									EntitySummonArgumentType.method_9322(commandContext, "entity"),
-									commandContext.getSource().method_9222(),
+									EntitySummonArgumentType.getSummonArgument(commandContext, "entity"),
+									commandContext.getSource().getPosition(),
 									new CompoundTag(),
 									true
 								)
@@ -43,7 +43,7 @@ public class SummonCommand {
 								.executes(
 									commandContext -> method_13694(
 											commandContext.getSource(),
-											EntitySummonArgumentType.method_9322(commandContext, "entity"),
+											EntitySummonArgumentType.getSummonArgument(commandContext, "entity"),
 											Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 											new CompoundTag(),
 											true
@@ -54,9 +54,9 @@ public class SummonCommand {
 										.executes(
 											commandContext -> method_13694(
 													commandContext.getSource(),
-													EntitySummonArgumentType.method_9322(commandContext, "entity"),
+													EntitySummonArgumentType.getSummonArgument(commandContext, "entity"),
 													Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
-													NbtCompoundTagArgumentType.method_9285(commandContext, "nbt"),
+													NbtCompoundTagArgumentType.getCompoundArgument(commandContext, "nbt"),
 													false
 												)
 										)
@@ -69,14 +69,14 @@ public class SummonCommand {
 	private static int method_13694(ServerCommandSource serverCommandSource, Identifier identifier, Vec3d vec3d, CompoundTag compoundTag, boolean bl) throws CommandSyntaxException {
 		CompoundTag compoundTag2 = compoundTag.method_10553();
 		compoundTag2.putString("id", identifier.toString());
-		if (EntityType.method_5890(EntityType.LIGHTNING_BOLT).equals(identifier)) {
-			LightningEntity lightningEntity = new LightningEntity(serverCommandSource.method_9225(), vec3d.x, vec3d.y, vec3d.z, false);
-			serverCommandSource.method_9225().addLightning(lightningEntity);
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.summon.success", lightningEntity.method_5476()), true);
+		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(identifier)) {
+			LightningEntity lightningEntity = new LightningEntity(serverCommandSource.getWorld(), vec3d.x, vec3d.y, vec3d.z, false);
+			serverCommandSource.getWorld().addLightning(lightningEntity);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", lightningEntity.getDisplayName()), true);
 			return 1;
 		} else {
-			ServerWorld serverWorld = serverCommandSource.method_9225();
-			Entity entity = EntityType.method_17842(compoundTag2, serverWorld, entityx -> {
+			ServerWorld serverWorld = serverCommandSource.getWorld();
+			Entity entity = EntityType.loadEntityWithPassengers(compoundTag2, serverWorld, entityx -> {
 				entityx.setPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, entityx.yaw, entityx.pitch);
 				return !serverWorld.method_18768(entityx) ? null : entityx;
 			});
@@ -85,10 +85,12 @@ public class SummonCommand {
 			} else {
 				if (bl && entity instanceof MobEntity) {
 					((MobEntity)entity)
-						.method_5943(serverCommandSource.method_9225(), serverCommandSource.method_9225().method_8404(new BlockPos(entity)), SpawnType.field_16462, null, null);
+						.prepareEntityData(
+							serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16462, null, null
+						);
 				}
 
-				serverCommandSource.method_9226(new TranslatableTextComponent("commands.summon.success", entity.method_5476()), true);
+				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", entity.getDisplayName()), true);
 				return 1;
 			}
 		}

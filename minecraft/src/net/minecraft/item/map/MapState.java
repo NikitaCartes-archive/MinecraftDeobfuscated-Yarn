@@ -61,7 +61,7 @@ public class MapState extends PersistentState {
 	}
 
 	@Override
-	public void method_77(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag compoundTag) {
 		this.dimension = DimensionType.byRawId(compoundTag.getInt("dimension"));
 		this.xCenter = compoundTag.getInt("xCenter");
 		this.zCenter = compoundTag.getInt("zCenter");
@@ -74,33 +74,33 @@ public class MapState extends PersistentState {
 			this.colorArray = new byte[16384];
 		}
 
-		ListTag listTag = compoundTag.method_10554("banners", 10);
+		ListTag listTag = compoundTag.getList("banners", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			MapBannerInstance mapBannerInstance = MapBannerInstance.method_67(listTag.getCompoundTag(i));
+			MapBannerInstance mapBannerInstance = MapBannerInstance.fromNbt(listTag.getCompoundTag(i));
 			this.field_123.put(mapBannerInstance.method_71(), mapBannerInstance);
 			this.method_107(
 				mapBannerInstance.method_72(),
 				null,
 				mapBannerInstance.method_71(),
-				(double)mapBannerInstance.method_70().getX(),
-				(double)mapBannerInstance.method_70().getZ(),
+				(double)mapBannerInstance.getPos().getX(),
+				(double)mapBannerInstance.getPos().getZ(),
 				180.0,
-				mapBannerInstance.method_68()
+				mapBannerInstance.getText()
 			);
 		}
 
-		ListTag listTag2 = compoundTag.method_10554("frames", 10);
+		ListTag listTag2 = compoundTag.getList("frames", 10);
 
 		for (int j = 0; j < listTag2.size(); j++) {
-			MapFrameInstance mapFrameInstance = MapFrameInstance.method_87(listTag2.getCompoundTag(j));
+			MapFrameInstance mapFrameInstance = MapFrameInstance.fromNbt(listTag2.getCompoundTag(j));
 			this.field_121.put(mapFrameInstance.method_82(), mapFrameInstance);
 			this.method_107(
 				MapIcon.Type.field_95,
 				null,
 				"frame-" + mapFrameInstance.getEntityId(),
-				(double)mapFrameInstance.method_86().getX(),
-				(double)mapFrameInstance.method_86().getZ(),
+				(double)mapFrameInstance.getPos().getX(),
+				(double)mapFrameInstance.getPos().getZ(),
 				(double)mapFrameInstance.getRotation(),
 				null
 			);
@@ -108,7 +108,7 @@ public class MapState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag method_75(CompoundTag compoundTag) {
+	public CompoundTag toTag(CompoundTag compoundTag) {
 		compoundTag.putInt("dimension", this.dimension.getRawId());
 		compoundTag.putInt("xCenter", this.xCenter);
 		compoundTag.putInt("zCenter", this.zCenter);
@@ -120,17 +120,17 @@ public class MapState extends PersistentState {
 		ListTag listTag = new ListTag();
 
 		for (MapBannerInstance mapBannerInstance : this.field_123.values()) {
-			listTag.add(mapBannerInstance.method_74());
+			listTag.add(mapBannerInstance.getNbt());
 		}
 
-		compoundTag.method_10566("banners", listTag);
+		compoundTag.put("banners", listTag);
 		ListTag listTag2 = new ListTag();
 
 		for (MapFrameInstance mapFrameInstance : this.field_121.values()) {
-			listTag2.add(mapFrameInstance.method_84());
+			listTag2.add(mapFrameInstance.getNbt());
 		}
 
-		compoundTag.method_10566("frames", listTag2);
+		compoundTag.put("frames", listTag2);
 		return compoundTag;
 	}
 
@@ -151,16 +151,16 @@ public class MapState extends PersistentState {
 			this.field_112.add(lv);
 		}
 
-		if (!playerEntity.inventory.method_7379(itemStack)) {
-			this.icons.remove(playerEntity.method_5477().getString());
+		if (!playerEntity.inventory.containsStack(itemStack)) {
+			this.icons.remove(playerEntity.getName().getString());
 		}
 
 		for (int i = 0; i < this.field_112.size(); i++) {
 			MapState.class_23 lv2 = (MapState.class_23)this.field_112.get(i);
-			String string = lv2.field_125.method_5477().getString();
-			if (!lv2.field_125.invalid && (lv2.field_125.inventory.method_7379(itemStack) || itemStack.isHeldInItemFrame())) {
-				if (!itemStack.isHeldInItemFrame() && lv2.field_125.field_6026 == this.dimension && this.showIcons) {
-					this.method_107(MapIcon.Type.field_91, lv2.field_125.field_6002, string, lv2.field_125.x, lv2.field_125.z, (double)lv2.field_125.yaw, null);
+			String string = lv2.field_125.getName().getString();
+			if (!lv2.field_125.invalid && (lv2.field_125.inventory.containsStack(itemStack) || itemStack.isHeldInItemFrame())) {
+				if (!itemStack.isHeldInItemFrame() && lv2.field_125.dimension == this.dimension && this.showIcons) {
+					this.method_107(MapIcon.Type.field_91, lv2.field_125.world, string, lv2.field_125.x, lv2.field_125.z, (double)lv2.field_125.yaw, null);
 				}
 			} else {
 				this.field_120.remove(lv2.field_125);
@@ -171,35 +171,35 @@ public class MapState extends PersistentState {
 
 		if (itemStack.isHeldInItemFrame() && this.showIcons) {
 			ItemFrameEntity itemFrameEntity = itemStack.getHoldingItemFrame();
-			BlockPos blockPos = itemFrameEntity.method_6896();
+			BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
 			MapFrameInstance mapFrameInstance = (MapFrameInstance)this.field_121.get(MapFrameInstance.method_81(blockPos));
 			if (mapFrameInstance != null && itemFrameEntity.getEntityId() != mapFrameInstance.getEntityId() && this.field_121.containsKey(mapFrameInstance.method_82())) {
 				this.icons.remove("frame-" + mapFrameInstance.getEntityId());
 			}
 
-			MapFrameInstance mapFrameInstance2 = new MapFrameInstance(blockPos, itemFrameEntity.field_7099.getHorizontal() * 90, itemFrameEntity.getEntityId());
+			MapFrameInstance mapFrameInstance2 = new MapFrameInstance(blockPos, itemFrameEntity.facing.getHorizontal() * 90, itemFrameEntity.getEntityId());
 			this.method_107(
 				MapIcon.Type.field_95,
-				playerEntity.field_6002,
+				playerEntity.world,
 				"frame-" + itemFrameEntity.getEntityId(),
 				(double)blockPos.getX(),
 				(double)blockPos.getZ(),
-				(double)(itemFrameEntity.field_7099.getHorizontal() * 90),
+				(double)(itemFrameEntity.facing.getHorizontal() * 90),
 				null
 			);
 			this.field_121.put(mapFrameInstance2.method_82(), mapFrameInstance2);
 		}
 
-		CompoundTag compoundTag = itemStack.method_7969();
+		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && compoundTag.containsKey("Decorations", 9)) {
-			ListTag listTag = compoundTag.method_10554("Decorations", 10);
+			ListTag listTag = compoundTag.getList("Decorations", 10);
 
 			for (int j = 0; j < listTag.size(); j++) {
 				CompoundTag compoundTag2 = listTag.getCompoundTag(j);
 				if (!this.icons.containsKey(compoundTag2.getString("id"))) {
 					this.method_107(
 						MapIcon.Type.byId(compoundTag2.getByte("type")),
-						playerEntity.field_6002,
+						playerEntity.world,
 						compoundTag2.getString("id"),
 						compoundTag2.getDouble("x"),
 						compoundTag2.getDouble("z"),
@@ -213,11 +213,11 @@ public class MapState extends PersistentState {
 
 	public static void method_110(ItemStack itemStack, BlockPos blockPos, String string, MapIcon.Type type) {
 		ListTag listTag;
-		if (itemStack.hasTag() && itemStack.method_7969().containsKey("Decorations", 9)) {
-			listTag = itemStack.method_7969().method_10554("Decorations", 10);
+		if (itemStack.hasTag() && itemStack.getTag().containsKey("Decorations", 9)) {
+			listTag = itemStack.getTag().getList("Decorations", 10);
 		} else {
 			listTag = new ListTag();
-			itemStack.method_7959("Decorations", listTag);
+			itemStack.setChildTag("Decorations", listTag);
 		}
 
 		CompoundTag compoundTag = new CompoundTag();
@@ -228,7 +228,7 @@ public class MapState extends PersistentState {
 		compoundTag.putDouble("rot", 180.0);
 		listTag.add(compoundTag);
 		if (type.hasTintColor()) {
-			CompoundTag compoundTag2 = itemStack.method_7911("display");
+			CompoundTag compoundTag2 = itemStack.getOrCreateSubCompoundTag("display");
 			compoundTag2.putInt("MapColor", type.getTintColor());
 		}
 	}
@@ -245,7 +245,7 @@ public class MapState extends PersistentState {
 			f += f < 0.0 ? -8.0 : 8.0;
 			k = (byte)((int)(f * 16.0 / 360.0));
 			if (this.dimension == DimensionType.field_13076 && iWorld != null) {
-				int l = (int)(iWorld.method_8401().getTimeOfDay() / 10L);
+				int l = (int)(iWorld.getLevelProperties().getTimeOfDay() / 10L);
 				k = (byte)(l * l * 34187121 + l * 121 >> 15 & 15);
 			}
 		} else {
@@ -321,7 +321,7 @@ public class MapState extends PersistentState {
 		int k = 63;
 		boolean bl = false;
 		if (h >= -63.0F && j >= -63.0F && h <= 63.0F && j <= 63.0F) {
-			MapBannerInstance mapBannerInstance = MapBannerInstance.method_73(iWorld, blockPos);
+			MapBannerInstance mapBannerInstance = MapBannerInstance.fromWorldBlock(iWorld, blockPos);
 			if (mapBannerInstance == null) {
 				return;
 			}
@@ -337,7 +337,7 @@ public class MapState extends PersistentState {
 
 			if (bl2) {
 				this.field_123.put(mapBannerInstance.method_71(), mapBannerInstance);
-				this.method_107(mapBannerInstance.method_72(), iWorld, mapBannerInstance.method_71(), (double)f, (double)g, 180.0, mapBannerInstance.method_68());
+				this.method_107(mapBannerInstance.method_72(), iWorld, mapBannerInstance.method_71(), (double)f, (double)g, 180.0, mapBannerInstance.getText());
 				bl = true;
 			}
 
@@ -352,8 +352,8 @@ public class MapState extends PersistentState {
 
 		while (iterator.hasNext()) {
 			MapBannerInstance mapBannerInstance = (MapBannerInstance)iterator.next();
-			if (mapBannerInstance.method_70().getX() == i && mapBannerInstance.method_70().getZ() == j) {
-				MapBannerInstance mapBannerInstance2 = MapBannerInstance.method_73(blockView, mapBannerInstance.method_70());
+			if (mapBannerInstance.getPos().getX() == i && mapBannerInstance.getPos().getZ() == j) {
+				MapBannerInstance mapBannerInstance2 = MapBannerInstance.fromWorldBlock(blockView, mapBannerInstance.getPos());
 				if (!mapBannerInstance.equals(mapBannerInstance2)) {
 					iterator.remove();
 					this.icons.remove(mapBannerInstance.method_71());

@@ -15,11 +15,11 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class CubeMapRenderer {
-	private final Identifier[] field_3952 = new Identifier[6];
+	private final Identifier[] faces = new Identifier[6];
 
 	public CubeMapRenderer(Identifier identifier) {
 		for (int i = 0; i < 6; i++) {
-			this.field_3952[i] = new Identifier(identifier.getNamespace(), identifier.getPath() + '_' + i + ".png");
+			this.faces[i] = new Identifier(identifier.getNamespace(), identifier.getPath() + '_' + i + ".png");
 		}
 	}
 
@@ -56,8 +56,8 @@ public class CubeMapRenderer {
 			GlStateManager.rotatef(g, 0.0F, 1.0F, 0.0F);
 
 			for (int n = 0; n < 6; n++) {
-				minecraftClient.method_1531().method_4618(this.field_3952[n]);
-				bufferBuilder.method_1328(7, VertexFormats.field_1575);
+				minecraftClient.getTextureManager().bindTexture(this.faces[n]);
+				bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 				int o = Math.round(255.0F * h) / (j + 1);
 				if (n == 0) {
 					bufferBuilder.vertex(-1.0, -1.0, 1.0).texture(0.0, 0.0).color(255, 255, 255, o).next();
@@ -123,7 +123,7 @@ public class CubeMapRenderer {
 		CompletableFuture<?>[] completableFutures = new CompletableFuture[6];
 
 		for (int i = 0; i < completableFutures.length; i++) {
-			completableFutures[i] = textureManager.method_18168(this.field_3952[i], executor);
+			completableFutures[i] = textureManager.method_18168(this.faces[i], executor);
 		}
 
 		return CompletableFuture.allOf(completableFutures);

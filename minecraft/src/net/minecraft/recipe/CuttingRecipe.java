@@ -16,7 +16,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 	protected final ItemStack result;
 	private final RecipeType<?> type;
 	private final RecipeSerializer<?> serializer;
-	protected final Identifier field_17644;
+	protected final Identifier id;
 	protected final String group;
 
 	public CuttingRecipe(
@@ -24,25 +24,25 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 	) {
 		this.type = recipeType;
 		this.serializer = recipeSerializer;
-		this.field_17644 = identifier;
+		this.id = identifier;
 		this.group = string;
 		this.ingredient = ingredient;
 		this.result = itemStack;
 	}
 
 	@Override
-	public RecipeType<?> method_17716() {
+	public RecipeType<?> getType() {
 		return this.type;
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
+	public RecipeSerializer<?> getSerializer() {
 		return this.serializer;
 	}
 
 	@Override
-	public Identifier method_8114() {
-		return this.field_17644;
+	public Identifier getId() {
+		return this.id;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -57,7 +57,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public DefaultedList<Ingredient> method_8117() {
+	public DefaultedList<Ingredient> getPreviewInputs() {
 		DefaultedList<Ingredient> defaultedList = DefaultedList.create();
 		defaultedList.add(this.ingredient);
 		return defaultedList;
@@ -92,20 +92,20 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 
 			String string2 = JsonHelper.getString(jsonObject, "result");
 			int i = JsonHelper.getInt(jsonObject, "count");
-			ItemStack itemStack = new ItemStack(Registry.ITEM.method_10223(new Identifier(string2)), i);
+			ItemStack itemStack = new ItemStack(Registry.ITEM.get(new Identifier(string2)), i);
 			return this.field_17648.create(identifier, string, ingredient, itemStack);
 		}
 
 		public T method_17882(Identifier identifier, PacketByteBuf packetByteBuf) {
 			String string = packetByteBuf.readString(32767);
-			Ingredient ingredient = Ingredient.method_8086(packetByteBuf);
+			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 			ItemStack itemStack = packetByteBuf.readItemStack();
 			return this.field_17648.create(identifier, string, ingredient, itemStack);
 		}
 
 		public void method_17880(PacketByteBuf packetByteBuf, T cuttingRecipe) {
 			packetByteBuf.writeString(cuttingRecipe.group);
-			cuttingRecipe.ingredient.method_8088(packetByteBuf);
+			cuttingRecipe.ingredient.write(packetByteBuf);
 			packetByteBuf.writeItemStack(cuttingRecipe.result);
 		}
 

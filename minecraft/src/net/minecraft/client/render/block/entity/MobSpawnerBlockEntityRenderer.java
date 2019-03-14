@@ -33,7 +33,7 @@ public class MobSpawnerBlockEntityRenderer extends BlockEntityRenderer<MobSpawne
 			GlStateManager.rotatef(-30.0F, 1.0F, 0.0F, 0.0F);
 			GlStateManager.scalef(h, h, h);
 			entity.setPositionAndAngles(d, e, f, 0.0F, 0.0F);
-			MinecraftClient.getInstance().method_1561().render(entity, 0.0, 0.0, 0.0, 0.0F, g, false);
+			MinecraftClient.getInstance().getEntityRenderManager().render(entity, 0.0, 0.0, 0.0, 0.0F, g, false);
 		}
 	}
 }

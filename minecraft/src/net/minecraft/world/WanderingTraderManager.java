@@ -17,15 +17,15 @@ import net.minecraft.world.level.LevelProperties;
 
 public class WanderingTraderManager {
 	private final Random random = new Random();
-	private final ServerWorld field_17727;
+	private final ServerWorld world;
 	private int field_17728;
 	private int field_17729;
 	private int field_17730;
 
 	public WanderingTraderManager(ServerWorld serverWorld) {
-		this.field_17727 = serverWorld;
+		this.world = serverWorld;
 		this.field_17728 = 1200;
-		LevelProperties levelProperties = serverWorld.method_8401();
+		LevelProperties levelProperties = serverWorld.getLevelProperties();
 		this.field_17729 = levelProperties.getWanderingTraderSpawnDelay();
 		this.field_17730 = levelProperties.getWanderingTraderSpawnChance();
 		if (this.field_17729 == 0 && this.field_17730 == 0) {
@@ -39,12 +39,12 @@ public class WanderingTraderManager {
 	public void tick() {
 		if (--this.field_17728 <= 0) {
 			this.field_17728 = 1200;
-			LevelProperties levelProperties = this.field_17727.method_8401();
+			LevelProperties levelProperties = this.world.getLevelProperties();
 			this.field_17729 -= 1200;
 			levelProperties.setWanderingTraderSpawnDelay(this.field_17729);
 			if (this.field_17729 <= 0) {
 				this.field_17729 = 24000;
-				if (this.field_17727.getGameRules().getBoolean("doMobSpawning")) {
+				if (this.world.getGameRules().getBoolean("doMobSpawning")) {
 					int i = this.field_17730;
 					this.field_17730 = MathHelper.clamp(this.field_17730 + 25, 25, 75);
 					levelProperties.setWanderingTraderSpawnChance(this.field_17730);
@@ -59,25 +59,24 @@ public class WanderingTraderManager {
 	}
 
 	private boolean method_18018() {
-		PlayerEntity playerEntity = this.field_17727.method_18779();
+		PlayerEntity playerEntity = this.world.method_18779();
 		if (playerEntity == null) {
 			return true;
 		} else if (this.random.nextInt(10) != 0) {
 			return false;
 		} else {
-			BlockPos blockPos = playerEntity.method_5704();
+			BlockPos blockPos = playerEntity.getPos();
 			BlockPos blockPos2 = this.method_18017(blockPos, 48);
 			if (blockPos2 != null) {
-				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713
-					.method_5899(this.field_17727, null, null, null, blockPos2, SpawnType.field_16467, false, false);
+				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713.spawn(this.world, null, null, null, blockPos2, SpawnType.field_16467, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int i = 0; i < 2; i++) {
 						this.method_18016(wanderingTraderEntity, 8);
 					}
 
-					this.field_17727.method_8401().setWanderingTraderId(wanderingTraderEntity.getUuid());
+					this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
 					wanderingTraderEntity.setDespawnDelay(48000);
-					wanderingTraderEntity.method_18069(new BlockPos(playerEntity.x, playerEntity.y, playerEntity.z));
+					wanderingTraderEntity.setWanderTarget(new BlockPos(playerEntity.x, playerEntity.y, playerEntity.z));
 					return true;
 				}
 			}
@@ -89,7 +88,7 @@ public class WanderingTraderManager {
 	private void method_18016(WanderingTraderEntity wanderingTraderEntity, int i) {
 		BlockPos blockPos = this.method_18017(new BlockPos(wanderingTraderEntity), i);
 		if (blockPos != null) {
-			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.method_5899(this.field_17727, null, null, null, blockPos, SpawnType.field_16467, false, false);
+			TraderLlamaEntity traderLlamaEntity = EntityType.field_17714.spawn(this.world, null, null, null, blockPos, SpawnType.field_16467, false, false);
 			if (traderLlamaEntity != null) {
 				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
 				traderLlamaEntity.setDespawnDelay(47999);
@@ -104,9 +103,9 @@ public class WanderingTraderManager {
 		for (int j = 0; j < 10; j++) {
 			int k = blockPos.getX() + this.random.nextInt(i * 2) - i;
 			int l = blockPos.getZ() + this.random.nextInt(i * 2) - i;
-			int m = this.field_17727.method_8589(Heightmap.Type.WORLD_SURFACE, k, l);
+			int m = this.world.getTop(Heightmap.Type.WORLD_SURFACE, k, l);
 			BlockPos blockPos3 = new BlockPos(k, m, l);
-			if (SpawnHelper.method_8660(SpawnRestriction.Location.field_6317, this.field_17727, blockPos3, EntityType.field_17713)) {
+			if (SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, blockPos3, EntityType.field_17713)) {
 				blockPos2 = blockPos3;
 				break;
 			}

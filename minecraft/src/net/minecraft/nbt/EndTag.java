@@ -31,7 +31,7 @@ public class EndTag implements Tag {
 	}
 
 	@Override
-	public TextComponent method_10710(String string, int i) {
+	public TextComponent toTextComponent(String string, int i) {
 		return new StringTextComponent("");
 	}
 

@@ -22,7 +22,7 @@ public class RandomBooleanFeature extends Feature<RandomBooleanFeatureConfig> {
 	) {
 		boolean bl = random.nextBoolean();
 		return bl
-			? randomBooleanFeatureConfig.featureTrue.method_12862(iWorld, chunkGenerator, random, blockPos)
-			: randomBooleanFeatureConfig.featureFalse.method_12862(iWorld, chunkGenerator, random, blockPos);
+			? randomBooleanFeatureConfig.featureTrue.generate(iWorld, chunkGenerator, random, blockPos)
+			: randomBooleanFeatureConfig.featureFalse.generate(iWorld, chunkGenerator, random, blockPos);
 	}
 }

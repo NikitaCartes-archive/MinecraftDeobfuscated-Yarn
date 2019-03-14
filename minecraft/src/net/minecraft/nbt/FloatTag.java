@@ -51,7 +51,7 @@ public class FloatTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public TextComponent method_10710(String string, int i) {
+	public TextComponent toTextComponent(String string, int i) {
 		TextComponent textComponent = new StringTextComponent("f").applyFormat(RED);
 		return new StringTextComponent(String.valueOf(this.value)).append(textComponent).applyFormat(GOLD);
 	}

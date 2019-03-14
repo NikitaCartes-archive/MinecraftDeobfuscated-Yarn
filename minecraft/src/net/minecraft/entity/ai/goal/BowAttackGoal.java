@@ -24,7 +24,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 		this.field_6569 = d;
 		this.field_6575 = i;
 		this.field_6570 = f * f;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
 	}
 
 	public void method_6305(int i) {
@@ -42,7 +42,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 
 	@Override
 	public boolean shouldContinue() {
-		return (this.canStart() || !this.field_6576.method_5942().isIdle()) && this.method_6306();
+		return (this.canStart() || !this.field_6576.getNavigation().isIdle()) && this.method_6306();
 	}
 
 	@Override
@@ -64,8 +64,8 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 	public void tick() {
 		LivingEntity livingEntity = this.field_6576.getTarget();
 		if (livingEntity != null) {
-			double d = this.field_6576.squaredDistanceTo(livingEntity.x, livingEntity.method_5829().minY, livingEntity.z);
-			boolean bl = this.field_6576.method_5985().canSee(livingEntity);
+			double d = this.field_6576.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+			boolean bl = this.field_6576.getVisibilityCache().canSee(livingEntity);
 			boolean bl2 = this.field_6572 > 0;
 			if (bl != bl2) {
 				this.field_6572 = 0;
@@ -78,10 +78,10 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 			}
 
 			if (!(d > (double)this.field_6570) && this.field_6572 >= 20) {
-				this.field_6576.method_5942().stop();
+				this.field_6576.getNavigation().stop();
 				this.field_6568++;
 			} else {
-				this.field_6576.method_5942().startMovingTo(livingEntity, this.field_6569);
+				this.field_6576.getNavigation().startMovingTo(livingEntity, this.field_6569);
 				this.field_6568 = -1;
 			}
 
@@ -104,10 +104,10 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 					this.field_6571 = true;
 				}
 
-				this.field_6576.method_5962().method_6243(this.field_6571 ? -0.5F : 0.5F, this.field_6573 ? 0.5F : -0.5F);
+				this.field_6576.getMoveControl().method_6243(this.field_6571 ? -0.5F : 0.5F, this.field_6573 ? 0.5F : -0.5F);
 				this.field_6576.method_5951(livingEntity, 30.0F, 30.0F);
 			} else {
-				this.field_6576.method_5988().lookAt(livingEntity, 30.0F, 30.0F);
+				this.field_6576.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 			}
 
 			if (this.field_6576.isUsingItem()) {

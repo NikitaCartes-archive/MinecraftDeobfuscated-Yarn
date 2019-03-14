@@ -12,11 +12,11 @@ import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
 public class GrassColormapResourceSupplier extends SupplyingResourceReloadListener<int[]> {
-	private static final Identifier field_5302 = new Identifier("textures/colormap/grass.png");
+	private static final Identifier GRASS_COLORMAP_LOC = new Identifier("textures/colormap/grass.png");
 
 	protected int[] method_18662(ResourceManager resourceManager, Profiler profiler) {
 		try {
-			return RawTextureDataLoader.method_16049(resourceManager, field_5302);
+			return RawTextureDataLoader.loadRawTextureData(resourceManager, GRASS_COLORMAP_LOC);
 		} catch (IOException var4) {
 			throw new IllegalStateException("Failed to load grass color texture", var4);
 		}

@@ -20,12 +20,12 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack method_7854() {
-		return PotionUtil.setPotion(super.method_7854(), Potions.field_8982);
+	public ItemStack getDefaultStack() {
+		return PotionUtil.setPotion(super.getDefaultStack(), Potions.field_8982);
 	}
 
 	@Override
-	public void method_7850(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
+	public void appendItemsForGroup(ItemGroup itemGroup, DefaultedList<ItemStack> defaultedList) {
 		if (this.isInItemGroup(itemGroup)) {
 			for (Potion potion : Registry.POTION) {
 				if (!potion.getEffects().isEmpty()) {
@@ -37,12 +37,12 @@ public class TippedArrowItem extends ArrowItem {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_7851(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		PotionUtil.buildTooltip(itemStack, list, 0.125F);
 	}
 
 	@Override
-	public String method_7866(ItemStack itemStack) {
+	public String getTranslationKey(ItemStack itemStack) {
 		return PotionUtil.getPotion(itemStack).getName(this.getTranslationKey() + ".effect.");
 	}
 }

@@ -27,7 +27,7 @@ public enum Difficulty {
 		return this.id;
 	}
 
-	public TextComponent method_5463() {
+	public TextComponent toTextComponent() {
 		return new TranslatableTextComponent("options.difficulty." + this.translationKey);
 	}
 

@@ -53,27 +53,27 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public float method_15788(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+	public float getHeight(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
 		return 0.0F;
 	}
 
 	@Override
-	protected BlockState method_15790(FluidState fluidState) {
-		return Blocks.field_10124.method_9564();
+	protected BlockState toBlockState(FluidState fluidState) {
+		return Blocks.field_10124.getDefaultState();
 	}
 
 	@Override
-	public boolean method_15793(FluidState fluidState) {
+	public boolean isStill(FluidState fluidState) {
 		return false;
 	}
 
 	@Override
-	public int method_15779(FluidState fluidState) {
+	public int getLevel(FluidState fluidState) {
 		return 0;
 	}
 
 	@Override
-	public VoxelShape method_17775(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
-		return VoxelShapes.method_1073();
+	public VoxelShape getShape(FluidState fluidState, BlockView blockView, BlockPos blockPos) {
+		return VoxelShapes.empty();
 	}
 }

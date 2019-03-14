@@ -19,7 +19,7 @@ import net.minecraft.world.chunk.WorldNibbleStorage;
 
 public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends class_4079 {
 	protected static final ChunkNibbleArray EMPTY = new ChunkNibbleArray();
-	private static final Direction[] field_15799 = Direction.values();
+	private static final Direction[] DIRECTIONS = Direction.values();
 	private final LightType lightType;
 	private final ChunkProvider chunkProvider;
 	protected final LongSet field_15808 = new LongOpenHashSet();
@@ -92,7 +92,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 	}
 
 	@Override
-	protected int getCurrentLevelFor(long l) {
+	protected int getLevel(long l) {
 		if (l == Long.MAX_VALUE) {
 			return 2;
 		} else if (this.field_15808.contains(l)) {
@@ -112,8 +112,8 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 	}
 
 	@Override
-	protected void setLevelFor(long l, int i) {
-		int j = this.getCurrentLevelFor(l);
+	protected void setLevel(long l, int i) {
+		int j = this.getLevel(l);
 		if (j != 0 && i == 0) {
 			this.field_15808.add(l);
 			this.field_15804.remove(l);
@@ -218,7 +218,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 						int j = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l));
 						int k = ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l));
 
-						for (Direction direction : field_15799) {
+						for (Direction direction : DIRECTIONS) {
 							long n = ChunkSectionPos.offsetPacked(l, direction);
 							if (!this.toUpdate.containsKey(n) && this.hasChunk(n)) {
 								for (int o = 0; o < 16; o++) {
@@ -251,8 +251,8 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 												r = BlockPos.asLong(i + 16, j + o, k + p);
 										}
 
-										chunkLightProvider.scheduleNewLevelUpdate(q, r, chunkLightProvider.getBaseLevelFor(q, r, chunkLightProvider.getCurrentLevelFor(q)), false);
-										chunkLightProvider.scheduleNewLevelUpdate(r, q, chunkLightProvider.getBaseLevelFor(r, q, chunkLightProvider.getCurrentLevelFor(r)), false);
+										chunkLightProvider.scheduleNewLevelUpdate(q, r, chunkLightProvider.getBaseLevel(q, r, chunkLightProvider.getLevel(q)), false);
+										chunkLightProvider.scheduleNewLevelUpdate(r, q, chunkLightProvider.getBaseLevel(r, q, chunkLightProvider.getLevel(r)), false);
 									}
 								}
 							}
@@ -318,7 +318,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 
 			while (longIterator.hasNext()) {
 				long l = longIterator.nextLong();
-				this.chunkProvider.method_12247(this.lightType, ChunkSectionPos.from(l));
+				this.chunkProvider.onLightUpdate(this.lightType, ChunkSectionPos.from(l));
 			}
 
 			this.toNotify.clear();

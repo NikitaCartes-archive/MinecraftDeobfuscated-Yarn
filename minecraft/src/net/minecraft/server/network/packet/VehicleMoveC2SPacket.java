@@ -43,7 +43,7 @@ public class VehicleMoveC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12278(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12078(this);
+		serverPlayPacketListener.onVehicleMove(this);
 	}
 
 	public double getX() {

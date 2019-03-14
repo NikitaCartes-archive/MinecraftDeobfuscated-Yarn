@@ -2,14 +2,13 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class SpitParticle extends ExplosionSmokeParticle {
-	private SpitParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
-		super(world, d, e, f, g, h, i, arg);
+	private SpitParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
+		super(world, d, e, f, g, h, i, spriteProvider);
 		this.gravityStrength = 0.5F;
 	}
 
@@ -21,10 +20,10 @@ public class SpitParticle extends ExplosionSmokeParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17876;
+		private final SpriteProvider field_17876;
 
-		public Factory(class_4002 arg) {
-			this.field_17876 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17876 = spriteProvider;
 		}
 
 		public Particle method_3103(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

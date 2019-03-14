@@ -3,21 +3,21 @@ package net.minecraft.client.render.block.entity;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.block.entity.ConduitBlockEntity;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.client.model.Model;
+import net.minecraft.client.render.Camera;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlockEntity> {
-	private static final Identifier field_4377 = new Identifier("textures/entity/conduit/base.png");
-	private static final Identifier field_4378 = new Identifier("textures/entity/conduit/cage.png");
-	private static final Identifier field_4373 = new Identifier("textures/entity/conduit/wind.png");
-	private static final Identifier field_4371 = new Identifier("textures/entity/conduit/wind_vertical.png");
-	private static final Identifier field_4379 = new Identifier("textures/entity/conduit/open_eye.png");
-	private static final Identifier field_4380 = new Identifier("textures/entity/conduit/closed_eye.png");
+	private static final Identifier BASE_TEX = new Identifier("textures/entity/conduit/base.png");
+	private static final Identifier CAGE_TEX = new Identifier("textures/entity/conduit/cage.png");
+	private static final Identifier WIND_TEX = new Identifier("textures/entity/conduit/wind.png");
+	private static final Identifier WIND_VERTICAL_TEX = new Identifier("textures/entity/conduit/wind_vertical.png");
+	private static final Identifier OPEN_EYE_TEX = new Identifier("textures/entity/conduit/open_eye.png");
+	private static final Identifier CLOSED_EYE_TEX = new Identifier("textures/entity/conduit/closed_eye.png");
 	private final ConduitBlockEntityRenderer.BaseModel baseModel = new ConduitBlockEntityRenderer.BaseModel();
 	private final ConduitBlockEntityRenderer.CageModel cageModel = new ConduitBlockEntityRenderer.CageModel();
 	private final ConduitBlockEntityRenderer.WindModel windModel = new ConduitBlockEntityRenderer.WindModel();
@@ -27,7 +27,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 		float h = (float)conduitBlockEntity.ticks + g;
 		if (!conduitBlockEntity.isActive()) {
 			float j = conduitBlockEntity.getRotation(0.0F);
-			this.method_3566(field_4377);
+			this.bindTexture(BASE_TEX);
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 			GlStateManager.rotatef(j, 0.0F, 1.0F, 0.0F);
@@ -37,7 +37,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			float j = conduitBlockEntity.getRotation(g) * (180.0F / (float)Math.PI);
 			float k = MathHelper.sin(h * 0.1F) / 2.0F + 0.5F;
 			k = k * k + k;
-			this.method_3566(field_4378);
+			this.bindTexture(CAGE_TEX);
 			GlStateManager.disableCull();
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.3F + k * 0.2F, (float)f + 0.5F);
@@ -50,7 +50,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			int n = conduitBlockEntity.ticks / 66 % 3;
 			switch (n) {
 				case 0:
-					this.method_3566(field_4373);
+					this.bindTexture(WIND_TEX);
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 					this.windModel.render(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
@@ -64,7 +64,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 					GlStateManager.popMatrix();
 					break;
 				case 1:
-					this.method_3566(field_4371);
+					this.bindTexture(WIND_VERTICAL_TEX);
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 					GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
@@ -79,7 +79,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 					GlStateManager.popMatrix();
 					break;
 				case 2:
-					this.method_3566(field_4373);
+					this.bindTexture(WIND_TEX);
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
 					GlStateManager.rotatef(90.0F, 0.0F, 0.0F, 1.0F);
@@ -94,18 +94,18 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 					GlStateManager.popMatrix();
 			}
 
-			class_4184 lv = this.renderManager.cameraEntity;
+			Camera camera = this.renderManager.cameraEntity;
 			if (conduitBlockEntity.isEyeOpen()) {
-				this.method_3566(field_4379);
+				this.bindTexture(OPEN_EYE_TEX);
 			} else {
-				this.method_3566(field_4380);
+				this.bindTexture(CLOSED_EYE_TEX);
 			}
 
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)d + 0.5F, (float)e + 0.3F + k * 0.2F, (float)f + 0.5F);
 			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-			GlStateManager.rotatef(-lv.method_19330(), 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(lv.method_19329(), 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef(-camera.getYaw(), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(camera.getPitch(), 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 			this.eyeModel.render(0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.083333336F);
 			GlStateManager.popMatrix();

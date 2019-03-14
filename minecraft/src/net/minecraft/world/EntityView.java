@@ -8,9 +8,9 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_4051;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.BooleanBiFunction;
@@ -19,42 +19,42 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
 public interface EntityView {
-	List<Entity> method_8333(@Nullable Entity entity, BoundingBox boundingBox, @Nullable Predicate<? super Entity> predicate);
+	List<Entity> getEntities(@Nullable Entity entity, BoundingBox boundingBox, @Nullable Predicate<? super Entity> predicate);
 
-	<T extends Entity> List<T> method_8390(Class<? extends T> class_, BoundingBox boundingBox, @Nullable Predicate<? super T> predicate);
+	<T extends Entity> List<T> getEntities(Class<? extends T> class_, BoundingBox boundingBox, @Nullable Predicate<? super T> predicate);
 
 	List<? extends PlayerEntity> getPlayers();
 
-	default List<Entity> method_8335(@Nullable Entity entity, BoundingBox boundingBox) {
-		return this.method_8333(entity, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
+	default List<Entity> getVisibleEntities(@Nullable Entity entity, BoundingBox boundingBox) {
+		return this.getEntities(entity, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
 	default boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
 		return voxelShape.isEmpty()
 			? true
-			: this.method_8335(entity, voxelShape.getBoundingBox())
+			: this.getVisibleEntities(entity, voxelShape.getBoundingBox())
 				.stream()
 				.filter(entity2 -> !entity2.invalid && entity2.field_6033 && (entity == null || !entity2.method_5794(entity)))
-				.noneMatch(entityx -> VoxelShapes.method_1074(voxelShape, VoxelShapes.method_1078(entityx.method_5829()), BooleanBiFunction.AND));
+				.noneMatch(entityx -> VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(entityx.getBoundingBox()), BooleanBiFunction.AND));
 	}
 
 	default <T extends Entity> List<T> method_18467(Class<? extends T> class_, BoundingBox boundingBox) {
-		return this.method_8390(class_, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
+		return this.getEntities(class_, boundingBox, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 
-	default Stream<VoxelShape> method_8334(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+	default Stream<VoxelShape> getCollidingEntityBoundingBoxesForEntity(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
 		if (voxelShape.isEmpty()) {
 			return Stream.empty();
 		} else {
 			BoundingBox boundingBox = voxelShape.getBoundingBox();
-			return this.method_8335(entity, boundingBox.expand(0.25))
+			return this.getVisibleEntities(entity, boundingBox.expand(0.25))
 				.stream()
 				.filter(entity2 -> !set.contains(entity2) && (entity == null || !entity.method_5794(entity2)))
 				.flatMap(
 					entity2 -> Stream.of(entity2.method_5827(), entity == null ? null : entity.method_5708(entity2))
 							.filter(Objects::nonNull)
 							.filter(boundingBox2 -> boundingBox2.intersects(boundingBox))
-							.map(VoxelShapes::method_1078)
+							.map(VoxelShapes::cube)
 				);
 		}
 	}
@@ -120,34 +120,36 @@ public interface EntityView {
 	}
 
 	@Nullable
-	default PlayerEntity method_18462(class_4051 arg, LivingEntity livingEntity) {
-		return this.method_18468(this.getPlayers(), arg, livingEntity, livingEntity.x, livingEntity.y, livingEntity.z);
+	default PlayerEntity method_18462(TargetPredicate targetPredicate, LivingEntity livingEntity) {
+		return this.method_18468(this.getPlayers(), targetPredicate, livingEntity, livingEntity.x, livingEntity.y, livingEntity.z);
 	}
 
 	@Nullable
-	default PlayerEntity method_18463(class_4051 arg, LivingEntity livingEntity, double d, double e, double f) {
-		return this.method_18468(this.getPlayers(), arg, livingEntity, d, e, f);
+	default PlayerEntity method_18463(TargetPredicate targetPredicate, LivingEntity livingEntity, double d, double e, double f) {
+		return this.method_18468(this.getPlayers(), targetPredicate, livingEntity, d, e, f);
 	}
 
 	@Nullable
-	default PlayerEntity method_18461(class_4051 arg, double d, double e, double f) {
-		return this.method_18468(this.getPlayers(), arg, null, d, e, f);
+	default PlayerEntity method_18461(TargetPredicate targetPredicate, double d, double e, double f) {
+		return this.method_18468(this.getPlayers(), targetPredicate, null, d, e, f);
 	}
 
 	@Nullable
 	default <T extends LivingEntity> T method_18465(
-		Class<? extends T> class_, class_4051 arg, @Nullable LivingEntity livingEntity, double d, double e, double f, BoundingBox boundingBox
+		Class<? extends T> class_, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f, BoundingBox boundingBox
 	) {
-		return this.method_18468(this.method_8390(class_, boundingBox, null), arg, livingEntity, d, e, f);
+		return this.method_18468(this.getEntities(class_, boundingBox, null), targetPredicate, livingEntity, d, e, f);
 	}
 
 	@Nullable
-	default <T extends LivingEntity> T method_18468(List<? extends T> list, class_4051 arg, @Nullable LivingEntity livingEntity, double d, double e, double f) {
+	default <T extends LivingEntity> T method_18468(
+		List<? extends T> list, TargetPredicate targetPredicate, @Nullable LivingEntity livingEntity, double d, double e, double f
+	) {
 		double g = -1.0;
 		T livingEntity2 = null;
 
 		for (T livingEntity3 : list) {
-			if (arg.method_18419(livingEntity, livingEntity3)) {
+			if (targetPredicate.test(livingEntity, livingEntity3)) {
 				double h = livingEntity3.squaredDistanceTo(d, e, f);
 				if (g == -1.0 || h < g) {
 					g = h;
@@ -159,11 +161,11 @@ public interface EntityView {
 		return livingEntity2;
 	}
 
-	default List<PlayerEntity> method_18464(class_4051 arg, LivingEntity livingEntity, BoundingBox boundingBox) {
+	default List<PlayerEntity> method_18464(TargetPredicate targetPredicate, LivingEntity livingEntity, BoundingBox boundingBox) {
 		List<PlayerEntity> list = Lists.<PlayerEntity>newArrayList();
 
 		for (PlayerEntity playerEntity : this.getPlayers()) {
-			if (boundingBox.contains(playerEntity.x, playerEntity.y, playerEntity.z) && arg.method_18419(livingEntity, playerEntity)) {
+			if (boundingBox.contains(playerEntity.x, playerEntity.y, playerEntity.z) && targetPredicate.test(livingEntity, playerEntity)) {
 				list.add(playerEntity);
 			}
 		}
@@ -171,12 +173,14 @@ public interface EntityView {
 		return list;
 	}
 
-	default <T extends LivingEntity> List<T> method_18466(Class<? extends T> class_, class_4051 arg, LivingEntity livingEntity, BoundingBox boundingBox) {
-		List<T> list = this.method_8390(class_, boundingBox, null);
+	default <T extends LivingEntity> List<T> method_18466(
+		Class<? extends T> class_, TargetPredicate targetPredicate, LivingEntity livingEntity, BoundingBox boundingBox
+	) {
+		List<T> list = this.getEntities(class_, boundingBox, null);
 		List<T> list2 = Lists.<T>newArrayList();
 
 		for (T livingEntity2 : list) {
-			if (arg.method_18419(livingEntity, livingEntity2)) {
+			if (targetPredicate.test(livingEntity, livingEntity2)) {
 				list2.add(livingEntity2);
 			}
 		}

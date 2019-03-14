@@ -22,11 +22,11 @@ public class LocationPredicate {
 	private final NumberRange.Float y;
 	private final NumberRange.Float z;
 	@Nullable
-	private final Biome field_9683;
+	private final Biome biome;
 	@Nullable
-	private final StructureFeature<?> field_9687;
+	private final StructureFeature<?> feature;
 	@Nullable
-	private final DimensionType field_9686;
+	private final DimensionType dimension;
 
 	public LocationPredicate(
 		NumberRange.Float float_,
@@ -39,9 +39,9 @@ public class LocationPredicate {
 		this.x = float_;
 		this.y = float2;
 		this.z = float3;
-		this.field_9683 = biome;
-		this.field_9687 = structureFeature;
-		this.field_9686 = dimensionType;
+		this.biome = biome;
+		this.feature = structureFeature;
+		this.dimension = dimensionType;
 	}
 
 	public static LocationPredicate method_9022(Biome biome) {
@@ -56,24 +56,24 @@ public class LocationPredicate {
 		return new LocationPredicate(NumberRange.Float.ANY, NumberRange.Float.ANY, NumberRange.Float.ANY, null, structureFeature, null);
 	}
 
-	public boolean method_9018(ServerWorld serverWorld, double d, double e, double f) {
-		return this.method_9020(serverWorld, (float)d, (float)e, (float)f);
+	public boolean test(ServerWorld serverWorld, double d, double e, double f) {
+		return this.test(serverWorld, (float)d, (float)e, (float)f);
 	}
 
-	public boolean method_9020(ServerWorld serverWorld, float f, float g, float h) {
+	public boolean test(ServerWorld serverWorld, float f, float g, float h) {
 		if (!this.x.matches(f)) {
 			return false;
 		} else if (!this.y.matches(g)) {
 			return false;
 		} else if (!this.z.matches(h)) {
 			return false;
-		} else if (this.field_9686 != null && this.field_9686 != serverWorld.field_9247.method_12460()) {
+		} else if (this.dimension != null && this.dimension != serverWorld.dimension.getType()) {
 			return false;
 		} else {
 			BlockPos blockPos = new BlockPos((double)f, (double)g, (double)h);
-			return this.field_9683 != null && this.field_9683 != serverWorld.method_8310(blockPos)
+			return this.biome != null && this.biome != serverWorld.getBiome(blockPos)
 				? false
-				: this.field_9687 == null || this.field_9687.method_14024(serverWorld, blockPos);
+				: this.feature == null || this.feature.isInsideStructure(serverWorld, blockPos);
 		}
 	}
 
@@ -90,16 +90,16 @@ public class LocationPredicate {
 				jsonObject.add("position", jsonObject2);
 			}
 
-			if (this.field_9686 != null) {
-				jsonObject.addProperty("dimension", DimensionType.method_12485(this.field_9686).toString());
+			if (this.dimension != null) {
+				jsonObject.addProperty("dimension", DimensionType.getId(this.dimension).toString());
 			}
 
-			if (this.field_9687 != null) {
-				jsonObject.addProperty("feature", (String)Feature.STRUCTURES.inverse().get(this.field_9687));
+			if (this.feature != null) {
+				jsonObject.addProperty("feature", (String)Feature.STRUCTURES.inverse().get(this.feature));
 			}
 
-			if (this.field_9683 != null) {
-				jsonObject.addProperty("biome", Registry.BIOME.method_10221(this.field_9683).toString());
+			if (this.biome != null) {
+				jsonObject.addProperty("biome", Registry.BIOME.getId(this.biome).toString());
 			}
 
 			return jsonObject;
@@ -113,14 +113,14 @@ public class LocationPredicate {
 			NumberRange.Float float_ = NumberRange.Float.fromJson(jsonObject2.get("x"));
 			NumberRange.Float float2 = NumberRange.Float.fromJson(jsonObject2.get("y"));
 			NumberRange.Float float3 = NumberRange.Float.fromJson(jsonObject2.get("z"));
-			DimensionType dimensionType = jsonObject.has("dimension") ? DimensionType.method_12483(new Identifier(JsonHelper.getString(jsonObject, "dimension"))) : null;
+			DimensionType dimensionType = jsonObject.has("dimension") ? DimensionType.byId(new Identifier(JsonHelper.getString(jsonObject, "dimension"))) : null;
 			StructureFeature<?> structureFeature = jsonObject.has("feature")
 				? (StructureFeature)Feature.STRUCTURES.get(JsonHelper.getString(jsonObject, "feature"))
 				: null;
 			Biome biome = null;
 			if (jsonObject.has("biome")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "biome"));
-				biome = (Biome)Registry.BIOME.method_17966(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier + "'"));
+				biome = (Biome)Registry.BIOME.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown biome '" + identifier + "'"));
 			}
 
 			return new LocationPredicate(float_, float2, float3, biome, structureFeature, dimensionType);
@@ -134,19 +134,19 @@ public class LocationPredicate {
 		private NumberRange.Float y = NumberRange.Float.ANY;
 		private NumberRange.Float z = NumberRange.Float.ANY;
 		@Nullable
-		private Biome field_9690;
+		private Biome biome;
 		@Nullable
-		private StructureFeature<?> field_9688;
+		private StructureFeature<?> feature;
 		@Nullable
-		private DimensionType field_9691;
+		private DimensionType dimension;
 
-		public LocationPredicate.Builder method_9024(@Nullable Biome biome) {
-			this.field_9690 = biome;
+		public LocationPredicate.Builder biome(@Nullable Biome biome) {
+			this.biome = biome;
 			return this;
 		}
 
 		public LocationPredicate build() {
-			return new LocationPredicate(this.x, this.y, this.z, this.field_9690, this.field_9688, this.field_9691);
+			return new LocationPredicate(this.x, this.y, this.z, this.biome, this.feature, this.dimension);
 		}
 	}
 }

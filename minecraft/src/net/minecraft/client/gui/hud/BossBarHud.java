@@ -14,7 +14,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BossBarHud extends DrawableHelper {
-	private static final Identifier field_2059 = new Identifier("textures/gui/bars.png");
+	private static final Identifier BAR_TEX = new Identifier("textures/gui/bars.png");
 	private final MinecraftClient client;
 	private final Map<UUID, ClientBossBar> bossBars = Maps.<UUID, ClientBossBar>newLinkedHashMap();
 
@@ -30,14 +30,14 @@ public class BossBarHud extends DrawableHelper {
 			for (ClientBossBar clientBossBar : this.bossBars.values()) {
 				int k = i / 2 - 91;
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.client.method_1531().method_4618(field_2059);
+				this.client.getTextureManager().bindTexture(BAR_TEX);
 				this.drawBossBar(k, j, clientBossBar);
-				String string = clientBossBar.method_5414().getFormattedText();
-				int m = this.client.field_1772.getStringWidth(string);
+				String string = clientBossBar.getName().getFormattedText();
+				int m = this.client.textRenderer.getStringWidth(string);
 				int n = i / 2 - m / 2;
 				int o = j - 9;
-				drawRect(n - 2, o - 2, n + m + 2, o + 9, this.client.field_1690.method_19344(0));
-				this.client.field_1772.drawWithShadow(string, (float)n, (float)o, 16777215);
+				drawRect(n - 2, o - 2, n + m + 2, o + 9, this.client.options.method_19344(0));
+				this.client.textRenderer.drawWithShadow(string, (float)n, (float)o, 16777215);
 				j += 10 + 9;
 				if (j >= this.client.window.getScaledHeight() / 3) {
 					break;
@@ -61,13 +61,13 @@ public class BossBarHud extends DrawableHelper {
 		}
 	}
 
-	public void method_1795(BossBarS2CPacket bossBarS2CPacket) {
+	public void handlePacket(BossBarS2CPacket bossBarS2CPacket) {
 		if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.ADD) {
 			this.bossBars.put(bossBarS2CPacket.getUuid(), new ClientBossBar(bossBarS2CPacket));
 		} else if (bossBarS2CPacket.getType() == BossBarS2CPacket.Type.REMOVE) {
 			this.bossBars.remove(bossBarS2CPacket.getUuid());
 		} else {
-			((ClientBossBar)this.bossBars.get(bossBarS2CPacket.getUuid())).method_1894(bossBarS2CPacket);
+			((ClientBossBar)this.bossBars.get(bossBarS2CPacket.getUuid())).handlePacket(bossBarS2CPacket);
 		}
 	}
 

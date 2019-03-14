@@ -2,15 +2,14 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ExplosionLargeParticle extends SpriteBillboardParticle {
-	private final class_4002 field_17815;
+	private final SpriteProvider field_17815;
 
-	private ExplosionLargeParticle(World world, double d, double e, double f, double g, class_4002 arg) {
+	private ExplosionLargeParticle(World world, double d, double e, double f, double g, SpriteProvider spriteProvider) {
 		super(world, d, e, f, 0.0, 0.0, 0.0);
 		this.maxAge = 6 + this.random.nextInt(4);
 		float h = this.random.nextFloat() * 0.6F + 0.4F;
@@ -18,8 +17,8 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 		this.colorGreen = h;
 		this.colorBlue = h;
 		this.scale = 2.0F * (1.0F - (float)g * 0.5F);
-		this.field_17815 = arg;
-		this.method_18142(arg);
+		this.field_17815 = spriteProvider;
+		this.method_18142(spriteProvider);
 	}
 
 	@Override
@@ -40,16 +39,16 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_LIT;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17816;
+		private final SpriteProvider field_17816;
 
-		public Factory(class_4002 arg) {
-			this.field_17816 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17816 = spriteProvider;
 		}
 
 		public Particle method_3038(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

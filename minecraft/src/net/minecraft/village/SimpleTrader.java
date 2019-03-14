@@ -8,20 +8,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 public class SimpleTrader implements Trader {
-	private final TraderInventory field_7443;
-	private final PlayerEntity field_7441;
-	private TraderRecipeList field_7442 = new TraderRecipeList();
-	private int field_18525;
+	private final TraderInventory traderInventory;
+	private final PlayerEntity player;
+	private TraderRecipeList recipeList = new TraderRecipeList();
+	private int experience;
 
 	public SimpleTrader(PlayerEntity playerEntity) {
-		this.field_7441 = playerEntity;
-		this.field_7443 = new TraderInventory(this);
+		this.player = playerEntity;
+		this.traderInventory = new TraderInventory(this);
 	}
 
 	@Nullable
 	@Override
 	public PlayerEntity getCurrentCustomer() {
-		return this.field_7441;
+		return this.player;
 	}
 
 	@Override
@@ -29,18 +29,18 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public TraderRecipeList method_8264() {
-		return this.field_7442;
+	public TraderRecipeList getRecipes() {
+		return this.recipeList;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_8261(@Nullable TraderRecipeList traderRecipeList) {
-		this.field_7442 = traderRecipeList;
+	public void setServerRecipes(@Nullable TraderRecipeList traderRecipeList) {
+		this.recipeList = traderRecipeList;
 	}
 
 	@Override
-	public void method_8262(TraderRecipe traderRecipe) {
+	public void useRecipe(TraderRecipe traderRecipe) {
 		traderRecipe.use();
 	}
 
@@ -49,18 +49,18 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public World method_8260() {
-		return this.field_7441.field_6002;
+	public World getTraderWorld() {
+		return this.player.world;
 	}
 
 	@Override
-	public int method_19269() {
-		return this.field_18525;
+	public int getExperience() {
+		return this.experience;
 	}
 
 	@Override
-	public void method_19271(int i) {
-		this.field_18525 = i;
+	public void setExperience(int i) {
+		this.experience = i;
 	}
 
 	@Override

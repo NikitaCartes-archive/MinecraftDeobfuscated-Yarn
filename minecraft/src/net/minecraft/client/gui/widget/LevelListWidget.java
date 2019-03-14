@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.menu.ErrorScreen;
 import net.minecraft.client.gui.menu.LevelSelectScreen;
+import net.minecraft.client.gui.menu.SevereErrorScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -54,7 +54,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
 				LOGGER.error("Couldn't load level list", (Throwable)var7);
-				this.client.method_1507(new ErrorScreen(I18n.translate("selectWorld.unable_to_load"), var7.getMessage()));
+				this.client.openScreen(new SevereErrorScreen(I18n.translate("selectWorld.unable_to_load"), var7.getMessage()));
 				return;
 			}
 
@@ -82,7 +82,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 
 	@Override
 	protected boolean method_19352() {
-		return this.parent.method_19357() == this;
+		return this.parent.getFocused() == this;
 	}
 
 	public void method_2751(int i) {

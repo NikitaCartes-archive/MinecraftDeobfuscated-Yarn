@@ -38,7 +38,7 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 
 	@Override
 	public void addPack(ResourcePack resourcePack) {
-		for (String string : resourcePack.method_14406(this.type)) {
+		for (String string : resourcePack.getNamespaces(this.type)) {
 			this.namespaces.add(string);
 			NamespaceResourceManager namespaceResourceManager = (NamespaceResourceManager)this.namespaceManagers.get(string);
 			if (namespaceResourceManager == null) {

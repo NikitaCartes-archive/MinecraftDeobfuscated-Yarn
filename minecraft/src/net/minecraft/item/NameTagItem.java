@@ -11,10 +11,10 @@ public class NameTagItem extends Item {
 	}
 
 	@Override
-	public boolean method_7847(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+	public boolean interactWithEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
 		if (itemStack.hasDisplayName() && !(livingEntity instanceof PlayerEntity)) {
 			if (livingEntity.isValid()) {
-				livingEntity.method_5665(itemStack.method_7964());
+				livingEntity.setCustomName(itemStack.getDisplayName());
 				if (livingEntity instanceof MobEntity) {
 					((MobEntity)livingEntity).setPersistent();
 				}

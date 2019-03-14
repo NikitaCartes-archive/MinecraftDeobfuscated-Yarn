@@ -12,7 +12,7 @@ public class WallWitherSkullBlock extends WallSkullBlock {
 	}
 
 	@Override
-	public void method_9567(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
-		Blocks.field_10177.method_9567(world, blockPos, blockState, livingEntity, itemStack);
+	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+		Blocks.field_10177.onPlaced(world, blockPos, blockState, livingEntity, itemStack);
 	}
 }

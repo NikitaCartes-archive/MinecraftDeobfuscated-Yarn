@@ -2,23 +2,23 @@ package net.minecraft.client.gui.menu;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
 public class DirectConnectServerScreen extends Screen {
-	private class_4185 selectServerButton;
-	private final Screen field_2461;
-	private final ServerEntry field_2460;
+	private ButtonWidget selectServerButton;
+	private final Screen parent;
+	private final ServerEntry serverEntry;
 	private TextFieldWidget addressField;
 
 	public DirectConnectServerScreen(Screen screen, ServerEntry serverEntry) {
-		this.field_2461 = screen;
-		this.field_2460 = serverEntry;
+		this.parent = screen;
+		this.serverEntry = serverEntry;
 	}
 
 	@Override
@@ -29,25 +29,27 @@ public class DirectConnectServerScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.selectServerButton = this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 12, I18n.translate("selectServer.select")) {
-			@Override
-			public void method_1826() {
-				DirectConnectServerScreen.this.saveAndClose();
+		this.selectServerButton = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 12, I18n.translate("selectServer.select")) {
+				@Override
+				public void onPressed() {
+					DirectConnectServerScreen.this.saveAndClose();
+				}
 			}
-		});
-		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, I18n.translate("gui.cancel")) {
+		);
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, I18n.translate("gui.cancel")) {
 			@Override
-			public void method_1826() {
-				DirectConnectServerScreen.this.field_2461.confirmResult(false, 0);
+			public void onPressed() {
+				DirectConnectServerScreen.this.parent.confirmResult(false, 0);
 			}
 		});
 		this.addressField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 116, 200, 20);
 		this.addressField.setMaxLength(128);
 		this.addressField.setFocused(true);
-		this.addressField.setText(this.client.field_1690.lastServer);
+		this.addressField.setText(this.client.options.lastServer);
 		this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
 		this.listeners.add(this.addressField);
-		this.method_18624(this.addressField);
+		this.focusOn(this.addressField);
 		this.onAddressFieldChanged();
 	}
 
@@ -59,15 +61,15 @@ public class DirectConnectServerScreen extends Screen {
 	}
 
 	private void saveAndClose() {
-		this.field_2460.address = this.addressField.getText();
-		this.field_2461.confirmResult(true, 0);
+		this.serverEntry.address = this.addressField.getText();
+		this.parent.confirmResult(true, 0);
 	}
 
 	@Override
 	public void onClosed() {
 		this.client.keyboard.enableRepeatEvents(false);
-		this.client.field_1690.lastServer = this.addressField.getText();
-		this.client.field_1690.write();
+		this.client.options.lastServer = this.addressField.getText();
+		this.client.options.write();
 	}
 
 	private void onAddressFieldChanged() {

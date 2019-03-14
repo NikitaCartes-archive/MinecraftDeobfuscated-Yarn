@@ -26,10 +26,10 @@ public class LoomContainer extends Container {
 	private final Property selectedPattern = Property.create();
 	private Runnable inventoryChangeListener = () -> {
 	};
-	private final Slot field_17319;
-	private final Slot field_17320;
-	private final Slot field_17321;
-	private final Slot field_17322;
+	private final Slot bannerSlot;
+	private final Slot dyeSlot;
+	private final Slot patternSlot;
+	private final Slot outputSlot;
 	private final Inventory inputInventory = new BasicInventory(3) {
 		@Override
 		public void markDirty() {
@@ -53,58 +53,58 @@ public class LoomContainer extends Container {
 	public LoomContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.LOOM, i);
 		this.context = blockContext;
-		this.field_17319 = this.method_7621(new Slot(this.inputInventory, 0, 13, 26) {
+		this.bannerSlot = this.addSlot(new Slot(this.inputInventory, 0, 13, 26) {
 			@Override
-			public boolean method_7680(ItemStack itemStack) {
+			public boolean canInsert(ItemStack itemStack) {
 				return itemStack.getItem() instanceof BannerItem;
 			}
 		});
-		this.field_17320 = this.method_7621(new Slot(this.inputInventory, 1, 33, 26) {
+		this.dyeSlot = this.addSlot(new Slot(this.inputInventory, 1, 33, 26) {
 			@Override
-			public boolean method_7680(ItemStack itemStack) {
+			public boolean canInsert(ItemStack itemStack) {
 				return itemStack.getItem() instanceof DyeItem;
 			}
 		});
-		this.field_17321 = this.method_7621(new Slot(this.inputInventory, 2, 23, 45) {
+		this.patternSlot = this.addSlot(new Slot(this.inputInventory, 2, 23, 45) {
 			@Override
-			public boolean method_7680(ItemStack itemStack) {
+			public boolean canInsert(ItemStack itemStack) {
 				return itemStack.getItem() instanceof BannerPatternItem;
 			}
 		});
-		this.field_17322 = this.method_7621(
+		this.outputSlot = this.addSlot(
 			new Slot(this.outputInventory, 0, 143, 58) {
 				@Override
-				public boolean method_7680(ItemStack itemStack) {
+				public boolean canInsert(ItemStack itemStack) {
 					return false;
 				}
 
 				@Override
-				public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
-					LoomContainer.this.field_17319.method_7671(1);
-					LoomContainer.this.field_17320.method_7671(1);
-					if (!LoomContainer.this.field_17319.hasStack() || !LoomContainer.this.field_17320.hasStack()) {
+				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+					LoomContainer.this.bannerSlot.takeStack(1);
+					LoomContainer.this.dyeSlot.takeStack(1);
+					if (!LoomContainer.this.bannerSlot.hasStack() || !LoomContainer.this.dyeSlot.hasStack()) {
 						LoomContainer.this.selectedPattern.set(0);
 					}
 
 					blockContext.run(
-						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.method_8396(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F))
+						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_15096, SoundCategory.field_15245, 1.0F, 1.0F))
 					);
-					return super.method_7667(playerEntity, itemStack);
+					return super.onTakeItem(playerEntity, itemStack);
 				}
 			}
 		);
 
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 9; k++) {
-				this.method_7621(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
 			}
 		}
 
 		for (int j = 0; j < 9; j++) {
-			this.method_7621(new Slot(playerInventory, j, 8 + j * 18, 142));
+			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
-		this.method_17362(this.selectedPattern);
+		this.addProperty(this.selectedPattern);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -114,7 +114,7 @@ public class LoomContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.context, playerEntity, Blocks.field_10083);
+		return canUse(this.context, playerEntity, Blocks.field_10083);
 	}
 
 	@Override
@@ -130,26 +130,26 @@ public class LoomContainer extends Container {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		ItemStack itemStack = this.field_17319.method_7677();
-		ItemStack itemStack2 = this.field_17320.method_7677();
-		ItemStack itemStack3 = this.field_17321.method_7677();
-		ItemStack itemStack4 = this.field_17322.method_7677();
+		ItemStack itemStack = this.bannerSlot.getStack();
+		ItemStack itemStack2 = this.dyeSlot.getStack();
+		ItemStack itemStack3 = this.patternSlot.getStack();
+		ItemStack itemStack4 = this.outputSlot.getStack();
 		if (itemStack4.isEmpty()
 			|| !itemStack.isEmpty()
 				&& !itemStack2.isEmpty()
 				&& this.selectedPattern.get() > 0
 				&& (this.selectedPattern.get() < BannerPattern.COUNT - 5 || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
-				CompoundTag compoundTag = itemStack.method_7911("BlockEntityTag");
-				boolean bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.method_10554("Patterns", 10).size() >= 6;
+				CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
+				boolean bl = compoundTag.containsKey("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
 				if (bl) {
 					this.selectedPattern.set(0);
 				} else {
-					this.selectedPattern.set(((BannerPatternItem)itemStack3.getItem()).method_7704().ordinal());
+					this.selectedPattern.set(((BannerPatternItem)itemStack3.getItem()).getPattern().ordinal());
 				}
 			}
 		} else {
-			this.field_17322.method_7673(ItemStack.EMPTY);
+			this.outputSlot.setStack(ItemStack.EMPTY);
 			this.selectedPattern.set(0);
 		}
 
@@ -163,44 +163,44 @@ public class LoomContainer extends Container {
 	}
 
 	@Override
-	public ItemStack method_7601(PlayerEntity playerEntity, int i) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.method_7677();
+			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			if (i == this.field_17322.id) {
-				if (!this.method_7616(itemStack2, 4, 40, true)) {
+			if (i == this.outputSlot.id) {
+				if (!this.insertItem(itemStack2, 4, 40, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.method_7670(itemStack2, itemStack);
-			} else if (i != this.field_17320.id && i != this.field_17319.id && i != this.field_17321.id) {
+				slot.onStackChanged(itemStack2, itemStack);
+			} else if (i != this.dyeSlot.id && i != this.bannerSlot.id && i != this.patternSlot.id) {
 				if (itemStack2.getItem() instanceof BannerItem) {
-					if (!this.method_7616(itemStack2, this.field_17319.id, this.field_17319.id + 1, false)) {
+					if (!this.insertItem(itemStack2, this.bannerSlot.id, this.bannerSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (itemStack2.getItem() instanceof DyeItem) {
-					if (!this.method_7616(itemStack2, this.field_17320.id, this.field_17320.id + 1, false)) {
+					if (!this.insertItem(itemStack2, this.dyeSlot.id, this.dyeSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (itemStack2.getItem() instanceof BannerPatternItem) {
-					if (!this.method_7616(itemStack2, this.field_17321.id, this.field_17321.id + 1, false)) {
+					if (!this.insertItem(itemStack2, this.patternSlot.id, this.patternSlot.id + 1, false)) {
 						return ItemStack.EMPTY;
 					}
 				} else if (i >= 4 && i < 31) {
-					if (!this.method_7616(itemStack2, 31, 40, false)) {
+					if (!this.insertItem(itemStack2, 31, 40, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (i >= 31 && i < 40 && !this.method_7616(itemStack2, 4, 31, false)) {
+				} else if (i >= 31 && i < 40 && !this.insertItem(itemStack2, 4, 31, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.method_7616(itemStack2, 4, 40, false)) {
+			} else if (!this.insertItem(itemStack2, 4, 40, false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.method_7673(ItemStack.EMPTY);
+				slot.setStack(ItemStack.EMPTY);
 			} else {
 				slot.markDirty();
 			}
@@ -209,7 +209,7 @@ public class LoomContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			slot.method_7667(playerEntity, itemStack2);
+			slot.onTakeItem(playerEntity, itemStack2);
 		}
 
 		return itemStack;
@@ -218,26 +218,26 @@ public class LoomContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, playerEntity.field_6002, this.inputInventory)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inputInventory)));
 	}
 
 	private void updateOutputSlot() {
 		if (this.selectedPattern.get() > 0) {
-			ItemStack itemStack = this.field_17319.method_7677();
-			ItemStack itemStack2 = this.field_17320.method_7677();
+			ItemStack itemStack = this.bannerSlot.getStack();
+			ItemStack itemStack2 = this.dyeSlot.getStack();
 			ItemStack itemStack3 = ItemStack.EMPTY;
 			if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 				itemStack3 = itemStack.copy();
 				itemStack3.setAmount(1);
 				BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
 				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-				CompoundTag compoundTag = itemStack3.method_7911("BlockEntityTag");
+				CompoundTag compoundTag = itemStack3.getOrCreateSubCompoundTag("BlockEntityTag");
 				ListTag listTag;
 				if (compoundTag.containsKey("Patterns", 9)) {
-					listTag = compoundTag.method_10554("Patterns", 10);
+					listTag = compoundTag.getList("Patterns", 10);
 				} else {
 					listTag = new ListTag();
-					compoundTag.method_10566("Patterns", listTag);
+					compoundTag.put("Patterns", listTag);
 				}
 
 				CompoundTag compoundTag2 = new CompoundTag();
@@ -246,29 +246,29 @@ public class LoomContainer extends Container {
 				listTag.add(compoundTag2);
 			}
 
-			if (!ItemStack.areEqual(itemStack3, this.field_17322.method_7677())) {
-				this.field_17322.method_7673(itemStack3);
+			if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {
+				this.outputSlot.setStack(itemStack3);
 			}
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Slot method_17428() {
-		return this.field_17319;
+	public Slot getBannerSlot() {
+		return this.bannerSlot;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Slot method_17429() {
-		return this.field_17320;
+	public Slot getDyeSlot() {
+		return this.dyeSlot;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Slot method_17430() {
-		return this.field_17321;
+	public Slot getPatternSlot() {
+		return this.patternSlot;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Slot method_17431() {
-		return this.field_17322;
+	public Slot getOutputSlot() {
+		return this.outputSlot;
 	}
 }

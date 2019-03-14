@@ -73,9 +73,9 @@ public class SpreadPlayersCommand {
 		double h = (double)(vec2f.x + g);
 		double i = (double)(vec2f.y + g);
 		SpreadPlayersCommand.class_3132[] lvs = method_13653(random, bl ? method_13652(collection) : collection.size(), d, e, h, i);
-		method_13661(vec2f, (double)f, serverCommandSource.method_9225(), random, d, e, h, i, lvs, bl);
-		double j = method_13657(collection, serverCommandSource.method_9225(), lvs, bl);
-		serverCommandSource.method_9226(
+		method_13661(vec2f, (double)f, serverCommandSource.getWorld(), random, d, e, h, i, lvs, bl);
+		double j = method_13657(collection, serverCommandSource.getWorld(), lvs, bl);
+		serverCommandSource.sendFeedback(
 			new TranslatableTextComponent(
 				"commands.spreadplayers.success." + (bl ? "teams" : "entities"), lvs.length, vec2f.x, vec2f.y, String.format(Locale.ROOT, "%.2f", j)
 			),
@@ -89,7 +89,7 @@ public class SpreadPlayersCommand {
 
 		for (Entity entity : collection) {
 			if (entity instanceof PlayerEntity) {
-				set.add(entity.method_5781());
+				set.add(entity.getScoreboardTeam());
 			} else {
 				set.add(null);
 			}
@@ -177,7 +177,7 @@ public class SpreadPlayersCommand {
 		for (Entity entity : collection) {
 			SpreadPlayersCommand.class_3132 lv;
 			if (bl) {
-				AbstractScoreboardTeam abstractScoreboardTeam = entity instanceof PlayerEntity ? entity.method_5781() : null;
+				AbstractScoreboardTeam abstractScoreboardTeam = entity instanceof PlayerEntity ? entity.getScoreboardTeam() : null;
 				if (!map.containsKey(abstractScoreboardTeam)) {
 					map.put(abstractScoreboardTeam, args[i++]);
 				}
@@ -268,7 +268,7 @@ public class SpreadPlayersCommand {
 
 			while (blockPos.getY() > 0) {
 				blockPos = blockPos.down();
-				if (!blockView.method_8320(blockPos).isAir()) {
+				if (!blockView.getBlockState(blockPos).isAir()) {
 					return blockPos.getY() + 1;
 				}
 			}
@@ -281,9 +281,9 @@ public class SpreadPlayersCommand {
 
 			while (blockPos.getY() > 0) {
 				blockPos = blockPos.down();
-				BlockState blockState = blockView.method_8320(blockPos);
+				BlockState blockState = blockView.getBlockState(blockPos);
 				if (!blockState.isAir()) {
-					Material material = blockState.method_11620();
+					Material material = blockState.getMaterial();
 					return !material.isLiquid() && material != Material.FIRE;
 				}
 			}

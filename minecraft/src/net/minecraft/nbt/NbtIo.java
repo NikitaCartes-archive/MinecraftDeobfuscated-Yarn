@@ -127,7 +127,7 @@ public class NbtIo {
 	}
 
 	public static CompoundTag read(DataInput dataInput, PositionTracker positionTracker) throws IOException {
-		Tag tag = method_10626(dataInput, 0, positionTracker);
+		Tag tag = read(dataInput, 0, positionTracker);
 		if (tag instanceof CompoundTag) {
 			return (CompoundTag)tag;
 		} else {
@@ -136,10 +136,10 @@ public class NbtIo {
 	}
 
 	public static void write(CompoundTag compoundTag, DataOutput dataOutput) throws IOException {
-		method_10631(compoundTag, dataOutput);
+		write((Tag)compoundTag, dataOutput);
 	}
 
-	private static void method_10631(Tag tag, DataOutput dataOutput) throws IOException {
+	private static void write(Tag tag, DataOutput dataOutput) throws IOException {
 		dataOutput.writeByte(tag.getType());
 		if (tag.getType() != 0) {
 			dataOutput.writeUTF("");
@@ -147,7 +147,7 @@ public class NbtIo {
 		}
 	}
 
-	private static Tag method_10626(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+	private static Tag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
 		byte b = dataInput.readByte();
 		if (b == 0) {
 			return new EndTag();
@@ -160,7 +160,7 @@ public class NbtIo {
 				return tag;
 			} catch (IOException var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Loading NBT data");
-				CrashReportSection crashReportSection = crashReport.method_562("NBT Tag");
+				CrashReportSection crashReportSection = crashReport.addElement("NBT Tag");
 				crashReportSection.add("Tag type", b);
 				throw new CrashException(crashReport);
 			}

@@ -73,19 +73,19 @@ public class InputUtil {
 	@Environment(EnvType.CLIENT)
 	public static final class KeyCode {
 		private final String name;
-		private final InputUtil.Type field_1666;
+		private final InputUtil.Type type;
 		private final int keyCode;
 		private static final Map<String, InputUtil.KeyCode> NAMES = Maps.<String, InputUtil.KeyCode>newHashMap();
 
 		private KeyCode(String string, InputUtil.Type type, int i) {
 			this.name = string;
-			this.field_1666 = type;
+			this.type = type;
 			this.keyCode = i;
 			NAMES.put(string, this);
 		}
 
-		public InputUtil.Type method_1442() {
-			return this.field_1666;
+		public InputUtil.Type getCategory() {
+			return this.type;
 		}
 
 		public int getKeyCode() {
@@ -101,14 +101,14 @@ public class InputUtil {
 				return true;
 			} else if (object != null && this.getClass() == object.getClass()) {
 				InputUtil.KeyCode keyCode = (InputUtil.KeyCode)object;
-				return this.keyCode == keyCode.keyCode && this.field_1666 == keyCode.field_1666;
+				return this.keyCode == keyCode.keyCode && this.type == keyCode.type;
 			} else {
 				return false;
 			}
 		}
 
 		public int hashCode() {
-			return Objects.hash(new Object[]{this.field_1666, this.keyCode});
+			return Objects.hash(new Object[]{this.type, this.keyCode});
 		}
 
 		public String toString() {

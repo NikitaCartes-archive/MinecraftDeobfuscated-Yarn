@@ -3,10 +3,10 @@ package net.minecraft.client.gui.container;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ContainerScreen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
@@ -28,7 +28,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class BeaconScreen extends ContainerScreen<BeaconContainer> {
-	private static final Identifier field_2808 = new Identifier("textures/gui/container/beacon.png");
+	private static final Identifier BG_TEX = new Identifier("textures/gui/container/beacon.png");
 	private BeaconScreen.WidgetButtonIconDone doneButton;
 	private boolean canConsumeGem;
 	private StatusEffect primaryEffect;
@@ -38,13 +38,13 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		super(beaconContainer, playerInventory, textComponent);
 		this.width = 230;
 		this.height = 219;
-		beaconContainer.method_7596(new ContainerListener() {
+		beaconContainer.addListener(new ContainerListener() {
 			@Override
-			public void method_7634(Container container, DefaultedList<ItemStack> defaultedList) {
+			public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
 			}
 
 			@Override
-			public void method_7635(Container container, int i, ItemStack itemStack) {
+			public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
 			}
 
 			@Override
@@ -130,9 +130,9 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		this.drawStringCentered(this.fontRenderer, I18n.translate("block.minecraft.beacon.primary"), 62, 10, 14737632);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("block.minecraft.beacon.secondary"), 169, 10, 14737632);
 
-		for (ButtonWidget buttonWidget : this.buttons) {
-			if (buttonWidget.isHovered()) {
-				buttonWidget.onHover(i - this.left, j - this.top);
+		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+			if (abstractButtonWidget.isHovered()) {
+				abstractButtonWidget.onHover(i - this.left, j - this.top);
 				break;
 			}
 		}
@@ -143,16 +143,16 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.method_1531().method_4618(field_2808);
+		this.client.getTextureManager().bindTexture(BG_TEX);
 		int k = (this.screenWidth - this.width) / 2;
 		int l = (this.screenHeight - this.height) / 2;
 		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
-		this.field_2560.zOffset = 100.0F;
-		this.field_2560.renderGuiItem(new ItemStack(Items.field_8687), k + 42, l + 109);
-		this.field_2560.renderGuiItem(new ItemStack(Items.field_8477), k + 42 + 22, l + 109);
-		this.field_2560.renderGuiItem(new ItemStack(Items.field_8695), k + 42 + 44, l + 109);
-		this.field_2560.renderGuiItem(new ItemStack(Items.field_8620), k + 42 + 66, l + 109);
-		this.field_2560.zOffset = 0.0F;
+		this.itemRenderer.zOffset = 100.0F;
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8687), k + 42, l + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8477), k + 42 + 22, l + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8695), k + 42 + 44, l + 109);
+		this.itemRenderer.renderGuiItem(new ItemStack(Items.field_8620), k + 42 + 66, l + 109);
+		this.itemRenderer.zOffset = 0.0F;
 	}
 
 	@Override
@@ -163,7 +163,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	abstract static class WidgetButtonIcon extends class_4185 {
+	abstract static class WidgetButtonIcon extends ButtonWidget {
 		private boolean disabled;
 
 		protected WidgetButtonIcon(int i, int j) {
@@ -172,7 +172,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 		@Override
 		public void drawButton(int i, int j, float f) {
-			MinecraftClient.getInstance().method_1531().method_4618(BeaconScreen.field_2808);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconScreen.BG_TEX);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int k = 219;
 			int l = 0;
@@ -206,9 +206,9 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void method_1826() {
-			BeaconScreen.this.client.field_1724.networkHandler.method_2883(new GuiCloseC2SPacket(BeaconScreen.this.client.field_1724.field_7512.syncId));
-			BeaconScreen.this.client.method_1507(null);
+		public void onPressed() {
+			BeaconScreen.this.client.player.networkHandler.sendPacket(new GuiCloseC2SPacket(BeaconScreen.this.client.player.container.syncId));
+			BeaconScreen.this.client.openScreen(null);
 		}
 
 		@Override
@@ -224,12 +224,12 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void method_1826() {
+		public void onPressed() {
 			BeaconScreen.this.client
-				.method_1562()
-				.method_2883(new UpdateBeaconC2SPacket(StatusEffect.getRawId(BeaconScreen.this.primaryEffect), StatusEffect.getRawId(BeaconScreen.this.secondaryEffect)));
-			BeaconScreen.this.client.field_1724.networkHandler.method_2883(new GuiCloseC2SPacket(BeaconScreen.this.client.field_1724.field_7512.syncId));
-			BeaconScreen.this.client.method_1507(null);
+				.getNetworkHandler()
+				.sendPacket(new UpdateBeaconC2SPacket(StatusEffect.getRawId(BeaconScreen.this.primaryEffect), StatusEffect.getRawId(BeaconScreen.this.secondaryEffect)));
+			BeaconScreen.this.client.player.networkHandler.sendPacket(new GuiCloseC2SPacket(BeaconScreen.this.client.player.container.syncId));
+			BeaconScreen.this.client.openScreen(null);
 		}
 
 		@Override
@@ -252,7 +252,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void method_1826() {
+		public void onPressed() {
 			if (!this.isDisabled()) {
 				if (this.primary) {
 					BeaconScreen.this.primaryEffect = this.effect;
@@ -279,8 +279,8 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 		@Override
 		protected void method_18641() {
-			MinecraftClient.getInstance().method_1531().method_4618(SpriteAtlasTexture.field_18229);
-			this.method_1790(this.x + 2, this.y + 2, this.field_18223, 18, 18);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+			this.drawTexturedRect(this.x + 2, this.y + 2, this.field_18223, 18, 18);
 		}
 	}
 

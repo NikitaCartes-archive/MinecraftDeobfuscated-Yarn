@@ -24,7 +24,9 @@ public class KickCommand {
 							ServerCommandManager.argument("reason", MessageArgumentType.create())
 								.executes(
 									commandContext -> method_13411(
-											commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), MessageArgumentType.method_9339(commandContext, "reason")
+											commandContext.getSource(),
+											EntityArgumentType.method_9312(commandContext, "targets"),
+											MessageArgumentType.getMessageArgument(commandContext, "reason")
 										)
 								)
 						)
@@ -34,8 +36,8 @@ public class KickCommand {
 
 	private static int method_13411(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.field_13987.disconnect(textComponent);
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.kick.success", serverPlayerEntity.method_5476(), textComponent), true);
+			serverPlayerEntity.networkHandler.disconnect(textComponent);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.kick.success", serverPlayerEntity.getDisplayName(), textComponent), true);
 		}
 
 		return collection.size();

@@ -41,28 +41,28 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Nullable
 	private final Screen parentGui;
 	private final Consumer<TextComponent> statusConsumer;
-	private final ClientConnection field_3707;
+	private final ClientConnection connection;
 	private GameProfile playerProfile;
 
 	public ClientLoginNetworkHandler(ClientConnection clientConnection, MinecraftClient minecraftClient, @Nullable Screen screen, Consumer<TextComponent> consumer) {
-		this.field_3707 = clientConnection;
+		this.connection = clientConnection;
 		this.client = minecraftClient;
 		this.parentGui = screen;
 		this.statusConsumer = consumer;
 	}
 
 	@Override
-	public void method_12587(LoginHelloS2CPacket loginHelloS2CPacket) {
+	public void onHello(LoginHelloS2CPacket loginHelloS2CPacket) {
 		SecretKey secretKey = NetworkEncryptionUtils.generateKey();
 		PublicKey publicKey = loginHelloS2CPacket.getPublicKey();
 		String string = new BigInteger(NetworkEncryptionUtils.method_15240(loginHelloS2CPacket.getServerId(), publicKey, secretKey)).toString(16);
 		LoginKeyC2SPacket loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, loginHelloS2CPacket.method_12613());
 		this.statusConsumer.accept(new TranslatableTextComponent("connect.authorizing"));
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
-			TextComponent textComponent = this.method_2892(string);
+			TextComponent textComponent = this.joinServerSession(string);
 			if (textComponent != null) {
-				if (this.client.method_1558() == null || !this.client.method_1558().isLocal()) {
-					this.field_3707.method_10747(textComponent);
+				if (this.client.getCurrentServerEntry() == null || !this.client.getCurrentServerEntry().isLocal()) {
+					this.connection.disconnect(textComponent);
 					return;
 				}
 
@@ -70,14 +70,14 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			}
 
 			this.statusConsumer.accept(new TranslatableTextComponent("connect.encrypting"));
-			this.field_3707.method_10752(loginKeyC2SPacket, future -> this.field_3707.setupEncryption(secretKey));
+			this.connection.sendPacket(loginKeyC2SPacket, future -> this.connection.setupEncryption(secretKey));
 		}));
 	}
 
 	@Nullable
-	private TextComponent method_2892(String string) {
+	private TextComponent joinServerSession(String string) {
 		try {
-			this.getSessionService().joinServer(this.client.method_1548().getProfile(), this.client.method_1548().getAccessToken(), string);
+			this.getSessionService().joinServer(this.client.getSession().getProfile(), this.client.getSession().getAccessToken(), string);
 			return null;
 		} catch (AuthenticationUnavailableException var3) {
 			return new TranslatableTextComponent("disconnect.loginFailedInfo", new TranslatableTextComponent("disconnect.loginFailedInfo.serversUnavailable"));
@@ -93,37 +93,37 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	}
 
 	@Override
-	public void method_12588(LoginSuccessS2CPacket loginSuccessS2CPacket) {
+	public void onLoginSuccess(LoginSuccessS2CPacket loginSuccessS2CPacket) {
 		this.statusConsumer.accept(new TranslatableTextComponent("connect.joining"));
 		this.playerProfile = loginSuccessS2CPacket.getPlayerProfile();
-		this.field_3707.method_10750(NetworkState.GAME);
-		this.field_3707.method_10763(new ClientPlayNetworkHandler(this.client, this.parentGui, this.field_3707, this.playerProfile));
+		this.connection.setState(NetworkState.GAME);
+		this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentGui, this.connection, this.playerProfile));
 	}
 
 	@Override
-	public void method_10839(TextComponent textComponent) {
+	public void onDisconnected(TextComponent textComponent) {
 		if (this.parentGui != null && this.parentGui instanceof RealmsScreen) {
-			this.client.method_1507(new DisconnectedRealmsScreen(((RealmsScreen)this.parentGui).getRealmsScreen(), "connect.failed", textComponent).getProxy());
+			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreen)this.parentGui).getRealmsScreen(), "connect.failed", textComponent).getProxy());
 		} else {
-			this.client.method_1507(new DisconnectedScreen(this.parentGui, "connect.failed", textComponent));
+			this.client.openScreen(new DisconnectedScreen(this.parentGui, "connect.failed", textComponent));
 		}
 	}
 
 	@Override
-	public void method_12584(LoginDisconnectS2CPacket loginDisconnectS2CPacket) {
-		this.field_3707.method_10747(loginDisconnectS2CPacket.getReason());
+	public void onDisconnect(LoginDisconnectS2CPacket loginDisconnectS2CPacket) {
+		this.connection.disconnect(loginDisconnectS2CPacket.getReason());
 	}
 
 	@Override
-	public void method_12585(LoginCompressionS2CPacket loginCompressionS2CPacket) {
-		if (!this.field_3707.isLocal()) {
-			this.field_3707.setMinCompressedSize(loginCompressionS2CPacket.getMinCompressedSize());
+	public void onCompression(LoginCompressionS2CPacket loginCompressionS2CPacket) {
+		if (!this.connection.isLocal()) {
+			this.connection.setMinCompressedSize(loginCompressionS2CPacket.getMinCompressedSize());
 		}
 	}
 
 	@Override
-	public void method_12586(LoginQueryRequestS2CPacket loginQueryRequestS2CPacket) {
+	public void onQueryRequest(LoginQueryRequestS2CPacket loginQueryRequestS2CPacket) {
 		this.statusConsumer.accept(new TranslatableTextComponent("connect.negotiating"));
-		this.field_3707.method_10743(new LoginQueryResponseC2SPacket(loginQueryRequestS2CPacket.getQueryId(), null));
+		this.connection.sendPacket(new LoginQueryResponseC2SPacket(loginQueryRequestS2CPacket.getQueryId(), null));
 	}
 }

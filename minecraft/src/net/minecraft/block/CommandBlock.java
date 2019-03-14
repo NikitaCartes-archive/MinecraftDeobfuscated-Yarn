@@ -28,34 +28,34 @@ import org.apache.logging.log4j.Logger;
 
 public class CommandBlock extends BlockWithEntity {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final DirectionProperty field_10791 = FacingBlock.field_10927;
-	public static final BooleanProperty field_10793 = Properties.field_12486;
+	public static final DirectionProperty FACING = FacingBlock.FACING;
+	public static final BooleanProperty CONDITIONAL = Properties.CONDITIONAL;
 
 	public CommandBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_10791, Direction.NORTH).method_11657(field_10793, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(CONDITIONAL, Boolean.valueOf(false)));
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		CommandBlockBlockEntity commandBlockBlockEntity = new CommandBlockBlockEntity();
 		commandBlockBlockEntity.setAuto(this == Blocks.field_10395);
 		return commandBlockBlockEntity;
 	}
 
 	@Override
-	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
 		if (!world.isClient) {
-			BlockEntity blockEntity = world.method_8321(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
 				CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
-				boolean bl = world.method_8479(blockPos);
+				boolean bl = world.isReceivingRedstonePower(blockPos);
 				boolean bl2 = commandBlockBlockEntity.isPowered();
 				commandBlockBlockEntity.setPowered(bl);
 				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getType() != CommandBlockBlockEntity.Type.field_11922) {
 					if (bl) {
 						commandBlockBlockEntity.updateConditionMet();
-						world.method_8397().method_8676(blockPos, this, this.getTickRate(world));
+						world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 					}
 				}
 			}
@@ -63,9 +63,9 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient) {
-			BlockEntity blockEntity = world.method_8321(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
 				CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 				CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
@@ -81,7 +81,7 @@ public class CommandBlock extends BlockWithEntity {
 					}
 
 					if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
-						world.method_8397().method_8676(blockPos, this, this.getTickRate(world));
+						world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 					}
 				} else if (type == CommandBlockBlockEntity.Type.field_11924) {
 					if (bl2) {
@@ -91,19 +91,19 @@ public class CommandBlock extends BlockWithEntity {
 					}
 				}
 
-				world.method_8455(blockPos, this);
+				world.updateHorizontalAdjacent(blockPos, this);
 			}
 		}
 	}
 
 	private void method_9780(BlockState blockState, World world, BlockPos blockPos, CommandBlockExecutor commandBlockExecutor, boolean bl) {
 		if (bl) {
-			commandBlockExecutor.method_8301(world);
+			commandBlockExecutor.execute(world);
 		} else {
 			commandBlockExecutor.setSuccessCount(0);
 		}
 
-		method_9779(world, blockPos, blockState.method_11654(field_10791));
+		method_9779(world, blockPos, blockState.get(FACING));
 	}
 
 	@Override
@@ -112,10 +112,10 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		BlockEntity blockEntity = world.method_8321(blockPos);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof CommandBlockBlockEntity && playerEntity.isCreativeLevelTwoOp()) {
-			playerEntity.method_7323((CommandBlockBlockEntity)blockEntity);
+			playerEntity.openCommandBlockScreen((CommandBlockBlockEntity)blockEntity);
 			return true;
 		} else {
 			return false;
@@ -123,34 +123,34 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean method_9498(BlockState blockState) {
+	public boolean hasComparatorOutput(BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public int method_9572(BlockState blockState, World world, BlockPos blockPos) {
-		BlockEntity blockEntity = world.method_8321(blockPos);
+	public int getComparatorOutput(BlockState blockState, World world, BlockPos blockPos) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		return blockEntity instanceof CommandBlockBlockEntity ? ((CommandBlockBlockEntity)blockEntity).getCommandExecutor().getSuccessCount() : 0;
 	}
 
 	@Override
-	public void method_9567(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		BlockEntity blockEntity = world.method_8321(blockPos);
+	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof CommandBlockBlockEntity) {
 			CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
 			CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
 			if (itemStack.hasDisplayName()) {
-				commandBlockExecutor.method_8290(itemStack.method_7964());
+				commandBlockExecutor.setCustomName(itemStack.getDisplayName());
 			}
 
 			if (!world.isClient) {
-				if (itemStack.method_7941("BlockEntityTag") == null) {
+				if (itemStack.getSubCompoundTag("BlockEntityTag") == null) {
 					commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean("sendCommandFeedback"));
 					commandBlockBlockEntity.setAuto(this == Blocks.field_10395);
 				}
 
 				if (commandBlockBlockEntity.getType() == CommandBlockBlockEntity.Type.field_11922) {
-					boolean bl = world.method_8479(blockPos);
+					boolean bl = world.isReceivingRedstonePower(blockPos);
 					commandBlockBlockEntity.setPowered(bl);
 				}
 			}
@@ -158,28 +158,28 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockRenderType method_9604(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, Rotation rotation) {
-		return blockState.method_11657(field_10791, rotation.method_10503(blockState.method_11654(field_10791)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.method_10345(blockState.method_11654(field_10791)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_10791, field_10793);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(FACING, CONDITIONAL);
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		return this.method_9564().method_11657(field_10791, itemPlacementContext.method_7715().getOpposite());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
 	private static void method_9779(World world, BlockPos blockPos, Direction direction) {
@@ -188,14 +188,14 @@ public class CommandBlock extends BlockWithEntity {
 		int i = gameRules.getInteger("maxCommandChainLength");
 
 		while (i-- > 0) {
-			mutable.method_10098(direction);
-			BlockState blockState = world.method_8320(mutable);
+			mutable.setOffset(direction);
+			BlockState blockState = world.getBlockState(mutable);
 			Block block = blockState.getBlock();
 			if (block != Blocks.field_10395) {
 				break;
 			}
 
-			BlockEntity blockEntity = world.method_8321(mutable);
+			BlockEntity blockEntity = world.getBlockEntity(mutable);
 			if (!(blockEntity instanceof CommandBlockBlockEntity)) {
 				break;
 			}
@@ -208,17 +208,17 @@ public class CommandBlock extends BlockWithEntity {
 			if (commandBlockBlockEntity.isPowered() || commandBlockBlockEntity.isAuto()) {
 				CommandBlockExecutor commandBlockExecutor = commandBlockBlockEntity.getCommandExecutor();
 				if (commandBlockBlockEntity.updateConditionMet()) {
-					if (!commandBlockExecutor.method_8301(world)) {
+					if (!commandBlockExecutor.execute(world)) {
 						break;
 					}
 
-					world.method_8455(mutable, block);
+					world.updateHorizontalAdjacent(mutable, block);
 				} else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
 					commandBlockExecutor.setSuccessCount(0);
 				}
 			}
 
-			direction = blockState.method_11654(field_10791);
+			direction = blockState.get(FACING);
 		}
 
 		if (i <= 0) {

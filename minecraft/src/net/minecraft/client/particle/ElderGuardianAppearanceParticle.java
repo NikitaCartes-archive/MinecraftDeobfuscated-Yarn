@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -26,7 +26,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.CUSTOM;
 	}
 
@@ -34,16 +34,16 @@ public class ElderGuardianAppearanceParticle extends Particle {
 	public void update() {
 		super.update();
 		if (this.guardian == null) {
-			ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.method_5883(this.world);
+			ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(this.world);
 			elderGuardianEntity.method_7010();
 			this.guardian = elderGuardianEntity;
 		}
 	}
 
 	@Override
-	public void buildGeometry(BufferBuilder bufferBuilder, class_4184 arg, float f, float g, float h, float i, float j, float k) {
+	public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
 		if (this.guardian != null) {
-			EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().method_1561();
+			EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderManager();
 			entityRenderDispatcher.setRenderPosition(Particle.cameraX, Particle.cameraY, Particle.cameraZ);
 			float l = 1.0F / ElderGuardianEntity.field_17492;
 			float m = ((float)this.age + f) / (float)this.maxAge;
@@ -57,8 +57,8 @@ public class ElderGuardianAppearanceParticle extends Particle {
 			float o = 0.05F + 0.5F * MathHelper.sin(m * (float) Math.PI);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, o);
 			GlStateManager.translatef(0.0F, 1.8F, 0.0F);
-			GlStateManager.rotatef(180.0F - arg.method_19330(), 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(60.0F - 150.0F * m - arg.method_19329(), 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef(180.0F - camera.getYaw(), 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(60.0F - 150.0F * m - camera.getPitch(), 1.0F, 0.0F, 0.0F);
 			GlStateManager.translatef(0.0F, -0.4F, -1.5F);
 			GlStateManager.scalef(l, l, l);
 			this.guardian.yaw = 0.0F;

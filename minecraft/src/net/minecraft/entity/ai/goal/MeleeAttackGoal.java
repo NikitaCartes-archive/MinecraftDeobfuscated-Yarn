@@ -24,7 +24,7 @@ public class MeleeAttackGoal extends Goal {
 		this.entity = mobEntityWithAi;
 		this.field_6500 = d;
 		this.field_6502 = bl;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
 	}
 
 	@Override
@@ -35,10 +35,10 @@ public class MeleeAttackGoal extends Goal {
 		} else if (!livingEntity.isValid()) {
 			return false;
 		} else {
-			this.field_6509 = this.entity.method_5942().method_6349(livingEntity);
+			this.field_6509 = this.entity.getNavigation().findPathTo(livingEntity);
 			return this.field_6509 != null
 				? true
-				: this.method_6289(livingEntity) >= this.entity.squaredDistanceTo(livingEntity.x, livingEntity.method_5829().minY, livingEntity.z);
+				: this.method_6289(livingEntity) >= this.entity.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
 		}
 	}
 
@@ -50,7 +50,7 @@ public class MeleeAttackGoal extends Goal {
 		} else if (!livingEntity.isValid()) {
 			return false;
 		} else if (!this.field_6502) {
-			return !this.entity.method_5942().isIdle();
+			return !this.entity.getNavigation().isIdle();
 		} else {
 			return !this.entity.method_18407(new BlockPos(livingEntity))
 				? false
@@ -60,7 +60,7 @@ public class MeleeAttackGoal extends Goal {
 
 	@Override
 	public void start() {
-		this.entity.method_5942().method_6334(this.field_6509, this.field_6500);
+		this.entity.getNavigation().startMovingAlong(this.field_6509, this.field_6500);
 		this.field_6501 = 0;
 	}
 
@@ -71,16 +71,16 @@ public class MeleeAttackGoal extends Goal {
 			this.entity.setTarget(null);
 		}
 
-		this.entity.method_5942().stop();
+		this.entity.getNavigation().stop();
 	}
 
 	@Override
 	public void tick() {
 		LivingEntity livingEntity = this.entity.getTarget();
-		this.entity.method_5988().lookAt(livingEntity, 30.0F, 30.0F);
-		double d = this.entity.squaredDistanceTo(livingEntity.x, livingEntity.method_5829().minY, livingEntity.z);
+		this.entity.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
+		double d = this.entity.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
 		this.field_6501--;
-		if ((this.field_6502 || this.entity.method_5985().canSee(livingEntity))
+		if ((this.field_6502 || this.entity.getVisibilityCache().canSee(livingEntity))
 			&& this.field_6501 <= 0
 			&& (
 				this.field_6508 == 0.0 && this.field_6507 == 0.0 && this.field_6506 == 0.0
@@ -88,7 +88,7 @@ public class MeleeAttackGoal extends Goal {
 					|| this.entity.getRand().nextFloat() < 0.05F
 			)) {
 			this.field_6508 = livingEntity.x;
-			this.field_6507 = livingEntity.method_5829().minY;
+			this.field_6507 = livingEntity.getBoundingBox().minY;
 			this.field_6506 = livingEntity.z;
 			this.field_6501 = 4 + this.entity.getRand().nextInt(7);
 			if (d > 1024.0) {
@@ -97,7 +97,7 @@ public class MeleeAttackGoal extends Goal {
 				this.field_6501 += 5;
 			}
 
-			if (!this.entity.method_5942().startMovingTo(livingEntity, this.field_6500)) {
+			if (!this.entity.getNavigation().startMovingTo(livingEntity, this.field_6500)) {
 				this.field_6501 += 15;
 			}
 		}

@@ -61,7 +61,7 @@ public class DebugHud extends DrawableHelper {
 
 	public DebugHud(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
-		this.fontRenderer = minecraftClient.field_1772;
+		this.fontRenderer = minecraftClient.textRenderer;
 	}
 
 	public void resetChunk() {
@@ -73,17 +73,17 @@ public class DebugHud extends DrawableHelper {
 		this.client.getProfiler().push("debug");
 		GlStateManager.pushMatrix();
 		Entity entity = this.client.getCameraEntity();
-		this.blockHit = entity.method_5745(20.0, 0.0F, false);
-		this.fluidHit = entity.method_5745(20.0, 0.0F, true);
+		this.blockHit = entity.rayTrace(20.0, 0.0F, false);
+		this.fluidHit = entity.rayTrace(20.0, 0.0F, true);
 		this.drawLeftText();
 		this.drawRightText();
 		GlStateManager.popMatrix();
-		if (this.client.field_1690.debugTpsEnabled) {
+		if (this.client.options.debugTpsEnabled) {
 			int i = this.client.window.getScaledWidth();
-			this.method_15870(this.client.method_1570(), 0, i / 2, true);
-			IntegratedServer integratedServer = this.client.method_1576();
+			this.drawMetricsData(this.client.getMetricsData(), 0, i / 2, true);
+			IntegratedServer integratedServer = this.client.getServer();
 			if (integratedServer != null) {
-				this.method_15870(integratedServer.method_15876(), i - Math.min(i / 2, 240), i / 2, false);
+				this.drawMetricsData(integratedServer.getMetricsData(), i - Math.min(i / 2, 240), i / 2, false);
 			}
 		}
 
@@ -93,13 +93,13 @@ public class DebugHud extends DrawableHelper {
 	protected void drawLeftText() {
 		List<String> list = this.getLeftText();
 		list.add("");
-		boolean bl = this.client.method_1576() != null;
+		boolean bl = this.client.getServer() != null;
 		list.add(
 			"Debug: Pie [shift]: "
-				+ (this.client.field_1690.debugProfilerEnabled ? "visible" : "hidden")
+				+ (this.client.options.debugProfilerEnabled ? "visible" : "hidden")
 				+ (bl ? " FPS + TPS" : " FPS")
 				+ " [alt]: "
-				+ (this.client.field_1690.debugTpsEnabled ? "visible" : "hidden")
+				+ (this.client.options.debugTpsEnabled ? "visible" : "hidden")
 		);
 		list.add("For help: press F3 + Q");
 
@@ -133,33 +133,33 @@ public class DebugHud extends DrawableHelper {
 	}
 
 	protected List<String> getLeftText() {
-		IntegratedServer integratedServer = this.client.method_1576();
-		ClientConnection clientConnection = this.client.method_1562().method_2872();
+		IntegratedServer integratedServer = this.client.getServer();
+		ClientConnection clientConnection = this.client.getNetworkHandler().getClientConnection();
 		float f = clientConnection.getAveragePacketsSent();
 		float g = clientConnection.getAveragePacketsReceived();
 		String string;
 		if (integratedServer != null) {
 			string = String.format("Integrated server @ %.0f ms ticks, %.0f tx, %.0f rx", integratedServer.getTickTime(), f, g);
 		} else {
-			string = String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.field_1724.getServerBrand(), f, g);
+			string = String.format("\"%s\" server, %.0f tx, %.0f rx", this.client.player.getServerBrand(), f, g);
 		}
 
-		BlockPos blockPos = new BlockPos(this.client.getCameraEntity().x, this.client.getCameraEntity().method_5829().minY, this.client.getCameraEntity().z);
+		BlockPos blockPos = new BlockPos(this.client.getCameraEntity().x, this.client.getCameraEntity().getBoundingBox().minY, this.client.getCameraEntity().z);
 		if (this.client.hasReducedDebugInfo()) {
 			return Lists.<String>newArrayList(
 				"Minecraft " + SharedConstants.getGameVersion().getName() + " (" + this.client.getGameVersion() + "/" + ClientBrandRetriever.getClientModName() + ")",
 				this.client.fpsDebugString,
 				string,
-				this.client.field_1769.getChunksDebugString(),
-				this.client.field_1769.getEntitiesDebugString(),
-				"P: " + this.client.field_1713.getDebugString() + ". T: " + this.client.field_1687.method_18120(),
-				this.client.field_1687.getChunkProviderStatus(),
+				this.client.worldRenderer.getChunksDebugString(),
+				this.client.worldRenderer.getEntitiesDebugString(),
+				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.method_18120(),
+				this.client.world.getChunkProviderStatus(),
 				"",
 				String.format("Chunk-relative: %d %d %d", blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15)
 			);
 		} else {
 			Entity entity = this.client.getCameraEntity();
-			Direction direction = entity.method_5735();
+			Direction direction = entity.getHorizontalFacing();
 			String string2;
 			switch (direction) {
 				case NORTH:
@@ -197,14 +197,18 @@ public class DebugHud extends DrawableHelper {
 					+ ")",
 				this.client.fpsDebugString,
 				string,
-				this.client.field_1769.getChunksDebugString(),
-				this.client.field_1769.getEntitiesDebugString(),
-				"P: " + this.client.field_1713.getDebugString() + ". T: " + this.client.field_1687.method_18120(),
-				this.client.field_1687.getChunkProviderStatus(),
-				DimensionType.method_12485(this.client.field_1687.field_9247.method_12460()).toString() + " FC: " + Integer.toString(longSet.size()),
+				this.client.worldRenderer.getChunksDebugString(),
+				this.client.worldRenderer.getEntitiesDebugString(),
+				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.method_18120(),
+				this.client.world.getChunkProviderStatus(),
+				DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()),
 				"",
 				String.format(
-					Locale.ROOT, "XYZ: %.3f / %.5f / %.3f", this.client.getCameraEntity().x, this.client.getCameraEntity().method_5829().minY, this.client.getCameraEntity().z
+					Locale.ROOT,
+					"XYZ: %.3f / %.5f / %.3f",
+					this.client.getCameraEntity().x,
+					this.client.getCameraEntity().getBoundingBox().minY,
+					this.client.getCameraEntity().z
 				),
 				String.format("Block: %d %d %d", blockPos.getX(), blockPos.getY(), blockPos.getZ()),
 				String.format(
@@ -218,35 +222,35 @@ public class DebugHud extends DrawableHelper {
 				),
 				String.format(Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, MathHelper.wrapDegrees(entity.yaw), MathHelper.wrapDegrees(entity.pitch))
 			);
-			if (this.client.field_1687 != null) {
-				if (this.client.field_1687.method_8591(blockPos)) {
+			if (this.client.world != null) {
+				if (this.client.world.isBlockLoaded(blockPos)) {
 					WorldChunk worldChunk = this.getClientChunk();
 					if (worldChunk.isEmpty()) {
 						list.add("Waiting for chunk...");
 					} else {
 						list.add(
 							"Client Light: "
-								+ worldChunk.method_12233(blockPos, 0)
+								+ worldChunk.getLightLevel(blockPos, 0)
 								+ " ("
-								+ this.client.field_1687.method_8314(LightType.SKY, blockPos)
+								+ this.client.world.getLightLevel(LightType.SKY, blockPos)
 								+ " sky, "
-								+ this.client.field_1687.method_8314(LightType.BLOCK, blockPos)
+								+ this.client.world.getLightLevel(LightType.BLOCK, blockPos)
 								+ " block)"
 						);
 						WorldChunk worldChunk2 = this.getChunk();
 						if (worldChunk2 != null) {
-							LightingProvider lightingProvider = world.method_8398().method_12130();
+							LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
 							list.add(
 								"Server Light: ("
-									+ lightingProvider.get(LightType.SKY).method_15543(blockPos)
+									+ lightingProvider.get(LightType.SKY).getLightLevel(blockPos)
 									+ " sky, "
-									+ lightingProvider.get(LightType.BLOCK).method_15543(blockPos)
+									+ lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos)
 									+ " block)"
 							);
 						}
 
 						if (blockPos.getY() >= 0 && blockPos.getY() < 256) {
-							list.add("Biome: " + Registry.BIOME.method_10221(worldChunk.method_16552(blockPos)));
+							list.add("Biome: " + Registry.BIOME.getId(worldChunk.getBiome(blockPos)));
 							long l = 0L;
 							float h = 0.0F;
 							if (worldChunk2 != null) {
@@ -261,7 +265,7 @@ public class DebugHud extends DrawableHelper {
 									"Local Difficulty: %.2f // %.2f (Day %d)",
 									localDifficulty.getLocalDifficulty(),
 									localDifficulty.getClampedLocalDifficulty(),
-									this.client.field_1687.getTimeOfDay() / 24000L
+									this.client.world.getTimeOfDay() / 24000L
 								)
 							);
 						}
@@ -273,17 +277,17 @@ public class DebugHud extends DrawableHelper {
 				list.add("Outside of world...");
 			}
 
-			if (this.client.field_1773 != null && this.client.field_1773.method_3175()) {
-				list.add("Shader: " + this.client.field_1773.method_3183().getName());
+			if (this.client.gameRenderer != null && this.client.gameRenderer.method_3175()) {
+				list.add("Shader: " + this.client.gameRenderer.getShader().getName());
 			}
 
 			if (this.blockHit.getType() == HitResult.Type.BLOCK) {
-				BlockPos blockPos2 = ((BlockHitResult)this.blockHit).method_17777();
+				BlockPos blockPos2 = ((BlockHitResult)this.blockHit).getBlockPos();
 				list.add(String.format("Looking at block: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
 			}
 
 			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
-				BlockPos blockPos2 = ((BlockHitResult)this.fluidHit).method_17777();
+				BlockPos blockPos2 = ((BlockHitResult)this.fluidHit).getBlockPos();
 				list.add(String.format("Looking at liquid: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
 			}
 
@@ -293,17 +297,16 @@ public class DebugHud extends DrawableHelper {
 
 	private World getWorld() {
 		return DataFixUtils.orElse(
-			Optional.ofNullable(this.client.method_1576()).map(integratedServer -> integratedServer.method_3847(this.client.field_1687.field_9247.method_12460())),
-			this.client.field_1687
+			Optional.ofNullable(this.client.getServer()).map(integratedServer -> integratedServer.getWorld(this.client.world.dimension.getType())), this.client.world
 		);
 	}
 
 	@Nullable
 	private WorldChunk getChunk() {
 		if (this.chunkFuture == null) {
-			IntegratedServer integratedServer = this.client.method_1576();
+			IntegratedServer integratedServer = this.client.getServer();
 			if (integratedServer != null) {
-				ServerWorld serverWorld = integratedServer.method_3847(this.client.field_1687.field_9247.method_12460());
+				ServerWorld serverWorld = integratedServer.getWorld(this.client.world.dimension.getType());
 				if (serverWorld != null) {
 					this.chunkFuture = serverWorld.getChunkSyncIfServerThread(this.pos.x, this.pos.z, false);
 				}
@@ -319,7 +322,7 @@ public class DebugHud extends DrawableHelper {
 
 	private WorldChunk getClientChunk() {
 		if (this.chunk == null) {
-			this.chunk = this.client.field_1687.method_8497(this.pos.x, this.pos.z);
+			this.chunk = this.client.world.method_8497(this.pos.x, this.pos.z);
 		}
 
 		return this.chunk;
@@ -350,33 +353,33 @@ public class DebugHud extends DrawableHelper {
 			return list;
 		} else {
 			if (this.blockHit.getType() == HitResult.Type.BLOCK) {
-				BlockPos blockPos = ((BlockHitResult)this.blockHit).method_17777();
-				BlockState blockState = this.client.field_1687.method_8320(blockPos);
+				BlockPos blockPos = ((BlockHitResult)this.blockHit).getBlockPos();
+				BlockState blockState = this.client.world.getBlockState(blockPos);
 				list.add("");
 				list.add(TextFormat.field_1073 + "Targeted Block");
-				list.add(String.valueOf(Registry.BLOCK.method_10221(blockState.getBlock())));
+				list.add(String.valueOf(Registry.BLOCK.getId(blockState.getBlock())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : blockState.getEntries().entrySet()) {
 					list.add(this.propertyToString(entry));
 				}
 
-				for (Identifier identifier : this.client.method_1562().method_2867().blocks().getTagsFor(blockState.getBlock())) {
+				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().blocks().getTagsFor(blockState.getBlock())) {
 					list.add("#" + identifier);
 				}
 			}
 
 			if (this.fluidHit.getType() == HitResult.Type.BLOCK) {
-				BlockPos blockPos = ((BlockHitResult)this.fluidHit).method_17777();
-				FluidState fluidState = this.client.field_1687.method_8316(blockPos);
+				BlockPos blockPos = ((BlockHitResult)this.fluidHit).getBlockPos();
+				FluidState fluidState = this.client.world.getFluidState(blockPos);
 				list.add("");
 				list.add(TextFormat.field_1073 + "Targeted Fluid");
-				list.add(String.valueOf(Registry.FLUID.method_10221(fluidState.getFluid())));
+				list.add(String.valueOf(Registry.FLUID.getId(fluidState.getFluid())));
 
 				for (Entry<Property<?>, Comparable<?>> entry : fluidState.getEntries().entrySet()) {
 					list.add(this.propertyToString(entry));
 				}
 
-				for (Identifier identifier : this.client.method_1562().method_2867().fluids().getTagsFor(fluidState.getFluid())) {
+				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().fluids().getTagsFor(fluidState.getFluid())) {
 					list.add("#" + identifier);
 				}
 			}
@@ -385,7 +388,7 @@ public class DebugHud extends DrawableHelper {
 			if (entity != null) {
 				list.add("");
 				list.add(TextFormat.field_1073 + "Targeted Entity");
-				list.add(String.valueOf(Registry.ENTITY_TYPE.method_10221(entity.method_5864())));
+				list.add(String.valueOf(Registry.ENTITY_TYPE.getId(entity.getType())));
 			}
 
 			return list;
@@ -405,7 +408,7 @@ public class DebugHud extends DrawableHelper {
 		return property.getName() + ": " + string;
 	}
 
-	private void method_15870(MetricsData metricsData, int i, int j, boolean bl) {
+	private void drawMetricsData(MetricsData metricsData, int i, int j, boolean bl) {
 		GlStateManager.disableDepthTest();
 		int k = metricsData.method_15249();
 		int l = metricsData.getCurrentIndex();
@@ -453,8 +456,8 @@ public class DebugHud extends DrawableHelper {
 		this.drawHorizontalLine(i, i + p - 1, t - 1, -1);
 		this.drawVerticalLine(i, t - 60, t, -1);
 		this.drawVerticalLine(i + p - 1, t - 60, t, -1);
-		if (bl && this.client.field_1690.maxFps > 0 && this.client.field_1690.maxFps <= 250) {
-			this.drawHorizontalLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.field_1690.maxFps), -16711681);
+		if (bl && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
+			this.drawHorizontalLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
 		}
 
 		String string = r + " ms min";

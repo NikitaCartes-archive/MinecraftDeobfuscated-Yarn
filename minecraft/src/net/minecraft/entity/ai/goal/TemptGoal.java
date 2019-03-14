@@ -1,15 +1,20 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.class_4051;
-import net.minecraft.entity.ai.pathing.EntityMobNavigation;
+import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 
 public class TemptGoal extends Goal {
-	private static final class_4051 field_18090 = new class_4051().method_18418(10.0).method_18417().method_18421().method_18423().method_18422();
+	private static final TargetPredicate field_18090 = new TargetPredicate()
+		.setBaseMaxDistance(10.0)
+		.includeInvulnerable()
+		.includeTeammates()
+		.ignoreEntityTargetRules()
+		.includeHidden();
 	protected final MobEntityWithAi field_6616;
 	private final double field_6615;
 	private double field_6614;
@@ -32,8 +37,8 @@ public class TemptGoal extends Goal {
 		this.field_6615 = d;
 		this.field_6622 = ingredient;
 		this.field_6620 = bl;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
-		if (!(mobEntityWithAi.method_5942() instanceof EntityMobNavigation)) {
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
 		}
 	}
@@ -44,8 +49,8 @@ public class TemptGoal extends Goal {
 			this.field_6612--;
 			return false;
 		} else {
-			this.field_6617 = this.field_6616.field_6002.method_18462(field_18090, this.field_6616);
-			return this.field_6617 == null ? false : this.method_6312(this.field_6617.method_6047()) || this.method_6312(this.field_6617.method_6079());
+			this.field_6617 = this.field_6616.world.method_18462(field_18090, this.field_6616);
+			return this.field_6617 == null ? false : this.method_6312(this.field_6617.getMainHandStack()) || this.method_6312(this.field_6617.getOffHandStack());
 		}
 	}
 
@@ -92,18 +97,18 @@ public class TemptGoal extends Goal {
 	@Override
 	public void onRemove() {
 		this.field_6617 = null;
-		this.field_6616.method_5942().stop();
+		this.field_6616.getNavigation().stop();
 		this.field_6612 = 100;
 		this.field_6613 = false;
 	}
 
 	@Override
 	public void tick() {
-		this.field_6616.method_5988().lookAt(this.field_6617, (float)(this.field_6616.method_5986() + 20), (float)this.field_6616.method_5978());
+		this.field_6616.getLookControl().lookAt(this.field_6617, (float)(this.field_6616.method_5986() + 20), (float)this.field_6616.method_5978());
 		if (this.field_6616.squaredDistanceTo(this.field_6617) < 6.25) {
-			this.field_6616.method_5942().stop();
+			this.field_6616.getNavigation().stop();
 		} else {
-			this.field_6616.method_5942().startMovingTo(this.field_6617, this.field_6615);
+			this.field_6616.getNavigation().startMovingTo(this.field_6617, this.field_6615);
 		}
 	}
 

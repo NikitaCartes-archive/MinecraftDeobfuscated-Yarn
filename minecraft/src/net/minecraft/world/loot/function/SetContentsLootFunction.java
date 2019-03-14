@@ -39,19 +39,19 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			this.field_1103
 				.forEach(lootEntry -> lootEntry.expand(lootContext, lootChoice -> lootChoice.drop(LootSupplier.limitedConsumer(defaultedList::add), lootContext)));
 			CompoundTag compoundTag = new CompoundTag();
-			Inventories.method_5426(compoundTag, defaultedList);
-			CompoundTag compoundTag2 = itemStack.method_7948();
-			compoundTag2.method_10566("BlockEntityTag", compoundTag.copyFrom(compoundTag2.getCompound("BlockEntityTag")));
+			Inventories.toTag(compoundTag, defaultedList);
+			CompoundTag compoundTag2 = itemStack.getOrCreateTag();
+			compoundTag2.put("BlockEntityTag", compoundTag.copyFrom(compoundTag2.getCompound("BlockEntityTag")));
 			return itemStack;
 		}
 	}
 
 	@Override
-	public void method_292(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		super.method_292(lootTableReporter, function, set, lootContextType);
+	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		super.check(lootTableReporter, function, set, lootContextType);
 
 		for (int i = 0; i < this.field_1103.size(); i++) {
-			((LootEntry)this.field_1103.get(i)).method_415(lootTableReporter.makeChild(".entry[" + i + "]"), function, set, lootContextType);
+			((LootEntry)this.field_1103.get(i)).check(lootTableReporter.makeChild(".entry[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
@@ -89,7 +89,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new SetContentsLootFunction(this.method_526(), this.field_1104);
+			return new SetContentsLootFunction(this.getConditions(), this.field_1104);
 		}
 	}
 }

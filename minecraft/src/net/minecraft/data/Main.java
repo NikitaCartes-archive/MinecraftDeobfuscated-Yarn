@@ -54,31 +54,31 @@ public class Main {
 	public static DataGenerator create(Path path, Collection<Path> collection, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5) {
 		DataGenerator dataGenerator = new DataGenerator(path, collection);
 		if (bl || bl2) {
-			dataGenerator.method_10314(new SnbtProvider(dataGenerator));
+			dataGenerator.install(new SnbtProvider(dataGenerator));
 		}
 
 		if (bl2) {
-			dataGenerator.method_10314(new FluidTagsProvider(dataGenerator));
-			dataGenerator.method_10314(new BlockTagsProvider(dataGenerator));
-			dataGenerator.method_10314(new ItemTagsProvider(dataGenerator));
-			dataGenerator.method_10314(new EntityTypeTagsProvider(dataGenerator));
-			dataGenerator.method_10314(new RecipesProvider(dataGenerator));
-			dataGenerator.method_10314(new AdvancementsProvider(dataGenerator));
-			dataGenerator.method_10314(new LootTablesProvider(dataGenerator));
+			dataGenerator.install(new FluidTagsProvider(dataGenerator));
+			dataGenerator.install(new BlockTagsProvider(dataGenerator));
+			dataGenerator.install(new ItemTagsProvider(dataGenerator));
+			dataGenerator.install(new EntityTypeTagsProvider(dataGenerator));
+			dataGenerator.install(new RecipesProvider(dataGenerator));
+			dataGenerator.install(new AdvancementsProvider(dataGenerator));
+			dataGenerator.install(new LootTablesProvider(dataGenerator));
 		}
 
 		if (bl3) {
-			dataGenerator.method_10314(new NbtProvider(dataGenerator));
+			dataGenerator.install(new NbtProvider(dataGenerator));
 		}
 
 		if (bl4) {
-			dataGenerator.method_10314(new BlockListProvider(dataGenerator));
-			dataGenerator.method_10314(new ItemListProvider(dataGenerator));
-			dataGenerator.method_10314(new CommandSyntaxProvider(dataGenerator));
+			dataGenerator.install(new BlockListProvider(dataGenerator));
+			dataGenerator.install(new ItemListProvider(dataGenerator));
+			dataGenerator.install(new CommandSyntaxProvider(dataGenerator));
 		}
 
 		if (bl5) {
-			dataGenerator.method_10314(new StructureValidatorProvider(dataGenerator));
+			dataGenerator.install(new StructureValidatorProvider(dataGenerator));
 		}
 
 		return dataGenerator;

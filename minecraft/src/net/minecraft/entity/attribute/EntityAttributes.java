@@ -12,34 +12,34 @@ public class EntityAttributes {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final EntityAttribute MAX_HEALTH = new ClampedEntityAttribute(null, "generic.maxHealth", 20.0, 0.0, 1024.0)
 		.setName("Max Health")
-		.method_6212(true);
+		.setTracked(true);
 	public static final EntityAttribute FOLLOW_RANGE = new ClampedEntityAttribute(null, "generic.followRange", 32.0, 0.0, 2048.0).setName("Follow Range");
 	public static final EntityAttribute KNOCKBACK_RESISTANCE = new ClampedEntityAttribute(null, "generic.knockbackResistance", 0.0, 0.0, 1.0)
 		.setName("Knockback Resistance");
 	public static final EntityAttribute MOVEMENT_SPEED = new ClampedEntityAttribute(null, "generic.movementSpeed", 0.7F, 0.0, 1024.0)
 		.setName("Movement Speed")
-		.method_6212(true);
+		.setTracked(true);
 	public static final EntityAttribute FLYING_SPEED = new ClampedEntityAttribute(null, "generic.flyingSpeed", 0.4F, 0.0, 1024.0)
 		.setName("Flying Speed")
-		.method_6212(true);
+		.setTracked(true);
 	public static final EntityAttribute ATTACK_DAMAGE = new ClampedEntityAttribute(null, "generic.attackDamage", 2.0, 0.0, 2048.0);
 	public static final EntityAttribute ATTACK_KNOCKBACK = new ClampedEntityAttribute(null, "generic.attackKnockback", 0.0, 0.0, 5.0);
-	public static final EntityAttribute ATTACK_SPEED = new ClampedEntityAttribute(null, "generic.attackSpeed", 4.0, 0.0, 1024.0).method_6212(true);
-	public static final EntityAttribute ARMOR = new ClampedEntityAttribute(null, "generic.armor", 0.0, 0.0, 30.0).method_6212(true);
-	public static final EntityAttribute ARMOR_TOUGHNESS = new ClampedEntityAttribute(null, "generic.armorToughness", 0.0, 0.0, 20.0).method_6212(true);
-	public static final EntityAttribute LUCK = new ClampedEntityAttribute(null, "generic.luck", 0.0, -1024.0, 1024.0).method_6212(true);
+	public static final EntityAttribute ATTACK_SPEED = new ClampedEntityAttribute(null, "generic.attackSpeed", 4.0, 0.0, 1024.0).setTracked(true);
+	public static final EntityAttribute ARMOR = new ClampedEntityAttribute(null, "generic.armor", 0.0, 0.0, 30.0).setTracked(true);
+	public static final EntityAttribute ARMOR_TOUGHNESS = new ClampedEntityAttribute(null, "generic.armorToughness", 0.0, 0.0, 20.0).setTracked(true);
+	public static final EntityAttribute LUCK = new ClampedEntityAttribute(null, "generic.luck", 0.0, -1024.0, 1024.0).setTracked(true);
 
-	public static ListTag method_7134(AbstractEntityAttributeContainer abstractEntityAttributeContainer) {
+	public static ListTag toTag(AbstractEntityAttributeContainer abstractEntityAttributeContainer) {
 		ListTag listTag = new ListTag();
 
 		for (EntityAttributeInstance entityAttributeInstance : abstractEntityAttributeContainer.values()) {
-			listTag.add(method_7130(entityAttributeInstance));
+			listTag.add(toTag(entityAttributeInstance));
 		}
 
 		return listTag;
 	}
 
-	private static CompoundTag method_7130(EntityAttributeInstance entityAttributeInstance) {
+	private static CompoundTag toTag(EntityAttributeInstance entityAttributeInstance) {
 		CompoundTag compoundTag = new CompoundTag();
 		EntityAttribute entityAttribute = entityAttributeInstance.getAttribute();
 		compoundTag.putString("Name", entityAttribute.getId());
@@ -50,17 +50,17 @@ public class EntityAttributes {
 
 			for (EntityAttributeModifier entityAttributeModifier : collection) {
 				if (entityAttributeModifier.shouldSerialize()) {
-					listTag.add(method_7135(entityAttributeModifier));
+					listTag.add(toTag(entityAttributeModifier));
 				}
 			}
 
-			compoundTag.method_10566("Modifiers", listTag);
+			compoundTag.put("Modifiers", listTag);
 		}
 
 		return compoundTag;
 	}
 
-	public static CompoundTag method_7135(EntityAttributeModifier entityAttributeModifier) {
+	public static CompoundTag toTag(EntityAttributeModifier entityAttributeModifier) {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("Name", entityAttributeModifier.getName());
 		compoundTag.putDouble("Amount", entityAttributeModifier.getAmount());
@@ -69,43 +69,43 @@ public class EntityAttributes {
 		return compoundTag;
 	}
 
-	public static void method_7131(AbstractEntityAttributeContainer abstractEntityAttributeContainer, ListTag listTag) {
+	public static void fromTag(AbstractEntityAttributeContainer abstractEntityAttributeContainer, ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
 			EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get(compoundTag.getString("Name"));
 			if (entityAttributeInstance == null) {
 				LOGGER.warn("Ignoring unknown attribute '{}'", compoundTag.getString("Name"));
 			} else {
-				method_7132(entityAttributeInstance, compoundTag);
+				fromTag(entityAttributeInstance, compoundTag);
 			}
 		}
 	}
 
-	private static void method_7132(EntityAttributeInstance entityAttributeInstance, CompoundTag compoundTag) {
+	private static void fromTag(EntityAttributeInstance entityAttributeInstance, CompoundTag compoundTag) {
 		entityAttributeInstance.setBaseValue(compoundTag.getDouble("Base"));
 		if (compoundTag.containsKey("Modifiers", 9)) {
-			ListTag listTag = compoundTag.method_10554("Modifiers", 10);
+			ListTag listTag = compoundTag.getList("Modifiers", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				EntityAttributeModifier entityAttributeModifier = method_7133(listTag.getCompoundTag(i));
+				EntityAttributeModifier entityAttributeModifier = createFromTag(listTag.getCompoundTag(i));
 				if (entityAttributeModifier != null) {
-					EntityAttributeModifier entityAttributeModifier2 = entityAttributeInstance.method_6199(entityAttributeModifier.getId());
+					EntityAttributeModifier entityAttributeModifier2 = entityAttributeInstance.getModifier(entityAttributeModifier.getId());
 					if (entityAttributeModifier2 != null) {
-						entityAttributeInstance.method_6202(entityAttributeModifier2);
+						entityAttributeInstance.removeModifier(entityAttributeModifier2);
 					}
 
-					entityAttributeInstance.method_6197(entityAttributeModifier);
+					entityAttributeInstance.addModifier(entityAttributeModifier);
 				}
 			}
 		}
 	}
 
 	@Nullable
-	public static EntityAttributeModifier method_7133(CompoundTag compoundTag) {
+	public static EntityAttributeModifier createFromTag(CompoundTag compoundTag) {
 		UUID uUID = compoundTag.getUuid("UUID");
 
 		try {
-			EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.method_6190(compoundTag.getInt("Operation"));
+			EntityAttributeModifier.Operation operation = EntityAttributeModifier.Operation.fromId(compoundTag.getInt("Operation"));
 			return new EntityAttributeModifier(uUID, compoundTag.getString("Name"), compoundTag.getDouble("Amount"), operation);
 		} catch (Exception var3) {
 			LOGGER.warn("Unable to create attribute: {}", var3.getMessage());

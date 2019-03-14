@@ -13,13 +13,13 @@ public class GuardianAttackSoundInstance extends MovingSoundInstance {
 	public GuardianAttackSoundInstance(GuardianEntity guardianEntity) {
 		super(SoundEvents.field_14880, SoundCategory.field_15251);
 		this.guardian = guardianEntity;
-		this.field_5440 = SoundInstance.AttenuationType.NONE;
+		this.attenuationType = SoundInstance.AttenuationType.NONE;
 		this.repeat = true;
 		this.repeatDelay = 0;
 	}
 
 	@Override
-	public void method_16896() {
+	public void tick() {
 		if (!this.guardian.invalid && this.guardian.hasBeamTarget()) {
 			this.x = (float)this.guardian.x;
 			this.y = (float)this.guardian.y;

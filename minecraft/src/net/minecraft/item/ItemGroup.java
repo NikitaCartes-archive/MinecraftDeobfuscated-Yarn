@@ -15,67 +15,67 @@ public abstract class ItemGroup {
 	public static final ItemGroup BUILDING_BLOCKS = (new ItemGroup(0, "buildingBlocks") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10104);
 		}
 	}).setName("building_blocks");
 	public static final ItemGroup DECORATIONS = new ItemGroup(1, "decorations") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10003);
 		}
 	};
 	public static final ItemGroup REDSTONE = new ItemGroup(2, "redstone") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8725);
 		}
 	};
 	public static final ItemGroup TRANSPORTATION = new ItemGroup(3, "transportation") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10425);
 		}
 	};
 	public static final ItemGroup MISC = new ItemGroup(6, "misc") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8187);
 		}
 	};
 	public static final ItemGroup SEARCH = (new ItemGroup(5, "search") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8251);
 		}
 	}).setTexture("item_search.png");
 	public static final ItemGroup FOOD = new ItemGroup(7, "food") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8279);
 		}
 	};
 	public static final ItemGroup TOOLS = (new ItemGroup(8, "tools") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Items.field_8475);
 		}
-	}).method_7745(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.BREAKER, EnchantmentTarget.FISHING, EnchantmentTarget.TOOL});
+	}).setEnchantments(new EnchantmentTarget[]{EnchantmentTarget.ALL, EnchantmentTarget.BREAKER, EnchantmentTarget.FISHING, EnchantmentTarget.TOOL});
 	public static final ItemGroup COMBAT = (new ItemGroup(9, "combat") {
 			@Environment(EnvType.CLIENT)
 			@Override
-			public ItemStack method_7750() {
+			public ItemStack createIcon() {
 				return new ItemStack(Items.field_8845);
 			}
 		})
-		.method_7745(
+		.setEnchantments(
 			new EnchantmentTarget[]{
 				EnchantmentTarget.ALL,
 				EnchantmentTarget.ARMOR,
@@ -94,7 +94,7 @@ public abstract class ItemGroup {
 	public static final ItemGroup BREWING = new ItemGroup(10, "brewing") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991);
 		}
 	};
@@ -102,13 +102,13 @@ public abstract class ItemGroup {
 	public static final ItemGroup HOTBAR = new ItemGroup(4, "hotbar") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10504);
 		}
 
 		@Environment(EnvType.CLIENT)
 		@Override
-		public void method_7738(DefaultedList<ItemStack> defaultedList) {
+		public void appendItems(DefaultedList<ItemStack> defaultedList) {
 			throw new RuntimeException("Implement exception client-side.");
 		}
 
@@ -121,7 +121,7 @@ public abstract class ItemGroup {
 	public static final ItemGroup INVENTORY = (new ItemGroup(11, "inventory") {
 		@Environment(EnvType.CLIENT)
 		@Override
-		public ItemStack method_7750() {
+		public ItemStack createIcon() {
 			return new ItemStack(Blocks.field_10034);
 		}
 	}).setTexture("inventory.png").setNoScrollbar().setNoTooltip();
@@ -131,13 +131,13 @@ public abstract class ItemGroup {
 	private String texture = "items.png";
 	private boolean scrollbar = true;
 	private boolean tooltip = true;
-	private EnchantmentTarget[] field_7927 = new EnchantmentTarget[0];
-	private ItemStack field_7934;
+	private EnchantmentTarget[] enchantments = new EnchantmentTarget[0];
+	private ItemStack icon;
 
 	public ItemGroup(int i, String string) {
 		this.index = i;
 		this.id = string;
-		this.field_7934 = ItemStack.EMPTY;
+		this.icon = ItemStack.EMPTY;
 		GROUPS[i] = this;
 	}
 
@@ -161,16 +161,16 @@ public abstract class ItemGroup {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ItemStack method_7747() {
-		if (this.field_7934.isEmpty()) {
-			this.field_7934 = this.method_7750();
+	public ItemStack getIcon() {
+		if (this.icon.isEmpty()) {
+			this.icon = this.createIcon();
 		}
 
-		return this.field_7934;
+		return this.icon;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract ItemStack method_7750();
+	public abstract ItemStack createIcon();
 
 	@Environment(EnvType.CLIENT)
 	public String getTexture() {
@@ -222,18 +222,18 @@ public abstract class ItemGroup {
 		return this.getColumn() == 5;
 	}
 
-	public EnchantmentTarget[] method_7744() {
-		return this.field_7927;
+	public EnchantmentTarget[] getEnchantments() {
+		return this.enchantments;
 	}
 
-	public ItemGroup method_7745(EnchantmentTarget... enchantmentTargets) {
-		this.field_7927 = enchantmentTargets;
+	public ItemGroup setEnchantments(EnchantmentTarget... enchantmentTargets) {
+		this.enchantments = enchantmentTargets;
 		return this;
 	}
 
-	public boolean method_7740(@Nullable EnchantmentTarget enchantmentTarget) {
+	public boolean containsEnchantments(@Nullable EnchantmentTarget enchantmentTarget) {
 		if (enchantmentTarget != null) {
-			for (EnchantmentTarget enchantmentTarget2 : this.field_7927) {
+			for (EnchantmentTarget enchantmentTarget2 : this.enchantments) {
 				if (enchantmentTarget2 == enchantmentTarget) {
 					return true;
 				}
@@ -244,9 +244,9 @@ public abstract class ItemGroup {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_7738(DefaultedList<ItemStack> defaultedList) {
+	public void appendItems(DefaultedList<ItemStack> defaultedList) {
 		for (Item item : Registry.ITEM) {
-			item.method_7850(this, defaultedList);
+			item.appendItemsForGroup(this, defaultedList);
 		}
 	}
 }

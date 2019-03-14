@@ -16,13 +16,13 @@ public class TraderRecipe {
 	private boolean rewardExp = true;
 	private int field_18676;
 	private int field_18677;
-	private float field_18678;
-	private int field_18679 = 1;
+	private float priceMultiplier;
+	private int rewardedExp = 1;
 
 	public TraderRecipe(CompoundTag compoundTag) {
-		this.firstBuyItem = ItemStack.method_7915(compoundTag.getCompound("buy"));
-		this.secondBuyItem = ItemStack.method_7915(compoundTag.getCompound("buyB"));
-		this.sellItem = ItemStack.method_7915(compoundTag.getCompound("sell"));
+		this.firstBuyItem = ItemStack.fromTag(compoundTag.getCompound("buy"));
+		this.secondBuyItem = ItemStack.fromTag(compoundTag.getCompound("buyB"));
+		this.sellItem = ItemStack.fromTag(compoundTag.getCompound("sell"));
 		this.uses = compoundTag.getInt("uses");
 		if (compoundTag.containsKey("maxUses", 99)) {
 			this.maxUses = compoundTag.getInt("maxUses");
@@ -35,11 +35,11 @@ public class TraderRecipe {
 		}
 
 		if (compoundTag.containsKey("xp", 3)) {
-			this.field_18679 = compoundTag.getInt("xp");
+			this.rewardedExp = compoundTag.getInt("xp");
 		}
 
 		if (compoundTag.containsKey("priceMultiplier", 5)) {
-			this.field_18678 = compoundTag.getFloat("priceMultiplier");
+			this.priceMultiplier = compoundTag.getFloat("priceMultiplier");
 		}
 	}
 
@@ -57,8 +57,8 @@ public class TraderRecipe {
 		this.sellItem = itemStack3;
 		this.uses = i;
 		this.maxUses = j;
-		this.field_18679 = k;
-		this.field_18678 = f;
+		this.rewardedExp = k;
+		this.priceMultiplier = f;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -69,7 +69,7 @@ public class TraderRecipe {
 	public ItemStack method_19272() {
 		int i = this.firstBuyItem.getAmount();
 		ItemStack itemStack = this.firstBuyItem.copy();
-		int j = MathHelper.floor((float)(i * this.field_18677) * this.field_18678);
+		int j = MathHelper.floor((float)(i * this.field_18677) * this.priceMultiplier);
 		itemStack.setAmount(MathHelper.clamp(i + j + this.field_18676, 1, 64));
 		return itemStack;
 	}
@@ -94,7 +94,7 @@ public class TraderRecipe {
 		return this.uses;
 	}
 
-	public void method_19275() {
+	public void resetUses() {
 		this.uses = 0;
 	}
 
@@ -122,12 +122,12 @@ public class TraderRecipe {
 		this.field_18676 = i;
 	}
 
-	public float method_19278() {
-		return this.field_18678;
+	public float getPriceMultiplier() {
+		return this.priceMultiplier;
 	}
 
-	public int method_19279() {
-		return this.field_18679;
+	public int getRewardedExp() {
+		return this.rewardedExp;
 	}
 
 	public boolean isDisabled() {
@@ -138,20 +138,20 @@ public class TraderRecipe {
 		this.uses = this.maxUses;
 	}
 
-	public boolean getRewardExp() {
+	public boolean shouldRewardExp() {
 		return this.rewardExp;
 	}
 
-	public CompoundTag method_8251() {
+	public CompoundTag serialize() {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.method_10566("buy", this.firstBuyItem.method_7953(new CompoundTag()));
-		compoundTag.method_10566("sell", this.sellItem.method_7953(new CompoundTag()));
-		compoundTag.method_10566("buyB", this.secondBuyItem.method_7953(new CompoundTag()));
+		compoundTag.put("buy", this.firstBuyItem.toTag(new CompoundTag()));
+		compoundTag.put("sell", this.sellItem.toTag(new CompoundTag()));
+		compoundTag.put("buyB", this.secondBuyItem.toTag(new CompoundTag()));
 		compoundTag.putInt("uses", this.uses);
 		compoundTag.putInt("maxUses", this.maxUses);
 		compoundTag.putBoolean("rewardExp", this.rewardExp);
-		compoundTag.putInt("xp", this.field_18679);
-		compoundTag.putFloat("priceMultiplier", this.field_18678);
+		compoundTag.putInt("xp", this.rewardedExp);
+		compoundTag.putFloat("priceMultiplier", this.priceMultiplier);
 		return compoundTag;
 	}
 
@@ -172,7 +172,7 @@ public class TraderRecipe {
 			}
 
 			return ItemStack.areEqualIgnoreTags(itemStack3, itemStack2)
-				&& (!itemStack2.hasTag() || itemStack3.hasTag() && TagHelper.method_10687(itemStack2.method_7969(), itemStack3.method_7969(), false));
+				&& (!itemStack2.hasTag() || itemStack3.hasTag() && TagHelper.areTagsEqual(itemStack2.getTag(), itemStack3.getTag(), false));
 		}
 	}
 

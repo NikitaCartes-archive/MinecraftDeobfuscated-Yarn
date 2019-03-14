@@ -25,9 +25,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> {
-	private static final Identifier field_2910 = new Identifier("textures/gui/container/enchanting_table.png");
-	private static final Identifier field_2901 = new Identifier("textures/entity/enchanting_table_book.png");
-	private static final BookModel field_2908 = new BookModel();
+	private static final Identifier TEXTURE = new Identifier("textures/gui/container/enchanting_table.png");
+	private static final Identifier BOOK_TEXURE = new Identifier("textures/entity/enchanting_table_book.png");
+	private static final BookModel bookModel = new BookModel();
 	private final Random random = new Random();
 	public int field_2915;
 	public float nextPageAngle;
@@ -44,8 +44,8 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.field_17411.getFormattedText(), 12.0F, 5.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.method_5476().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+		this.fontRenderer.draw(this.name.getFormattedText(), 12.0F, 5.0F, 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
 	@Override
@@ -62,8 +62,8 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 		for (int l = 0; l < 3; l++) {
 			double f = d - (double)(j + 60);
 			double g = e - (double)(k + 14 + 19 * l);
-			if (f >= 0.0 && g >= 0.0 && f < 108.0 && g < 19.0 && this.container.onButtonClick(this.client.field_1724, l)) {
-				this.client.field_1761.clickButton(this.container.syncId, l);
+			if (f >= 0.0 && g >= 0.0 && f < 108.0 && g < 19.0 && this.container.onButtonClick(this.client.player, l)) {
+				this.client.interactionManager.clickButton(this.container.syncId, l);
 				return true;
 			}
 		}
@@ -74,7 +74,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.method_1531().method_4618(field_2910);
+		this.client.getTextureManager().bindTexture(TEXTURE);
 		int k = (this.screenWidth - this.width) / 2;
 		int l = (this.screenHeight - this.height) / 2;
 		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
@@ -95,7 +95,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 		float h = 5.0F;
 		GlStateManager.scalef(5.0F, 5.0F, 5.0F);
 		GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
-		this.client.method_1531().method_4618(field_2901);
+		this.client.getTextureManager().bindTexture(BOOK_TEXURE);
 		GlStateManager.rotatef(20.0F, 1.0F, 0.0F, 0.0F);
 		float n = MathHelper.lerp(f, this.pageTurningSpeed, this.nextPageTurningSpeed);
 		GlStateManager.translatef((1.0F - n) * 0.2F, (1.0F - n) * 0.1F, (1.0F - n) * 0.25F);
@@ -122,7 +122,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 		}
 
 		GlStateManager.enableRescaleNormal();
-		field_2908.render(0.0F, o, p, n, 0.0F, 0.0625F);
+		bookModel.render(0.0F, o, p, n, 0.0F, 0.0625F);
 		GlStateManager.disableRescaleNormal();
 		GuiLighting.disable();
 		GlStateManager.matrixMode(5889);
@@ -139,7 +139,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 			int s = k + 60;
 			int t = s + 20;
 			this.zOffset = 0.0F;
-			this.client.method_1531().method_4618(field_2910);
+			this.client.getTextureManager().bindTexture(TEXTURE);
 			int u = this.container.enchantmentPower[r];
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			if (u == 0) {
@@ -148,9 +148,9 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 				String string = "" + u;
 				int v = 86 - this.fontRenderer.getStringWidth(string);
 				String string2 = EnchantingPhrases.getInstance().generatePhrase(this.fontRenderer, v);
-				TextRenderer textRenderer = this.client.method_1568().method_2019(MinecraftClient.field_1749);
+				TextRenderer textRenderer = this.client.getFontManager().getTextRenderer(MinecraftClient.ALT_TEXT_RENDERER_ID);
 				int w = 6839882;
-				if ((q < r + 1 || this.client.field_1724.experience < u) && !this.client.field_1724.abilities.creativeMode) {
+				if ((q < r + 1 || this.client.player.experience < u) && !this.client.player.abilities.creativeMode) {
 					this.drawTexturedRect(s, l + 14 + 19 * r, 0, 185, 108, 19);
 					this.drawTexturedRect(s + 1, l + 15 + 19 * r, 16 * r, 239, 16, 16);
 					textRenderer.drawStringBounded(string2, t, l + 16 + 19 * r, v, (w & 16711422) >> 1);
@@ -170,7 +170,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 					w = 8453920;
 				}
 
-				textRenderer = this.client.field_1772;
+				textRenderer = this.client.textRenderer;
 				textRenderer.drawWithShadow(string, (float)(t + 86 - textRenderer.getStringWidth(string)), (float)(l + 16 + 19 * r + 7), w);
 			}
 		}
@@ -182,7 +182,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 		this.drawBackground();
 		super.draw(i, j, f);
 		this.drawMouseoverTooltip(i, j);
-		boolean bl = this.client.field_1724.abilities.creativeMode;
+		boolean bl = this.client.player.abilities.creativeMode;
 		int k = this.container.method_7638();
 
 		for (int l = 0; l < 3; l++) {
@@ -192,10 +192,10 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 			int o = l + 1;
 			if (this.isPointWithinBounds(60, 14 + 19 * l, 108, 17, (double)i, (double)j) && m > 0 && n >= 0 && enchantment != null) {
 				List<String> list = Lists.<String>newArrayList();
-				list.add("" + TextFormat.field_1068 + TextFormat.field_1056 + I18n.translate("container.enchant.clue", enchantment.method_8179(n).getFormattedText()));
+				list.add("" + TextFormat.field_1068 + TextFormat.field_1056 + I18n.translate("container.enchant.clue", enchantment.getTextComponent(n).getFormattedText()));
 				if (!bl) {
 					list.add("");
-					if (this.client.field_1724.experience < m) {
+					if (this.client.player.experience < m) {
 						list.add(TextFormat.field_1061 + I18n.translate("container.enchant.level.requirement", this.container.enchantmentPower[l]));
 					} else {
 						String string;
@@ -224,7 +224,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 	}
 
 	public void method_2478() {
-		ItemStack itemStack = this.container.method_7611(0).method_7677();
+		ItemStack itemStack = this.container.getSlot(0).getStack();
 		if (!ItemStack.areEqual(itemStack, this.field_2913)) {
 			this.field_2913 = itemStack;
 

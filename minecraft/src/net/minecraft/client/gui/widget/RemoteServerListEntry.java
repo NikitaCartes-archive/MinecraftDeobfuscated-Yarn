@@ -32,59 +32,59 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 	private static final ThreadPoolExecutor PING_THREAD_POOL = new ScheduledThreadPoolExecutor(
 		5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build()
 	);
-	private static final Identifier field_3060 = new Identifier("textures/misc/unknown_server.png");
-	private static final Identifier field_3059 = new Identifier("textures/gui/server_selection.png");
+	private static final Identifier UNKNOWN_SERVER = new Identifier("textures/misc/unknown_server.png");
+	private static final Identifier SERVER_SELECTION = new Identifier("textures/gui/server_selection.png");
 	private final MultiplayerScreen guiMultiplayer;
 	private final MinecraftClient client;
-	private final ServerEntry field_3061;
-	private final Identifier field_3065;
+	private final ServerEntry serverEntry;
+	private final Identifier serverIconTextureId;
 	private String field_3062;
-	private NativeImageBackedTexture field_3063;
+	private NativeImageBackedTexture serverIconTexture;
 	private long field_3067;
 
 	protected RemoteServerListEntry(MultiplayerScreen multiplayerScreen, ServerEntry serverEntry) {
 		this.guiMultiplayer = multiplayerScreen;
-		this.field_3061 = serverEntry;
+		this.serverEntry = serverEntry;
 		this.client = MinecraftClient.getInstance();
-		this.field_3065 = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.address) + "/icon");
-		this.field_3063 = (NativeImageBackedTexture)this.client.method_1531().method_4619(this.field_3065);
+		this.serverIconTextureId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.address) + "/icon");
+		this.serverIconTexture = (NativeImageBackedTexture)this.client.getTextureManager().getTexture(this.serverIconTextureId);
 	}
 
 	@Override
 	public void draw(int i, int j, int k, int l, boolean bl, float f) {
 		int m = this.getY();
 		int n = this.getX();
-		if (!this.field_3061.field_3754) {
-			this.field_3061.field_3754 = true;
-			this.field_3061.ping = -2L;
-			this.field_3061.label = "";
-			this.field_3061.playerCountLabel = "";
+		if (!this.serverEntry.field_3754) {
+			this.serverEntry.field_3754 = true;
+			this.serverEntry.ping = -2L;
+			this.serverEntry.label = "";
+			this.serverEntry.playerCountLabel = "";
 			PING_THREAD_POOL.submit(() -> {
 				try {
-					this.guiMultiplayer.method_2538().method_3003(this.field_3061);
+					this.guiMultiplayer.method_2538().method_3003(this.serverEntry);
 				} catch (UnknownHostException var2) {
-					this.field_3061.ping = -1L;
-					this.field_3061.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_resolve");
+					this.serverEntry.ping = -1L;
+					this.serverEntry.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_resolve");
 				} catch (Exception var3) {
-					this.field_3061.ping = -1L;
-					this.field_3061.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
+					this.serverEntry.ping = -1L;
+					this.serverEntry.label = TextFormat.field_1079 + I18n.translate("multiplayer.status.cannot_connect");
 				}
 			});
 		}
 
-		boolean bl2 = this.field_3061.protocolVersion > SharedConstants.getGameVersion().getProtocolVersion();
-		boolean bl3 = this.field_3061.protocolVersion < SharedConstants.getGameVersion().getProtocolVersion();
+		boolean bl2 = this.serverEntry.protocolVersion > SharedConstants.getGameVersion().getProtocolVersion();
+		boolean bl3 = this.serverEntry.protocolVersion < SharedConstants.getGameVersion().getProtocolVersion();
 		boolean bl4 = bl2 || bl3;
-		this.client.field_1772.draw(this.field_3061.name, (float)(n + 32 + 3), (float)(m + 1), 16777215);
-		List<String> list = this.client.field_1772.wrapStringToWidthAsList(this.field_3061.label, i - 32 - 2);
+		this.client.textRenderer.draw(this.serverEntry.name, (float)(n + 32 + 3), (float)(m + 1), 16777215);
+		List<String> list = this.client.textRenderer.wrapStringToWidthAsList(this.serverEntry.label, i - 32 - 2);
 
 		for (int o = 0; o < Math.min(list.size(), 2); o++) {
-			this.client.field_1772.draw((String)list.get(o), (float)(n + 32 + 3), (float)(m + 12 + 9 * o), 8421504);
+			this.client.textRenderer.draw((String)list.get(o), (float)(n + 32 + 3), (float)(m + 12 + 9 * o), 8421504);
 		}
 
-		String string = bl4 ? TextFormat.field_1079 + this.field_3061.version : this.field_3061.playerCountLabel;
-		int p = this.client.field_1772.getStringWidth(string);
-		this.client.field_1772.draw(string, (float)(n + i - p - 15 - 2), (float)(m + 1), 8421504);
+		String string = bl4 ? TextFormat.field_1079 + this.serverEntry.version : this.serverEntry.playerCountLabel;
+		int p = this.client.textRenderer.getStringWidth(string);
+		this.client.textRenderer.draw(string, (float)(n + i - p - 15 - 2), (float)(m + 1), 8421504);
 		int q = 0;
 		String string2 = null;
 		int r;
@@ -92,27 +92,27 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 		if (bl4) {
 			r = 5;
 			string3 = I18n.translate(bl2 ? "multiplayer.status.client_out_of_date" : "multiplayer.status.server_out_of_date");
-			string2 = this.field_3061.playerListSummary;
-		} else if (this.field_3061.field_3754 && this.field_3061.ping != -2L) {
-			if (this.field_3061.ping < 0L) {
+			string2 = this.serverEntry.playerListSummary;
+		} else if (this.serverEntry.field_3754 && this.serverEntry.ping != -2L) {
+			if (this.serverEntry.ping < 0L) {
 				r = 5;
-			} else if (this.field_3061.ping < 150L) {
+			} else if (this.serverEntry.ping < 150L) {
 				r = 0;
-			} else if (this.field_3061.ping < 300L) {
+			} else if (this.serverEntry.ping < 300L) {
 				r = 1;
-			} else if (this.field_3061.ping < 600L) {
+			} else if (this.serverEntry.ping < 600L) {
 				r = 2;
-			} else if (this.field_3061.ping < 1000L) {
+			} else if (this.serverEntry.ping < 1000L) {
 				r = 3;
 			} else {
 				r = 4;
 			}
 
-			if (this.field_3061.ping < 0L) {
+			if (this.serverEntry.ping < 0L) {
 				string3 = I18n.translate("multiplayer.status.no_connection");
 			} else {
-				string3 = this.field_3061.ping + "ms";
-				string2 = this.field_3061.playerListSummary;
+				string3 = this.serverEntry.ping + "ms";
+				string2 = this.serverEntry.playerListSummary;
 			}
 		} else {
 			q = 1;
@@ -125,18 +125,18 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 		}
 
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.method_1531().method_4618(DrawableHelper.field_2053);
+		this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
 		DrawableHelper.drawTexturedRect(n + i - 15, m, (float)(q * 10), (float)(176 + r * 8), 10, 8, 256.0F, 256.0F);
-		if (this.field_3061.getIcon() != null && !this.field_3061.getIcon().equals(this.field_3062)) {
-			this.field_3062 = this.field_3061.getIcon();
+		if (this.serverEntry.getIcon() != null && !this.serverEntry.getIcon().equals(this.field_3062)) {
+			this.field_3062 = this.serverEntry.getIcon();
 			this.method_2554();
 			this.guiMultiplayer.method_2529().saveFile();
 		}
 
-		if (this.field_3063 != null) {
-			this.method_2557(n, m, this.field_3065);
+		if (this.serverIconTexture != null) {
+			this.drawIcon(n, m, this.serverIconTextureId);
 		} else {
-			this.method_2557(n, m, field_3060);
+			this.drawIcon(n, m, UNKNOWN_SERVER);
 		}
 
 		int s = k - n;
@@ -147,8 +147,8 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 			this.guiMultiplayer.method_2528(string2);
 		}
 
-		if (this.client.field_1690.touchscreen || bl) {
-			this.client.method_1531().method_4618(field_3059);
+		if (this.client.options.touchscreen || bl) {
+			this.client.getTextureManager().bindTexture(SERVER_SELECTION);
 			DrawableHelper.drawRect(n, m, n + 32, m + 32, -1601138544);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int u = k - n;
@@ -179,8 +179,8 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 		}
 	}
 
-	protected void method_2557(int i, int j, Identifier identifier) {
-		this.client.method_1531().method_4618(identifier);
+	protected void drawIcon(int i, int j, Identifier identifier) {
+		this.client.getTextureManager().bindTexture(identifier);
 		GlStateManager.enableBlend();
 		DrawableHelper.drawTexturedRect(i, j, 0.0F, 0.0F, 32, 32, 32.0F, 32.0F);
 		GlStateManager.disableBlend();
@@ -191,30 +191,30 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 	}
 
 	private void method_2554() {
-		String string = this.field_3061.getIcon();
+		String string = this.serverEntry.getIcon();
 		if (string == null) {
-			this.client.method_1531().method_4615(this.field_3065);
-			if (this.field_3063 != null && this.field_3063.getImage() != null) {
-				this.field_3063.getImage().close();
+			this.client.getTextureManager().destroyTexture(this.serverIconTextureId);
+			if (this.serverIconTexture != null && this.serverIconTexture.getImage() != null) {
+				this.serverIconTexture.getImage().close();
 			}
 
-			this.field_3063 = null;
+			this.serverIconTexture = null;
 		} else {
 			try {
 				NativeImage nativeImage = NativeImage.fromBase64(string);
 				Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
 				Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
-				if (this.field_3063 == null) {
-					this.field_3063 = new NativeImageBackedTexture(nativeImage);
+				if (this.serverIconTexture == null) {
+					this.serverIconTexture = new NativeImageBackedTexture(nativeImage);
 				} else {
-					this.field_3063.setImage(nativeImage);
-					this.field_3063.upload();
+					this.serverIconTexture.setImage(nativeImage);
+					this.serverIconTexture.upload();
 				}
 
-				this.client.method_1531().method_4616(this.field_3065, this.field_3063);
+				this.client.getTextureManager().registerTexture(this.serverIconTextureId, this.serverIconTexture);
 			} catch (Throwable var3) {
-				LOGGER.error("Invalid icon for server {} ({})", this.field_3061.name, this.field_3061.address, var3);
-				this.field_3061.setIcon(null);
+				LOGGER.error("Invalid icon for server {} ({})", this.serverEntry.name, this.serverEntry.address, var3);
+				this.serverEntry.setIcon(null);
 			}
 		}
 	}
@@ -250,7 +250,7 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 		return false;
 	}
 
-	public ServerEntry method_2556() {
-		return this.field_3061;
+	public ServerEntry getServerEntry() {
+		return this.serverEntry;
 	}
 }

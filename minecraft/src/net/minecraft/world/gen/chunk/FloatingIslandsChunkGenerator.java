@@ -5,11 +5,11 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.source.BiomeSource;
 
 public class FloatingIslandsChunkGenerator extends SurfaceChunkGenerator<FloatingIslandsChunkGeneratorConfig> {
-	private final BlockPos field_13268;
+	private final BlockPos center;
 
 	public FloatingIslandsChunkGenerator(IWorld iWorld, BiomeSource biomeSource, FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig) {
 		super(iWorld, biomeSource, 8, 4, 128, floatingIslandsChunkGeneratorConfig, true);
-		this.field_13268 = floatingIslandsChunkGeneratorConfig.method_12652();
+		this.center = floatingIslandsChunkGeneratorConfig.getCenter();
 	}
 
 	@Override

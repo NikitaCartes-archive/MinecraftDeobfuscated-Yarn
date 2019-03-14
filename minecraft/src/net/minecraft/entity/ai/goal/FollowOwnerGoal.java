@@ -1,12 +1,12 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.class_1407;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.pathing.EntityMobNavigation;
+import net.minecraft.entity.ai.pathing.BirdNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -18,7 +18,7 @@ import net.minecraft.world.ViewableWorld;
 public class FollowOwnerGoal extends Goal {
 	private final TameableEntity caller;
 	private LivingEntity owner;
-	protected final ViewableWorld field_6445;
+	protected final ViewableWorld world;
 	private final double field_6442;
 	private final EntityNavigation field_6446;
 	private int field_6443;
@@ -28,13 +28,13 @@ public class FollowOwnerGoal extends Goal {
 
 	public FollowOwnerGoal(TameableEntity tameableEntity, double d, float f, float g) {
 		this.caller = tameableEntity;
-		this.field_6445 = tameableEntity.field_6002;
+		this.world = tameableEntity.world;
 		this.field_6442 = d;
-		this.field_6446 = tameableEntity.method_5942();
+		this.field_6446 = tameableEntity.getNavigation();
 		this.minDistance = f;
 		this.field_6450 = g;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
-		if (!(tameableEntity.method_5942() instanceof EntityMobNavigation) && !(tameableEntity.method_5942() instanceof class_1407)) {
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		if (!(tameableEntity.getNavigation() instanceof MobNavigation) && !(tameableEntity.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
 		}
 	}
@@ -64,20 +64,20 @@ public class FollowOwnerGoal extends Goal {
 	@Override
 	public void start() {
 		this.field_6443 = 0;
-		this.field_6447 = this.caller.method_5944(PathNodeType.field_18);
-		this.caller.method_5941(PathNodeType.field_18, 0.0F);
+		this.field_6447 = this.caller.getPathNodeTypeWeight(PathNodeType.field_18);
+		this.caller.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
 	}
 
 	@Override
 	public void onRemove() {
 		this.owner = null;
 		this.field_6446.stop();
-		this.caller.method_5941(PathNodeType.field_18, this.field_6447);
+		this.caller.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6447);
 	}
 
 	@Override
 	public void tick() {
-		this.caller.method_5988().lookAt(this.owner, 10.0F, (float)this.caller.method_5978());
+		this.caller.getLookControl().lookAt(this.owner, 10.0F, (float)this.caller.method_5978());
 		if (!this.caller.isSitting()) {
 			if (--this.field_6443 <= 0) {
 				this.field_6443 = 10;
@@ -86,7 +86,7 @@ public class FollowOwnerGoal extends Goal {
 						if (!(this.caller.squaredDistanceTo(this.owner) < 144.0)) {
 							int i = MathHelper.floor(this.owner.x) - 2;
 							int j = MathHelper.floor(this.owner.z) - 2;
-							int k = MathHelper.floor(this.owner.method_5829().minY);
+							int k = MathHelper.floor(this.owner.getBoundingBox().minY);
 
 							for (int l = 0; l <= 4; l++) {
 								for (int m = 0; m <= 4; m++) {
@@ -106,10 +106,10 @@ public class FollowOwnerGoal extends Goal {
 
 	protected boolean method_6263(int i, int j, int k, int l, int m) {
 		BlockPos blockPos = new BlockPos(i + l, k - 1, j + m);
-		BlockState blockState = this.field_6445.method_8320(blockPos);
-		return Block.method_9501(blockState.method_11628(this.field_6445, blockPos), Direction.DOWN)
+		BlockState blockState = this.world.getBlockState(blockPos);
+		return Block.isFaceFullSquare(blockState.getCollisionShape(this.world, blockPos), Direction.DOWN)
 			&& blockState.allowsSpawning(this.caller)
-			&& this.field_6445.method_8623(blockPos.up())
-			&& this.field_6445.method_8623(blockPos.up(2));
+			&& this.world.isAir(blockPos.up())
+			&& this.world.isAir(blockPos.up(2));
 	}
 }

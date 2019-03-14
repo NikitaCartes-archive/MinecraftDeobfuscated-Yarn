@@ -31,7 +31,7 @@ public enum Direction implements StringRepresentable {
 	private final String name;
 	private final Direction.Axis axis;
 	private final Direction.AxisDirection direction;
-	private final Vec3i field_11042;
+	private final Vec3i vector;
 	private static final Direction[] ALL = values();
 	private static final Map<String, Direction> NAME_MAP = (Map<String, Direction>)Arrays.stream(ALL)
 		.collect(Collectors.toMap(Direction::getName, direction -> direction));
@@ -43,7 +43,7 @@ public enum Direction implements StringRepresentable {
 		.sorted(Comparator.comparingInt(direction -> direction.idHorizontal))
 		.toArray(Direction[]::new);
 	private static final Long2ObjectMap<Direction> VECTOR_TO_DIRECTION = (Long2ObjectMap<Direction>)Arrays.stream(ALL)
-		.collect(Collectors.toMap(direction -> new BlockPos(direction.method_10163()).asLong(), direction -> direction, (direction, direction2) -> {
+		.collect(Collectors.toMap(direction -> new BlockPos(direction.getVector()).asLong(), direction -> direction, (direction, direction2) -> {
 			throw new IllegalArgumentException("Duplicate keys");
 		}, Long2ObjectOpenHashMap::new));
 
@@ -54,7 +54,7 @@ public enum Direction implements StringRepresentable {
 		this.name = string2;
 		this.axis = axis;
 		this.direction = axisDirection;
-		this.field_11042 = vec3i;
+		this.vector = vec3i;
 	}
 
 	public static Direction[] getEntityFacingOrder(Entity entity) {
@@ -271,7 +271,7 @@ public enum Direction implements StringRepresentable {
 		float i = Float.MIN_VALUE;
 
 		for (Direction direction2 : ALL) {
-			float j = f * (float)direction2.field_11042.getX() + g * (float)direction2.field_11042.getY() + h * (float)direction2.field_11042.getZ();
+			float j = f * (float)direction2.vector.getX() + g * (float)direction2.vector.getY() + h * (float)direction2.vector.getZ();
 			if (j > i) {
 				i = j;
 				direction = direction2;
@@ -300,8 +300,8 @@ public enum Direction implements StringRepresentable {
 		throw new IllegalArgumentException("No such direction: " + axisDirection + " " + axis);
 	}
 
-	public Vec3i method_10163() {
-		return this.field_11042;
+	public Vec3i getVector() {
+		return this.vector;
 	}
 
 	public static enum Axis implements Predicate<Direction>, StringRepresentable {

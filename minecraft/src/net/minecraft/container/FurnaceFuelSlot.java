@@ -13,16 +13,16 @@ public class FurnaceFuelSlot extends Slot {
 	}
 
 	@Override
-	public boolean method_7680(ItemStack itemStack) {
-		return this.container.method_16945(itemStack) || method_7636(itemStack);
+	public boolean canInsert(ItemStack itemStack) {
+		return this.container.isFuel(itemStack) || isBucket(itemStack);
 	}
 
 	@Override
-	public int method_7676(ItemStack itemStack) {
-		return method_7636(itemStack) ? 1 : super.method_7676(itemStack);
+	public int getMaxStackAmount(ItemStack itemStack) {
+		return isBucket(itemStack) ? 1 : super.getMaxStackAmount(itemStack);
 	}
 
-	public static boolean method_7636(ItemStack itemStack) {
+	public static boolean isBucket(ItemStack itemStack) {
 		return itemStack.getItem() == Items.field_8550;
 	}
 }

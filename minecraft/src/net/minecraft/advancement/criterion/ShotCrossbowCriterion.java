@@ -17,12 +17,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Conditions> {
-	private static final Identifier field_9743 = new Identifier("shot_crossbow");
+	private static final Identifier ID = new Identifier("shot_crossbow");
 	private final Map<PlayerAdvancementTracker, ShotCrossbowCriterion.class_2124> field_9744 = Maps.<PlayerAdvancementTracker, ShotCrossbowCriterion.class_2124>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return field_9743;
+		return ID;
 	}
 
 	@Override
@@ -72,12 +72,12 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 		private final ItemPredicate item;
 
 		public Conditions(ItemPredicate itemPredicate) {
-			super(ShotCrossbowCriterion.field_9743);
+			super(ShotCrossbowCriterion.ID);
 			this.item = itemPredicate;
 		}
 
 		public static ShotCrossbowCriterion.Conditions create(ItemProvider itemProvider) {
-			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().method_8977(itemProvider).build());
+			return new ShotCrossbowCriterion.Conditions(ItemPredicate.Builder.create().item(itemProvider).build());
 		}
 
 		public boolean matches(ItemStack itemStack) {
@@ -116,7 +116,7 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 			List<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer : this.field_9745) {
-				if (conditionsContainer.method_797().matches(itemStack)) {
+				if (conditionsContainer.getConditions().matches(itemStack)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>>newArrayList();
 					}

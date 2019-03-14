@@ -56,7 +56,7 @@ public class StateFactory<O, S extends PropertyContainer<S>> {
 		return this.states;
 	}
 
-	public S method_11664() {
+	public S getDefaultState() {
 		return (S)this.states.get(0);
 	}
 
@@ -76,7 +76,7 @@ public class StateFactory<O, S extends PropertyContainer<S>> {
 	}
 
 	@Nullable
-	public Property<?> method_11663(String string) {
+	public Property<?> getProperty(String string) {
 		return this.propertyMap.get(string);
 	}
 
@@ -88,16 +88,16 @@ public class StateFactory<O, S extends PropertyContainer<S>> {
 			this.baseObject = object;
 		}
 
-		public StateFactory.Builder<O, S> method_11667(Property<?>... propertys) {
+		public StateFactory.Builder<O, S> with(Property<?>... propertys) {
 			for (Property<?> property : propertys) {
-				this.method_11669(property);
+				this.validate(property);
 				this.propertyMap.put(property.getName(), property);
 			}
 
 			return this;
 		}
 
-		private <T extends Comparable<T>> void method_11669(Property<T> property) {
+		private <T extends Comparable<T>> void validate(Property<T> property) {
 			String string = property.getName();
 			if (!StateFactory.NAME_MATCHER.matcher(string).matches()) {
 				throw new IllegalArgumentException(this.baseObject + " has invalidly named property: " + string);
@@ -120,7 +120,7 @@ public class StateFactory<O, S extends PropertyContainer<S>> {
 			}
 		}
 
-		public <A extends AbstractPropertyContainer<O, S>> StateFactory<O, S> method_11668(StateFactory.Factory<O, S, A> factory) {
+		public <A extends AbstractPropertyContainer<O, S>> StateFactory<O, S> build(StateFactory.Factory<O, S, A> factory) {
 			return new StateFactory<>(this.baseObject, factory, this.propertyMap);
 		}
 	}

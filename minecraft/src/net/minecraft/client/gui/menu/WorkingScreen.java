@@ -51,7 +51,7 @@ public class WorkingScreen extends Screen implements ProgressListener {
 	public void draw(int i, int j, float f) {
 		if (this.done) {
 			if (!this.client.isConnectedToRealms()) {
-				this.client.method_1507(null);
+				this.client.openScreen(null);
 			}
 		} else {
 			this.drawBackground();

@@ -107,13 +107,13 @@ public class Trades {
 								1,
 								30,
 								ImmutableMap.<VillagerType, Item>builder()
-									.put(VillagerType.field_17073, Items.field_8533)
-									.put(VillagerType.field_17077, Items.field_8486)
-									.put(VillagerType.field_17075, Items.field_8486)
-									.put(VillagerType.field_17071, Items.field_8730)
-									.put(VillagerType.field_17072, Items.field_8730)
-									.put(VillagerType.field_17074, Items.field_8094)
-									.put(VillagerType.field_17076, Items.field_8138)
+									.put(VillagerType.PLAINS, Items.field_8533)
+									.put(VillagerType.TAIGA, Items.field_8486)
+									.put(VillagerType.SNOW, Items.field_8486)
+									.put(VillagerType.DESERT, Items.field_8730)
+									.put(VillagerType.JUNGLE, Items.field_8730)
+									.put(VillagerType.SAVANNA, Items.field_8094)
+									.put(VillagerType.SWAMP, Items.field_8138)
 									.build()
 							)
 						}
@@ -600,7 +600,7 @@ public class Trades {
 		}
 
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
+		public TraderRecipe create(Entity entity, Random random) {
 			Enchantment enchantment = Registry.ENCHANTMENT.getRandom(random);
 			int i = MathHelper.nextInt(random, enchantment.getMinimumLevel(), enchantment.getMaximumLevel());
 			ItemStack itemStack = EnchantedBookItem.method_7808(new InfoEnchantment(enchantment, i));
@@ -619,7 +619,7 @@ public class Trades {
 
 	public interface Factory {
 		@Nullable
-		TraderRecipe method_7246(Entity entity, Random random);
+		TraderRecipe create(Entity entity, Random random);
 	}
 
 	static class SellMapFactory implements Trades.Factory {
@@ -639,14 +639,14 @@ public class Trades {
 
 		@Nullable
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
-			World world = entity.field_6002;
-			BlockPos blockPos = world.method_8487(this.structure, new BlockPos(entity), 100, true);
+		public TraderRecipe create(Entity entity, Random random) {
+			World world = entity.world;
+			BlockPos blockPos = world.locateStructure(this.structure, new BlockPos(entity), 100, true);
 			if (blockPos != null) {
 				ItemStack itemStack = FilledMapItem.method_8005(world, blockPos.getX(), blockPos.getZ(), (byte)2, true, true);
 				FilledMapItem.method_8002(world, itemStack);
 				MapState.method_110(itemStack, blockPos, "+", this.field_7473);
-				itemStack.method_7977(new TranslatableTextComponent("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
+				itemStack.setDisplayName(new TranslatableTextComponent("filled_map." + this.structure.toLowerCase(Locale.ROOT)));
 				return new TraderRecipe(
 					new ItemStack(Items.field_8687, this.field_18589), new ItemStack(Items.field_8251), itemStack, this.field_18590, this.field_18591, 0.2F
 				);
@@ -674,7 +674,7 @@ public class Trades {
 		}
 
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
+		public TraderRecipe create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.field_8687, this.field_18545);
 			ItemStack itemStack2 = new ItemStack(this.field_18544);
 			if (this.field_18544 instanceof DyeableArmorItem) {
@@ -715,7 +715,7 @@ public class Trades {
 		}
 
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
+		public TraderRecipe create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(this.field_18548, this.field_18549);
 			return new TraderRecipe(itemStack, new ItemStack(Items.field_8687), this.field_18550, this.field_18551, this.field_18552);
 		}
@@ -729,7 +729,7 @@ public class Trades {
 
 		public class_4162(int i, int j, int k, Map<VillagerType, Item> map) {
 			Registry.VILLAGER_TYPE.stream().filter(villagerType -> !map.containsKey(villagerType)).findAny().ifPresent(villagerType -> {
-				throw new IllegalStateException("Missing trade for villager type: " + Registry.VILLAGER_TYPE.method_10221(villagerType));
+				throw new IllegalStateException("Missing trade for villager type: " + Registry.VILLAGER_TYPE.getId(villagerType));
 			});
 			this.field_18553 = map;
 			this.field_18554 = i;
@@ -739,9 +739,9 @@ public class Trades {
 
 		@Nullable
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
+		public TraderRecipe create(Entity entity, Random random) {
 			if (entity instanceof VillagerDataContainer) {
-				ItemStack itemStack = new ItemStack((ItemProvider)this.field_18553.get(((VillagerDataContainer)entity).getVillagerData().method_16919()), this.field_18554);
+				ItemStack itemStack = new ItemStack((ItemProvider)this.field_18553.get(((VillagerDataContainer)entity).getVillagerData().getType()), this.field_18554);
 				return new TraderRecipe(itemStack, new ItemStack(Items.field_8687), this.field_18555, this.field_18556, 0.05F);
 			} else {
 				return null;
@@ -769,7 +769,7 @@ public class Trades {
 		}
 
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
+		public TraderRecipe create(Entity entity, Random random) {
 			int i = 5 + random.nextInt(15);
 			ItemStack itemStack = EnchantmentHelper.enchant(random, new ItemStack(this.field_18558.getItem()), i, false);
 			int j = Math.min(this.field_18559 + i, 64);
@@ -805,7 +805,7 @@ public class Trades {
 
 		@Nullable
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
+		public TraderRecipe create(Entity entity, Random random) {
 			return new TraderRecipe(
 				new ItemStack(Items.field_8687, this.field_18565),
 				new ItemStack(this.field_18563.getItem(), this.field_18564),
@@ -851,7 +851,7 @@ public class Trades {
 		}
 
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
+		public TraderRecipe create(Entity entity, Random random) {
 			return new TraderRecipe(
 				new ItemStack(Items.field_8687, this.field_18572),
 				new ItemStack(this.field_18571.getItem(), this.field_18573),
@@ -877,7 +877,7 @@ public class Trades {
 
 		@Nullable
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
+		public TraderRecipe create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.field_8766, 1);
 			SuspiciousStewItem.addEffectToStew(itemStack, this.field_18577, this.field_18578);
 			return new TraderRecipe(new ItemStack(Items.field_8687, 1), itemStack, 4, this.field_18579, this.field_18580);
@@ -906,7 +906,7 @@ public class Trades {
 		}
 
 		@Override
-		public TraderRecipe method_7246(Entity entity, Random random) {
+		public TraderRecipe create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.field_8687, this.field_18583);
 			List<Potion> list = (List<Potion>)Registry.POTION.stream().filter(potionx -> !potionx.getEffects().isEmpty()).collect(Collectors.toList());
 			Potion potion = (Potion)list.get(random.nextInt(list.size()));

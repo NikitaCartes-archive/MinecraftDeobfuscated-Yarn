@@ -19,86 +19,84 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class NoteBlock extends Block {
-	public static final EnumProperty<Instrument> field_11325 = Properties.field_12499;
-	public static final BooleanProperty field_11326 = Properties.field_12484;
-	public static final IntegerProperty field_11324 = Properties.field_12524;
+	public static final EnumProperty<Instrument> INSTRUMENT = Properties.INSTRUMENT;
+	public static final BooleanProperty POWERED = Properties.POWERED;
+	public static final IntegerProperty NOTE = Properties.NOTE;
 
 	public NoteBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_11325, Instrument.field_12648)
-				.method_11657(field_11324, Integer.valueOf(0))
-				.method_11657(field_11326, Boolean.valueOf(false))
+		this.setDefaultState(
+			this.stateFactory.getDefaultState().with(INSTRUMENT, Instrument.field_12648).with(NOTE, Integer.valueOf(0)).with(POWERED, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		return this.method_9564()
-			.method_11657(field_11325, Instrument.fromBlockState(itemPlacementContext.method_8045().method_8320(itemPlacementContext.method_8037().down())));
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState()
+			.with(INSTRUMENT, Instrument.fromBlockState(itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().down())));
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		return direction == Direction.DOWN
-			? blockState.method_11657(field_11325, Instrument.fromBlockState(blockState2))
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			? blockState.with(INSTRUMENT, Instrument.fromBlockState(blockState2))
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		boolean bl = world.method_8479(blockPos);
-		if (bl != (Boolean)blockState.method_11654(field_11326)) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+		boolean bl = world.isReceivingRedstonePower(blockPos);
+		if (bl != (Boolean)blockState.get(POWERED)) {
 			if (bl) {
-				this.method_10367(world, blockPos);
+				this.playNote(world, blockPos);
 			}
 
-			world.method_8652(blockPos, blockState.method_11657(field_11326, Boolean.valueOf(bl)), 3);
+			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl)), 3);
 		}
 	}
 
-	private void method_10367(World world, BlockPos blockPos) {
-		if (world.method_8320(blockPos.up()).isAir()) {
-			world.method_8427(blockPos, this, 0, 0);
+	private void playNote(World world, BlockPos blockPos) {
+		if (world.getBlockState(blockPos.up()).isAir()) {
+			world.addBlockAction(blockPos, this, 0, 0);
 		}
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
-			blockState = blockState.method_11572(field_11324);
-			world.method_8652(blockPos, blockState, 3);
-			this.method_10367(world, blockPos);
-			playerEntity.method_7281(Stats.field_15393);
+			blockState = blockState.method_11572(NOTE);
+			world.setBlockState(blockPos, blockState, 3);
+			this.playNote(world, blockPos);
+			playerEntity.increaseStat(Stats.field_15393);
 			return true;
 		}
 	}
 
 	@Override
-	public void method_9606(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
+	public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		if (!world.isClient) {
-			this.method_10367(world, blockPos);
-			playerEntity.method_7281(Stats.field_15385);
+			this.playNote(world, blockPos);
+			playerEntity.increaseStat(Stats.field_15385);
 		}
 	}
 
 	@Override
-	public boolean method_9592(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
-		int k = (Integer)blockState.method_11654(field_11324);
+	public boolean onBlockAction(BlockState blockState, World world, BlockPos blockPos, int i, int j) {
+		int k = (Integer)blockState.get(NOTE);
 		float f = (float)Math.pow(2.0, (double)(k - 12) / 12.0);
-		world.method_8396(null, blockPos, ((Instrument)blockState.method_11654(field_11325)).method_11886(), SoundCategory.field_15247, 3.0F, f);
-		world.method_8406(
+		world.playSound(null, blockPos, ((Instrument)blockState.get(INSTRUMENT)).getSound(), SoundCategory.field_15247, 3.0F, f);
+		world.addParticle(
 			ParticleTypes.field_11224, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.2, (double)blockPos.getZ() + 0.5, (double)k / 24.0, 0.0, 0.0
 		);
 		return true;
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_11325, field_11326, field_11324);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(INSTRUMENT, POWERED, NOTE);
 	}
 }

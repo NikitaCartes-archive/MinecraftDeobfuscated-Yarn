@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4186;
-import net.minecraft.class_4187;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.item.ItemStack;
-import net.minecraft.realms.RealmsButton;
+import net.minecraft.realms.RealmsAbstractButton;
 import net.minecraft.realms.RealmsGuiEventListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -143,15 +141,15 @@ public class RealmsScreen extends Screen {
 		return this.listeners.contains(realmsGuiEventListener.getProxy());
 	}
 
-	public void addButton(class_4186<?> arg) {
-		this.addButton(arg.getProxy());
+	public void addButton(RealmsAbstractButton<?> realmsAbstractButton) {
+		this.addButton(realmsAbstractButton.getProxy());
 	}
 
-	public List<class_4186<?>> getButtons() {
-		List<class_4186<?>> list = Lists.<class_4186<?>>newArrayListWithExpectedSize(this.buttons.size());
+	public List<RealmsAbstractButton<?>> getButtons() {
+		List<RealmsAbstractButton<?>> list = Lists.<RealmsAbstractButton<?>>newArrayListWithExpectedSize(this.buttons.size());
 
-		for (ButtonWidget buttonWidget : this.buttons) {
-			list.add(((class_4187)buttonWidget).method_19359());
+		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+			list.add(((RealmsButton)abstractButtonWidget).getRealmsProxy());
 		}
 
 		return list;
@@ -163,7 +161,7 @@ public class RealmsScreen extends Screen {
 		this.buttons.clear();
 	}
 
-	public void removeButton(RealmsButton realmsButton) {
+	public void removeButton(net.minecraft.realms.RealmsButton realmsButton) {
 		this.listeners.remove(realmsButton.getProxy());
 		this.buttons.remove(realmsButton.getProxy());
 	}

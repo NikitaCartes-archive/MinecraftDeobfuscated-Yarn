@@ -24,25 +24,25 @@ public class StructurePool {
 	public static final StructurePool INVALID = new StructurePool(
 		new Identifier("invalid"), new Identifier("invalid"), ImmutableList.of(), StructurePool.Projection.RIGID
 	);
-	private final Identifier field_16678;
+	private final Identifier id;
 	private final ImmutableList<Pair<StructurePoolElement, Integer>> elementCounts;
 	private final List<StructurePoolElement> elements;
-	private final Identifier field_16681;
+	private final Identifier terminatorsId;
 	private final StructurePool.Projection projection;
 	private int field_18707 = Integer.MIN_VALUE;
 
 	public StructurePool(Identifier identifier, Identifier identifier2, List<Pair<StructurePoolElement, Integer>> list, StructurePool.Projection projection) {
-		this.field_16678 = identifier;
+		this.id = identifier;
 		this.elementCounts = ImmutableList.copyOf(list);
 		this.elements = Lists.<StructurePoolElement>newArrayList();
 
 		for (Pair<StructurePoolElement, Integer> pair : list) {
 			for (Integer integer = 0; integer < pair.getSecond(); integer = integer + 1) {
-				this.elements.add(pair.getFirst().method_16622(projection));
+				this.elements.add(pair.getFirst().setProjection(projection));
 			}
 		}
 
-		this.field_16681 = identifier2;
+		this.terminatorsId = identifier2;
 		this.projection = projection;
 	}
 
@@ -50,7 +50,7 @@ public class StructurePool {
 		if (this.field_18707 == Integer.MIN_VALUE) {
 			this.field_18707 = this.elements
 				.stream()
-				.mapToInt(structurePoolElement -> structurePoolElement.method_16628(structureManager, BlockPos.ORIGIN, Rotation.ROT_0).getBlockCountY())
+				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, Rotation.ROT_0).getBlockCountY())
 				.max()
 				.orElse(0);
 		}
@@ -58,8 +58,8 @@ public class StructurePool {
 		return this.field_18707;
 	}
 
-	public Identifier method_16634() {
-		return this.field_16681;
+	public Identifier getTerminatorsId() {
+		return this.terminatorsId;
 	}
 
 	public StructurePoolElement getRandomElement(Random random) {
@@ -70,8 +70,8 @@ public class StructurePool {
 		return ImmutableList.copyOf(ObjectArrays.shuffle(this.elements.toArray(new StructurePoolElement[0]), random));
 	}
 
-	public Identifier method_16629() {
-		return this.field_16678;
+	public Identifier getId() {
+		return this.id;
 	}
 
 	public int getElementCount() {

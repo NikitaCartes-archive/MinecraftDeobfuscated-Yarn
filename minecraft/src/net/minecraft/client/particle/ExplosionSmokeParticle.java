@@ -2,17 +2,16 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class ExplosionSmokeParticle extends SpriteBillboardParticle {
-	private final class_4002 field_17806;
+	private final SpriteProvider field_17806;
 
-	protected ExplosionSmokeParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
+	protected ExplosionSmokeParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
 		super(world, d, e, f);
-		this.field_17806 = arg;
+		this.field_17806 = spriteProvider;
 		this.velocityX = g + (Math.random() * 2.0 - 1.0) * 0.05F;
 		this.velocityY = h + (Math.random() * 2.0 - 1.0) * 0.05F;
 		this.velocityZ = i + (Math.random() * 2.0 - 1.0) * 0.05F;
@@ -22,11 +21,11 @@ public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 		this.colorBlue = j;
 		this.scale = 0.1F * (this.random.nextFloat() * this.random.nextFloat() * 6.0F + 1.0F);
 		this.maxAge = (int)(16.0 / ((double)this.random.nextFloat() * 0.8 + 0.2)) + 2;
-		this.method_18142(arg);
+		this.method_18142(spriteProvider);
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -53,10 +52,10 @@ public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17807;
+		private final SpriteProvider field_17807;
 
-		public Factory(class_4002 arg) {
-			this.field_17807 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17807 = spriteProvider;
 		}
 
 		public Particle method_3023(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

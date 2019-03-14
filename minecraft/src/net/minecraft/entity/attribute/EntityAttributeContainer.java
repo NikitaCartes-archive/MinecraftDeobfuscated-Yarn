@@ -7,7 +7,7 @@ import java.util.Set;
 import net.minecraft.util.LowercaseMap;
 
 public class EntityAttributeContainer extends AbstractEntityAttributeContainer {
-	private final Set<EntityAttributeInstance> field_6342 = Sets.<EntityAttributeInstance>newHashSet();
+	private final Set<EntityAttributeInstance> trackedAttributes = Sets.<EntityAttributeInstance>newHashSet();
 	protected final Map<String, EntityAttributeInstance> instancesByName = new LowercaseMap();
 
 	public EntityAttributeInstanceImpl method_6216(EntityAttribute entityAttribute) {
@@ -39,28 +39,28 @@ public class EntityAttributeContainer extends AbstractEntityAttributeContainer {
 	}
 
 	@Override
-	public void method_6211(EntityAttributeInstance entityAttributeInstance) {
-		if (entityAttributeInstance.getAttribute().method_6168()) {
-			this.field_6342.add(entityAttributeInstance);
+	public void add(EntityAttributeInstance entityAttributeInstance) {
+		if (entityAttributeInstance.getAttribute().isTracked()) {
+			this.trackedAttributes.add(entityAttributeInstance);
 		}
 
-		for (EntityAttribute entityAttribute : this.field_6336.get(entityAttributeInstance.getAttribute())) {
+		for (EntityAttribute entityAttribute : this.attributeHierarchy.get(entityAttributeInstance.getAttribute())) {
 			EntityAttributeInstanceImpl entityAttributeInstanceImpl = this.method_6216(entityAttribute);
 			if (entityAttributeInstanceImpl != null) {
-				entityAttributeInstanceImpl.method_6217();
+				entityAttributeInstanceImpl.invalidateCache();
 			}
 		}
 	}
 
-	public Set<EntityAttributeInstance> method_6215() {
-		return this.field_6342;
+	public Set<EntityAttributeInstance> getTrackedAttributes() {
+		return this.trackedAttributes;
 	}
 
-	public Collection<EntityAttributeInstance> method_6213() {
+	public Collection<EntityAttributeInstance> buildTrackedAttributesCollection() {
 		Set<EntityAttributeInstance> set = Sets.<EntityAttributeInstance>newHashSet();
 
 		for (EntityAttributeInstance entityAttributeInstance : this.values()) {
-			if (entityAttributeInstance.getAttribute().method_6168()) {
+			if (entityAttributeInstance.getAttribute().isTracked()) {
 				set.add(entityAttributeInstance);
 			}
 		}

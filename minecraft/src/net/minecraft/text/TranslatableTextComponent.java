@@ -35,7 +35,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 			if (object instanceof TextComponent) {
 				TextComponent textComponent = ((TextComponent)object).copy();
 				this.params[i] = textComponent;
-				textComponent.method_10866().setParent(this.method_10866());
+				textComponent.getStyle().setParent(this.getStyle());
 			} else if (object == null) {
 				this.params[i] = "null";
 			}
@@ -79,7 +79,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 				int l = matcher.end();
 				if (k > j) {
 					TextComponent textComponent = new StringTextComponent(String.format(string.substring(j, k)));
-					textComponent.method_10866().setParent(this.method_10866());
+					textComponent.getStyle().setParent(this.getStyle());
 					this.field_11877.add(textComponent);
 				}
 
@@ -87,7 +87,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 				String string3 = string.substring(k, l);
 				if ("%".equals(string2) && "%%".equals(string3)) {
 					TextComponent textComponent2 = new StringTextComponent("%");
-					textComponent2.method_10866().setParent(this.method_10866());
+					textComponent2.getStyle().setParent(this.getStyle());
 					this.field_11877.add(textComponent2);
 				} else {
 					if (!"s".equals(string2)) {
@@ -106,7 +106,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 
 			if (j < string.length()) {
 				TextComponent textComponent3 = new StringTextComponent(String.format(string.substring(j)));
-				textComponent3.method_10866().setParent(this.method_10866());
+				textComponent3.getStyle().setParent(this.getStyle());
 				this.field_11877.add(textComponent3);
 			}
 		} catch (IllegalFormatException var11) {
@@ -124,7 +124,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 				textComponent = (TextComponent)object;
 			} else {
 				textComponent = new StringTextComponent(object == null ? "null" : object.toString());
-				textComponent.method_10866().setParent(this.method_10866());
+				textComponent.getStyle().setParent(this.getStyle());
 			}
 
 			return textComponent;
@@ -132,18 +132,18 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 	}
 
 	@Override
-	public TextComponent method_10862(Style style) {
-		super.method_10862(style);
+	public TextComponent setStyle(Style style) {
+		super.setStyle(style);
 
 		for (Object object : this.params) {
 			if (object instanceof TextComponent) {
-				((TextComponent)object).method_10866().setParent(this.method_10866());
+				((TextComponent)object).getStyle().setParent(this.getStyle());
 			}
 		}
 
 		if (this.field_11871 > -1L) {
 			for (TextComponent textComponent : this.field_11877) {
-				textComponent.method_10866().setParent(style);
+				textComponent.getStyle().setParent(style);
 			}
 		}
 
@@ -227,7 +227,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 			+ ", siblings="
 			+ this.children
 			+ ", style="
-			+ this.method_10866()
+			+ this.getStyle()
 			+ '}';
 	}
 

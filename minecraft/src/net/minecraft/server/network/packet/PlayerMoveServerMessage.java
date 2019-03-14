@@ -26,7 +26,7 @@ public class PlayerMoveServerMessage implements Packet<ServerPlayPacketListener>
 	}
 
 	public void method_12272(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12063(this);
+		serverPlayPacketListener.onPlayerMove(this);
 	}
 
 	@Override

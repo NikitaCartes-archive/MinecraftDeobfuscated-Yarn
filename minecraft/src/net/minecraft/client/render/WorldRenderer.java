@@ -19,8 +19,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
-import net.minecraft.class_852;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
@@ -46,6 +44,7 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBatcher;
+import net.minecraft.client.render.chunk.ChunkOcclusionGraphBuilder;
 import net.minecraft.client.render.chunk.ChunkRenderData;
 import net.minecraft.client.render.chunk.ChunkRenderer;
 import net.minecraft.client.render.chunk.ChunkRendererFactory;
@@ -85,6 +84,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -105,20 +105,20 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Identifier field_4098 = new Identifier("textures/environment/moon_phases.png");
-	private static final Identifier field_4111 = new Identifier("textures/environment/sun.png");
-	private static final Identifier field_4108 = new Identifier("textures/environment/clouds.png");
-	private static final Identifier field_4061 = new Identifier("textures/environment/end_sky.png");
-	private static final Identifier field_4071 = new Identifier("textures/misc/forcefield.png");
-	public static final Direction[] field_4095 = Direction.values();
+	private static final Identifier MOON_PHASES_TEX = new Identifier("textures/environment/moon_phases.png");
+	private static final Identifier SUN_TEX = new Identifier("textures/environment/sun.png");
+	private static final Identifier CLOUDS_TEX = new Identifier("textures/environment/clouds.png");
+	private static final Identifier END_SKY_TEX = new Identifier("textures/environment/end_sky.png");
+	private static final Identifier FORCEFIELD_TEX = new Identifier("textures/misc/forcefield.png");
+	public static final Direction[] DIRECTIONS = Direction.values();
 	private final MinecraftClient client;
-	private final TextureManager field_4057;
-	private final EntityRenderDispatcher field_4109;
+	private final TextureManager textureManager;
+	private final EntityRenderDispatcher entityRenderDispatcher;
 	private ClientWorld world;
 	private Set<ChunkRenderer> chunkRenderers = Sets.<ChunkRenderer>newLinkedHashSet();
 	private List<WorldRenderer.class_762> field_4086 = Lists.<WorldRenderer.class_762>newArrayListWithCapacity(69696);
 	private final Set<BlockEntity> field_4055 = Sets.<BlockEntity>newHashSet();
-	private ChunkRenderDispatcher field_4112;
+	private ChunkRenderDispatcher chunkRenderDispatcher;
 	private int starsDisplayList = -1;
 	private int field_4117 = -1;
 	private int field_4067 = -1;
@@ -133,9 +133,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private int ticks;
 	private final Map<Integer, PartiallyBrokenBlockEntry> partiallyBrokenBlocks = Maps.<Integer, PartiallyBrokenBlockEntry>newHashMap();
 	private final Map<BlockPos, SoundInstance> field_4119 = Maps.<BlockPos, SoundInstance>newHashMap();
-	private final Sprite[] field_4068 = new Sprite[10];
+	private final Sprite[] destroyStages = new Sprite[10];
 	private GlFramebuffer entityOutlinesFramebuffer;
-	private ShaderEffect field_4059;
+	private ShaderEffect entityOutlineShader;
 	private double lastCameraChunkUpdateX = Double.MIN_VALUE;
 	private double lastCameraChunkUpdateY = Double.MIN_VALUE;
 	private double lastCameraChunkUpdateZ = Double.MIN_VALUE;
@@ -152,18 +152,18 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private int field_4116 = Integer.MIN_VALUE;
 	private net.minecraft.util.math.Vec3d field_4072 = net.minecraft.util.math.Vec3d.ZERO;
 	private CloudRenderMode field_4080;
-	private ChunkBatcher field_4106;
+	private ChunkBatcher chunkBatcher;
 	private ChunkRendererList chunkRendererList;
 	private int renderDistance = -1;
 	private int field_4076 = 2;
 	private int renderedEntities;
 	private int field_4110;
 	private boolean field_4066;
-	private Frustum field_4056;
+	private Frustum forcedFrustum;
 	private final Vector4f[] field_4065 = new Vector4f[8];
 	private final Vec3d forcedFrustumPosition = new Vec3d();
 	private boolean vertexBufferObjectsEnabled;
-	private ChunkRendererFactory field_4078;
+	private ChunkRendererFactory chunkRendererFactory;
 	private double lastTranslucentSortX;
 	private double lastTranslucentSortY;
 	private double lastTranslucentSortZ;
@@ -172,33 +172,33 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	public WorldRenderer(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
-		this.field_4109 = minecraftClient.method_1561();
-		this.field_4057 = minecraftClient.method_1531();
+		this.entityRenderDispatcher = minecraftClient.getEntityRenderManager();
+		this.textureManager = minecraftClient.getTextureManager();
 		this.vertexBufferObjectsEnabled = GLX.useVbo();
 		if (this.vertexBufferObjectsEnabled) {
 			this.chunkRendererList = new VboChunkRendererList();
-			this.field_4078 = ChunkRenderer::new;
+			this.chunkRendererFactory = ChunkRenderer::new;
 		} else {
 			this.chunkRendererList = new DisplayListChunkRendererList();
-			this.field_4078 = DisplayListChunkRenderer::new;
+			this.chunkRendererFactory = DisplayListChunkRenderer::new;
 		}
 
 		this.field_4100 = new VertexFormat();
-		this.field_4100.method_1361(new VertexFormatElement(0, VertexFormatElement.Format.FLOAT, VertexFormatElement.Type.POSITION, 3));
+		this.field_4100.add(new VertexFormatElement(0, VertexFormatElement.Format.FLOAT, VertexFormatElement.Type.POSITION, 3));
 		this.setupStarRendering();
 		this.method_3277();
 		this.method_3265();
 	}
 
 	public void close() {
-		if (this.field_4059 != null) {
-			this.field_4059.close();
+		if (this.entityOutlineShader != null) {
+			this.entityOutlineShader.close();
 		}
 	}
 
 	@Override
 	public void apply(ResourceManager resourceManager) {
-		this.field_4057.method_4618(field_4071);
+		this.textureManager.bindTexture(FORCEFIELD_TEX);
 		GlStateManager.texParameter(3553, 10242, 10497);
 		GlStateManager.texParameter(3553, 10243, 10497);
 		GlStateManager.bindTexture(0);
@@ -207,17 +207,17 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private void loadDestroyStageTextures() {
-		SpriteAtlasTexture spriteAtlasTexture = this.client.method_1549();
-		this.field_4068[0] = spriteAtlasTexture.method_4608(ModelLoader.field_5377);
-		this.field_4068[1] = spriteAtlasTexture.method_4608(ModelLoader.field_5385);
-		this.field_4068[2] = spriteAtlasTexture.method_4608(ModelLoader.field_5375);
-		this.field_4068[3] = spriteAtlasTexture.method_4608(ModelLoader.field_5403);
-		this.field_4068[4] = spriteAtlasTexture.method_4608(ModelLoader.field_5393);
-		this.field_4068[5] = spriteAtlasTexture.method_4608(ModelLoader.field_5386);
-		this.field_4068[6] = spriteAtlasTexture.method_4608(ModelLoader.field_5369);
-		this.field_4068[7] = spriteAtlasTexture.method_4608(ModelLoader.field_5401);
-		this.field_4068[8] = spriteAtlasTexture.method_4608(ModelLoader.field_5392);
-		this.field_4068[9] = spriteAtlasTexture.method_4608(ModelLoader.field_5382);
+		SpriteAtlasTexture spriteAtlasTexture = this.client.getSpriteAtlas();
+		this.destroyStages[0] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_0);
+		this.destroyStages[1] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_1);
+		this.destroyStages[2] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_2);
+		this.destroyStages[3] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_3);
+		this.destroyStages[4] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_4);
+		this.destroyStages[5] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_5);
+		this.destroyStages[6] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_6);
+		this.destroyStages[7] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_7);
+		this.destroyStages[8] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_8);
+		this.destroyStages[9] = spriteAtlasTexture.getSprite(ModelLoader.DESTROY_STAGE_9);
 	}
 
 	public void loadEntityOutlineShader() {
@@ -229,20 +229,20 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			Identifier identifier = new Identifier("shaders/post/entity_outline.json");
 
 			try {
-				this.field_4059 = new ShaderEffect(this.client.method_1531(), this.client.method_1478(), this.client.getFramebuffer(), identifier);
-				this.field_4059.setupDimensions(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
-				this.entityOutlinesFramebuffer = this.field_4059.getSecondaryTarget("final");
+				this.entityOutlineShader = new ShaderEffect(this.client.getTextureManager(), this.client.getResourceManager(), this.client.getFramebuffer(), identifier);
+				this.entityOutlineShader.setupDimensions(this.client.window.getFramebufferWidth(), this.client.window.getFramebufferHeight());
+				this.entityOutlinesFramebuffer = this.entityOutlineShader.getSecondaryTarget("final");
 			} catch (IOException var3) {
 				LOGGER.warn("Failed to load shader: {}", identifier, var3);
-				this.field_4059 = null;
+				this.entityOutlineShader = null;
 				this.entityOutlinesFramebuffer = null;
 			} catch (JsonSyntaxException var4) {
 				LOGGER.warn("Failed to load shader: {}", identifier, var4);
-				this.field_4059 = null;
+				this.entityOutlineShader = null;
 				this.entityOutlinesFramebuffer = null;
 			}
 		} else {
-			this.field_4059 = null;
+			this.entityOutlineShader = null;
 			this.entityOutlinesFramebuffer = null;
 		}
 	}
@@ -259,7 +259,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	protected boolean canDrawEntityOutlines() {
-		return this.entityOutlinesFramebuffer != null && this.field_4059 != null && this.client.field_1724 != null;
+		return this.entityOutlinesFramebuffer != null && this.entityOutlineShader != null && this.client.player != null;
 	}
 
 	private void method_3265() {
@@ -319,7 +319,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	private void method_3283(BufferBuilder bufferBuilder, float f, boolean bl) {
 		int i = 64;
 		int j = 6;
-		bufferBuilder.method_1328(7, VertexFormats.field_1592);
+		bufferBuilder.begin(7, VertexFormats.POSITION);
 
 		for (int k = -384; k <= 384; k += 64) {
 			for (int l = -384; l <= 384; l += 64) {
@@ -369,7 +369,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	private void renderStars(BufferBuilder bufferBuilder) {
 		Random random = new Random(10842L);
-		bufferBuilder.method_1328(7, VertexFormats.field_1592);
+		bufferBuilder.begin(7, VertexFormats.POSITION);
 
 		for (int i = 0; i < 1500; i++) {
 			double d = (double)(random.nextFloat() * 2.0F - 1.0F);
@@ -419,45 +419,45 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		this.cameraChunkX = Integer.MIN_VALUE;
 		this.cameraChunkY = Integer.MIN_VALUE;
 		this.cameraChunkZ = Integer.MIN_VALUE;
-		this.field_4109.method_3944(clientWorld);
+		this.entityRenderDispatcher.method_3944(clientWorld);
 		this.world = clientWorld;
 		if (clientWorld != null) {
 			this.reload();
 		} else {
 			this.chunkRenderers.clear();
 			this.field_4086.clear();
-			if (this.field_4112 != null) {
-				this.field_4112.delete();
-				this.field_4112 = null;
+			if (this.chunkRenderDispatcher != null) {
+				this.chunkRenderDispatcher.delete();
+				this.chunkRenderDispatcher = null;
 			}
 
-			if (this.field_4106 != null) {
-				this.field_4106.method_3619();
+			if (this.chunkBatcher != null) {
+				this.chunkBatcher.method_3619();
 			}
 
-			this.field_4106 = null;
+			this.chunkBatcher = null;
 			this.field_4055.clear();
 		}
 	}
 
 	public void reload() {
 		if (this.world != null) {
-			if (this.field_4106 == null) {
-				this.field_4106 = new ChunkBatcher();
+			if (this.chunkBatcher == null) {
+				this.chunkBatcher = new ChunkBatcher();
 			}
 
 			this.terrainUpdateNecessary = true;
 			this.cloudsDirty = true;
-			LeavesBlock.setRenderingMode(this.client.field_1690.fancyGraphics);
-			this.renderDistance = this.client.field_1690.viewDistance;
+			LeavesBlock.setRenderingMode(this.client.options.fancyGraphics);
+			this.renderDistance = this.client.options.viewDistance;
 			boolean bl = this.vertexBufferObjectsEnabled;
 			this.vertexBufferObjectsEnabled = GLX.useVbo();
 			if (bl && !this.vertexBufferObjectsEnabled) {
 				this.chunkRendererList = new DisplayListChunkRendererList();
-				this.field_4078 = DisplayListChunkRenderer::new;
+				this.chunkRendererFactory = DisplayListChunkRenderer::new;
 			} else if (!bl && this.vertexBufferObjectsEnabled) {
 				this.chunkRendererList = new VboChunkRendererList();
-				this.field_4078 = ChunkRenderer::new;
+				this.chunkRendererFactory = ChunkRenderer::new;
 			}
 
 			if (bl != this.vertexBufferObjectsEnabled) {
@@ -466,8 +466,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.method_3265();
 			}
 
-			if (this.field_4112 != null) {
-				this.field_4112.delete();
+			if (this.chunkRenderDispatcher != null) {
+				this.chunkRenderDispatcher.delete();
 			}
 
 			this.method_3280();
@@ -475,11 +475,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.field_4055.clear();
 			}
 
-			this.field_4112 = new ChunkRenderDispatcher(this.world, this.client.field_1690.viewDistance, this, this.field_4078);
+			this.chunkRenderDispatcher = new ChunkRenderDispatcher(this.world, this.client.options.viewDistance, this, this.chunkRendererFactory);
 			if (this.world != null) {
 				Entity entity = this.client.getCameraEntity();
 				if (entity != null) {
-					this.field_4112.updateCameraPosition(entity.x, entity.z);
+					this.chunkRenderDispatcher.updateCameraPosition(entity.x, entity.z);
 				}
 			}
 
@@ -489,53 +489,56 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	protected void method_3280() {
 		this.chunkRenderers.clear();
-		this.field_4106.method_3632();
+		this.chunkBatcher.method_3632();
 	}
 
 	public void onResized(int i, int j) {
 		this.method_3292();
 		if (GLX.usePostProcess) {
-			if (this.field_4059 != null) {
-				this.field_4059.setupDimensions(i, j);
+			if (this.entityOutlineShader != null) {
+				this.entityOutlineShader.setupDimensions(i, j);
 			}
 		}
 	}
 
-	public void method_3271(class_4184 arg, VisibleRegion visibleRegion, float f) {
+	public void renderEntities(Camera camera, VisibleRegion visibleRegion, float f) {
 		if (this.field_4076 > 0) {
 			this.field_4076--;
 		} else {
-			double d = arg.method_19326().x;
-			double e = arg.method_19326().y;
-			double g = arg.method_19326().z;
+			double d = camera.getPos().x;
+			double e = camera.getPos().y;
+			double g = camera.getPos().z;
 			this.world.getProfiler().push("prepare");
-			BlockEntityRenderDispatcher.INSTANCE.method_3549(this.world, this.client.method_1531(), this.client.field_1772, arg, this.client.hitResult);
-			this.field_4109.method_3941(this.world, this.client.field_1772, arg, this.client.targetedEntity, this.client.field_1690);
+			BlockEntityRenderDispatcher.INSTANCE.configure(this.world, this.client.getTextureManager(), this.client.textRenderer, camera, this.client.hitResult);
+			this.entityRenderDispatcher.method_3941(this.world, this.client.textRenderer, camera, this.client.targetedEntity, this.client.options);
 			this.renderedEntities = 0;
 			this.field_4110 = 0;
-			double h = arg.method_19326().x;
-			double i = arg.method_19326().y;
-			double j = arg.method_19326().z;
+			double h = camera.getPos().x;
+			double i = camera.getPos().y;
+			double j = camera.getPos().z;
 			BlockEntityRenderDispatcher.renderOffsetX = h;
 			BlockEntityRenderDispatcher.renderOffsetY = i;
 			BlockEntityRenderDispatcher.renderOffsetZ = j;
-			this.field_4109.setRenderPosition(h, i, j);
-			this.client.field_1773.enableLightmap();
+			this.entityRenderDispatcher.setRenderPosition(h, i, j);
+			this.client.gameRenderer.enableLightmap();
 			this.world.getProfiler().swap("entities");
 			List<Entity> list = Lists.<Entity>newArrayList();
 			List<Entity> list2 = Lists.<Entity>newArrayList();
 
 			for (Entity entity : this.world.getEntities()) {
-				if ((this.field_4109.method_3950(entity, visibleRegion, d, e, g) || entity.method_5821(this.client.field_1724))
-					&& (entity != arg.method_19331() || arg.method_19333() || arg.method_19331() instanceof LivingEntity && ((LivingEntity)arg.method_19331()).isSleeping())) {
+				if ((this.entityRenderDispatcher.method_3950(entity, visibleRegion, d, e, g) || entity.method_5821(this.client.player))
+					&& (
+						entity != camera.getFocusedEntity()
+							|| camera.isThirdPerson()
+							|| camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()
+					)) {
 					this.renderedEntities++;
-					this.field_4109.render(entity, f, false);
-					if (entity.isGlowing()
-						|| entity instanceof PlayerEntity && this.client.field_1724.isSpectator() && this.client.field_1690.keySpectatorOutlines.isPressed()) {
+					this.entityRenderDispatcher.render(entity, f, false);
+					if (entity.isGlowing() || entity instanceof PlayerEntity && this.client.player.isSpectator() && this.client.options.keySpectatorOutlines.isPressed()) {
 						list.add(entity);
 					}
 
-					if (this.field_4109.hasSecondPass(entity)) {
+					if (this.entityRenderDispatcher.hasSecondPass(entity)) {
 						list2.add(entity);
 					}
 				}
@@ -543,7 +546,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 			if (!list2.isEmpty()) {
 				for (Entity entityx : list2) {
-					this.field_4109.renderSecondPass(entityx, f);
+					this.entityRenderDispatcher.renderSecondPass(entityx, f);
 				}
 			}
 
@@ -556,16 +559,16 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					GlStateManager.disableFog();
 					this.entityOutlinesFramebuffer.beginWrite(false);
 					GuiLighting.disable();
-					this.field_4109.setRenderOutlines(true);
+					this.entityRenderDispatcher.setRenderOutlines(true);
 
 					for (int k = 0; k < list.size(); k++) {
-						this.field_4109.render((Entity)list.get(k), f, false);
+						this.entityRenderDispatcher.render((Entity)list.get(k), f, false);
 					}
 
-					this.field_4109.setRenderOutlines(false);
+					this.entityRenderDispatcher.setRenderOutlines(false);
 					GuiLighting.enable();
 					GlStateManager.depthMask(false);
-					this.field_4059.render(f);
+					this.entityOutlineShader.render(f);
 					GlStateManager.enableLighting();
 					GlStateManager.depthMask(true);
 					GlStateManager.enableFog();
@@ -601,12 +604,12 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 			for (PartiallyBrokenBlockEntry partiallyBrokenBlockEntry : this.partiallyBrokenBlocks.values()) {
 				BlockPos blockPos = partiallyBrokenBlockEntry.getPos();
-				BlockState blockState = this.world.method_8320(blockPos);
+				BlockState blockState = this.world.getBlockState(blockPos);
 				if (blockState.getBlock().hasBlockEntity()) {
-					BlockEntity blockEntity = this.world.method_8321(blockPos);
-					if (blockEntity instanceof ChestBlockEntity && blockState.method_11654(ChestBlock.field_10770) == ChestType.field_12574) {
-						blockPos = blockPos.method_10093(((Direction)blockState.method_11654(ChestBlock.field_10768)).rotateYClockwise());
-						blockEntity = this.world.method_8321(blockPos);
+					BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
+					if (blockEntity instanceof ChestBlockEntity && blockState.get(ChestBlock.CHEST_TYPE) == ChestType.field_12574) {
+						blockPos = blockPos.offset(((Direction)blockState.get(ChestBlock.FACING)).rotateYClockwise());
+						blockEntity = this.world.getBlockEntity(blockPos);
 					}
 
 					if (blockEntity != null && blockState.hasBlockEntityBreakingRender()) {
@@ -616,16 +619,21 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			}
 
 			this.method_3274();
-			this.client.field_1773.disableLightmap();
+			this.client.gameRenderer.disableLightmap();
 			this.client.getProfiler().pop();
 		}
 	}
 
 	public String getChunksDebugString() {
-		int i = this.field_4112.field_4150.length;
+		int i = this.chunkRenderDispatcher.renderers.length;
 		int j = this.getChunkNumber();
 		return String.format(
-			"C: %d/%d %sD: %d, %s", j, i, this.client.field_1730 ? "(s) " : "", this.renderDistance, this.field_4106 == null ? "null" : this.field_4106.getDebugString()
+			"C: %d/%d %sD: %d, %s",
+			j,
+			i,
+			this.client.field_1730 ? "(s) " : "",
+			this.renderDistance,
+			this.chunkBatcher == null ? "null" : this.chunkBatcher.getDebugString()
 		);
 	}
 
@@ -646,72 +654,72 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		return "E: " + this.renderedEntities + "/" + this.world.method_18120() + ", B: " + this.field_4110;
 	}
 
-	public void method_3273(class_4184 arg, VisibleRegion visibleRegion, int i, boolean bl) {
-		if (this.client.field_1690.viewDistance != this.renderDistance) {
+	public void setUpTerrain(Camera camera, VisibleRegion visibleRegion, int i, boolean bl) {
+		if (this.client.options.viewDistance != this.renderDistance) {
 			this.reload();
 		}
 
 		this.world.getProfiler().push("camera");
-		double d = this.client.field_1724.x - this.lastCameraChunkUpdateX;
-		double e = this.client.field_1724.y - this.lastCameraChunkUpdateY;
-		double f = this.client.field_1724.z - this.lastCameraChunkUpdateZ;
-		if (this.cameraChunkX != this.client.field_1724.chunkX
-			|| this.cameraChunkY != this.client.field_1724.chunkY
-			|| this.cameraChunkZ != this.client.field_1724.chunkZ
+		double d = this.client.player.x - this.lastCameraChunkUpdateX;
+		double e = this.client.player.y - this.lastCameraChunkUpdateY;
+		double f = this.client.player.z - this.lastCameraChunkUpdateZ;
+		if (this.cameraChunkX != this.client.player.chunkX
+			|| this.cameraChunkY != this.client.player.chunkY
+			|| this.cameraChunkZ != this.client.player.chunkZ
 			|| d * d + e * e + f * f > 16.0) {
-			this.lastCameraChunkUpdateX = this.client.field_1724.x;
-			this.lastCameraChunkUpdateY = this.client.field_1724.y;
-			this.lastCameraChunkUpdateZ = this.client.field_1724.z;
-			this.cameraChunkX = this.client.field_1724.chunkX;
-			this.cameraChunkY = this.client.field_1724.chunkY;
-			this.cameraChunkZ = this.client.field_1724.chunkZ;
-			this.field_4112.updateCameraPosition(this.client.field_1724.x, this.client.field_1724.z);
+			this.lastCameraChunkUpdateX = this.client.player.x;
+			this.lastCameraChunkUpdateY = this.client.player.y;
+			this.lastCameraChunkUpdateZ = this.client.player.z;
+			this.cameraChunkX = this.client.player.chunkX;
+			this.cameraChunkY = this.client.player.chunkY;
+			this.cameraChunkZ = this.client.player.chunkZ;
+			this.chunkRenderDispatcher.updateCameraPosition(this.client.player.x, this.client.player.z);
 		}
 
 		this.world.getProfiler().swap("renderlistcamera");
-		this.chunkRendererList.setCameraPosition(arg.method_19326().x, arg.method_19326().y, arg.method_19326().z);
-		this.field_4106.method_19419(arg.method_19326());
+		this.chunkRendererList.setCameraPosition(camera.getPos().x, camera.getPos().y, camera.getPos().z);
+		this.chunkBatcher.method_19419(camera.getPos());
 		this.world.getProfiler().swap("cull");
-		if (this.field_4056 != null) {
-			FrustumWithOrigin frustumWithOrigin = new FrustumWithOrigin(this.field_4056);
+		if (this.forcedFrustum != null) {
+			FrustumWithOrigin frustumWithOrigin = new FrustumWithOrigin(this.forcedFrustum);
 			frustumWithOrigin.setOrigin(this.forcedFrustumPosition.x, this.forcedFrustumPosition.y, this.forcedFrustumPosition.z);
 			visibleRegion = frustumWithOrigin;
 		}
 
 		this.client.getProfiler().swap("culling");
-		BlockPos blockPos = arg.method_19328();
-		ChunkRenderer chunkRenderer = this.field_4112.method_3323(blockPos);
+		BlockPos blockPos = camera.getBlockPos();
+		ChunkRenderer chunkRenderer = this.chunkRenderDispatcher.getChunk(blockPos);
 		BlockPos blockPos2 = new BlockPos(
-			MathHelper.floor(arg.method_19326().x / 16.0) * 16, MathHelper.floor(arg.method_19326().y / 16.0) * 16, MathHelper.floor(arg.method_19326().z / 16.0) * 16
+			MathHelper.floor(camera.getPos().x / 16.0) * 16, MathHelper.floor(camera.getPos().y / 16.0) * 16, MathHelper.floor(camera.getPos().z / 16.0) * 16
 		);
-		float g = arg.method_19329();
-		float h = arg.method_19330();
+		float g = camera.getPitch();
+		float h = camera.getYaw();
 		this.terrainUpdateNecessary = this.terrainUpdateNecessary
 			|| !this.chunkRenderers.isEmpty()
-			|| arg.method_19326().x != this.lastCameraX
-			|| arg.method_19326().y != this.lastCameraY
-			|| arg.method_19326().z != this.lastCameraZ
+			|| camera.getPos().x != this.lastCameraX
+			|| camera.getPos().y != this.lastCameraY
+			|| camera.getPos().z != this.lastCameraZ
 			|| (double)g != this.lastCameraPitch
 			|| (double)h != this.lastCameraYaw;
-		this.lastCameraX = arg.method_19326().x;
-		this.lastCameraY = arg.method_19326().y;
-		this.lastCameraZ = arg.method_19326().z;
+		this.lastCameraX = camera.getPos().x;
+		this.lastCameraY = camera.getPos().y;
+		this.lastCameraZ = camera.getPos().z;
 		this.lastCameraPitch = (double)g;
 		this.lastCameraYaw = (double)h;
-		boolean bl2 = this.field_4056 != null;
+		boolean bl2 = this.forcedFrustum != null;
 		this.client.getProfiler().swap("update");
 		if (!bl2 && this.terrainUpdateNecessary) {
 			this.terrainUpdateNecessary = false;
 			this.field_4086 = Lists.<WorldRenderer.class_762>newArrayList();
 			Queue<WorldRenderer.class_762> queue = Queues.<WorldRenderer.class_762>newArrayDeque();
-			Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.field_1690.viewDistance / 8.0, 1.0, 2.5));
+			Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5));
 			boolean bl3 = this.client.field_1730;
 			if (chunkRenderer != null) {
 				boolean bl4 = false;
 				WorldRenderer.class_762 lv = new WorldRenderer.class_762(chunkRenderer, null, 0);
 				Set<Direction> set = this.method_3285(blockPos);
 				if (set.size() == 1) {
-					net.minecraft.util.math.Vec3d vec3d = arg.method_19335();
+					net.minecraft.util.math.Vec3d vec3d = camera.method_19335();
 					Direction direction = Direction.getFacing(vec3d.x, vec3d.y, vec3d.z).getOpposite();
 					set.remove(direction);
 				}
@@ -723,7 +731,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				if (bl4 && !bl) {
 					this.field_4086.add(lv);
 				} else {
-					if (bl && this.world.method_8320(blockPos).method_11598(this.world, blockPos)) {
+					if (bl && this.world.getBlockState(blockPos).isFullOpaque(this.world, blockPos)) {
 						bl3 = false;
 					}
 
@@ -735,7 +743,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 				for (int k = -this.renderDistance; k <= this.renderDistance; k++) {
 					for (int l = -this.renderDistance; l <= this.renderDistance; l++) {
-						ChunkRenderer chunkRenderer2 = this.field_4112.method_3323(new BlockPos((k << 4) + 8, j, (l << 4) + 8));
+						ChunkRenderer chunkRenderer2 = this.chunkRenderDispatcher.getChunk(new BlockPos((k << 4) + 8, j, (l << 4) + 8));
 						if (chunkRenderer2 != null && visibleRegion.intersects(chunkRenderer2.boundingBox)) {
 							chunkRenderer2.method_3671(i);
 							queue.add(new WorldRenderer.class_762(chunkRenderer2, null, 0));
@@ -752,7 +760,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				Direction direction2 = lv2.field_4125;
 				this.field_4086.add(lv2);
 
-				for (Direction direction3 : field_4095) {
+				for (Direction direction3 : DIRECTIONS) {
 					ChunkRenderer chunkRenderer4 = this.method_3241(blockPos2, chunkRenderer3, direction3);
 					if ((!bl3 || !lv2.method_3298(direction3.getOpposite()))
 						&& (!bl3 || direction2 == null || chunkRenderer3.getChunkRenderData().method_3650(direction2.getOpposite(), direction3))
@@ -772,7 +780,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.client.getProfiler().swap("captureFrustum");
 		if (this.field_4066) {
-			this.method_3275(arg.method_19326().x, arg.method_19326().y, arg.method_19326().z);
+			this.method_3275(camera.getPos().x, camera.getPos().y, camera.getPos().z);
 			this.field_4066 = false;
 		}
 
@@ -784,13 +792,13 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			ChunkRenderer chunkRenderer3 = lv2.field_4124;
 			if (chunkRenderer3.method_3672() || set2.contains(chunkRenderer3)) {
 				this.terrainUpdateNecessary = true;
-				BlockPos blockPos3 = chunkRenderer3.method_3670().add(8, 8, 8);
+				BlockPos blockPos3 = chunkRenderer3.getOrigin().add(8, 8, 8);
 				boolean bl5 = blockPos3.squaredDistanceTo(blockPos) < 768.0;
 				if (!chunkRenderer3.method_3661() && !bl5) {
 					this.chunkRenderers.add(chunkRenderer3);
 				} else {
 					this.client.getProfiler().push("build near");
-					this.field_4106.method_3627(chunkRenderer3);
+					this.chunkBatcher.method_3627(chunkRenderer3);
 					chunkRenderer3.method_3662();
 					this.client.getProfiler().pop();
 				}
@@ -802,17 +810,17 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private Set<Direction> method_3285(BlockPos blockPos) {
-		class_852 lv = new class_852();
+		ChunkOcclusionGraphBuilder chunkOcclusionGraphBuilder = new ChunkOcclusionGraphBuilder();
 		BlockPos blockPos2 = new BlockPos(blockPos.getX() >> 4 << 4, blockPos.getY() >> 4 << 4, blockPos.getZ() >> 4 << 4);
-		WorldChunk worldChunk = this.world.method_8500(blockPos2);
+		WorldChunk worldChunk = this.world.getWorldChunk(blockPos2);
 
 		for (BlockPos blockPos3 : BlockPos.iterateBoxPositions(blockPos2, blockPos2.add(15, 15, 15))) {
-			if (worldChunk.method_8320(blockPos3).method_11598(this.world, blockPos3)) {
-				lv.method_3682(blockPos3);
+			if (worldChunk.getBlockState(blockPos3).isFullOpaque(this.world, blockPos3)) {
+				chunkOcclusionGraphBuilder.markClosed(blockPos3);
 			}
 		}
 
-		return lv.method_3686(blockPos);
+		return chunkOcclusionGraphBuilder.getOpenFaces(blockPos);
 	}
 
 	@Nullable
@@ -823,29 +831,29 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		} else if (blockPos2.getY() < 0 || blockPos2.getY() >= 256) {
 			return null;
 		} else {
-			return MathHelper.abs(blockPos.getZ() - blockPos2.getZ()) > this.renderDistance * 16 ? null : this.field_4112.method_3323(blockPos2);
+			return MathHelper.abs(blockPos.getZ() - blockPos2.getZ()) > this.renderDistance * 16 ? null : this.chunkRenderDispatcher.getChunk(blockPos2);
 		}
 	}
 
 	private void method_3275(double d, double e, double f) {
 	}
 
-	public int renderLayer(BlockRenderLayer blockRenderLayer, class_4184 arg) {
+	public int renderLayer(BlockRenderLayer blockRenderLayer, Camera camera) {
 		GuiLighting.disable();
 		if (blockRenderLayer == BlockRenderLayer.TRANSLUCENT) {
 			this.client.getProfiler().push("translucent_sort");
-			double d = arg.method_19326().x - this.lastTranslucentSortX;
-			double e = arg.method_19326().y - this.lastTranslucentSortY;
-			double f = arg.method_19326().z - this.lastTranslucentSortZ;
+			double d = camera.getPos().x - this.lastTranslucentSortX;
+			double e = camera.getPos().y - this.lastTranslucentSortY;
+			double f = camera.getPos().z - this.lastTranslucentSortZ;
 			if (d * d + e * e + f * f > 1.0) {
-				this.lastTranslucentSortX = arg.method_19326().x;
-				this.lastTranslucentSortY = arg.method_19326().y;
-				this.lastTranslucentSortZ = arg.method_19326().z;
+				this.lastTranslucentSortX = camera.getPos().x;
+				this.lastTranslucentSortY = camera.getPos().y;
+				this.lastTranslucentSortZ = camera.getPos().z;
 				int i = 0;
 
 				for (WorldRenderer.class_762 lv : this.field_4086) {
 					if (lv.field_4124.chunkRenderData.isBufferInitialized(blockRenderLayer) && i++ < 15) {
-						this.field_4106.method_3620(lv.field_4124);
+						this.chunkBatcher.method_3620(lv.field_4124);
 					}
 				}
 			}
@@ -864,7 +872,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			ChunkRenderer chunkRenderer = ((WorldRenderer.class_762)this.field_4086.get(n)).field_4124;
 			if (!chunkRenderer.getChunkRenderData().method_3641(blockRenderLayer)) {
 				j++;
-				this.chunkRendererList.method_3159(chunkRenderer, blockRenderLayer);
+				this.chunkRendererList.add(chunkRenderer, blockRenderLayer);
 			}
 		}
 
@@ -875,7 +883,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private void renderLayer(BlockRenderLayer blockRenderLayer) {
-		this.client.field_1773.enableLightmap();
+		this.client.gameRenderer.enableLightmap();
 		if (GLX.useVbo()) {
 			GlStateManager.enableClientState(32884);
 			GLX.glClientActiveTexture(GLX.GL_TEXTURE0);
@@ -888,7 +896,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		this.chunkRendererList.render(blockRenderLayer);
 		if (GLX.useVbo()) {
-			for (VertexFormatElement vertexFormatElement : VertexFormats.field_1582.getElements()) {
+			for (VertexFormatElement vertexFormatElement : VertexFormats.POSITION_COLOR_UV_LMAP.getElements()) {
 				VertexFormatElement.Type type = vertexFormatElement.getType();
 				int i = vertexFormatElement.getIndex();
 				switch (type) {
@@ -907,7 +915,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			}
 		}
 
-		this.client.field_1773.disableLightmap();
+		this.client.gameRenderer.disableLightmap();
 	}
 
 	private void method_3290(Iterator<PartiallyBrokenBlockEntry> iterator) {
@@ -936,7 +944,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		);
 		GuiLighting.disable();
 		GlStateManager.depthMask(false);
-		this.field_4057.method_4618(field_4061);
+		this.textureManager.bindTexture(END_SKY_TEX);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 
@@ -962,7 +970,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlStateManager.rotatef(-90.0F, 0.0F, 0.0F, 1.0F);
 			}
 
-			bufferBuilder.method_1328(7, VertexFormats.field_1575);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			bufferBuilder.vertex(-100.0, -100.0, -100.0).texture(0.0, 0.0).color(40, 40, 40, 255).next();
 			bufferBuilder.vertex(-100.0, -100.0, 100.0).texture(0.0, 16.0).color(40, 40, 40, 255).next();
 			bufferBuilder.vertex(100.0, -100.0, 100.0).texture(16.0, 16.0).color(40, 40, 40, 255).next();
@@ -977,11 +985,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public void renderSky(float f) {
-		if (this.client.field_1687.field_9247.method_12460() == DimensionType.field_13078) {
+		if (this.client.world.dimension.getType() == DimensionType.field_13078) {
 			this.renderEndSky();
-		} else if (this.client.field_1687.field_9247.hasVisibleSky()) {
+		} else if (this.client.world.dimension.hasVisibleSky()) {
 			GlStateManager.disableTexture();
-			net.minecraft.util.math.Vec3d vec3d = this.world.method_8548(this.client.field_1773.method_19418().method_19328(), f);
+			net.minecraft.util.math.Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.method_19418().getBlockPos(), f);
 			float g = (float)vec3d.x;
 			float h = (float)vec3d.y;
 			float i = (float)vec3d.z;
@@ -1009,7 +1017,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
 			GuiLighting.disable();
-			float[] fs = this.world.field_9247.getBackgroundColor(this.world.getSkyAngle(f), f);
+			float[] fs = this.world.dimension.getBackgroundColor(this.world.getSkyAngle(f), f);
 			if (fs != null) {
 				GlStateManager.disableTexture();
 				GlStateManager.shadeModel(7425);
@@ -1020,7 +1028,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				float j = fs[0];
 				float k = fs[1];
 				float l = fs[2];
-				bufferBuilder.method_1328(6, VertexFormats.field_1576);
+				bufferBuilder.begin(6, VertexFormats.POSITION_COLOR);
 				bufferBuilder.vertex(0.0, 100.0, 0.0).color(j, k, l, fs[3]).next();
 				int m = 16;
 
@@ -1046,15 +1054,15 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(this.world.getSkyAngle(f) * 360.0F, 1.0F, 0.0F, 0.0F);
 			float k = 30.0F;
-			this.field_4057.method_4618(field_4111);
-			bufferBuilder.method_1328(7, VertexFormats.field_1585);
+			this.textureManager.bindTexture(SUN_TEX);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 			bufferBuilder.vertex((double)(-k), 100.0, (double)(-k)).texture(0.0, 0.0).next();
 			bufferBuilder.vertex((double)k, 100.0, (double)(-k)).texture(1.0, 0.0).next();
 			bufferBuilder.vertex((double)k, 100.0, (double)k).texture(1.0, 1.0).next();
 			bufferBuilder.vertex((double)(-k), 100.0, (double)k).texture(0.0, 1.0).next();
 			tessellator.draw();
 			k = 20.0F;
-			this.field_4057.method_4618(field_4098);
+			this.textureManager.bindTexture(MOON_PHASES_TEX);
 			int r = this.world.getMoonPhase();
 			int m = r % 4;
 			int n = r / 4 % 2;
@@ -1062,7 +1070,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			float p = (float)(n + 0) / 2.0F;
 			float q = (float)(m + 1) / 4.0F;
 			float s = (float)(n + 1) / 2.0F;
-			bufferBuilder.method_1328(7, VertexFormats.field_1585);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 			bufferBuilder.vertex((double)(-k), -100.0, (double)k).texture((double)q, (double)s).next();
 			bufferBuilder.vertex((double)k, -100.0, (double)k).texture((double)o, (double)s).next();
 			bufferBuilder.vertex((double)k, -100.0, (double)(-k)).texture((double)o, (double)p).next();
@@ -1091,7 +1099,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			GlStateManager.popMatrix();
 			GlStateManager.disableTexture();
 			GlStateManager.color3f(0.0F, 0.0F, 0.0F);
-			double d = this.client.field_1724.method_5836(f).y - this.world.getHorizonHeight();
+			double d = this.client.player.getCameraPosVec(f).y - this.world.getHorizonHeight();
 			if (d < 0.0) {
 				GlStateManager.pushMatrix();
 				GlStateManager.translatef(0.0F, 12.0F, 0.0F);
@@ -1109,7 +1117,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlStateManager.popMatrix();
 			}
 
-			if (this.world.field_9247.method_12449()) {
+			if (this.world.dimension.method_12449()) {
 				GlStateManager.color3f(g * 0.2F + 0.04F, h * 0.2F + 0.04F, i * 0.6F + 0.1F);
 			} else {
 				GlStateManager.color3f(g, h, i);
@@ -1125,33 +1133,33 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public void renderClouds(float f, double d, double e, double g) {
-		if (this.client.field_1687.field_9247.hasVisibleSky()) {
+		if (this.client.world.dimension.hasVisibleSky()) {
 			float h = 12.0F;
 			float i = 4.0F;
 			double j = 2.0E-4;
 			double k = (double)(((float)this.ticks + f) * 0.03F);
 			double l = (d + k) / 12.0;
-			double m = (double)(this.world.field_9247.getCloudHeight() - (float)e + 0.33F);
+			double m = (double)(this.world.dimension.getCloudHeight() - (float)e + 0.33F);
 			double n = g / 12.0 + 0.33F;
 			l -= (double)(MathHelper.floor(l / 2048.0) * 2048);
 			n -= (double)(MathHelper.floor(n / 2048.0) * 2048);
 			float o = (float)(l - (double)MathHelper.floor(l));
 			float p = (float)(m / 4.0 - (double)MathHelper.floor(m / 4.0)) * 4.0F;
 			float q = (float)(n - (double)MathHelper.floor(n));
-			net.minecraft.util.math.Vec3d vec3d = this.world.method_8423(f);
+			net.minecraft.util.math.Vec3d vec3d = this.world.getCloudColor(f);
 			int r = (int)Math.floor(l);
 			int s = (int)Math.floor(m / 4.0);
 			int t = (int)Math.floor(n);
 			if (r != this.field_4082
 				|| s != this.field_4097
 				|| t != this.field_4116
-				|| this.client.field_1690.getCloudRenderMode() != this.field_4080
+				|| this.client.options.getCloudRenderMode() != this.field_4080
 				|| this.field_4072.squaredDistanceTo(vec3d) > 2.0E-4) {
 				this.field_4082 = r;
 				this.field_4097 = s;
 				this.field_4116 = t;
 				this.field_4072 = vec3d;
-				this.field_4080 = this.client.field_1690.getCloudRenderMode();
+				this.field_4080 = this.client.options.getCloudRenderMode();
 				this.cloudsDirty = true;
 			}
 
@@ -1169,7 +1177,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				}
 
 				if (this.vertexBufferObjectsEnabled) {
-					this.cloudsBuffer = new GlBuffer(VertexFormats.field_1577);
+					this.cloudsBuffer = new GlBuffer(VertexFormats.POSITION_UV_COLOR_NORMAL);
 					this.renderClouds(bufferBuilder, l, m, n, vec3d);
 					bufferBuilder.end();
 					bufferBuilder.clear();
@@ -1184,7 +1192,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			}
 
 			GlStateManager.disableCull();
-			this.field_4057.method_4618(field_4108);
+			this.textureManager.bindTexture(CLOUDS_TEX);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
@@ -1262,7 +1270,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		float w = n * 0.8F;
 		float x = o * 0.8F;
 		float y = p * 0.8F;
-		bufferBuilder.method_1328(7, VertexFormats.field_1577);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_NORMAL);
 		float z = (float)Math.floor(e / 4.0) * 4.0F;
 		if (this.field_4080 == CloudRenderMode.field_18164) {
 			for (int aa = -3; aa <= 4; aa++) {
@@ -1448,7 +1456,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public void updateChunks(long l) {
-		this.terrainUpdateNecessary = this.terrainUpdateNecessary | this.field_4106.method_3631(l);
+		this.terrainUpdateNecessary = this.terrainUpdateNecessary | this.chunkBatcher.method_3631(l);
 		if (!this.chunkRenderers.isEmpty()) {
 			Iterator<ChunkRenderer> iterator = this.chunkRenderers.iterator();
 
@@ -1456,9 +1464,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				ChunkRenderer chunkRenderer = (ChunkRenderer)iterator.next();
 				boolean bl;
 				if (chunkRenderer.method_3661()) {
-					bl = this.field_4106.method_3627(chunkRenderer);
+					bl = this.chunkBatcher.method_3627(chunkRenderer);
 				} else {
-					bl = this.field_4106.method_3624(chunkRenderer);
+					bl = this.chunkBatcher.method_3624(chunkRenderer);
 				}
 
 				if (!bl) {
@@ -1475,25 +1483,25 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	public void renderWorldBorder(class_4184 arg, float f) {
+	public void renderWorldBorder(Camera camera, float f) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		WorldBorder worldBorder = this.world.method_8621();
-		double d = (double)(this.client.field_1690.viewDistance * 16);
-		if (!(arg.method_19326().x < worldBorder.getBoundEast() - d)
-			|| !(arg.method_19326().x > worldBorder.getBoundWest() + d)
-			|| !(arg.method_19326().z < worldBorder.getBoundSouth() - d)
-			|| !(arg.method_19326().z > worldBorder.getBoundNorth() + d)) {
-			double e = 1.0 - worldBorder.contains(arg.method_19326().x, arg.method_19326().z) / d;
+		WorldBorder worldBorder = this.world.getWorldBorder();
+		double d = (double)(this.client.options.viewDistance * 16);
+		if (!(camera.getPos().x < worldBorder.getBoundEast() - d)
+			|| !(camera.getPos().x > worldBorder.getBoundWest() + d)
+			|| !(camera.getPos().z < worldBorder.getBoundSouth() - d)
+			|| !(camera.getPos().z > worldBorder.getBoundNorth() + d)) {
+			double e = 1.0 - worldBorder.contains(camera.getPos().x, camera.getPos().z) / d;
 			e = Math.pow(e, 4.0);
-			double g = arg.method_19326().x;
-			double h = arg.method_19326().y;
-			double i = arg.method_19326().z;
+			double g = camera.getPos().x;
+			double h = camera.getPos().y;
+			double i = camera.getPos().z;
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
-			this.field_4057.method_4618(field_4071);
+			this.textureManager.bindTexture(FORCEFIELD_TEX);
 			GlStateManager.depthMask(false);
 			GlStateManager.pushMatrix();
 			int j = worldBorder.getStage().getColor();
@@ -1510,7 +1518,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			float o = 0.0F;
 			float p = 0.0F;
 			float q = 128.0F;
-			bufferBuilder.method_1328(7, VertexFormats.field_1585);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 			bufferBuilder.setOffset(-g, -h, -i);
 			double r = Math.max((double)MathHelper.floor(i - d), worldBorder.getBoundNorth());
 			double s = Math.min((double)MathHelper.ceil(i + d), worldBorder.getBoundSouth());
@@ -1607,14 +1615,14 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		GlStateManager.popMatrix();
 	}
 
-	public void renderPartiallyBrokenBlocks(Tessellator tessellator, BufferBuilder bufferBuilder, class_4184 arg) {
-		double d = arg.method_19326().x;
-		double e = arg.method_19326().y;
-		double f = arg.method_19326().z;
+	public void renderPartiallyBrokenBlocks(Tessellator tessellator, BufferBuilder bufferBuilder, Camera camera) {
+		double d = camera.getPos().x;
+		double e = camera.getPos().y;
+		double f = camera.getPos().z;
 		if (!this.partiallyBrokenBlocks.isEmpty()) {
-			this.field_4057.method_4618(SpriteAtlasTexture.field_5275);
+			this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			this.method_3263();
-			bufferBuilder.method_1328(7, VertexFormats.field_1582);
+			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR_UV_LMAP);
 			bufferBuilder.setOffset(-d, -e, -f);
 			bufferBuilder.disableColor();
 			Iterator<PartiallyBrokenBlockEntry> iterator = this.partiallyBrokenBlocks.values().iterator();
@@ -1622,7 +1630,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			while (iterator.hasNext()) {
 				PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = (PartiallyBrokenBlockEntry)iterator.next();
 				BlockPos blockPos = partiallyBrokenBlockEntry.getPos();
-				Block block = this.world.method_8320(blockPos).getBlock();
+				Block block = this.world.getBlockState(blockPos).getBlock();
 				if (!(block instanceof ChestBlock) && !(block instanceof EnderChestBlock) && !(block instanceof SignBlock) && !(block instanceof AbstractSkullBlock)) {
 					double g = (double)blockPos.getX() - d;
 					double h = (double)blockPos.getY() - e;
@@ -1630,12 +1638,12 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					if (g * g + h * h + i * i > 1024.0) {
 						iterator.remove();
 					} else {
-						BlockState blockState = this.world.method_8320(blockPos);
+						BlockState blockState = this.world.getBlockState(blockPos);
 						if (!blockState.isAir()) {
 							int j = partiallyBrokenBlockEntry.getStage();
-							Sprite sprite = this.field_4068[j];
-							BlockRenderManager blockRenderManager = this.client.method_1541();
-							blockRenderManager.method_3354(blockState, blockPos, sprite, this.world);
+							Sprite sprite = this.destroyStages[j];
+							BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
+							blockRenderManager.tesselateDamage(blockState, blockPos, sprite, this.world);
 						}
 					}
 				}
@@ -1647,11 +1655,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	public void drawHighlightedBlockOutline(class_4184 arg, HitResult hitResult, int i) {
+	public void drawHighlightedBlockOutline(Camera camera, HitResult hitResult, int i) {
 		if (i == 0 && hitResult.getType() == HitResult.Type.BLOCK) {
-			BlockPos blockPos = ((BlockHitResult)hitResult).method_17777();
-			BlockState blockState = this.world.method_8320(blockPos);
-			if (!blockState.isAir() && this.world.method_8621().method_11952(blockPos)) {
+			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
+			BlockState blockState = this.world.getBlockState(blockPos);
+			if (!blockState.isAir() && this.world.getWorldBorder().contains(blockPos)) {
 				GlStateManager.enableBlend();
 				GlStateManager.blendFuncSeparate(
 					GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
@@ -1662,11 +1670,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlStateManager.matrixMode(5889);
 				GlStateManager.pushMatrix();
 				GlStateManager.scalef(1.0F, 1.0F, 0.999F);
-				double d = arg.method_19326().x;
-				double e = arg.method_19326().y;
-				double f = arg.method_19326().z;
+				double d = camera.getPos().x;
+				double e = camera.getPos().y;
+				double f = camera.getPos().z;
 				drawShapeOutline(
-					blockState.method_11606(this.world, blockPos, VerticalEntityPosition.fromEntity(arg.method_19331())),
+					blockState.getOutlineShape(this.world, blockPos, VerticalEntityPosition.fromEntity(camera.getFocusedEntity())),
 					(double)blockPos.getX() - d,
 					(double)blockPos.getY() - e,
 					(double)blockPos.getZ() - f,
@@ -1695,14 +1703,14 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			float o = m * (float)(n == 0.0F ? 1 : 0);
 			float p = m * (float)(n == 1.0F ? 1 : 0);
 			float q = m * (float)(n == 2.0F ? 1 : 0);
-			drawShapeOutline(VoxelShapes.method_1078(boundingBox.offset(0.0, 0.0, 0.0)), d, e, f, o, p, q, 1.0F);
+			drawShapeOutline(VoxelShapes.cube(boundingBox.offset(0.0, 0.0, 0.0)), d, e, f, o, p, q, 1.0F);
 		}
 	}
 
 	public static void drawShapeOutline(VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(1, VertexFormats.field_1576);
+		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
 		voxelShape.method_1104((k, l, m, n, o, p) -> {
 			bufferBuilder.vertex(k + d, l + e, m + f).color(g, h, i, j).next();
 			bufferBuilder.vertex(n + d, o + e, p + f).color(g, h, i, j).next();
@@ -1717,7 +1725,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	public static void drawBoxOutline(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(3, VertexFormats.field_1576);
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 		buildBoxOutline(bufferBuilder, d, e, f, g, h, i, j, k, l, m);
 		tessellator.draw();
 	}
@@ -1750,7 +1758,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	public static void drawBox(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(5, VertexFormats.field_1576);
+		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 		buildBox(bufferBuilder, d, e, f, g, h, i, j, k, l, m);
 		tessellator.draw();
 	}
@@ -1827,25 +1835,25 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private void scheduleChunkRender(int i, int j, int k, boolean bl) {
-		this.field_4112.scheduleChunkRender(i, j, k, bl);
+		this.chunkRenderDispatcher.scheduleChunkRender(i, j, k, bl);
 	}
 
 	public void method_8562(@Nullable SoundEvent soundEvent, BlockPos blockPos) {
 		SoundInstance soundInstance = (SoundInstance)this.field_4119.get(blockPos);
 		if (soundInstance != null) {
-			this.client.method_1483().stop(soundInstance);
+			this.client.getSoundLoader().stop(soundInstance);
 			this.field_4119.remove(blockPos);
 		}
 
 		if (soundEvent != null) {
-			RecordItem recordItem = RecordItem.method_8012(soundEvent);
+			RecordItem recordItem = RecordItem.bySound(soundEvent);
 			if (recordItem != null) {
-				this.client.field_1705.setRecordPlayingOverlay(recordItem.method_8011().getFormattedText());
+				this.client.inGameHud.setRecordPlayingOverlay(recordItem.getDescription().getFormattedText());
 			}
 
-			SoundInstance var5 = PositionedSoundInstance.method_4760(soundEvent, (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ());
+			SoundInstance var5 = PositionedSoundInstance.record(soundEvent, (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ());
 			this.field_4119.put(blockPos, var5);
-			this.client.method_1483().play(var5);
+			this.client.getSoundLoader().play(var5);
 		}
 
 		this.method_3247(this.world, blockPos, soundEvent != null);
@@ -1857,43 +1865,43 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 	}
 
-	public void method_8568(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
-		this.method_8563(particleParameters, bl, false, d, e, f, g, h, i);
+	public void addParticle(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
+		this.addParticle(particleParameters, bl, false, d, e, f, g, h, i);
 	}
 
-	public void method_8563(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
+	public void addParticle(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
 		try {
-			this.method_3288(particleParameters, bl, bl2, d, e, f, g, h, i);
+			this.spawnParticle(particleParameters, bl, bl2, d, e, f, g, h, i);
 		} catch (Throwable var19) {
 			CrashReport crashReport = CrashReport.create(var19, "Exception while adding particle");
-			CrashReportSection crashReportSection = crashReport.method_562("Particle being added");
-			crashReportSection.add("ID", Registry.PARTICLE_TYPE.method_10221((ParticleType<? extends ParticleParameters>)particleParameters.method_10295()));
+			CrashReportSection crashReportSection = crashReport.addElement("Particle being added");
+			crashReportSection.add("ID", Registry.PARTICLE_TYPE.getId((ParticleType<? extends ParticleParameters>)particleParameters.getType()));
 			crashReportSection.add("Parameters", particleParameters.asString());
-			crashReportSection.method_577("Position", () -> CrashReportSection.createPositionString(d, e, f));
+			crashReportSection.add("Position", (ICrashCallable<String>)(() -> CrashReportSection.createPositionString(d, e, f)));
 			throw new CrashException(crashReport);
 		}
 	}
 
 	private <T extends ParticleParameters> void method_3276(T particleParameters, double d, double e, double f, double g, double h, double i) {
-		this.method_8568(particleParameters, particleParameters.method_10295().shouldAlwaysSpawn(), d, e, f, g, h, i);
+		this.addParticle(particleParameters, particleParameters.getType().shouldAlwaysSpawn(), d, e, f, g, h, i);
 	}
 
 	@Nullable
-	private Particle method_3282(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
-		return this.method_3288(particleParameters, bl, false, d, e, f, g, h, i);
+	private Particle spawnParticle(ParticleParameters particleParameters, boolean bl, double d, double e, double f, double g, double h, double i) {
+		return this.spawnParticle(particleParameters, bl, false, d, e, f, g, h, i);
 	}
 
 	@Nullable
-	private Particle method_3288(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
-		class_4184 lv = this.client.field_1773.method_19418();
-		if (this.client != null && lv.method_19332() && this.client.field_1713 != null) {
+	private Particle spawnParticle(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
+		Camera camera = this.client.gameRenderer.method_19418();
+		if (this.client != null && camera.isReady() && this.client.particleManager != null) {
 			ParticlesOption particlesOption = this.getRandomParticleSpawnChance(bl2);
 			if (bl) {
-				return this.client.field_1713.method_3056(particleParameters, d, e, f, g, h, i);
-			} else if (lv.method_19326().squaredDistanceTo(d, e, f) > 1024.0) {
+				return this.client.particleManager.addParticle(particleParameters, d, e, f, g, h, i);
+			} else if (camera.getPos().squaredDistanceTo(d, e, f) > 1024.0) {
 				return null;
 			} else {
-				return particlesOption == ParticlesOption.field_18199 ? null : this.client.field_1713.method_3056(particleParameters, d, e, f, g, h, i);
+				return particlesOption == ParticlesOption.field_18199 ? null : this.client.particleManager.addParticle(particleParameters, d, e, f, g, h, i);
 			}
 		} else {
 			return null;
@@ -1901,7 +1909,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	private ParticlesOption getRandomParticleSpawnChance(boolean bl) {
-		ParticlesOption particlesOption = this.client.field_1690.field_1882;
+		ParticlesOption particlesOption = this.client.options.particles;
 		if (bl && particlesOption == ParticlesOption.field_18199 && this.world.random.nextInt(10) == 0) {
 			particlesOption = ParticlesOption.field_18198;
 		}
@@ -1916,20 +1924,20 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	public void method_3267() {
 	}
 
-	public void method_8564(int i, BlockPos blockPos, int j) {
+	public void playGlobalEvent(int i, BlockPos blockPos, int j) {
 		switch (i) {
 			case 1023:
 			case 1028:
 			case 1038:
-				class_4184 lv = this.client.field_1773.method_19418();
-				if (lv.method_19332()) {
-					double d = (double)blockPos.getX() - lv.method_19326().x;
-					double e = (double)blockPos.getY() - lv.method_19326().y;
-					double f = (double)blockPos.getZ() - lv.method_19326().z;
+				Camera camera = this.client.gameRenderer.method_19418();
+				if (camera.isReady()) {
+					double d = (double)blockPos.getX() - camera.getPos().x;
+					double e = (double)blockPos.getY() - camera.getPos().y;
+					double f = (double)blockPos.getZ() - camera.getPos().z;
 					double g = Math.sqrt(d * d + e * e + f * f);
-					double h = lv.method_19326().x;
-					double k = lv.method_19326().y;
-					double l = lv.method_19326().z;
+					double h = camera.getPos().x;
+					double k = camera.getPos().y;
+					double l = camera.getPos().z;
 					if (g > 0.0) {
 						h += d / g * 2.0;
 						k += e / g * 2.0;
@@ -1937,145 +1945,145 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					}
 
 					if (i == 1023) {
-						this.world.method_8486(h, k, l, SoundEvents.field_14792, SoundCategory.field_15251, 1.0F, 1.0F, false);
+						this.world.playSound(h, k, l, SoundEvents.field_14792, SoundCategory.field_15251, 1.0F, 1.0F, false);
 					} else if (i == 1038) {
-						this.world.method_8486(h, k, l, SoundEvents.field_14981, SoundCategory.field_15251, 1.0F, 1.0F, false);
+						this.world.playSound(h, k, l, SoundEvents.field_14981, SoundCategory.field_15251, 1.0F, 1.0F, false);
 					} else {
-						this.world.method_8486(h, k, l, SoundEvents.field_14773, SoundCategory.field_15251, 5.0F, 1.0F, false);
+						this.world.playSound(h, k, l, SoundEvents.field_14773, SoundCategory.field_15251, 5.0F, 1.0F, false);
 					}
 				}
 		}
 	}
 
-	public void method_8567(PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
+	public void playLevelEvent(PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 		Random random = this.world.random;
 		switch (i) {
 			case 1000:
-				this.world.method_2947(blockPos, SoundEvents.field_14611, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14611, SoundCategory.field_15245, 1.0F, 1.0F, false);
 				break;
 			case 1001:
-				this.world.method_2947(blockPos, SoundEvents.field_14701, SoundCategory.field_15245, 1.0F, 1.2F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14701, SoundCategory.field_15245, 1.0F, 1.2F, false);
 				break;
 			case 1002:
-				this.world.method_2947(blockPos, SoundEvents.field_14711, SoundCategory.field_15245, 1.0F, 1.2F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14711, SoundCategory.field_15245, 1.0F, 1.2F, false);
 				break;
 			case 1003:
-				this.world.method_2947(blockPos, SoundEvents.field_15155, SoundCategory.field_15254, 1.0F, 1.2F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15155, SoundCategory.field_15254, 1.0F, 1.2F, false);
 				break;
 			case 1004:
-				this.world.method_2947(blockPos, SoundEvents.field_14712, SoundCategory.field_15254, 1.0F, 1.2F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14712, SoundCategory.field_15254, 1.0F, 1.2F, false);
 				break;
 			case 1005:
-				this.world.method_2947(blockPos, SoundEvents.field_14567, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14567, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1006:
-				this.world.method_2947(blockPos, SoundEvents.field_14664, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14664, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1007:
-				this.world.method_2947(blockPos, SoundEvents.field_14932, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14932, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1008:
-				this.world.method_2947(blockPos, SoundEvents.field_14766, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14766, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1009:
-				this.world.method_2947(blockPos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false);
 				break;
 			case 1010:
 				if (Item.byRawId(j) instanceof RecordItem) {
-					this.method_8562(((RecordItem)Item.byRawId(j)).method_8009(), blockPos);
+					this.method_8562(((RecordItem)Item.byRawId(j)).getSound(), blockPos);
 				} else {
 					this.method_8562(null, blockPos);
 				}
 				break;
 			case 1011:
-				this.world.method_2947(blockPos, SoundEvents.field_14819, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14819, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1012:
-				this.world.method_2947(blockPos, SoundEvents.field_14541, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14541, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1013:
-				this.world.method_2947(blockPos, SoundEvents.field_15080, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15080, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1014:
-				this.world.method_2947(blockPos, SoundEvents.field_14861, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14861, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1015:
-				this.world.method_2947(blockPos, SoundEvents.field_15130, SoundCategory.field_15251, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15130, SoundCategory.field_15251, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1016:
-				this.world.method_2947(blockPos, SoundEvents.field_15231, SoundCategory.field_15251, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15231, SoundCategory.field_15251, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1017:
-				this.world.method_2947(blockPos, SoundEvents.field_14934, SoundCategory.field_15251, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14934, SoundCategory.field_15251, 10.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1018:
-				this.world.method_2947(blockPos, SoundEvents.field_14970, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14970, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1019:
-				this.world.method_2947(blockPos, SoundEvents.field_14562, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14562, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1020:
-				this.world.method_2947(blockPos, SoundEvents.field_14670, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14670, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1021:
-				this.world.method_2947(blockPos, SoundEvents.field_14742, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14742, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1022:
-				this.world.method_2947(blockPos, SoundEvents.field_15236, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15236, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1024:
-				this.world.method_2947(blockPos, SoundEvents.field_14588, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14588, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1025:
-				this.world.method_2947(blockPos, SoundEvents.field_14610, SoundCategory.field_15254, 0.05F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14610, SoundCategory.field_15254, 0.05F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1026:
-				this.world.method_2947(blockPos, SoundEvents.field_14986, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14986, SoundCategory.field_15251, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1027:
-				this.world.method_2947(blockPos, SoundEvents.field_15168, SoundCategory.field_15254, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15168, SoundCategory.field_15254, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1029:
-				this.world.method_2947(blockPos, SoundEvents.field_14665, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14665, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1030:
-				this.world.method_2947(blockPos, SoundEvents.field_14559, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14559, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1031:
-				this.world.method_2947(blockPos, SoundEvents.field_14833, SoundCategory.field_15245, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14833, SoundCategory.field_15245, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1032:
-				this.client.method_1483().play(PositionedSoundInstance.method_4758(SoundEvents.field_14716, random.nextFloat() * 0.4F + 0.8F));
+				this.client.getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_14716, random.nextFloat() * 0.4F + 0.8F));
 				break;
 			case 1033:
-				this.world.method_2947(blockPos, SoundEvents.field_14817, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14817, SoundCategory.field_15245, 1.0F, 1.0F, false);
 				break;
 			case 1034:
-				this.world.method_2947(blockPos, SoundEvents.field_14739, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14739, SoundCategory.field_15245, 1.0F, 1.0F, false);
 				break;
 			case 1035:
-				this.world.method_2947(blockPos, SoundEvents.field_14978, SoundCategory.field_15245, 1.0F, 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14978, SoundCategory.field_15245, 1.0F, 1.0F, false);
 				break;
 			case 1036:
-				this.world.method_2947(blockPos, SoundEvents.field_15131, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15131, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1037:
-				this.world.method_2947(blockPos, SoundEvents.field_15082, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15082, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1039:
-				this.world.method_2947(blockPos, SoundEvents.field_14729, SoundCategory.field_15251, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14729, SoundCategory.field_15251, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1040:
-				this.world.method_2947(blockPos, SoundEvents.field_14850, SoundCategory.field_15254, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14850, SoundCategory.field_15254, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1041:
-				this.world.method_2947(blockPos, SoundEvents.field_15128, SoundCategory.field_15254, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
+				this.world.playSound(blockPos, SoundEvents.field_15128, SoundCategory.field_15254, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false);
 				break;
 			case 1042:
-				this.world.method_2947(blockPos, SoundEvents.field_16865, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_16865, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1043:
-				this.world.method_2947(blockPos, SoundEvents.field_17481, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_17481, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1500:
 				ComposterBlock.method_18027(this.world, blockPos, j > 0);
@@ -2101,13 +2109,13 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				}
 				break;
 			case 2001:
-				BlockState blockState = Block.method_9531(j);
+				BlockState blockState = Block.getStateFromRawId(j);
 				if (!blockState.isAir()) {
 					BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
 					this.world
-						.method_2947(
+						.playSound(
 							blockPos,
-							blockSoundGroup.method_10595(),
+							blockSoundGroup.getBreakSound(),
 							SoundCategory.field_15245,
 							(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
 							blockSoundGroup.getPitch() * 0.8F,
@@ -2115,7 +2123,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 						);
 				}
 
-				this.client.field_1713.method_3046(blockPos, blockState);
+				this.client.particleManager.addBlockBreakParticles(blockPos, blockState);
 				break;
 			case 2002:
 			case 2007:
@@ -2146,7 +2154,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					double o = Math.cos(h) * g;
 					double p = 0.01 + random.nextDouble() * 0.5;
 					double q = Math.sin(h) * g;
-					Particle particle = this.method_3282(particleParameters, particleParameters.method_10295().shouldAlwaysSpawn(), t + o * 0.1, u + 0.3, d + q * 0.1, o, p, q);
+					Particle particle = this.spawnParticle(particleParameters, particleParameters.getType().shouldAlwaysSpawn(), t + o * 0.1, u + 0.3, d + q * 0.1, o, p, q);
 					if (particle != null) {
 						float z = 0.75F + random.nextFloat() * 0.25F;
 						particle.setColor(w * z, x * z, y * z);
@@ -2154,7 +2162,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					}
 				}
 
-				this.world.method_2947(blockPos, SoundEvents.field_14839, SoundCategory.field_15254, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14839, SoundCategory.field_15254, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 2003:
 				double t = (double)blockPos.getX() + 0.5;
@@ -2183,8 +2191,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					double ab = (double)blockPos.getX() + 0.5 + ((double)this.world.random.nextFloat() - 0.5) * 2.0;
 					double ac = (double)blockPos.getY() + 0.5 + ((double)this.world.random.nextFloat() - 0.5) * 2.0;
 					double ad = (double)blockPos.getZ() + 0.5 + ((double)this.world.random.nextFloat() - 0.5) * 2.0;
-					this.world.method_8406(ParticleTypes.field_11251, ab, ac, ad, 0.0, 0.0, 0.0);
-					this.world.method_8406(ParticleTypes.field_11240, ab, ac, ad, 0.0, 0.0, 0.0);
+					this.world.addParticle(ParticleTypes.field_11251, ab, ac, ad, 0.0, 0.0, 0.0);
+					this.world.addParticle(ParticleTypes.field_11240, ab, ac, ad, 0.0, 0.0, 0.0);
 				}
 				break;
 			case 2005:
@@ -2197,7 +2205,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					double ac = (double)(MathHelper.cos(af) * ae);
 					double ad = 0.01 + random.nextDouble() * 0.5;
 					double ag = (double)(MathHelper.sin(af) * ae);
-					Particle particle2 = this.method_3282(
+					Particle particle2 = this.spawnParticle(
 						ParticleTypes.field_11216, false, (double)blockPos.getX() + ac * 0.1, (double)blockPos.getY() + 0.3, (double)blockPos.getZ() + ag * 0.1, ac, ad, ag
 					);
 					if (particle2 != null) {
@@ -2205,13 +2213,13 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					}
 				}
 
-				this.world.method_2947(blockPos, SoundEvents.field_14803, SoundCategory.field_15251, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14803, SoundCategory.field_15251, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 3000:
 				this.world
-					.method_8466(ParticleTypes.field_11221, true, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0);
+					.addParticle(ParticleTypes.field_11221, true, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0);
 				this.world
-					.method_2947(
+					.playSound(
 						blockPos,
 						SoundEvents.field_14816,
 						SoundCategory.field_15245,
@@ -2221,11 +2229,11 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 					);
 				break;
 			case 3001:
-				this.world.method_2947(blockPos, SoundEvents.field_14671, SoundCategory.field_15251, 64.0F, 0.8F + this.world.random.nextFloat() * 0.3F, false);
+				this.world.playSound(blockPos, SoundEvents.field_14671, SoundCategory.field_15251, 64.0F, 0.8F + this.world.random.nextFloat() * 0.3F, false);
 		}
 	}
 
-	public void method_8569(int i, BlockPos blockPos, int j) {
+	public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
 		if (j >= 0 && j < 10) {
 			PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = (PartiallyBrokenBlockEntry)this.partiallyBrokenBlocks.get(i);
 			if (partiallyBrokenBlockEntry == null
@@ -2244,7 +2252,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public boolean method_3281() {
-		return this.chunkRenderers.isEmpty() && this.field_4106.method_3630();
+		return this.chunkRenderers.isEmpty() && this.chunkBatcher.method_3630();
 	}
 
 	public void method_3292() {

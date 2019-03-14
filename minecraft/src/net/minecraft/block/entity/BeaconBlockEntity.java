@@ -58,7 +58,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	private StatusEffect primary;
 	@Nullable
 	private StatusEffect secondary;
-	private TextComponent field_11793;
+	private TextComponent customName;
 	private ContainerLock lock = ContainerLock.NONE;
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
 		@Override
@@ -89,7 +89,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			}
 
 			if (!BeaconBlockEntity.this.world.isClient && i == 1 && BeaconBlockEntity.this.active) {
-				BeaconBlockEntity.this.method_10938(SoundEvents.field_14891);
+				BeaconBlockEntity.this.playSound(SoundEvents.field_14891);
 			}
 		}
 
@@ -108,13 +108,13 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		if (this.world.getTime() % 80L == 0L) {
 			this.update();
 			if (this.active) {
-				this.method_10938(SoundEvents.field_15045);
+				this.playSound(SoundEvents.field_15045);
 			}
 		}
 
 		if (!this.world.isClient && this.active != this.lastActive) {
 			this.lastActive = this.active;
-			this.method_10938(this.active ? SoundEvents.field_14703 : SoundEvents.field_15176);
+			this.playSound(this.active ? SoundEvents.field_14703 : SoundEvents.field_15176);
 		}
 	}
 
@@ -125,8 +125,8 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		}
 	}
 
-	public void method_10938(SoundEvent soundEvent) {
-		this.world.method_8396(null, this.field_11867, soundEvent, SoundCategory.field_15245, 1.0F, 1.0F);
+	public void playSound(SoundEvent soundEvent) {
+		this.world.playSound(null, this.pos, soundEvent, SoundCategory.field_15245, 1.0F, 1.0F);
 	}
 
 	private void applyPlayerEffects() {
@@ -138,9 +138,9 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			}
 
 			int j = (9 + this.levels * 2) * 20;
-			int k = this.field_11867.getX();
-			int l = this.field_11867.getY();
-			int m = this.field_11867.getZ();
+			int k = this.pos.getX();
+			int l = this.pos.getY();
+			int m = this.pos.getZ();
 			BoundingBox boundingBox = new BoundingBox((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
 				.expand(d)
 				.stretch(0.0, (double)this.world.getHeight(), 0.0);
@@ -159,9 +159,9 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	}
 
 	private void updateBeamColors() {
-		int i = this.field_11867.getX();
-		int j = this.field_11867.getY();
-		int k = this.field_11867.getZ();
+		int i = this.pos.getX();
+		int j = this.pos.getY();
+		int k = this.pos.getZ();
 		int l = this.levels;
 		this.levels = 0;
 		this.beamSegments.clear();
@@ -172,14 +172,14 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int m = j + 1; m < 256; m++) {
-			BlockState blockState = this.world.method_8320(mutable.set(i, m, k));
+			BlockState blockState = this.world.getBlockState(mutable.set(i, m, k));
 			Block block = blockState.getBlock();
 			float[] fs;
 			if (block instanceof StainedGlassBlock) {
 				fs = ((StainedGlassBlock)block).getColor().getColorComponents();
 			} else {
 				if (!(block instanceof StainedGlassPaneBlock)) {
-					if (blockState.method_11581(this.world, mutable) >= 15 && block != Blocks.field_9987) {
+					if (blockState.getLightSubtracted(this.world, mutable) >= 15 && block != Blocks.field_9987) {
 						this.active = false;
 						this.beamSegments.clear();
 						break;
@@ -217,7 +217,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 				for (int o = i - m; o <= i + m && bl2; o++) {
 					for (int p = k - m; p <= k + m; p++) {
-						Block block2 = this.world.method_8320(new BlockPos(o, n, p)).getBlock();
+						Block block2 = this.world.getBlockState(new BlockPos(o, n, p)).getBlock();
 						if (block2 != Blocks.field_10234 && block2 != Blocks.field_10205 && block2 != Blocks.field_10201 && block2 != Blocks.field_10085) {
 							bl2 = false;
 							break;
@@ -238,7 +238,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		if (!this.world.isClient && l < this.levels) {
 			for (ServerPlayerEntity serverPlayerEntity : this.world
 				.method_18467(ServerPlayerEntity.class, new BoundingBox((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
-				Criterions.CONSTRUCT_BEACON.method_8812(serverPlayerEntity, this);
+				Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
 			}
 		}
 	}
@@ -277,13 +277,13 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 	@Nullable
 	@Override
-	public BlockEntityUpdateS2CPacket method_16886() {
-		return new BlockEntityUpdateS2CPacket(this.field_11867, 3, this.method_16887());
+	public BlockEntityUpdateS2CPacket toUpdatePacket() {
+		return new BlockEntityUpdateS2CPacket(this.pos, 3, this.toInitialChunkDataTag());
 	}
 
 	@Override
-	public CompoundTag method_16887() {
-		return this.method_11007(new CompoundTag());
+	public CompoundTag toInitialChunkDataTag() {
+		return this.toTag(new CompoundTag());
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -299,34 +299,34 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	}
 
 	@Override
-	public void method_11014(CompoundTag compoundTag) {
-		super.method_11014(compoundTag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
 		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
 		this.levels = compoundTag.getInt("Levels");
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.field_11793 = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+			this.customName = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
 		}
 
-		this.lock = ContainerLock.method_5473(compoundTag);
+		this.lock = ContainerLock.deserialize(compoundTag);
 	}
 
 	@Override
-	public CompoundTag method_11007(CompoundTag compoundTag) {
-		super.method_11007(compoundTag);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
 		compoundTag.putInt("Primary", StatusEffect.getRawId(this.primary));
 		compoundTag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
 		compoundTag.putInt("Levels", this.levels);
-		if (this.field_11793 != null) {
-			compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.field_11793));
+		if (this.customName != null) {
+			compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.customName));
 		}
 
-		this.lock.method_5474(compoundTag);
+		this.lock.serialize(compoundTag);
 		return compoundTag;
 	}
 
-	public void method_10936(@Nullable TextComponent textComponent) {
-		this.field_11793 = textComponent;
+	public void setCustomName(@Nullable TextComponent textComponent) {
+		this.customName = textComponent;
 	}
 
 	@Override
@@ -342,14 +342,14 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 	@Nullable
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return LockableContainerBlockEntity.method_17487(playerEntity, this.lock, this.method_5476())
-			? new BeaconContainer(i, playerInventory, this.propertyDelegate, BlockContext.method_17392(this.world, this.method_11016()))
+		return LockableContainerBlockEntity.checkUnlocked(playerEntity, this.lock, this.getDisplayName())
+			? new BeaconContainer(i, playerInventory, this.propertyDelegate, BlockContext.create(this.world, this.getPos()))
 			: null;
 	}
 
 	@Override
-	public TextComponent method_5476() {
-		return (TextComponent)(this.field_11793 != null ? this.field_11793 : new TranslatableTextComponent("container.beacon"));
+	public TextComponent getDisplayName() {
+		return (TextComponent)(this.customName != null ? this.customName : new TranslatableTextComponent("container.beacon"));
 	}
 
 	public static class BeamSegment {

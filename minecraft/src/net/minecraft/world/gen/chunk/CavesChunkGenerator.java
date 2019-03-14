@@ -57,18 +57,20 @@ public class CavesChunkGenerator extends SurfaceChunkGenerator<CavesChunkGenerat
 	}
 
 	@Override
-	public List<Biome.SpawnEntry> method_12113(EntityCategory entityCategory, BlockPos blockPos) {
+	public List<Biome.SpawnEntry> getEntitySpawnList(EntityCategory entityCategory, BlockPos blockPos) {
 		if (entityCategory == EntityCategory.field_6302) {
-			if (Feature.field_13569.method_14024(this.world, blockPos)) {
-				return Feature.field_13569.getMonsterSpawns();
+			if (Feature.NETHER_BRIDGE.isInsideStructure(this.world, blockPos)) {
+				return Feature.NETHER_BRIDGE.getMonsterSpawns();
 			}
 
-			if (Feature.field_13569.method_14023(this.world, blockPos) && this.world.method_8320(blockPos.down()).getBlock() == Blocks.field_10266) {
-				return Feature.field_13569.getMonsterSpawns();
+			if (Feature.NETHER_BRIDGE.isApproximatelyInsideStructure(this.world, blockPos) && this.world.getBlockState(blockPos.down()).getBlock() == Blocks.field_10266
+				)
+			 {
+				return Feature.NETHER_BRIDGE.getMonsterSpawns();
 			}
 		}
 
-		return super.method_12113(entityCategory, blockPos);
+		return super.getEntitySpawnList(entityCategory, blockPos);
 	}
 
 	@Override

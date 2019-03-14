@@ -28,27 +28,27 @@ import net.minecraft.world.World;
 public class ShapedRecipe implements CraftingRecipe {
 	private final int width;
 	private final int height;
-	private final DefaultedList<Ingredient> field_9052;
+	private final DefaultedList<Ingredient> inputs;
 	private final ItemStack output;
-	private final Identifier field_9051;
+	private final Identifier id;
 	private final String group;
 
 	public ShapedRecipe(Identifier identifier, String string, int i, int j, DefaultedList<Ingredient> defaultedList, ItemStack itemStack) {
-		this.field_9051 = identifier;
+		this.id = identifier;
 		this.group = string;
 		this.width = i;
 		this.height = j;
-		this.field_9052 = defaultedList;
+		this.inputs = defaultedList;
 		this.output = itemStack;
 	}
 
 	@Override
-	public Identifier method_8114() {
-		return this.field_9051;
+	public Identifier getId() {
+		return this.id;
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
+	public RecipeSerializer<?> getSerializer() {
 		return RecipeSerializer.SHAPED;
 	}
 
@@ -64,8 +64,8 @@ public class ShapedRecipe implements CraftingRecipe {
 	}
 
 	@Override
-	public DefaultedList<Ingredient> method_8117() {
-		return this.field_9052;
+	public DefaultedList<Ingredient> getPreviewInputs() {
+		return this.inputs;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -98,13 +98,13 @@ public class ShapedRecipe implements CraftingRecipe {
 				Ingredient ingredient = Ingredient.EMPTY;
 				if (m >= 0 && n >= 0 && m < this.width && n < this.height) {
 					if (bl) {
-						ingredient = this.field_9052.get(this.width - m - 1 + n * this.width);
+						ingredient = this.inputs.get(this.width - m - 1 + n * this.width);
 					} else {
-						ingredient = this.field_9052.get(m + n * this.width);
+						ingredient = this.inputs.get(m + n * this.width);
 					}
 				}
 
-				if (!ingredient.method_8093(craftingInventory.method_5438(k + l * craftingInventory.getWidth()))) {
+				if (!ingredient.method_8093(craftingInventory.getInvStack(k + l * craftingInventory.getWidth()))) {
 					return false;
 				}
 			}
@@ -125,7 +125,7 @@ public class ShapedRecipe implements CraftingRecipe {
 		return this.height;
 	}
 
-	private static DefaultedList<Ingredient> method_8148(String[] strings, Map<String, Ingredient> map, int i, int j) {
+	private static DefaultedList<Ingredient> getIngredients(String[] strings, Map<String, Ingredient> map, int i, int j) {
 		DefaultedList<Ingredient> defaultedList = DefaultedList.create(i * j, Ingredient.EMPTY);
 		Set<String> set = Sets.<String>newHashSet(map.keySet());
 		set.remove(" ");
@@ -251,7 +251,7 @@ public class ShapedRecipe implements CraftingRecipe {
 
 	public static ItemStack getItemStack(JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "item");
-		Item item = (Item)Registry.ITEM.method_17966(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + string + "'"));
+		Item item = (Item)Registry.ITEM.getOrEmpty(new Identifier(string)).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + string + "'"));
 		if (jsonObject.has("data")) {
 			throw new JsonParseException("Disallowed data tag found");
 		} else {
@@ -267,7 +267,7 @@ public class ShapedRecipe implements CraftingRecipe {
 			String[] strings = ShapedRecipe.combinePattern(ShapedRecipe.getPattern(JsonHelper.getArray(jsonObject, "pattern")));
 			int i = strings[0].length();
 			int j = strings.length;
-			DefaultedList<Ingredient> defaultedList = ShapedRecipe.method_8148(strings, map, i, j);
+			DefaultedList<Ingredient> defaultedList = ShapedRecipe.getIngredients(strings, map, i, j);
 			ItemStack itemStack = ShapedRecipe.getItemStack(JsonHelper.getObject(jsonObject, "result"));
 			return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
 		}
@@ -279,7 +279,7 @@ public class ShapedRecipe implements CraftingRecipe {
 			DefaultedList<Ingredient> defaultedList = DefaultedList.create(i * j, Ingredient.EMPTY);
 
 			for (int k = 0; k < defaultedList.size(); k++) {
-				defaultedList.set(k, Ingredient.method_8086(packetByteBuf));
+				defaultedList.set(k, Ingredient.fromPacket(packetByteBuf));
 			}
 
 			ItemStack itemStack = packetByteBuf.readItemStack();
@@ -291,8 +291,8 @@ public class ShapedRecipe implements CraftingRecipe {
 			packetByteBuf.writeVarInt(shapedRecipe.height);
 			packetByteBuf.writeString(shapedRecipe.group);
 
-			for (Ingredient ingredient : shapedRecipe.field_9052) {
-				ingredient.method_8088(packetByteBuf);
+			for (Ingredient ingredient : shapedRecipe.inputs) {
+				ingredient.write(packetByteBuf);
 			}
 
 			packetByteBuf.writeItemStack(shapedRecipe.output);

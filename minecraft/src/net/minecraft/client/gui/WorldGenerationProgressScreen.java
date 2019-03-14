@@ -10,7 +10,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 
 @Environment(EnvType.CLIENT)
 public class WorldGenerationProgressScreen extends Screen {
-	private final WorldGenerationProgressTracker field_17406;
+	private final WorldGenerationProgressTracker progressProvider;
 	private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = SystemUtil.consume(new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> {
 		object2IntOpenHashMap.defaultReturnValue(0);
 		object2IntOpenHashMap.put(ChunkStatus.EMPTY, 5526612);
@@ -29,7 +29,7 @@ public class WorldGenerationProgressScreen extends Screen {
 	});
 
 	public WorldGenerationProgressScreen(WorldGenerationProgressTracker worldGenerationProgressTracker) {
-		this.field_17406 = worldGenerationProgressTracker;
+		this.progressProvider = worldGenerationProgressTracker;
 	}
 
 	@Override
@@ -43,11 +43,11 @@ public class WorldGenerationProgressScreen extends Screen {
 		int k = this.screenWidth / 2;
 		int l = this.screenHeight / 2;
 		int m = 30;
-		method_17538(this.field_17406, k, l + 30, 2, 0);
-		this.drawStringCentered(this.fontRenderer, MathHelper.clamp(this.field_17406.getProgressPercentage(), 0, 100) + "%", k, l - 9 / 2 - 30, 16777215);
+		drawChunkMap(this.progressProvider, k, l + 30, 2, 0);
+		this.drawStringCentered(this.fontRenderer, MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100) + "%", k, l - 9 / 2 - 30, 16777215);
 	}
 
-	public static void method_17538(WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {
+	public static void drawChunkMap(WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {
 		int m = k + l;
 		int n = worldGenerationProgressTracker.getCenterSize();
 		int o = n * m - l;

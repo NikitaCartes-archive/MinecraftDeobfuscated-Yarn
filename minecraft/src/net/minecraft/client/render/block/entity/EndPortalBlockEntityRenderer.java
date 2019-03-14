@@ -18,8 +18,8 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalBlockEntity> {
-	private static final Identifier field_4406 = new Identifier("textures/environment/end_sky.png");
-	private static final Identifier field_4407 = new Identifier("textures/entity/end_portal.png");
+	private static final Identifier SKY_TEX = new Identifier("textures/environment/end_sky.png");
+	private static final Identifier PORTAL_TEX = new Identifier("textures/entity/end_portal.png");
 	private static final Random RANDOM = new Random(31100L);
 	private static final FloatBuffer field_4408 = GlAllocationUtils.allocateFloatBuffer(16);
 	private static final FloatBuffer field_4404 = GlAllocationUtils.allocateFloatBuffer(16);
@@ -34,20 +34,20 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 		int j = this.method_3592(h);
 		float k = this.method_3594();
 		boolean bl = false;
-		GameRenderer gameRenderer = MinecraftClient.getInstance().field_1773;
+		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
 
 		for (int l = 0; l < j; l++) {
 			GlStateManager.pushMatrix();
 			float m = 2.0F / (float)(18 - l);
 			if (l == 0) {
-				this.method_3566(field_4406);
+				this.bindTexture(SKY_TEX);
 				m = 0.15F;
 				GlStateManager.enableBlend();
 				GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			}
 
 			if (l >= 1) {
-				this.method_3566(field_4407);
+				this.bindTexture(PORTAL_TEX);
 				bl = true;
 				gameRenderer.method_3201(true);
 			}
@@ -80,46 +80,46 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			GlStateManager.multMatrix(field_4408);
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			bufferBuilder.method_1328(7, VertexFormats.field_1576);
+			bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 			float o = (RANDOM.nextFloat() * 0.5F + 0.1F) * m;
 			float p = (RANDOM.nextFloat() * 0.5F + 0.4F) * m;
 			float q = (RANDOM.nextFloat() * 0.5F + 0.5F) * m;
-			if (endPortalBlockEntity.method_11400(Direction.SOUTH)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.SOUTH)) {
 				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.method_11400(Direction.NORTH)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.NORTH)) {
 				bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.method_11400(Direction.EAST)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.EAST)) {
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.method_11400(Direction.WEST)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.WEST)) {
 				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e + 1.0, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e + 1.0, f).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.method_11400(Direction.DOWN)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.DOWN)) {
 				bufferBuilder.vertex(d, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d, e, f + 1.0).color(o, p, q, 1.0F).next();
 			}
 
-			if (endPortalBlockEntity.method_11400(Direction.UP)) {
+			if (endPortalBlockEntity.shouldDrawSide(Direction.UP)) {
 				bufferBuilder.vertex(d, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + (double)k, f + 1.0).color(o, p, q, 1.0F).next();
 				bufferBuilder.vertex(d + 1.0, e + (double)k, f).color(o, p, q, 1.0F).next();
@@ -129,7 +129,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			tessellator.draw();
 			GlStateManager.popMatrix();
 			GlStateManager.matrixMode(5888);
-			this.method_3566(field_4406);
+			this.bindTexture(SKY_TEX);
 		}
 
 		GlStateManager.disableBlend();

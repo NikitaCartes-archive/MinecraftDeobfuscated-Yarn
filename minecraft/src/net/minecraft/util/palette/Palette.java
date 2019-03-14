@@ -9,15 +9,17 @@ import net.minecraft.util.PacketByteBuf;
 public interface Palette<T> {
 	int getIndex(T object);
 
+	boolean method_19525(T object);
+
 	@Nullable
 	T getByIndex(int i);
 
 	@Environment(EnvType.CLIENT)
-	void method_12289(PacketByteBuf packetByteBuf);
+	void fromPacket(PacketByteBuf packetByteBuf);
 
-	void method_12287(PacketByteBuf packetByteBuf);
+	void toPacket(PacketByteBuf packetByteBuf);
 
 	int getPacketSize();
 
-	void method_12286(ListTag listTag);
+	void fromTag(ListTag listTag);
 }

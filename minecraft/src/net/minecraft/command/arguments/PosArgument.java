@@ -10,7 +10,7 @@ public interface PosArgument {
 
 	Vec2f toAbsoluteRotation(ServerCommandSource serverCommandSource);
 
-	default BlockPos method_9704(ServerCommandSource serverCommandSource) {
+	default BlockPos toAbsoluteBlockPos(ServerCommandSource serverCommandSource) {
 		return new BlockPos(this.toAbsolutePos(serverCommandSource));
 	}
 

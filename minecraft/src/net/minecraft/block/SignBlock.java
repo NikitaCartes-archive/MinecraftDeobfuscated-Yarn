@@ -22,30 +22,32 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public abstract class SignBlock extends BlockWithEntity implements Waterloggable {
-	public static final BooleanProperty field_11491 = Properties.field_12508;
-	protected static final VoxelShape field_11492 = Block.method_9541(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 
 	protected SignBlock(Block.Settings settings) {
 		super(settings);
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		if ((Boolean)blockState.method_11654(field_11491)) {
-			iWorld.method_8405().method_8676(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if ((Boolean)blockState.get(WATERLOGGED)) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_11492;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return SHAPE;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_9589(BlockState blockState) {
+	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
 		return true;
 	}
 
@@ -55,19 +57,19 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new SignBlockEntity();
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (world.isClient) {
 			return true;
 		} else {
-			BlockEntity blockEntity = world.method_8321(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof SignBlockEntity) {
 				SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
-				ItemStack itemStack = playerEntity.method_5998(hand);
+				ItemStack itemStack = playerEntity.getStackInHand(hand);
 				if (itemStack.getItem() instanceof DyeItem) {
 					boolean bl = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
 					if (bl && !playerEntity.isCreative()) {
@@ -83,7 +85,7 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 	}
 
 	@Override
-	public FluidState method_9545(BlockState blockState) {
-		return blockState.method_11654(field_11491) ? Fluids.WATER.method_15729(false) : super.method_9545(blockState);
+	public FluidState getFluidState(BlockState blockState) {
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
 	}
 }

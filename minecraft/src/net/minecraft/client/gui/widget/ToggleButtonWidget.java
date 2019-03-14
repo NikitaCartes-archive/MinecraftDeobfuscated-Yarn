@@ -7,8 +7,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class ToggleButtonWidget extends ButtonWidget {
-	protected Identifier field_2193;
+public class ToggleButtonWidget extends AbstractButtonWidget {
+	protected Identifier texture;
 	protected boolean toggled;
 	protected int u;
 	protected int v;
@@ -20,12 +20,12 @@ public class ToggleButtonWidget extends ButtonWidget {
 		this.toggled = bl;
 	}
 
-	public void method_1962(int i, int j, int k, int l, Identifier identifier) {
+	public void setTextureUV(int i, int j, int k, int l, Identifier identifier) {
 		this.u = i;
 		this.v = j;
 		this.pressedUOffset = k;
 		this.hoverVOffset = l;
-		this.field_2193 = identifier;
+		this.texture = identifier;
 	}
 
 	public void setToggled(boolean bl) {
@@ -44,7 +44,7 @@ public class ToggleButtonWidget extends ButtonWidget {
 	@Override
 	public void drawButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.method_1531().method_4618(this.field_2193);
+		minecraftClient.getTextureManager().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();
 		int k = this.u;
 		int l = this.v;
@@ -66,7 +66,7 @@ public class ToggleButtonWidget extends ButtonWidget {
 			if (i == 0) {
 				boolean bl = this.isSelected(d, e);
 				if (bl) {
-					this.method_1832(MinecraftClient.getInstance().method_1483());
+					this.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
 					return true;
 				}
 			}

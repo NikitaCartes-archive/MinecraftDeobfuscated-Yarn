@@ -30,12 +30,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1419;
-import net.minecraft.class_4094;
-import net.minecraft.class_4151;
-import net.minecraft.class_4153;
-import net.minecraft.class_4158;
 import net.minecraft.class_4209;
-import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -51,7 +46,9 @@ import net.minecraft.client.network.packet.PlaySoundS2CPacket;
 import net.minecraft.client.network.packet.WorldEventS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
+import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Npc;
@@ -97,6 +94,8 @@ import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.IdCountsState;
@@ -144,13 +143,13 @@ public class ServerWorld extends World {
 	private int idleTimeout;
 	private final PortalForcer portalForcer;
 	private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<>(
-		this, block -> block == null || block.method_9564().isAir(), Registry.BLOCK::method_10221, Registry.BLOCK::method_10223, this::method_14189
+		this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, this::method_14189
 	);
 	private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<>(
-		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::method_10221, Registry.FLUID::method_10223, this::method_14171
+		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this::method_14171
 	);
 	private final Set<EntityNavigation> field_18262 = Sets.<EntityNavigation>newHashSet();
-	protected final RaidManager field_18811;
+	protected final RaidManager raidManager;
 	protected final class_1419 field_13958 = new class_1419(this);
 	private final ObjectLinkedOpenHashSet<BlockAction> pendingBlockActions = new ObjectLinkedOpenHashSet<>();
 	private boolean insideTick;
@@ -176,10 +175,10 @@ public class ServerWorld extends World {
 					worldSaveHandler.getStructureManager(),
 					executor,
 					dimension.createChunkGenerator(),
-					minecraftServer.method_3760().getViewDistance(),
-					minecraftServer.method_3760().getViewDistance() - 2,
+					minecraftServer.getPlayerManager().getViewDistance(),
+					minecraftServer.getPlayerManager().getViewDistance() - 2,
 					worldGenerationProgressListener,
-					() -> minecraftServer.method_3847(DimensionType.field_13072).getPersistentStateManager()
+					() -> minecraftServer.getWorld(DimensionType.field_13072).getPersistentStateManager()
 				),
 			profiler,
 			false
@@ -189,29 +188,29 @@ public class ServerWorld extends World {
 		this.portalForcer = new PortalForcer(this);
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
-		this.method_8621().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
-		this.field_18811 = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.method_16533(this.field_9247));
+		this.getWorldBorder().setMaxWorldBorderRadius(minecraftServer.getMaxWorldBorderRadius());
+		this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.dimension));
 		if (!minecraftServer.isSinglePlayer()) {
-			this.method_8401().setGameMode(minecraftServer.getDefaultGameMode());
+			this.getLevelProperties().setGameMode(minecraftServer.getDefaultGameMode());
 		}
 
-		this.wanderingTraderManager = this.field_9247.method_12460() == DimensionType.field_13072 ? new WanderingTraderManager(this) : null;
+		this.wanderingTraderManager = this.dimension.getType() == DimensionType.field_13072 ? new WanderingTraderManager(this) : null;
 	}
 
 	public void method_18765(BooleanSupplier booleanSupplier) {
 		Profiler profiler = this.getProfiler();
 		this.insideTick = true;
 		profiler.push("world border");
-		this.method_8621().update();
+		this.getWorldBorder().update();
 		profiler.swap("weather");
 		boolean bl = this.isRaining();
-		if (this.field_9247.hasSkyLight()) {
+		if (this.dimension.hasSkyLight()) {
 			if (this.getGameRules().getBoolean("doWeatherCycle")) {
-				int i = this.field_9232.getClearWeatherTime();
-				int j = this.field_9232.getThunderTime();
-				int k = this.field_9232.getRainTime();
-				boolean bl2 = this.field_9232.isThundering();
-				boolean bl3 = this.field_9232.isRaining();
+				int i = this.properties.getClearWeatherTime();
+				int j = this.properties.getThunderTime();
+				int k = this.properties.getRainTime();
+				boolean bl2 = this.properties.isThundering();
+				boolean bl3 = this.properties.isRaining();
 				if (i > 0) {
 					i--;
 					j = bl2 ? 0 : 1;
@@ -240,15 +239,15 @@ public class ServerWorld extends World {
 					}
 				}
 
-				this.field_9232.setThunderTime(j);
-				this.field_9232.setRainTime(k);
-				this.field_9232.setClearWeatherTime(i);
-				this.field_9232.setThundering(bl2);
-				this.field_9232.setRaining(bl3);
+				this.properties.setThunderTime(j);
+				this.properties.setRainTime(k);
+				this.properties.setClearWeatherTime(i);
+				this.properties.setThundering(bl2);
+				this.properties.setRaining(bl3);
 			}
 
 			this.thunderGradientPrev = this.thunderGradient;
-			if (this.field_9232.isThundering()) {
+			if (this.properties.isThundering()) {
 				this.thunderGradient = (float)((double)this.thunderGradient + 0.01);
 			} else {
 				this.thunderGradient = (float)((double)this.thunderGradient - 0.01);
@@ -256,7 +255,7 @@ public class ServerWorld extends World {
 
 			this.thunderGradient = MathHelper.clamp(this.thunderGradient, 0.0F, 1.0F);
 			this.rainGradientPrev = this.rainGradient;
-			if (this.field_9232.isRaining()) {
+			if (this.properties.isRaining()) {
 				this.rainGradient = (float)((double)this.rainGradient + 0.01);
 			} else {
 				this.rainGradient = (float)((double)this.rainGradient - 0.01);
@@ -266,33 +265,33 @@ public class ServerWorld extends World {
 		}
 
 		if (this.rainGradientPrev != this.rainGradient) {
-			this.server.method_3760().sendToDimension(new GameStateChangeS2CPacket(7, this.rainGradient), this.field_9247.method_12460());
+			this.server.getPlayerManager().sendToDimension(new GameStateChangeS2CPacket(7, this.rainGradient), this.dimension.getType());
 		}
 
 		if (this.thunderGradientPrev != this.thunderGradient) {
-			this.server.method_3760().sendToDimension(new GameStateChangeS2CPacket(8, this.thunderGradient), this.field_9247.method_12460());
+			this.server.getPlayerManager().sendToDimension(new GameStateChangeS2CPacket(8, this.thunderGradient), this.dimension.getType());
 		}
 
 		if (bl != this.isRaining()) {
 			if (bl) {
-				this.server.method_3760().sendToAll(new GameStateChangeS2CPacket(2, 0.0F));
+				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(2, 0.0F));
 			} else {
-				this.server.method_3760().sendToAll(new GameStateChangeS2CPacket(1, 0.0F));
+				this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(1, 0.0F));
 			}
 
-			this.server.method_3760().sendToAll(new GameStateChangeS2CPacket(7, this.rainGradient));
-			this.server.method_3760().sendToAll(new GameStateChangeS2CPacket(8, this.thunderGradient));
+			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(7, this.rainGradient));
+			this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(8, this.thunderGradient));
 		}
 
-		if (this.method_8401().isHardcore() && this.getDifficulty() != Difficulty.HARD) {
-			this.method_8401().setDifficulty(Difficulty.HARD);
+		if (this.getLevelProperties().isHardcore() && this.getDifficulty() != Difficulty.HARD) {
+			this.getLevelProperties().setDifficulty(Difficulty.HARD);
 		}
 
 		if (this.allPlayersSleeping
 			&& this.players.stream().noneMatch(serverPlayerEntity -> !serverPlayerEntity.isSpectator() && !serverPlayerEntity.isSleepingLongEnough())) {
 			this.allPlayersSleeping = false;
 			if (this.getGameRules().getBoolean("doDaylightCycle")) {
-				long l = this.field_9232.getTimeOfDay() + 24000L;
+				long l = this.properties.getTimeOfDay() + 24000L;
 				this.setTimeOfDay(l - l % 24000L);
 			}
 
@@ -307,7 +306,7 @@ public class ServerWorld extends World {
 		profiler.swap("chunkSource");
 		this.method_14178().tick(booleanSupplier);
 		profiler.swap("tickPending");
-		if (this.field_9232.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+		if (this.properties.getGeneratorType() != LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
 			this.blockTickScheduler.tick();
 			this.fluidTickScheduler.tick();
 		}
@@ -317,7 +316,7 @@ public class ServerWorld extends World {
 		profiler.swap("portalForcer");
 		this.portalForcer.tick(this.getTime());
 		profiler.swap("raid");
-		this.field_18811.tick();
+		this.raidManager.tick();
 		if (this.wanderingTraderManager != null) {
 			this.wanderingTraderManager.tick();
 		}
@@ -332,7 +331,7 @@ public class ServerWorld extends World {
 		}
 
 		if (bl4 || this.idleTimeout++ < 300) {
-			this.field_9247.update();
+			this.dimension.update();
 			profiler.push("global");
 
 			for (int j = 0; j < this.globalEntities.size(); j++) {
@@ -408,12 +407,12 @@ public class ServerWorld extends World {
 		Profiler profiler = this.getProfiler();
 		profiler.push("thunder");
 		if (bl && this.isThundering() && this.random.nextInt(100000) == 0) {
-			BlockPos blockPos = this.method_18210(this.method_8536(j, 0, k, 15));
-			if (this.method_8520(blockPos)) {
-				LocalDifficulty localDifficulty = this.method_8404(blockPos);
+			BlockPos blockPos = this.method_18210(this.getRandomPosInChunk(j, 0, k, 15));
+			if (this.hasRain(blockPos)) {
+				LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
 				boolean bl2 = this.getGameRules().getBoolean("doMobSpawning") && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
 				if (bl2) {
-					SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.method_5883(this);
+					SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this);
 					skeletonHorseEntity.method_6813(true);
 					skeletonHorseEntity.setBreedingAge(0);
 					skeletonHorseEntity.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
@@ -426,39 +425,39 @@ public class ServerWorld extends World {
 
 		profiler.swap("iceandsnow");
 		if (this.random.nextInt(16) == 0) {
-			BlockPos blockPos = this.method_8598(Heightmap.Type.MOTION_BLOCKING, this.method_8536(j, 0, k, 15));
+			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(j, 0, k, 15));
 			BlockPos blockPos2 = blockPos.down();
-			Biome biome = this.method_8310(blockPos);
-			if (biome.method_8705(this, blockPos2)) {
-				this.method_8501(blockPos2, Blocks.field_10295.method_9564());
+			Biome biome = this.getBiome(blockPos);
+			if (biome.canSetSnow(this, blockPos2)) {
+				this.setBlockState(blockPos2, Blocks.field_10295.getDefaultState());
 			}
 
-			if (bl && biome.method_8696(this, blockPos)) {
-				this.method_8501(blockPos, Blocks.field_10477.method_9564());
+			if (bl && biome.canSetIce(this, blockPos)) {
+				this.setBlockState(blockPos, Blocks.field_10477.getDefaultState());
 			}
 
-			if (bl && this.method_8310(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
-				this.method_8320(blockPos2).getBlock().method_9504(this, blockPos2);
+			if (bl && this.getBiome(blockPos2).getPrecipitation() == Biome.Precipitation.RAIN) {
+				this.getBlockState(blockPos2).getBlock().onRainTick(this, blockPos2);
 			}
 		}
 
 		profiler.swap("tickBlocks");
 		if (i > 0) {
-			for (ChunkSection chunkSection : worldChunk.method_12006()) {
-				if (chunkSection != WorldChunk.field_12852 && chunkSection.hasRandomTicks()) {
+			for (ChunkSection chunkSection : worldChunk.getSectionArray()) {
+				if (chunkSection != WorldChunk.EMPTY_SECTION && chunkSection.hasRandomTicks()) {
 					int l = chunkSection.getYOffset();
 
 					for (int m = 0; m < i; m++) {
-						BlockPos blockPos3 = this.method_8536(j, l, k, 15);
+						BlockPos blockPos3 = this.getRandomPosInChunk(j, l, k, 15);
 						profiler.push("randomTick");
 						BlockState blockState = chunkSection.getBlockState(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k);
 						if (blockState.hasRandomTicks()) {
-							blockState.method_11624(this, blockPos3, this.random);
+							blockState.onRandomTick(this, blockPos3, this.random);
 						}
 
-						FluidState fluidState = chunkSection.method_12255(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k);
+						FluidState fluidState = chunkSection.getFluidState(blockPos3.getX() - j, blockPos3.getY() - l, blockPos3.getZ() - k);
 						if (fluidState.hasRandomTicks()) {
-							fluidState.method_15757(this, blockPos3, this.random);
+							fluidState.onRandomTick(this, blockPos3, this.random);
 						}
 
 						profiler.pop();
@@ -471,13 +470,13 @@ public class ServerWorld extends World {
 	}
 
 	protected BlockPos method_18210(BlockPos blockPos) {
-		BlockPos blockPos2 = this.method_8598(Heightmap.Type.MOTION_BLOCKING, blockPos);
+		BlockPos blockPos2 = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos);
 		BoundingBox boundingBox = new BoundingBox(blockPos2, new BlockPos(blockPos2.getX(), this.getHeight(), blockPos2.getZ())).expand(3.0);
-		List<LivingEntity> list = this.method_8390(
-			LivingEntity.class, boundingBox, livingEntity -> livingEntity != null && livingEntity.isValid() && this.method_8311(livingEntity.method_5704())
+		List<LivingEntity> list = this.getEntities(
+			LivingEntity.class, boundingBox, livingEntity -> livingEntity != null && livingEntity.isValid() && this.isSkyVisible(livingEntity.getPos())
 		);
 		if (!list.isEmpty()) {
-			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).method_5704();
+			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getPos();
 		} else {
 			if (blockPos2.getY() == -1) {
 				blockPos2 = blockPos2.up(2);
@@ -510,28 +509,28 @@ public class ServerWorld extends World {
 	}
 
 	public ServerScoreboard method_14170() {
-		return this.server.method_3845();
+		return this.server.getScoreboard();
 	}
 
 	private void resetWeather() {
-		this.field_9232.setRainTime(0);
-		this.field_9232.setRaining(false);
-		this.field_9232.setThunderTime(0);
-		this.field_9232.setThundering(false);
+		this.properties.setRainTime(0);
+		this.properties.setRaining(false);
+		this.properties.setThunderTime(0);
+		this.properties.setThundering(false);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void setDefaultSpawnClient() {
-		if (this.field_9232.getSpawnY() <= 0) {
-			this.field_9232.setSpawnY(this.getSeaLevel() + 1);
+		if (this.properties.getSpawnY() <= 0) {
+			this.properties.setSpawnY(this.getSeaLevel() + 1);
 		}
 
-		int i = this.field_9232.getSpawnX();
-		int j = this.field_9232.getSpawnZ();
+		int i = this.properties.getSpawnX();
+		int j = this.properties.getSpawnZ();
 		int k = 0;
 
-		while (this.method_8495(new BlockPos(i, 0, j)).isAir()) {
+		while (this.getTopNonAirState(new BlockPos(i, 0, j)).isAir()) {
 			i += this.random.nextInt(8) - this.random.nextInt(8);
 			j += this.random.nextInt(8) - this.random.nextInt(8);
 			if (++k == 10000) {
@@ -539,8 +538,8 @@ public class ServerWorld extends World {
 			}
 		}
 
-		this.field_9232.setSpawnX(i);
-		this.field_9232.setSpawnZ(j);
+		this.properties.setSpawnX(i);
+		this.properties.setSpawnZ(j);
 	}
 
 	public void resetIdleTimeout() {
@@ -548,16 +547,16 @@ public class ServerWorld extends World {
 	}
 
 	private void method_14171(ScheduledTick<Fluid> scheduledTick) {
-		FluidState fluidState = this.method_8316(scheduledTick.field_9322);
+		FluidState fluidState = this.getFluidState(scheduledTick.pos);
 		if (fluidState.getFluid() == scheduledTick.getObject()) {
-			fluidState.method_15770(this, scheduledTick.field_9322);
+			fluidState.onScheduledTick(this, scheduledTick.pos);
 		}
 	}
 
 	private void method_14189(ScheduledTick<Block> scheduledTick) {
-		BlockState blockState = this.method_8320(scheduledTick.field_9322);
+		BlockState blockState = this.getBlockState(scheduledTick.pos);
 		if (blockState.getBlock() == scheduledTick.getObject()) {
-			blockState.method_11585(this, scheduledTick.field_9322, this.random);
+			blockState.scheduledTick(this, scheduledTick.pos, this.random);
 		}
 	}
 
@@ -570,7 +569,7 @@ public class ServerWorld extends World {
 			entity.prevPitch = entity.pitch;
 			if (entity.field_6016) {
 				entity.age++;
-				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.method_10221(entity.method_5864()).toString()));
+				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
 				entity.update();
 				this.getProfiler().pop();
 			}
@@ -628,20 +627,20 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public boolean method_8505(PlayerEntity playerEntity, BlockPos blockPos) {
-		return !this.server.isSpawnProtected(this, blockPos, playerEntity) && this.method_8621().method_11952(blockPos);
+	public boolean canPlayerModifyAt(PlayerEntity playerEntity, BlockPos blockPos) {
+		return !this.server.isSpawnProtected(this, blockPos, playerEntity) && this.getWorldBorder().contains(blockPos);
 	}
 
 	public void init(LevelInfo levelInfo) {
-		if (!this.field_9247.canPlayersSleep()) {
-			this.field_9232.method_187(BlockPos.ORIGIN.up(this.field_9248.getChunkGenerator().getSpawnHeight()));
-		} else if (this.field_9232.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-			this.field_9232.method_187(BlockPos.ORIGIN.up());
+		if (!this.dimension.canPlayersSleep()) {
+			this.properties.setSpawnPos(BlockPos.ORIGIN.up(this.chunkManager.getChunkGenerator().getSpawnHeight()));
+		} else if (this.properties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
+			this.properties.setSpawnPos(BlockPos.ORIGIN.up());
 		} else {
-			BiomeSource biomeSource = this.field_9248.getChunkGenerator().getBiomeSource();
+			BiomeSource biomeSource = this.chunkManager.getChunkGenerator().getBiomeSource();
 			List<Biome> list = biomeSource.getSpawnBiomes();
 			Random random = new Random(this.getSeed());
-			BlockPos blockPos = biomeSource.method_8762(0, 0, 256, list, random);
+			BlockPos blockPos = biomeSource.locateBiome(0, 0, 256, list, random);
 			ChunkPos chunkPos = blockPos == null ? new ChunkPos(0, 0) : new ChunkPos(blockPos);
 			if (blockPos == null) {
 				LOGGER.warn("Unable to find spawn biome");
@@ -650,13 +649,13 @@ public class ServerWorld extends World {
 			boolean bl = false;
 
 			for (Block block : BlockTags.field_15478.values()) {
-				if (biomeSource.getTopMaterials().contains(block.method_9564())) {
+				if (biomeSource.getTopMaterials().contains(block.getDefaultState())) {
 					bl = true;
 					break;
 				}
 			}
 
-			this.field_9232.method_187(chunkPos.method_8323().add(8, this.field_9248.getChunkGenerator().getSpawnHeight(), 8));
+			this.properties.setSpawnPos(chunkPos.getCenterBlockPos().add(8, this.chunkManager.getChunkGenerator().getSpawnHeight(), 8));
 			int i = 0;
 			int j = 0;
 			int k = 0;
@@ -665,9 +664,9 @@ public class ServerWorld extends World {
 
 			for (int n = 0; n < 1024; n++) {
 				if (i > -16 && i <= 16 && j > -16 && j <= 16) {
-					BlockPos blockPos2 = this.field_9247.method_12452(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl);
+					BlockPos blockPos2 = this.dimension.getSpawningBlockInChunk(new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl);
 					if (blockPos2 != null) {
-						this.field_9232.method_187(blockPos2);
+						this.properties.setSpawnPos(blockPos2);
 						break;
 					}
 				}
@@ -692,11 +691,11 @@ public class ServerWorld extends World {
 		BonusChestFeature bonusChestFeature = Feature.BONUS_CHEST;
 
 		for (int i = 0; i < 10; i++) {
-			int j = this.field_9232.getSpawnX() + this.random.nextInt(6) - this.random.nextInt(6);
-			int k = this.field_9232.getSpawnZ() + this.random.nextInt(6) - this.random.nextInt(6);
-			BlockPos blockPos = this.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(j, 0, k)).up();
+			int j = this.properties.getSpawnX() + this.random.nextInt(6) - this.random.nextInt(6);
+			int k = this.properties.getSpawnZ() + this.random.nextInt(6) - this.random.nextInt(6);
+			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(j, 0, k)).up();
 			if (bonusChestFeature.method_12817(
-				this, (ChunkGenerator<? extends ChunkGeneratorConfig>)this.field_9248.getChunkGenerator(), this.random, blockPos, FeatureConfig.field_13603
+				this, (ChunkGenerator<? extends ChunkGeneratorConfig>)this.chunkManager.getChunkGenerator(), this.random, blockPos, FeatureConfig.DEFAULT
 			)) {
 				break;
 			}
@@ -705,10 +704,10 @@ public class ServerWorld extends World {
 
 	@Nullable
 	public BlockPos getForcedSpawnPoint() {
-		return this.field_9247.method_12466();
+		return this.dimension.getForcedSpawnPoint();
 	}
 
-	public void method_14176(@Nullable ProgressListener progressListener, boolean bl, boolean bl2) throws SessionLockException {
+	public void save(@Nullable ProgressListener progressListener, boolean bl, boolean bl2) throws SessionLockException {
 		ServerChunkManager serverChunkManager = this.method_14178();
 		if (!bl2) {
 			if (progressListener != null) {
@@ -726,7 +725,7 @@ public class ServerWorld extends World {
 
 	protected void saveLevel() throws SessionLockException {
 		this.checkSessionLock();
-		this.field_9247.saveWorldData();
+		this.dimension.saveWorldData();
 		this.method_14178().getPersistentStateManager().save();
 	}
 
@@ -734,7 +733,7 @@ public class ServerWorld extends World {
 		List<Entity> list = Lists.<Entity>newArrayList();
 
 		for (Entity entity : this.entitiesById.values()) {
-			if ((entityType == null || entity.method_5864() == entityType) && predicate.test(entity)) {
+			if ((entityType == null || entity.getType() == entityType) && predicate.test(entity)) {
 				list.add(entity);
 			}
 		}
@@ -777,7 +776,7 @@ public class ServerWorld extends World {
 
 		for (Entity entity : this.entitiesById.values()) {
 			if (!(entity instanceof MobEntity) || !((MobEntity)entity).isPersistent()) {
-				EntityCategory entityCategory = entity.method_5864().method_5891();
+				EntityCategory entityCategory = entity.getType().getEntityClass();
 				if (entityCategory != EntityCategory.field_17715) {
 					object2IntMap.computeInt(entityCategory, (entityCategoryx, integer) -> 1 + (integer == null ? 0 : integer));
 				}
@@ -832,7 +831,7 @@ public class ServerWorld extends World {
 
 		this.players.add(serverPlayerEntity);
 		this.updatePlayersSleeping();
-		Chunk chunk = this.method_8402(MathHelper.floor(serverPlayerEntity.x / 16.0), MathHelper.floor(serverPlayerEntity.z / 16.0), ChunkStatus.FULL, true);
+		Chunk chunk = this.getChunk(MathHelper.floor(serverPlayerEntity.x / 16.0), MathHelper.floor(serverPlayerEntity.z / 16.0), ChunkStatus.FULL, true);
 		if (chunk instanceof WorldChunk) {
 			chunk.addEntity(serverPlayerEntity);
 		}
@@ -842,12 +841,12 @@ public class ServerWorld extends World {
 
 	private boolean method_14175(Entity entity) {
 		if (entity.invalid) {
-			LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityType.method_5890(entity.method_5864()));
+			LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityType.getId(entity.getType()));
 			return false;
 		} else if (this.method_18777(entity)) {
 			return false;
 		} else {
-			Chunk chunk = this.method_8402(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, entity.teleporting);
+			Chunk chunk = this.getChunk(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, entity.teleporting);
 			if (!(chunk instanceof WorldChunk)) {
 				return false;
 			} else {
@@ -869,14 +868,14 @@ public class ServerWorld extends World {
 		if (entity2 == null) {
 			return false;
 		} else {
-			LOGGER.warn("Keeping entity {} that already exists with UUID {}", EntityType.method_5890(entity2.method_5864()), entity.getUuid().toString());
+			LOGGER.warn("Keeping entity {} that already exists with UUID {}", EntityType.getId(entity2.getType()), entity.getUuid().toString());
 			return true;
 		}
 	}
 
 	public void method_18764(WorldChunk worldChunk) {
 		this.field_18139.addAll(worldChunk.getBlockEntityMap().values());
-		TypeFilterableList[] var2 = worldChunk.method_12215();
+		TypeFilterableList[] var2 = worldChunk.getEntitySectionArray();
 		int var3 = var2.length;
 
 		for (int var4 = 0; var4 < var3; var4++) {
@@ -909,7 +908,7 @@ public class ServerWorld extends World {
 
 		this.method_14170().resetEntityScore(entity);
 		if (entity instanceof MobEntity) {
-			this.field_18262.remove(((MobEntity)entity).method_5942());
+			this.field_18262.remove(((MobEntity)entity).getNavigation());
 		}
 	}
 
@@ -927,7 +926,7 @@ public class ServerWorld extends World {
 			this.entitiesByUuid.put(entity.getUuid(), entity);
 			this.method_14178().method_18755(entity);
 			if (entity instanceof MobEntity) {
-				this.field_18262.add(((MobEntity)entity).method_5942());
+				this.field_18262.add(((MobEntity)entity).getNavigation());
 			}
 		}
 	}
@@ -943,7 +942,7 @@ public class ServerWorld extends World {
 	}
 
 	private void method_18780(Entity entity) {
-		Chunk chunk = this.method_8402(entity.chunkX, entity.chunkZ, ChunkStatus.FULL, false);
+		Chunk chunk = this.getChunk(entity.chunkX, entity.chunkZ, ChunkStatus.FULL, false);
 		if (chunk instanceof WorldChunk) {
 			((WorldChunk)chunk).remove(entity);
 		}
@@ -958,84 +957,76 @@ public class ServerWorld extends World {
 	public void addLightning(LightningEntity lightningEntity) {
 		this.globalEntities.add(lightningEntity);
 		this.server
-			.method_3760()
+			.getPlayerManager()
 			.sendToAround(
-				null, lightningEntity.x, lightningEntity.y, lightningEntity.z, 512.0, this.field_9247.method_12460(), new EntitySpawnGlobalS2CPacket(lightningEntity)
+				null, lightningEntity.x, lightningEntity.y, lightningEntity.z, 512.0, this.dimension.getType(), new EntitySpawnGlobalS2CPacket(lightningEntity)
 			);
 	}
 
 	@Override
-	public void method_8517(int i, BlockPos blockPos, int j) {
-		for (ServerPlayerEntity serverPlayerEntity : this.server.method_3760().getPlayerList()) {
-			if (serverPlayerEntity != null && serverPlayerEntity.field_6002 == this && serverPlayerEntity.getEntityId() != i) {
+	public void setBlockBreakingProgress(int i, BlockPos blockPos, int j) {
+		for (ServerPlayerEntity serverPlayerEntity : this.server.getPlayerManager().getPlayerList()) {
+			if (serverPlayerEntity != null && serverPlayerEntity.world == this && serverPlayerEntity.getEntityId() != i) {
 				double d = (double)blockPos.getX() - serverPlayerEntity.x;
 				double e = (double)blockPos.getY() - serverPlayerEntity.y;
 				double f = (double)blockPos.getZ() - serverPlayerEntity.z;
 				if (d * d + e * e + f * f < 1024.0) {
-					serverPlayerEntity.field_13987.sendPacket(new BlockBreakingProgressS2CPacket(i, blockPos, j));
+					serverPlayerEntity.networkHandler.sendPacket(new BlockBreakingProgressS2CPacket(i, blockPos, j));
 				}
 			}
 		}
 	}
 
 	@Override
-	public void method_8465(
-		@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h
-	) {
+	public void playSound(@Nullable PlayerEntity playerEntity, double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h) {
 		this.server
-			.method_3760()
+			.getPlayerManager()
 			.sendToAround(
-				playerEntity,
-				d,
-				e,
-				f,
-				g > 1.0F ? (double)(16.0F * g) : 16.0,
-				this.field_9247.method_12460(),
-				new PlaySoundS2CPacket(soundEvent, soundCategory, d, e, f, g, h)
+				playerEntity, d, e, f, g > 1.0F ? (double)(16.0F * g) : 16.0, this.dimension.getType(), new PlaySoundS2CPacket(soundEvent, soundCategory, d, e, f, g, h)
 			);
 	}
 
 	@Override
-	public void method_8449(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+	public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
 		this.server
-			.method_3760()
+			.getPlayerManager()
 			.sendToAround(
 				playerEntity,
 				entity.x,
 				entity.y,
 				entity.z,
 				f > 1.0F ? (double)(16.0F * f) : 16.0,
-				this.field_9247.method_12460(),
+				this.dimension.getType(),
 				new PlaySoundFromEntityS2CPacket(soundEvent, soundCategory, entity, f, g)
 			);
 	}
 
 	@Override
-	public void method_8474(int i, BlockPos blockPos, int j) {
-		this.server.method_3760().sendToAll(new WorldEventS2CPacket(i, blockPos, j, true));
+	public void playGlobalEvent(int i, BlockPos blockPos, int j) {
+		this.server.getPlayerManager().sendToAll(new WorldEventS2CPacket(i, blockPos, j, true));
 	}
 
 	@Override
-	public void method_8444(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
+	public void playEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 		this.server
-			.method_3760()
+			.getPlayerManager()
 			.sendToAround(
 				playerEntity,
 				(double)blockPos.getX(),
 				(double)blockPos.getY(),
 				(double)blockPos.getZ(),
 				64.0,
-				this.field_9247.method_12460(),
+				this.dimension.getType(),
 				new WorldEventS2CPacket(i, blockPos, j, false)
 			);
 	}
 
 	@Override
-	public void method_8413(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
+	public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
 		this.method_14178().markForUpdate(blockPos);
-		VoxelShape voxelShape = blockState.method_11628(this, blockPos);
-		VoxelShape voxelShape2 = blockState2.method_11628(this, blockPos);
-		if (VoxelShapes.method_1074(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
+		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
+		VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos);
+		if (VoxelShapes.compareShapes(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
 			for (EntityNavigation entityNavigation : this.field_18262) {
 				if (!entityNavigation.shouldRecalculatePath()) {
 					entityNavigation.method_18053(blockPos);
@@ -1050,7 +1041,7 @@ public class ServerWorld extends World {
 	}
 
 	public ServerChunkManager method_14178() {
-		return (ServerChunkManager)super.method_8398();
+		return (ServerChunkManager)super.getChunkManager();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1077,7 +1068,7 @@ public class ServerWorld extends World {
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
 			if (serverPlayerEntity.squaredDistanceTo(d, e, f) < 4096.0) {
-				serverPlayerEntity.field_13987
+				serverPlayerEntity.networkHandler
 					.sendPacket(new ExplosionS2CPacket(d, e, f, g, explosion.getAffectedBlocks(), (Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity)));
 			}
 		}
@@ -1086,7 +1077,7 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void method_8427(BlockPos blockPos, Block block, int i, int j) {
+	public void addBlockAction(BlockPos blockPos, Block block, int i, int j) {
 		this.pendingBlockActions.add(new BlockAction(blockPos, block, i, j));
 	}
 
@@ -1095,30 +1086,30 @@ public class ServerWorld extends World {
 			BlockAction blockAction = this.pendingBlockActions.removeFirst();
 			if (this.method_14174(blockAction)) {
 				this.server
-					.method_3760()
+					.getPlayerManager()
 					.sendToAround(
 						null,
-						(double)blockAction.method_8306().getX(),
-						(double)blockAction.method_8306().getY(),
-						(double)blockAction.method_8306().getZ(),
+						(double)blockAction.getPos().getX(),
+						(double)blockAction.getPos().getY(),
+						(double)blockAction.getPos().getZ(),
 						64.0,
-						this.field_9247.method_12460(),
-						new BlockActionS2CPacket(blockAction.method_8306(), blockAction.method_8309(), blockAction.getType(), blockAction.getData())
+						this.dimension.getType(),
+						new BlockActionS2CPacket(blockAction.getPos(), blockAction.getBlock(), blockAction.getType(), blockAction.getData())
 					);
 			}
 		}
 	}
 
 	private boolean method_14174(BlockAction blockAction) {
-		BlockState blockState = this.method_8320(blockAction.method_8306());
-		return blockState.getBlock() == blockAction.method_8309()
-			? blockState.method_11583(this, blockAction.method_8306(), blockAction.getType(), blockAction.getData())
+		BlockState blockState = this.getBlockState(blockAction.getPos());
+		return blockState.getBlock() == blockAction.getBlock()
+			? blockState.onBlockAction(this, blockAction.getPos(), blockAction.getType(), blockAction.getData())
 			: false;
 	}
 
 	@Override
 	public void close() throws IOException {
-		this.field_9248.close();
+		this.chunkManager.close();
 		super.close();
 	}
 
@@ -1171,12 +1162,12 @@ public class ServerWorld extends World {
 		if (serverPlayerEntity.getServerWorld() != this) {
 			return false;
 		} else {
-			BlockPos blockPos = serverPlayerEntity.method_5704();
+			BlockPos blockPos = serverPlayerEntity.getPos();
 			double g = blockPos.squaredDistanceTo(d, e, f);
 			if (!(g <= 1024.0) && (!bl || !(g <= 262144.0))) {
 				return false;
 			} else {
-				serverPlayerEntity.field_13987.sendPacket(packet);
+				serverPlayerEntity.networkHandler.sendPacket(packet);
 				return true;
 			}
 		}
@@ -1195,8 +1186,8 @@ public class ServerWorld extends World {
 
 	@Nullable
 	@Override
-	public BlockPos method_8487(String string, BlockPos blockPos, int i, boolean bl) {
-		return this.method_14178().getChunkGenerator().method_12103(this, string, blockPos, i, bl);
+	public BlockPos locateStructure(String string, BlockPos blockPos, int i, boolean bl) {
+		return this.method_14178().getChunkGenerator().locateStructure(this, string, blockPos, i, bl);
 	}
 
 	@Override
@@ -1205,14 +1196,14 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public TagManager method_8514() {
-		return this.server.method_3801();
+	public TagManager getTagManager() {
+		return this.server.getTagManager();
 	}
 
 	@Override
 	public void setTime(long l) {
 		super.setTime(l);
-		this.field_9232.method_143().processEvents(this.server, l);
+		this.properties.getScheduledEvents().processEvents(this.server, l);
 	}
 
 	@Override
@@ -1234,30 +1225,30 @@ public class ServerWorld extends World {
 
 	@Nullable
 	@Override
-	public MapState method_17891(String string) {
-		return this.getServer().method_3847(DimensionType.field_13072).getPersistentStateManager().get(() -> new MapState(string), string);
+	public MapState getMapState(String string) {
+		return this.getServer().getWorld(DimensionType.field_13072).getPersistentStateManager().get(() -> new MapState(string), string);
 	}
 
 	@Override
-	public void method_17890(MapState mapState) {
-		this.getServer().method_3847(DimensionType.field_13072).getPersistentStateManager().set(mapState);
+	public void putMapState(MapState mapState) {
+		this.getServer().getWorld(DimensionType.field_13072).getPersistentStateManager().set(mapState);
 	}
 
 	@Override
 	public int getNextMapId() {
 		return this.getServer()
-			.method_3847(DimensionType.field_13072)
+			.getWorld(DimensionType.field_13072)
 			.getPersistentStateManager()
 			.<IdCountsState>getOrCreate(IdCountsState::new, "idcounts")
 			.getNextMapId();
 	}
 
 	@Override
-	public void method_8554(BlockPos blockPos) {
-		ChunkPos chunkPos = new ChunkPos(new BlockPos(this.field_9232.getSpawnX(), 0, this.field_9232.getSpawnZ()));
-		super.method_8554(blockPos);
-		this.method_14178().method_17300(ChunkTicketType.START, chunkPos, 11, Void.INSTANCE);
-		this.method_14178().method_17297(ChunkTicketType.START, new ChunkPos(blockPos), 11, Void.INSTANCE);
+	public void setSpawnPos(BlockPos blockPos) {
+		ChunkPos chunkPos = new ChunkPos(new BlockPos(this.properties.getSpawnX(), 0, this.properties.getSpawnZ()));
+		super.setSpawnPos(blockPos);
+		this.method_14178().removeTicket(ChunkTicketType.START, chunkPos, 11, Void.INSTANCE);
+		this.method_14178().addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, Void.INSTANCE);
 	}
 
 	public LongSet getForcedChunks() {
@@ -1295,23 +1286,18 @@ public class ServerWorld extends World {
 	@Override
 	public void method_19282(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
 		BlockPos blockPos2 = blockPos.toImmutable();
-		if (blockState.method_11602(BlockTags.field_18847) && !BedBlock.method_19284(blockState)) {
-			this.getServer().execute(() -> {
-				this.method_19494().method_19112(blockPos2);
+		PointOfInterestType.method_19516(blockState).ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
+				this.getPointOfInterestStorage().remove(blockPos2);
 				class_4209.method_19473(this, blockPos2, blockState, false);
-			});
-		}
-
-		if (blockState2.method_11602(BlockTags.field_18847) && !BedBlock.method_19284(blockState2)) {
-			this.getServer().execute(() -> {
-				this.method_19494().method_19115(blockPos2, class_4158.method_19163(blockState2.getBlock()));
+			}));
+		PointOfInterestType.method_19516(blockState2).ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
+				this.getPointOfInterestStorage().add(blockPos2, pointOfInterestType);
 				class_4209.method_19473(this, blockPos2, blockState2, true);
-			});
-		}
+			}));
 	}
 
-	public class_4153 method_19494() {
-		return this.method_14178().method_19493();
+	public PointOfInterestStorage getPointOfInterestStorage() {
+		return this.method_14178().getPointOfInterestStorage();
 	}
 
 	public boolean method_19500(BlockPos blockPos) {
@@ -1323,23 +1309,23 @@ public class ServerWorld extends World {
 	}
 
 	public int method_19498(ChunkSectionPos chunkSectionPos) {
-		return this.method_19494().method_19118(chunkSectionPos);
+		return this.getPointOfInterestStorage().getLevel(chunkSectionPos);
 	}
 
-	public RaidManager method_19495() {
-		return this.field_18811;
+	public RaidManager getRaidManager() {
+		return this.raidManager;
 	}
 
 	@Nullable
-	public Raid method_19502(BlockPos blockPos) {
-		return this.field_18811.method_19209(blockPos);
+	public Raid getRaidAt(BlockPos blockPos) {
+		return this.raidManager.getRaidAt(blockPos);
 	}
 
-	public boolean method_19503(BlockPos blockPos) {
-		return this.method_19502(blockPos) != null;
+	public boolean hasRaidAt(BlockPos blockPos) {
+		return this.getRaidAt(blockPos) != null;
 	}
 
-	public void method_19496(class_4151 arg, Entity entity, class_4094 arg2) {
-		arg2.method_18870(arg, entity);
+	public void handleInteraction(EntityInteraction entityInteraction, Entity entity, InteractionObserver interactionObserver) {
+		interactionObserver.onInteractionWith(entityInteraction, entity);
 	}
 }

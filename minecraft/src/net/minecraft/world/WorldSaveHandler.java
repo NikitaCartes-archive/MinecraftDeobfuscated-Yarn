@@ -46,11 +46,11 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 		this.writeSessionLock();
 	}
 
-	public void method_131(LevelProperties levelProperties, @Nullable CompoundTag compoundTag) {
+	public void saveWorld(LevelProperties levelProperties, @Nullable CompoundTag compoundTag) {
 		levelProperties.setVersion(19133);
-		CompoundTag compoundTag2 = levelProperties.method_163(compoundTag);
+		CompoundTag compoundTag2 = levelProperties.cloneWorldTag(compoundTag);
 		CompoundTag compoundTag3 = new CompoundTag();
-		compoundTag3.method_10566("Data", compoundTag2);
+		compoundTag3.put("Data", compoundTag2);
 
 		try {
 			File file = new File(this.worldDir, "level.dat_new");
@@ -127,13 +127,13 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 	}
 
 	public void saveWorld(LevelProperties levelProperties) {
-		this.method_131(levelProperties, null);
+		this.saveWorld(levelProperties, null);
 	}
 
 	@Override
 	public void savePlayerData(PlayerEntity playerEntity) {
 		try {
-			CompoundTag compoundTag = playerEntity.method_5647(new CompoundTag());
+			CompoundTag compoundTag = playerEntity.toTag(new CompoundTag());
 			File file = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat.tmp");
 			File file2 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
 			NbtIo.writeCompressed(compoundTag, new FileOutputStream(file));
@@ -143,13 +143,13 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 
 			file.renameTo(file2);
 		} catch (Exception var5) {
-			LOGGER.warn("Failed to save player data for {}", playerEntity.method_5477().getString());
+			LOGGER.warn("Failed to save player data for {}", playerEntity.getName().getString());
 		}
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag method_261(PlayerEntity playerEntity) {
+	public CompoundTag loadPlayerData(PlayerEntity playerEntity) {
 		CompoundTag compoundTag = null;
 
 		try {
@@ -158,12 +158,12 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 				compoundTag = NbtIo.readCompressed(new FileInputStream(file));
 			}
 		} catch (Exception var4) {
-			LOGGER.warn("Failed to load player data for {}", playerEntity.method_5477().getString());
+			LOGGER.warn("Failed to load player data for {}", playerEntity.getName().getString());
 		}
 
 		if (compoundTag != null) {
 			int i = compoundTag.containsKey("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
-			playerEntity.method_5651(TagHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
+			playerEntity.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
 		}
 
 		return compoundTag;

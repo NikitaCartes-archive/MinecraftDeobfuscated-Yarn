@@ -111,10 +111,10 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return this.showIcon;
 	}
 
-	public boolean method_5585(LivingEntity livingEntity) {
+	public boolean update(LivingEntity livingEntity) {
 		if (this.duration > 0) {
 			if (this.type.canApplyUpdateEffect(this.duration, this.amplifier)) {
-				this.method_5589(livingEntity);
+				this.applyUpdateEffect(livingEntity);
 			}
 
 			this.updateDuration();
@@ -127,9 +127,9 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return --this.duration;
 	}
 
-	public void method_5589(LivingEntity livingEntity) {
+	public void applyUpdateEffect(LivingEntity livingEntity) {
 		if (this.duration > 0) {
-			this.type.method_5572(livingEntity, this.amplifier);
+			this.type.applyUpdateEffect(livingEntity, this.amplifier);
 		}
 	}
 
@@ -183,7 +183,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return 31 * i + (this.ambient ? 1 : 0);
 	}
 
-	public CompoundTag method_5582(CompoundTag compoundTag) {
+	public CompoundTag serialize(CompoundTag compoundTag) {
 		compoundTag.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
 		compoundTag.putByte("Amplifier", (byte)this.getAmplifier());
 		compoundTag.putInt("Duration", this.getDuration());
@@ -193,7 +193,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		return compoundTag;
 	}
 
-	public static StatusEffectInstance method_5583(CompoundTag compoundTag) {
+	public static StatusEffectInstance deserialize(CompoundTag compoundTag) {
 		int i = compoundTag.getByte("Id");
 		StatusEffect statusEffect = StatusEffect.byRawId(i);
 		if (statusEffect == null) {

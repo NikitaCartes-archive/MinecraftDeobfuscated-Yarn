@@ -18,7 +18,7 @@ public class EmptyEntry extends LeafEntry {
 	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
 	}
 
-	public static LeafEntry.Builder<?> method_401() {
+	public static LeafEntry.Builder<?> Serializer() {
 		return create(EmptyEntry::new);
 	}
 

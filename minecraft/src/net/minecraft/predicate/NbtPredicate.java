@@ -18,26 +18,26 @@ import net.minecraft.util.TagHelper;
 public class NbtPredicate {
 	public static final NbtPredicate ANY = new NbtPredicate(null);
 	@Nullable
-	private final CompoundTag field_9715;
+	private final CompoundTag tag;
 
 	public NbtPredicate(@Nullable CompoundTag compoundTag) {
-		this.field_9715 = compoundTag;
+		this.tag = compoundTag;
 	}
 
 	public boolean test(ItemStack itemStack) {
-		return this == ANY ? true : this.method_9077(itemStack.method_7969());
+		return this == ANY ? true : this.test(itemStack.getTag());
 	}
 
 	public boolean test(Entity entity) {
-		return this == ANY ? true : this.method_9077(method_9076(entity));
+		return this == ANY ? true : this.test(entityToTag(entity));
 	}
 
-	public boolean method_9077(@Nullable Tag tag) {
-		return tag == null ? this == ANY : this.field_9715 == null || TagHelper.method_10687(this.field_9715, tag, true);
+	public boolean test(@Nullable Tag tag) {
+		return tag == null ? this == ANY : this.tag == null || TagHelper.areTagsEqual(this.tag, tag, true);
 	}
 
 	public JsonElement serialize() {
-		return (JsonElement)(this != ANY && this.field_9715 != null ? new JsonPrimitive(this.field_9715.toString()) : JsonNull.INSTANCE);
+		return (JsonElement)(this != ANY && this.tag != null ? new JsonPrimitive(this.tag.toString()) : JsonNull.INSTANCE);
 	}
 
 	public static NbtPredicate deserialize(@Nullable JsonElement jsonElement) {
@@ -55,12 +55,12 @@ public class NbtPredicate {
 		}
 	}
 
-	public static CompoundTag method_9076(Entity entity) {
-		CompoundTag compoundTag = entity.method_5647(new CompoundTag());
+	public static CompoundTag entityToTag(Entity entity) {
+		CompoundTag compoundTag = entity.toTag(new CompoundTag());
 		if (entity instanceof PlayerEntity) {
-			ItemStack itemStack = ((PlayerEntity)entity).inventory.method_7391();
+			ItemStack itemStack = ((PlayerEntity)entity).inventory.getMainHandStack();
 			if (!itemStack.isEmpty()) {
-				compoundTag.method_10566("SelectedItem", itemStack.method_7953(new CompoundTag()));
+				compoundTag.put("SelectedItem", itemStack.toTag(new CompoundTag()));
 			}
 		}
 

@@ -2,8 +2,8 @@ package net.minecraft.client.gui.ingame;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.gui.menu.YesNoScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.YesNoCallback;
 
@@ -29,22 +29,22 @@ public class ConfirmChatLinkScreen extends YesNoScreen {
 		super.onInitialized();
 		this.buttons.clear();
 		this.listeners.clear();
-		this.addButton(new class_4185(this.screenWidth / 2 - 50 - 105, this.screenHeight / 6 + 96, 100, 20, this.yesTranslated) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50 - 105, this.screenHeight / 6 + 96, 100, 20, this.yesTranslated) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				ConfirmChatLinkScreen.this.callback.confirmResult(true, ConfirmChatLinkScreen.this.callbackId);
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 - 50, this.screenHeight / 6 + 96, 100, 20, this.copy) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50, this.screenHeight / 6 + 96, 100, 20, this.copy) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				ConfirmChatLinkScreen.this.copyToClipboard();
 				ConfirmChatLinkScreen.this.callback.confirmResult(false, ConfirmChatLinkScreen.this.callbackId);
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 - 50 + 105, this.screenHeight / 6 + 96, 100, 20, this.noTranslated) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50 + 105, this.screenHeight / 6 + 96, 100, 20, this.noTranslated) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				ConfirmChatLinkScreen.this.callback.confirmResult(false, ConfirmChatLinkScreen.this.callbackId);
 			}
 		});

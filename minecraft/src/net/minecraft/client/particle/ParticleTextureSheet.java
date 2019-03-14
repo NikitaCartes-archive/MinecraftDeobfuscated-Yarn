@@ -14,12 +14,12 @@ import net.minecraft.client.texture.TextureManager;
 public interface ParticleTextureSheet {
 	ParticleTextureSheet TERRAIN_SHEET = new ParticleTextureSheet() {
 		@Override
-		public void method_18130(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			GuiLighting.disable();
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
-			textureManager.method_4618(SpriteAtlasTexture.field_5275);
-			bufferBuilder.method_1328(7, VertexFormats.field_1584);
+			textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}
 
 		@Override
@@ -33,12 +33,12 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet PARTICLE_SHEET_OPAQUE = new ParticleTextureSheet() {
 		@Override
-		public void method_18130(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			GuiLighting.disable();
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
-			textureManager.method_4618(SpriteAtlasTexture.field_17898);
-			bufferBuilder.method_1328(7, VertexFormats.field_1584);
+			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}
 
 		@Override
@@ -52,14 +52,14 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet PARTICLE_SHEET_TRANSLUCENT = new ParticleTextureSheet() {
 		@Override
-		public void method_18130(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			GuiLighting.disable();
 			GlStateManager.depthMask(false);
-			textureManager.method_4618(SpriteAtlasTexture.field_17898);
+			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			GlStateManager.alphaFunc(516, 0.003921569F);
-			bufferBuilder.method_1328(7, VertexFormats.field_1584);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}
 
 		@Override
@@ -73,12 +73,12 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet PARTICLE_SHEET_LIT = new ParticleTextureSheet() {
 		@Override
-		public void method_18130(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
-			textureManager.method_4618(SpriteAtlasTexture.field_17898);
+			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEX);
 			GuiLighting.disable();
-			bufferBuilder.method_1328(7, VertexFormats.field_1584);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_LMAP);
 		}
 
 		@Override
@@ -92,7 +92,7 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet CUSTOM = new ParticleTextureSheet() {
 		@Override
-		public void method_18130(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			GlStateManager.depthMask(true);
 			GlStateManager.disableBlend();
 		}
@@ -107,7 +107,7 @@ public interface ParticleTextureSheet {
 	};
 	ParticleTextureSheet NO_RENDER = new ParticleTextureSheet() {
 		@Override
-		public void method_18130(BufferBuilder bufferBuilder, TextureManager textureManager) {
+		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
 		}
 
 		@Override
@@ -119,7 +119,7 @@ public interface ParticleTextureSheet {
 		}
 	};
 
-	void method_18130(BufferBuilder bufferBuilder, TextureManager textureManager);
+	void begin(BufferBuilder bufferBuilder, TextureManager textureManager);
 
 	void draw(Tessellator tessellator);
 }

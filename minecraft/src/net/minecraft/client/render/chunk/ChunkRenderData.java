@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_854;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.BufferBuilder;
@@ -32,7 +31,7 @@ public class ChunkRenderData {
 	private final boolean[] initialized = new boolean[BlockRenderLayer.values().length];
 	private boolean empty = true;
 	private final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
-	private class_854 field_4455 = new class_854();
+	private ChunkOcclusionGraph field_4455 = new ChunkOcclusionGraph();
 	private BufferBuilder.State bufferState;
 
 	public boolean isEmpty() {
@@ -65,11 +64,11 @@ public class ChunkRenderData {
 	}
 
 	public boolean method_3650(Direction direction, Direction direction2) {
-		return this.field_4455.method_3695(direction, direction2);
+		return this.field_4455.isVisibleThrough(direction, direction2);
 	}
 
-	public void method_3640(class_854 arg) {
-		this.field_4455 = arg;
+	public void method_3640(ChunkOcclusionGraph chunkOcclusionGraph) {
+		this.field_4455 = chunkOcclusionGraph;
 	}
 
 	public BufferBuilder.State getBufferState() {

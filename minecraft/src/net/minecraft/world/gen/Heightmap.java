@@ -17,8 +17,8 @@ import net.minecraft.world.chunk.Chunk;
 
 public class Heightmap {
 	private static final Predicate<BlockState> ALWAYS_TRUE = blockState -> true;
-	private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.method_11620().suffocates();
-	private final PackedIntegerArray field_13192 = new PackedIntegerArray(9, 256);
+	private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().suffocates();
+	private final PackedIntegerArray storage = new PackedIntegerArray(9, 256);
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;
 
@@ -37,12 +37,12 @@ public class Heightmap {
 			for (int k = 0; k < 16; k++) {
 				for (int l = 0; l < 16; l++) {
 					for (Heightmap.Type type : set) {
-						objectList.add(chunk.method_12032(type));
+						objectList.add(chunk.getHeightmap(type));
 					}
 
 					for (int m = j - 1; m >= 0; m--) {
 						pooledMutable.method_10113(k, m, l);
-						BlockState blockState = chunk.method_8320(pooledMutable);
+						BlockState blockState = chunk.getBlockState(pooledMutable);
 						if (blockState.getBlock() != Blocks.field_10124) {
 							while (objectListIterator.hasNext()) {
 								Heightmap heightmap = (Heightmap)objectListIterator.next();
@@ -79,7 +79,7 @@ public class Heightmap {
 
 				for (int m = j - 1; m >= 0; m--) {
 					mutable.set(i, m, k);
-					if (this.blockPredicate.test(this.chunk.method_8320(mutable))) {
+					if (this.blockPredicate.test(this.chunk.getBlockState(mutable))) {
 						this.set(i, k, m + 1);
 						break;
 					}
@@ -101,19 +101,19 @@ public class Heightmap {
 	}
 
 	private int get(int i) {
-		return this.field_13192.get(i);
+		return this.storage.get(i);
 	}
 
 	private void set(int i, int j, int k) {
-		this.field_13192.set(toIndex(i, j), k);
+		this.storage.set(toIndex(i, j), k);
 	}
 
 	public void setTo(long[] ls) {
-		System.arraycopy(ls, 0, this.field_13192.getStorage(), 0, ls.length);
+		System.arraycopy(ls, 0, this.storage.getStorage(), 0, ls.length);
 	}
 
 	public long[] asLongArray() {
-		return this.field_13192.getStorage();
+		return this.storage.getStorage();
 	}
 
 	private static int toIndex(int i, int j) {
@@ -126,12 +126,12 @@ public class Heightmap {
 		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.class_2904.field_13207, Heightmap.SUFFOCATES),
 		OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.class_2904.field_13206, Heightmap.SUFFOCATES),
 		MOTION_BLOCKING(
-			"MOTION_BLOCKING", Heightmap.class_2904.field_16424, blockState -> blockState.method_11620().suffocates() || !blockState.method_11618().isEmpty()
+			"MOTION_BLOCKING", Heightmap.class_2904.field_16424, blockState -> blockState.getMaterial().suffocates() || !blockState.getFluidState().isEmpty()
 		),
 		MOTION_BLOCKING_NO_LEAVES(
 			"MOTION_BLOCKING_NO_LEAVES",
 			Heightmap.class_2904.field_13206,
-			blockState -> (blockState.method_11620().suffocates() || !blockState.method_11618().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
+			blockState -> (blockState.getMaterial().suffocates() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
 		);
 
 		private final String name;

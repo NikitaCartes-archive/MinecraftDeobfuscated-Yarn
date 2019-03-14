@@ -20,13 +20,13 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProgress> extends BlockEntityRenderer<T> {
-	private static final Identifier field_4360 = new Identifier("textures/entity/chest/trapped_double.png");
-	private static final Identifier field_4362 = new Identifier("textures/entity/chest/christmas_double.png");
-	private static final Identifier field_4359 = new Identifier("textures/entity/chest/normal_double.png");
-	private static final Identifier field_4357 = new Identifier("textures/entity/chest/trapped.png");
-	private static final Identifier field_4363 = new Identifier("textures/entity/chest/christmas.png");
-	private static final Identifier field_4364 = new Identifier("textures/entity/chest/normal.png");
-	private static final Identifier field_4366 = new Identifier("textures/entity/chest/ender.png");
+	private static final Identifier TRAPPED_DOUBLE_TEX = new Identifier("textures/entity/chest/trapped_double.png");
+	private static final Identifier CHRISTMAS_DOUBLE_TEX = new Identifier("textures/entity/chest/christmas_double.png");
+	private static final Identifier NORMAL_DOUBLE_TEX = new Identifier("textures/entity/chest/normal_double.png");
+	private static final Identifier TRAPPED_TEX = new Identifier("textures/entity/chest/trapped.png");
+	private static final Identifier CHRISTMAS_TEX = new Identifier("textures/entity/chest/christmas.png");
+	private static final Identifier NORMAL_TEX = new Identifier("textures/entity/chest/normal.png");
+	private static final Identifier ENDER_TEX = new Identifier("textures/entity/chest/ender.png");
 	private final ChestEntityModel modelSingleChest = new ChestEntityModel();
 	private final ChestEntityModel modelDoubleChest = new ChestDoubleEntityModel();
 	private boolean isChristmas;
@@ -43,10 +43,8 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 		GlStateManager.enableDepthTest();
 		GlStateManager.depthFunc(515);
 		GlStateManager.depthMask(true);
-		BlockState blockState = blockEntity.hasWorld()
-			? blockEntity.method_11010()
-			: Blocks.field_10034.method_9564().method_11657(ChestBlock.field_10768, Direction.SOUTH);
-		ChestType chestType = blockState.method_11570((Property<T>)ChestBlock.field_10770) ? blockState.method_11654(ChestBlock.field_10770) : ChestType.field_12569;
+		BlockState blockState = blockEntity.hasWorld() ? blockEntity.getCachedState() : Blocks.field_10034.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH);
+		ChestType chestType = blockState.contains((Property<T>)ChestBlock.CHEST_TYPE) ? blockState.get(ChestBlock.CHEST_TYPE) : ChestType.field_12569;
 		if (chestType != ChestType.field_12574) {
 			boolean bl = chestType != ChestType.field_12569;
 			ChestEntityModel chestEntityModel = this.method_3562(blockEntity, i, bl);
@@ -64,7 +62,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.translatef((float)d, (float)e + 1.0F, (float)f + 1.0F);
 			GlStateManager.scalef(1.0F, -1.0F, -1.0F);
-			float h = ((Direction)blockState.method_11654(ChestBlock.field_10768)).asRotation();
+			float h = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
 			if ((double)Math.abs(h) > 1.0E-5) {
 				GlStateManager.translatef(0.5F, 0.5F, 0.5F);
 				GlStateManager.rotatef(h, 0.0F, 1.0F, 0.0F);
@@ -87,18 +85,18 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	private ChestEntityModel method_3562(T blockEntity, int i, boolean bl) {
 		Identifier identifier;
 		if (i >= 0) {
-			identifier = field_4368[i];
+			identifier = DESTROY_STAGE_TEXTURES[i];
 		} else if (this.isChristmas) {
-			identifier = bl ? field_4362 : field_4363;
+			identifier = bl ? CHRISTMAS_DOUBLE_TEX : CHRISTMAS_TEX;
 		} else if (blockEntity instanceof TrappedChestBlockEntity) {
-			identifier = bl ? field_4360 : field_4357;
+			identifier = bl ? TRAPPED_DOUBLE_TEX : TRAPPED_TEX;
 		} else if (blockEntity instanceof EnderChestBlockEntity) {
-			identifier = field_4366;
+			identifier = ENDER_TEX;
 		} else {
-			identifier = bl ? field_4359 : field_4364;
+			identifier = bl ? NORMAL_DOUBLE_TEX : NORMAL_TEX;
 		}
 
-		this.method_3566(identifier);
+		this.bindTexture(identifier);
 		return bl ? this.modelDoubleChest : this.modelSingleChest;
 	}
 

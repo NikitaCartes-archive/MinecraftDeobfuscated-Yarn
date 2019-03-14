@@ -27,13 +27,13 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Entity
 	public void method_17158(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		int m = livingEntity.getStuckArrows();
 		if (m > 0) {
-			Entity entity = new ArrowEntity(livingEntity.field_6002, livingEntity.x, livingEntity.y, livingEntity.z);
+			Entity entity = new ArrowEntity(livingEntity.world, livingEntity.x, livingEntity.y, livingEntity.z);
 			Random random = new Random((long)livingEntity.getEntityId());
 			GuiLighting.disable();
 
 			for (int n = 0; n < m; n++) {
 				GlStateManager.pushMatrix();
-				Cuboid cuboid = this.getModel().method_17101(random);
+				Cuboid cuboid = this.getModel().getRandomCuboid(random);
 				Box box = (Box)cuboid.boxes.get(random.nextInt(cuboid.boxes.size()));
 				cuboid.applyTransform(0.0625F);
 				float o = random.nextFloat();

@@ -130,12 +130,12 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 		@Override
 		protected Stream<CompoundTag> method_10916(ServerCommandSource serverCommandSource) {
 			if (this.field_16408 != null) {
-				ServerWorld serverWorld = serverCommandSource.method_9225();
-				BlockPos blockPos = this.field_16408.method_9704(serverCommandSource);
-				if (serverWorld.method_8477(blockPos)) {
-					BlockEntity blockEntity = serverWorld.method_8321(blockPos);
+				ServerWorld serverWorld = serverCommandSource.getWorld();
+				BlockPos blockPos = this.field_16408.toAbsoluteBlockPos(serverCommandSource);
+				if (serverWorld.isHeightValidAndBlockLoaded(blockPos)) {
+					BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 					if (blockEntity != null) {
-						return Stream.of(blockEntity.method_11007(new CompoundTag()));
+						return Stream.of(blockEntity.toTag(new CompoundTag()));
 					}
 				}
 			}
@@ -157,7 +157,7 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 
 		@Override
 		public String toString() {
-			return "BlockPosArgument{pos='" + this.pos + '\'' + "path='" + this.path + '\'' + ", siblings=" + this.children + ", style=" + this.method_10866() + '}';
+			return "BlockPosArgument{pos='" + this.pos + '\'' + "path='" + this.path + '\'' + ", siblings=" + this.children + ", style=" + this.getStyle() + '}';
 		}
 	}
 
@@ -203,7 +203,7 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 		protected Stream<CompoundTag> method_10916(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 			if (this.field_11781 != null) {
 				List<? extends Entity> list = this.field_11781.getEntities(serverCommandSource);
-				return list.stream().map(NbtPredicate::method_9076);
+				return list.stream().map(NbtPredicate::entityToTag);
 			} else {
 				return Stream.empty();
 			}
@@ -232,7 +232,7 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 				+ ", siblings="
 				+ this.children
 				+ ", style="
-				+ this.method_10866()
+				+ this.getStyle()
 				+ '}';
 		}
 	}

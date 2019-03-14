@@ -8,13 +8,13 @@ import net.minecraft.recipe.RecipeInputProvider;
 import net.minecraft.util.DefaultedList;
 
 public class CraftingInventory implements Inventory, RecipeInputProvider {
-	private final DefaultedList<ItemStack> field_7805;
+	private final DefaultedList<ItemStack> stacks;
 	private final int width;
 	private final int height;
 	private final Container container;
 
 	public CraftingInventory(Container container, int i, int j) {
-		this.field_7805 = DefaultedList.create(i * j, ItemStack.EMPTY);
+		this.stacks = DefaultedList.create(i * j, ItemStack.EMPTY);
 		this.container = container;
 		this.width = i;
 		this.height = j;
@@ -22,12 +22,12 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 
 	@Override
 	public int getInvSize() {
-		return this.field_7805.size();
+		return this.stacks.size();
 	}
 
 	@Override
 	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.field_7805) {
+		for (ItemStack itemStack : this.stacks) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -37,18 +37,18 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public ItemStack method_5438(int i) {
-		return i >= this.getInvSize() ? ItemStack.EMPTY : this.field_7805.get(i);
+	public ItemStack getInvStack(int i) {
+		return i >= this.getInvSize() ? ItemStack.EMPTY : this.stacks.get(i);
 	}
 
 	@Override
-	public ItemStack method_5441(int i) {
-		return Inventories.method_5428(this.field_7805, i);
+	public ItemStack removeInvStack(int i) {
+		return Inventories.removeStack(this.stacks, i);
 	}
 
 	@Override
-	public ItemStack method_5434(int i, int j) {
-		ItemStack itemStack = Inventories.method_5430(this.field_7805, i, j);
+	public ItemStack takeInvStack(int i, int j) {
+		ItemStack itemStack = Inventories.splitStack(this.stacks, i, j);
 		if (!itemStack.isEmpty()) {
 			this.container.onContentChanged(this);
 		}
@@ -57,8 +57,8 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public void method_5447(int i, ItemStack itemStack) {
-		this.field_7805.set(i, itemStack);
+	public void setInvStack(int i, ItemStack itemStack) {
+		this.stacks.set(i, itemStack);
 		this.container.onContentChanged(this);
 	}
 
@@ -67,13 +67,13 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public boolean method_5443(PlayerEntity playerEntity) {
+	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 		return true;
 	}
 
 	@Override
 	public void clear() {
-		this.field_7805.clear();
+		this.stacks.clear();
 	}
 
 	public int getHeight() {
@@ -86,8 +86,8 @@ public class CraftingInventory implements Inventory, RecipeInputProvider {
 
 	@Override
 	public void provideRecipeInputs(RecipeFinder recipeFinder) {
-		for (ItemStack itemStack : this.field_7805) {
-			recipeFinder.method_7404(itemStack);
+		for (ItemStack itemStack : this.stacks) {
+			recipeFinder.addNormalItem(itemStack);
 		}
 	}
 }

@@ -23,7 +23,7 @@ public class HeightmapNoiseBiasedDecorator extends Decorator<TopSolidHeightmapNo
 		TopSolidHeightmapNoiseBiasedDecoratorConfig topSolidHeightmapNoiseBiasedDecoratorConfig,
 		BlockPos blockPos
 	) {
-		double d = Biome.field_9324
+		double d = Biome.FOLIAGE_NOISE
 			.sample(
 				(double)blockPos.getX() / topSolidHeightmapNoiseBiasedDecoratorConfig.noiseFactor,
 				(double)blockPos.getZ() / topSolidHeightmapNoiseBiasedDecoratorConfig.noiseFactor
@@ -32,7 +32,7 @@ public class HeightmapNoiseBiasedDecorator extends Decorator<TopSolidHeightmapNo
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(16);
-			int l = iWorld.method_8589(topSolidHeightmapNoiseBiasedDecoratorConfig.heightmap, blockPos.getX() + j, blockPos.getZ() + k);
+			int l = iWorld.getTop(topSolidHeightmapNoiseBiasedDecoratorConfig.heightmap, blockPos.getX() + j, blockPos.getZ() + k);
 			return new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
 		});
 	}

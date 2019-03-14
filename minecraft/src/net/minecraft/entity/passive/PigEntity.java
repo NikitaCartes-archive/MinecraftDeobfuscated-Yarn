@@ -19,7 +19,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.PigZombieEntity;
+import net.minecraft.entity.mob.ZombiePigmanEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -34,9 +34,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class PigEntity extends AnimalEntity {
-	private static final TrackedData<Boolean> field_6816 = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> SADDLED = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> field_6815 = DataTracker.registerData(PigEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Ingredient field_6817 = Ingredient.method_8091(Items.field_8179, Items.field_8567, Items.field_8186);
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.field_8179, Items.field_8567, Items.field_8186);
 	private boolean field_6814;
 	private int field_6812;
 	private int field_6813;
@@ -47,22 +47,22 @@ public class PigEntity extends AnimalEntity {
 
 	@Override
 	protected void initGoals() {
-		this.field_6201.add(0, new SwimGoal(this));
-		this.field_6201.add(1, new EscapeDangerGoal(this, 1.25));
-		this.field_6201.add(3, new AnimalMateGoal(this, 1.0));
-		this.field_6201.add(4, new TemptGoal(this, 1.2, Ingredient.method_8091(Items.field_8184), false));
-		this.field_6201.add(4, new TemptGoal(this, 1.2, false, field_6817));
-		this.field_6201.add(5, new FollowParentGoal(this, 1.1));
-		this.field_6201.add(6, new class_1394(this, 1.0));
-		this.field_6201.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
-		this.field_6201.add(8, new LookAroundGoal(this));
+		this.goalSelector.add(0, new SwimGoal(this));
+		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
+		this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.field_8184), false));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, false, BREEDING_INGREDIENT));
+		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
+		this.goalSelector.add(6, new class_1394(this, 1.0));
+		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
-		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
 	}
 
 	@Nullable
@@ -78,69 +78,69 @@ public class PigEntity extends AnimalEntity {
 			return false;
 		} else {
 			PlayerEntity playerEntity = (PlayerEntity)entity;
-			return playerEntity.method_6047().getItem() == Items.field_8184 || playerEntity.method_6079().getItem() == Items.field_8184;
+			return playerEntity.getMainHandStack().getItem() == Items.field_8184 || playerEntity.getOffHandStack().getItem() == Items.field_8184;
 		}
 	}
 
 	@Override
-	public void method_5674(TrackedData<?> trackedData) {
-		if (field_6815.equals(trackedData) && this.field_6002.isClient) {
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (field_6815.equals(trackedData) && this.world.isClient) {
 			this.field_6814 = true;
 			this.field_6812 = 0;
-			this.field_6813 = this.field_6011.get(field_6815);
+			this.field_6813 = this.dataTracker.get(field_6815);
 		}
 
-		super.method_5674(trackedData);
+		super.onTrackedDataSet(trackedData);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.field_6011.startTracking(field_6816, false);
-		this.field_6011.startTracking(field_6815, 0);
+		this.dataTracker.startTracking(SADDLED, false);
+		this.dataTracker.startTracking(field_6815, 0);
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putBoolean("Saddle", this.isSaddled());
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		this.setSaddled(compoundTag.getBoolean("Saddle"));
 	}
 
 	@Override
-	protected SoundEvent method_5994() {
+	protected SoundEvent getAmbientSound() {
 		return SoundEvents.field_14615;
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_14750;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_14689;
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
-		this.method_5783(SoundEvents.field_14894, 0.15F, 1.0F);
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+		this.playSound(SoundEvents.field_14894, 0.15F, 1.0F);
 	}
 
 	@Override
-	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
-		if (!super.method_5992(playerEntity, hand)) {
-			ItemStack itemStack = playerEntity.method_5998(hand);
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		if (!super.interactMob(playerEntity, hand)) {
+			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (itemStack.getItem() == Items.field_8448) {
 				itemStack.interactWithEntity(playerEntity, this, hand);
 				return true;
 			} else if (this.isSaddled() && !this.hasPassengers()) {
-				if (!this.field_6002.isClient) {
+				if (!this.world.isClient) {
 					playerEntity.startRiding(this);
 				}
 
@@ -160,39 +160,39 @@ public class PigEntity extends AnimalEntity {
 	protected void dropInventory() {
 		super.dropInventory();
 		if (this.isSaddled()) {
-			this.method_5706(Items.field_8175);
+			this.dropItem(Items.field_8175);
 		}
 	}
 
 	public boolean isSaddled() {
-		return this.field_6011.get(field_6816);
+		return this.dataTracker.get(SADDLED);
 	}
 
 	public void setSaddled(boolean bl) {
 		if (bl) {
-			this.field_6011.set(field_6816, true);
+			this.dataTracker.set(SADDLED, true);
 		} else {
-			this.field_6011.set(field_6816, false);
+			this.dataTracker.set(SADDLED, false);
 		}
 	}
 
 	@Override
-	public void method_5800(LightningEntity lightningEntity) {
-		PigZombieEntity pigZombieEntity = EntityType.ZOMBIE_PIGMAN.method_5883(this.field_6002);
-		pigZombieEntity.method_5673(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8845));
-		pigZombieEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
-		pigZombieEntity.setAiDisabled(this.isAiDisabled());
+	public void onStruckByLightning(LightningEntity lightningEntity) {
+		ZombiePigmanEntity zombiePigmanEntity = EntityType.ZOMBIE_PIGMAN.create(this.world);
+		zombiePigmanEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8845));
+		zombiePigmanEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
+		zombiePigmanEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
-			pigZombieEntity.method_5665(this.method_5797());
-			pigZombieEntity.setCustomNameVisible(this.isCustomNameVisible());
+			zombiePigmanEntity.setCustomName(this.getCustomName());
+			zombiePigmanEntity.setCustomNameVisible(this.isCustomNameVisible());
 		}
 
-		this.field_6002.spawnEntity(pigZombieEntity);
+		this.world.spawnEntity(zombiePigmanEntity);
 		this.invalidate();
 	}
 
 	@Override
-	public void method_6091(Vec3d vec3d) {
+	public void travel(Vec3d vec3d) {
 		if (this.isValid()) {
 			Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 			if (this.hasPassengers() && this.method_5956()) {
@@ -209,15 +209,15 @@ public class PigEntity extends AnimalEntity {
 				}
 
 				if (this.method_5787()) {
-					float f = (float)this.method_5996(EntityAttributes.MOVEMENT_SPEED).getValue() * 0.225F;
+					float f = (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue() * 0.225F;
 					if (this.field_6814) {
 						f += f * 1.15F * MathHelper.sin((float)this.field_6812 / (float)this.field_6813 * (float) Math.PI);
 					}
 
 					this.setMovementSpeed(f);
-					super.method_6091(new Vec3d(0.0, 0.0, 1.0));
+					super.travel(new Vec3d(0.0, 0.0, 1.0));
 				} else {
-					this.method_18799(Vec3d.ZERO);
+					this.setVelocity(Vec3d.ZERO);
 				}
 
 				this.field_6211 = this.field_6225;
@@ -233,7 +233,7 @@ public class PigEntity extends AnimalEntity {
 			} else {
 				this.stepHeight = 0.5F;
 				this.field_6281 = 0.02F;
-				super.method_6091(vec3d);
+				super.travel(vec3d);
 			}
 		}
 	}
@@ -245,17 +245,17 @@ public class PigEntity extends AnimalEntity {
 			this.field_6814 = true;
 			this.field_6812 = 0;
 			this.field_6813 = this.getRand().nextInt(841) + 140;
-			this.method_5841().set(field_6815, this.field_6813);
+			this.getDataTracker().set(field_6815, this.field_6813);
 			return true;
 		}
 	}
 
 	public PigEntity method_6574(PassiveEntity passiveEntity) {
-		return EntityType.PIG.method_5883(this.field_6002);
+		return EntityType.PIG.create(this.world);
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
-		return field_6817.method_8093(itemStack);
+	public boolean isBreedingItem(ItemStack itemStack) {
+		return BREEDING_INGREDIENT.method_8093(itemStack);
 	}
 }

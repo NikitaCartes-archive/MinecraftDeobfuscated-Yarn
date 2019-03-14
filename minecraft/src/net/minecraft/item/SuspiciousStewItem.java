@@ -13,21 +13,21 @@ public class SuspiciousStewItem extends Item {
 	}
 
 	public static void addEffectToStew(ItemStack itemStack, StatusEffect statusEffect, int i) {
-		CompoundTag compoundTag = itemStack.method_7948();
-		ListTag listTag = compoundTag.method_10554("Effects", 9);
+		CompoundTag compoundTag = itemStack.getOrCreateTag();
+		ListTag listTag = compoundTag.getList("Effects", 9);
 		CompoundTag compoundTag2 = new CompoundTag();
 		compoundTag2.putByte("EffectId", (byte)StatusEffect.getRawId(statusEffect));
 		compoundTag2.putInt("EffectDuration", i);
 		listTag.add(compoundTag2);
-		compoundTag.method_10566("Effects", listTag);
+		compoundTag.put("Effects", listTag);
 	}
 
 	@Override
-	public ItemStack method_7861(ItemStack itemStack, World world, LivingEntity livingEntity) {
-		super.method_7861(itemStack, world, livingEntity);
-		CompoundTag compoundTag = itemStack.method_7969();
+	public ItemStack onItemFinishedUsing(ItemStack itemStack, World world, LivingEntity livingEntity) {
+		super.onItemFinishedUsing(itemStack, world, livingEntity);
+		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && compoundTag.containsKey("Effects", 9)) {
-			ListTag listTag = compoundTag.method_10554("Effects", 10);
+			ListTag listTag = compoundTag.getList("Effects", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				int j = 160;

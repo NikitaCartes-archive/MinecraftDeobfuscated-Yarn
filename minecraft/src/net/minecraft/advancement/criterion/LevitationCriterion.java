@@ -17,12 +17,12 @@ import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.Vec3d;
 
 public class LevitationCriterion implements Criterion<LevitationCriterion.Conditions> {
-	private static final Identifier field_9671 = new Identifier("levitation");
+	private static final Identifier ID = new Identifier("levitation");
 	private final Map<PlayerAdvancementTracker, LevitationCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, LevitationCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return field_9671;
+		return ID;
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.method_9009(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 	) {
 		LevitationCriterion.Handler handler = (LevitationCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.method_9012(conditionsContainer);
+			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -62,10 +62,10 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 		return new LevitationCriterion.Conditions(distancePredicate, integer);
 	}
 
-	public void method_9008(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
 		LevitationCriterion.Handler handler = (LevitationCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.method_9011(serverPlayerEntity, vec3d, i);
+			handler.handle(serverPlayerEntity, vec3d, i);
 		}
 	}
 
@@ -74,7 +74,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 		private final NumberRange.Integer duration;
 
 		public Conditions(DistancePredicate distancePredicate, NumberRange.Integer integer) {
-			super(LevitationCriterion.field_9671);
+			super(LevitationCriterion.ID);
 			this.distance = distancePredicate;
 			this.duration = integer;
 		}
@@ -83,7 +83,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 			return new LevitationCriterion.Conditions(distancePredicate, NumberRange.Integer.ANY);
 		}
 
-		public boolean method_9014(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
+		public boolean matches(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
 			return !this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z) ? false : this.duration.test(i);
 		}
 
@@ -97,30 +97,30 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker field_9674;
+		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<LevitationCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<LevitationCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9674 = playerAdvancementTracker;
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void method_9009(Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer) {
+		public void addCondition(Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_9012(Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer) {
+		public void removeCondition(Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_9011(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
 			List<Criterion.ConditionsContainer<LevitationCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.method_797().method_9014(serverPlayerEntity, vec3d, i)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, vec3d, i)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<LevitationCriterion.Conditions>>newArrayList();
 					}
@@ -131,7 +131,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<LevitationCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_9674);
+					conditionsContainerx.apply(this.manager);
 				}
 			}
 		}

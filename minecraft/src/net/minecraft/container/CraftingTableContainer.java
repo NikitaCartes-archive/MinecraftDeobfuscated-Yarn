@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class CraftingTableContainer extends CraftingContainer<CraftingInventory> {
 	private final CraftingInventory craftingInv = new CraftingInventory(this, 3, 3);
-	private final CraftingResultInventory field_7800 = new CraftingResultInventory();
+	private final CraftingResultInventory resultInv = new CraftingResultInventory();
 	private final BlockContext context;
 	private final PlayerEntity player;
 
@@ -33,23 +33,23 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 	public CraftingTableContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.CRAFTING, i);
 		this.context = blockContext;
-		this.player = playerInventory.field_7546;
-		this.method_7621(new CraftingResultSlot(playerInventory.field_7546, this.craftingInv, this.field_7800, 0, 124, 35));
+		this.player = playerInventory.player;
+		this.addSlot(new CraftingResultSlot(playerInventory.player, this.craftingInv, this.resultInv, 0, 124, 35));
 
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 3; k++) {
-				this.method_7621(new Slot(this.craftingInv, k + j * 3, 30 + k * 18, 17 + j * 18));
+				this.addSlot(new Slot(this.craftingInv, k + j * 3, 30 + k * 18, 17 + j * 18));
 			}
 		}
 
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 9; k++) {
-				this.method_7621(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
 			}
 		}
 
 		for (int j = 0; j < 9; j++) {
-			this.method_7621(new Slot(playerInventory, j, 8 + j * 18, 142));
+			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 	}
 
@@ -59,22 +59,22 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 		if (!world.isClient) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)playerEntity;
 			ItemStack itemStack = ItemStack.EMPTY;
-			Optional<CraftingRecipe> optional = world.getServer().getRecipeManager().method_8132(RecipeType.CRAFTING, craftingInventory, world);
+			Optional<CraftingRecipe> optional = world.getServer().getRecipeManager().get(RecipeType.CRAFTING, craftingInventory, world);
 			if (optional.isPresent()) {
 				CraftingRecipe craftingRecipe = (CraftingRecipe)optional.get();
-				if (craftingResultInventory.method_7665(world, serverPlayerEntity, craftingRecipe)) {
+				if (craftingResultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe)) {
 					itemStack = craftingRecipe.craft(craftingInventory);
 				}
 			}
 
-			craftingResultInventory.method_5447(0, itemStack);
-			serverPlayerEntity.field_13987.sendPacket(new GuiSlotUpdateS2CPacket(i, 0, itemStack));
+			craftingResultInventory.setInvStack(0, itemStack);
+			serverPlayerEntity.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(i, 0, itemStack));
 		}
 	}
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> method_17399(this.syncId, world, this.player, this.craftingInv, this.field_7800)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> method_17399(this.syncId, world, this.player, this.craftingInv, this.resultInv)));
 	}
 
 	@Override
@@ -85,53 +85,53 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 	@Override
 	public void clearCraftingSlots() {
 		this.craftingInv.clear();
-		this.field_7800.clear();
+		this.resultInv.clear();
 	}
 
 	@Override
-	public boolean method_7652(Recipe<? super CraftingInventory> recipe) {
-		return recipe.method_8115(this.craftingInv, this.player.field_6002);
+	public boolean matches(Recipe<? super CraftingInventory> recipe) {
+		return recipe.matches(this.craftingInv, this.player.world);
 	}
 
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, world, this.craftingInv)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInv)));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.context, playerEntity, Blocks.field_9980);
+		return canUse(this.context, playerEntity, Blocks.field_9980);
 	}
 
 	@Override
-	public ItemStack method_7601(PlayerEntity playerEntity, int i) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.method_7677();
+			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (i == 0) {
-				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> itemStack2.getItem().method_7843(itemStack2, world, playerEntity)));
-				if (!this.method_7616(itemStack2, 10, 46, true)) {
+				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> itemStack2.getItem().onCrafted(itemStack2, world, playerEntity)));
+				if (!this.insertItem(itemStack2, 10, 46, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.method_7670(itemStack2, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 			} else if (i >= 10 && i < 37) {
-				if (!this.method_7616(itemStack2, 37, 46, false)) {
+				if (!this.insertItem(itemStack2, 37, 46, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (i >= 37 && i < 46) {
-				if (!this.method_7616(itemStack2, 10, 37, false)) {
+				if (!this.insertItem(itemStack2, 10, 37, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.method_7616(itemStack2, 10, 46, false)) {
+			} else if (!this.insertItem(itemStack2, 10, 46, false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.method_7673(ItemStack.EMPTY);
+				slot.setStack(ItemStack.EMPTY);
 			} else {
 				slot.markDirty();
 			}
@@ -140,9 +140,9 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 				return ItemStack.EMPTY;
 			}
 
-			ItemStack itemStack3 = slot.method_7667(playerEntity, itemStack2);
+			ItemStack itemStack3 = slot.onTakeItem(playerEntity, itemStack2);
 			if (i == 0) {
-				playerEntity.method_7328(itemStack3, false);
+				playerEntity.dropItem(itemStack3, false);
 			}
 		}
 
@@ -150,8 +150,8 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 	}
 
 	@Override
-	public boolean method_7613(ItemStack itemStack, Slot slot) {
-		return slot.inventory != this.field_7800 && super.method_7613(itemStack, slot);
+	public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
+		return slot.inventory != this.resultInv && super.canInsertIntoSlot(itemStack, slot);
 	}
 
 	@Override

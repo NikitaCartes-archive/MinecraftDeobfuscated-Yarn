@@ -28,21 +28,21 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
 		super(entityType, world);
 		this.fireImmune = true;
-		this.method_5941(PathNodeType.field_14, 8.0F);
+		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
 	}
 
 	@Override
-	protected SoundEvent method_5994() {
+	protected SoundEvent getAmbientSound() {
 		return SoundEvents.field_15214;
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_15027;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_15122;
 	}
 
@@ -54,19 +54,19 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	@Override
 	protected void dropEquipment(DamageSource damageSource, int i, boolean bl) {
 		super.dropEquipment(damageSource, i, bl);
-		Entity entity = damageSource.method_5529();
+		Entity entity = damageSource.getAttacker();
 		if (entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
 			if (creeperEntity.method_7008()) {
 				creeperEntity.method_7002();
-				this.method_5706(Items.WITHER_SKELETON_SKULL);
+				this.dropItem(Items.WITHER_SKELETON_SKULL);
 			}
 		}
 	}
 
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
-		this.method_5673(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8528));
+		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8528));
 	}
 
 	@Override
@@ -75,17 +75,17 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
+	public EntityData prepareEntityData(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		EntityData entityData2 = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-		this.method_5996(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
+		EntityData entityData2 = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
 		this.method_6997();
 		return entityData2;
 	}
 
 	@Override
-	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 2.1F;
 	}
 

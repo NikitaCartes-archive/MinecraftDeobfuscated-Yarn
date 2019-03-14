@@ -28,7 +28,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 	public void method_6855() {
 		if (this.field_7062 == null) {
 			LOGGER.warn("Skipping player strafe phase because no player was found");
-			this.dragon.method_6831().setPhase(PhaseType.HOLDING_PATTERN);
+			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 		} else {
 			if (this.field_7059 != null && this.field_7059.isFinished()) {
 				double d = this.field_7062.x;
@@ -59,17 +59,17 @@ public class StrafePlayerPhase extends AbstractPhase {
 					k += 0.5F;
 					if (this.field_7060 >= 5 && k >= 0.0F && k < 10.0F) {
 						double h = 1.0;
-						Vec3d vec3d3 = this.dragon.method_5828(1.0F);
+						Vec3d vec3d3 = this.dragon.getRotationVec(1.0F);
 						double l = this.dragon.partHead.x - vec3d3.x * 1.0;
 						double m = this.dragon.partHead.y + (double)(this.dragon.partHead.getHeight() / 2.0F) + 0.5;
 						double n = this.dragon.partHead.z - vec3d3.z * 1.0;
 						double o = this.field_7062.x - l;
 						double p = this.field_7062.y + (double)(this.field_7062.getHeight() / 2.0F) - (m + (double)(this.dragon.partHead.getHeight() / 2.0F));
 						double q = this.field_7062.z - n;
-						this.dragon.field_6002.method_8444(null, 1017, new BlockPos(this.dragon), 0);
-						DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.field_6002, this.dragon, o, p, q);
+						this.dragon.world.playEvent(null, 1017, new BlockPos(this.dragon), 0);
+						DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.world, this.dragon, o, p, q);
 						dragonFireballEntity.setPositionAndAngles(l, m, n, 0.0F, 0.0F);
-						this.dragon.field_6002.spawnEntity(dragonFireballEntity);
+						this.dragon.world.spawnEntity(dragonFireballEntity);
 						this.field_7060 = 0;
 						if (this.field_7059 != null) {
 							while (!this.field_7059.isFinished()) {
@@ -77,7 +77,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 							}
 						}
 
-						this.dragon.method_6831().setPhase(PhaseType.HOLDING_PATTERN);
+						this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 					}
 				} else if (this.field_7060 > 0) {
 					this.field_7060--;
@@ -103,7 +103,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 				j--;
 			}
 
-			if (this.dragon.method_6829() != null && this.dragon.method_6829().getAliveEndCrystals() > 0) {
+			if (this.dragon.getFight() != null && this.dragon.getFight().getAliveEndCrystals() > 0) {
 				j %= 12;
 				if (j < 0) {
 					j += 12;
@@ -125,7 +125,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 
 	private void method_6861() {
 		if (this.field_7059 != null && !this.field_7059.isFinished()) {
-			Vec3d vec3d = this.field_7059.method_35();
+			Vec3d vec3d = this.field_7059.getCurrentPosition();
 			this.field_7059.next();
 			double d = vec3d.x;
 			double e = vec3d.z;
@@ -168,12 +168,12 @@ public class StrafePlayerPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d method_6851() {
+	public Vec3d getTarget() {
 		return this.field_7057;
 	}
 
 	@Override
-	public PhaseType<StrafePlayerPhase> method_6849() {
+	public PhaseType<StrafePlayerPhase> getType() {
 		return PhaseType.STRAFE_PLAYER;
 	}
 }

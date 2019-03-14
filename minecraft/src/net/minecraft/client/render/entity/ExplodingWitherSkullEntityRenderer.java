@@ -10,8 +10,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ExplodingWitherSkullEntityRenderer extends EntityRenderer<ExplodingWitherSkullEntity> {
-	private static final Identifier field_4817 = new Identifier("textures/entity/wither/wither_invulnerable.png");
-	private static final Identifier field_4815 = new Identifier("textures/entity/wither/wither.png");
+	private static final Identifier INVINCIBLE_SKIN = new Identifier("textures/entity/wither/wither_invulnerable.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither.png");
 	private final SkullEntityModel field_4816 = new SkullEntityModel();
 
 	public ExplodingWitherSkullEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -59,6 +59,6 @@ public class ExplodingWitherSkullEntityRenderer extends EntityRenderer<Exploding
 	}
 
 	protected Identifier method_4160(ExplodingWitherSkullEntity explodingWitherSkullEntity) {
-		return explodingWitherSkullEntity.method_7503() ? field_4817 : field_4815;
+		return explodingWitherSkullEntity.method_7503() ? INVINCIBLE_SKIN : SKIN;
 	}
 }

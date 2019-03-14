@@ -23,7 +23,7 @@ public class BannedIpList extends ServerConfigList<String, BannedIpEntry> {
 		return this.contains(string);
 	}
 
-	public BannedIpEntry method_14528(SocketAddress socketAddress) {
+	public BannedIpEntry get(SocketAddress socketAddress) {
 		String string = this.stringifyAddress(socketAddress);
 		return this.get(string);
 	}

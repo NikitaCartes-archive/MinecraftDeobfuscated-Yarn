@@ -13,13 +13,13 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 	@Override
 	public void method_6853() {
 		this.dragon
-			.field_6002
-			.method_8486(
+			.world
+			.playSound(
 				this.dragon.x,
 				this.dragon.y,
 				this.dragon.z,
 				SoundEvents.field_14671,
-				this.dragon.method_5634(),
+				this.dragon.getSoundCategory(),
 				2.5F,
 				0.8F + this.dragon.getRand().nextFloat() * 0.3F,
 				false
@@ -29,7 +29,7 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 	@Override
 	public void method_6855() {
 		if (this.field_7049++ >= 40) {
-			this.dragon.method_6831().setPhase(PhaseType.SITTING_FLAMING);
+			this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_FLAMING);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class SittingAttackingPhase extends AbstractSittingPhase {
 	}
 
 	@Override
-	public PhaseType<SittingAttackingPhase> method_6849() {
+	public PhaseType<SittingAttackingPhase> getType() {
 		return PhaseType.SITTING_ATTACKING;
 	}
 }

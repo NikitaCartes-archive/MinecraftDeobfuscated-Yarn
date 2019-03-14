@@ -30,9 +30,9 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.BlockStateParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
@@ -42,32 +42,32 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ArmorStandEntity extends LivingEntity {
-	private static final Rotation field_7113 = new Rotation(0.0F, 0.0F, 0.0F);
-	private static final Rotation field_7119 = new Rotation(0.0F, 0.0F, 0.0F);
-	private static final Rotation field_7124 = new Rotation(-10.0F, 0.0F, -10.0F);
-	private static final Rotation field_7115 = new Rotation(-15.0F, 0.0F, 10.0F);
-	private static final Rotation field_7121 = new Rotation(-1.0F, 0.0F, -1.0F);
-	private static final Rotation field_7117 = new Rotation(1.0F, 0.0F, 1.0F);
-	public static final TrackedData<Byte> field_7107 = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.BYTE);
-	public static final TrackedData<Rotation> field_7123 = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> field_7122 = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> field_7116 = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> field_7105 = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> field_7127 = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> field_7125 = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	private static final Rotation DEFAULT_HEAD_ROTATION = new Rotation(0.0F, 0.0F, 0.0F);
+	private static final Rotation DEFAULT_BODY_ROTATION = new Rotation(0.0F, 0.0F, 0.0F);
+	private static final Rotation DEFAULT_LEFT_ARM_ROTATION = new Rotation(-10.0F, 0.0F, -10.0F);
+	private static final Rotation DEFAULT_RIGHT_ARM_ROTATION = new Rotation(-15.0F, 0.0F, 10.0F);
+	private static final Rotation DEFAULT_LEFT_LEG_ROTATION = new Rotation(-1.0F, 0.0F, -1.0F);
+	private static final Rotation DEFAULT_RIGHT_LEG_ROTATION = new Rotation(1.0F, 0.0F, 1.0F);
+	public static final TrackedData<Byte> ARMOR_STAND_FLAGS = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.BYTE);
+	public static final TrackedData<Rotation> TRACKER_HEAD_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<Rotation> TRACKER_BODY_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<Rotation> TRACKER_LEFT_ARM_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<Rotation> TRACKER_RIGHT_ARM_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<Rotation> TRACKER_LEFT_LEG_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<Rotation> TRACKER_RIGHT_LEG_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
 	private static final Predicate<Entity> field_7102 = entity -> entity instanceof AbstractMinecartEntity
 			&& ((AbstractMinecartEntity)entity).getMinecartType() == AbstractMinecartEntity.Type.field_7674;
-	private final DefaultedList<ItemStack> field_7114 = DefaultedList.create(2, ItemStack.EMPTY);
-	private final DefaultedList<ItemStack> field_7108 = DefaultedList.create(4, ItemStack.EMPTY);
+	private final DefaultedList<ItemStack> heldItems = DefaultedList.create(2, ItemStack.EMPTY);
+	private final DefaultedList<ItemStack> armorItems = DefaultedList.create(4, ItemStack.EMPTY);
 	private boolean field_7111;
 	public long field_7112;
 	private int disabledSlots;
-	private Rotation field_7104 = field_7113;
-	private Rotation field_7106 = field_7119;
-	private Rotation field_7126 = field_7124;
-	private Rotation field_7120 = field_7115;
-	private Rotation field_7110 = field_7121;
-	private Rotation field_7103 = field_7117;
+	private Rotation headRotation = DEFAULT_HEAD_ROTATION;
+	private Rotation bodyRotation = DEFAULT_BODY_ROTATION;
+	private Rotation leftArmRotation = DEFAULT_LEFT_ARM_ROTATION;
+	private Rotation rightArmRotation = DEFAULT_RIGHT_ARM_ROTATION;
+	private Rotation leftLegRotation = DEFAULT_LEFT_LEG_ROTATION;
+	private Rotation rightLegRotation = DEFAULT_RIGHT_LEG_ROTATION;
 
 	public ArmorStandEntity(EntityType<? extends ArmorStandEntity> entityType, World world) {
 		super(entityType, world);
@@ -100,47 +100,47 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.field_6011.startTracking(field_7107, (byte)0);
-		this.field_6011.startTracking(field_7123, field_7113);
-		this.field_6011.startTracking(field_7122, field_7119);
-		this.field_6011.startTracking(field_7116, field_7124);
-		this.field_6011.startTracking(field_7105, field_7115);
-		this.field_6011.startTracking(field_7127, field_7121);
-		this.field_6011.startTracking(field_7125, field_7117);
+		this.dataTracker.startTracking(ARMOR_STAND_FLAGS, (byte)0);
+		this.dataTracker.startTracking(TRACKER_HEAD_ROTATION, DEFAULT_HEAD_ROTATION);
+		this.dataTracker.startTracking(TRACKER_BODY_ROTATION, DEFAULT_BODY_ROTATION);
+		this.dataTracker.startTracking(TRACKER_LEFT_ARM_ROTATION, DEFAULT_LEFT_ARM_ROTATION);
+		this.dataTracker.startTracking(TRACKER_RIGHT_ARM_ROTATION, DEFAULT_RIGHT_ARM_ROTATION);
+		this.dataTracker.startTracking(TRACKER_LEFT_LEG_ROTATION, DEFAULT_LEFT_LEG_ROTATION);
+		this.dataTracker.startTracking(TRACKER_RIGHT_LEG_ROTATION, DEFAULT_RIGHT_LEG_ROTATION);
 	}
 
 	@Override
 	public Iterable<ItemStack> getItemsHand() {
-		return this.field_7114;
+		return this.heldItems;
 	}
 
 	@Override
 	public Iterable<ItemStack> getItemsArmor() {
-		return this.field_7108;
+		return this.armorItems;
 	}
 
 	@Override
-	public ItemStack method_6118(EquipmentSlot equipmentSlot) {
+	public ItemStack getEquippedStack(EquipmentSlot equipmentSlot) {
 		switch (equipmentSlot.getType()) {
 			case HAND:
-				return this.field_7114.get(equipmentSlot.getEntitySlotId());
+				return this.heldItems.get(equipmentSlot.getEntitySlotId());
 			case ARMOR:
-				return this.field_7108.get(equipmentSlot.getEntitySlotId());
+				return this.armorItems.get(equipmentSlot.getEntitySlotId());
 			default:
 				return ItemStack.EMPTY;
 		}
 	}
 
 	@Override
-	public void method_5673(EquipmentSlot equipmentSlot, ItemStack itemStack) {
+	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 		switch (equipmentSlot.getType()) {
 			case HAND:
-				this.method_6116(itemStack);
-				this.field_7114.set(equipmentSlot.getEntitySlotId(), itemStack);
+				this.onEquipStack(itemStack);
+				this.heldItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 				break;
 			case ARMOR:
-				this.method_6116(itemStack);
-				this.field_7108.set(equipmentSlot.getEntitySlotId(), itemStack);
+				this.onEquipStack(itemStack);
+				this.armorItems.set(equipmentSlot.getEntitySlotId(), itemStack);
 		}
 	}
 
@@ -168,44 +168,44 @@ public class ArmorStandEntity extends LivingEntity {
 		if (!itemStack.isEmpty() && !MobEntity.method_5935(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.HEAD) {
 			return false;
 		} else {
-			this.method_5673(equipmentSlot, itemStack);
+			this.setEquippedStack(equipmentSlot, itemStack);
 			return true;
 		}
 	}
 
 	@Override
-	public boolean method_18397(ItemStack itemStack) {
-		EquipmentSlot equipmentSlot = MobEntity.method_5953(itemStack);
-		return this.method_6118(equipmentSlot).isEmpty() && !this.method_6915(equipmentSlot);
+	public boolean canPickUp(ItemStack itemStack) {
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
+		return this.getEquippedStack(equipmentSlot).isEmpty() && !this.method_6915(equipmentSlot);
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		ListTag listTag = new ListTag();
 
-		for (ItemStack itemStack : this.field_7108) {
+		for (ItemStack itemStack : this.armorItems) {
 			CompoundTag compoundTag2 = new CompoundTag();
 			if (!itemStack.isEmpty()) {
-				itemStack.method_7953(compoundTag2);
+				itemStack.toTag(compoundTag2);
 			}
 
 			listTag.add(compoundTag2);
 		}
 
-		compoundTag.method_10566("ArmorItems", listTag);
+		compoundTag.put("ArmorItems", listTag);
 		ListTag listTag2 = new ListTag();
 
-		for (ItemStack itemStack2 : this.field_7114) {
+		for (ItemStack itemStack2 : this.heldItems) {
 			CompoundTag compoundTag3 = new CompoundTag();
 			if (!itemStack2.isEmpty()) {
-				itemStack2.method_7953(compoundTag3);
+				itemStack2.toTag(compoundTag3);
 			}
 
 			listTag2.add(compoundTag3);
 		}
 
-		compoundTag.method_10566("HandItems", listTag2);
+		compoundTag.put("HandItems", listTag2);
 		compoundTag.putBoolean("Invisible", this.isInvisible());
 		compoundTag.putBoolean("Small", this.isSmall());
 		compoundTag.putBoolean("ShowArms", this.shouldShowArms());
@@ -215,25 +215,25 @@ public class ArmorStandEntity extends LivingEntity {
 			compoundTag.putBoolean("Marker", this.isMarker());
 		}
 
-		compoundTag.method_10566("Pose", this.method_6911());
+		compoundTag.put("Pose", this.serializePose());
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("ArmorItems", 9)) {
-			ListTag listTag = compoundTag.method_10554("ArmorItems", 10);
+			ListTag listTag = compoundTag.getList("ArmorItems", 10);
 
-			for (int i = 0; i < this.field_7108.size(); i++) {
-				this.field_7108.set(i, ItemStack.method_7915(listTag.getCompoundTag(i)));
+			for (int i = 0; i < this.armorItems.size(); i++) {
+				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
 			}
 		}
 
 		if (compoundTag.containsKey("HandItems", 9)) {
-			ListTag listTag = compoundTag.method_10554("HandItems", 10);
+			ListTag listTag = compoundTag.getList("HandItems", 10);
 
-			for (int i = 0; i < this.field_7114.size(); i++) {
-				this.field_7114.set(i, ItemStack.method_7915(listTag.getCompoundTag(i)));
+			for (int i = 0; i < this.heldItems.size(); i++) {
+				this.heldItems.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
 			}
 		}
 
@@ -245,48 +245,48 @@ public class ArmorStandEntity extends LivingEntity {
 		this.setMarker(compoundTag.getBoolean("Marker"));
 		this.noClip = !this.method_18059();
 		CompoundTag compoundTag2 = compoundTag.getCompound("Pose");
-		this.method_6928(compoundTag2);
+		this.deserializePose(compoundTag2);
 	}
 
-	private void method_6928(CompoundTag compoundTag) {
-		ListTag listTag = compoundTag.method_10554("Head", 5);
-		this.method_6919(listTag.isEmpty() ? field_7113 : new Rotation(listTag));
-		ListTag listTag2 = compoundTag.method_10554("Body", 5);
-		this.method_6927(listTag2.isEmpty() ? field_7119 : new Rotation(listTag2));
-		ListTag listTag3 = compoundTag.method_10554("LeftArm", 5);
-		this.method_6910(listTag3.isEmpty() ? field_7124 : new Rotation(listTag3));
-		ListTag listTag4 = compoundTag.method_10554("RightArm", 5);
-		this.method_6925(listTag4.isEmpty() ? field_7115 : new Rotation(listTag4));
-		ListTag listTag5 = compoundTag.method_10554("LeftLeg", 5);
-		this.method_6909(listTag5.isEmpty() ? field_7121 : new Rotation(listTag5));
-		ListTag listTag6 = compoundTag.method_10554("RightLeg", 5);
-		this.method_6926(listTag6.isEmpty() ? field_7117 : new Rotation(listTag6));
+	private void deserializePose(CompoundTag compoundTag) {
+		ListTag listTag = compoundTag.getList("Head", 5);
+		this.setHeadRotation(listTag.isEmpty() ? DEFAULT_HEAD_ROTATION : new Rotation(listTag));
+		ListTag listTag2 = compoundTag.getList("Body", 5);
+		this.setBodyRotation(listTag2.isEmpty() ? DEFAULT_BODY_ROTATION : new Rotation(listTag2));
+		ListTag listTag3 = compoundTag.getList("LeftArm", 5);
+		this.setLeftArmRotation(listTag3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new Rotation(listTag3));
+		ListTag listTag4 = compoundTag.getList("RightArm", 5);
+		this.setRightArmRotation(listTag4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new Rotation(listTag4));
+		ListTag listTag5 = compoundTag.getList("LeftLeg", 5);
+		this.setLeftLegRotation(listTag5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new Rotation(listTag5));
+		ListTag listTag6 = compoundTag.getList("RightLeg", 5);
+		this.setRightLegRotation(listTag6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new Rotation(listTag6));
 	}
 
-	private CompoundTag method_6911() {
+	private CompoundTag serializePose() {
 		CompoundTag compoundTag = new CompoundTag();
-		if (!field_7113.equals(this.field_7104)) {
-			compoundTag.method_10566("Head", this.field_7104.method_10255());
+		if (!DEFAULT_HEAD_ROTATION.equals(this.headRotation)) {
+			compoundTag.put("Head", this.headRotation.serialize());
 		}
 
-		if (!field_7119.equals(this.field_7106)) {
-			compoundTag.method_10566("Body", this.field_7106.method_10255());
+		if (!DEFAULT_BODY_ROTATION.equals(this.bodyRotation)) {
+			compoundTag.put("Body", this.bodyRotation.serialize());
 		}
 
-		if (!field_7124.equals(this.field_7126)) {
-			compoundTag.method_10566("LeftArm", this.field_7126.method_10255());
+		if (!DEFAULT_LEFT_ARM_ROTATION.equals(this.leftArmRotation)) {
+			compoundTag.put("LeftArm", this.leftArmRotation.serialize());
 		}
 
-		if (!field_7115.equals(this.field_7120)) {
-			compoundTag.method_10566("RightArm", this.field_7120.method_10255());
+		if (!DEFAULT_RIGHT_ARM_ROTATION.equals(this.rightArmRotation)) {
+			compoundTag.put("RightArm", this.rightArmRotation.serialize());
 		}
 
-		if (!field_7121.equals(this.field_7110)) {
-			compoundTag.method_10566("LeftLeg", this.field_7110.method_10255());
+		if (!DEFAULT_LEFT_LEG_ROTATION.equals(this.leftLegRotation)) {
+			compoundTag.put("LeftLeg", this.leftLegRotation.serialize());
 		}
 
-		if (!field_7117.equals(this.field_7103)) {
-			compoundTag.method_10566("RightLeg", this.field_7103.method_10255());
+		if (!DEFAULT_RIGHT_LEG_ROTATION.equals(this.rightLegRotation)) {
+			compoundTag.put("RightLeg", this.rightLegRotation.serialize());
 		}
 
 		return compoundTag;
@@ -303,7 +303,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	protected void doPushLogic() {
-		List<Entity> list = this.field_6002.method_8333(this, this.method_5829(), field_7102);
+		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), field_7102);
 
 		for (int i = 0; i < list.size(); i++) {
 			Entity entity = (Entity)list.get(i);
@@ -314,12 +314,12 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public ActionResult method_5664(PlayerEntity playerEntity, Vec3d vec3d, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
+	public ActionResult interactAt(PlayerEntity playerEntity, Vec3d vec3d, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (this.isMarker() || itemStack.getItem() == Items.field_8448) {
 			return ActionResult.PASS;
-		} else if (!this.field_6002.isClient && !playerEntity.isSpectator()) {
-			EquipmentSlot equipmentSlot = MobEntity.method_5953(itemStack);
+		} else if (!this.world.isClient && !playerEntity.isSpectator()) {
+			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (itemStack.isEmpty()) {
 				EquipmentSlot equipmentSlot2 = this.method_6916(vec3d);
 				EquipmentSlot equipmentSlot3 = this.method_6915(equipmentSlot2) ? equipmentSlot : equipmentSlot2;
@@ -369,20 +369,20 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void method_6904(PlayerEntity playerEntity, EquipmentSlot equipmentSlot, ItemStack itemStack, Hand hand) {
-		ItemStack itemStack2 = this.method_6118(equipmentSlot);
+		ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 		if (itemStack2.isEmpty() || (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 8) == 0) {
 			if (!itemStack2.isEmpty() || (this.disabledSlots & 1 << equipmentSlot.getArmorStandSlotId() + 16) == 0) {
 				if (playerEntity.abilities.creativeMode && itemStack2.isEmpty() && !itemStack.isEmpty()) {
 					ItemStack itemStack3 = itemStack.copy();
 					itemStack3.setAmount(1);
-					this.method_5673(equipmentSlot, itemStack3);
+					this.setEquippedStack(equipmentSlot, itemStack3);
 				} else if (itemStack.isEmpty() || itemStack.getAmount() <= 1) {
-					this.method_5673(equipmentSlot, itemStack);
-					playerEntity.method_6122(hand, itemStack2);
+					this.setEquippedStack(equipmentSlot, itemStack);
+					playerEntity.setStackInHand(hand, itemStack2);
 				} else if (itemStack2.isEmpty()) {
 					ItemStack itemStack3 = itemStack.copy();
 					itemStack3.setAmount(1);
-					this.method_5673(equipmentSlot, itemStack3);
+					this.setEquippedStack(equipmentSlot, itemStack3);
 					itemStack.subtractAmount(1);
 				}
 			}
@@ -391,7 +391,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		if (this.field_6002.isClient || this.invalid) {
+		if (this.world.isClient || this.invalid) {
 			return false;
 		} else if (DamageSource.OUT_OF_WORLD.equals(damageSource)) {
 			this.invalidate();
@@ -414,12 +414,12 @@ public class ArmorStandEntity extends LivingEntity {
 			this.method_6905(damageSource, 4.0F);
 			return false;
 		} else {
-			boolean bl = damageSource.method_5526() instanceof ProjectileEntity;
-			boolean bl2 = bl && ((ProjectileEntity)damageSource.method_5526()).getPierceLevel() > 0;
+			boolean bl = damageSource.getSource() instanceof ProjectileEntity;
+			boolean bl2 = bl && ((ProjectileEntity)damageSource.getSource()).getPierceLevel() > 0;
 			boolean bl3 = "player".equals(damageSource.getName());
 			if (!bl3 && !bl) {
 				return false;
-			} else if (damageSource.method_5529() instanceof PlayerEntity && !((PlayerEntity)damageSource.method_5529()).abilities.allowModifyWorld) {
+			} else if (damageSource.getAttacker() instanceof PlayerEntity && !((PlayerEntity)damageSource.getAttacker()).abilities.allowModifyWorld) {
 				return false;
 			} else if (damageSource.isSourceCreativePlayer()) {
 				this.method_6920();
@@ -427,9 +427,9 @@ public class ArmorStandEntity extends LivingEntity {
 				this.invalidate();
 				return bl2;
 			} else {
-				long l = this.field_6002.getTime();
+				long l = this.world.getTime();
 				if (l - this.field_7112 > 5L && !bl) {
-					this.field_6002.summonParticle(this, (byte)32);
+					this.world.summonParticle(this, (byte)32);
 					this.field_7112 = l;
 				} else {
 					this.method_6924(damageSource);
@@ -446,9 +446,9 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void method_5711(byte b) {
 		if (b == 32) {
-			if (this.field_6002.isClient) {
-				this.field_6002.method_8486(this.x, this.y, this.z, SoundEvents.field_14897, this.method_5634(), 0.3F, 1.0F, false);
-				this.field_7112 = this.field_6002.getTime();
+			if (this.world.isClient) {
+				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14897, this.getSoundCategory(), 0.3F, 1.0F, false);
+				this.field_7112 = this.world.getTime();
 			}
 		} else {
 			super.method_5711(b);
@@ -458,7 +458,7 @@ public class ArmorStandEntity extends LivingEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
-		double e = this.method_5829().averageDimension() * 4.0;
+		double e = this.getBoundingBox().averageDimension() * 4.0;
 		if (Double.isNaN(e) || e == 0.0) {
 			e = 4.0;
 		}
@@ -468,10 +468,10 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void method_6898() {
-		if (this.field_6002 instanceof ServerWorld) {
-			((ServerWorld)this.field_6002)
+		if (this.world instanceof ServerWorld) {
+			((ServerWorld)this.world)
 				.method_14199(
-					new BlockStateParticleParameters(ParticleTypes.field_11217, Blocks.field_10161.method_9564()),
+					new BlockStateParticleParameters(ParticleTypes.field_11217, Blocks.field_10161.getDefaultState()),
 					this.x,
 					this.y + (double)this.getHeight() / 1.5,
 					this.z,
@@ -496,7 +496,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	private void method_6924(DamageSource damageSource) {
-		Block.method_9577(this.field_6002, new BlockPos(this), new ItemStack(Items.field_8694));
+		Block.dropStack(this.world, new BlockPos(this), new ItemStack(Items.field_8694));
 		this.method_6908(damageSource);
 	}
 
@@ -504,25 +504,25 @@ public class ArmorStandEntity extends LivingEntity {
 		this.method_6920();
 		this.method_16080(damageSource);
 
-		for (int i = 0; i < this.field_7114.size(); i++) {
-			ItemStack itemStack = this.field_7114.get(i);
+		for (int i = 0; i < this.heldItems.size(); i++) {
+			ItemStack itemStack = this.heldItems.get(i);
 			if (!itemStack.isEmpty()) {
-				Block.method_9577(this.field_6002, new BlockPos(this).up(), itemStack);
-				this.field_7114.set(i, ItemStack.EMPTY);
+				Block.dropStack(this.world, new BlockPos(this).up(), itemStack);
+				this.heldItems.set(i, ItemStack.EMPTY);
 			}
 		}
 
-		for (int ix = 0; ix < this.field_7108.size(); ix++) {
-			ItemStack itemStack = this.field_7108.get(ix);
+		for (int ix = 0; ix < this.armorItems.size(); ix++) {
+			ItemStack itemStack = this.armorItems.get(ix);
 			if (!itemStack.isEmpty()) {
-				Block.method_9577(this.field_6002, new BlockPos(this).up(), itemStack);
-				this.field_7108.set(ix, ItemStack.EMPTY);
+				Block.dropStack(this.world, new BlockPos(this).up(), itemStack);
+				this.armorItems.set(ix, ItemStack.EMPTY);
 			}
 		}
 	}
 
 	private void method_6920() {
-		this.field_6002.method_8465(null, this.x, this.y, this.z, SoundEvents.field_15118, this.method_5634(), 1.0F, 1.0F);
+		this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15118, this.getSoundCategory(), 1.0F, 1.0F);
 	}
 
 	@Override
@@ -533,7 +533,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return entitySize.height * (this.isChild() ? 0.5F : 0.9F);
 	}
 
@@ -543,9 +543,9 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_6091(Vec3d vec3d) {
+	public void travel(Vec3d vec3d) {
 		if (this.method_18059()) {
-			super.method_6091(vec3d);
+			super.travel(vec3d);
 		}
 	}
 
@@ -564,34 +564,34 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void update() {
 		super.update();
-		Rotation rotation = this.field_6011.get(field_7123);
-		if (!this.field_7104.equals(rotation)) {
-			this.method_6919(rotation);
+		Rotation rotation = this.dataTracker.get(TRACKER_HEAD_ROTATION);
+		if (!this.headRotation.equals(rotation)) {
+			this.setHeadRotation(rotation);
 		}
 
-		Rotation rotation2 = this.field_6011.get(field_7122);
-		if (!this.field_7106.equals(rotation2)) {
-			this.method_6927(rotation2);
+		Rotation rotation2 = this.dataTracker.get(TRACKER_BODY_ROTATION);
+		if (!this.bodyRotation.equals(rotation2)) {
+			this.setBodyRotation(rotation2);
 		}
 
-		Rotation rotation3 = this.field_6011.get(field_7116);
-		if (!this.field_7126.equals(rotation3)) {
-			this.method_6910(rotation3);
+		Rotation rotation3 = this.dataTracker.get(TRACKER_LEFT_ARM_ROTATION);
+		if (!this.leftArmRotation.equals(rotation3)) {
+			this.setLeftArmRotation(rotation3);
 		}
 
-		Rotation rotation4 = this.field_6011.get(field_7105);
-		if (!this.field_7120.equals(rotation4)) {
-			this.method_6925(rotation4);
+		Rotation rotation4 = this.dataTracker.get(TRACKER_RIGHT_ARM_ROTATION);
+		if (!this.rightArmRotation.equals(rotation4)) {
+			this.setRightArmRotation(rotation4);
 		}
 
-		Rotation rotation5 = this.field_6011.get(field_7127);
-		if (!this.field_7110.equals(rotation5)) {
-			this.method_6909(rotation5);
+		Rotation rotation5 = this.dataTracker.get(TRACKER_LEFT_LEG_ROTATION);
+		if (!this.leftLegRotation.equals(rotation5)) {
+			this.setLeftLegRotation(rotation5);
 		}
 
-		Rotation rotation6 = this.field_6011.get(field_7125);
-		if (!this.field_7103.equals(rotation6)) {
-			this.method_6926(rotation6);
+		Rotation rotation6 = this.dataTracker.get(TRACKER_RIGHT_LEG_ROTATION);
+		if (!this.rightLegRotation.equals(rotation6)) {
+			this.setRightLegRotation(rotation6);
 		}
 	}
 
@@ -622,40 +622,40 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public PistonBehavior method_5657() {
-		return this.isMarker() ? PistonBehavior.field_15975 : super.method_5657();
+	public PistonBehavior getPistonBehavior() {
+		return this.isMarker() ? PistonBehavior.field_15975 : super.getPistonBehavior();
 	}
 
 	private void setSmall(boolean bl) {
-		this.field_6011.set(field_7107, this.setBitField(this.field_6011.get(field_7107), 1, bl));
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 1, bl));
 	}
 
 	public boolean isSmall() {
-		return (this.field_6011.get(field_7107) & 1) != 0;
+		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 1) != 0;
 	}
 
 	private void setShowArms(boolean bl) {
-		this.field_6011.set(field_7107, this.setBitField(this.field_6011.get(field_7107), 4, bl));
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 4, bl));
 	}
 
 	public boolean shouldShowArms() {
-		return (this.field_6011.get(field_7107) & 4) != 0;
+		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 4) != 0;
 	}
 
 	private void setHideBasePlate(boolean bl) {
-		this.field_6011.set(field_7107, this.setBitField(this.field_6011.get(field_7107), 8, bl));
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 8, bl));
 	}
 
 	public boolean shouldHideBasePlate() {
-		return (this.field_6011.get(field_7107) & 8) != 0;
+		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 8) != 0;
 	}
 
 	private void setMarker(boolean bl) {
-		this.field_6011.set(field_7107, this.setBitField(this.field_6011.get(field_7107), 16, bl));
+		this.dataTracker.set(ARMOR_STAND_FLAGS, this.setBitField(this.dataTracker.get(ARMOR_STAND_FLAGS), 16, bl));
 	}
 
 	public boolean isMarker() {
-		return (this.field_6011.get(field_7107) & 16) != 0;
+		return (this.dataTracker.get(ARMOR_STAND_FLAGS) & 16) != 0;
 	}
 
 	private byte setBitField(byte b, int i, boolean bl) {
@@ -668,62 +668,62 @@ public class ArmorStandEntity extends LivingEntity {
 		return b;
 	}
 
-	public void method_6919(Rotation rotation) {
-		this.field_7104 = rotation;
-		this.field_6011.set(field_7123, rotation);
+	public void setHeadRotation(Rotation rotation) {
+		this.headRotation = rotation;
+		this.dataTracker.set(TRACKER_HEAD_ROTATION, rotation);
 	}
 
-	public void method_6927(Rotation rotation) {
-		this.field_7106 = rotation;
-		this.field_6011.set(field_7122, rotation);
+	public void setBodyRotation(Rotation rotation) {
+		this.bodyRotation = rotation;
+		this.dataTracker.set(TRACKER_BODY_ROTATION, rotation);
 	}
 
-	public void method_6910(Rotation rotation) {
-		this.field_7126 = rotation;
-		this.field_6011.set(field_7116, rotation);
+	public void setLeftArmRotation(Rotation rotation) {
+		this.leftArmRotation = rotation;
+		this.dataTracker.set(TRACKER_LEFT_ARM_ROTATION, rotation);
 	}
 
-	public void method_6925(Rotation rotation) {
-		this.field_7120 = rotation;
-		this.field_6011.set(field_7105, rotation);
+	public void setRightArmRotation(Rotation rotation) {
+		this.rightArmRotation = rotation;
+		this.dataTracker.set(TRACKER_RIGHT_ARM_ROTATION, rotation);
 	}
 
-	public void method_6909(Rotation rotation) {
-		this.field_7110 = rotation;
-		this.field_6011.set(field_7127, rotation);
+	public void setLeftLegRotation(Rotation rotation) {
+		this.leftLegRotation = rotation;
+		this.dataTracker.set(TRACKER_LEFT_LEG_ROTATION, rotation);
 	}
 
-	public void method_6926(Rotation rotation) {
-		this.field_7103 = rotation;
-		this.field_6011.set(field_7125, rotation);
+	public void setRightLegRotation(Rotation rotation) {
+		this.rightLegRotation = rotation;
+		this.dataTracker.set(TRACKER_RIGHT_LEG_ROTATION, rotation);
 	}
 
-	public Rotation method_6921() {
-		return this.field_7104;
+	public Rotation getHeadRotation() {
+		return this.headRotation;
 	}
 
-	public Rotation method_6923() {
-		return this.field_7106;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public Rotation method_6930() {
-		return this.field_7126;
+	public Rotation getBodyRotation() {
+		return this.bodyRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Rotation method_6903() {
-		return this.field_7120;
+	public Rotation getLeftArmRotation() {
+		return this.leftArmRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Rotation method_6917() {
-		return this.field_7110;
+	public Rotation getRightArmRotation() {
+		return this.rightArmRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Rotation method_6900() {
-		return this.field_7103;
+	public Rotation getLeftLegRotation() {
+		return this.leftLegRotation;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Rotation getRightLegRotation() {
+		return this.rightLegRotation;
 	}
 
 	@Override
@@ -732,29 +732,29 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public OptionMainHand getMainHand() {
-		return OptionMainHand.field_6183;
+	public AbsoluteHand getMainHand() {
+		return AbsoluteHand.field_6183;
 	}
 
 	@Override
-	protected SoundEvent method_6041(int i) {
+	protected SoundEvent getFallSound(int i) {
 		return SoundEvents.field_15186;
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_14897;
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_15118;
 	}
 
 	@Override
-	public void method_5800(LightningEntity lightningEntity) {
+	public void onStruckByLightning(LightningEntity lightningEntity) {
 	}
 
 	@Override
@@ -763,13 +763,13 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void method_5674(TrackedData<?> trackedData) {
-		if (field_7107.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (ARMOR_STAND_FLAGS.equals(trackedData)) {
 			this.refreshSize();
 			this.field_6033 = !this.isMarker();
 		}
 
-		super.method_5674(trackedData);
+		super.onTrackedDataSet(trackedData);
 	}
 
 	@Override
@@ -778,8 +778,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public EntitySize method_18377(EntityPose entityPose) {
+	public EntitySize getSize(EntityPose entityPose) {
 		float f = this.isMarker() ? 0.0F : (this.isChild() ? 0.5F : 1.0F);
-		return this.method_5864().getDefaultSize().scaled(f);
+		return this.getType().getDefaultSize().scaled(f);
 	}
 }

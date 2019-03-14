@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.mob.VexEntity;
-import net.minecraft.sortme.OptionMainHand;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -18,11 +18,11 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 
 	public VexEntityModel(float f) {
 		super(f, 0.0F, 64, 64);
-		this.field_3397.visible = false;
-		this.field_3394.visible = false;
-		this.field_3392 = new Cuboid(this, 32, 0);
-		this.field_3392.addBox(-1.0F, -1.0F, -2.0F, 6, 10, 4, 0.0F);
-		this.field_3392.setRotationPoint(-1.9F, 12.0F, 0.0F);
+		this.legLeft.visible = false;
+		this.headwear.visible = false;
+		this.legRight = new Cuboid(this, 32, 0);
+		this.legRight.addBox(-1.0F, -1.0F, -2.0F, 6, 10, 4, 0.0F);
+		this.legRight.setRotationPoint(-1.9F, 12.0F, 0.0F);
 		this.field_3602 = new Cuboid(this, 0, 32);
 		this.field_3602.addBox(-20.0F, 0.0F, 0.0F, 20, 12, 1);
 		this.field_3601 = new Cuboid(this, 0, 32);
@@ -39,14 +39,14 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 	public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(vexEntity, f, g, h, i, j, k);
 		if (vexEntity.method_7176()) {
-			if (vexEntity.getMainHand() == OptionMainHand.field_6183) {
-				this.field_3401.pitch = 3.7699115F;
+			if (vexEntity.getMainHand() == AbsoluteHand.field_6183) {
+				this.armRight.pitch = 3.7699115F;
 			} else {
-				this.field_3390.pitch = 3.7699115F;
+				this.armLeft.pitch = 3.7699115F;
 			}
 		}
 
-		this.field_3392.pitch += (float) (Math.PI / 5);
+		this.legRight.pitch += (float) (Math.PI / 5);
 		this.field_3602.rotationPointZ = 2.0F;
 		this.field_3601.rotationPointZ = 2.0F;
 		this.field_3602.rotationPointY = 1.0F;

@@ -24,7 +24,7 @@ public class AdvancementDisplay {
 	private final TextComponent description;
 	private final ItemStack icon;
 	private final Identifier background;
-	private final AdvancementFrame field_1237;
+	private final AdvancementFrame frame;
 	private final boolean showToast;
 	private final boolean announceToChat;
 	private final boolean hidden;
@@ -45,7 +45,7 @@ public class AdvancementDisplay {
 		this.description = textComponent2;
 		this.icon = itemStack;
 		this.background = identifier;
-		this.field_1237 = advancementFrame;
+		this.frame = advancementFrame;
 		this.showToast = bl;
 		this.announceToChat = bl2;
 		this.hidden = bl3;
@@ -75,8 +75,8 @@ public class AdvancementDisplay {
 		return this.background;
 	}
 
-	public AdvancementFrame method_815() {
-		return this.field_1237;
+	public AdvancementFrame getFrame() {
+		return this.frame;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -130,7 +130,7 @@ public class AdvancementDisplay {
 				if (jsonObject.has("nbt")) {
 					try {
 						CompoundTag compoundTag = JsonLikeTagParser.parse(JsonHelper.asString(jsonObject.get("nbt"), "nbt"));
-						itemStack.method_7980(compoundTag);
+						itemStack.setTag(compoundTag);
 					} catch (CommandSyntaxException var4) {
 						throw new JsonSyntaxException("Invalid nbt tag: " + var4.getMessage());
 					}
@@ -142,10 +142,10 @@ public class AdvancementDisplay {
 	}
 
 	public void toPacket(PacketByteBuf packetByteBuf) {
-		packetByteBuf.method_10805(this.title);
-		packetByteBuf.method_10805(this.description);
+		packetByteBuf.writeTextComponent(this.title);
+		packetByteBuf.writeTextComponent(this.description);
 		packetByteBuf.writeItemStack(this.icon);
-		packetByteBuf.writeEnumConstant(this.field_1237);
+		packetByteBuf.writeEnumConstant(this.frame);
 		int i = 0;
 		if (this.background != null) {
 			i |= 1;
@@ -161,7 +161,7 @@ public class AdvancementDisplay {
 
 		packetByteBuf.writeInt(i);
 		if (this.background != null) {
-			packetByteBuf.method_10812(this.background);
+			packetByteBuf.writeIdentifier(this.background);
 		}
 
 		packetByteBuf.writeFloat(this.xPos);
@@ -169,12 +169,12 @@ public class AdvancementDisplay {
 	}
 
 	public static AdvancementDisplay fromPacket(PacketByteBuf packetByteBuf) {
-		TextComponent textComponent = packetByteBuf.method_10808();
-		TextComponent textComponent2 = packetByteBuf.method_10808();
+		TextComponent textComponent = packetByteBuf.readTextComponent();
+		TextComponent textComponent2 = packetByteBuf.readTextComponent();
 		ItemStack itemStack = packetByteBuf.readItemStack();
 		AdvancementFrame advancementFrame = packetByteBuf.readEnumConstant(AdvancementFrame.class);
 		int i = packetByteBuf.readInt();
-		Identifier identifier = (i & 1) != 0 ? packetByteBuf.method_10810() : null;
+		Identifier identifier = (i & 1) != 0 ? packetByteBuf.readIdentifier() : null;
 		boolean bl = (i & 2) != 0;
 		boolean bl2 = (i & 4) != 0;
 		AdvancementDisplay advancementDisplay = new AdvancementDisplay(itemStack, textComponent, textComponent2, identifier, advancementFrame, bl, false, bl2);
@@ -187,7 +187,7 @@ public class AdvancementDisplay {
 		jsonObject.add("icon", this.iconToJson());
 		jsonObject.add("title", TextComponent.Serializer.toJson(this.title));
 		jsonObject.add("description", TextComponent.Serializer.toJson(this.description));
-		jsonObject.addProperty("frame", this.field_1237.getId());
+		jsonObject.addProperty("frame", this.frame.getId());
 		jsonObject.addProperty("show_toast", this.showToast);
 		jsonObject.addProperty("announce_to_chat", this.announceToChat);
 		jsonObject.addProperty("hidden", this.hidden);
@@ -200,7 +200,7 @@ public class AdvancementDisplay {
 
 	private JsonObject iconToJson() {
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("item", Registry.ITEM.method_10221(this.icon.getItem()).toString());
+		jsonObject.addProperty("item", Registry.ITEM.getId(this.icon.getItem()).toString());
 		return jsonObject;
 	}
 }

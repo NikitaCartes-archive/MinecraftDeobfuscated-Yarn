@@ -33,12 +33,12 @@ public class Bootstrap {
 	public static void initialize() {
 		if (!initialized) {
 			initialized = true;
-			if (Registry.field_11144.isEmpty()) {
+			if (Registry.REGISTRIES.isEmpty()) {
 				throw new IllegalStateException("Unable to load registries");
 			} else {
 				FireBlock.registerDefaultFlammables();
 				ComposterBlock.registerDefaultCompostableItems();
-				if (EntityType.method_5890(EntityType.PLAYER) == null) {
+				if (EntityType.getId(EntityType.PLAYER) == null) {
 					throw new IllegalStateException("Failed loading EntityTypes");
 				} else {
 					BrewingRecipeRegistry.registerDefaults();

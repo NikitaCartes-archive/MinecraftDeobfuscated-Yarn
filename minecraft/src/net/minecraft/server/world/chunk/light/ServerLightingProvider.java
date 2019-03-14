@@ -60,24 +60,24 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void method_15559(BlockPos blockPos) {
+	public void enqueueLightUpdate(BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.toImmutable();
 		this.method_17308(
 			blockPos.getX() >> 4,
 			blockPos.getZ() >> 4,
 			ServerLightingProvider.class_3901.field_17262,
-			SystemUtil.method_18839(() -> super.method_15559(blockPos2), () -> "checkBlock " + blockPos)
+			SystemUtil.method_18839(() -> super.enqueueLightUpdate(blockPos2), () -> "checkBlock " + blockPos)
 		);
 	}
 
 	@Override
-	public void method_15551(ChunkSectionPos chunkSectionPos, boolean bl) {
+	public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
 		this.method_17307(
 			chunkSectionPos.getX(),
 			chunkSectionPos.getZ(),
 			() -> 0,
 			ServerLightingProvider.class_3901.field_17261,
-			SystemUtil.method_18839(() -> super.method_15551(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl)
+			SystemUtil.method_18839(() -> super.scheduleChunkLightUpdate(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl)
 		);
 	}
 
@@ -92,12 +92,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	@Override
-	public void method_15558(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
+	public void setSection(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
 		this.method_17308(
 			chunkSectionPos.getX(),
 			chunkSectionPos.getZ(),
 			ServerLightingProvider.class_3901.field_17261,
-			SystemUtil.method_18839(() -> super.method_15558(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
+			SystemUtil.method_18839(() -> super.setSection(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
 		);
 	}
 
@@ -121,17 +121,17 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 				super.method_15557(chunkPos, false);
 			}
 
-			ChunkSection[] chunkSections = chunk.method_12006();
+			ChunkSection[] chunkSections = chunk.getSectionArray();
 
 			for (int i = 0; i < 16; i++) {
 				ChunkSection chunkSection = chunkSections[i];
 				if (!ChunkSection.isEmpty(chunkSection)) {
-					super.method_15551(ChunkSectionPos.from(chunkPos, i), false);
+					super.scheduleChunkLightUpdate(ChunkSectionPos.from(chunkPos, i), false);
 				}
 			}
 
 			if (!bl) {
-				chunk.getLightSourcesStream().forEach(blockPos -> super.method_15560(blockPos, chunk.method_8317(blockPos)));
+				chunk.getLightSourcesStream().forEach(blockPos -> super.method_15560(blockPos, chunk.getLuminance(blockPos)));
 			}
 
 			chunk.setLightOn(true);

@@ -2,7 +2,6 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
@@ -23,7 +22,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -50,10 +49,10 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class DolphinFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17881;
+		private final SpriteProvider field_17881;
 
-		public DolphinFactory(class_4002 arg) {
-			this.field_17881 = arg;
+		public DolphinFactory(SpriteProvider spriteProvider) {
+			this.field_17881 = spriteProvider;
 		}
 
 		public Particle method_3110(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -68,10 +67,10 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class HappyVillagerFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17882;
+		private final SpriteProvider field_17882;
 
-		public HappyVillagerFactory(class_4002 arg) {
-			this.field_17882 = arg;
+		public HappyVillagerFactory(SpriteProvider spriteProvider) {
+			this.field_17882 = spriteProvider;
 		}
 
 		public Particle method_3111(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -84,10 +83,10 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class MyceliumFactory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17883;
+		private final SpriteProvider field_17883;
 
-		public MyceliumFactory(class_4002 arg) {
-			this.field_17883 = arg;
+		public MyceliumFactory(SpriteProvider spriteProvider) {
+			this.field_17883 = spriteProvider;
 		}
 
 		public Particle method_3112(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
@@ -99,10 +98,10 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class class_3991 implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17880;
+		private final SpriteProvider field_17880;
 
-		public class_3991(class_4002 arg) {
-			this.field_17880 = arg;
+		public class_3991(SpriteProvider spriteProvider) {
+			this.field_17880 = spriteProvider;
 		}
 
 		public Particle method_18044(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

@@ -81,13 +81,13 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 			return (EntityAnchorArgumentType.EntityAnchor)anchors.get(string);
 		}
 
-		public Vec3d method_9302(Entity entity) {
+		public Vec3d positionAt(Entity entity) {
 			return (Vec3d)this.offset.apply(new Vec3d(entity.x, entity.y, entity.z), entity);
 		}
 
-		public Vec3d method_9299(ServerCommandSource serverCommandSource) {
+		public Vec3d positionAt(ServerCommandSource serverCommandSource) {
 			Entity entity = serverCommandSource.getEntity();
-			return entity == null ? serverCommandSource.method_9222() : (Vec3d)this.offset.apply(serverCommandSource.method_9222(), entity);
+			return entity == null ? serverCommandSource.getPosition() : (Vec3d)this.offset.apply(serverCommandSource.getPosition(), entity);
 		}
 	}
 }

@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 public class ItemEntity extends Entity {
-	private static final TrackedData<ItemStack> field_7199 = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+	private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private int age;
 	private int pickupDelay;
 	private int health = 5;
@@ -49,7 +49,7 @@ public class ItemEntity extends Entity {
 
 	public ItemEntity(World world, double d, double e, double f, ItemStack itemStack) {
 		this(world, d, e, f);
-		this.method_6979(itemStack);
+		this.setStack(itemStack);
 	}
 
 	@Override
@@ -59,12 +59,12 @@ public class ItemEntity extends Entity {
 
 	@Override
 	protected void initDataTracker() {
-		this.method_5841().startTracking(field_7199, ItemStack.EMPTY);
+		this.getDataTracker().startTracking(STACK, ItemStack.EMPTY);
 	}
 
 	@Override
 	public void update() {
-		if (this.method_6983().isEmpty()) {
+		if (this.getStack().isEmpty()) {
 			this.invalidate();
 		} else {
 			super.update();
@@ -75,45 +75,45 @@ public class ItemEntity extends Entity {
 			this.prevX = this.x;
 			this.prevY = this.y;
 			this.prevZ = this.z;
-			Vec3d vec3d = this.method_18798();
-			if (this.method_5777(FluidTags.field_15517)) {
+			Vec3d vec3d = this.getVelocity();
+			if (this.isInFluid(FluidTags.field_15517)) {
 				this.method_6974();
 			} else if (!this.isUnaffectedByGravity()) {
-				this.method_18799(this.method_18798().add(0.0, -0.04, 0.0));
+				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
 
-			if (this.field_6002.isClient) {
+			if (this.world.isClient) {
 				this.noClip = false;
 			} else {
-				this.noClip = !this.field_6002.method_17892(this);
+				this.noClip = !this.world.method_17892(this);
 				if (this.noClip) {
-					this.method_5632(this.x, (this.method_5829().minY + this.method_5829().maxY) / 2.0, this.z);
+					this.method_5632(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
 				}
 			}
 
-			this.method_5784(MovementType.field_6308, this.method_18798());
+			this.move(MovementType.field_6308, this.getVelocity());
 			boolean bl = (int)this.prevX != (int)this.x || (int)this.prevY != (int)this.y || (int)this.prevZ != (int)this.z;
 			if (bl || this.age % 25 == 0) {
-				if (this.field_6002.method_8316(new BlockPos(this)).method_15767(FluidTags.field_15518)) {
+				if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
 					this.setVelocity(
 						(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
 					);
-					this.method_5783(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
+					this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
-				if (!this.field_6002.isClient) {
+				if (!this.world.isClient) {
 					this.tryMerge();
 				}
 			}
 
 			float f = 0.98F;
 			if (this.onGround) {
-				f = this.field_6002.method_8320(new BlockPos(this.x, this.method_5829().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
+				f = this.world.getBlockState(new BlockPos(this.x, this.getBoundingBox().minY - 1.0, this.z)).getBlock().getFrictionCoefficient() * 0.98F;
 			}
 
-			this.method_18799(this.method_18798().multiply((double)f, 0.98, (double)f));
+			this.setVelocity(this.getVelocity().multiply((double)f, 0.98, (double)f));
 			if (this.onGround) {
-				this.method_18799(this.method_18798().multiply(1.0, -0.5, 1.0));
+				this.setVelocity(this.getVelocity().multiply(1.0, -0.5, 1.0));
 			}
 
 			if (this.age != -32768) {
@@ -121,26 +121,26 @@ public class ItemEntity extends Entity {
 			}
 
 			this.velocityDirty = this.velocityDirty | this.method_5713();
-			if (!this.field_6002.isClient) {
-				double d = this.method_18798().subtract(vec3d).lengthSquared();
+			if (!this.world.isClient) {
+				double d = this.getVelocity().subtract(vec3d).lengthSquared();
 				if (d > 0.01) {
 					this.velocityDirty = true;
 				}
 			}
 
-			if (!this.field_6002.isClient && this.age >= 6000) {
+			if (!this.world.isClient && this.age >= 6000) {
 				this.invalidate();
 			}
 		}
 	}
 
 	private void method_6974() {
-		Vec3d vec3d = this.method_18798();
+		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x * 0.99F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.99F);
 	}
 
 	private void tryMerge() {
-		List<ItemEntity> list = this.field_6002.method_18467(ItemEntity.class, this.method_5829().expand(0.5, 0.0, 0.5));
+		List<ItemEntity> list = this.world.method_18467(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5));
 		if (!list.isEmpty()) {
 			for (ItemEntity itemEntity : list) {
 				this.tryMerge(itemEntity);
@@ -156,18 +156,18 @@ public class ItemEntity extends Entity {
 		} else if (this.pickupDelay == 32767 || itemEntity.pickupDelay == 32767) {
 			return false;
 		} else if (this.age != -32768 && itemEntity.age != -32768) {
-			ItemStack itemStack = this.method_6983();
+			ItemStack itemStack = this.getStack();
 			if (itemStack.getAmount() == itemStack.getMaxAmount()) {
 				return false;
 			} else {
-				ItemStack itemStack2 = itemEntity.method_6983();
+				ItemStack itemStack2 = itemEntity.getStack();
 				if (itemStack2.getItem() != itemStack.getItem()) {
 					return false;
 				} else if (itemStack2.getAmount() + itemStack.getAmount() > itemStack2.getMaxAmount()) {
 					return false;
 				} else if (itemStack2.hasTag() ^ itemStack.hasTag()) {
 					return false;
-				} else if (itemStack2.hasTag() && !itemStack2.method_7969().equals(itemStack.method_7969())) {
+				} else if (itemStack2.hasTag() && !itemStack2.getTag().equals(itemStack.getTag())) {
 					return false;
 				} else {
 					if (itemStack2.getAmount() < itemStack.getAmount()) {
@@ -187,7 +187,7 @@ public class ItemEntity extends Entity {
 	private static void method_18006(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2) {
 		ItemStack itemStack3 = itemStack.copy();
 		itemStack3.addAmount(itemStack2.getAmount());
-		itemEntity.method_6979(itemStack3);
+		itemEntity.setStack(itemStack3);
 		itemEntity.pickupDelay = Math.max(itemEntity.pickupDelay, itemEntity2.pickupDelay);
 		itemEntity.age = Math.min(itemEntity.age, itemEntity2.age);
 		itemEntity2.invalidate();
@@ -206,7 +206,7 @@ public class ItemEntity extends Entity {
 	public boolean damage(DamageSource damageSource, float f) {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
-		} else if (!this.method_6983().isEmpty() && this.method_6983().getItem() == Items.field_8137 && damageSource.isExplosive()) {
+		} else if (!this.getStack().isEmpty() && this.getStack().getItem() == Items.field_8137 && damageSource.isExplosive()) {
 			return false;
 		} else {
 			this.scheduleVelocityUpdate();
@@ -220,25 +220,25 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		compoundTag.putShort("Health", (short)this.health);
 		compoundTag.putShort("Age", (short)this.age);
 		compoundTag.putShort("PickupDelay", (short)this.pickupDelay);
 		if (this.getThrower() != null) {
-			compoundTag.method_10566("Thrower", TagHelper.serializeUuid(this.getThrower()));
+			compoundTag.put("Thrower", TagHelper.serializeUuid(this.getThrower()));
 		}
 
 		if (this.getOwner() != null) {
-			compoundTag.method_10566("Owner", TagHelper.serializeUuid(this.getOwner()));
+			compoundTag.put("Owner", TagHelper.serializeUuid(this.getOwner()));
 		}
 
-		if (!this.method_6983().isEmpty()) {
-			compoundTag.method_10566("Item", this.method_6983().method_7953(new CompoundTag()));
+		if (!this.getStack().isEmpty()) {
+			compoundTag.put("Item", this.getStack().toTag(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		this.health = compoundTag.getShort("Health");
 		this.age = compoundTag.getShort("Age");
 		if (compoundTag.containsKey("PickupDelay")) {
@@ -254,36 +254,36 @@ public class ItemEntity extends Entity {
 		}
 
 		CompoundTag compoundTag2 = compoundTag.getCompound("Item");
-		this.method_6979(ItemStack.method_7915(compoundTag2));
-		if (this.method_6983().isEmpty()) {
+		this.setStack(ItemStack.fromTag(compoundTag2));
+		if (this.getStack().isEmpty()) {
 			this.invalidate();
 		}
 	}
 
 	@Override
-	public void method_5694(PlayerEntity playerEntity) {
-		if (!this.field_6002.isClient) {
-			ItemStack itemStack = this.method_6983();
+	public void onPlayerCollision(PlayerEntity playerEntity) {
+		if (!this.world.isClient) {
+			ItemStack itemStack = this.getStack();
 			Item item = itemStack.getItem();
 			int i = itemStack.getAmount();
 			if (this.pickupDelay == 0
 				&& (this.owner == null || 6000 - this.age <= 200 || this.owner.equals(playerEntity.getUuid()))
-				&& playerEntity.inventory.method_7394(itemStack)) {
+				&& playerEntity.inventory.insertStack(itemStack)) {
 				playerEntity.pickUpEntity(this, i);
 				if (itemStack.isEmpty()) {
 					this.invalidate();
 					itemStack.setAmount(i);
 				}
 
-				playerEntity.method_7342(Stats.field_15392.getOrCreateStat(item), i);
+				playerEntity.incrementStat(Stats.field_15392.getOrCreateStat(item), i);
 			}
 		}
 	}
 
 	@Override
-	public TextComponent method_5477() {
-		TextComponent textComponent = this.method_5797();
-		return (TextComponent)(textComponent != null ? textComponent : new TranslatableTextComponent(this.method_6983().getTranslationKey()));
+	public TextComponent getName() {
+		TextComponent textComponent = this.getCustomName();
+		return (TextComponent)(textComponent != null ? textComponent : new TranslatableTextComponent(this.getStack().getTranslationKey()));
 	}
 
 	@Override
@@ -293,21 +293,21 @@ public class ItemEntity extends Entity {
 
 	@Nullable
 	@Override
-	public Entity method_5731(DimensionType dimensionType) {
-		Entity entity = super.method_5731(dimensionType);
-		if (!this.field_6002.isClient && entity instanceof ItemEntity) {
+	public Entity changeDimension(DimensionType dimensionType) {
+		Entity entity = super.changeDimension(dimensionType);
+		if (!this.world.isClient && entity instanceof ItemEntity) {
 			((ItemEntity)entity).tryMerge();
 		}
 
 		return entity;
 	}
 
-	public ItemStack method_6983() {
-		return this.method_5841().get(field_7199);
+	public ItemStack getStack() {
+		return this.getDataTracker().get(STACK);
 	}
 
-	public void method_6979(ItemStack itemStack) {
-		this.method_5841().set(field_7199, itemStack);
+	public void setStack(ItemStack itemStack) {
+		this.getDataTracker().set(STACK, itemStack);
 	}
 
 	@Nullable
@@ -363,7 +363,7 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public Packet<?> method_18002() {
+	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this);
 	}
 }

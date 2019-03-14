@@ -13,12 +13,12 @@ public class SaddleItem extends Item {
 	}
 
 	@Override
-	public boolean method_7847(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
+	public boolean interactWithEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
 		if (livingEntity instanceof PigEntity) {
 			PigEntity pigEntity = (PigEntity)livingEntity;
 			if (pigEntity.isValid() && !pigEntity.isSaddled() && !pigEntity.isChild()) {
 				pigEntity.setSaddled(true);
-				pigEntity.field_6002.method_8465(playerEntity, pigEntity.x, pigEntity.y, pigEntity.z, SoundEvents.field_14824, SoundCategory.field_15254, 0.5F, 1.0F);
+				pigEntity.world.playSound(playerEntity, pigEntity.x, pigEntity.y, pigEntity.z, SoundEvents.field_14824, SoundCategory.field_15254, 0.5F, 1.0F);
 				itemStack.subtractAmount(1);
 			}
 

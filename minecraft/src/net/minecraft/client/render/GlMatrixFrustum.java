@@ -14,7 +14,7 @@ public class GlMatrixFrustum extends Frustum {
 	private final FloatBuffer modelviewMatrixBuffer = GlAllocationUtils.allocateFloatBuffer(16);
 	private final FloatBuffer field_4493 = GlAllocationUtils.allocateFloatBuffer(16);
 
-	public static Frustum method_3696() {
+	public static Frustum get() {
 		INSTANCE.loadFromGlMatrices();
 		return INSTANCE;
 	}

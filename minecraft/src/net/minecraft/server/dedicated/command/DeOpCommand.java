@@ -23,7 +23,7 @@ public class DeOpCommand {
 					ServerCommandManager.argument("targets", GameProfileArgumentType.create())
 						.suggests(
 							(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-									commandContext.getSource().getMinecraftServer().method_3760().getOpNames(), suggestionsBuilder
+									commandContext.getSource().getMinecraftServer().getPlayerManager().getOpNames(), suggestionsBuilder
 								)
 						)
 						.executes(commandContext -> method_13144(commandContext.getSource(), GameProfileArgumentType.getProfilesArgument(commandContext, "targets")))
@@ -32,14 +32,14 @@ public class DeOpCommand {
 	}
 
 	private static int method_13144(ServerCommandSource serverCommandSource, Collection<GameProfile> collection) throws CommandSyntaxException {
-		PlayerManager playerManager = serverCommandSource.getMinecraftServer().method_3760();
+		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {
 			if (playerManager.isOperator(gameProfile)) {
 				playerManager.removeFromOperators(gameProfile);
 				i++;
-				serverCommandSource.method_9226(new TranslatableTextComponent("commands.deop.success", ((GameProfile)collection.iterator().next()).getName()), true);
+				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.deop.success", ((GameProfile)collection.iterator().next()).getName()), true);
 			}
 		}
 

@@ -3,14 +3,14 @@ package net.minecraft.world.gen.chunk;
 import net.minecraft.util.math.BlockPos;
 
 public class FloatingIslandsChunkGeneratorConfig extends ChunkGeneratorConfig {
-	private BlockPos field_13272;
+	private BlockPos center;
 
-	public FloatingIslandsChunkGeneratorConfig method_12651(BlockPos blockPos) {
-		this.field_13272 = blockPos;
+	public FloatingIslandsChunkGeneratorConfig withCenter(BlockPos blockPos) {
+		this.center = blockPos;
 		return this;
 	}
 
-	public BlockPos method_12652() {
-		return this.field_13272;
+	public BlockPos getCenter() {
+		return this.center;
 	}
 }

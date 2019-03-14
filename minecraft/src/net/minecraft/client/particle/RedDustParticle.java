@@ -2,18 +2,19 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class RedDustParticle extends SpriteBillboardParticle {
-	private final class_4002 field_17801;
+	private final SpriteProvider field_17801;
 
-	private RedDustParticle(World world, double d, double e, double f, double g, double h, double i, DustParticleParameters dustParticleParameters, class_4002 arg) {
+	private RedDustParticle(
+		World world, double d, double e, double f, double g, double h, double i, DustParticleParameters dustParticleParameters, SpriteProvider spriteProvider
+	) {
 		super(world, d, e, f, g, h, i);
-		this.field_17801 = arg;
+		this.field_17801 = spriteProvider;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
@@ -24,11 +25,11 @@ public class RedDustParticle extends SpriteBillboardParticle {
 		this.scale = this.scale * 0.75F * dustParticleParameters.getAlpha();
 		int k = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.maxAge = (int)Math.max((float)k * dustParticleParameters.getAlpha(), 1.0F);
-		this.method_18142(arg);
+		this.method_18142(spriteProvider);
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -64,10 +65,10 @@ public class RedDustParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DustParticleParameters> {
-		private final class_4002 field_17802;
+		private final SpriteProvider field_17802;
 
-		public Factory(class_4002 arg) {
-			this.field_17802 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17802 = spriteProvider;
 		}
 
 		public Particle method_3022(DustParticleParameters dustParticleParameters, World world, double d, double e, double f, double g, double h, double i) {

@@ -25,7 +25,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	public TeamTeleportSpectatorMenu() {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 
-		for (ScoreboardTeam scoreboardTeam : minecraftClient.field_1687.method_8428().getTeams()) {
+		for (ScoreboardTeam scoreboardTeam : minecraftClient.world.getScoreboard().getTeams()) {
 			this.commands.add(new TeamTeleportSpectatorMenu.TeleportToSpecificTeamCommand(scoreboardTeam));
 		}
 	}
@@ -36,23 +36,23 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public TextComponent method_2781() {
+	public TextComponent getPrompt() {
 		return new TranslatableTextComponent("spectatorMenu.team_teleport.prompt");
 	}
 
 	@Override
 	public void use(SpectatorMenu spectatorMenu) {
-		spectatorMenu.method_2778(this);
+		spectatorMenu.selectElement(this);
 	}
 
 	@Override
-	public TextComponent method_16892() {
+	public TextComponent getName() {
 		return new TranslatableTextComponent("spectatorMenu.team_teleport");
 	}
 
 	@Override
 	public void renderIcon(float f, int i) {
-		MinecraftClient.getInstance().method_1531().method_4618(SpectatorHud.field_2199);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 		DrawableHelper.drawTexturedRect(0, 0, 16.0F, 0.0F, 16, 16, 256.0F, 256.0F);
 	}
 
@@ -70,7 +70,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	@Environment(EnvType.CLIENT)
 	class TeleportToSpecificTeamCommand implements SpectatorMenuCommand {
 		private final ScoreboardTeam team;
-		private final Identifier field_3276;
+		private final Identifier skinId;
 		private final List<ScoreboardEntry> scoreboardEntries;
 
 		public TeleportToSpecificTeamCommand(ScoreboardTeam scoreboardTeam) {
@@ -78,29 +78,29 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 			this.scoreboardEntries = Lists.<ScoreboardEntry>newArrayList();
 
 			for (String string : scoreboardTeam.getPlayerList()) {
-				ScoreboardEntry scoreboardEntry = MinecraftClient.getInstance().method_1562().method_2874(string);
+				ScoreboardEntry scoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntry(string);
 				if (scoreboardEntry != null) {
 					this.scoreboardEntries.add(scoreboardEntry);
 				}
 			}
 
 			if (this.scoreboardEntries.isEmpty()) {
-				this.field_3276 = DefaultSkinHelper.method_4649();
+				this.skinId = DefaultSkinHelper.getTexture();
 			} else {
 				String string2 = ((ScoreboardEntry)this.scoreboardEntries.get(new Random().nextInt(this.scoreboardEntries.size()))).getProfile().getName();
-				this.field_3276 = AbstractClientPlayerEntity.method_3124(string2);
-				AbstractClientPlayerEntity.method_3120(this.field_3276, string2);
+				this.skinId = AbstractClientPlayerEntity.getSkinId(string2);
+				AbstractClientPlayerEntity.loadSkin(this.skinId, string2);
 			}
 		}
 
 		@Override
 		public void use(SpectatorMenu spectatorMenu) {
-			spectatorMenu.method_2778(new TeleportSpectatorMenu(this.scoreboardEntries));
+			spectatorMenu.selectElement(new TeleportSpectatorMenu(this.scoreboardEntries));
 		}
 
 		@Override
-		public TextComponent method_16892() {
-			return this.team.method_1140();
+		public TextComponent getName() {
+			return this.team.getDisplayName();
 		}
 
 		@Override
@@ -113,7 +113,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 				DrawableHelper.drawRect(1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
 			}
 
-			MinecraftClient.getInstance().method_1531().method_4618(this.field_3276);
+			MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
 			GlStateManager.color4f(f, f, f, (float)i / 255.0F);
 			DrawableHelper.drawTexturedRect(2, 2, 8.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
 			DrawableHelper.drawTexturedRect(2, 2, 40.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);

@@ -42,7 +42,7 @@ public class ChunkRenderWorker implements Runnable {
 				return;
 			} catch (Throwable var4) {
 				CrashReport crashReport = CrashReport.create(var4, "Batching chunks");
-				MinecraftClient.getInstance().method_1494(MinecraftClient.getInstance().method_1587(crashReport));
+				MinecraftClient.getInstance().setCrashReport(MinecraftClient.getInstance().populateCrashReport(crashReport));
 				return;
 			}
 		}
@@ -60,7 +60,7 @@ public class ChunkRenderWorker implements Runnable {
 				return;
 			}
 
-			if (!chunkRenderTask.method_3608().method_3673()) {
+			if (!chunkRenderTask.getChunkRenderer().method_3673()) {
 				chunkRenderTask.cancel();
 				return;
 			}
@@ -77,9 +77,9 @@ public class ChunkRenderWorker implements Runnable {
 		float h = (float)vec3d.z;
 		ChunkRenderTask.Mode mode = chunkRenderTask.getMode();
 		if (mode == ChunkRenderTask.Mode.field_4426) {
-			chunkRenderTask.method_3608().rebuildChunk(f, g, h, chunkRenderTask);
+			chunkRenderTask.getChunkRenderer().rebuildChunk(f, g, h, chunkRenderTask);
 		} else if (mode == ChunkRenderTask.Mode.field_4427) {
-			chunkRenderTask.method_3608().resortTransparency(f, g, h, chunkRenderTask);
+			chunkRenderTask.getChunkRenderer().resortTransparency(f, g, h, chunkRenderTask);
 		}
 
 		chunkRenderTask.getLock().lock();
@@ -99,7 +99,7 @@ public class ChunkRenderWorker implements Runnable {
 			chunkRenderTask.getLock().unlock();
 		}
 
-		final ChunkRenderData chunkRenderData = chunkRenderTask.method_3609();
+		final ChunkRenderData chunkRenderData = chunkRenderTask.getRenderData();
 		ArrayList list = Lists.newArrayList();
 		if (mode == ChunkRenderTask.Mode.field_4426) {
 			for (BlockRenderLayer blockRenderLayer : BlockRenderLayer.values()) {
@@ -109,7 +109,7 @@ public class ChunkRenderWorker implements Runnable {
 							.method_3635(
 								blockRenderLayer,
 								chunkRenderTask.getBufferBuilders().get(blockRenderLayer),
-								chunkRenderTask.method_3608(),
+								chunkRenderTask.getChunkRenderer(),
 								chunkRenderData,
 								chunkRenderTask.getDistanceToPlayerSquared()
 							)
@@ -122,7 +122,7 @@ public class ChunkRenderWorker implements Runnable {
 					.method_3635(
 						BlockRenderLayer.TRANSLUCENT,
 						chunkRenderTask.getBufferBuilders().get(BlockRenderLayer.TRANSLUCENT),
-						chunkRenderTask.method_3608(),
+						chunkRenderTask.getChunkRenderer(),
 						chunkRenderData,
 						chunkRenderTask.getDistanceToPlayerSquared()
 					)
@@ -153,14 +153,14 @@ public class ChunkRenderWorker implements Runnable {
 					return;
 				}
 
-				chunkRenderTask.method_3608().method_3665(chunkRenderData);
+				chunkRenderTask.getChunkRenderer().method_3665(chunkRenderData);
 			}
 
 			@Override
 			public void onFailure(Throwable throwable) {
 				ChunkRenderWorker.this.freeRenderTask(chunkRenderTask);
 				if (!(throwable instanceof CancellationException) && !(throwable instanceof InterruptedException)) {
-					MinecraftClient.getInstance().method_1494(CrashReport.create(throwable, "Rendering chunk"));
+					MinecraftClient.getInstance().setCrashReport(CrashReport.create(throwable, "Rendering chunk"));
 				}
 			}
 		});

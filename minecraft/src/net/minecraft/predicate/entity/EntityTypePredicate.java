@@ -36,12 +36,12 @@ public abstract class EntityTypePredicate {
 			String string = JsonHelper.asString(jsonElement, "type");
 			if (string.startsWith("#")) {
 				Identifier identifier = new Identifier(string.substring(1));
-				Tag<EntityType<?>> tag = EntityTags.method_15082().getOrCreate(identifier);
+				Tag<EntityType<?>> tag = EntityTags.getContainer().getOrCreate(identifier);
 				return new EntityTypePredicate.Tagged(tag);
 			} else {
 				Identifier identifier = new Identifier(string);
 				EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE
-					.method_17966(identifier)
+					.getOrEmpty(identifier)
 					.orElseThrow(
 						() -> new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.getIds()))
 					);
@@ -56,7 +56,7 @@ public abstract class EntityTypePredicate {
 		return new EntityTypePredicate.Single(entityType);
 	}
 
-	public static EntityTypePredicate method_8926(Tag<EntityType<?>> tag) {
+	public static EntityTypePredicate create(Tag<EntityType<?>> tag) {
 		return new EntityTypePredicate.Tagged(tag);
 	}
 
@@ -74,25 +74,25 @@ public abstract class EntityTypePredicate {
 
 		@Override
 		public JsonElement toJson() {
-			return new JsonPrimitive(Registry.ENTITY_TYPE.method_10221(this.type).toString());
+			return new JsonPrimitive(Registry.ENTITY_TYPE.getId(this.type).toString());
 		}
 	}
 
 	static class Tagged extends EntityTypePredicate {
-		private final Tag<EntityType<?>> field_9610;
+		private final Tag<EntityType<?>> tag;
 
 		public Tagged(Tag<EntityType<?>> tag) {
-			this.field_9610 = tag;
+			this.tag = tag;
 		}
 
 		@Override
 		public boolean matches(EntityType<?> entityType) {
-			return this.field_9610.contains(entityType);
+			return this.tag.contains(entityType);
 		}
 
 		@Override
 		public JsonElement toJson() {
-			return new JsonPrimitive("#" + this.field_9610.getId().toString());
+			return new JsonPrimitive("#" + this.tag.getId().toString());
 		}
 	}
 }

@@ -168,7 +168,7 @@ public class JsonLikeTagParser {
 			}
 
 			this.expect(':');
-			compoundTag.method_10566(string, this.parseTag());
+			compoundTag.put(string, this.parseTag());
 			if (!this.method_10716()) {
 				break;
 			}

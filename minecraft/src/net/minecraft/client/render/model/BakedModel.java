@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public interface BakedModel {
-	List<BakedQuad> method_4707(@Nullable BlockState blockState, @Nullable Direction direction, Random random);
+	List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random);
 
 	boolean useAmbientOcclusion();
 

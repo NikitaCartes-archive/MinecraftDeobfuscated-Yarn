@@ -14,7 +14,7 @@ public class CoralMushroomFeature extends CoralFeature {
 	}
 
 	@Override
-	protected boolean method_12863(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
+	protected boolean spawnCoral(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
 		int i = random.nextInt(3) + 3;
 		int j = random.nextInt(3) + 3;
 		int k = random.nextInt(3) + 3;
@@ -25,13 +25,13 @@ public class CoralMushroomFeature extends CoralFeature {
 			for (int n = 0; n <= i; n++) {
 				for (int o = 0; o <= k; o++) {
 					mutable.set(m + blockPos.getX(), n + blockPos.getY(), o + blockPos.getZ());
-					mutable.method_10104(Direction.DOWN, l);
+					mutable.setOffset(Direction.DOWN, l);
 					if ((m != 0 && m != j || n != 0 && n != i)
 						&& (o != 0 && o != k || n != 0 && n != i)
 						&& (m != 0 && m != j || o != 0 && o != k)
 						&& (m == 0 || m == j || n == 0 || n == i || o == 0 || o == k)
 						&& !(random.nextFloat() < 0.1F)
-						&& !this.method_12864(iWorld, random, mutable, blockState)) {
+						&& !this.spawnCoralPiece(iWorld, random, mutable, blockState)) {
 					}
 				}
 			}

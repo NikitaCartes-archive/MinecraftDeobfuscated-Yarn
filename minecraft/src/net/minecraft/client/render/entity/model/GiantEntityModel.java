@@ -2,11 +2,10 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3968;
 import net.minecraft.entity.mob.GiantEntity;
 
 @Environment(EnvType.CLIENT)
-public class GiantEntityModel extends class_3968<GiantEntity> {
+public class GiantEntityModel extends AbstractZombieModel<GiantEntity> {
 	public GiantEntityModel() {
 		this(0.0F, false);
 	}

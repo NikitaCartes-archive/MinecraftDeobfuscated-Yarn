@@ -19,9 +19,9 @@ public class OceanDeepColdBiome extends Biome {
 	public OceanDeepColdBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15677)
+				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
-				.method_8738(Biome.Category.OCEAN)
+				.category(Biome.Category.OCEAN)
 				.depth(-1.8F)
 				.scale(0.1F)
 				.temperature(0.5F)
@@ -30,10 +30,10 @@ public class OceanDeepColdBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13536, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
-		this.method_8710(Feature.field_13588, FeatureConfig.field_13603);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.method_8710(Feature.field_13589, new ShipwreckFeatureConfig(false));
+		this.addStructureFeature(Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.9F));
+		this.addStructureFeature(Feature.OCEAN_MONUMENT, FeatureConfig.DEFAULT);
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(false));
 		DefaultBiomeFeatures.addOceanCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -47,9 +47,9 @@ public class OceanDeepColdBiome extends Biome {
 		DefaultBiomeFeatures.addDefaultMushrooms(this);
 		DefaultBiomeFeatures.addDefaultVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
-		this.method_8719(
+		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			method_8699(Feature.field_13567, new SeagrassFeatureConfig(40, 0.8), Decorator.field_14231, DecoratorConfig.field_13436)
+			configureFeature(Feature.field_13567, new SeagrassFeatureConfig(40, 0.8), Decorator.field_14231, DecoratorConfig.DEFAULT)
 		);
 		DefaultBiomeFeatures.addSeagrassOnStone(this);
 		DefaultBiomeFeatures.addKelp(this);

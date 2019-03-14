@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.options.ChatVisibility;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.sortme.OptionMainHand;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.PacketByteBuf;
 
 public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener> {
@@ -15,19 +15,19 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	private ChatVisibility chatVisibility;
 	private boolean field_12779;
 	private int playerModelBitMask;
-	private OptionMainHand mainHand;
+	private AbsoluteHand mainHand;
 
 	public ClientSettingsC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ClientSettingsC2SPacket(String string, int i, ChatVisibility chatVisibility, boolean bl, int j, OptionMainHand optionMainHand) {
+	public ClientSettingsC2SPacket(String string, int i, ChatVisibility chatVisibility, boolean bl, int j, AbsoluteHand absoluteHand) {
 		this.language = string;
 		this.viewDistance = i;
 		this.chatVisibility = chatVisibility;
 		this.field_12779 = bl;
 		this.playerModelBitMask = j;
-		this.mainHand = optionMainHand;
+		this.mainHand = absoluteHand;
 	}
 
 	@Override
@@ -37,7 +37,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		this.chatVisibility = packetByteBuf.readEnumConstant(ChatVisibility.class);
 		this.field_12779 = packetByteBuf.readBoolean();
 		this.playerModelBitMask = packetByteBuf.readUnsignedByte();
-		this.mainHand = packetByteBuf.readEnumConstant(OptionMainHand.class);
+		this.mainHand = packetByteBuf.readEnumConstant(AbsoluteHand.class);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	public void method_12133(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12069(this);
+		serverPlayPacketListener.onClientSettings(this);
 	}
 
 	public String getLanguage() {
@@ -70,7 +70,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		return this.playerModelBitMask;
 	}
 
-	public OptionMainHand getMainHand() {
+	public AbsoluteHand getMainHand() {
 		return this.mainHand;
 	}
 }

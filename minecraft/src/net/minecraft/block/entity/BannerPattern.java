@@ -108,7 +108,7 @@ public enum BannerPattern {
 			return this;
 		}
 
-		public ListTag method_16375() {
+		public ListTag build() {
 			ListTag listTag = new ListTag();
 
 			for (Pair<BannerPattern, DyeColor> pair : this.patterns) {

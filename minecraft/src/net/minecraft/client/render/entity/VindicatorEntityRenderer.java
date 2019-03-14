@@ -14,7 +14,7 @@ public class VindicatorEntityRenderer extends IllagerEntityRenderer<VindicatorEn
 
 	public VindicatorEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new EvilVillagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
-		this.method_4046(new HeldItemFeatureRenderer<VindicatorEntity, EvilVillagerEntityModel<VindicatorEntity>>(this) {
+		this.addFeature(new HeldItemFeatureRenderer<VindicatorEntity, EvilVillagerEntityModel<VindicatorEntity>>(this) {
 			public void method_17156(VindicatorEntity vindicatorEntity, float f, float g, float h, float i, float j, float k, float l) {
 				if (vindicatorEntity.method_7169()) {
 					super.method_17162(vindicatorEntity, f, g, h, i, j, k, l);

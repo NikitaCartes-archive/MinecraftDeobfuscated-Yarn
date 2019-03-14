@@ -9,11 +9,11 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRenderer<T, SpiderEntityModel<T>> {
-	private static final Identifier field_4789 = new Identifier("textures/entity/spider/spider.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/spider/spider.png");
 
 	public SpiderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new SpiderEntityModel<>(), 0.8F);
-		this.method_4046(new SpiderEyesFeatureRenderer<>(this));
+		this.addFeature(new SpiderEyesFeatureRenderer<>(this));
 	}
 
 	protected float method_4124(T spiderEntity) {
@@ -21,6 +21,6 @@ public class SpiderEntityRenderer<T extends SpiderEntity> extends MobEntityRende
 	}
 
 	protected Identifier method_4123(T spiderEntity) {
-		return field_4789;
+		return SKIN;
 	}
 }

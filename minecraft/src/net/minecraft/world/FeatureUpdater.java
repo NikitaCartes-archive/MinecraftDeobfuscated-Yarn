@@ -48,7 +48,7 @@ public class FeatureUpdater {
 	public FeatureUpdater(@Nullable PersistentStateManager persistentStateManager, List<String> list, List<String> list2) {
 		this.field_17658 = list;
 		this.field_17659 = list2;
-		this.method_14734(persistentStateManager);
+		this.init(persistentStateManager);
 		boolean bl = false;
 
 		for (String string : this.field_17659) {
@@ -68,11 +68,11 @@ public class FeatureUpdater {
 		}
 	}
 
-	public CompoundTag method_14735(CompoundTag compoundTag) {
+	public CompoundTag getUpdatedReferences(CompoundTag compoundTag) {
 		CompoundTag compoundTag2 = compoundTag.getCompound("Level");
 		ChunkPos chunkPos = new ChunkPos(compoundTag2.getInt("xPos"), compoundTag2.getInt("zPos"));
 		if (this.needsUpdate(chunkPos.x, chunkPos.z)) {
-			compoundTag = this.method_14741(compoundTag, chunkPos);
+			compoundTag = this.getUpdatedStarts(compoundTag, chunkPos);
 		}
 
 		CompoundTag compoundTag3 = compoundTag2.getCompound("Structures");
@@ -96,9 +96,9 @@ public class FeatureUpdater {
 			}
 		}
 
-		compoundTag3.method_10566("References", compoundTag4);
-		compoundTag2.method_10566("Structures", compoundTag3);
-		compoundTag.method_10566("Level", compoundTag2);
+		compoundTag3.put("References", compoundTag4);
+		compoundTag2.put("Structures", compoundTag3);
+		compoundTag.put("Level", compoundTag2);
 		return compoundTag;
 	}
 
@@ -122,7 +122,7 @@ public class FeatureUpdater {
 		}
 	}
 
-	private CompoundTag method_14741(CompoundTag compoundTag, ChunkPos chunkPos) {
+	private CompoundTag getUpdatedStarts(CompoundTag compoundTag, ChunkPos chunkPos) {
 		CompoundTag compoundTag2 = compoundTag.getCompound("Level");
 		CompoundTag compoundTag3 = compoundTag2.getCompound("Structures");
 		CompoundTag compoundTag4 = compoundTag3.getCompound("Starts");
@@ -134,19 +134,19 @@ public class FeatureUpdater {
 				if (((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaing(l)) {
 					CompoundTag compoundTag5 = long2ObjectMap.get(l);
 					if (compoundTag5 != null) {
-						compoundTag4.method_10566(string, compoundTag5);
+						compoundTag4.put(string, compoundTag5);
 					}
 				}
 			}
 		}
 
-		compoundTag3.method_10566("Starts", compoundTag4);
-		compoundTag2.method_10566("Structures", compoundTag3);
-		compoundTag.method_10566("Level", compoundTag2);
+		compoundTag3.put("Starts", compoundTag4);
+		compoundTag2.put("Structures", compoundTag3);
+		compoundTag.put("Level", compoundTag2);
 		return compoundTag;
 	}
 
-	private void method_14734(@Nullable PersistentStateManager persistentStateManager) {
+	private void init(@Nullable PersistentStateManager persistentStateManager) {
 		if (persistentStateManager != null) {
 			for (String string : this.field_17658) {
 				CompoundTag compoundTag = new CompoundTag();
@@ -162,7 +162,7 @@ public class FeatureUpdater {
 				for (String string2 : compoundTag.getKeys()) {
 					CompoundTag compoundTag2 = compoundTag.getCompound(string2);
 					long l = ChunkPos.toLong(compoundTag2.getInt("ChunkX"), compoundTag2.getInt("ChunkZ"));
-					ListTag listTag = compoundTag2.method_10554("Children", 10);
+					ListTag listTag = compoundTag2.getList("Children", 10);
 					if (!listTag.isEmpty()) {
 						String string3 = listTag.getCompoundTag(0).getString("id");
 						String string4 = (String)ANCIENT_TO_OLD.get(string3);
@@ -194,7 +194,7 @@ public class FeatureUpdater {
 		}
 	}
 
-	public static FeatureUpdater method_14745(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
+	public static FeatureUpdater create(DimensionType dimensionType, @Nullable PersistentStateManager persistentStateManager) {
 		if (dimensionType == DimensionType.field_13072) {
 			return new FeatureUpdater(
 				persistentStateManager,

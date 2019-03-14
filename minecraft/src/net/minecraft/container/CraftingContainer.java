@@ -13,15 +13,15 @@ public abstract class CraftingContainer<C extends Inventory> extends Container {
 		super(containerType, i);
 	}
 
-	public void method_17697(boolean bl, Recipe<?> recipe, ServerPlayerEntity serverPlayerEntity) {
-		new InputSlotFiller<>(this).method_12826(serverPlayerEntity, (Recipe<C>)recipe, bl);
+	public void fillInputSlots(boolean bl, Recipe<?> recipe, ServerPlayerEntity serverPlayerEntity) {
+		new InputSlotFiller<>(this).fillInputSlots(serverPlayerEntity, (Recipe<C>)recipe, bl);
 	}
 
 	public abstract void populateRecipeFinder(RecipeFinder recipeFinder);
 
 	public abstract void clearCraftingSlots();
 
-	public abstract boolean method_7652(Recipe<? super C> recipe);
+	public abstract boolean matches(Recipe<? super C> recipe);
 
 	public abstract int getCraftingResultSlotIndex();
 

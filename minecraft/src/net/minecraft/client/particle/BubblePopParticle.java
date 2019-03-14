@@ -2,23 +2,22 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class BubblePopParticle extends SpriteBillboardParticle {
-	private final class_4002 field_17787;
+	private final SpriteProvider field_17787;
 
-	private BubblePopParticle(World world, double d, double e, double f, double g, double h, double i, class_4002 arg) {
+	private BubblePopParticle(World world, double d, double e, double f, double g, double h, double i, SpriteProvider spriteProvider) {
 		super(world, d, e, f);
-		this.field_17787 = arg;
+		this.field_17787 = spriteProvider;
 		this.maxAge = 4;
 		this.gravityStrength = 0.008F;
 		this.velocityX = g;
 		this.velocityY = h;
 		this.velocityZ = i;
-		this.method_18142(arg);
+		this.method_18142(spriteProvider);
 	}
 
 	@Override
@@ -36,16 +35,16 @@ public class BubblePopParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
-		private final class_4002 field_17788;
+		private final SpriteProvider field_17788;
 
-		public Factory(class_4002 arg) {
-			this.field_17788 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17788 = spriteProvider;
 		}
 
 		public Particle method_3016(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {

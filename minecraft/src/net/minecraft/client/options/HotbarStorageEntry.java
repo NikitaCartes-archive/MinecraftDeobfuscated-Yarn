@@ -12,28 +12,28 @@ import net.minecraft.util.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class HotbarStorageEntry extends ForwardingList<ItemStack> {
-	private final DefaultedList<ItemStack> field_3948 = DefaultedList.create(PlayerInventory.getHotbarSize(), ItemStack.EMPTY);
+	private final DefaultedList<ItemStack> delegate = DefaultedList.create(PlayerInventory.getHotbarSize(), ItemStack.EMPTY);
 
 	@Override
 	protected List<ItemStack> delegate() {
-		return this.field_3948;
+		return this.delegate;
 	}
 
-	public ListTag method_3153() {
+	public ListTag toListTag() {
 		ListTag listTag = new ListTag();
 
 		for (ItemStack itemStack : this.delegate()) {
-			listTag.add(itemStack.method_7953(new CompoundTag()));
+			listTag.add(itemStack.toTag(new CompoundTag()));
 		}
 
 		return listTag;
 	}
 
-	public void method_3152(ListTag listTag) {
+	public void fromListTag(ListTag listTag) {
 		List<ItemStack> list = this.delegate();
 
 		for (int i = 0; i < list.size(); i++) {
-			list.set(i, ItemStack.method_7915(listTag.getCompoundTag(i)));
+			list.set(i, ItemStack.fromTag(listTag.getCompoundTag(i)));
 		}
 	}
 

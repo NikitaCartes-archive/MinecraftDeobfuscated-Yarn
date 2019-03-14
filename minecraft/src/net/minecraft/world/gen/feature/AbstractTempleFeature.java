@@ -36,8 +36,8 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 	public boolean shouldStartAt(ChunkGenerator<?> chunkGenerator, Random random, int i, int j) {
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
-			Biome biome = chunkGenerator.getBiomeSource().method_8758(new BlockPos(i * 16 + 9, 0, j * 16 + 9));
-			if (chunkGenerator.method_12097(biome, this)) {
+			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos(i * 16 + 9, 0, j * 16 + 9));
+			if (chunkGenerator.hasStructure(biome, this)) {
 				return true;
 			}
 		}
@@ -46,11 +46,11 @@ public abstract class AbstractTempleFeature<C extends FeatureConfig> extends Str
 	}
 
 	protected int getSpacing(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.method_12109().getTempleDistance();
+		return chunkGenerator.getConfig().getTempleDistance();
 	}
 
 	protected int getSeparation(ChunkGenerator<?> chunkGenerator) {
-		return chunkGenerator.method_12109().getTempleSeparation();
+		return chunkGenerator.getConfig().getTempleSeparation();
 	}
 
 	protected abstract int getSeedModifier();

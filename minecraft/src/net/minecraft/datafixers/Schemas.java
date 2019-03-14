@@ -10,7 +10,6 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import net.minecraft.SharedConstants;
 import net.minecraft.class_1191;
-import net.minecraft.class_4092;
 import net.minecraft.datafixers.fixes.AddTrappedChestFix;
 import net.minecraft.datafixers.fixes.AdvancementsFix;
 import net.minecraft.datafixers.fixes.BedBlockEntityFix;
@@ -87,6 +86,7 @@ import net.minecraft.datafixers.fixes.MobSpawnerEntityIdentifiersFix;
 import net.minecraft.datafixers.fixes.NewVillageFix;
 import net.minecraft.datafixers.fixes.ObjectiveDisplayNameFix;
 import net.minecraft.datafixers.fixes.ObjectiveRenderTypeFix;
+import net.minecraft.datafixers.fixes.OptionsAddTextBackgroundFix;
 import net.minecraft.datafixers.fixes.OptionsForceVBOFix;
 import net.minecraft.datafixers.fixes.OptionsKeyLwjgl3Fix;
 import net.minecraft.datafixers.fixes.OptionsKeyTranslationFix;
@@ -493,6 +493,6 @@ public class Schemas {
 		Schema schema90 = dataFixerBuilder.addSchema(1931, Schema1931::new);
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema90, "Added Fox", TypeReferences.ENTITY));
 		Schema schema91 = dataFixerBuilder.addSchema(1936, identNormalize);
-		dataFixerBuilder.addFixer(new class_4092(schema91, false));
+		dataFixerBuilder.addFixer(new OptionsAddTextBackgroundFix(schema91, false));
 	}
 }

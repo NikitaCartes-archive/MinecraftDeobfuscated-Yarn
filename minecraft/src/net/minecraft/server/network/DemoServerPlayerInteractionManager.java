@@ -30,7 +30,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 		long m = l / 24000L + 1L;
 		if (!this.field_13890 && this.field_13887 > 20) {
 			this.field_13890 = true;
-			this.player.field_13987.sendPacket(new GameStateChangeS2CPacket(5, 0.0F));
+			this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 0.0F));
 		}
 
 		this.field_13889 = l > 120500L;
@@ -41,27 +41,27 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 		if (l % 24000L == 500L) {
 			if (m <= 6L) {
 				if (m == 6L) {
-					this.player.field_13987.sendPacket(new GameStateChangeS2CPacket(5, 104.0F));
+					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 104.0F));
 				} else {
-					this.player.method_9203(new TranslatableTextComponent("demo.day." + m));
+					this.player.appendCommandFeedback(new TranslatableTextComponent("demo.day." + m));
 				}
 			}
 		} else if (m == 1L) {
 			if (l == 100L) {
-				this.player.field_13987.sendPacket(new GameStateChangeS2CPacket(5, 101.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 101.0F));
 			} else if (l == 175L) {
-				this.player.field_13987.sendPacket(new GameStateChangeS2CPacket(5, 102.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 102.0F));
 			} else if (l == 250L) {
-				this.player.field_13987.sendPacket(new GameStateChangeS2CPacket(5, 103.0F));
+				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 103.0F));
 			}
 		} else if (m == 5L && l % 24000L == 22000L) {
-			this.player.method_9203(new TranslatableTextComponent("demo.day.warning"));
+			this.player.appendCommandFeedback(new TranslatableTextComponent("demo.day.warning"));
 		}
 	}
 
 	private void method_14031() {
 		if (this.field_13888 > 100) {
-			this.player.method_9203(new TranslatableTextComponent("demo.reminder"));
+			this.player.appendCommandFeedback(new TranslatableTextComponent("demo.reminder"));
 			this.field_13888 = 0;
 		}
 	}

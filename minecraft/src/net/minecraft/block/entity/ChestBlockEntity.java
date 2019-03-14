@@ -37,7 +37,7 @@ import net.minecraft.world.World;
 		itf = ChestAnimationProgress.class
 	)})
 public class ChestBlockEntity extends LootableContainerBlockEntity implements ChestAnimationProgress, Tickable {
-	private DefaultedList<ItemStack> field_11927 = DefaultedList.create(27, ItemStack.EMPTY);
+	private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
 	protected float animationAngle;
 	protected float lastAnimationAngle;
 	protected int viewerCount;
@@ -58,7 +58,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 	@Override
 	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.field_11927) {
+		for (ItemStack itemStack : this.inventory) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -68,24 +68,24 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	protected TextComponent method_17823() {
+	protected TextComponent getContainerName() {
 		return new TranslatableTextComponent("container.chest");
 	}
 
 	@Override
-	public void method_11014(CompoundTag compoundTag) {
-		super.method_11014(compoundTag);
-		this.field_11927 = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.method_11283(compoundTag)) {
-			Inventories.method_5429(compoundTag, this.field_11927);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+		if (!this.deserializeLootTable(compoundTag)) {
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 
 	@Override
-	public CompoundTag method_11007(CompoundTag compoundTag) {
-		super.method_11007(compoundTag);
-		if (!this.method_11286(compoundTag)) {
-			Inventories.method_5426(compoundTag, this.field_11927);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		if (!this.serializeLootTable(compoundTag)) {
+			Inventories.toTag(compoundTag, this.inventory);
 		}
 
 		return compoundTag;
@@ -93,15 +93,15 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 	@Override
 	public void tick() {
-		int i = this.field_11867.getX();
-		int j = this.field_11867.getY();
-		int k = this.field_11867.getZ();
+		int i = this.pos.getX();
+		int j = this.pos.getY();
+		int k = this.pos.getZ();
 		this.ticksOpen++;
 		this.viewerCount = recalculateViewerCountIfNecessary(this.world, this, this.ticksOpen, i, j, k, this.viewerCount);
 		this.lastAnimationAngle = this.animationAngle;
 		float f = 0.1F;
 		if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
-			this.method_11050(SoundEvents.field_14982);
+			this.playSound(SoundEvents.field_14982);
 		}
 
 		if (this.viewerCount == 0 && this.animationAngle > 0.0F || this.viewerCount > 0 && this.animationAngle < 1.0F) {
@@ -118,7 +118,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 
 			float h = 0.5F;
 			if (this.animationAngle < 0.5F && g >= 0.5F) {
-				this.method_11050(SoundEvents.field_14823);
+				this.playSound(SoundEvents.field_14823);
 			}
 
 			if (this.animationAngle < 0.0F) {
@@ -143,10 +143,11 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 					(double)((float)(l + 1) + 5.0F)
 				)
 			)) {
-				if (playerEntity.field_7512 instanceof GenericContainer) {
-					Inventory inventory = ((GenericContainer)playerEntity.field_7512).getInventory();
-					if (inventory == lockableContainerBlockEntity
-						|| inventory instanceof DoubleInventory && ((DoubleInventory)inventory).method_5405(lockableContainerBlockEntity)) {
+				if (playerEntity.container instanceof GenericContainer) {
+					Inventory inventory = ((GenericContainer)playerEntity.container).getInventory();
+					if (inventory == lockableContainerBlockEntity || inventory instanceof DoubleInventory && ((DoubleInventory)inventory).isPart(lockableContainerBlockEntity)
+						)
+					 {
 						m++;
 					}
 				}
@@ -156,19 +157,19 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		return m;
 	}
 
-	private void method_11050(SoundEvent soundEvent) {
-		ChestType chestType = this.method_11010().method_11654(ChestBlock.field_10770);
+	private void playSound(SoundEvent soundEvent) {
+		ChestType chestType = this.getCachedState().get(ChestBlock.CHEST_TYPE);
 		if (chestType != ChestType.field_12574) {
-			double d = (double)this.field_11867.getX() + 0.5;
-			double e = (double)this.field_11867.getY() + 0.5;
-			double f = (double)this.field_11867.getZ() + 0.5;
+			double d = (double)this.pos.getX() + 0.5;
+			double e = (double)this.pos.getY() + 0.5;
+			double f = (double)this.pos.getZ() + 0.5;
 			if (chestType == ChestType.field_12571) {
-				Direction direction = ChestBlock.method_9758(this.method_11010());
+				Direction direction = ChestBlock.getFacing(this.getCachedState());
 				d += (double)direction.getOffsetX() * 0.5;
 				f += (double)direction.getOffsetZ() * 0.5;
 			}
 
-			this.world.method_8465(null, d, e, f, soundEvent, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+			this.world.playSound(null, d, e, f, soundEvent, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 		}
 	}
 
@@ -183,7 +184,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void method_5435(PlayerEntity playerEntity) {
+	public void onInvOpen(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
@@ -195,7 +196,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	@Override
-	public void method_5432(PlayerEntity playerEntity) {
+	public void onInvClose(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
 			this.viewerCount--;
 			this.onInvOpenOrClose();
@@ -203,21 +204,21 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	protected void onInvOpenOrClose() {
-		Block block = this.method_11010().getBlock();
+		Block block = this.getCachedState().getBlock();
 		if (block instanceof ChestBlock) {
-			this.world.method_8427(this.field_11867, block, 1, this.viewerCount);
-			this.world.method_8452(this.field_11867, block);
+			this.world.addBlockAction(this.pos, block, 1, this.viewerCount);
+			this.world.updateNeighborsAlways(this.pos, block);
 		}
 	}
 
 	@Override
-	protected DefaultedList<ItemStack> method_11282() {
-		return this.field_11927;
+	protected DefaultedList<ItemStack> getInvStackList() {
+		return this.inventory;
 	}
 
 	@Override
-	protected void method_11281(DefaultedList<ItemStack> defaultedList) {
-		this.field_11927 = defaultedList;
+	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
+		this.inventory = defaultedList;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -226,10 +227,10 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		return MathHelper.lerp(f, this.lastAnimationAngle, this.animationAngle);
 	}
 
-	public static int method_11048(BlockView blockView, BlockPos blockPos) {
-		BlockState blockState = blockView.method_8320(blockPos);
+	public static int getPlayersLookingInChestCount(BlockView blockView, BlockPos blockPos) {
+		BlockState blockState = blockView.getBlockState(blockPos);
 		if (blockState.getBlock().hasBlockEntity()) {
-			BlockEntity blockEntity = blockView.method_8321(blockPos);
+			BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 			if (blockEntity instanceof ChestBlockEntity) {
 				return ((ChestBlockEntity)blockEntity).viewerCount;
 			}
@@ -239,13 +240,13 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 	}
 
 	public static void copyInventory(ChestBlockEntity chestBlockEntity, ChestBlockEntity chestBlockEntity2) {
-		DefaultedList<ItemStack> defaultedList = chestBlockEntity.method_11282();
-		chestBlockEntity.method_11281(chestBlockEntity2.method_11282());
-		chestBlockEntity2.method_11281(defaultedList);
+		DefaultedList<ItemStack> defaultedList = chestBlockEntity.getInvStackList();
+		chestBlockEntity.setInvStackList(chestBlockEntity2.getInvStackList());
+		chestBlockEntity2.setInvStackList(defaultedList);
 	}
 
 	@Override
 	protected Container createContainer(int i, PlayerInventory playerInventory) {
-		return GenericContainer.method_19245(i, playerInventory, this);
+		return GenericContainer.createGeneric9x3(i, playerInventory, this);
 	}
 }

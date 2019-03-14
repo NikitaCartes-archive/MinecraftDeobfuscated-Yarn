@@ -43,7 +43,7 @@ public class DedicatedServerWatchdog implements Runnable {
 				Error error = new Error();
 
 				for (ThreadInfo threadInfo : threadInfos) {
-					if (threadInfo.getThreadId() == this.server.method_3777().getId()) {
+					if (threadInfo.getThreadId() == this.server.thread().getId()) {
 						error.setStackTrace(threadInfo.getStackTrace());
 					}
 
@@ -53,7 +53,7 @@ public class DedicatedServerWatchdog implements Runnable {
 
 				CrashReport crashReport = new CrashReport("Watching Server", error);
 				this.server.populateCrashReport(crashReport);
-				CrashReportSection crashReportSection = crashReport.method_562("Thread Dump");
+				CrashReportSection crashReportSection = crashReport.addElement("Thread Dump");
 				crashReportSection.add("Threads", stringBuilder);
 				File file = new File(
 					new File(this.server.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt"

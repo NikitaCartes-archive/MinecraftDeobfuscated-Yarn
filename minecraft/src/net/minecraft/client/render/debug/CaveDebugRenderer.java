@@ -8,16 +8,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
-public class CaveDebugRenderer implements DebugRenderer.DebugRenderer {
+public class CaveDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient field_4505;
 	private final Map<BlockPos, BlockPos> field_4507 = Maps.<BlockPos, BlockPos>newHashMap();
 	private final Map<BlockPos, Float> field_4508 = Maps.<BlockPos, Float>newHashMap();
@@ -38,20 +38,20 @@ public class CaveDebugRenderer implements DebugRenderer.DebugRenderer {
 
 	@Override
 	public void render(long l) {
-		class_4184 lv = this.field_4505.field_1773.method_19418();
-		double d = lv.method_19326().x;
-		double e = lv.method_19326().y;
-		double f = lv.method_19326().z;
+		Camera camera = this.field_4505.gameRenderer.method_19418();
+		double d = camera.getPos().x;
+		double e = camera.getPos().y;
+		double f = camera.getPos().z;
 		GlStateManager.pushMatrix();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.disableTexture();
-		BlockPos blockPos = new BlockPos(lv.method_19326().x, 0.0, lv.method_19326().z);
+		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(5, VertexFormats.field_1576);
+		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (Entry<BlockPos, BlockPos> entry : this.field_4507.entrySet()) {
 			BlockPos blockPos2 = (BlockPos)entry.getKey();

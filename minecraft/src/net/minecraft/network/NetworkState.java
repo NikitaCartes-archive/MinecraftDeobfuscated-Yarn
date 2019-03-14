@@ -5,8 +5,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.class_4210;
-import net.minecraft.class_4211;
 import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
@@ -141,6 +139,8 @@ import net.minecraft.server.network.packet.TeleportConfirmC2SPacket;
 import net.minecraft.server.network.packet.UpdateBeaconC2SPacket;
 import net.minecraft.server.network.packet.UpdateCommandBlockC2SPacket;
 import net.minecraft.server.network.packet.UpdateCommandBlockMinecartC2SPacket;
+import net.minecraft.server.network.packet.UpdateDifficultyC2SPacket;
+import net.minecraft.server.network.packet.UpdateDifficultyLockC2SPacket;
 import net.minecraft.server.network.packet.UpdatePlayerAbilitiesC2SPacket;
 import net.minecraft.server.network.packet.UpdateSelectedSlotC2SPacket;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
@@ -248,7 +248,7 @@ public enum NetworkState {
 			this.method_10784(NetworkSide.CLIENT, SetVillagerRecipesPacket.class);
 			this.method_10784(NetworkSide.SERVER, TeleportConfirmC2SPacket.class);
 			this.method_10784(NetworkSide.SERVER, QueryBlockNbtC2SPacket.class);
-			this.method_10784(NetworkSide.SERVER, class_4210.class);
+			this.method_10784(NetworkSide.SERVER, UpdateDifficultyC2SPacket.class);
 			this.method_10784(NetworkSide.SERVER, ChatMessageC2SPacket.class);
 			this.method_10784(NetworkSide.SERVER, ClientStatusC2SPacket.class);
 			this.method_10784(NetworkSide.SERVER, ClientSettingsC2SPacket.class);
@@ -261,7 +261,7 @@ public enum NetworkState {
 			this.method_10784(NetworkSide.SERVER, BookUpdateC2SPacket.class);
 			this.method_10784(NetworkSide.SERVER, QueryEntityNbtC2SPacket.class);
 			this.method_10784(NetworkSide.SERVER, PlayerInteractEntityC2SPacket.class);
-			this.method_10784(NetworkSide.SERVER, class_4211.class);
+			this.method_10784(NetworkSide.SERVER, UpdateDifficultyLockC2SPacket.class);
 			this.method_10784(NetworkSide.SERVER, KeepAliveC2SPacket.class);
 			this.method_10784(NetworkSide.SERVER, PlayerMoveServerMessage.class);
 			this.method_10784(NetworkSide.SERVER, PlayerMoveServerMessage.PositionOnly.class);
@@ -340,12 +340,12 @@ public enum NetworkState {
 		}
 	}
 
-	public Integer method_10781(NetworkSide networkSide, Packet<?> packet) throws Exception {
+	public Integer getPacketId(NetworkSide networkSide, Packet<?> packet) throws Exception {
 		return (Integer)((BiMap)this.packetHandlerMap.get(networkSide)).inverse().get(packet.getClass());
 	}
 
 	@Nullable
-	public Packet<?> method_10783(NetworkSide networkSide, int i) throws IllegalAccessException, InstantiationException {
+	public Packet<?> getPacketHandler(NetworkSide networkSide, int i) throws IllegalAccessException, InstantiationException {
 		Class<? extends Packet<?>> class_ = (Class<? extends Packet<?>>)((BiMap)this.packetHandlerMap.get(networkSide)).get(i);
 		return class_ == null ? null : (Packet)class_.newInstance();
 	}
@@ -358,7 +358,7 @@ public enum NetworkState {
 		return i >= -1 && i <= 2 ? STATES[i - -1] : null;
 	}
 
-	public static NetworkState method_10786(Packet<?> packet) {
+	public static NetworkState getPacketHandlerState(Packet<?> packet) {
 		return (NetworkState)HANDLER_STATE_MAP.get(packet.getClass());
 	}
 

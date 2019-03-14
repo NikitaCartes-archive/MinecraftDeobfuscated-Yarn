@@ -61,6 +61,9 @@ public class BlockSoundGroup {
 	public static final BlockSoundGroup CROP = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.field_17610, SoundEvents.field_14573, SoundEvents.field_17611, SoundEvents.field_14720, SoundEvents.field_14965
 	);
+	public static final BlockSoundGroup field_18852 = new BlockSoundGroup(
+		1.0F, 1.0F, SoundEvents.field_15215, SoundEvents.field_15053, SoundEvents.field_17611, SoundEvents.field_14808, SoundEvents.field_14607
+	);
 	public static final BlockSoundGroup NETHER_WART = new BlockSoundGroup(
 		1.0F, 1.0F, SoundEvents.field_17612, SoundEvents.field_14921, SoundEvents.field_17613, SoundEvents.field_14658, SoundEvents.field_14723
 	);
@@ -69,20 +72,20 @@ public class BlockSoundGroup {
 	);
 	public final float volume;
 	public final float pitch;
-	private final SoundEvent field_11546;
-	private final SoundEvent field_11527;
-	private final SoundEvent field_11536;
-	private final SoundEvent field_11530;
-	private final SoundEvent field_11541;
+	private final SoundEvent breakSound;
+	private final SoundEvent stepSound;
+	private final SoundEvent placeSound;
+	private final SoundEvent hitSound;
+	private final SoundEvent fallSound;
 
 	public BlockSoundGroup(float f, float g, SoundEvent soundEvent, SoundEvent soundEvent2, SoundEvent soundEvent3, SoundEvent soundEvent4, SoundEvent soundEvent5) {
 		this.volume = f;
 		this.pitch = g;
-		this.field_11546 = soundEvent;
-		this.field_11527 = soundEvent2;
-		this.field_11536 = soundEvent3;
-		this.field_11530 = soundEvent4;
-		this.field_11541 = soundEvent5;
+		this.breakSound = soundEvent;
+		this.stepSound = soundEvent2;
+		this.placeSound = soundEvent3;
+		this.hitSound = soundEvent4;
+		this.fallSound = soundEvent5;
 	}
 
 	public float getVolume() {
@@ -94,24 +97,24 @@ public class BlockSoundGroup {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent method_10595() {
-		return this.field_11546;
+	public SoundEvent getBreakSound() {
+		return this.breakSound;
 	}
 
-	public SoundEvent method_10594() {
-		return this.field_11527;
+	public SoundEvent getStepSound() {
+		return this.stepSound;
 	}
 
-	public SoundEvent method_10598() {
-		return this.field_11536;
+	public SoundEvent getPlaceSound() {
+		return this.placeSound;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent method_10596() {
-		return this.field_11530;
+	public SoundEvent getHitSound() {
+		return this.hitSound;
 	}
 
-	public SoundEvent method_10593() {
-		return this.field_11541;
+	public SoundEvent getFallSound() {
+		return this.fallSound;
 	}
 }

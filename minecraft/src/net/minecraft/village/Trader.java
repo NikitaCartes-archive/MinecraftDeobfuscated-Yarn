@@ -17,31 +17,31 @@ public interface Trader {
 	@Nullable
 	PlayerEntity getCurrentCustomer();
 
-	TraderRecipeList method_8264();
+	TraderRecipeList getRecipes();
 
 	@Environment(EnvType.CLIENT)
-	void method_8261(@Nullable TraderRecipeList traderRecipeList);
+	void setServerRecipes(@Nullable TraderRecipeList traderRecipeList);
 
-	void method_8262(TraderRecipe traderRecipe);
+	void useRecipe(TraderRecipe traderRecipe);
 
 	void onSellingItem(ItemStack itemStack);
 
-	World method_8260();
+	World getTraderWorld();
 
-	int method_19269();
+	int getExperience();
 
-	void method_19271(int i);
+	void setExperience(int i);
 
 	boolean method_19270();
 
-	default void method_17449(PlayerEntity playerEntity, TextComponent textComponent, int i) {
+	default void sendRecipes(PlayerEntity playerEntity, TextComponent textComponent, int i) {
 		OptionalInt optionalInt = playerEntity.openContainer(
 			new ClientDummyContainerProvider((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), textComponent)
 		);
 		if (optionalInt.isPresent()) {
-			TraderRecipeList traderRecipeList = this.method_8264();
+			TraderRecipeList traderRecipeList = this.getRecipes();
 			if (!traderRecipeList.isEmpty()) {
-				playerEntity.method_17354(optionalInt.getAsInt(), traderRecipeList, i, this.method_19269(), this.method_19270());
+				playerEntity.sendVillagerRecipes(optionalInt.getAsInt(), traderRecipeList, i, this.getExperience(), this.method_19270());
 			}
 		}
 	}

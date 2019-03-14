@@ -26,8 +26,8 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 
 public class PistonBlockEntity extends BlockEntity implements Tickable {
-	private BlockState field_12204;
-	private Direction field_12201;
+	private BlockState pushedBlock;
+	private Direction facing;
 	private boolean extending;
 	private boolean source;
 	private static final ThreadLocal<Direction> field_12205 = new ThreadLocal<Direction>() {
@@ -45,23 +45,23 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 	public PistonBlockEntity(BlockState blockState, Direction direction, boolean bl, boolean bl2) {
 		this();
-		this.field_12204 = blockState;
-		this.field_12201 = direction;
+		this.pushedBlock = blockState;
+		this.facing = direction;
 		this.extending = bl;
 		this.source = bl2;
 	}
 
 	@Override
-	public CompoundTag method_16887() {
-		return this.method_11007(new CompoundTag());
+	public CompoundTag toInitialChunkDataTag() {
+		return this.toTag(new CompoundTag());
 	}
 
 	public boolean isExtending() {
 		return this.extending;
 	}
 
-	public Direction method_11498() {
-		return this.field_12201;
+	public Direction getFacing() {
+		return this.facing;
 	}
 
 	public boolean isSource() {
@@ -78,17 +78,17 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 	@Environment(EnvType.CLIENT)
 	public float getRenderOffsetX(float f) {
-		return (float)this.field_12201.getOffsetX() * this.method_11504(this.getProgress(f));
+		return (float)this.facing.getOffsetX() * this.method_11504(this.getProgress(f));
 	}
 
 	@Environment(EnvType.CLIENT)
 	public float getRenderOffsetY(float f) {
-		return (float)this.field_12201.getOffsetY() * this.method_11504(this.getProgress(f));
+		return (float)this.facing.getOffsetY() * this.method_11504(this.getProgress(f));
 	}
 
 	@Environment(EnvType.CLIENT)
 	public float getRenderOffsetZ(float f) {
-		return (float)this.field_12201.getOffsetZ() * this.method_11504(this.getProgress(f));
+		return (float)this.facing.getOffsetZ() * this.method_11504(this.getProgress(f));
 	}
 
 	private float method_11504(float f) {
@@ -98,28 +98,28 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	private BlockState method_11496() {
 		return !this.isExtending() && this.isSource()
 			? Blocks.field_10379
-				.method_9564()
-				.method_11657(PistonHeadBlock.field_12224, this.field_12204.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637)
-				.method_11657(PistonHeadBlock.field_10927, this.field_12204.method_11654(PistonBlock.field_10927))
-			: this.field_12204;
+				.getDefaultState()
+				.with(PistonHeadBlock.field_12224, this.pushedBlock.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637)
+				.with(PistonHeadBlock.FACING, this.pushedBlock.get(PistonBlock.FACING))
+			: this.pushedBlock;
 	}
 
 	private void method_11503(float f) {
 		Direction direction = this.method_11506();
 		double d = (double)(f - this.nextProgress);
-		VoxelShape voxelShape = this.method_11496().method_11628(this.world, this.method_11016());
+		VoxelShape voxelShape = this.method_11496().getCollisionShape(this.world, this.getPos());
 		if (!voxelShape.isEmpty()) {
 			List<BoundingBox> list = voxelShape.getBoundingBoxList();
 			BoundingBox boundingBox = this.method_11500(this.method_11509(list));
-			List<Entity> list2 = this.world.method_8335(null, this.method_11502(boundingBox, direction, d).union(boundingBox));
+			List<Entity> list2 = this.world.getVisibleEntities(null, this.method_11502(boundingBox, direction, d).union(boundingBox));
 			if (!list2.isEmpty()) {
-				boolean bl = this.field_12204.getBlock() == Blocks.field_10030;
+				boolean bl = this.pushedBlock.getBlock() == Blocks.field_10030;
 
 				for (int i = 0; i < list2.size(); i++) {
 					Entity entity = (Entity)list2.get(i);
-					if (entity.method_5657() != PistonBehavior.field_15975) {
+					if (entity.getPistonBehavior() != PistonBehavior.field_15975) {
 						if (bl) {
-							Vec3d vec3d = entity.method_18798();
+							Vec3d vec3d = entity.getVelocity();
 							double e = vec3d.x;
 							double g = vec3d.y;
 							double h = vec3d.z;
@@ -141,7 +141,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 
 						for (int k = 0; k < list.size(); k++) {
 							BoundingBox boundingBox2 = this.method_11502(this.method_11500((BoundingBox)list.get(k)), direction, d);
-							BoundingBox boundingBox3 = entity.method_5829();
+							BoundingBox boundingBox3 = entity.getBoundingBox();
 							if (boundingBox2.intersects(boundingBox3)) {
 								j = Math.max(j, this.method_11497(boundingBox2, direction, boundingBox3));
 								if (j >= d) {
@@ -153,7 +153,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 						if (!(j <= 0.0)) {
 							j = Math.min(j, d) + 0.01;
 							field_12205.set(direction);
-							entity.method_5784(
+							entity.move(
 								MovementType.field_6310, new Vec3d(j * (double)direction.getOffsetX(), j * (double)direction.getOffsetY(), j * (double)direction.getOffsetZ())
 							);
 							field_12205.set(null);
@@ -168,7 +168,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	public Direction method_11506() {
-		return this.extending ? this.field_12201 : this.field_12201.getOpposite();
+		return this.extending ? this.facing : this.facing.getOpposite();
 	}
 
 	private BoundingBox method_11509(List<BoundingBox> list) {
@@ -206,9 +206,9 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	private BoundingBox method_11500(BoundingBox boundingBox) {
 		double d = (double)this.method_11504(this.nextProgress);
 		return boundingBox.offset(
-			(double)this.field_11867.getX() + d * (double)this.field_12201.getOffsetX(),
-			(double)this.field_11867.getY() + d * (double)this.field_12201.getOffsetY(),
-			(double)this.field_11867.getZ() + d * (double)this.field_12201.getOffsetZ()
+			(double)this.pos.getX() + d * (double)this.facing.getOffsetX(),
+			(double)this.pos.getY() + d * (double)this.facing.getOffsetY(),
+			(double)this.pos.getZ() + d * (double)this.facing.getOffsetZ()
 		);
 	}
 
@@ -234,8 +234,8 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	private void method_11514(Entity entity, Direction direction, double d) {
-		BoundingBox boundingBox = entity.method_5829();
-		BoundingBox boundingBox2 = VoxelShapes.method_1077().getBoundingBox().method_996(this.field_11867);
+		BoundingBox boundingBox = entity.getBoundingBox();
+		BoundingBox boundingBox2 = VoxelShapes.fullCube().getBoundingBox().offset(this.pos);
 		if (boundingBox.intersects(boundingBox2)) {
 			Direction direction2 = direction.getOpposite();
 			double e = this.method_11497(boundingBox2, direction2, boundingBox) + 0.01;
@@ -243,7 +243,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			if (Math.abs(e - f) < 0.01) {
 				e = Math.min(e, d) + 0.01;
 				field_12205.set(direction);
-				entity.method_5784(
+				entity.move(
 					MovementType.field_6310, new Vec3d(e * (double)direction2.getOffsetX(), e * (double)direction2.getOffsetY(), e * (double)direction2.getOffsetZ())
 				);
 				field_12205.set(null);
@@ -263,26 +263,26 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		return direction.getDirection() == Direction.AxisDirection.POSITIVE ? boundingBox.maxZ - boundingBox2.minZ : boundingBox2.maxZ - boundingBox.minZ;
 	}
 
-	public BlockState method_11495() {
-		return this.field_12204;
+	public BlockState getPushedBlock() {
+		return this.pushedBlock;
 	}
 
 	public void method_11513() {
 		if (this.progress < 1.0F && this.world != null) {
 			this.nextProgress = 1.0F;
 			this.progress = this.nextProgress;
-			this.world.method_8544(this.field_11867);
+			this.world.removeBlockEntity(this.pos);
 			this.invalidate();
-			if (this.world.method_8320(this.field_11867).getBlock() == Blocks.field_10008) {
+			if (this.world.getBlockState(this.pos).getBlock() == Blocks.field_10008) {
 				BlockState blockState;
 				if (this.source) {
-					blockState = Blocks.field_10124.method_9564();
+					blockState = Blocks.field_10124.getDefaultState();
 				} else {
-					blockState = Block.method_9510(this.field_12204, this.world, this.field_11867);
+					blockState = Block.getRenderingState(this.pushedBlock, this.world, this.pos);
 				}
 
-				this.world.method_8652(this.field_11867, blockState, 3);
-				this.world.method_8492(this.field_11867, blockState.getBlock(), this.field_11867);
+				this.world.setBlockState(this.pos, blockState, 3);
+				this.world.updateNeighbor(this.pos, blockState.getBlock(), this.pos);
 			}
 		}
 	}
@@ -292,20 +292,20 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		this.savedWorldTime = this.world.getTime();
 		this.progress = this.nextProgress;
 		if (this.progress >= 1.0F) {
-			this.world.method_8544(this.field_11867);
+			this.world.removeBlockEntity(this.pos);
 			this.invalidate();
-			if (this.field_12204 != null && this.world.method_8320(this.field_11867).getBlock() == Blocks.field_10008) {
-				BlockState blockState = Block.method_9510(this.field_12204, this.world, this.field_11867);
+			if (this.pushedBlock != null && this.world.getBlockState(this.pos).getBlock() == Blocks.field_10008) {
+				BlockState blockState = Block.getRenderingState(this.pushedBlock, this.world, this.pos);
 				if (blockState.isAir()) {
-					this.world.method_8652(this.field_11867, this.field_12204, 84);
-					Block.method_9611(this.field_12204, blockState, this.world, this.field_11867, 3);
+					this.world.setBlockState(this.pos, this.pushedBlock, 84);
+					Block.replaceBlock(this.pushedBlock, blockState, this.world, this.pos, 3);
 				} else {
-					if (blockState.method_11570(Properties.field_12508) && (Boolean)blockState.method_11654(Properties.field_12508)) {
-						blockState = blockState.method_11657(Properties.field_12508, Boolean.valueOf(false));
+					if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
+						blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false));
 					}
 
-					this.world.method_8652(this.field_11867, blockState, 67);
-					this.world.method_8492(this.field_11867, blockState.getBlock(), this.field_11867);
+					this.world.setBlockState(this.pos, blockState, 67);
+					this.world.updateNeighbor(this.pos, blockState.getBlock(), this.pos);
 				}
 			}
 		} else {
@@ -319,10 +319,10 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void method_11014(CompoundTag compoundTag) {
-		super.method_11014(compoundTag);
-		this.field_12204 = TagHelper.deserializeBlockState(compoundTag.getCompound("blockState"));
-		this.field_12201 = Direction.byId(compoundTag.getInt("facing"));
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		this.pushedBlock = TagHelper.deserializeBlockState(compoundTag.getCompound("blockState"));
+		this.facing = Direction.byId(compoundTag.getInt("facing"));
 		this.nextProgress = compoundTag.getFloat("progress");
 		this.progress = this.nextProgress;
 		this.extending = compoundTag.getBoolean("extending");
@@ -330,10 +330,10 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public CompoundTag method_11007(CompoundTag compoundTag) {
-		super.method_11007(compoundTag);
-		compoundTag.method_10566("blockState", TagHelper.serializeBlockState(this.field_12204));
-		compoundTag.putInt("facing", this.field_12201.getId());
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		compoundTag.put("blockState", TagHelper.serializeBlockState(this.pushedBlock));
+		compoundTag.putInt("facing", this.facing.getId());
 		compoundTag.putFloat("progress", this.progress);
 		compoundTag.putBoolean("extending", this.extending);
 		compoundTag.putBoolean("source", this.source);
@@ -343,9 +343,9 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	public VoxelShape method_11512(BlockView blockView, BlockPos blockPos) {
 		VoxelShape voxelShape;
 		if (!this.extending && this.source) {
-			voxelShape = this.field_12204.method_11657(PistonBlock.field_12191, Boolean.valueOf(true)).method_11628(blockView, blockPos);
+			voxelShape = this.pushedBlock.with(PistonBlock.field_12191, Boolean.valueOf(true)).getCollisionShape(blockView, blockPos);
 		} else {
-			voxelShape = VoxelShapes.method_1073();
+			voxelShape = VoxelShapes.empty();
 		}
 
 		Direction direction = (Direction)field_12205.get();
@@ -355,18 +355,18 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			BlockState blockState;
 			if (this.isSource()) {
 				blockState = Blocks.field_10379
-					.method_9564()
-					.method_11657(PistonHeadBlock.field_10927, this.field_12201)
-					.method_11657(PistonHeadBlock.field_12227, Boolean.valueOf(this.extending != 1.0F - this.nextProgress < 4.0F));
+					.getDefaultState()
+					.with(PistonHeadBlock.FACING, this.facing)
+					.with(PistonHeadBlock.field_12227, Boolean.valueOf(this.extending != 1.0F - this.nextProgress < 4.0F));
 			} else {
-				blockState = this.field_12204;
+				blockState = this.pushedBlock;
 			}
 
 			float f = this.method_11504(this.nextProgress);
-			double d = (double)((float)this.field_12201.getOffsetX() * f);
-			double e = (double)((float)this.field_12201.getOffsetY() * f);
-			double g = (double)((float)this.field_12201.getOffsetZ() * f);
-			return VoxelShapes.method_1084(voxelShape, blockState.method_11628(blockView, blockPos).offset(d, e, g));
+			double d = (double)((float)this.facing.getOffsetX() * f);
+			double e = (double)((float)this.facing.getOffsetY() * f);
+			double g = (double)((float)this.facing.getOffsetZ() * f);
+			return VoxelShapes.union(voxelShape, blockState.getCollisionShape(blockView, blockPos).offset(d, e, g));
 		}
 	}
 

@@ -19,9 +19,9 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class SimpleStructurePiece extends StructurePiece {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public Structure field_15433;
-	public StructurePlacementData field_15434;
-	public BlockPos field_15432;
+	public Structure structure;
+	public StructurePlacementData placementData;
+	public BlockPos pos;
 
 	public SimpleStructurePiece(StructurePieceType structurePieceType, int i) {
 		super(structurePieceType, i);
@@ -29,42 +29,42 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 
 	public SimpleStructurePiece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
 		super(structurePieceType, compoundTag);
-		this.field_15432 = new BlockPos(compoundTag.getInt("TPX"), compoundTag.getInt("TPY"), compoundTag.getInt("TPZ"));
+		this.pos = new BlockPos(compoundTag.getInt("TPX"), compoundTag.getInt("TPY"), compoundTag.getInt("TPZ"));
 	}
 
-	protected void method_15027(Structure structure, BlockPos blockPos, StructurePlacementData structurePlacementData) {
-		this.field_15433 = structure;
-		this.method_14926(Direction.NORTH);
-		this.field_15432 = blockPos;
-		this.field_15434 = structurePlacementData;
-		this.boundingBox = structure.method_16187(structurePlacementData, blockPos);
+	protected void setStructureData(Structure structure, BlockPos blockPos, StructurePlacementData structurePlacementData) {
+		this.structure = structure;
+		this.setOrientation(Direction.NORTH);
+		this.pos = blockPos;
+		this.placementData = structurePlacementData;
+		this.boundingBox = structure.calculateBoundingBox(structurePlacementData, blockPos);
 	}
 
 	@Override
-	protected void method_14943(CompoundTag compoundTag) {
-		compoundTag.putInt("TPX", this.field_15432.getX());
-		compoundTag.putInt("TPY", this.field_15432.getY());
-		compoundTag.putInt("TPZ", this.field_15432.getZ());
+	protected void toNbt(CompoundTag compoundTag) {
+		compoundTag.putInt("TPX", this.pos.getX());
+		compoundTag.putInt("TPY", this.pos.getY());
+		compoundTag.putInt("TPZ", this.pos.getZ());
 	}
 
 	@Override
 	public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-		this.field_15434.setBoundingBox(mutableIntBoundingBox);
-		if (this.field_15433.method_15172(iWorld, this.field_15432, this.field_15434, 2)) {
-			for (Structure.StructureBlockInfo structureBlockInfo : this.field_15433.method_16445(this.field_15432, this.field_15434, Blocks.field_10465)) {
-				if (structureBlockInfo.field_15595 != null) {
-					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.field_15595.getString("mode"));
+		this.placementData.setBoundingBox(mutableIntBoundingBox);
+		if (this.structure.method_15172(iWorld, this.pos, this.placementData, 2)) {
+			for (Structure.StructureBlockInfo structureBlockInfo : this.structure.method_16445(this.pos, this.placementData, Blocks.field_10465)) {
+				if (structureBlockInfo.tag != null) {
+					StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
 					if (structureBlockMode == StructureBlockMode.field_12696) {
-						this.method_15026(structureBlockInfo.field_15595.getString("metadata"), structureBlockInfo.field_15597, iWorld, random, mutableIntBoundingBox);
+						this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, iWorld, random, mutableIntBoundingBox);
 					}
 				}
 			}
 
-			for (Structure.StructureBlockInfo structureBlockInfo2 : this.field_15433.method_16445(this.field_15432, this.field_15434, Blocks.field_16540)) {
-				if (structureBlockInfo2.field_15595 != null) {
-					String string = structureBlockInfo2.field_15595.getString("final_state");
+			for (Structure.StructureBlockInfo structureBlockInfo2 : this.structure.method_16445(this.pos, this.placementData, Blocks.field_16540)) {
+				if (structureBlockInfo2.tag != null) {
+					String string = structureBlockInfo2.tag.getString("final_state");
 					BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
-					BlockState blockState = Blocks.field_10124.method_9564();
+					BlockState blockState = Blocks.field_10124.getDefaultState();
 
 					try {
 						blockArgumentParser.parse(true);
@@ -72,13 +72,13 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 						if (blockState2 != null) {
 							blockState = blockState2;
 						} else {
-							LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.field_15597);
+							LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
 						}
 					} catch (CommandSyntaxException var13) {
-						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.field_15597);
+						LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", string, structureBlockInfo2.pos);
 					}
 
-					iWorld.method_8652(structureBlockInfo2.field_15597, blockState, 3);
+					iWorld.setBlockState(structureBlockInfo2.pos, blockState, 3);
 				}
 			}
 		}
@@ -86,16 +86,16 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 		return true;
 	}
 
-	protected abstract void method_15026(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox);
+	protected abstract void handleMetadata(String string, BlockPos blockPos, IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox);
 
 	@Override
 	public void translate(int i, int j, int k) {
 		super.translate(i, j, k);
-		this.field_15432 = this.field_15432.add(i, j, k);
+		this.pos = this.pos.add(i, j, k);
 	}
 
 	@Override
 	public Rotation getRotation() {
-		return this.field_15434.getRotation();
+		return this.placementData.getRotation();
 	}
 }

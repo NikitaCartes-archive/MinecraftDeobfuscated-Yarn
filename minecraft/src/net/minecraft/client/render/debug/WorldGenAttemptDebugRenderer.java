@@ -5,16 +5,16 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
-public class WorldGenAttemptDebugRenderer implements DebugRenderer.DebugRenderer {
+public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient field_4634;
 	private final List<BlockPos> field_4640 = Lists.<BlockPos>newArrayList();
 	private final List<Float> field_4635 = Lists.<Float>newArrayList();
@@ -38,10 +38,10 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.DebugRenderer
 
 	@Override
 	public void render(long l) {
-		class_4184 lv = this.field_4634.field_1773.method_19418();
-		double d = lv.method_19326().x;
-		double e = lv.method_19326().y;
-		double f = lv.method_19326().z;
+		Camera camera = this.field_4634.gameRenderer.method_19418();
+		double d = camera.getPos().x;
+		double e = camera.getPos().y;
+		double f = camera.getPos().z;
 		GlStateManager.pushMatrix();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
@@ -50,7 +50,7 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.DebugRenderer
 		GlStateManager.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(5, VertexFormats.field_1576);
+		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i < this.field_4640.size(); i++) {
 			BlockPos blockPos = (BlockPos)this.field_4640.get(i);

@@ -16,7 +16,7 @@ import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
 public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> {
-	private static final Identifier[] field_4356 = (Identifier[])Arrays.stream(DyeColor.values())
+	private static final Identifier[] TEXTURES = (Identifier[])Arrays.stream(DyeColor.values())
 		.sorted(Comparator.comparingInt(DyeColor::getId))
 		.map(dyeColor -> new Identifier("textures/entity/bed/" + dyeColor.getName() + ".png"))
 		.toArray(Identifier[]::new);
@@ -24,22 +24,22 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 
 	public void method_3557(BedBlockEntity bedBlockEntity, double d, double e, double f, float g, int i) {
 		if (i >= 0) {
-			this.method_3566(field_4368[i]);
+			this.bindTexture(DESTROY_STAGE_TEXTURES[i]);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(4.0F, 4.0F, 1.0F);
 			GlStateManager.translatef(0.0625F, 0.0625F, 0.0625F);
 			GlStateManager.matrixMode(5888);
 		} else {
-			Identifier identifier = field_4356[bedBlockEntity.getColor().getId()];
+			Identifier identifier = TEXTURES[bedBlockEntity.getColor().getId()];
 			if (identifier != null) {
-				this.method_3566(identifier);
+				this.bindTexture(identifier);
 			}
 		}
 
 		if (bedBlockEntity.hasWorld()) {
-			BlockState blockState = bedBlockEntity.method_11010();
-			this.method_3558(blockState.method_11654(BedBlock.field_9967) == BedPart.field_12560, d, e, f, blockState.method_11654(BedBlock.field_11177));
+			BlockState blockState = bedBlockEntity.getCachedState();
+			this.method_3558(blockState.get(BedBlock.PART) == BedPart.field_12560, d, e, f, blockState.get(BedBlock.field_11177));
 		} else {
 			this.method_3558(true, d, e, f, Direction.SOUTH);
 			this.method_3558(false, d, e, f - 1.0, Direction.SOUTH);

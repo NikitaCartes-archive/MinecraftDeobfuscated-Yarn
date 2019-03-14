@@ -37,16 +37,16 @@ import org.apache.logging.log4j.Logger;
 public final class SpawnHelper {
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	public static void method_8663(EntityCategory entityCategory, World world, WorldChunk worldChunk, BlockPos blockPos) {
-		ChunkGenerator<?> chunkGenerator = world.method_8398().getChunkGenerator();
+	public static void spawnEntitiesInChunk(EntityCategory entityCategory, World world, WorldChunk worldChunk, BlockPos blockPos) {
+		ChunkGenerator<?> chunkGenerator = world.getChunkManager().getChunkGenerator();
 		int i = 0;
 		BlockPos blockPos2 = method_8657(world, worldChunk);
 		int j = blockPos2.getX();
 		int k = blockPos2.getY();
 		int l = blockPos2.getZ();
 		if (k >= 1) {
-			BlockState blockState = worldChunk.method_8320(blockPos2);
-			if (!blockState.method_11621(worldChunk, blockPos2)) {
+			BlockState blockState = worldChunk.getBlockState(blockPos2);
+			if (!blockState.isSimpleFullBlock(worldChunk, blockPos2)) {
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
 				int m = 0;
 
@@ -93,7 +93,7 @@ public final class SpawnHelper {
 									q = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
 								}
 
-								if (spawnEntry.type.method_5891() == EntityCategory.field_17715) {
+								if (spawnEntry.type.getEntityClass() == EntityCategory.field_17715) {
 									break label119;
 								}
 
@@ -102,18 +102,18 @@ public final class SpawnHelper {
 									break label119;
 								}
 
-								SpawnRestriction.Location location = SpawnRestriction.method_6159(entityType);
+								SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
 								if (location == null
-									|| !method_8660(location, world, mutable, entityType)
-									|| !world.method_18026(entityType.method_17683((double)f, (double)k, (double)g))) {
+									|| !canSpawn(location, world, mutable, entityType)
+									|| !world.method_18026(entityType.createSimpleBoundingBox((double)f, (double)k, (double)g))) {
 									break label119;
 								}
 
 								MobEntity mobEntity;
 								try {
-									Entity entity = entityType.method_5883(world);
+									Entity entity = entityType.create(world);
 									if (!(entity instanceof MobEntity)) {
-										throw new IllegalStateException("Trying to spawn a non-mob: " + Registry.ENTITY_TYPE.method_10221(entityType));
+										throw new IllegalStateException("Trying to spawn a non-mob: " + Registry.ENTITY_TYPE.getId(entityType));
 									}
 
 									mobEntity = (MobEntity)entity;
@@ -123,11 +123,11 @@ public final class SpawnHelper {
 								}
 
 								mobEntity.setPositionAndAngles((double)f, (double)k, (double)g, world.random.nextFloat() * 360.0F, 0.0F);
-								if (d > 16384.0 && mobEntity.canImmediatelyDespawn(d) || !mobEntity.method_5979(world, SpawnType.field_16459) || !mobEntity.method_5957(world)) {
+								if (d > 16384.0 && mobEntity.canImmediatelyDespawn(d) || !mobEntity.canSpawn(world, SpawnType.field_16459) || !mobEntity.method_5957(world)) {
 									break label119;
 								}
 
-								entityData = mobEntity.method_5943(world, world.method_8404(new BlockPos(mobEntity)), SpawnType.field_16459, entityData, null);
+								entityData = mobEntity.prepareEntityData(world, world.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.field_16459, entityData, null);
 								i++;
 								r++;
 								world.spawnEntity(mobEntity);
@@ -153,12 +153,12 @@ public final class SpawnHelper {
 
 	@Nullable
 	private static Biome.SpawnEntry method_8664(ChunkGenerator<?> chunkGenerator, EntityCategory entityCategory, Random random, BlockPos blockPos) {
-		List<Biome.SpawnEntry> list = chunkGenerator.method_12113(entityCategory, blockPos);
+		List<Biome.SpawnEntry> list = chunkGenerator.getEntitySpawnList(entityCategory, blockPos);
 		return list.isEmpty() ? null : WeightedPicker.getRandom(random, list);
 	}
 
 	private static boolean method_8659(ChunkGenerator<?> chunkGenerator, EntityCategory entityCategory, Biome.SpawnEntry spawnEntry, BlockPos blockPos) {
-		List<Biome.SpawnEntry> list = chunkGenerator.method_12113(entityCategory, blockPos);
+		List<Biome.SpawnEntry> list = chunkGenerator.getEntitySpawnList(entityCategory, blockPos);
 		return list.isEmpty() ? false : list.contains(spawnEntry);
 	}
 
@@ -166,43 +166,43 @@ public final class SpawnHelper {
 		ChunkPos chunkPos = worldChunk.getPos();
 		int i = chunkPos.getStartX() + world.random.nextInt(16);
 		int j = chunkPos.getStartZ() + world.random.nextInt(16);
-		int k = worldChunk.method_12005(Heightmap.Type.WORLD_SURFACE, i, j) + 1;
+		int k = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i, j) + 1;
 		int l = world.random.nextInt(k + 1);
 		return new BlockPos(i, l, j);
 	}
 
-	public static boolean method_8662(BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+	public static boolean isClearForSpawn(BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
 		if (blockState.method_11603(blockView, blockPos)) {
 			return false;
 		} else if (blockState.emitsRedstonePower()) {
 			return false;
 		} else {
-			return !fluidState.isEmpty() ? false : !blockState.method_11602(BlockTags.field_15463);
+			return !fluidState.isEmpty() ? false : !blockState.matches(BlockTags.field_15463);
 		}
 	}
 
-	public static boolean method_8660(SpawnRestriction.Location location, ViewableWorld viewableWorld, BlockPos blockPos, @Nullable EntityType<?> entityType) {
-		if (entityType != null && viewableWorld.method_8621().method_11952(blockPos)) {
-			BlockState blockState = viewableWorld.method_8320(blockPos);
-			FluidState fluidState = viewableWorld.method_8316(blockPos);
+	public static boolean canSpawn(SpawnRestriction.Location location, ViewableWorld viewableWorld, BlockPos blockPos, @Nullable EntityType<?> entityType) {
+		if (entityType != null && viewableWorld.getWorldBorder().contains(blockPos)) {
+			BlockState blockState = viewableWorld.getBlockState(blockPos);
+			FluidState fluidState = viewableWorld.getFluidState(blockPos);
 			BlockPos blockPos2 = blockPos.up();
 			BlockPos blockPos3 = blockPos.down();
 			switch (location) {
 				case field_6318:
-					return fluidState.method_15767(FluidTags.field_15517)
-						&& viewableWorld.method_8316(blockPos3).method_15767(FluidTags.field_15517)
-						&& !viewableWorld.method_8320(blockPos2).method_11621(viewableWorld, blockPos2);
+					return fluidState.matches(FluidTags.field_15517)
+						&& viewableWorld.getFluidState(blockPos3).matches(FluidTags.field_15517)
+						&& !viewableWorld.getBlockState(blockPos2).isSimpleFullBlock(viewableWorld, blockPos2);
 				case field_6317:
 				default:
-					BlockState blockState2 = viewableWorld.method_8320(blockPos3);
-					if (!blockState2.method_11631(viewableWorld, blockPos3) && !SpawnRestriction.method_6158(entityType, blockState2)) {
+					BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
+					if (!blockState2.hasSolidTopSurface(viewableWorld, blockPos3) && !SpawnRestriction.canSpawn(entityType, blockState2)) {
 						return false;
 					} else {
 						Block block = blockState2.getBlock();
 						boolean bl = block != Blocks.field_9987 && block != Blocks.field_10499;
 						return bl
-							&& method_8662(viewableWorld, blockPos, blockState, fluidState)
-							&& method_8662(viewableWorld, blockPos2, viewableWorld.method_8320(blockPos2), viewableWorld.method_8316(blockPos2));
+							&& isClearForSpawn(viewableWorld, blockPos, blockState, fluidState)
+							&& isClearForSpawn(viewableWorld, blockPos2, viewableWorld.getBlockState(blockPos2), viewableWorld.getFluidState(blockPos2));
 					}
 			}
 		} else {
@@ -210,7 +210,7 @@ public final class SpawnHelper {
 		}
 	}
 
-	public static void method_8661(IWorld iWorld, Biome biome, int i, int j, Random random) {
+	public static void populateEntities(IWorld iWorld, Biome biome, int i, int j, Random random) {
 		List<Biome.SpawnEntry> list = biome.getEntitySpawnList(EntityCategory.field_6294);
 		if (!list.isEmpty()) {
 			int k = i << 4;
@@ -230,17 +230,17 @@ public final class SpawnHelper {
 
 					for (int s = 0; !bl && s < 4; s++) {
 						BlockPos blockPos = method_8658(iWorld, spawnEntry.type, n, o);
-						if (spawnEntry.type.isSummonable() && method_8660(SpawnRestriction.Location.field_6317, iWorld, blockPos, spawnEntry.type)) {
+						if (spawnEntry.type.isSummonable() && canSpawn(SpawnRestriction.Location.field_6317, iWorld, blockPos, spawnEntry.type)) {
 							float f = spawnEntry.type.getWidth();
 							double d = MathHelper.clamp((double)n, (double)k + (double)f, (double)k + 16.0 - (double)f);
 							double e = MathHelper.clamp((double)o, (double)l + (double)f, (double)l + 16.0 - (double)f);
-							if (!iWorld.method_18026(spawnEntry.type.method_17683(d, (double)blockPos.getY(), e))) {
+							if (!iWorld.method_18026(spawnEntry.type.createSimpleBoundingBox(d, (double)blockPos.getY(), e))) {
 								continue;
 							}
 
 							Entity entity;
 							try {
-								entity = spawnEntry.type.method_5883(iWorld.getWorld());
+								entity = spawnEntry.type.create(iWorld.getWorld());
 							} catch (Exception var26) {
 								LOGGER.warn("Failed to create mob", (Throwable)var26);
 								continue;
@@ -249,8 +249,8 @@ public final class SpawnHelper {
 							entity.setPositionAndAngles(d, (double)blockPos.getY(), e, random.nextFloat() * 360.0F, 0.0F);
 							if (entity instanceof MobEntity) {
 								MobEntity mobEntity = (MobEntity)entity;
-								if (mobEntity.method_5979(iWorld, SpawnType.field_16472) && mobEntity.method_5957(iWorld)) {
-									entityData = mobEntity.method_5943(iWorld, iWorld.method_8404(new BlockPos(mobEntity)), SpawnType.field_16472, entityData, null);
+								if (mobEntity.canSpawn(iWorld, SpawnType.field_16472) && mobEntity.method_5957(iWorld)) {
+									entityData = mobEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.field_16472, entityData, null);
 									iWorld.spawnEntity(mobEntity);
 									bl = true;
 								}
@@ -269,8 +269,8 @@ public final class SpawnHelper {
 	}
 
 	private static BlockPos method_8658(ViewableWorld viewableWorld, @Nullable EntityType<?> entityType, int i, int j) {
-		BlockPos blockPos = new BlockPos(i, viewableWorld.method_8589(SpawnRestriction.method_6160(entityType), i, j), j);
+		BlockPos blockPos = new BlockPos(i, viewableWorld.getTop(SpawnRestriction.getHeightMapType(entityType), i, j), j);
 		BlockPos blockPos2 = blockPos.down();
-		return viewableWorld.method_8320(blockPos2).method_11609(viewableWorld, blockPos2, BlockPlacementEnvironment.field_50) ? blockPos2 : blockPos;
+		return viewableWorld.getBlockState(blockPos2).canPlaceAtSide(viewableWorld, blockPos2, BlockPlacementEnvironment.field_50) ? blockPos2 : blockPos;
 	}
 }

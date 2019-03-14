@@ -24,6 +24,7 @@ import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
+import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.profiler.DisableableProfiler;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.world.Difficulty;
@@ -43,7 +44,7 @@ public class IntegratedServer extends MinecraftServer {
 	private final LevelInfo levelInfo;
 	private boolean field_5524;
 	private int lanPort = -1;
-	private LanServerPinger field_5519;
+	private LanServerPinger lanPinger;
 	private UUID field_5521;
 
 	public IntegratedServer(
@@ -69,12 +70,12 @@ public class IntegratedServer extends MinecraftServer {
 			worldGenerationProgressListenerFactory,
 			string
 		);
-		this.setUserName(minecraftClient.method_1548().getUsername());
+		this.setUserName(minecraftClient.getSession().getUsername());
 		this.setServerName(string2);
 		this.setDemo(minecraftClient.isDemo());
 		this.setBonusChest(levelInfo.hasBonusChest());
 		this.setWorldHeight(256);
-		this.method_3846(new IntegratedPlayerManager(this));
+		this.setPlayerManager(new IntegratedPlayerManager(this));
 		this.client = minecraftClient;
 		this.levelInfo = this.isDemo() ? MinecraftServer.field_17704 : levelInfo;
 	}
@@ -92,13 +93,13 @@ public class IntegratedServer extends MinecraftServer {
 		}
 
 		this.method_3800(worldSaveHandler.getWorldDir(), levelProperties);
-		WorldGenerationProgressListener worldGenerationProgressListener = this.field_17439.create(11);
-		this.method_3786(worldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
-		if (this.method_3847(DimensionType.field_13072).method_8401().getDifficulty() == null) {
-			this.setDifficulty(this.client.field_1690.difficulty, true);
+		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
+		this.createWorlds(worldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
+		if (this.getWorld(DimensionType.field_13072).getLevelProperties().getDifficulty() == null) {
+			this.setDifficulty(this.client.options.difficulty, true);
 		}
 
-		this.method_3774(worldGenerationProgressListener);
+		this.prepareStartRegion(worldGenerationProgressListener);
 	}
 
 	@Override
@@ -111,30 +112,30 @@ public class IntegratedServer extends MinecraftServer {
 		this.setFlightEnabled(true);
 		LOGGER.info("Generating keypair");
 		this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
-		this.method_3735(this.getLevelName(), this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.method_8576(), this.levelInfo.getGeneratorOptions());
-		this.setMotd(this.getUserName() + " - " + this.method_3847(DimensionType.field_13072).method_8401().getLevelName());
+		this.method_3735(this.getLevelName(), this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.getGeneratorType(), this.levelInfo.getGeneratorOptions());
+		this.setMotd(this.getUserName() + " - " + this.getWorld(DimensionType.field_13072).getLevelProperties().getLevelName());
 		return true;
 	}
 
 	@Override
 	public void method_3748(BooleanSupplier booleanSupplier) {
 		boolean bl = this.field_5524;
-		this.field_5524 = MinecraftClient.getInstance().method_1562() != null && MinecraftClient.getInstance().isPaused();
+		this.field_5524 = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
 		DisableableProfiler disableableProfiler = this.getProfiler();
 		if (!bl && this.field_5524) {
 			disableableProfiler.push("autoSave");
 			LOGGER.info("Saving and pausing game...");
-			this.method_3760().saveAllPlayerData();
+			this.getPlayerManager().saveAllPlayerData();
 			this.save(false, true, false);
 			disableableProfiler.pop();
 		}
 
 		if (!this.field_5524) {
 			super.method_3748(booleanSupplier);
-			int i = Math.max(2, this.client.field_1690.viewDistance + -2);
-			if (i != this.method_3760().getViewDistance()) {
-				LOGGER.info("Changing view distance to {}, from {}", i, this.method_3760().getViewDistance());
-				this.method_3760().setViewDistance(i, i - 2);
+			int i = Math.max(2, this.client.options.viewDistance + -2);
+			if (i != this.getPlayerManager().getViewDistance()) {
+				LOGGER.info("Changing view distance to {}, from {}", i, this.getPlayerManager().getViewDistance());
+				this.getPlayerManager().setViewDistance(i, i - 2);
 			}
 		}
 	}
@@ -151,7 +152,7 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public Difficulty getDefaultDifficulty() {
-		return this.client.field_1687.method_8401().getDifficulty();
+		return this.client.world.getLevelProperties().getDifficulty();
 	}
 
 	@Override
@@ -186,17 +187,17 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public void setCrashReport(CrashReport crashReport) {
-		this.client.method_1494(crashReport);
+		this.client.setCrashReport(crashReport);
 	}
 
 	@Override
 	public CrashReport populateCrashReport(CrashReport crashReport) {
 		crashReport = super.populateCrashReport(crashReport);
-		crashReport.method_567().add("Type", "Integrated Server (map_client.txt)");
-		crashReport.method_567()
-			.method_577(
+		crashReport.getSystemDetailsSection().add("Type", "Integrated Server (map_client.txt)");
+		crashReport.getSystemDetailsSection()
+			.add(
 				"Is Modded",
-				() -> {
+				(ICrashCallable<String>)(() -> {
 					String string = ClientBrandRetriever.getClientModName();
 					if (!string.equals("vanilla")) {
 						return "Definitely; Client brand changed to '" + string + "'";
@@ -210,7 +211,7 @@ public class IntegratedServer extends MinecraftServer {
 								: "Probably not. Jar signature remains and both client + server brands are untouched.";
 						}
 					}
-				}
+				})
 			);
 		return crashReport;
 	}
@@ -224,18 +225,18 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public boolean openToLan(GameMode gameMode, boolean bl, int i) {
 		try {
-			this.method_3787().method_14354(null, i);
+			this.getNetworkIO().bind(null, i);
 			LOGGER.info("Started serving on {}", i);
 			this.lanPort = i;
-			this.field_5519 = new LanServerPinger(this.getServerMotd(), i + "");
-			this.field_5519.start();
-			this.method_3760().setGameMode(gameMode);
-			this.method_3760().setCheatsAllowed(bl);
-			int j = this.getPermissionLevel(this.client.field_1724.getGameProfile());
-			this.client.field_1724.setClientPermissionLevel(j);
+			this.lanPinger = new LanServerPinger(this.getServerMotd(), i + "");
+			this.lanPinger.start();
+			this.getPlayerManager().setGameMode(gameMode);
+			this.getPlayerManager().setCheatsAllowed(bl);
+			int j = this.getPermissionLevel(this.client.player.getGameProfile());
+			this.client.player.setClientPermissionLevel(j);
 
-			for (ServerPlayerEntity serverPlayerEntity : this.method_3760().getPlayerList()) {
-				this.getCommandManager().method_9241(serverPlayerEntity);
+			for (ServerPlayerEntity serverPlayerEntity : this.getPlayerManager().getPlayerList()) {
+				this.getCommandManager().sendCommandTree(serverPlayerEntity);
 			}
 
 			return true;
@@ -247,25 +248,25 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public void shutdown() {
 		super.shutdown();
-		if (this.field_5519 != null) {
-			this.field_5519.interrupt();
-			this.field_5519 = null;
+		if (this.lanPinger != null) {
+			this.lanPinger.interrupt();
+			this.lanPinger = null;
 		}
 	}
 
 	@Override
 	public void stop(boolean bl) {
 		this.executeFuture(() -> {
-			for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(this.method_3760().getPlayerList())) {
+			for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(this.getPlayerManager().getPlayerList())) {
 				if (!serverPlayerEntity.getUuid().equals(this.field_5521)) {
-					this.method_3760().method_14611(serverPlayerEntity);
+					this.getPlayerManager().method_14611(serverPlayerEntity);
 				}
 			}
 		}).join();
 		super.stop(bl);
-		if (this.field_5519 != null) {
-			this.field_5519.interrupt();
-			this.field_5519 = null;
+		if (this.lanPinger != null) {
+			this.lanPinger.interrupt();
+			this.lanPinger = null;
 		}
 	}
 
@@ -282,7 +283,7 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public void setDefaultGameMode(GameMode gameMode) {
 		super.setDefaultGameMode(gameMode);
-		this.method_3760().setGameMode(gameMode);
+		this.getPlayerManager().setGameMode(gameMode);
 	}
 
 	@Override

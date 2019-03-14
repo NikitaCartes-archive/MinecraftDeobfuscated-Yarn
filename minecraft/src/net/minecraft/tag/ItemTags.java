@@ -6,58 +6,58 @@ import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
 
 public class ItemTags {
-	private static TagContainer<Item> field_15530 = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
+	private static TagContainer<Item> container = new TagContainer<>(identifier -> Optional.empty(), "", false, "");
 	private static int containerChanges;
-	public static final Tag<Item> field_15544 = method_15102("wool");
-	public static final Tag<Item> field_15537 = method_15102("planks");
-	public static final Tag<Item> field_15531 = method_15102("stone_bricks");
-	public static final Tag<Item> field_15555 = method_15102("wooden_buttons");
-	public static final Tag<Item> field_15551 = method_15102("buttons");
-	public static final Tag<Item> field_15542 = method_15102("carpets");
-	public static final Tag<Item> field_15552 = method_15102("wooden_doors");
-	public static final Tag<Item> field_15557 = method_15102("wooden_stairs");
-	public static final Tag<Item> field_15534 = method_15102("wooden_slabs");
-	public static final Tag<Item> field_17620 = method_15102("wooden_fences");
-	public static final Tag<Item> field_15540 = method_15102("wooden_pressure_plates");
-	public static final Tag<Item> field_15550 = method_15102("wooden_trapdoors");
-	public static final Tag<Item> field_15553 = method_15102("doors");
-	public static final Tag<Item> field_15528 = method_15102("saplings");
-	public static final Tag<Item> field_15539 = method_15102("logs");
-	public static final Tag<Item> field_15546 = method_15102("dark_oak_logs");
-	public static final Tag<Item> field_15545 = method_15102("oak_logs");
-	public static final Tag<Item> field_15554 = method_15102("birch_logs");
-	public static final Tag<Item> field_15525 = method_15102("acacia_logs");
-	public static final Tag<Item> field_15538 = method_15102("jungle_logs");
-	public static final Tag<Item> field_15549 = method_15102("spruce_logs");
-	public static final Tag<Item> field_15556 = method_15102("banners");
-	public static final Tag<Item> field_15532 = method_15102("sand");
-	public static final Tag<Item> field_15526 = method_15102("stairs");
-	public static final Tag<Item> field_15535 = method_15102("slabs");
-	public static final Tag<Item> field_15560 = method_15102("walls");
-	public static final Tag<Item> field_15547 = method_15102("anvil");
-	public static final Tag<Item> field_15529 = method_15102("rails");
-	public static final Tag<Item> field_15558 = method_15102("leaves");
-	public static final Tag<Item> field_15548 = method_15102("trapdoors");
-	public static final Tag<Item> field_15543 = method_15102("small_flowers");
-	public static final Tag<Item> field_16444 = method_15102("beds");
-	public static final Tag<Item> field_16585 = method_15102("fences");
-	public static final Tag<Item> field_15536 = method_15102("boats");
-	public static final Tag<Item> field_15527 = method_15102("fishes");
-	public static final Tag<Item> field_15533 = method_15102("signs");
-	public static final Tag<Item> field_15541 = method_15102("music_discs");
-	public static final Tag<Item> field_17487 = method_15102("coals");
-	public static final Tag<Item> field_18317 = method_15102("arrows");
+	public static final Tag<Item> field_15544 = register("wool");
+	public static final Tag<Item> field_15537 = register("planks");
+	public static final Tag<Item> field_15531 = register("stone_bricks");
+	public static final Tag<Item> field_15555 = register("wooden_buttons");
+	public static final Tag<Item> field_15551 = register("buttons");
+	public static final Tag<Item> field_15542 = register("carpets");
+	public static final Tag<Item> field_15552 = register("wooden_doors");
+	public static final Tag<Item> field_15557 = register("wooden_stairs");
+	public static final Tag<Item> field_15534 = register("wooden_slabs");
+	public static final Tag<Item> field_17620 = register("wooden_fences");
+	public static final Tag<Item> field_15540 = register("wooden_pressure_plates");
+	public static final Tag<Item> field_15550 = register("wooden_trapdoors");
+	public static final Tag<Item> field_15553 = register("doors");
+	public static final Tag<Item> field_15528 = register("saplings");
+	public static final Tag<Item> field_15539 = register("logs");
+	public static final Tag<Item> field_15546 = register("dark_oak_logs");
+	public static final Tag<Item> field_15545 = register("oak_logs");
+	public static final Tag<Item> field_15554 = register("birch_logs");
+	public static final Tag<Item> field_15525 = register("acacia_logs");
+	public static final Tag<Item> field_15538 = register("jungle_logs");
+	public static final Tag<Item> field_15549 = register("spruce_logs");
+	public static final Tag<Item> field_15556 = register("banners");
+	public static final Tag<Item> field_15532 = register("sand");
+	public static final Tag<Item> field_15526 = register("stairs");
+	public static final Tag<Item> field_15535 = register("slabs");
+	public static final Tag<Item> field_15560 = register("walls");
+	public static final Tag<Item> field_15547 = register("anvil");
+	public static final Tag<Item> field_15529 = register("rails");
+	public static final Tag<Item> field_15558 = register("leaves");
+	public static final Tag<Item> field_15548 = register("trapdoors");
+	public static final Tag<Item> field_15543 = register("small_flowers");
+	public static final Tag<Item> field_16444 = register("beds");
+	public static final Tag<Item> field_16585 = register("fences");
+	public static final Tag<Item> field_15536 = register("boats");
+	public static final Tag<Item> field_15527 = register("fishes");
+	public static final Tag<Item> field_15533 = register("signs");
+	public static final Tag<Item> field_15541 = register("music_discs");
+	public static final Tag<Item> field_17487 = register("coals");
+	public static final Tag<Item> field_18317 = register("arrows");
 
-	public static void method_15103(TagContainer<Item> tagContainer) {
-		field_15530 = tagContainer;
+	public static void setContainer(TagContainer<Item> tagContainer) {
+		container = tagContainer;
 		containerChanges++;
 	}
 
-	public static TagContainer<Item> method_15106() {
-		return field_15530;
+	public static TagContainer<Item> getContainer() {
+		return container;
 	}
 
-	private static Tag<Item> method_15102(String string) {
+	private static Tag<Item> register(String string) {
 		return new ItemTags.class_3490(new Identifier(string));
 	}
 
@@ -71,7 +71,7 @@ public class ItemTags {
 
 		public boolean method_15109(Item item) {
 			if (this.field_15562 != ItemTags.containerChanges) {
-				this.field_15561 = ItemTags.field_15530.getOrCreate(this.getId());
+				this.field_15561 = ItemTags.container.getOrCreate(this.getId());
 				this.field_15562 = ItemTags.containerChanges;
 			}
 
@@ -81,7 +81,7 @@ public class ItemTags {
 		@Override
 		public Collection<Item> values() {
 			if (this.field_15562 != ItemTags.containerChanges) {
-				this.field_15561 = ItemTags.field_15530.getOrCreate(this.getId());
+				this.field_15561 = ItemTags.container.getOrCreate(this.getId());
 				this.field_15562 = ItemTags.containerChanges;
 			}
 
@@ -91,7 +91,7 @@ public class ItemTags {
 		@Override
 		public Collection<Tag.Entry<Item>> entries() {
 			if (this.field_15562 != ItemTags.containerChanges) {
-				this.field_15561 = ItemTags.field_15530.getOrCreate(this.getId());
+				this.field_15561 = ItemTags.container.getOrCreate(this.getId());
 				this.field_15562 = ItemTags.containerChanges;
 			}
 

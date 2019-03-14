@@ -26,7 +26,7 @@ public class ClientStatusC2SPacket implements Packet<ServerPlayPacketListener> {
 	}
 
 	public void method_12120(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12068(this);
+		serverPlayPacketListener.onClientStatus(this);
 	}
 
 	public ClientStatusC2SPacket.Mode getMode() {

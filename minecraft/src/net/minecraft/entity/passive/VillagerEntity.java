@@ -8,35 +8,34 @@ import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiPredicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4094;
-import net.minecraft.class_4095;
-import net.minecraft.class_4129;
-import net.minecraft.class_4136;
-import net.minecraft.class_4139;
-import net.minecraft.class_4140;
-import net.minecraft.class_4141;
-import net.minecraft.class_4148;
-import net.minecraft.class_4149;
-import net.minecraft.class_4151;
-import net.minecraft.class_4168;
-import net.minecraft.class_4170;
-import net.minecraft.class_4208;
 import net.minecraft.class_4209;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.entity.InteractionObserver;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.pathing.EntityMobNavigation;
+import net.minecraft.entity.ai.brain.Activity;
+import net.minecraft.entity.ai.brain.Brain;
+import net.minecraft.entity.ai.brain.MemoryModuleState;
+import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.Schedule;
+import net.minecraft.entity.ai.brain.sensor.Sensor;
+import net.minecraft.entity.ai.brain.sensor.SensorType;
+import net.minecraft.entity.ai.brain.task.VillagerTaskListProvider;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -62,220 +61,239 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.village.TraderRecipe;
 import net.minecraft.village.TraderRecipeList;
 import net.minecraft.village.Trades;
+import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerDataContainer;
+import net.minecraft.village.VillagerGossips;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
-public class VillagerEntity extends AbstractTraderEntity implements class_4094, VillagerDataContainer {
-	private static final TrackedData<VillagerData> field_7445 = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
-	public static final Map<Item, Integer> field_18526 = ImmutableMap.of(Items.field_8229, 4, Items.field_8567, 1, Items.field_8179, 1, Items.field_8186, 1);
-	private static final Set<Item> field_18527 = ImmutableSet.of(
+public class VillagerEntity extends AbstractTraderEntity implements InteractionObserver, VillagerDataContainer {
+	private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(VillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
+	public static final Map<Item, Integer> ITEM_FOOD_VALUES = ImmutableMap.of(Items.field_8229, 4, Items.field_8567, 1, Items.field_8179, 1, Items.field_8186, 1);
+	private static final Set<Item> GATHERABLE_ITEMS = ImmutableSet.of(
 		Items.field_8229, Items.field_8567, Items.field_8179, Items.field_8861, Items.field_8317, Items.field_8186, Items.field_8309
 	);
-	private int field_18528;
-	private boolean field_18529;
+	private int levelUpTimer;
+	private boolean levellingUp;
 	@Nullable
-	private PlayerEntity field_18530;
+	private PlayerEntity lastCustomer;
 	@Nullable
-	private UUID field_18531;
+	private UUID buddyGolemId;
 	private long field_18532 = Long.MIN_VALUE;
-	private byte field_18533;
-	private final class_4136 field_18534 = new class_4136();
-	private long field_18535;
-	private int field_18536;
-	private long field_18537 = 0L;
-	private static final ImmutableList<class_4140<?>> field_18538 = ImmutableList.of(
-		class_4140.field_18438,
-		class_4140.field_18439,
-		class_4140.field_18440,
-		class_4140.field_18441,
-		class_4140.field_18442,
-		class_4140.field_18443,
-		class_4140.field_18444,
-		class_4140.field_18445,
-		class_4140.field_18446,
-		class_4140.field_18447,
-		class_4140.field_18448,
-		class_4140.field_18449,
-		class_4140.field_18450,
-		class_4140.field_18451,
-		class_4140.field_18452,
-		class_4140.field_18453
+	private byte foodLevel;
+	private final VillagerGossips gossip = new VillagerGossips();
+	private long gossipStartTime;
+	private int experience;
+	private long lastRestock = 0L;
+	private static final ImmutableList<MemoryModuleType<?>> MEMORY_MODULES = ImmutableList.of(
+		MemoryModuleType.field_18438,
+		MemoryModuleType.field_18439,
+		MemoryModuleType.field_18440,
+		MemoryModuleType.field_18441,
+		MemoryModuleType.field_18442,
+		MemoryModuleType.field_18443,
+		MemoryModuleType.field_18444,
+		MemoryModuleType.field_18445,
+		MemoryModuleType.field_18446,
+		MemoryModuleType.field_18447,
+		MemoryModuleType.field_18448,
+		MemoryModuleType.field_18449,
+		MemoryModuleType.field_18450,
+		MemoryModuleType.field_18451,
+		MemoryModuleType.field_18452,
+		MemoryModuleType.field_18453
 	);
-	private static final ImmutableList<class_4149<? extends class_4148<? super VillagerEntity>>> field_18539 = ImmutableList.of(
-		class_4149.field_18466, class_4149.field_18467, class_4149.field_18468, class_4149.field_18469, class_4149.field_18470
+	private static final ImmutableList<SensorType<? extends Sensor<? super VillagerEntity>>> SENSORS = ImmutableList.of(
+		SensorType.field_18466, SensorType.field_18467, SensorType.field_18468, SensorType.field_18469, SensorType.field_18470
+	);
+	public static final Map<MemoryModuleType<GlobalPos>, BiPredicate<VillagerEntity, PointOfInterestType>> field_18851 = ImmutableMap.of(
+		MemoryModuleType.field_18438,
+		(villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.field_18517,
+		MemoryModuleType.field_18439,
+		(villagerEntity, pointOfInterestType) -> villagerEntity.getVillagerData().getProfession().getWorkStation() == pointOfInterestType,
+		MemoryModuleType.field_18440,
+		(villagerEntity, pointOfInterestType) -> pointOfInterestType == PointOfInterestType.field_18518
 	);
 
 	public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world) {
-		this(entityType, world, VillagerType.field_17073);
+		this(entityType, world, VillagerType.PLAINS);
 	}
 
 	public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world, VillagerType villagerType) {
 		super(entityType, world);
-		((EntityMobNavigation)this.method_5942()).setCanPathThroughDoors(true);
+		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
 		this.setCanPickUpLoot(true);
-		this.method_7221(this.getVillagerData().method_16921(VillagerProfession.field_17051));
-		this.field_18321 = this.method_18867(new Dynamic<>(NbtOps.INSTANCE, new CompoundTag()));
+		this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.field_17051));
+		this.brain = this.createBrain(new Dynamic<>(NbtOps.INSTANCE, new CompoundTag()));
 	}
 
 	@Override
-	public class_4095<VillagerEntity> method_18868() {
-		return (class_4095<VillagerEntity>)super.method_18868();
+	public Brain<VillagerEntity> getBrain() {
+		return (Brain<VillagerEntity>)super.getBrain();
 	}
 
 	@Override
-	protected class_4095<?> method_18867(Dynamic<?> dynamic) {
-		class_4095<VillagerEntity> lv = new class_4095<>(field_18538, field_18539, dynamic);
-		this.method_19174(lv);
-		return lv;
+	protected Brain<?> createBrain(Dynamic<?> dynamic) {
+		Brain<VillagerEntity> brain = new Brain<>(MEMORY_MODULES, SENSORS, dynamic);
+		this.initBrain(brain);
+		return brain;
 	}
 
-	public void method_19179(ServerWorld serverWorld) {
-		class_4095<VillagerEntity> lv = this.method_18868();
-		lv.method_18900(serverWorld, this);
-		this.field_18321 = lv.method_18911();
-		this.method_19174(this.method_18868());
+	public void reinitializeBrain(ServerWorld serverWorld) {
+		Brain<VillagerEntity> brain = this.getBrain();
+		brain.stopAllTasks(serverWorld, this);
+		this.brain = brain.clone();
+		this.initBrain(this.getBrain());
 	}
 
-	private void method_19174(class_4095<VillagerEntity> arg) {
-		VillagerProfession villagerProfession = this.getVillagerData().method_16924();
-		float f = (float)this.method_5996(EntityAttributes.MOVEMENT_SPEED).getValue();
+	private void initBrain(Brain<VillagerEntity> brain) {
+		VillagerProfession villagerProfession = this.getVillagerData().getProfession();
+		float f = (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
 		if (this.isChild()) {
-			arg.method_18884(class_4170.field_18605);
+			brain.setSchedule(Schedule.VILLAGER_BABY);
 		} else {
-			arg.method_18884(class_4170.field_18606);
-			arg.method_18882(
-				class_4168.field_18596, class_4129.method_19021(villagerProfession, f), ImmutableSet.of(Pair.of(class_4140.field_18439, class_4141.field_18456))
+			brain.setSchedule(Schedule.VILLAGER_DEFAULT);
+			brain.setTaskList(
+				Activity.field_18596,
+				VillagerTaskListProvider.getWorkTasks(villagerProfession, f),
+				ImmutableSet.of(Pair.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456))
 			);
 		}
 
-		arg.method_18881(class_4168.field_18594, class_4129.method_19020(villagerProfession, f));
-		arg.method_18882(
-			class_4168.field_18598, class_4129.method_19023(villagerProfession, f), ImmutableSet.of(Pair.of(class_4140.field_18440, class_4141.field_18456))
+		brain.setTaskList(Activity.field_18594, VillagerTaskListProvider.getCoreTasks(villagerProfession, f));
+		brain.setTaskList(
+			Activity.field_18598,
+			VillagerTaskListProvider.getMeetTasks(villagerProfession, f),
+			ImmutableSet.of(Pair.of(MemoryModuleType.field_18440, MemoryModuleState.field_18456))
 		);
-		arg.method_18882(
-			class_4168.field_18597, class_4129.method_19022(villagerProfession, f), ImmutableSet.of(Pair.of(class_4140.field_18438, class_4141.field_18456))
+		brain.setTaskList(
+			Activity.field_18597,
+			VillagerTaskListProvider.getRestTasks(villagerProfession, f),
+			ImmutableSet.of(Pair.of(MemoryModuleType.field_18438, MemoryModuleState.field_18456))
 		);
-		arg.method_18881(class_4168.field_18595, class_4129.method_19024(villagerProfession, f));
-		arg.method_18881(class_4168.field_18599, class_4129.method_19025(villagerProfession, f));
-		arg.method_18890(ImmutableSet.of(class_4168.field_18594));
-		arg.method_18897(class_4168.field_18595);
-		arg.method_18871(this.field_6002.getTimeOfDay());
+		brain.setTaskList(Activity.field_18595, VillagerTaskListProvider.getIdleTasks(villagerProfession, f));
+		brain.setTaskList(Activity.field_18599, VillagerTaskListProvider.getPanicTasks(villagerProfession, f));
+		brain.method_18890(ImmutableSet.of(Activity.field_18594));
+		brain.setActivity(Activity.field_18595);
+		brain.doActivity(this.world.getTimeOfDay());
 	}
 
 	@Override
 	protected void method_5619() {
 		super.method_5619();
-		if (this.field_6002 instanceof ServerWorld) {
-			this.method_19179((ServerWorld)this.field_6002);
+		if (this.world instanceof ServerWorld) {
+			this.reinitializeBrain((ServerWorld)this.world);
 		}
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
-		this.method_5996(EntityAttributes.FOLLOW_RANGE).setBaseValue(48.0);
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
+		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(48.0);
 	}
 
 	@Override
 	protected void mobTick() {
-		this.field_6002.getProfiler().push("brain");
-		this.method_18868().method_18891((ServerWorld)this.field_6002, this);
-		this.field_6002.getProfiler().pop();
-		if (!this.hasCustomer() && this.field_18528 > 0) {
-			this.field_18528--;
-			if (this.field_18528 <= 0) {
-				if (this.field_18529) {
+		this.world.getProfiler().push("brain");
+		this.getBrain().tick((ServerWorld)this.world, this);
+		this.world.getProfiler().pop();
+		if (!this.hasCustomer() && this.levelUpTimer > 0) {
+			this.levelUpTimer--;
+			if (this.levelUpTimer <= 0) {
+				if (this.levellingUp) {
 					this.levelUp();
-					this.field_18529 = false;
+					this.levellingUp = false;
 				}
 
 				this.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5924, 200, 0));
 			}
 		}
 
-		if (this.field_18530 != null && this.field_6002 instanceof ServerWorld) {
-			((ServerWorld)this.field_6002).method_19496(class_4151.field_18478, this.field_18530, this);
-			this.field_18530 = null;
+		if (this.lastCustomer != null && this.world instanceof ServerWorld) {
+			((ServerWorld)this.world).handleInteraction(EntityInteraction.field_18478, this.lastCustomer, this);
+			this.lastCustomer = null;
 		}
 
 		super.mobTick();
 	}
 
-	public void method_19181() {
+	public void resetCustomer() {
 		this.setCurrentCustomer(null);
 		this.method_19187();
 	}
 
 	@Override
-	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		boolean bl = itemStack.getItem() == Items.field_8448;
 		if (bl) {
 			itemStack.interactWithEntity(playerEntity, this, hand);
 			return true;
 		} else if (itemStack.getItem() != Items.field_8086 && this.isValid() && !this.hasCustomer() && !this.isChild()) {
 			if (hand == Hand.MAIN) {
-				playerEntity.method_7281(Stats.field_15384);
+				playerEntity.increaseStat(Stats.field_15384);
 			}
 
-			if (this.method_8264().isEmpty()) {
-				return super.method_5992(playerEntity, hand);
+			if (this.getRecipes().isEmpty()) {
+				return super.interactMob(playerEntity, hand);
 			} else {
-				if (this.field_6002 instanceof ServerWorld && !this.field_17721.isEmpty()) {
-					if (((ServerWorld)this.field_6002).method_19503(new BlockPos(this))) {
-						this.field_6002.summonParticle(this, (byte)42);
+				if (this.world instanceof ServerWorld && !this.recipes.isEmpty()) {
+					if (((ServerWorld)this.world).hasRaidAt(new BlockPos(this))) {
+						this.world.summonParticle(this, (byte)42);
 					} else {
-						this.method_19191(playerEntity);
+						this.beginTradeWith(playerEntity);
 					}
 				}
 
 				return true;
 			}
 		} else {
-			return super.method_5992(playerEntity, hand);
+			return super.interactMob(playerEntity, hand);
 		}
 	}
 
-	private void method_19191(PlayerEntity playerEntity) {
+	private void beginTradeWith(PlayerEntity playerEntity) {
 		this.method_19192(playerEntity);
 		this.setCurrentCustomer(playerEntity);
-		this.method_17449(playerEntity, this.method_5476(), this.getVillagerData().getLevel());
+		this.sendRecipes(playerEntity, this.getDisplayName(), this.getVillagerData().getLevel());
 	}
 
 	public void method_19182() {
-		for (TraderRecipe traderRecipe : this.method_8264()) {
+		for (TraderRecipe traderRecipe : this.getRecipes()) {
 			traderRecipe.method_19274();
-			traderRecipe.method_19275();
+			traderRecipe.resetUses();
 		}
 
-		this.field_18537 = this.field_6002.getTimeOfDay() % 24000L;
+		this.lastRestock = this.world.getTimeOfDay() % 24000L;
 	}
 
 	private void method_19192(PlayerEntity playerEntity) {
-		int i = this.field_18534.method_19073(playerEntity.getUuid(), arg -> arg != class_4139.field_18429);
+		int i = this.gossip.getReputationFor(playerEntity.getUuid(), villageGossipType -> villageGossipType != VillageGossipType.field_18429);
 		if (i != 0) {
-			for (TraderRecipe traderRecipe : this.method_8264()) {
-				traderRecipe.increasedMaxUses(-MathHelper.floor((float)i * traderRecipe.method_19278()));
+			for (TraderRecipe traderRecipe : this.getRecipes()) {
+				traderRecipe.increasedMaxUses(-MathHelper.floor((float)i * traderRecipe.getPriceMultiplier()));
 			}
 		}
 	}
 
 	private void method_19187() {
-		for (TraderRecipe traderRecipe : this.method_8264()) {
+		for (TraderRecipe traderRecipe : this.getRecipes()) {
 			traderRecipe.method_19276();
 		}
 	}
@@ -283,51 +301,51 @@ public class VillagerEntity extends AbstractTraderEntity implements class_4094, 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.field_6011.startTracking(field_7445, new VillagerData(VillagerType.field_17073, VillagerProfession.field_17051, 1));
+		this.dataTracker.startTracking(VILLAGER_DATA, new VillagerData(VillagerType.PLAINS, VillagerProfession.field_17051, 1));
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
-		compoundTag.method_10566("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
-		compoundTag.putByte("FoodLevel", this.field_18533);
-		compoundTag.method_10566("Gossips", this.field_18534.method_19067(NbtOps.INSTANCE).getValue());
-		compoundTag.putInt("Xp", this.field_18536);
-		compoundTag.putLong("LastRestock", this.field_18537);
-		if (this.field_18531 != null) {
-			compoundTag.putUuid("BuddyGolem", this.field_18531);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.put("VillagerData", this.getVillagerData().serialize(NbtOps.INSTANCE));
+		compoundTag.putByte("FoodLevel", this.foodLevel);
+		compoundTag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
+		compoundTag.putInt("Xp", this.experience);
+		compoundTag.putLong("LastRestock", this.lastRestock);
+		if (this.buddyGolemId != null) {
+			compoundTag.putUuid("BuddyGolem", this.buddyGolemId);
 		}
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("VillagerData", 10)) {
-			this.method_7221(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, compoundTag.method_10580("VillagerData"))));
+			this.setVillagerData(new VillagerData(new Dynamic<>(NbtOps.INSTANCE, compoundTag.getTag("VillagerData"))));
 		}
 
 		if (compoundTag.containsKey("Offers", 10)) {
-			this.field_17721 = new TraderRecipeList(compoundTag.getCompound("Offers"));
+			this.recipes = new TraderRecipeList(compoundTag.getCompound("Offers"));
 		}
 
 		if (compoundTag.containsKey("FoodLevel", 1)) {
-			this.field_18533 = compoundTag.getByte("FoodLevel");
+			this.foodLevel = compoundTag.getByte("FoodLevel");
 		}
 
-		ListTag listTag = compoundTag.method_10554("Gossips", 10);
-		this.field_18534.method_19066(new Dynamic<>(NbtOps.INSTANCE, listTag));
+		ListTag listTag = compoundTag.getList("Gossips", 10);
+		this.gossip.deserialize(new Dynamic<>(NbtOps.INSTANCE, listTag));
 		if (compoundTag.containsKey("Xp", 3)) {
-			this.field_18536 = compoundTag.getInt("Xp");
+			this.experience = compoundTag.getInt("Xp");
 		} else {
 			int i = this.getVillagerData().getLevel();
-			if (VillagerData.method_19196(i)) {
-				this.field_18536 = VillagerData.method_19194(i);
+			if (VillagerData.isLevelValid(i)) {
+				this.experience = VillagerData.getLowerLevelExperience(i);
 			}
 		}
 
-		this.field_18537 = compoundTag.getLong("LastRestock");
+		this.lastRestock = compoundTag.getLong("LastRestock");
 		if (compoundTag.hasUuid("BuddyGolem")) {
-			this.field_18531 = compoundTag.getUuid("BuddyGolem");
+			this.buddyGolemId = compoundTag.getUuid("BuddyGolem");
 		}
 
 		this.setCanPickUpLoot(true);
@@ -338,62 +356,67 @@ public class VillagerEntity extends AbstractTraderEntity implements class_4094, 
 		return false;
 	}
 
+	@Nullable
 	@Override
-	protected SoundEvent method_5994() {
-		return this.hasCustomer() ? SoundEvents.field_14933 : SoundEvents.field_15175;
+	protected SoundEvent getAmbientSound() {
+		if (this.isSleeping()) {
+			return null;
+		} else {
+			return this.hasCustomer() ? SoundEvents.field_14933 : SoundEvents.field_15175;
+		}
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_15139;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_15225;
 	}
 
-	public void method_19183() {
-		SoundEvent soundEvent = this.getVillagerData().method_16924().method_19198().method_19166();
+	public void playWorkSound() {
+		SoundEvent soundEvent = this.getVillagerData().getProfession().getWorkStation().getSound();
 		if (soundEvent != null) {
-			this.method_5783(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+			this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
 		}
 	}
 
-	public void method_7221(VillagerData villagerData) {
+	public void setVillagerData(VillagerData villagerData) {
 		VillagerData villagerData2 = this.getVillagerData();
-		if (villagerData2.method_16924() != villagerData.method_16924()) {
-			this.field_17721 = null;
+		if (villagerData2.getProfession() != villagerData.getProfession()) {
+			this.recipes = null;
 		}
 
-		this.field_6011.set(field_7445, villagerData);
+		this.dataTracker.set(VILLAGER_DATA, villagerData);
 	}
 
 	@Override
 	public VillagerData getVillagerData() {
-		return this.field_6011.get(field_7445);
+		return this.dataTracker.get(VILLAGER_DATA);
 	}
 
 	@Override
-	protected void method_18008(TraderRecipe traderRecipe) {
+	protected void afterUsing(TraderRecipe traderRecipe) {
 		int i = 3 + this.random.nextInt(4);
-		this.field_18536 = this.field_18536 + traderRecipe.method_19279();
-		this.field_18530 = this.getCurrentCustomer();
-		if (this.method_19188()) {
-			this.field_18528 = 40;
-			this.field_18529 = true;
+		this.experience = this.experience + traderRecipe.getRewardedExp();
+		this.lastCustomer = this.getCurrentCustomer();
+		if (this.canLevelUp()) {
+			this.levelUpTimer = 40;
+			this.levellingUp = true;
 			i += 5;
 		}
 
-		if (traderRecipe.getRewardExp()) {
-			this.field_6002.spawnEntity(new ExperienceOrbEntity(this.field_6002, this.x, this.y + 0.5, this.z, i));
+		if (traderRecipe.shouldRewardExp()) {
+			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
 		}
 	}
 
 	@Override
 	public void setAttacker(@Nullable LivingEntity livingEntity) {
-		if (livingEntity != null && this.field_6002 instanceof ServerWorld) {
-			((ServerWorld)this.field_6002).method_19496(class_4151.field_18476, livingEntity, this);
+		if (livingEntity != null && this.world instanceof ServerWorld) {
+			((ServerWorld)this.world).handleInteraction(EntityInteraction.field_18476, livingEntity, this);
 		}
 
 		super.setAttacker(livingEntity);
@@ -401,37 +424,44 @@ public class VillagerEntity extends AbstractTraderEntity implements class_4094, 
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		this.method_19176(class_4140.field_18438);
-		this.method_19176(class_4140.field_18439);
-		this.method_19176(class_4140.field_18440);
+		this.releaseTicketFor(MemoryModuleType.field_18438);
+		this.releaseTicketFor(MemoryModuleType.field_18439);
+		this.releaseTicketFor(MemoryModuleType.field_18440);
 		super.onDeath(damageSource);
 	}
 
-	private void method_19176(class_4140<class_4208> arg) {
-		if (this.field_6002 instanceof ServerWorld) {
-			MinecraftServer minecraftServer = ((ServerWorld)this.field_6002).getServer();
-			this.field_18321.method_18904(arg).ifPresent(argx -> minecraftServer.method_3847(argx.method_19442()).method_19494().method_19129(argx.method_19446()));
+	public void releaseTicketFor(MemoryModuleType<GlobalPos> memoryModuleType) {
+		if (this.world instanceof ServerWorld) {
+			MinecraftServer minecraftServer = ((ServerWorld)this.world).getServer();
+			this.brain.getMemory(memoryModuleType).ifPresent(globalPos -> {
+				PointOfInterestStorage pointOfInterestStorage = minecraftServer.getWorld(globalPos.getDimension()).getPointOfInterestStorage();
+				Optional<PointOfInterestType> optional = pointOfInterestStorage.getType(globalPos.getPos());
+				BiPredicate<VillagerEntity, PointOfInterestType> biPredicate = (BiPredicate<VillagerEntity, PointOfInterestType>)field_18851.get(memoryModuleType);
+				if (optional.isPresent() && biPredicate.test(this, optional.get())) {
+					pointOfInterestStorage.releaseTicket(globalPos.getPos());
+				}
+			});
 		}
 	}
 
-	public boolean method_19184() {
-		return this.field_18533 + this.method_19189() >= 12 && this.getBreedingAge() == 0;
+	public boolean isReadyToBreed() {
+		return this.foodLevel + this.getAvailableFood() >= 12 && this.getBreedingAge() == 0;
 	}
 
-	public void method_19185() {
-		if (this.field_18533 < 12 && this.method_19189() != 0) {
-			Set<Item> set = field_18526.keySet();
+	public void consumeAvailableFood() {
+		if (this.foodLevel < 12 && this.getAvailableFood() != 0) {
+			Set<Item> set = ITEM_FOOD_VALUES.keySet();
 
 			for (int i = 0; i < this.getInventory().getInvSize(); i++) {
-				ItemStack itemStack = this.getInventory().method_5438(i);
+				ItemStack itemStack = this.getInventory().getInvStack(i);
 				Item item = itemStack.getItem();
 				if (!itemStack.isEmpty() || set.contains(item)) {
 					int j = itemStack.getAmount();
 
 					for (int k = j; k > 0; k--) {
-						this.field_18533 = (byte)(this.field_18533 + (Integer)field_18526.get(item));
-						this.getInventory().method_5434(i, 1);
-						if (this.field_18533 >= 12) {
+						this.foodLevel = (byte)(this.foodLevel + (Integer)ITEM_FOOD_VALUES.get(item));
+						this.getInventory().takeInvStack(i, 1);
+						if (this.foodLevel >= 12) {
 							return;
 						}
 					}
@@ -440,37 +470,37 @@ public class VillagerEntity extends AbstractTraderEntity implements class_4094, 
 		}
 	}
 
-	public void method_19193(int i) {
-		this.field_18533 = (byte)(this.field_18533 - i);
+	public void depleteFood(int i) {
+		this.foodLevel = (byte)(this.foodLevel - i);
 	}
 
-	public void method_16917(TraderRecipeList traderRecipeList) {
-		this.field_17721 = traderRecipeList;
+	public void setRecipes(TraderRecipeList traderRecipeList) {
+		this.recipes = traderRecipeList;
 	}
 
-	private boolean method_19188() {
+	private boolean canLevelUp() {
 		int i = this.getVillagerData().getLevel();
-		return VillagerData.method_19196(i) && this.field_18536 >= VillagerData.method_19195(i);
+		return VillagerData.isLevelValid(i) && this.experience >= VillagerData.getUpperLevelExperience(i);
 	}
 
 	private void levelUp() {
-		this.method_7221(this.getVillagerData().withLevel(this.getVillagerData().getLevel() + 1));
+		this.setVillagerData(this.getVillagerData().withLevel(this.getVillagerData().getLevel() + 1));
 		this.fillRecipes();
 	}
 
 	@Override
-	public TextComponent method_5476() {
-		AbstractScoreboardTeam abstractScoreboardTeam = this.method_5781();
-		TextComponent textComponent = this.method_5797();
+	public TextComponent getDisplayName() {
+		AbstractScoreboardTeam abstractScoreboardTeam = this.getScoreboardTeam();
+		TextComponent textComponent = this.getCustomName();
 		if (textComponent != null) {
 			return ScoreboardTeam.method_1142(abstractScoreboardTeam, textComponent)
-				.modifyStyle(style -> style.setHoverEvent(this.method_5769()).setInsertion(this.getUuidAsString()));
+				.modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
 		} else {
-			VillagerProfession villagerProfession = this.getVillagerData().method_16924();
+			VillagerProfession villagerProfession = this.getVillagerData().getProfession();
 			TextComponent textComponent2 = new TranslatableTextComponent(
-					this.method_5864().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.method_10221(villagerProfession).getPath()
+					this.getType().getTranslationKey() + '.' + Registry.VILLAGER_PROFESSION.getId(villagerProfession).getPath()
 				)
-				.modifyStyle(style -> style.setHoverEvent(this.method_5769()).setInsertion(this.getUuidAsString()));
+				.modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
 			if (abstractScoreboardTeam != null) {
 				textComponent2.applyFormat(abstractScoreboardTeam.getColor());
 			}
@@ -497,69 +527,69 @@ public class VillagerEntity extends AbstractTraderEntity implements class_4094, 
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
+	public EntityData prepareEntityData(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (spawnType == SpawnType.field_16466) {
-			this.method_7221(this.getVillagerData().method_16921(VillagerProfession.field_17051));
+			this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.field_17051));
 		}
 
 		if (spawnType == SpawnType.field_16462 || spawnType == SpawnType.field_16465 || spawnType == SpawnType.field_16469) {
-			this.method_7221(this.getVillagerData().method_16922(VillagerType.method_16930(iWorld.method_8310(new BlockPos(this)))));
+			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(iWorld.getBiome(new BlockPos(this)))));
 		}
 
-		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	public VillagerEntity method_7225(PassiveEntity passiveEntity) {
 		double d = this.random.nextDouble();
 		VillagerType villagerType;
 		if (d < 0.5) {
-			villagerType = VillagerType.method_16930(this.field_6002.method_8310(new BlockPos(this)));
+			villagerType = VillagerType.forBiome(this.world.getBiome(new BlockPos(this)));
 		} else if (d < 0.75) {
-			villagerType = this.getVillagerData().method_16919();
+			villagerType = this.getVillagerData().getType();
 		} else {
-			villagerType = ((VillagerEntity)passiveEntity).getVillagerData().method_16919();
+			villagerType = ((VillagerEntity)passiveEntity).getVillagerData().getType();
 		}
 
-		VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.field_6002, villagerType);
-		villagerEntity.method_5943(this.field_6002, this.field_6002.method_8404(new BlockPos(villagerEntity)), SpawnType.field_16466, null, null);
+		VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, this.world, villagerType);
+		villagerEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16466, null, null);
 		return villagerEntity;
 	}
 
 	@Override
-	public void method_5800(LightningEntity lightningEntity) {
-		WitchEntity witchEntity = EntityType.WITCH.method_5883(this.field_6002);
+	public void onStruckByLightning(LightningEntity lightningEntity) {
+		WitchEntity witchEntity = EntityType.WITCH.create(this.world);
 		witchEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
-		witchEntity.method_5943(this.field_6002, this.field_6002.method_8404(new BlockPos(witchEntity)), SpawnType.field_16468, null, null);
+		witchEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(new BlockPos(witchEntity)), SpawnType.field_16468, null, null);
 		witchEntity.setAiDisabled(this.isAiDisabled());
 		if (this.hasCustomName()) {
-			witchEntity.method_5665(this.method_5797());
+			witchEntity.setCustomName(this.getCustomName());
 			witchEntity.setCustomNameVisible(this.isCustomNameVisible());
 		}
 
-		this.field_6002.spawnEntity(witchEntity);
+		this.world.spawnEntity(witchEntity);
 		this.invalidate();
 	}
 
 	@Override
-	protected void method_5949(ItemEntity itemEntity) {
-		ItemStack itemStack = itemEntity.method_6983();
+	protected void pickupItem(ItemEntity itemEntity) {
+		ItemStack itemStack = itemEntity.getStack();
 		Item item = itemStack.getItem();
-		VillagerProfession villagerProfession = this.getVillagerData().method_16924();
-		if (field_18527.contains(item) || villagerProfession.method_19199().contains(item)) {
+		VillagerProfession villagerProfession = this.getVillagerData().getProfession();
+		if (GATHERABLE_ITEMS.contains(item) || villagerProfession.getGatherableItems().contains(item)) {
 			if (villagerProfession == VillagerProfession.field_17056 && item == Items.field_8861) {
 				int i = itemStack.getAmount() / 3;
 				if (i > 0) {
-					ItemStack itemStack2 = this.getInventory().method_5491(new ItemStack(Items.field_8229, i));
+					ItemStack itemStack2 = this.getInventory().add(new ItemStack(Items.field_8229, i));
 					itemStack.subtractAmount(i * 3);
 					if (!itemStack2.isEmpty()) {
-						this.method_5699(itemStack2, 0.5F);
+						this.dropStack(itemStack2, 0.5F);
 					}
 				}
 			}
 
-			ItemStack itemStack3 = this.getInventory().method_5491(itemStack);
+			ItemStack itemStack3 = this.getInventory().add(itemStack);
 			if (itemStack3.isEmpty()) {
 				itemEntity.invalidate();
 			} else {
@@ -569,56 +599,56 @@ public class VillagerEntity extends AbstractTraderEntity implements class_4094, 
 	}
 
 	public boolean wantsToStartBreeding() {
-		return this.method_19189() >= 24;
+		return this.getAvailableFood() >= 24;
 	}
 
 	public boolean canBreed() {
-		boolean bl = this.getVillagerData().method_16924() == VillagerProfession.field_17056;
-		int i = this.method_19189();
+		boolean bl = this.getVillagerData().getProfession() == VillagerProfession.field_17056;
+		int i = this.getAvailableFood();
 		return bl ? i < 60 : i < 12;
 	}
 
-	private int method_19189() {
+	private int getAvailableFood() {
 		BasicInventory basicInventory = this.getInventory();
-		return field_18526.entrySet().stream().mapToInt(entry -> basicInventory.method_18861((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
+		return ITEM_FOOD_VALUES.entrySet().stream().mapToInt(entry -> basicInventory.getInvAmountOf((Item)entry.getKey()) * (Integer)entry.getValue()).sum();
 	}
 
 	@Override
 	protected void fillRecipes() {
 		VillagerData villagerData = this.getVillagerData();
-		Int2ObjectMap<Trades.Factory[]> int2ObjectMap = (Int2ObjectMap<Trades.Factory[]>)Trades.PROFESSION_TO_LEVELED_TRADE.get(villagerData.method_16924());
+		Int2ObjectMap<Trades.Factory[]> int2ObjectMap = (Int2ObjectMap<Trades.Factory[]>)Trades.PROFESSION_TO_LEVELED_TRADE.get(villagerData.getProfession());
 		if (int2ObjectMap != null && !int2ObjectMap.isEmpty()) {
 			Trades.Factory[] factorys = int2ObjectMap.get(villagerData.getLevel());
 			if (factorys != null) {
-				TraderRecipeList traderRecipeList = this.method_8264();
-				this.method_19170(traderRecipeList, factorys, 2);
+				TraderRecipeList traderRecipeList = this.getRecipes();
+				this.fillRecipesFromPool(traderRecipeList, factorys, 2);
 			}
 		}
 	}
 
-	public void method_19177(VillagerEntity villagerEntity, long l) {
-		if ((l < this.field_18535 || l >= this.field_18535 + 1200L) && (l < villagerEntity.field_18535 || l >= villagerEntity.field_18535 + 1200L)) {
+	public void talkWithVillager(VillagerEntity villagerEntity, long l) {
+		if ((l < this.gossipStartTime || l >= this.gossipStartTime + 1200L) && (l < villagerEntity.gossipStartTime || l >= villagerEntity.gossipStartTime + 1200L)) {
 			if (this.method_19173(this) || this.method_19171(l)) {
-				this.field_18534.method_19072(this.getUuid(), class_4139.field_18429, class_4139.field_18429.field_18432);
+				this.gossip.startGossip(this.getUuid(), VillageGossipType.field_18429, VillageGossipType.field_18429.field_18432);
 			}
 
-			this.field_18534.method_19061(villagerEntity.field_18534, this.random, 10);
-			this.field_18535 = l;
-			villagerEntity.field_18535 = l;
-			if (this.field_18534.method_19062(class_4139.field_18429) >= 10L) {
-				BoundingBox boundingBox = this.method_5829().stretch(80.0, 80.0, 80.0);
-				List<VillagerEntity> list = this.field_6002.method_8390(VillagerEntity.class, boundingBox, this::method_19173);
+			this.gossip.shareGossipFrom(villagerEntity.gossip, this.random, 10);
+			this.gossipStartTime = l;
+			villagerEntity.gossipStartTime = l;
+			if (this.gossip.getGossipCount(VillageGossipType.field_18429) >= 10L) {
+				BoundingBox boundingBox = this.getBoundingBox().stretch(80.0, 80.0, 80.0);
+				List<VillagerEntity> list = this.world.getEntities(VillagerEntity.class, boundingBox, this::method_19173);
 				if (list.size() >= 10) {
-					IronGolemEntity ironGolemEntity = this.method_19190();
+					IronGolemEntity ironGolemEntity = this.spawnIronGolem();
 					if (ironGolemEntity != null) {
 						UUID uUID = ironGolemEntity.getUuid();
 
 						for (VillagerEntity villagerEntity2 : list) {
 							for (VillagerEntity villagerEntity3 : list) {
-								villagerEntity2.field_18534.method_19072(villagerEntity3.getUuid(), class_4139.field_18429, -class_4139.field_18429.field_18432);
+								villagerEntity2.gossip.startGossip(villagerEntity3.getUuid(), VillageGossipType.field_18429, -VillageGossipType.field_18429.field_18432);
 							}
 
-							villagerEntity2.field_18531 = uUID;
+							villagerEntity2.buddyGolemId = uUID;
 						}
 					}
 				}
@@ -627,18 +657,18 @@ public class VillagerEntity extends AbstractTraderEntity implements class_4094, 
 	}
 
 	private boolean method_19173(Entity entity) {
-		return this.field_18534.method_19073(entity.getUuid(), arg -> arg == class_4139.field_18429) > 30;
+		return this.gossip.getReputationFor(entity.getUuid(), villageGossipType -> villageGossipType == VillageGossipType.field_18429) > 30;
 	}
 
 	private boolean method_19171(long l) {
-		if (this.field_18531 == null) {
+		if (this.buddyGolemId == null) {
 			return true;
 		} else {
 			if (this.field_18532 < l + 1200L) {
 				this.field_18532 = l + 1200L;
-				Entity entity = ((ServerWorld)this.field_6002).getEntity(this.field_18531);
+				Entity entity = ((ServerWorld)this.world).getEntity(this.buddyGolemId);
 				if (entity == null || !entity.isValid() || this.squaredDistanceTo(entity) > 80.0) {
-					this.field_18531 = null;
+					this.buddyGolemId = null;
 					return true;
 				}
 			}
@@ -648,15 +678,15 @@ public class VillagerEntity extends AbstractTraderEntity implements class_4094, 
 	}
 
 	@Nullable
-	private IronGolemEntity method_19190() {
+	private IronGolemEntity spawnIronGolem() {
 		BlockPos blockPos = new BlockPos(this);
 
 		for (int i = 0; i < 10; i++) {
-			BlockPos blockPos2 = blockPos.add(this.field_6002.random.nextInt(16) - 8, this.field_6002.random.nextInt(6) - 3, this.field_6002.random.nextInt(16) - 8);
-			IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.method_5888(this.field_6002, null, null, null, blockPos2, SpawnType.field_16471, false, false);
+			BlockPos blockPos2 = blockPos.add(this.world.random.nextInt(16) - 8, this.world.random.nextInt(6) - 3, this.world.random.nextInt(16) - 8);
+			IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(this.world, null, null, null, blockPos2, SpawnType.field_16471, false, false);
 			if (ironGolemEntity != null) {
-				if (ironGolemEntity.method_5979(this.field_6002, SpawnType.field_16471) && ironGolemEntity.method_5957(this.field_6002)) {
-					this.field_6002.spawnEntity(ironGolemEntity);
+				if (ironGolemEntity.canSpawn(this.world, SpawnType.field_16471) && ironGolemEntity.method_5957(this.world)) {
+					this.world.spawnEntity(ironGolemEntity);
 					return ironGolemEntity;
 				}
 
@@ -668,30 +698,30 @@ public class VillagerEntity extends AbstractTraderEntity implements class_4094, 
 	}
 
 	@Override
-	public void method_18870(class_4151 arg, Entity entity) {
-		if (arg == class_4151.field_18474) {
-			this.field_18534.method_19072(entity.getUuid(), class_4139.field_18427, 25);
-		} else if (arg == class_4151.field_18478) {
-			this.field_18534.method_19072(entity.getUuid(), class_4139.field_18428, 2);
-		} else if (arg == class_4151.field_18476) {
-			this.field_18534.method_19072(entity.getUuid(), class_4139.field_18425, 25);
-		} else if (arg == class_4151.field_18477) {
-			this.field_18534.method_19072(entity.getUuid(), class_4139.field_18424, 25);
+	public void onInteractionWith(EntityInteraction entityInteraction, Entity entity) {
+		if (entityInteraction == EntityInteraction.field_18474) {
+			this.gossip.startGossip(entity.getUuid(), VillageGossipType.field_18427, 25);
+		} else if (entityInteraction == EntityInteraction.field_18478) {
+			this.gossip.startGossip(entity.getUuid(), VillageGossipType.field_18428, 2);
+		} else if (entityInteraction == EntityInteraction.field_18476) {
+			this.gossip.startGossip(entity.getUuid(), VillageGossipType.field_18425, 25);
+		} else if (entityInteraction == EntityInteraction.field_18477) {
+			this.gossip.startGossip(entity.getUuid(), VillageGossipType.field_18424, 25);
 		}
 	}
 
 	@Override
-	public int method_19269() {
-		return this.field_18536;
+	public int getExperience() {
+		return this.experience;
 	}
 
-	public long method_19186() {
-		return this.field_18537;
+	public long getLastRestock() {
+		return this.lastRestock;
 	}
 
 	@Override
 	protected void method_18409() {
 		super.method_18409();
-		class_4209.method_19468(this.field_6002, this, this.field_18321);
+		class_4209.method_19468(this.world, this, this.brain);
 	}
 }

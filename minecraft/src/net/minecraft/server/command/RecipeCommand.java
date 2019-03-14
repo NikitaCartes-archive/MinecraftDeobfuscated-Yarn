@@ -6,7 +6,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import java.util.Collections;
 import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.ResourceLocationArgumentType;
+import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -29,13 +29,13 @@ public class RecipeCommand {
 						.then(
 							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 								.then(
-									ServerCommandManager.argument("recipe", ResourceLocationArgumentType.create())
+									ServerCommandManager.argument("recipe", IdentifierArgumentType.create())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
 											commandContext -> give(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
-													Collections.singleton(ResourceLocationArgumentType.getRecipeArgument(commandContext, "recipe"))
+													Collections.singleton(IdentifierArgumentType.getRecipeArgument(commandContext, "recipe"))
 												)
 										)
 								)
@@ -56,13 +56,13 @@ public class RecipeCommand {
 						.then(
 							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 								.then(
-									ServerCommandManager.argument("recipe", ResourceLocationArgumentType.create())
+									ServerCommandManager.argument("recipe", IdentifierArgumentType.create())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
 											commandContext -> take(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
-													Collections.singleton(ResourceLocationArgumentType.getRecipeArgument(commandContext, "recipe"))
+													Collections.singleton(IdentifierArgumentType.getRecipeArgument(commandContext, "recipe"))
 												)
 										)
 								)
@@ -92,12 +92,14 @@ public class RecipeCommand {
 			throw GIVE_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.method_9226(
-					new TranslatableTextComponent("commands.recipe.give.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()),
+				serverCommandSource.sendFeedback(
+					new TranslatableTextComponent(
+						"commands.recipe.give.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+					),
 					true
 				);
 			} else {
-				serverCommandSource.method_9226(new TranslatableTextComponent("commands.recipe.give.success.multiple", collection2.size(), collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.recipe.give.success.multiple", collection2.size(), collection.size()), true);
 			}
 
 			return i;
@@ -115,12 +117,14 @@ public class RecipeCommand {
 			throw TAKE_FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.method_9226(
-					new TranslatableTextComponent("commands.recipe.take.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()),
+				serverCommandSource.sendFeedback(
+					new TranslatableTextComponent(
+						"commands.recipe.take.success.single", collection2.size(), ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+					),
 					true
 				);
 			} else {
-				serverCommandSource.method_9226(new TranslatableTextComponent("commands.recipe.take.success.multiple", collection2.size(), collection.size()), true);
+				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.recipe.take.success.multiple", collection2.size(), collection.size()), true);
 			}
 
 			return i;

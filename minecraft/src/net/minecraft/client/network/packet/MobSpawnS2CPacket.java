@@ -28,7 +28,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	private byte velocityX;
 	private byte velocityY;
 	private byte velocityZ;
-	private DataTracker field_11994;
+	private DataTracker dataTracker;
 	private List<DataTracker.Entry<?>> trackedValues;
 
 	public MobSpawnS2CPacket() {
@@ -37,7 +37,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	public MobSpawnS2CPacket(LivingEntity livingEntity) {
 		this.id = livingEntity.getEntityId();
 		this.uuid = livingEntity.getUuid();
-		this.entityTypeId = Registry.ENTITY_TYPE.getRawId(livingEntity.method_5864());
+		this.entityTypeId = Registry.ENTITY_TYPE.getRawId(livingEntity.getType());
 		this.x = livingEntity.x;
 		this.y = livingEntity.y;
 		this.z = livingEntity.z;
@@ -45,14 +45,14 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.velocityY = (byte)((int)(livingEntity.pitch * 256.0F / 360.0F));
 		this.velocityZ = (byte)((int)(livingEntity.headYaw * 256.0F / 360.0F));
 		double d = 3.9;
-		Vec3d vec3d = livingEntity.method_18798();
+		Vec3d vec3d = livingEntity.getVelocity();
 		double e = MathHelper.clamp(vec3d.x, -3.9, 3.9);
 		double f = MathHelper.clamp(vec3d.y, -3.9, 3.9);
 		double g = MathHelper.clamp(vec3d.z, -3.9, 3.9);
 		this.yaw = (int)(e * 8000.0);
 		this.pitch = (int)(f * 8000.0);
 		this.headPitch = (int)(g * 8000.0);
-		this.field_11994 = livingEntity.method_5841();
+		this.dataTracker = livingEntity.getDataTracker();
 	}
 
 	@Override
@@ -86,11 +86,11 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeShort(this.yaw);
 		packetByteBuf.writeShort(this.pitch);
 		packetByteBuf.writeShort(this.headPitch);
-		this.field_11994.serializePacket(packetByteBuf);
+		this.dataTracker.serializePacket(packetByteBuf);
 	}
 
 	public void method_11217(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11138(this);
+		clientPlayPacketListener.onMobSpawn(this);
 	}
 
 	@Nullable

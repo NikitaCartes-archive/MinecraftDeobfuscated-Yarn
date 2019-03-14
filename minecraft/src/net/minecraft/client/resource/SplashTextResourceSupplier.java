@@ -22,13 +22,13 @@ import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
 public class SplashTextResourceSupplier extends SupplyingResourceReloadListener<List<String>> {
-	private static final Identifier field_17904 = new Identifier("texts/splashes.txt");
+	private static final Identifier RESOURCE_ID = new Identifier("texts/splashes.txt");
 	private static final Random RANDOM = new Random();
 	private final List<String> splashTexts = Lists.<String>newArrayList();
 
 	protected List<String> method_18176(ResourceManager resourceManager, Profiler profiler) {
 		try {
-			Resource resource = MinecraftClient.getInstance().method_1478().getResource(field_17904);
+			Resource resource = MinecraftClient.getInstance().getResourceManager().getResource(RESOURCE_ID);
 			Throwable var4 = null;
 
 			List var7;

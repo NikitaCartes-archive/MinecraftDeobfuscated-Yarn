@@ -3,14 +3,14 @@ package net.minecraft.client.render.debug;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 
 @Environment(EnvType.CLIENT)
-public class ChunkBorderDebugRenderer implements DebugRenderer.DebugRenderer {
+public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 
 	public ChunkBorderDebugRenderer(MinecraftClient minecraftClient) {
@@ -19,20 +19,20 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.DebugRenderer {
 
 	@Override
 	public void render(long l) {
-		class_4184 lv = this.client.field_1773.method_19418();
+		Camera camera = this.client.gameRenderer.method_19418();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		double d = lv.method_19326().x;
-		double e = lv.method_19326().y;
-		double f = lv.method_19326().z;
+		double d = camera.getPos().x;
+		double e = camera.getPos().y;
+		double f = camera.getPos().z;
 		double g = 0.0 - e;
 		double h = 256.0 - e;
 		GlStateManager.disableTexture();
 		GlStateManager.disableBlend();
-		double i = (double)(lv.method_19331().chunkX << 4) - d;
-		double j = (double)(lv.method_19331().chunkZ << 4) - f;
+		double i = (double)(camera.getFocusedEntity().chunkX << 4) - d;
+		double j = (double)(camera.getFocusedEntity().chunkZ << 4) - f;
 		GlStateManager.lineWidth(1.0F);
-		bufferBuilder.method_1328(3, VertexFormats.field_1576);
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 
 		for (int k = -16; k <= 32; k += 16) {
 			for (int m = -16; m <= 32; m += 16) {
@@ -78,7 +78,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.DebugRenderer {
 
 		tessellator.draw();
 		GlStateManager.lineWidth(2.0F);
-		bufferBuilder.method_1328(3, VertexFormats.field_1576);
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 
 		for (int k = 0; k <= 16; k += 16) {
 			for (int m = 0; m <= 16; m += 16) {

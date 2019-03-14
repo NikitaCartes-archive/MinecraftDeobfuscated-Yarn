@@ -11,14 +11,14 @@ public class JigsawJunction {
 	private final int sourceGroundY;
 	private final int sourceZ;
 	private final int deltaY;
-	private final StructurePool.Projection field_16671;
+	private final StructurePool.Projection destProjection;
 
 	public JigsawJunction(int i, int j, int k, int l, StructurePool.Projection projection) {
 		this.sourceX = i;
 		this.sourceGroundY = j;
 		this.sourceZ = k;
 		this.deltaY = l;
-		this.field_16671 = projection;
+		this.destProjection = projection;
 	}
 
 	public int getSourceX() {
@@ -39,7 +39,7 @@ public class JigsawJunction {
 			.put(dynamicOps.createString("source_ground_y"), dynamicOps.createInt(this.sourceGroundY))
 			.put(dynamicOps.createString("source_z"), dynamicOps.createInt(this.sourceZ))
 			.put(dynamicOps.createString("delta_y"), dynamicOps.createInt(this.deltaY))
-			.put(dynamicOps.createString("dest_proj"), dynamicOps.createString(this.field_16671.getId()));
+			.put(dynamicOps.createString("dest_proj"), dynamicOps.createString(this.destProjection.getId()));
 		return new Dynamic<>(dynamicOps, dynamicOps.createMap(builder.build()));
 	}
 
@@ -63,7 +63,7 @@ public class JigsawJunction {
 			} else if (this.sourceZ != jigsawJunction.sourceZ) {
 				return false;
 			} else {
-				return this.deltaY != jigsawJunction.deltaY ? false : this.field_16671 == jigsawJunction.field_16671;
+				return this.deltaY != jigsawJunction.deltaY ? false : this.destProjection == jigsawJunction.destProjection;
 			}
 		} else {
 			return false;
@@ -75,7 +75,7 @@ public class JigsawJunction {
 		i = 31 * i + this.sourceGroundY;
 		i = 31 * i + this.sourceZ;
 		i = 31 * i + this.deltaY;
-		return 31 * i + this.field_16671.hashCode();
+		return 31 * i + this.destProjection.hashCode();
 	}
 
 	public String toString() {
@@ -88,7 +88,7 @@ public class JigsawJunction {
 			+ ", deltaY="
 			+ this.deltaY
 			+ ", destProjection="
-			+ this.field_16671
+			+ this.destProjection
 			+ '}';
 	}
 }

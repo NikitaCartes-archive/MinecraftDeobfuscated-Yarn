@@ -11,19 +11,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
-	private final MobSpawnerLogic field_7746 = new MobSpawnerLogic() {
+	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
 		public void method_8273(int i) {
-			MobSpawnerMinecartEntity.this.field_6002.summonParticle(MobSpawnerMinecartEntity.this, (byte)i);
+			MobSpawnerMinecartEntity.this.world.summonParticle(MobSpawnerMinecartEntity.this, (byte)i);
 		}
 
 		@Override
-		public World method_8271() {
-			return MobSpawnerMinecartEntity.this.field_6002;
+		public World getWorld() {
+			return MobSpawnerMinecartEntity.this.world;
 		}
 
 		@Override
-		public BlockPos method_8276() {
+		public BlockPos getPos() {
 			return new BlockPos(MobSpawnerMinecartEntity.this);
 		}
 	};
@@ -42,32 +42,32 @@ public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public BlockState method_7517() {
-		return Blocks.field_10260.method_9564();
+	public BlockState getDefaultContainedBlock() {
+		return Blocks.field_10260.getDefaultState();
 	}
 
 	@Override
-	protected void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
-		this.field_7746.method_8280(compoundTag);
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.logic.deserialize(compoundTag);
 	}
 
 	@Override
-	protected void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
-		this.field_7746.method_8272(compoundTag);
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		this.logic.serialize(compoundTag);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void method_5711(byte b) {
-		this.field_7746.method_8275(b);
+		this.logic.method_8275(b);
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		this.field_7746.update();
+		this.logic.update();
 	}
 
 	@Override

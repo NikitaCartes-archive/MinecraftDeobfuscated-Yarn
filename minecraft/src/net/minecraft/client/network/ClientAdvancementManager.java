@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
 public class ClientAdvancementManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
-	private final AdvancementManager field_3683 = new AdvancementManager();
+	private final AdvancementManager manager = new AdvancementManager();
 	private final Map<SimpleAdvancement, AdvancementProgress> field_3681 = Maps.<SimpleAdvancement, AdvancementProgress>newHashMap();
 	@Nullable
 	private ClientAdvancementManager.class_633 field_3682;
@@ -32,17 +32,17 @@ public class ClientAdvancementManager {
 		this.client = minecraftClient;
 	}
 
-	public void method_2861(AdvancementUpdateS2CPacket advancementUpdateS2CPacket) {
+	public void onAdvancements(AdvancementUpdateS2CPacket advancementUpdateS2CPacket) {
 		if (advancementUpdateS2CPacket.shouldClearCurrent()) {
-			this.field_3683.clear();
+			this.manager.clear();
 			this.field_3681.clear();
 		}
 
-		this.field_3683.removeAll(advancementUpdateS2CPacket.getAdvancementIdsToRemove());
-		this.field_3683.load(advancementUpdateS2CPacket.getAdvancementsToEarn());
+		this.manager.removeAll(advancementUpdateS2CPacket.getAdvancementIdsToRemove());
+		this.manager.load(advancementUpdateS2CPacket.getAdvancementsToEarn());
 
 		for (Entry<Identifier, AdvancementProgress> entry : advancementUpdateS2CPacket.getAdvancementsToProgress().entrySet()) {
-			SimpleAdvancement simpleAdvancement = this.field_3683.method_716((Identifier)entry.getKey());
+			SimpleAdvancement simpleAdvancement = this.manager.get((Identifier)entry.getKey());
 			if (simpleAdvancement != null) {
 				AdvancementProgress advancementProgress = (AdvancementProgress)entry.getValue();
 				advancementProgress.init(simpleAdvancement.getCriteria(), simpleAdvancement.getRequirements());
@@ -53,9 +53,9 @@ public class ClientAdvancementManager {
 
 				if (!advancementUpdateS2CPacket.shouldClearCurrent()
 					&& advancementProgress.isDone()
-					&& simpleAdvancement.method_686() != null
-					&& simpleAdvancement.method_686().shouldShowToast()) {
-					this.client.method_1566().add(new AdvancementToast(simpleAdvancement));
+					&& simpleAdvancement.getDisplay() != null
+					&& simpleAdvancement.getDisplay().shouldShowToast()) {
+					this.client.getToastManager().add(new AdvancementToast(simpleAdvancement));
 				}
 			} else {
 				LOGGER.warn("Server informed client about progress for unknown advancement {}", entry.getKey());
@@ -63,14 +63,14 @@ public class ClientAdvancementManager {
 		}
 	}
 
-	public AdvancementManager method_2863() {
-		return this.field_3683;
+	public AdvancementManager getManager() {
+		return this.manager;
 	}
 
-	public void method_2864(@Nullable SimpleAdvancement simpleAdvancement, boolean bl) {
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.method_1562();
+	public void selectTab(@Nullable SimpleAdvancement simpleAdvancement, boolean bl) {
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null && simpleAdvancement != null && bl) {
-			clientPlayNetworkHandler.method_2883(AdvancementTabC2SPacket.method_12418(simpleAdvancement));
+			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.open(simpleAdvancement));
 		}
 
 		if (this.field_3685 != simpleAdvancement) {
@@ -83,7 +83,7 @@ public class ClientAdvancementManager {
 
 	public void setGui(@Nullable ClientAdvancementManager.class_633 arg) {
 		this.field_3682 = arg;
-		this.field_3683.setListener(arg);
+		this.manager.setListener(arg);
 		if (arg != null) {
 			for (Entry<SimpleAdvancement, AdvancementProgress> entry : this.field_3681.entrySet()) {
 				arg.method_2865((SimpleAdvancement)entry.getKey(), (AdvancementProgress)entry.getValue());

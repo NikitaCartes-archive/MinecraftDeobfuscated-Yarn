@@ -40,12 +40,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
 
 public class Raid {
-	public static final ItemStack field_16609 = method_16515();
+	public static final ItemStack ILLAGER_BANNER = getIllagerBanner();
 	private final Map<Integer, RaiderEntity> waveToLeader = Maps.<Integer, RaiderEntity>newHashMap();
 	private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.<Integer, Set<RaiderEntity>>newHashMap();
 	private long ticksActive;
-	private final BlockPos field_16613;
-	private final ServerWorld field_16619;
+	private final BlockPos center;
+	private final ServerWorld world;
 	private boolean markedForRemoval;
 	private boolean started;
 	private boolean ignoreDayRequirement;
@@ -54,7 +54,7 @@ public class Raid {
 	private int badOmenLevel;
 	private boolean active;
 	private int wavesSpawned;
-	private final ServerBossBar field_16607 = new ServerBossBar(
+	private final ServerBossBar bar = new ServerBossBar(
 		new TranslatableTextComponent("event.minecraft.raid"), BossBar.Color.field_5784, BossBar.Overlay.field_5791
 	);
 	private int postRaidTicks;
@@ -63,15 +63,15 @@ public class Raid {
 
 	public Raid(int i, ServerWorld serverWorld, BlockPos blockPos) {
 		this.id = i;
-		this.field_16619 = serverWorld;
+		this.world = serverWorld;
 		this.active = true;
 		this.preRaidTicks = 300;
-		this.field_16607.setPercent(0.0F);
-		this.field_16613 = blockPos;
+		this.bar.setPercent(0.0F);
+		this.center = blockPos;
 	}
 
 	public Raid(ServerWorld serverWorld, CompoundTag compoundTag) {
-		this.field_16619 = serverWorld;
+		this.world = serverWorld;
 		this.id = compoundTag.getInt("Id");
 		this.started = compoundTag.getBoolean("Started");
 		this.active = compoundTag.getBoolean("Active");
@@ -83,11 +83,11 @@ public class Raid {
 		this.preRaidTicks = compoundTag.getInt("PreRaidTicks");
 		this.postRaidTicks = compoundTag.getInt("PostRaidTicks");
 		this.totalHealth = compoundTag.getFloat("TotalHealth");
-		this.field_16613 = new BlockPos(compoundTag.getInt("CX"), compoundTag.getInt("CY"), compoundTag.getInt("CZ"));
+		this.center = new BlockPos(compoundTag.getInt("CX"), compoundTag.getInt("CY"), compoundTag.getInt("CZ"));
 	}
 
-	public World method_16831() {
-		return this.field_16619;
+	public World getWorld() {
+		return this.world;
 	}
 
 	public boolean isOnGoing() {
@@ -109,16 +109,16 @@ public class Raid {
 	private void updateBarToPlayers() {
 		Set<ServerPlayerEntity> set = Sets.<ServerPlayerEntity>newHashSet();
 
-		for (ServerPlayerEntity serverPlayerEntity : this.field_16619.method_18766(this.isInRaidDistance())) {
-			this.field_16607.method_14088(serverPlayerEntity);
+		for (ServerPlayerEntity serverPlayerEntity : this.world.method_18766(this.isInRaidDistance())) {
+			this.bar.addPlayer(serverPlayerEntity);
 			set.add(serverPlayerEntity);
 		}
 
-		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet(this.field_16607.getPlayers());
+		Set<ServerPlayerEntity> set2 = Sets.<ServerPlayerEntity>newHashSet(this.bar.getPlayers());
 		set2.removeAll(set);
 
 		for (ServerPlayerEntity serverPlayerEntity2 : set2) {
-			this.field_16607.method_14089(serverPlayerEntity2);
+			this.bar.removePlayer(serverPlayerEntity2);
 		}
 	}
 
@@ -145,7 +145,7 @@ public class Raid {
 	public void invalidate() {
 		this.markedForRemoval = true;
 		this.active = false;
-		this.field_16607.clearPlayers();
+		this.bar.clearPlayers();
 	}
 
 	public boolean isMarkedForRemoval() {
@@ -155,12 +155,12 @@ public class Raid {
 	public void tick() {
 		if (!this.markedForRemoval) {
 			boolean bl = this.active;
-			this.active = this.field_16619.method_8591(this.field_16613);
-			if (this.field_16619.getDifficulty() == Difficulty.PEACEFUL) {
+			this.active = this.world.isBlockLoaded(this.center);
+			if (this.world.getDifficulty() == Difficulty.PEACEFUL) {
 				this.invalidate();
 			} else {
 				if (bl != this.active) {
-					this.field_16607.setVisible(this.active);
+					this.bar.setVisible(this.active);
 				}
 
 				if (this.active) {
@@ -173,10 +173,10 @@ public class Raid {
 							}
 
 							this.preRaidTicks--;
-							this.field_16607.setPercent(MathHelper.clamp((float)(300 - this.preRaidTicks) / 300.0F, 0.0F, 100.0F));
+							this.bar.setPercent(MathHelper.clamp((float)(300 - this.preRaidTicks) / 300.0F, 0.0F, 100.0F));
 						} else if (this.preRaidTicks == 0 && this.wavesSpawned > 0) {
 							this.preRaidTicks = 300;
-							this.field_16607.method_5413(new TranslatableTextComponent("event.minecraft.raid"));
+							this.bar.setName(new TranslatableTextComponent("event.minecraft.raid"));
 							return;
 						}
 					}
@@ -185,12 +185,12 @@ public class Raid {
 						this.updateBarToPlayers();
 						this.removeObsoleteRaiders();
 						if (i <= 2) {
-							this.field_16607
-								.method_5413(
+							this.bar
+								.setName(
 									new TranslatableTextComponent("event.minecraft.raid").append(" - ").append(new TranslatableTextComponent("event.minecraft.raid.mobs_remaining", i))
 								);
 						} else {
-							this.field_16607.method_5413(new TranslatableTextComponent("event.minecraft.raid"));
+							this.bar.setName(new TranslatableTextComponent("event.minecraft.raid"));
 						}
 					}
 
@@ -198,12 +198,12 @@ public class Raid {
 					int j = 0;
 
 					while (this.canSpawnRaiders()) {
-						BlockPos blockPos = this.method_16525(j);
+						BlockPos blockPos = this.getPillagerSpawnLocation(j);
 						if (blockPos != null) {
 							this.started = true;
-							this.method_16522(blockPos);
+							this.spawnNextWave(blockPos);
 							if (!bl2) {
-								this.method_16521(blockPos);
+								this.playRaidHorn(blockPos);
 								bl2 = true;
 							}
 						} else {
@@ -242,7 +242,7 @@ public class Raid {
 			Set<RaiderEntity> set2 = (Set<RaiderEntity>)iterator.next();
 
 			for (RaiderEntity raiderEntity : set2) {
-				if (!raiderEntity.invalid && raiderEntity.field_6026 == this.field_16619.method_8597().method_12460()) {
+				if (!raiderEntity.invalid && raiderEntity.dimension == this.world.getDimension().getType()) {
 					if (raiderEntity.age <= 300) {
 						continue;
 					}
@@ -250,7 +250,7 @@ public class Raid {
 					raiderEntity.setOutOfRaidCounter(30);
 				}
 
-				if (!RaidManager.method_16537(raiderEntity, this.field_16613, 32) || raiderEntity.getDespawnCounter() > 2400) {
+				if (!RaidManager.isLivingAroundVillage(raiderEntity, this.center, 32) || raiderEntity.getDespawnCounter() > 2400) {
 					raiderEntity.setOutOfRaidCounter(raiderEntity.getOutOfRaidCounter() + 1);
 				}
 
@@ -261,29 +261,29 @@ public class Raid {
 		}
 
 		for (RaiderEntity raiderEntity2 : set) {
-			this.method_16510(raiderEntity2, true);
+			this.removeFromWave(raiderEntity2, true);
 		}
 	}
 
-	private void method_16521(BlockPos blockPos) {
+	private void playRaidHorn(BlockPos blockPos) {
 		float f = 13.0F;
 		int i = 64;
 
-		for (PlayerEntity playerEntity : this.field_16619.getPlayers()) {
+		for (PlayerEntity playerEntity : this.world.getPlayers()) {
 			Vec3d vec3d = new Vec3d(playerEntity.x, playerEntity.y, playerEntity.z);
 			Vec3d vec3d2 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			float g = MathHelper.sqrt((vec3d2.x - vec3d.x) * (vec3d2.x - vec3d.x) + (vec3d2.z - vec3d.z) * (vec3d2.z - vec3d.z));
 			double d = vec3d.x + (double)(13.0F / g) * (vec3d2.x - vec3d.x);
 			double e = vec3d.z + (double)(13.0F / g) * (vec3d2.z - vec3d.z);
-			if (g <= 64.0F || RaidManager.method_16537(playerEntity, this.field_16613, 32)) {
+			if (g <= 64.0F || RaidManager.isLivingAroundVillage(playerEntity, this.center, 32)) {
 				((ServerPlayerEntity)playerEntity)
-					.field_13987
+					.networkHandler
 					.sendPacket(new PlaySoundS2CPacket(SoundEvents.field_17266, SoundCategory.field_15254, d, playerEntity.y, e, 64.0F, 1.0F));
 			}
 		}
 	}
 
-	private void method_16522(BlockPos blockPos) {
+	private void spawnNextWave(BlockPos blockPos) {
 		boolean bl = false;
 		int i = this.wavesSpawned + 1;
 		this.totalHealth = 0.0F;
@@ -292,24 +292,24 @@ public class Raid {
 			int j = getSpawnCount(member, this.random, i) + getBonusSpawnCount(member, this.random, i);
 
 			for (int k = 0; k < j; k++) {
-				RaiderEntity raiderEntity = member.type.method_5883(this.field_16619);
-				this.method_16516(i, raiderEntity, blockPos, false);
+				RaiderEntity raiderEntity = member.type.create(this.world);
+				this.addRaider(i, raiderEntity, blockPos, false);
 				if (!bl && raiderEntity.canLead()) {
 					raiderEntity.setPatrolLeader(true);
-					this.method_16491(i, raiderEntity);
+					this.setRaidLeader(i, raiderEntity);
 					bl = true;
 				}
 
 				if (member.type == EntityType.RAVAGER) {
 					RaiderEntity raiderEntity2;
 					if (i < 6) {
-						raiderEntity2 = EntityType.PILLAGER.method_5883(this.field_16619);
+						raiderEntity2 = EntityType.PILLAGER.create(this.world);
 					} else {
-						raiderEntity2 = EntityType.VINDICATOR.method_5883(this.field_16619);
+						raiderEntity2 = EntityType.VINDICATOR.create(this.world);
 					}
 
-					this.method_16516(i, raiderEntity2, blockPos, false);
-					raiderEntity2.method_5725(blockPos, 0.0F, 0.0F);
+					this.addRaider(i, raiderEntity2, blockPos, false);
+					raiderEntity2.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 					raiderEntity2.startRiding(raiderEntity);
 				}
 			}
@@ -320,8 +320,8 @@ public class Raid {
 		this.markDirty();
 	}
 
-	public void method_16516(int i, RaiderEntity raiderEntity, @Nullable BlockPos blockPos, boolean bl) {
-		boolean bl2 = this.method_16505(i, raiderEntity);
+	public void addRaider(int i, RaiderEntity raiderEntity, @Nullable BlockPos blockPos, boolean bl) {
+		boolean bl2 = this.addToWave(i, raiderEntity);
 		if (bl2) {
 			raiderEntity.setRaid(this);
 			raiderEntity.setWave(i);
@@ -329,16 +329,16 @@ public class Raid {
 			raiderEntity.setOutOfRaidCounter(0);
 			if (!bl && blockPos != null) {
 				raiderEntity.setPosition((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.0, (double)blockPos.getZ() + 0.5);
-				raiderEntity.method_5943(this.field_16619, this.field_16619.method_8404(blockPos), SpawnType.field_16467, null, null);
+				raiderEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(blockPos), SpawnType.field_16467, null, null);
 				raiderEntity.addBonusForWave(i, false);
 				raiderEntity.onGround = true;
-				this.field_16619.spawnEntity(raiderEntity);
+				this.world.spawnEntity(raiderEntity);
 			}
 		}
 	}
 
 	private void updateBar() {
-		this.field_16607.setPercent(MathHelper.clamp(this.getCurrentRaiderHealth() / this.totalHealth, 0.0F, 100.0F));
+		this.bar.setPercent(MathHelper.clamp(this.getCurrentRaiderHealth() / this.totalHealth, 0.0F, 100.0F));
 	}
 
 	public float getCurrentRaiderHealth() {
@@ -361,7 +361,7 @@ public class Raid {
 		return this.waveToRaiders.values().stream().mapToInt(Set::size).sum();
 	}
 
-	public void method_16510(@Nonnull RaiderEntity raiderEntity, boolean bl) {
+	public void removeFromWave(@Nonnull RaiderEntity raiderEntity, boolean bl) {
 		Set<RaiderEntity> set = (Set<RaiderEntity>)this.waveToRaiders.get(raiderEntity.getWave());
 		if (set != null) {
 			boolean bl2 = set.remove(raiderEntity);
@@ -377,12 +377,12 @@ public class Raid {
 	}
 
 	private void markDirty() {
-		this.field_16619.method_19495().markDirty();
+		this.world.getRaidManager().markDirty();
 	}
 
-	private static ItemStack method_16515() {
+	private static ItemStack getIllagerBanner() {
 		ItemStack itemStack = new ItemStack(Items.field_8539);
-		CompoundTag compoundTag = itemStack.method_7911("BlockEntityTag");
+		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("BlockEntityTag");
 		ListTag listTag = new BannerPattern.Builder()
 			.with(BannerPattern.RHOMBUS, DyeColor.field_7955)
 			.with(BannerPattern.STRIPE_BOTTOM, DyeColor.field_7967)
@@ -392,9 +392,9 @@ public class Raid {
 			.with(BannerPattern.HALF_HORIZONTAL_TOP, DyeColor.field_7967)
 			.with(BannerPattern.CIRCLE, DyeColor.field_7967)
 			.with(BannerPattern.BORDER, DyeColor.BLACK)
-			.method_16375();
-		compoundTag.method_10566("Patterns", listTag);
-		itemStack.method_7977(new TranslatableTextComponent("block.minecraft.illager_banner").applyFormat(TextFormat.field_1065));
+			.build();
+		compoundTag.put("Patterns", listTag);
+		itemStack.setDisplayName(new TranslatableTextComponent("block.minecraft.illager_banner").applyFormat(TextFormat.field_1065));
 		return itemStack;
 	}
 
@@ -408,27 +408,26 @@ public class Raid {
 	}
 
 	@Nullable
-	public RaiderEntity method_16496(int i) {
+	public RaiderEntity getLeader(int i) {
 		return (RaiderEntity)this.waveToLeader.get(i);
 	}
 
 	@Nullable
-	private BlockPos method_16525(int i) {
+	private BlockPos getPillagerSpawnLocation(int i) {
 		int j = i == 0 ? 2 : 2 - i;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int k = 0; k < 20; k++) {
-			float f = this.field_16619.random.nextFloat() * (float) (Math.PI * 2);
-			int l = this.field_16613.getX() + (int)(MathHelper.cos(f) * 32.0F * (float)j) + this.field_16619.random.nextInt(5);
-			int m = this.field_16613.getZ() + (int)(MathHelper.sin(f) * 32.0F * (float)j) + this.field_16619.random.nextInt(5);
-			int n = this.field_16619.method_8589(Heightmap.Type.WORLD_SURFACE, l, m);
+			float f = this.world.random.nextFloat() * (float) (Math.PI * 2);
+			int l = this.center.getX() + (int)(MathHelper.cos(f) * 32.0F * (float)j) + this.world.random.nextInt(5);
+			int m = this.center.getZ() + (int)(MathHelper.sin(f) * 32.0F * (float)j) + this.world.random.nextInt(5);
+			int n = this.world.getTop(Heightmap.Type.WORLD_SURFACE, l, m);
 			mutable.set(l, n, m);
-			if (!this.field_16619.method_19500(mutable)
-				&& this.field_16619
-					.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)
+			if (!this.world.method_19500(mutable)
+				&& this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)
 				&& (
-					SpawnHelper.method_8660(SpawnRestriction.Location.field_6317, this.field_16619, mutable, EntityType.PILLAGER)
-						|| this.field_16619.method_8320(mutable.down()).getBlock() == Blocks.field_10477 && this.field_16619.method_8320(mutable).isAir()
+					SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.world, mutable, EntityType.PILLAGER)
+						|| this.world.getBlockState(mutable.down()).getBlock() == Blocks.field_10477 && this.world.getBlockState(mutable).isAir()
 				)) {
 				return mutable;
 			}
@@ -437,11 +436,11 @@ public class Raid {
 		return null;
 	}
 
-	private boolean method_16505(int i, RaiderEntity raiderEntity) {
-		return this.method_16487(i, raiderEntity, true);
+	private boolean addToWave(int i, RaiderEntity raiderEntity) {
+		return this.addToWave(i, raiderEntity, true);
 	}
 
-	public boolean method_16487(int i, RaiderEntity raiderEntity, boolean bl) {
+	public boolean addToWave(int i, RaiderEntity raiderEntity, boolean bl) {
 		this.waveToRaiders.computeIfAbsent(i, integer -> Sets.newHashSet());
 		if (((Set)this.waveToRaiders.get(i)).contains(raiderEntity)) {
 			return false;
@@ -457,9 +456,9 @@ public class Raid {
 		}
 	}
 
-	public void method_16491(int i, RaiderEntity raiderEntity) {
+	public void setRaidLeader(int i, RaiderEntity raiderEntity) {
 		this.waveToLeader.put(i, raiderEntity);
-		raiderEntity.method_5673(EquipmentSlot.HEAD, field_16609);
+		raiderEntity.setEquippedStack(EquipmentSlot.HEAD, ILLAGER_BANNER);
 		raiderEntity.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
 	}
 
@@ -467,8 +466,8 @@ public class Raid {
 		this.waveToLeader.remove(i);
 	}
 
-	public BlockPos method_16495() {
-		return this.field_16613;
+	public BlockPos getCenter() {
+		return this.center;
 	}
 
 	public int getRaidId() {
@@ -526,7 +525,7 @@ public class Raid {
 		return this.active;
 	}
 
-	public CompoundTag method_16502(CompoundTag compoundTag) {
+	public CompoundTag toTag(CompoundTag compoundTag) {
 		compoundTag.putInt("Id", this.id);
 		compoundTag.putBoolean("Started", this.started);
 		compoundTag.putBoolean("Active", this.active);
@@ -538,9 +537,9 @@ public class Raid {
 		compoundTag.putInt("PreRaidTicks", this.preRaidTicks);
 		compoundTag.putInt("PostRaidTicks", this.postRaidTicks);
 		compoundTag.putFloat("TotalHealth", this.totalHealth);
-		compoundTag.putInt("CX", this.field_16613.getX());
-		compoundTag.putInt("CY", this.field_16613.getY());
-		compoundTag.putInt("CZ", this.field_16613.getZ());
+		compoundTag.putInt("CX", this.center.getX());
+		compoundTag.putInt("CY", this.center.getY());
+		compoundTag.putInt("CZ", this.center.getZ());
 		return compoundTag;
 	}
 

@@ -11,7 +11,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.sortme.Projectile;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -33,7 +33,7 @@ import net.minecraft.world.World;
 		itf = FlyingItemEntity.class
 	)})
 public class FireworkEntity extends Entity implements FlyingItemEntity, Projectile {
-	private static final TrackedData<ItemStack> field_7614 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final TrackedData<OptionalInt> field_7611 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.field_17910);
 	private static final TrackedData<Boolean> field_7615 = DataTracker.registerData(FireworkEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int field_7613;
@@ -46,9 +46,9 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 
 	@Override
 	protected void initDataTracker() {
-		this.field_6011.startTracking(field_7614, ItemStack.EMPTY);
-		this.field_6011.startTracking(field_7611, OptionalInt.empty());
-		this.field_6011.startTracking(field_7615, false);
+		this.dataTracker.startTracking(ITEM_STACK, ItemStack.EMPTY);
+		this.dataTracker.startTracking(field_7611, OptionalInt.empty());
+		this.dataTracker.startTracking(field_7615, false);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -69,8 +69,8 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 		this.setPosition(d, e, f);
 		int i = 1;
 		if (!itemStack.isEmpty() && itemStack.hasTag()) {
-			this.field_6011.set(field_7614, itemStack.copy());
-			i += itemStack.method_7911("Fireworks").getByte("Flight");
+			this.dataTracker.set(ITEM_STACK, itemStack.copy());
+			i += itemStack.getOrCreateSubCompoundTag("Fireworks").getByte("Flight");
 		}
 
 		this.setVelocity(this.random.nextGaussian() * 0.001, 0.05, this.random.nextGaussian() * 0.001);
@@ -79,13 +79,13 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 
 	public FireworkEntity(World world, ItemStack itemStack, LivingEntity livingEntity) {
 		this(world, livingEntity.x, livingEntity.y, livingEntity.z, itemStack);
-		this.field_6011.set(field_7611, OptionalInt.of(livingEntity.getEntityId()));
+		this.dataTracker.set(field_7611, OptionalInt.of(livingEntity.getEntityId()));
 		this.field_7616 = livingEntity;
 	}
 
 	public FireworkEntity(World world, ItemStack itemStack, double d, double e, double f, boolean bl) {
 		this(world, d, e, f, itemStack);
-		this.field_6011.set(field_7615, bl);
+		this.dataTracker.set(field_7615, bl);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -109,8 +109,8 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 		super.update();
 		if (this.method_7476()) {
 			if (this.field_7616 == null) {
-				this.field_6011.get(field_7611).ifPresent(i -> {
-					Entity entity = this.field_6002.getEntityById(i);
+				this.dataTracker.get(field_7611).ifPresent(i -> {
+					Entity entity = this.world.getEntityById(i);
 					if (entity instanceof LivingEntity) {
 						this.field_7616 = (LivingEntity)entity;
 					}
@@ -122,9 +122,9 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 					Vec3d vec3d = this.field_7616.method_5720();
 					double d = 1.5;
 					double e = 0.1;
-					Vec3d vec3d2 = this.field_7616.method_18798();
+					Vec3d vec3d2 = this.field_7616.getVelocity();
 					this.field_7616
-						.method_18799(
+						.setVelocity(
 							vec3d2.add(
 								vec3d.x * 0.1 + (vec3d.x * 1.5 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.5 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.5 - vec3d2.z) * 0.5
 							)
@@ -132,20 +132,20 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 				}
 
 				this.setPosition(this.field_7616.x, this.field_7616.y, this.field_7616.z);
-				this.method_18799(this.field_7616.method_18798());
+				this.setVelocity(this.field_7616.getVelocity());
 			}
 		} else {
 			if (!this.method_7477()) {
-				this.method_18799(this.method_18798().multiply(1.15, 1.0, 1.15).add(0.0, 0.04, 0.0));
+				this.setVelocity(this.getVelocity().multiply(1.15, 1.0, 1.15).add(0.0, 0.04, 0.0));
 			}
 
-			this.method_5784(MovementType.field_6308, this.method_18798());
+			this.move(MovementType.field_6308, this.getVelocity());
 		}
 
-		Vec3d vec3d = this.method_18798();
+		Vec3d vec3d = this.getVelocity();
 		HitResult hitResult = class_1675.method_18074(
 			this,
-			this.method_5829().method_18804(vec3d).expand(1.0),
+			this.getBoundingBox().method_18804(vec3d).expand(1.0),
 			entity -> !entity.isSpectator() && entity.isValid() && entity.doesCollide(),
 			RayTraceContext.ShapeType.field_17558,
 			true
@@ -155,7 +155,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 			this.velocityDirty = true;
 		}
 
-		float f = MathHelper.sqrt(method_17996(vec3d));
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
 		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
@@ -178,55 +178,49 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
 		if (this.field_7613 == 0 && !this.isSilent()) {
-			this.field_6002.method_8465(null, this.x, this.y, this.z, SoundEvents.field_14702, SoundCategory.field_15256, 3.0F, 1.0F);
+			this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14702, SoundCategory.field_15256, 3.0F, 1.0F);
 		}
 
 		this.field_7613++;
-		if (this.field_6002.isClient && this.field_7613 % 2 < 2) {
-			this.field_6002
-				.method_8406(
-					ParticleTypes.field_11248,
-					this.x,
-					this.y - 0.3,
-					this.z,
-					this.random.nextGaussian() * 0.05,
-					-this.method_18798().y * 0.5,
-					this.random.nextGaussian() * 0.05
+		if (this.world.isClient && this.field_7613 % 2 < 2) {
+			this.world
+				.addParticle(
+					ParticleTypes.field_11248, this.x, this.y - 0.3, this.z, this.random.nextGaussian() * 0.05, -this.getVelocity().y * 0.5, this.random.nextGaussian() * 0.05
 				);
 		}
 
-		if (!this.field_6002.isClient && this.field_7613 > this.field_7612) {
+		if (!this.world.isClient && this.field_7613 > this.field_7612) {
 			this.method_16830();
 		}
 	}
 
 	private void method_16830() {
-		this.field_6002.summonParticle(this, (byte)17);
+		this.world.summonParticle(this, (byte)17);
 		this.method_7475();
 		this.invalidate();
 	}
 
 	protected void method_16828(HitResult hitResult) {
-		if (hitResult.getType() == HitResult.Type.ENTITY && !this.field_6002.isClient) {
+		if (hitResult.getType() == HitResult.Type.ENTITY && !this.world.isClient) {
 			this.method_16830();
 		} else if (this.collided) {
 			BlockPos blockPos;
 			if (hitResult.getType() == HitResult.Type.BLOCK) {
-				blockPos = new BlockPos(((BlockHitResult)hitResult).method_17777());
+				blockPos = new BlockPos(((BlockHitResult)hitResult).getBlockPos());
 			} else {
 				blockPos = new BlockPos(this);
 			}
 
-			this.field_6002.method_8320(blockPos).method_11613(this.field_6002, blockPos, this);
+			this.world.getBlockState(blockPos).onEntityCollision(this.world, blockPos, this);
 			this.method_16830();
 		}
 	}
 
 	private void method_7475() {
 		float f = 0.0F;
-		ItemStack itemStack = this.field_6011.get(field_7614);
-		CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.method_7941("Fireworks");
-		ListTag listTag = compoundTag != null ? compoundTag.method_10554("Explosions", 10) : null;
+		ItemStack itemStack = this.dataTracker.get(ITEM_STACK);
+		CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubCompoundTag("Fireworks");
+		ListTag listTag = compoundTag != null ? compoundTag.getList("Explosions", 10) : null;
 		if (listTag != null && !listTag.isEmpty()) {
 			f = 5.0F + (float)(listTag.size() * 2);
 		}
@@ -239,14 +233,14 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 			double d = 5.0;
 			Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 
-			for (LivingEntity livingEntity : this.field_6002.method_18467(LivingEntity.class, this.method_5829().expand(5.0))) {
+			for (LivingEntity livingEntity : this.world.method_18467(LivingEntity.class, this.getBoundingBox().expand(5.0))) {
 				if (livingEntity != this.field_7616 && !(this.squaredDistanceTo(livingEntity) > 25.0)) {
 					boolean bl = false;
 
 					for (int i = 0; i < 2; i++) {
 						Vec3d vec3d2 = new Vec3d(livingEntity.x, livingEntity.y + (double)livingEntity.getHeight() * 0.5 * (double)i, livingEntity.z);
-						HitResult hitResult = this.field_6002
-							.method_17742(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
+						HitResult hitResult = this.world
+							.rayTrace(new RayTraceContext(vec3d, vec3d2, RayTraceContext.ShapeType.field_17558, RayTraceContext.FluidHandling.NONE, this));
 						if (hitResult.getType() == HitResult.Type.NONE) {
 							bl = true;
 							break;
@@ -263,56 +257,56 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	private boolean method_7476() {
-		return this.field_6011.get(field_7611).isPresent();
+		return this.dataTracker.get(field_7611).isPresent();
 	}
 
 	public boolean method_7477() {
-		return this.field_6011.get(field_7615);
+		return this.dataTracker.get(field_7615);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void method_5711(byte b) {
-		if (b == 17 && this.field_6002.isClient) {
-			ItemStack itemStack = this.field_6011.get(field_7614);
-			CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.method_7941("Fireworks");
-			Vec3d vec3d = this.method_18798();
-			this.field_6002.method_8547(this.x, this.y, this.z, vec3d.x, vec3d.y, vec3d.z, compoundTag);
+		if (b == 17 && this.world.isClient) {
+			ItemStack itemStack = this.dataTracker.get(ITEM_STACK);
+			CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubCompoundTag("Fireworks");
+			Vec3d vec3d = this.getVelocity();
+			this.world.addFireworkParticle(this.x, this.y, this.z, vec3d.x, vec3d.y, vec3d.z, compoundTag);
 		}
 
 		super.method_5711(b);
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		compoundTag.putInt("Life", this.field_7613);
 		compoundTag.putInt("LifeTime", this.field_7612);
-		ItemStack itemStack = this.field_6011.get(field_7614);
+		ItemStack itemStack = this.dataTracker.get(ITEM_STACK);
 		if (!itemStack.isEmpty()) {
-			compoundTag.method_10566("FireworksItem", itemStack.method_7953(new CompoundTag()));
+			compoundTag.put("FireworksItem", itemStack.toTag(new CompoundTag()));
 		}
 
-		compoundTag.putBoolean("ShotAtAngle", this.field_6011.get(field_7615));
+		compoundTag.putBoolean("ShotAtAngle", this.dataTracker.get(field_7615));
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		this.field_7613 = compoundTag.getInt("Life");
 		this.field_7612 = compoundTag.getInt("LifeTime");
-		ItemStack itemStack = ItemStack.method_7915(compoundTag.getCompound("FireworksItem"));
+		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("FireworksItem"));
 		if (!itemStack.isEmpty()) {
-			this.field_6011.set(field_7614, itemStack);
+			this.dataTracker.set(ITEM_STACK, itemStack);
 		}
 
 		if (compoundTag.containsKey("ShotAtAngle")) {
-			this.field_6011.set(field_7615, compoundTag.getBoolean("ShotAtAngle"));
+			this.dataTracker.set(field_7615, compoundTag.getBoolean("ShotAtAngle"));
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack method_7495() {
-		ItemStack itemStack = this.field_6011.get(field_7614);
+	public ItemStack getItem() {
+		ItemStack itemStack = this.dataTracker.get(ITEM_STACK);
 		return itemStack.isEmpty() ? new ItemStack(Items.field_8639) : itemStack;
 	}
 
@@ -322,7 +316,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	@Override
-	public Packet<?> method_18002() {
+	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this);
 	}
 

@@ -1,6 +1,7 @@
 package net.minecraft;
 
 import javax.annotation.Nullable;
+import net.minecraft.entity.ai.AiUtil;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.Vec3d;
@@ -19,12 +20,12 @@ public class class_1394 extends WanderAroundGoal {
 
 	@Nullable
 	@Override
-	protected Vec3d method_6302() {
+	protected Vec3d getWanderTarget() {
 		if (this.owner.isInsideWaterOrBubbleColumn()) {
-			Vec3d vec3d = class_1414.method_6378(this.owner, 15, 7);
-			return vec3d == null ? super.method_6302() : vec3d;
+			Vec3d vec3d = AiUtil.method_6378(this.owner, 15, 7);
+			return vec3d == null ? super.getWanderTarget() : vec3d;
 		} else {
-			return this.owner.getRand().nextFloat() >= this.field_6626 ? class_1414.method_6378(this.owner, 10, 7) : super.method_6302();
+			return this.owner.getRand().nextFloat() >= this.field_6626 ? AiUtil.method_6378(this.owner, 10, 7) : super.getWanderTarget();
 		}
 	}
 }

@@ -19,17 +19,17 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.context.LootContextType;
 
 public abstract class LootEntry implements LootChoiceProvider {
-	protected final LootCondition[] field_988;
+	protected final LootCondition[] conditions;
 	private final Predicate<LootContext> conditionPredicate;
 
 	protected LootEntry(LootCondition[] lootConditions) {
-		this.field_988 = lootConditions;
+		this.conditions = lootConditions;
 		this.conditionPredicate = LootConditions.joinAnd(lootConditions);
 	}
 
-	public void method_415(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		for (int i = 0; i < this.field_988.length; i++) {
-			this.field_988[i].method_292(lootTableReporter.makeChild(".condition[" + i + "]"), function, set, lootContextType);
+	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		for (int i = 0; i < this.conditions.length; i++) {
+			this.conditions[i].check(lootTableReporter.makeChild(".condition[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
@@ -51,7 +51,7 @@ public abstract class LootEntry implements LootChoiceProvider {
 			return this.getThisBuilder();
 		}
 
-		protected LootCondition[] method_420() {
+		protected LootCondition[] getConditions() {
 			return (LootCondition[])this.children.toArray(new LootCondition[0]);
 		}
 
@@ -63,16 +63,16 @@ public abstract class LootEntry implements LootChoiceProvider {
 	}
 
 	public abstract static class Serializer<T extends LootEntry> {
-		private final Identifier field_991;
+		private final Identifier id;
 		private final Class<T> type;
 
 		protected Serializer(Identifier identifier, Class<T> class_) {
-			this.field_991 = identifier;
+			this.id = identifier;
 			this.type = class_;
 		}
 
-		public Identifier method_423() {
-			return this.field_991;
+		public Identifier getIdentifier() {
+			return this.id;
 		}
 
 		public Class<T> getType() {
@@ -81,6 +81,6 @@ public abstract class LootEntry implements LootChoiceProvider {
 
 		public abstract void toJson(JsonObject jsonObject, T lootEntry, JsonSerializationContext jsonSerializationContext);
 
-		public abstract T method_424(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions);
+		public abstract T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions);
 	}
 }

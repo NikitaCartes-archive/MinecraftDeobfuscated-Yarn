@@ -44,11 +44,11 @@ public class LootTablesProvider implements DataProvider {
 	}
 
 	@Override
-	public void method_10319(DataCache dataCache) {
+	public void run(DataCache dataCache) {
 		Path path = this.root.getOutput();
 		Map<Identifier, LootSupplier> map = Maps.<Identifier, LootSupplier>newHashMap();
 		this.field_11354.forEach(pair -> ((Consumer)((Supplier)pair.getFirst()).get()).accept((BiConsumer)(identifierx, builder) -> {
-				if (map.put(identifierx, builder.method_334((LootContextType)pair.getSecond()).create()) != null) {
+				if (map.put(identifierx, builder.withType((LootContextType)pair.getSecond()).create()) != null) {
 					throw new IllegalStateException("Duplicate loot table " + identifierx);
 				}
 			}));
@@ -58,17 +58,17 @@ public class LootTablesProvider implements DataProvider {
 			lootTableReporter.report("Missing built-in table: " + identifier);
 		}
 
-		map.forEach((identifierx, lootSupplier) -> LootManager.method_369(lootTableReporter, identifierx, lootSupplier, map::get));
+		map.forEach((identifierx, lootSupplier) -> LootManager.check(lootTableReporter, identifierx, lootSupplier, map::get));
 		Multimap<String, String> multimap = lootTableReporter.getMessages();
 		if (!multimap.isEmpty()) {
 			multimap.forEach((string, string2) -> LOGGER.warn("Found validation problem in " + string + ": " + string2));
 			throw new IllegalStateException("Failed to validate loot tables, see logs");
 		} else {
 			map.forEach((identifierx, lootSupplier) -> {
-				Path path2 = method_10409(path, identifierx);
+				Path path2 = getOutput(path, identifierx);
 
 				try {
-					DataProvider.method_10320(GSON, dataCache, LootManager.toJson(lootSupplier), path2);
+					DataProvider.writeToPath(GSON, dataCache, LootManager.toJson(lootSupplier), path2);
 				} catch (IOException var6) {
 					LOGGER.error("Couldn't save loot table {}", path2, var6);
 				}
@@ -76,7 +76,7 @@ public class LootTablesProvider implements DataProvider {
 		}
 	}
 
-	private static Path method_10409(Path path, Identifier identifier) {
+	private static Path getOutput(Path path, Identifier identifier) {
 		return path.resolve("data/" + identifier.getNamespace() + "/loot_tables/" + identifier.getPath() + ".json");
 	}
 

@@ -63,7 +63,7 @@ public class ChatScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.field_2387 = this.client.field_1705.method_1743().method_1809().size();
+		this.field_2387 = this.client.inGameHud.getChatHud().method_1809().size();
 		this.chatField = new TextFieldWidget(this.fontRenderer, 4, this.screenHeight - 12, this.screenWidth - 4, 12);
 		this.chatField.setMaxLength(256);
 		this.chatField.setHasBorder(false);
@@ -72,7 +72,7 @@ public class ChatScreen extends Screen {
 		this.chatField.setChangedListener(this::onChatFieldChanged);
 		this.listeners.add(this.chatField);
 		this.updateCommand();
-		this.method_18624(this.chatField);
+		this.focusOn(this.chatField);
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class ChatScreen extends Screen {
 	@Override
 	public void onClosed() {
 		this.client.keyboard.enableRepeatEvents(false);
-		this.client.field_1705.method_1743().method_1820();
+		this.client.inGameHud.getChatHud().method_1820();
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class ChatScreen extends Screen {
 			if (super.keyPressed(i, j, k)) {
 				return true;
 			} else if (i == 256) {
-				this.client.method_1507(null);
+				this.client.openScreen(null);
 				return true;
 			} else if (i == 257 || i == 335) {
 				String string = this.chatField.getText().trim();
@@ -121,7 +121,7 @@ public class ChatScreen extends Screen {
 					this.sendMessage(string);
 				}
 
-				this.client.method_1507(null);
+				this.client.openScreen(null);
 				return true;
 			} else if (i == 265) {
 				this.method_2114(-1);
@@ -130,10 +130,10 @@ public class ChatScreen extends Screen {
 				this.method_2114(1);
 				return true;
 			} else if (i == 266) {
-				this.client.field_1705.method_1743().method_1802((double)(this.client.field_1705.method_1743().getVisibleLineCount() - 1));
+				this.client.inGameHud.getChatHud().method_1802((double)(this.client.inGameHud.getChatHud().getVisibleLineCount() - 1));
 				return true;
 			} else if (i == 267) {
-				this.client.field_1705.method_1743().method_1802((double)(-this.client.field_1705.method_1743().getVisibleLineCount() + 1));
+				this.client.inGameHud.getChatHud().method_1802((double)(-this.client.inGameHud.getChatHud().getVisibleLineCount() + 1));
 				return true;
 			} else {
 				return false;
@@ -186,9 +186,9 @@ public class ChatScreen extends Screen {
 		StringReader stringReader = new StringReader(string);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
-			CommandDispatcher<CommandSource> commandDispatcher = this.client.field_1724.networkHandler.getCommandDispatcher();
+			CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
 			if (this.parseResults == null) {
-				this.parseResults = commandDispatcher.parse(stringReader, this.client.field_1724.networkHandler.method_2875());
+				this.parseResults = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
 			}
 
 			int i = this.chatField.getCursor();
@@ -202,7 +202,7 @@ public class ChatScreen extends Screen {
 			}
 		} else {
 			int i = getLastWhitespaceIndex(string);
-			Collection<String> collection = this.client.field_1724.networkHandler.method_2875().getPlayerNames();
+			Collection<String> collection = this.client.player.networkHandler.getCommandSource().getPlayerNames();
 			this.suggestionsFuture = CommandSource.suggestMatching(collection, new SuggestionsBuilder(string, i));
 		}
 	}
@@ -234,7 +234,7 @@ public class ChatScreen extends Screen {
 		}
 
 		this.suggestionsWindow = null;
-		if (this.field_2380 && this.client.field_1690.autoSuggestions) {
+		if (this.field_2380 && this.client.options.autoSuggestions) {
 			this.openSuggestionsWindow();
 		}
 	}
@@ -305,7 +305,7 @@ public class ChatScreen extends Screen {
 				f *= 7.0;
 			}
 
-			this.client.field_1705.method_1743().method_1802(f);
+			this.client.inGameHud.getChatHud().method_1802(f);
 			return true;
 		}
 	}
@@ -316,8 +316,8 @@ public class ChatScreen extends Screen {
 			return true;
 		} else {
 			if (i == 0) {
-				TextComponent textComponent = this.client.field_1705.method_1743().method_1816(d, e);
-				if (textComponent != null && this.method_2216(textComponent)) {
+				TextComponent textComponent = this.client.inGameHud.getChatHud().getTextComponentAt(d, e);
+				if (textComponent != null && this.handleTextComponentClick(textComponent)) {
 					return true;
 				}
 			}
@@ -337,7 +337,7 @@ public class ChatScreen extends Screen {
 
 	public void method_2114(int i) {
 		int j = this.field_2387 + i;
-		int k = this.client.field_1705.method_1743().method_1809().size();
+		int k = this.client.inGameHud.getChatHud().method_1809().size();
 		j = MathHelper.clamp(j, 0, k);
 		if (j != this.field_2387) {
 			if (j == k) {
@@ -348,7 +348,7 @@ public class ChatScreen extends Screen {
 					this.field_2389 = this.chatField.getText();
 				}
 
-				this.chatField.setText((String)this.client.field_1705.method_1743().method_1809().get(j));
+				this.chatField.setText((String)this.client.inGameHud.getChatHud().method_1809().get(j));
 				this.suggestionsWindow = null;
 				this.field_2387 = j;
 				this.field_2380 = false;
@@ -358,7 +358,7 @@ public class ChatScreen extends Screen {
 
 	@Override
 	public void draw(int i, int j, float f) {
-		drawRect(2, this.screenHeight - 14, this.screenWidth - 2, this.screenHeight - 2, this.client.field_1690.method_19344(Integer.MIN_VALUE));
+		drawRect(2, this.screenHeight - 14, this.screenWidth - 2, this.screenHeight - 2, this.client.options.method_19344(Integer.MIN_VALUE));
 		this.chatField.draw(i, j, f);
 		if (this.suggestionsWindow != null) {
 			this.suggestionsWindow.draw(i, j);
@@ -378,9 +378,9 @@ public class ChatScreen extends Screen {
 			}
 		}
 
-		TextComponent textComponent = this.client.field_1705.method_1743().method_1816((double)i, (double)j);
-		if (textComponent != null && textComponent.method_10866().getHoverEvent() != null) {
-			this.method_2229(textComponent, i, j);
+		TextComponent textComponent = this.client.inGameHud.getChatHud().getTextComponentAt((double)i, (double)j);
+		if (textComponent != null && textComponent.getStyle().getHoverEvent() != null) {
+			this.drawTextComponentHover(textComponent, i, j);
 		}
 
 		super.draw(i, j, f);
@@ -395,10 +395,10 @@ public class ChatScreen extends Screen {
 		CommandContextBuilder<CommandSource> commandContextBuilder = this.parseResults.getContext();
 		SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.chatField.getCursor());
 		Map<CommandNode<CommandSource>, String> map = this.client
-			.field_1724
+			.player
 			.networkHandler
 			.getCommandDispatcher()
-			.getSmartUsage(suggestionContext.parent, this.client.field_1724.networkHandler.method_2875());
+			.getSmartUsage(suggestionContext.parent, this.client.player.networkHandler.getCommandSource());
 		List<String> list = Lists.<String>newArrayList();
 		int i = 0;
 
@@ -542,10 +542,10 @@ public class ChatScreen extends Screen {
 
 		public boolean method_2117(double d) {
 			int i = (int)(
-				ChatScreen.this.client.field_1729.getX() * (double)ChatScreen.this.client.window.getScaledWidth() / (double)ChatScreen.this.client.window.getWidth()
+				ChatScreen.this.client.mouse.getX() * (double)ChatScreen.this.client.window.getScaledWidth() / (double)ChatScreen.this.client.window.getWidth()
 			);
 			int j = (int)(
-				ChatScreen.this.client.field_1729.getY() * (double)ChatScreen.this.client.window.getScaledHeight() / (double)ChatScreen.this.client.window.getHeight()
+				ChatScreen.this.client.mouse.getY() * (double)ChatScreen.this.client.window.getScaledHeight() / (double)ChatScreen.this.client.window.getHeight()
 			);
 			if (this.field_2396.contains(i, j)) {
 				this.field_2395 = MathHelper.clamp((int)((double)this.field_2395 - d), 0, Math.max(this.suggestions.getList().size() - 10, 0));

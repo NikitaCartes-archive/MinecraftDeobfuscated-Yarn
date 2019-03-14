@@ -44,38 +44,38 @@ public class SpawnEggItem extends Item {
 	}
 
 	@Override
-	public ActionResult method_7884(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.method_8045();
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
 		if (world.isClient) {
 			return ActionResult.field_5812;
 		} else {
 			ItemStack itemStack = itemUsageContext.getItemStack();
-			BlockPos blockPos = itemUsageContext.method_8037();
-			Direction direction = itemUsageContext.method_8038();
-			BlockState blockState = world.method_8320(blockPos);
+			BlockPos blockPos = itemUsageContext.getBlockPos();
+			Direction direction = itemUsageContext.getFacing();
+			BlockState blockState = world.getBlockState(blockPos);
 			Block block = blockState.getBlock();
 			if (block == Blocks.field_10260) {
-				BlockEntity blockEntity = world.method_8321(blockPos);
+				BlockEntity blockEntity = world.getBlockEntity(blockPos);
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
-					EntityType<?> entityType = this.method_8015(itemStack.method_7969());
+					EntityType<?> entityType = this.entityTypeFromTag(itemStack.getTag());
 					mobSpawnerLogic.method_8274(entityType);
 					blockEntity.markDirty();
-					world.method_8413(blockPos, blockState, blockState, 3);
+					world.updateListeners(blockPos, blockState, blockState, 3);
 					itemStack.subtractAmount(1);
 					return ActionResult.field_5812;
 				}
 			}
 
 			BlockPos blockPos2;
-			if (blockState.method_11628(world, blockPos).isEmpty()) {
+			if (blockState.getCollisionShape(world, blockPos).isEmpty()) {
 				blockPos2 = blockPos;
 			} else {
-				blockPos2 = blockPos.method_10093(direction);
+				blockPos2 = blockPos.offset(direction);
 			}
 
-			EntityType<?> entityType2 = this.method_8015(itemStack.method_7969());
-			if (entityType2.method_5894(
+			EntityType<?> entityType2 = this.entityTypeFromTag(itemStack.getTag());
+			if (entityType2.spawnFromItemStack(
 					world, itemStack, itemUsageContext.getPlayer(), blockPos2, SpawnType.field_16465, true, !Objects.equals(blockPos, blockPos2) && direction == Direction.UP
 				)
 				!= null) {
@@ -87,29 +87,29 @@ public class SpawnEggItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
-			HitResult hitResult = method_7872(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
+			HitResult hitResult = getHitResult(world, playerEntity, RayTraceContext.FluidHandling.field_1345);
 			if (hitResult.getType() != HitResult.Type.BLOCK) {
 				return new TypedActionResult<>(ActionResult.PASS, itemStack);
 			} else {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
-				BlockPos blockPos = blockHitResult.method_17777();
-				if (!(world.method_8320(blockPos).getBlock() instanceof FluidBlock)) {
+				BlockPos blockPos = blockHitResult.getBlockPos();
+				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 					return new TypedActionResult<>(ActionResult.PASS, itemStack);
-				} else if (world.method_8505(playerEntity, blockPos) && playerEntity.method_7343(blockPos, blockHitResult.method_17780(), itemStack)) {
-					EntityType<?> entityType = this.method_8015(itemStack.method_7969());
-					if (entityType.method_5894(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
+				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceBlock(blockPos, blockHitResult.getSide(), itemStack)) {
+					EntityType<?> entityType = this.entityTypeFromTag(itemStack.getTag());
+					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
 						return new TypedActionResult<>(ActionResult.PASS, itemStack);
 					} else {
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.subtractAmount(1);
 						}
 
-						playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
+						playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 						return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 					}
 				} else {
@@ -120,7 +120,7 @@ public class SpawnEggItem extends Item {
 	}
 
 	public boolean method_8018(@Nullable CompoundTag compoundTag, EntityType<?> entityType) {
-		return Objects.equals(this.method_8015(compoundTag), entityType);
+		return Objects.equals(this.entityTypeFromTag(compoundTag), entityType);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -137,7 +137,7 @@ public class SpawnEggItem extends Item {
 		return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
 	}
 
-	public EntityType<?> method_8015(@Nullable CompoundTag compoundTag) {
+	public EntityType<?> entityTypeFromTag(@Nullable CompoundTag compoundTag) {
 		if (compoundTag != null && compoundTag.containsKey("EntityTag", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("EntityTag");
 			if (compoundTag2.containsKey("id", 8)) {

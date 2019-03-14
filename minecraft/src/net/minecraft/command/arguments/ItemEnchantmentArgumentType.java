@@ -33,7 +33,7 @@ public class ItemEnchantmentArgumentType implements ArgumentType<Enchantment> {
 
 	public Enchantment method_9335(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
-		return (Enchantment)Registry.ENCHANTMENT.method_17966(identifier).orElseThrow(() -> field_9872.create(identifier));
+		return (Enchantment)Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> field_9872.create(identifier));
 	}
 
 	@Override

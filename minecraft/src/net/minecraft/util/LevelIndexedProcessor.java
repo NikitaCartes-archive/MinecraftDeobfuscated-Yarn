@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 public abstract class LevelIndexedProcessor {
 	private final int maxLevelCount;
 	private final LongLinkedOpenHashSet[] toProcess;
-	private final Long2ByteFunction levelMap;
+	private final Long2ByteFunction levels;
 	private int minUnprocessedLevel;
 	private volatile boolean hasUpdates;
 
@@ -29,7 +29,7 @@ public abstract class LevelIndexedProcessor {
 				};
 			}
 
-			this.levelMap = new Long2ByteOpenHashMap(k, 0.5F) {
+			this.levels = new Long2ByteOpenHashMap(k, 0.5F) {
 				@Override
 				protected void rehash(int i) {
 					if (i > k) {
@@ -37,7 +37,7 @@ public abstract class LevelIndexedProcessor {
 					}
 				}
 			};
-			this.levelMap.defaultReturnValue((byte)-1);
+			this.levels.defaultReturnValue((byte)-1);
 			this.minUnprocessedLevel = i;
 		}
 	}
@@ -68,9 +68,9 @@ public abstract class LevelIndexedProcessor {
 	}
 
 	public void remove(long l) {
-		int i = this.levelMap.get(l) & 255;
+		int i = this.levels.get(l) & 255;
 		if (i != 255) {
-			int j = this.getCurrentLevelFor(l);
+			int j = this.getLevel(l);
 			int k = this.minLevel(j, i);
 			this.removeFromLevel(l, k, this.maxLevelCount, true);
 			this.hasUpdates = this.minUnprocessedLevel < this.maxLevelCount;
@@ -79,7 +79,7 @@ public abstract class LevelIndexedProcessor {
 
 	private void removeFromLevel(long l, int i, int j, boolean bl) {
 		if (bl) {
-			this.levelMap.remove(l);
+			this.levels.remove(l);
 		}
 
 		this.toProcess[i].remove(l);
@@ -91,7 +91,7 @@ public abstract class LevelIndexedProcessor {
 	private void addWithLevel(long l, int i, int j) {
 		if (i <= this.maxLevelCount - 1) {
 			i = Math.min(this.maxLevelCount - 1, i);
-			this.levelMap.put(l, (byte)i);
+			this.levels.put(l, (byte)i);
 			this.toProcess[j].add(l);
 			if (this.minUnprocessedLevel > j) {
 				this.minUnprocessedLevel = j;
@@ -104,7 +104,7 @@ public abstract class LevelIndexedProcessor {
 	}
 
 	public void scheduleNewLevelUpdate(long l, long m, int i, boolean bl) {
-		this.scheduleUpdate(l, m, i, this.getCurrentLevelFor(m), this.levelMap.get(m) & 255, bl);
+		this.scheduleUpdate(l, m, i, this.getLevel(m), this.levels.get(m) & 255, bl);
 		this.hasUpdates = this.minUnprocessedLevel < this.maxLevelCount;
 	}
 
@@ -144,23 +144,23 @@ public abstract class LevelIndexedProcessor {
 	}
 
 	protected final void scheduleUpdateRecursively(long l, long m, int i, boolean bl) {
-		int j = this.levelMap.get(m) & 255;
-		int k = this.getBaseLevelFor(l, m, i);
+		int j = this.levels.get(m) & 255;
+		int k = this.getBaseLevel(l, m, i);
 		if (bl) {
-			this.scheduleUpdate(l, m, k, this.getCurrentLevelFor(m), j, true);
+			this.scheduleUpdate(l, m, k, this.getLevel(m), j, true);
 		} else {
 			int n;
 			boolean bl2;
 			if (j == 255) {
 				bl2 = true;
-				n = this.getCurrentLevelFor(m);
+				n = this.getLevel(m);
 			} else {
 				n = j;
 				bl2 = false;
 			}
 
 			if (k == n) {
-				this.scheduleUpdate(l, m, this.maxLevelCount - 1, bl2 ? n : this.getCurrentLevelFor(m), j, false);
+				this.scheduleUpdate(l, m, this.maxLevelCount - 1, bl2 ? n : this.getLevel(m), j, false);
 			}
 		}
 	}
@@ -177,19 +177,19 @@ public abstract class LevelIndexedProcessor {
 				i--;
 				LongLinkedOpenHashSet longLinkedOpenHashSet = this.toProcess[this.minUnprocessedLevel];
 				long l = longLinkedOpenHashSet.removeFirstLong();
-				int j = this.getCurrentLevelFor(l);
+				int j = this.getLevel(l);
 				if (longLinkedOpenHashSet.isEmpty()) {
 					this.updateMinUnprocessed(this.maxLevelCount);
 				}
 
-				int k = this.levelMap.remove(l) & 255;
+				int k = this.levels.remove(l) & 255;
 				if (k < j) {
-					this.setLevelFor(l, k);
-					this.processLevelAt(l, k, true);
+					this.setLevel(l, k);
+					this.processLevel(l, k, true);
 				} else if (k > j) {
 					this.addWithLevel(l, k, this.minLevel(this.maxLevelCount - 1, k));
-					this.setLevelFor(l, this.maxLevelCount - 1);
-					this.processLevelAt(l, j, false);
+					this.setLevel(l, this.maxLevelCount - 1);
+					this.processLevel(l, j, false);
 				}
 			}
 
@@ -202,11 +202,11 @@ public abstract class LevelIndexedProcessor {
 
 	protected abstract int getMergedLevel(long l, long m, int i);
 
-	protected abstract void processLevelAt(long l, int i, boolean bl);
+	protected abstract void processLevel(long l, int i, boolean bl);
 
-	protected abstract int getCurrentLevelFor(long l);
+	protected abstract int getLevel(long l);
 
-	protected abstract void setLevelFor(long l, int i);
+	protected abstract void setLevel(long l, int i);
 
-	protected abstract int getBaseLevelFor(long l, long m, int i);
+	protected abstract int getBaseLevel(long l, long m, int i);
 }

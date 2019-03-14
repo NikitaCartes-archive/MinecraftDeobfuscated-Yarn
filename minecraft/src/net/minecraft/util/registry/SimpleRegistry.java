@@ -19,14 +19,14 @@ import org.apache.logging.log4j.Logger;
 
 public class SimpleRegistry<T> extends MutableRegistry<T> {
 	protected static final Logger LOGGER = LogManager.getLogger();
-	protected final Int2ObjectBiMap<T> field_11110 = new Int2ObjectBiMap<>(256);
+	protected final Int2ObjectBiMap<T> indexedEntries = new Int2ObjectBiMap<>(256);
 	protected final BiMap<Identifier, T> entries = HashBiMap.create();
 	protected Object[] randomEntries;
 	private int nextId;
 
 	@Override
-	public <V extends T> V method_10273(int i, Identifier identifier, V object) {
-		this.field_11110.put((T)object, i);
+	public <V extends T> V set(int i, Identifier identifier, V object) {
+		this.indexedEntries.put((T)object, i);
 		Validate.notNull(identifier);
 		Validate.notNull(object);
 		this.randomEntries = null;
@@ -43,39 +43,39 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 	}
 
 	@Override
-	public <V extends T> V method_10272(Identifier identifier, V object) {
-		return this.method_10273(this.nextId, identifier, object);
+	public <V extends T> V add(Identifier identifier, V object) {
+		return this.set(this.nextId, identifier, object);
 	}
 
 	@Nullable
 	@Override
-	public Identifier method_10221(T object) {
+	public Identifier getId(T object) {
 		return (Identifier)this.entries.inverse().get(object);
 	}
 
 	@Override
 	public int getRawId(@Nullable T object) {
-		return this.field_11110.getId(object);
+		return this.indexedEntries.getId(object);
 	}
 
 	@Nullable
 	@Override
 	public T get(int i) {
-		return this.field_11110.get(i);
+		return this.indexedEntries.get(i);
 	}
 
 	public Iterator<T> iterator() {
-		return this.field_11110.iterator();
+		return this.indexedEntries.iterator();
 	}
 
 	@Nullable
 	@Override
-	public T method_10223(@Nullable Identifier identifier) {
+	public T get(@Nullable Identifier identifier) {
 		return (T)this.entries.get(identifier);
 	}
 
 	@Override
-	public Optional<T> method_17966(@Nullable Identifier identifier) {
+	public Optional<T> getOrEmpty(@Nullable Identifier identifier) {
 		return Optional.ofNullable(this.entries.get(identifier));
 	}
 
@@ -106,7 +106,7 @@ public class SimpleRegistry<T> extends MutableRegistry<T> {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_10250(Identifier identifier) {
+	public boolean containsId(Identifier identifier) {
 		return this.entries.containsKey(identifier);
 	}
 }

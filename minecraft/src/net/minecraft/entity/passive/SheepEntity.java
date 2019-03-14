@@ -55,7 +55,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.loot.LootTables;
 
 public class SheepEntity extends AnimalEntity {
-	private static final TrackedData<Byte> field_6870 = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final Map<DyeColor, ItemProvider> DROPS = SystemUtil.consume(Maps.newEnumMap(DyeColor.class), enumMap -> {
 		enumMap.put(DyeColor.field_7952, Blocks.field_10446);
 		enumMap.put(DyeColor.field_7946, Blocks.field_10095);
@@ -91,7 +91,7 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static float[] method_6634(DyeColor dyeColor) {
+	public static float[] getRgbColor(DyeColor dyeColor) {
 		return (float[])COLORS.get(dyeColor);
 	}
 
@@ -102,15 +102,15 @@ public class SheepEntity extends AnimalEntity {
 	@Override
 	protected void initGoals() {
 		this.eatGrassGoal = new EatGrassGoal(this);
-		this.field_6201.add(0, new SwimGoal(this));
-		this.field_6201.add(1, new EscapeDangerGoal(this, 1.25));
-		this.field_6201.add(2, new AnimalMateGoal(this, 1.0));
-		this.field_6201.add(3, new TemptGoal(this, 1.1, Ingredient.method_8091(Items.field_8861), false));
-		this.field_6201.add(4, new FollowParentGoal(this, 1.1));
-		this.field_6201.add(5, this.eatGrassGoal);
-		this.field_6201.add(6, new class_1394(this, 1.0));
-		this.field_6201.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
-		this.field_6201.add(8, new LookAroundGoal(this));
+		this.goalSelector.add(0, new SwimGoal(this));
+		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
+		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
+		this.goalSelector.add(3, new TemptGoal(this, 1.1, Ingredient.ofItems(Items.field_8861), false));
+		this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
+		this.goalSelector.add(5, this.eatGrassGoal);
+		this.goalSelector.add(6, new class_1394(this, 1.0));
+		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(8, new LookAroundGoal(this));
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public class SheepEntity extends AnimalEntity {
 
 	@Override
 	public void updateMovement() {
-		if (this.field_6002.isClient) {
+		if (this.world.isClient) {
 			this.field_6865 = Math.max(0, this.field_6865 - 1);
 		}
 
@@ -131,55 +131,55 @@ public class SheepEntity extends AnimalEntity {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
-		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(8.0);
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.23F);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.field_6011.startTracking(field_6870, (byte)0);
+		this.dataTracker.startTracking(COLOR, (byte)0);
 	}
 
 	@Override
-	public Identifier method_5991() {
+	public Identifier getLootTableId() {
 		if (this.isSheared()) {
-			return this.method_5864().method_16351();
+			return this.getType().getLootTableId();
 		} else {
-			switch (this.method_6633()) {
+			switch (this.getColor()) {
 				case field_7952:
 				default:
-					return LootTables.field_869;
+					return LootTables.ENTITY_SHEEP_WHITE;
 				case field_7946:
-					return LootTables.field_814;
+					return LootTables.ENTITY_SHEEP_ORANGE;
 				case field_7958:
-					return LootTables.field_224;
+					return LootTables.ENTITY_SHEEP_MAGENTA;
 				case field_7951:
-					return LootTables.field_461;
+					return LootTables.ENTITY_SHEEP_LIGHT_BLUE;
 				case field_7947:
-					return LootTables.field_385;
+					return LootTables.ENTITY_SHEEP_YELLOW;
 				case field_7961:
-					return LootTables.field_702;
+					return LootTables.ENTITY_SHEEP_LIME;
 				case field_7954:
-					return LootTables.field_629;
+					return LootTables.ENTITY_SHEEP_PINK;
 				case field_7944:
-					return LootTables.field_878;
+					return LootTables.ENTITY_SHEEP_GRAY;
 				case field_7967:
-					return LootTables.field_806;
+					return LootTables.ENTITY_SHEEP_LIGHT_GRAY;
 				case field_7955:
-					return LootTables.field_365;
+					return LootTables.ENTITY_SHEEP_CYAN;
 				case field_7945:
-					return LootTables.field_285;
+					return LootTables.ENTITY_SHEEP_PURPLE;
 				case field_7966:
-					return LootTables.field_394;
+					return LootTables.ENTITY_SHEEP_BLUE;
 				case field_7957:
-					return LootTables.field_489;
+					return LootTables.ENTITY_SHEEP_BROWN;
 				case field_7942:
-					return LootTables.field_607;
+					return LootTables.ENTITY_SHEEP_GREEN;
 				case field_7964:
-					return LootTables.field_716;
+					return LootTables.ENTITY_SHEEP_RED;
 				case BLACK:
-					return LootTables.field_778;
+					return LootTables.ENTITY_SHEEP_BLACK;
 			}
 		}
 	}
@@ -216,26 +216,26 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868 && !this.isSheared() && !this.isChild()) {
 			this.dropItems();
 			itemStack.applyDamage(1, playerEntity);
 		}
 
-		return super.method_5992(playerEntity, hand);
+		return super.interactMob(playerEntity, hand);
 	}
 
 	public void dropItems() {
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			this.setSheared(true);
 			int i = 1 + this.random.nextInt(3);
 
 			for (int j = 0; j < i; j++) {
-				ItemEntity itemEntity = this.method_5870((ItemProvider)DROPS.get(this.method_6633()), 1);
+				ItemEntity itemEntity = this.dropItem((ItemProvider)DROPS.get(this.getColor()), 1);
 				if (itemEntity != null) {
-					itemEntity.method_18799(
-						itemEntity.method_18798()
+					itemEntity.setVelocity(
+						itemEntity.getVelocity()
 							.add(
 								(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.1F),
 								(double)(this.random.nextFloat() * 0.05F),
@@ -246,66 +246,66 @@ public class SheepEntity extends AnimalEntity {
 			}
 		}
 
-		this.method_5783(SoundEvents.field_14975, 1.0F, 1.0F);
+		this.playSound(SoundEvents.field_14975, 1.0F, 1.0F);
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putBoolean("Sheared", this.isSheared());
-		compoundTag.putByte("Color", (byte)this.method_6633().getId());
+		compoundTag.putByte("Color", (byte)this.getColor().getId());
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		this.setSheared(compoundTag.getBoolean("Sheared"));
-		this.method_6631(DyeColor.byId(compoundTag.getByte("Color")));
+		this.setColor(DyeColor.byId(compoundTag.getByte("Color")));
 	}
 
 	@Override
-	protected SoundEvent method_5994() {
+	protected SoundEvent getAmbientSound() {
 		return SoundEvents.field_14603;
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_14730;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_14814;
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
-		this.method_5783(SoundEvents.field_14870, 0.15F, 1.0F);
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+		this.playSound(SoundEvents.field_14870, 0.15F, 1.0F);
 	}
 
-	public DyeColor method_6633() {
-		return DyeColor.byId(this.field_6011.get(field_6870) & 15);
+	public DyeColor getColor() {
+		return DyeColor.byId(this.dataTracker.get(COLOR) & 15);
 	}
 
-	public void method_6631(DyeColor dyeColor) {
-		byte b = this.field_6011.get(field_6870);
-		this.field_6011.set(field_6870, (byte)(b & 240 | dyeColor.getId() & 15));
+	public void setColor(DyeColor dyeColor) {
+		byte b = this.dataTracker.get(COLOR);
+		this.dataTracker.set(COLOR, (byte)(b & 240 | dyeColor.getId() & 15));
 	}
 
 	public boolean isSheared() {
-		return (this.field_6011.get(field_6870) & 16) != 0;
+		return (this.dataTracker.get(COLOR) & 16) != 0;
 	}
 
 	public void setSheared(boolean bl) {
-		byte b = this.field_6011.get(field_6870);
+		byte b = this.dataTracker.get(COLOR);
 		if (bl) {
-			this.field_6011.set(field_6870, (byte)(b | 16));
+			this.dataTracker.set(COLOR, (byte)(b | 16));
 		} else {
-			this.field_6011.set(field_6870, (byte)(b & -17));
+			this.dataTracker.set(COLOR, (byte)(b & -17));
 		}
 	}
 
-	public static DyeColor method_6632(Random random) {
+	public static DyeColor generateDefaultColor(Random random) {
 		int i = random.nextInt(100);
 		if (i < 5) {
 			return DyeColor.BLACK;
@@ -322,8 +322,8 @@ public class SheepEntity extends AnimalEntity {
 
 	public SheepEntity method_6640(PassiveEntity passiveEntity) {
 		SheepEntity sheepEntity = (SheepEntity)passiveEntity;
-		SheepEntity sheepEntity2 = EntityType.SHEEP.method_5883(this.field_6002);
-		sheepEntity2.method_6631(this.method_6639(this, sheepEntity));
+		SheepEntity sheepEntity2 = EntityType.SHEEP.create(this.world);
+		sheepEntity2.setColor(this.getChildColor(this, sheepEntity));
 		return sheepEntity2;
 	}
 
@@ -337,27 +337,27 @@ public class SheepEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
+	public EntityData prepareEntityData(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-		this.method_6631(method_6632(iWorld.getRandom()));
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.setColor(generateDefaultColor(iWorld.getRandom()));
 		return entityData;
 	}
 
-	private DyeColor method_6639(AnimalEntity animalEntity, AnimalEntity animalEntity2) {
-		DyeColor dyeColor = ((SheepEntity)animalEntity).method_6633();
-		DyeColor dyeColor2 = ((SheepEntity)animalEntity2).method_6633();
+	private DyeColor getChildColor(AnimalEntity animalEntity, AnimalEntity animalEntity2) {
+		DyeColor dyeColor = ((SheepEntity)animalEntity).getColor();
+		DyeColor dyeColor2 = ((SheepEntity)animalEntity2).getColor();
 		CraftingInventory craftingInventory = method_17690(dyeColor, dyeColor2);
-		return (DyeColor)this.field_6002
+		return (DyeColor)this.world
 			.getRecipeManager()
-			.method_8132(RecipeType.CRAFTING, craftingInventory, this.field_6002)
+			.get(RecipeType.CRAFTING, craftingInventory, this.world)
 			.map(craftingRecipe -> craftingRecipe.craft(craftingInventory))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)
 			.map(DyeItem.class::cast)
 			.map(DyeItem::getColor)
-			.orElseGet(() -> this.field_6002.random.nextBoolean() ? dyeColor : dyeColor2);
+			.orElseGet(() -> this.world.random.nextBoolean() ? dyeColor : dyeColor2);
 	}
 
 	private static CraftingInventory method_17690(DyeColor dyeColor, DyeColor dyeColor2) {
@@ -367,13 +367,13 @@ public class SheepEntity extends AnimalEntity {
 				return false;
 			}
 		}, 2, 1);
-		craftingInventory.method_5447(0, new ItemStack(DyeItem.fromColor(dyeColor)));
-		craftingInventory.method_5447(1, new ItemStack(DyeItem.fromColor(dyeColor2)));
+		craftingInventory.setInvStack(0, new ItemStack(DyeItem.fromColor(dyeColor)));
+		craftingInventory.setInvStack(1, new ItemStack(DyeItem.fromColor(dyeColor2)));
 		return craftingInventory;
 	}
 
 	@Override
-	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 0.95F * entitySize.height;
 	}
 }

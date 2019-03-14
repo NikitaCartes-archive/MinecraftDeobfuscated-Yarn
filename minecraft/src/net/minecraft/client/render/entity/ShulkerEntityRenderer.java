@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3d;
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, ShulkerEntityModel<ShulkerEntity>> {
 	public static final Identifier field_4781 = new Identifier("textures/entity/shulker/shulker.png");
-	public static final Identifier[] field_4780 = new Identifier[]{
+	public static final Identifier[] SKIN = new Identifier[]{
 		new Identifier("textures/entity/shulker/shulker_white.png"),
 		new Identifier("textures/entity/shulker/shulker_orange.png"),
 		new Identifier("textures/entity/shulker/shulker_magenta.png"),
@@ -36,13 +36,13 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 
 	public ShulkerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new ShulkerEntityModel<>(), 0.0F);
-		this.method_4046(new ShulkerSomethingFeatureRenderer(this));
+		this.addFeature(new ShulkerSomethingFeatureRenderer(this));
 	}
 
 	public void method_4113(ShulkerEntity shulkerEntity, double d, double e, double f, float g, float h) {
 		int i = shulkerEntity.method_7113();
 		if (i > 0 && shulkerEntity.method_7117()) {
-			BlockPos blockPos = shulkerEntity.method_7123();
+			BlockPos blockPos = shulkerEntity.getAttachedBlock();
 			BlockPos blockPos2 = shulkerEntity.method_7120();
 			double j = (double)((float)i - h) / 6.0;
 			j *= j;
@@ -61,7 +61,7 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 		} else {
 			if (shulkerEntity.method_7113() > 0 && shulkerEntity.method_7117()) {
 				BlockPos blockPos = shulkerEntity.method_7120();
-				BlockPos blockPos2 = shulkerEntity.method_7123();
+				BlockPos blockPos2 = shulkerEntity.getAttachedBlock();
 				Vec3d vec3d = new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 				Vec3d vec3d2 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 				if (visibleRegion.intersects(new BoundingBox(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
@@ -74,12 +74,12 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	protected Identifier method_4111(ShulkerEntity shulkerEntity) {
-		return shulkerEntity.method_7121() == null ? field_4781 : field_4780[shulkerEntity.method_7121().getId()];
+		return shulkerEntity.getColor() == null ? field_4781 : SKIN[shulkerEntity.getColor().getId()];
 	}
 
 	protected void method_4114(ShulkerEntity shulkerEntity, float f, float g, float h) {
 		super.setupTransforms(shulkerEntity, f, g, h);
-		switch (shulkerEntity.method_7119()) {
+		switch (shulkerEntity.getAttachedFace()) {
 			case DOWN:
 			default:
 				break;

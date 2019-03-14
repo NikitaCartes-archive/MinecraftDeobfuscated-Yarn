@@ -18,19 +18,19 @@ public abstract class GolemEntity extends MobEntityWithAi {
 
 	@Nullable
 	@Override
-	protected SoundEvent method_5994() {
+	protected SoundEvent getAmbientSound() {
 		return null;
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return null;
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return null;
 	}
 

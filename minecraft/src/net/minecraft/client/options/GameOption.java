@@ -2,10 +2,9 @@ package net.minecraft.client.options;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4060;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.NarratorManager;
@@ -14,10 +13,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public abstract class GameOption {
-	public static final DoubleGameOption field_18189 = new DoubleGameOption(
+	public static final DoubleGameOption BIOME_BLEND_RADIUS = new DoubleGameOption(
 		"options.biomeBlendRadius", 0.0, 7.0, 1.0F, gameOptions -> (double)gameOptions.biomeBlendRadius, (gameOptions, double_) -> {
 			gameOptions.biomeBlendRadius = MathHelper.clamp((int)double_.doubleValue(), 0, 7);
-			MinecraftClient.getInstance().field_1769.reload();
+			MinecraftClient.getInstance().worldRenderer.reload();
 		}, (gameOptions, doubleGameOption) -> {
 			double d = doubleGameOption.method_18613(gameOptions);
 			String string = doubleGameOption.method_18518();
@@ -29,53 +28,53 @@ public abstract class GameOption {
 			}
 		}
 	);
-	public static final DoubleGameOption field_1940 = new DoubleGameOption(
+	public static final DoubleGameOption CHAT_HEIGHT_FOCUSED = new DoubleGameOption(
 		"options.chat.height.focused", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.chatHeightFocused, (gameOptions, double_) -> {
 			gameOptions.chatHeightFocused = double_;
-			MinecraftClient.getInstance().field_1705.method_1743().reset();
+			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleGameOption) -> {
 			double d = doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions));
 			return doubleGameOption.method_18518() + ChatHud.getHeight(d) + "px";
 		}
 	);
-	public static final DoubleGameOption field_1939 = new DoubleGameOption(
+	public static final DoubleGameOption SATURATION = new DoubleGameOption(
 		"options.chat.height.unfocused", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.chatHeightUnfocused, (gameOptions, double_) -> {
 			gameOptions.chatHeightUnfocused = double_;
-			MinecraftClient.getInstance().field_1705.method_1743().reset();
+			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleGameOption) -> {
 			double d = doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions));
 			return doubleGameOption.method_18518() + ChatHud.getHeight(d) + "px";
 		}
 	);
-	public static final DoubleGameOption field_1921 = new DoubleGameOption(
+	public static final DoubleGameOption CHAT_OPACITY = new DoubleGameOption(
 		"options.chat.opacity", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.chatOpacity, (gameOptions, double_) -> {
 			gameOptions.chatOpacity = double_;
-			MinecraftClient.getInstance().field_1705.method_1743().reset();
+			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleGameOption) -> {
 			double d = doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions));
 			return doubleGameOption.method_18518() + (int)(d * 90.0 + 10.0) + "%";
 		}
 	);
-	public static final DoubleGameOption field_1946 = new DoubleGameOption(
+	public static final DoubleGameOption CHAT_SCALE = new DoubleGameOption(
 		"options.chat.scale", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.chatScale, (gameOptions, double_) -> {
 			gameOptions.chatScale = double_;
-			MinecraftClient.getInstance().field_1705.method_1743().reset();
+			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleGameOption) -> {
 			double d = doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions));
 			String string = doubleGameOption.method_18518();
 			return d == 0.0 ? string + I18n.translate("options.off") : string + (int)(d * 100.0) + "%";
 		}
 	);
-	public static final DoubleGameOption field_1941 = new DoubleGameOption(
+	public static final DoubleGameOption CHAT_WIDTH = new DoubleGameOption(
 		"options.chat.width", 0.0, 1.0, 0.0F, gameOptions -> gameOptions.chatWidth, (gameOptions, double_) -> {
 			gameOptions.chatWidth = double_;
-			MinecraftClient.getInstance().field_1705.method_1743().reset();
+			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		}, (gameOptions, doubleGameOption) -> {
 			double d = doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions));
 			return doubleGameOption.method_18518() + ChatHud.getWidth(d) + "px";
 		}
 	);
-	public static final DoubleGameOption field_1964 = new DoubleGameOption(
+	public static final DoubleGameOption FOV = new DoubleGameOption(
 		"options.fov", 30.0, 110.0, 1.0F, gameOptions -> gameOptions.fov, (gameOptions, double_) -> gameOptions.fov = double_, (gameOptions, doubleGameOption) -> {
 			double d = doubleGameOption.method_18613(gameOptions);
 			String string = doubleGameOption.method_18518();
@@ -86,7 +85,7 @@ public abstract class GameOption {
 			}
 		}
 	);
-	public static final DoubleGameOption field_1935 = new DoubleGameOption(
+	public static final DoubleGameOption FRAMERATE_LIMIT = new DoubleGameOption(
 		"options.framerateLimit", 10.0, 260.0, 10.0F, gameOptions -> (double)gameOptions.maxFps, (gameOptions, double_) -> {
 			gameOptions.maxFps = (int)double_.doubleValue();
 			MinecraftClient.getInstance().window.setFramerateLimit(gameOptions.maxFps);
@@ -96,7 +95,7 @@ public abstract class GameOption {
 			return d == doubleGameOption.method_18617() ? string + I18n.translate("options.framerateLimit.max") : string + I18n.translate("options.framerate", (int)d);
 		}
 	);
-	public static final DoubleGameOption field_1931 = new DoubleGameOption(
+	public static final DoubleGameOption FULLSCREEN_RESOLUTION = new DoubleGameOption(
 		"options.fullscreen.resolution",
 		0.0,
 		0.0,
@@ -109,7 +108,7 @@ public abstract class GameOption {
 			return d == 0.0 ? string + I18n.translate("options.fullscreen.current") : string + MinecraftClient.getInstance().window.method_4487((int)d - 1);
 		}
 	);
-	public static final DoubleGameOption field_1945 = new DoubleGameOption(
+	public static final DoubleGameOption GAMMA = new DoubleGameOption(
 		"options.gamma",
 		0.0,
 		1.0,
@@ -126,15 +125,15 @@ public abstract class GameOption {
 			}
 		}
 	);
-	public static final DoubleGameOption field_18190 = new DoubleGameOption(
+	public static final DoubleGameOption MIPMAP_LEVELS = new DoubleGameOption(
 		"options.mipmapLevels", 0.0, 4.0, 1.0F, gameOptions -> (double)gameOptions.mipmapLevels, (gameOptions, double_) -> {
 			int i = gameOptions.mipmapLevels;
 			gameOptions.mipmapLevels = (int)double_.doubleValue();
 			if ((double)i != double_) {
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				minecraftClient.method_1549().setMipLevel(gameOptions.mipmapLevels);
-				minecraftClient.method_1531().method_4618(SpriteAtlasTexture.field_5275);
-				minecraftClient.method_1549().setFilter(false, gameOptions.mipmapLevels > 0);
+				minecraftClient.getSpriteAtlas().setMipLevel(gameOptions.mipmapLevels);
+				minecraftClient.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
+				minecraftClient.getSpriteAtlas().setFilter(false, gameOptions.mipmapLevels > 0);
 				minecraftClient.reloadResourcesConcurrently();
 			}
 		}, (gameOptions, doubleGameOption) -> {
@@ -143,7 +142,7 @@ public abstract class GameOption {
 			return d == 0.0 ? string + I18n.translate("options.off") : string + (int)d;
 		}
 	);
-	public static final DoubleGameOption field_18191 = new DoubleGameOption(
+	public static final DoubleGameOption MOUSE_WHEEL_SENSITIVITY = new DoubleGameOption(
 		"options.mouseWheelSensitivity",
 		1.0,
 		10.0,
@@ -156,16 +155,16 @@ public abstract class GameOption {
 			return d == 1.0 ? string + I18n.translate("options.mouseWheelSensitivity.default") : string + "+" + (int)d + "." + (int)(d * 10.0) % 10;
 		}
 	);
-	public static final DoubleGameOption field_1933 = new DoubleGameOption(
+	public static final DoubleGameOption RENDER_DISTANCE = new DoubleGameOption(
 		"options.renderDistance", 2.0, 16.0, 1.0F, gameOptions -> (double)gameOptions.viewDistance, (gameOptions, double_) -> {
 			gameOptions.viewDistance = (int)double_.doubleValue();
-			MinecraftClient.getInstance().field_1769.method_3292();
+			MinecraftClient.getInstance().worldRenderer.method_3292();
 		}, (gameOptions, doubleGameOption) -> {
 			double d = doubleGameOption.method_18613(gameOptions);
 			return doubleGameOption.method_18518() + I18n.translate("options.chunks", (int)d);
 		}
 	);
-	public static final DoubleGameOption field_1944 = new DoubleGameOption(
+	public static final DoubleGameOption SENSITIVITY = new DoubleGameOption(
 		"options.sensitivity",
 		0.0,
 		1.0,
@@ -182,7 +181,7 @@ public abstract class GameOption {
 			}
 		}
 	);
-	public static final DoubleGameOption field_18723 = new DoubleGameOption(
+	public static final DoubleGameOption TEXT_BACKGROUND_OPACITY = new DoubleGameOption(
 		"options.accessibility.text_background_opacity",
 		0.0,
 		1.0,
@@ -190,17 +189,17 @@ public abstract class GameOption {
 		gameOptions -> gameOptions.field_18726,
 		(gameOptions, double_) -> {
 			gameOptions.field_18726 = double_;
-			MinecraftClient.getInstance().field_1705.method_1743().reset();
+			MinecraftClient.getInstance().inGameHud.getChatHud().reset();
 		},
 		(gameOptions, doubleGameOption) -> doubleGameOption.method_18518()
 				+ (int)(doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions)) * 100.0)
 				+ "%"
 	);
 	public static final StringGameOption AO = new StringGameOption("options.ao", (gameOptions, integer) -> {
-		gameOptions.ao = class_4060.method_18484(gameOptions.ao.method_18483() + integer);
-		MinecraftClient.getInstance().field_1769.reload();
-	}, (gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.ao.method_18485()));
-	public static final StringGameOption field_18192 = new StringGameOption(
+		gameOptions.ao = AoOption.getOption(gameOptions.ao.getValue() + integer);
+		MinecraftClient.getInstance().worldRenderer.reload();
+	}, (gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.ao.getTranslationKey()));
+	public static final StringGameOption ATTACK_INDICATOR = new StringGameOption(
 		"options.attackIndicator",
 		(gameOptions, integer) -> gameOptions.attackIndicator = AttackIndicator.byId(gameOptions.attackIndicator.getId() + integer),
 		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.attackIndicator.getTranslationKey())
@@ -214,7 +213,7 @@ public abstract class GameOption {
 		"options.graphics",
 		(gameOptions, integer) -> {
 			gameOptions.fancyGraphics = !gameOptions.fancyGraphics;
-			MinecraftClient.getInstance().field_1769.reload();
+			MinecraftClient.getInstance().worldRenderer.reload();
 		},
 		(gameOptions, stringGameOption) -> gameOptions.fancyGraphics
 				? stringGameOption.method_18518() + I18n.translate("options.graphics.fancy")
@@ -228,12 +227,12 @@ public abstract class GameOption {
 		(gameOptions, stringGameOption) -> stringGameOption.method_18518()
 				+ (gameOptions.guiScale == 0 ? I18n.translate("options.guiScale.auto") : gameOptions.guiScale)
 	);
-	public static final StringGameOption field_18193 = new StringGameOption(
+	public static final StringGameOption MAIN_HAND = new StringGameOption(
 		"options.mainHand",
 		(gameOptions, integer) -> gameOptions.mainHand = gameOptions.mainHand.getOpposite(),
 		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + gameOptions.mainHand
 	);
-	public static final StringGameOption field_18194 = new StringGameOption(
+	public static final StringGameOption NARRATOR = new StringGameOption(
 		"options.narrator",
 		(gameOptions, integer) -> {
 			if (NarratorManager.INSTANCE.isActive()) {
@@ -250,15 +249,15 @@ public abstract class GameOption {
 	);
 	public static final StringGameOption PARTICLES = new StringGameOption(
 		"options.particles",
-		(gameOptions, integer) -> gameOptions.field_1882 = ParticlesOption.byId(gameOptions.field_1882.getId() + integer),
-		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.field_1882.getTranslationKey())
+		(gameOptions, integer) -> gameOptions.particles = ParticlesOption.byId(gameOptions.particles.getId() + integer),
+		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.particles.getTranslationKey())
 	);
-	public static final StringGameOption RENDER_CLOUDS = new StringGameOption(
+	public static final StringGameOption CLOUDS = new StringGameOption(
 		"options.renderClouds",
-		(gameOptions, integer) -> gameOptions.cloudRenderMode = CloudRenderMode.method_18497(gameOptions.cloudRenderMode.method_18496() + integer),
-		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.cloudRenderMode.method_18498())
+		(gameOptions, integer) -> gameOptions.cloudRenderMode = CloudRenderMode.method_18497(gameOptions.cloudRenderMode.getRenderModeId() + integer),
+		(gameOptions, stringGameOption) -> stringGameOption.method_18518() + I18n.translate(gameOptions.cloudRenderMode.getRenderMode())
 	);
-	public static final StringGameOption field_18724 = new StringGameOption(
+	public static final StringGameOption TEXT_BACKGROUND = new StringGameOption(
 		"options.accessibility.text_background",
 		(gameOptions, integer) -> gameOptions.field_18725 = !gameOptions.field_18725,
 		(gameOptions, stringGameOption) -> stringGameOption.method_18518()
@@ -290,7 +289,7 @@ public abstract class GameOption {
 		"options.forceUnicodeFont", gameOptions -> gameOptions.forceUnicodeFont, (gameOptions, boolean_) -> {
 			gameOptions.forceUnicodeFont = boolean_;
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			MinecraftClient.getInstance().method_1568().setForceUnicodeFont(gameOptions.forceUnicodeFont, SystemUtil.getServerWorkerExecutor(), minecraftClient);
+			MinecraftClient.getInstance().getFontManager().setForceUnicodeFont(gameOptions.forceUnicodeFont, SystemUtil.getServerWorkerExecutor(), minecraftClient);
 		}
 	);
 	public static final BooleanGameOption INVERT_MOUSE = new BooleanGameOption(
@@ -333,7 +332,7 @@ public abstract class GameOption {
 		this.key = string;
 	}
 
-	public abstract ButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k);
+	public abstract AbstractButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k);
 
 	public String method_18518() {
 		return I18n.translate(this.key) + ": ";

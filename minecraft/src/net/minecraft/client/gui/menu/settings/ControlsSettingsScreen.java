@@ -2,8 +2,8 @@ package net.minecraft.client.gui.menu.settings;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.KeyBindingListWidget;
 import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
@@ -14,14 +14,14 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class ControlsSettingsScreen extends Screen {
-	private static final GameOption[] SETTINGS = new GameOption[]{GameOption.INVERT_MOUSE, GameOption.field_1944, GameOption.TOUCHSCREEN, GameOption.AUTO_JUMP};
+	private static final GameOption[] SETTINGS = new GameOption[]{GameOption.INVERT_MOUSE, GameOption.SENSITIVITY, GameOption.TOUCHSCREEN, GameOption.AUTO_JUMP};
 	private final Screen parent;
 	protected String title = "Controls";
 	private final GameOptions settings;
 	public KeyBinding focusedBinding;
 	public long field_2723;
 	private KeyBindingListWidget keyBindingListWidget;
-	private class_4185 resetButton;
+	private ButtonWidget resetButton;
 
 	public ControlsSettingsScreen(Screen screen, GameOptions gameOptions) {
 		this.parent = screen;
@@ -32,17 +32,17 @@ public class ControlsSettingsScreen extends Screen {
 	protected void onInitialized() {
 		this.keyBindingListWidget = new KeyBindingListWidget(this, this.client);
 		this.listeners.add(this.keyBindingListWidget);
-		this.method_18624(this.keyBindingListWidget);
-		this.addButton(new class_4185(this.screenWidth / 2 - 155 + 160, this.screenHeight - 29, 150, 20, I18n.translate("gui.done")) {
+		this.focusOn(this.keyBindingListWidget);
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 160, this.screenHeight - 29, 150, 20, I18n.translate("gui.done")) {
 			@Override
-			public void method_1826() {
-				ControlsSettingsScreen.this.client.method_1507(ControlsSettingsScreen.this.parent);
+			public void onPressed() {
+				ControlsSettingsScreen.this.client.openScreen(ControlsSettingsScreen.this.parent);
 			}
 		});
-		this.resetButton = this.addButton(new class_4185(this.screenWidth / 2 - 155, this.screenHeight - 29, 150, 20, I18n.translate("controls.resetAll")) {
+		this.resetButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 29, 150, 20, I18n.translate("controls.resetAll")) {
 			@Override
-			public void method_1826() {
-				for (KeyBinding keyBinding : ControlsSettingsScreen.this.client.field_1690.keysAll) {
+			public void onPressed() {
+				for (KeyBinding keyBinding : ControlsSettingsScreen.this.client.options.keysAll) {
 					keyBinding.setKeyCode(keyBinding.getDefaultKeyCode());
 				}
 
@@ -55,7 +55,7 @@ public class ControlsSettingsScreen extends Screen {
 		for (GameOption gameOption : SETTINGS) {
 			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
 			int k = 18 + 24 * (i >> 1);
-			this.addButton(gameOption.method_18520(this.client.field_1690, j, k, 150));
+			this.addButton(gameOption.method_18520(this.client.options, j, k, 150));
 			i++;
 		}
 	}
@@ -68,7 +68,7 @@ public class ControlsSettingsScreen extends Screen {
 			KeyBinding.updateKeysByCode();
 			return true;
 		} else if (i == 0 && this.keyBindingListWidget.mouseClicked(d, e, i)) {
-			this.method_1966(true);
+			this.setActive(true);
 			return true;
 		} else {
 			return super.mouseClicked(d, e, i);
@@ -78,7 +78,7 @@ public class ControlsSettingsScreen extends Screen {
 	@Override
 	public boolean mouseReleased(double d, double e, int i) {
 		if (i == 0 && this.keyBindingListWidget.mouseReleased(d, e, i)) {
-			this.method_1966(false);
+			this.setActive(false);
 			return true;
 		} else {
 			return super.mouseReleased(d, e, i);

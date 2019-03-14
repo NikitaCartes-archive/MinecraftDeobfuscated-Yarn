@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.nio.FloatBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.util.GlAllocationUtils;
@@ -34,33 +33,33 @@ public class BackgroundRenderer {
 	private int waterFogColor = -1;
 	private int nextWaterFogColor = -1;
 	private long lastWaterFogColorUpdateTime = -1L;
-	private final GameRenderer field_4035;
+	private final GameRenderer gameRenderer;
 	private final MinecraftClient client;
 
 	public BackgroundRenderer(GameRenderer gameRenderer) {
-		this.field_4035 = gameRenderer;
+		this.gameRenderer = gameRenderer;
 		this.client = gameRenderer.getClient();
 		this.blackColorBuffer.put(0.0F).put(0.0F).put(0.0F).put(1.0F).flip();
 	}
 
-	public void renderBackground(class_4184 arg, float f) {
-		World world = this.client.field_1687;
-		FluidState fluidState = arg.method_19334();
-		if (fluidState.method_15767(FluidTags.field_15517)) {
-			this.updateColorInWater(arg, world);
-		} else if (fluidState.method_15767(FluidTags.field_15518)) {
+	public void renderBackground(Camera camera, float f) {
+		World world = this.client.world;
+		FluidState fluidState = camera.getSubmergedFluidState();
+		if (fluidState.matches(FluidTags.field_15517)) {
+			this.updateColorInWater(camera, world);
+		} else if (fluidState.matches(FluidTags.field_15518)) {
 			this.red = 0.6F;
 			this.green = 0.1F;
 			this.blue = 0.0F;
 			this.lastWaterFogColorUpdateTime = -1L;
 		} else {
-			this.updateColorNotInWater(arg, world, f);
+			this.updateColorNotInWater(camera, world, f);
 			this.lastWaterFogColorUpdateTime = -1L;
 		}
 
-		double d = arg.method_19326().y * world.field_9247.getHorizonShadingRatio();
-		if (arg.method_19331() instanceof LivingEntity && ((LivingEntity)arg.method_19331()).hasPotionEffect(StatusEffects.field_5919)) {
-			int i = ((LivingEntity)arg.method_19331()).getPotionEffect(StatusEffects.field_5919).getDuration();
+		double d = camera.getPos().y * world.dimension.getHorizonShadingRatio();
+		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasPotionEffect(StatusEffects.field_5919)) {
+			int i = ((LivingEntity)camera.getFocusedEntity()).getPotionEffect(StatusEffects.field_5919).getDuration();
 			if (i < 20) {
 				d *= (double)(1.0F - (float)i / 20.0F);
 			} else {
@@ -79,17 +78,17 @@ public class BackgroundRenderer {
 			this.blue = (float)((double)this.blue * d);
 		}
 
-		if (this.field_4035.getSkyDarkness(f) > 0.0F) {
-			float g = this.field_4035.getSkyDarkness(f);
+		if (this.gameRenderer.getSkyDarkness(f) > 0.0F) {
+			float g = this.gameRenderer.getSkyDarkness(f);
 			this.red = this.red * (1.0F - g) + this.red * 0.7F * g;
 			this.green = this.green * (1.0F - g) + this.green * 0.6F * g;
 			this.blue = this.blue * (1.0F - g) + this.blue * 0.6F * g;
 		}
 
-		if (fluidState.method_15767(FluidTags.field_15517)) {
+		if (fluidState.matches(FluidTags.field_15517)) {
 			float g = 0.0F;
-			if (arg.method_19331() instanceof ClientPlayerEntity) {
-				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)arg.method_19331();
+			if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
+				ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
 				g = clientPlayerEntity.method_3140();
 			}
 
@@ -105,8 +104,8 @@ public class BackgroundRenderer {
 			this.red = this.red * (1.0F - g) + this.red * h * g;
 			this.green = this.green * (1.0F - g) + this.green * h * g;
 			this.blue = this.blue * (1.0F - g) + this.blue * h * g;
-		} else if (arg.method_19331() instanceof LivingEntity && ((LivingEntity)arg.method_19331()).hasPotionEffect(StatusEffects.field_5925)) {
-			float gx = this.field_4035.method_3174((LivingEntity)arg.method_19331(), f);
+		} else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasPotionEffect(StatusEffects.field_5925)) {
+			float gx = this.gameRenderer.method_3174((LivingEntity)camera.getFocusedEntity(), f);
 			float hx = 1.0F / this.red;
 			if (hx > 1.0F / this.green) {
 				hx = 1.0F / this.green;
@@ -124,27 +123,27 @@ public class BackgroundRenderer {
 		GlStateManager.clearColor(this.red, this.green, this.blue, 0.0F);
 	}
 
-	private void updateColorNotInWater(class_4184 arg, World world, float f) {
-		float g = 0.25F + 0.75F * (float)this.client.field_1690.viewDistance / 32.0F;
+	private void updateColorNotInWater(Camera camera, World world, float f) {
+		float g = 0.25F + 0.75F * (float)this.client.options.viewDistance / 32.0F;
 		g = 1.0F - (float)Math.pow((double)g, 0.25);
-		net.minecraft.util.math.Vec3d vec3d = world.method_8548(arg.method_19328(), f);
+		net.minecraft.util.math.Vec3d vec3d = world.getSkyColor(camera.getBlockPos(), f);
 		float h = (float)vec3d.x;
 		float i = (float)vec3d.y;
 		float j = (float)vec3d.z;
-		net.minecraft.util.math.Vec3d vec3d2 = world.method_8464(f);
+		net.minecraft.util.math.Vec3d vec3d2 = world.getFogColor(f);
 		this.red = (float)vec3d2.x;
 		this.green = (float)vec3d2.y;
 		this.blue = (float)vec3d2.z;
-		if (this.client.field_1690.viewDistance >= 4) {
+		if (this.client.options.viewDistance >= 4) {
 			double d = MathHelper.sin(world.method_8442(f)) > 0.0F ? -1.0 : 1.0;
 			net.minecraft.util.math.Vec3d vec3d3 = new net.minecraft.util.math.Vec3d(d, 0.0, 0.0);
-			float k = (float)arg.method_19335().dotProduct(vec3d3);
+			float k = (float)camera.method_19335().dotProduct(vec3d3);
 			if (k < 0.0F) {
 				k = 0.0F;
 			}
 
 			if (k > 0.0F) {
-				float[] fs = world.field_9247.getBackgroundColor(world.getSkyAngle(f), f);
+				float[] fs = world.dimension.getBackgroundColor(world.getSkyAngle(f), f);
 				if (fs != null) {
 					k *= fs[3];
 					this.red = this.red * (1.0F - k) + fs[0] * k;
@@ -175,9 +174,9 @@ public class BackgroundRenderer {
 		}
 	}
 
-	private void updateColorInWater(class_4184 arg, ViewableWorld viewableWorld) {
+	private void updateColorInWater(Camera camera, ViewableWorld viewableWorld) {
 		long l = SystemUtil.getMeasuringTimeMs();
-		int i = viewableWorld.method_8310(new BlockPos(arg.method_19326())).getWaterFogColor();
+		int i = viewableWorld.getBiome(new BlockPos(camera.getPos())).getWaterFogColor();
 		if (this.lastWaterFogColorUpdateTime < 0L) {
 			this.waterFogColor = i;
 			this.nextWaterFogColor = i;
@@ -204,16 +203,16 @@ public class BackgroundRenderer {
 		}
 	}
 
-	public void applyFog(class_4184 arg, int i) {
+	public void applyFog(Camera camera, int i) {
 		this.updateFogColor(false);
 		GlStateManager.normal3f(0.0F, -1.0F, 0.0F);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		FluidState fluidState = arg.method_19334();
-		if (arg.method_19331() instanceof LivingEntity && ((LivingEntity)arg.method_19331()).hasPotionEffect(StatusEffects.field_5919)) {
+		FluidState fluidState = camera.getSubmergedFluidState();
+		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasPotionEffect(StatusEffects.field_5919)) {
 			float f = 5.0F;
-			int j = ((LivingEntity)arg.method_19331()).getPotionEffect(StatusEffects.field_5919).getDuration();
+			int j = ((LivingEntity)camera.getFocusedEntity()).getPotionEffect(StatusEffects.field_5919).getDuration();
 			if (j < 20) {
-				f = MathHelper.lerp(1.0F - (float)j / 20.0F, 5.0F, this.field_4035.getViewDistance());
+				f = MathHelper.lerp(1.0F - (float)j / 20.0F, 5.0F, this.gameRenderer.getViewDistance());
 			}
 
 			GlStateManager.fogMode(GlStateManager.FogMode.field_5095);
@@ -226,13 +225,13 @@ public class BackgroundRenderer {
 			}
 
 			GLX.setupNvFogDistance();
-		} else if (fluidState.method_15767(FluidTags.field_15517)) {
+		} else if (fluidState.matches(FluidTags.field_15517)) {
 			GlStateManager.fogMode(GlStateManager.FogMode.field_5097);
-			if (arg.method_19331() instanceof LivingEntity) {
-				if (arg.method_19331() instanceof ClientPlayerEntity) {
-					ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)arg.method_19331();
+			if (camera.getFocusedEntity() instanceof LivingEntity) {
+				if (camera.getFocusedEntity() instanceof ClientPlayerEntity) {
+					ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)camera.getFocusedEntity();
 					float g = 0.05F - clientPlayerEntity.method_3140() * clientPlayerEntity.method_3140() * 0.03F;
-					Biome biome = clientPlayerEntity.field_6002.method_8310(new BlockPos(clientPlayerEntity));
+					Biome biome = clientPlayerEntity.world.getBiome(new BlockPos(clientPlayerEntity));
 					if (biome == Biomes.field_9471 || biome == Biomes.field_9479) {
 						g += 0.005F;
 					}
@@ -244,11 +243,11 @@ public class BackgroundRenderer {
 			} else {
 				GlStateManager.fogDensity(0.1F);
 			}
-		} else if (fluidState.method_15767(FluidTags.field_15518)) {
+		} else if (fluidState.matches(FluidTags.field_15518)) {
 			GlStateManager.fogMode(GlStateManager.FogMode.field_5096);
 			GlStateManager.fogDensity(2.0F);
 		} else {
-			float fx = this.field_4035.getViewDistance();
+			float fx = this.gameRenderer.getViewDistance();
 			GlStateManager.fogMode(GlStateManager.FogMode.field_5095);
 			if (i == -1) {
 				GlStateManager.fogStart(0.0F);
@@ -259,8 +258,7 @@ public class BackgroundRenderer {
 			}
 
 			GLX.setupNvFogDistance();
-			if (this.client.field_1687.field_9247.shouldRenderFog((int)arg.method_19326().x, (int)arg.method_19326().z)
-				|| this.client.field_1705.method_1740().shouldThickenFog()) {
+			if (this.client.world.dimension.shouldRenderFog((int)camera.getPos().x, (int)camera.getPos().z) || this.client.inGameHud.getBossBarHud().shouldThickenFog()) {
 				GlStateManager.fogStart(fx * 0.05F);
 				GlStateManager.fogEnd(Math.min(fx, 192.0F) * 0.5F);
 			}

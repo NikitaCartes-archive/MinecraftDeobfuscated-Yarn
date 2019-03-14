@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.YesNoCallback;
@@ -42,15 +42,15 @@ public class YesNoScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new class_4185(this.screenWidth / 2 - 155, this.screenHeight / 6 + 96, 150, 20, this.yesTranslated) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 96, 150, 20, this.yesTranslated) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				YesNoScreen.this.callback.confirmResult(true, YesNoScreen.this.callbackId);
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 - 155 + 160, this.screenHeight / 6 + 96, 150, 20, this.noTranslated) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 160, this.screenHeight / 6 + 96, 150, 20, this.noTranslated) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				YesNoScreen.this.callback.confirmResult(false, YesNoScreen.this.callbackId);
 			}
 		});
@@ -75,8 +75,8 @@ public class YesNoScreen extends Screen {
 	public void disableButtons(int i) {
 		this.buttonEnableTimer = i;
 
-		for (ButtonWidget buttonWidget : this.buttons) {
-			buttonWidget.enabled = false;
+		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+			abstractButtonWidget.enabled = false;
 		}
 	}
 
@@ -84,8 +84,8 @@ public class YesNoScreen extends Screen {
 	public void update() {
 		super.update();
 		if (--this.buttonEnableTimer == 0) {
-			for (ButtonWidget buttonWidget : this.buttons) {
-				buttonWidget.enabled = true;
+			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
+				abstractButtonWidget.enabled = true;
 			}
 		}
 	}

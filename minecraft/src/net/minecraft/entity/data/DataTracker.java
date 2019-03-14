@@ -77,8 +77,8 @@ public class DataTracker {
 			throw new IllegalArgumentException("Data value id is too big with " + i + "! (Max is " + 254 + ")");
 		} else if (this.entries.containsKey(i)) {
 			throw new IllegalArgumentException("Duplicate id value for " + i + "!");
-		} else if (TrackedDataHandlerRegistry.getId(trackedData.method_12712()) < 0) {
-			throw new IllegalArgumentException("Unregistered serializer " + trackedData.method_12712() + " for " + i + "!");
+		} else if (TrackedDataHandlerRegistry.getId(trackedData.getType()) < 0) {
+			throw new IllegalArgumentException("Unregistered serializer " + trackedData.getType() + " for " + i + "!");
 		} else {
 			this.method_12776(trackedData, object);
 		}
@@ -100,7 +100,7 @@ public class DataTracker {
 			entry = (DataTracker.Entry<T>)this.entries.get(trackedData.getId());
 		} catch (Throwable var9) {
 			CrashReport crashReport = CrashReport.create(var9, "Getting synched entity data");
-			CrashReportSection crashReportSection = crashReport.method_562("Synched entity data");
+			CrashReportSection crashReportSection = crashReport.addElement("Synched entity data");
 			crashReportSection.add("Data ID", trackedData);
 			throw new CrashException(crashReport);
 		} finally {
@@ -118,7 +118,7 @@ public class DataTracker {
 		DataTracker.Entry<T> entry = this.method_12783(trackedData);
 		if (ObjectUtils.notEqual(object, entry.get())) {
 			entry.set(object);
-			this.trackedEntity.method_5674(trackedData);
+			this.trackedEntity.onTrackedDataSet(trackedData);
 			entry.setDirty(true);
 			this.dirty = true;
 		}
@@ -194,13 +194,13 @@ public class DataTracker {
 
 	private static <T> void method_12782(PacketByteBuf packetByteBuf, DataTracker.Entry<T> entry) throws IOException {
 		TrackedData<T> trackedData = entry.method_12797();
-		int i = TrackedDataHandlerRegistry.getId(trackedData.method_12712());
+		int i = TrackedDataHandlerRegistry.getId(trackedData.getType());
 		if (i < 0) {
-			throw new EncoderException("Unknown serializer type " + trackedData.method_12712());
+			throw new EncoderException("Unknown serializer type " + trackedData.getType());
 		} else {
 			packetByteBuf.writeByte(trackedData.getId());
 			packetByteBuf.writeVarInt(i);
-			trackedData.method_12712().write(packetByteBuf, entry.get());
+			trackedData.getType().write(packetByteBuf, entry.get());
 		}
 	}
 
@@ -238,7 +238,7 @@ public class DataTracker {
 			DataTracker.Entry<?> entry2 = (DataTracker.Entry<?>)this.entries.get(entry.method_12797().getId());
 			if (entry2 != null) {
 				this.method_12785(entry2, entry);
-				this.trackedEntity.method_5674(entry.method_12797());
+				this.trackedEntity.onTrackedDataSet(entry.method_12797());
 			}
 		}
 
@@ -298,7 +298,7 @@ public class DataTracker {
 		}
 
 		public DataTracker.Entry<T> method_12798() {
-			return new DataTracker.Entry<>(this.field_13337, this.field_13337.method_12712().copy(this.value));
+			return new DataTracker.Entry<>(this.field_13337, this.field_13337.getType().copy(this.value));
 		}
 	}
 }

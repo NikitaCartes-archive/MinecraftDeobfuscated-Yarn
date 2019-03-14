@@ -41,33 +41,33 @@ import org.apache.logging.log4j.Logger;
 public class ClientResourcePackCreator implements ResourcePackCreator {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern ALPHANUMERAL = Pattern.compile("^[a-fA-F0-9]{40}$");
-	private final DefaultResourcePack field_5293;
+	private final DefaultResourcePack pack;
 	private final File serverPacksRoot;
 	private final ReentrantLock lock = new ReentrantLock();
 	private final ResourceIndex index;
 	@Nullable
 	private CompletableFuture<?> downloadTask;
 	@Nullable
-	private ClientResourcePackContainer field_5295;
+	private ClientResourcePackContainer serverContainer;
 
 	public ClientResourcePackCreator(File file, ResourceIndex resourceIndex) {
 		this.serverPacksRoot = file;
 		this.index = resourceIndex;
-		this.field_5293 = new DefaultClientResourcePack(resourceIndex);
+		this.pack = new DefaultClientResourcePack(resourceIndex);
 	}
 
 	@Override
 	public <T extends ResourcePackContainer> void registerContainer(Map<String, T> map, ResourcePackContainer.Factory<T> factory) {
-		T resourcePackContainer = ResourcePackContainer.of("vanilla", true, () -> this.field_5293, factory, ResourcePackContainer.SortingDirection.field_14281);
+		T resourcePackContainer = ResourcePackContainer.of("vanilla", true, () -> this.pack, factory, ResourcePackContainer.SortingDirection.field_14281);
 		if (resourcePackContainer != null) {
 			map.put("vanilla", resourcePackContainer);
 		}
 
-		if (this.field_5295 != null) {
-			map.put("server", this.field_5295);
+		if (this.serverContainer != null) {
+			map.put("server", this.serverContainer);
 		}
 
-		File file = this.index.method_4630(new Identifier("resourcepacks/programmer_art.zip"));
+		File file = this.index.getResource(new Identifier("resourcepacks/programmer_art.zip"));
 		if (file != null && file.isFile()) {
 			T resourcePackContainer2 = ResourcePackContainer.of("programer_art", false, () -> new ZipResourcePack(file) {
 					@Override
@@ -81,14 +81,14 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 		}
 	}
 
-	public DefaultResourcePack method_4633() {
-		return this.field_5293;
+	public DefaultResourcePack getPack() {
+		return this.pack;
 	}
 
 	public static Map<String, String> getDownloadHeaders() {
 		Map<String, String> map = Maps.<String, String>newHashMap();
-		map.put("X-Minecraft-Username", MinecraftClient.getInstance().method_1548().getUsername());
-		map.put("X-Minecraft-UUID", MinecraftClient.getInstance().method_1548().getUuid());
+		map.put("X-Minecraft-Username", MinecraftClient.getInstance().getSession().getUsername());
+		map.put("X-Minecraft-UUID", MinecraftClient.getInstance().getSession().getUuid());
 		map.put("X-Minecraft-Version", SharedConstants.getGameVersion().getName());
 		map.put("X-Minecraft-Pack-Format", String.valueOf(SharedConstants.getGameVersion().getPackVersion()));
 		map.put("User-Agent", "Minecraft Java/" + SharedConstants.getGameVersion().getName());
@@ -112,8 +112,8 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 				WorkingScreen workingScreen = new WorkingScreen();
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				minecraftClient.executeFuture(() -> minecraftClient.method_1507(workingScreen)).join();
-				completableFuture = NetworkUtils.method_15301(file, string, map, 52428800, workingScreen, minecraftClient.getNetworkProxy());
+				minecraftClient.executeFuture(() -> minecraftClient.openScreen(workingScreen)).join();
+				completableFuture = NetworkUtils.download(file, string, map, 52428800, workingScreen, minecraftClient.getNetworkProxy());
 			}
 
 			this.downloadTask = completableFuture.thenCompose(
@@ -152,8 +152,8 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 			}
 
 			this.downloadTask = null;
-			if (this.field_5295 != null) {
-				this.field_5295 = null;
+			if (this.serverContainer != null) {
+				this.serverContainer = null;
 				MinecraftClient.getInstance().reloadResourcesConcurrently();
 			}
 		} finally {
@@ -231,7 +231,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 			Throwable var6 = null;
 
 			try {
-				packResourceMetadata = zipResourcePack.method_14407(PackResourceMetadata.field_14202);
+				packResourceMetadata = zipResourcePack.parseMetadata(PackResourceMetadata.READER);
 
 				try {
 					InputStream inputStream = zipResourcePack.openRoot("pack.png");
@@ -282,7 +282,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 			return SystemUtil.method_19483(new RuntimeException(String.format("Invalid resourcepack at %s: %s", file, string)));
 		} else {
 			LOGGER.info("Applying server pack {}", file);
-			this.field_5295 = new ClientResourcePackContainer(
+			this.serverContainer = new ClientResourcePackContainer(
 				"server",
 				true,
 				() -> new ZipResourcePack(file),

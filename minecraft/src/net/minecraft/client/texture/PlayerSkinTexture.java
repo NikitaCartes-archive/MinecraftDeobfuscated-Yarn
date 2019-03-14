@@ -57,10 +57,10 @@ public class PlayerSkinTexture extends ResourceTexture {
 	}
 
 	@Override
-	public void method_4625(ResourceManager resourceManager) throws IOException {
+	public void load(ResourceManager resourceManager) throws IOException {
 		if (!this.field_5215) {
 			synchronized (this) {
-				super.method_4625(resourceManager);
+				super.load(resourceManager);
 				this.field_5215 = true;
 			}
 		}

@@ -3,18 +3,18 @@ package net.minecraft.advancement.criterion;
 import net.minecraft.util.Identifier;
 
 public class AbstractCriterionConditions implements CriterionConditions {
-	private final Identifier field_1270;
+	private final Identifier id;
 
 	public AbstractCriterionConditions(Identifier identifier) {
-		this.field_1270 = identifier;
+		this.id = identifier;
 	}
 
 	@Override
 	public Identifier getId() {
-		return this.field_1270;
+		return this.id;
 	}
 
 	public String toString() {
-		return "AbstractCriterionInstance{criterion=" + this.field_1270 + '}';
+		return "AbstractCriterionInstance{criterion=" + this.id + '}';
 	}
 }

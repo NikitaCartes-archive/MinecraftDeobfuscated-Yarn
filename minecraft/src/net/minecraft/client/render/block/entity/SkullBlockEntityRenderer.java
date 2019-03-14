@@ -46,16 +46,16 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		hashMap.put(SkullBlock.Type.ZOMBIE, new Identifier("textures/entity/zombie/zombie.png"));
 		hashMap.put(SkullBlock.Type.CREEPER, new Identifier("textures/entity/creeper/creeper.png"));
 		hashMap.put(SkullBlock.Type.DRAGON, new Identifier("textures/entity/enderdragon/dragon.png"));
-		hashMap.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.method_4649());
+		hashMap.put(SkullBlock.Type.PLAYER, DefaultSkinHelper.getTexture());
 	});
 
 	public void method_3577(SkullBlockEntity skullBlockEntity, double d, double e, double f, float g, int i) {
 		float h = skullBlockEntity.getTicksPowered(g);
-		BlockState blockState = skullBlockEntity.method_11010();
+		BlockState blockState = skullBlockEntity.getCachedState();
 		boolean bl = blockState.getBlock() instanceof WallSkullBlock;
-		Direction direction = bl ? blockState.method_11654(WallSkullBlock.field_11724) : null;
-		float j = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.method_11654(SkullBlock.field_11505));
-		this.method_3581((float)d, (float)e, (float)f, direction, j, ((AbstractSkullBlock)blockState.getBlock()).method_9327(), skullBlockEntity.getOwner(), i, h);
+		Direction direction = bl ? blockState.get(WallSkullBlock.FACING) : null;
+		float j = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.ROTATION));
+		this.render((float)d, (float)e, (float)f, direction, j, ((AbstractSkullBlock)blockState.getBlock()).getSkullType(), skullBlockEntity.getOwner(), i, h);
 	}
 
 	@Override
@@ -64,19 +64,19 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		INSTANCE = this;
 	}
 
-	public void method_3581(
+	public void render(
 		float f, float g, float h, @Nullable Direction direction, float i, SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile, int j, float k
 	) {
 		SkullEntityModel skullEntityModel = (SkullEntityModel)MODELS.get(skullType);
 		if (j >= 0) {
-			this.method_3566(field_4368[j]);
+			this.bindTexture(DESTROY_STAGE_TEXTURES[j]);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(4.0F, 2.0F, 1.0F);
 			GlStateManager.translatef(0.0625F, 0.0625F, 0.0625F);
 			GlStateManager.matrixMode(5888);
 		} else {
-			this.method_3566(this.method_3578(skullType, gameProfile));
+			this.bindTexture(this.method_3578(skullType, gameProfile));
 		}
 
 		GlStateManager.pushMatrix();
@@ -120,11 +120,11 @@ public class SkullBlockEntityRenderer extends BlockEntityRenderer<SkullBlockEnti
 		Identifier identifier = (Identifier)TEXTURES.get(skullType);
 		if (skullType == SkullBlock.Type.PLAYER && gameProfile != null) {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			Map<Type, MinecraftProfileTexture> map = minecraftClient.method_1582().getTextures(gameProfile);
+			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
 			if (map.containsKey(Type.SKIN)) {
-				identifier = minecraftClient.method_1582().method_4656((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
+				identifier = minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
 			} else {
-				identifier = DefaultSkinHelper.method_4648(PlayerEntity.getUuidFromProfile(gameProfile));
+				identifier = DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile));
 			}
 		}
 

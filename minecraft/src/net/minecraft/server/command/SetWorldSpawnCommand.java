@@ -11,18 +11,18 @@ public class SetWorldSpawnCommand {
 		commandDispatcher.register(
 			ServerCommandManager.literal("setworldspawn")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-				.executes(commandContext -> method_13650(commandContext.getSource(), new BlockPos(commandContext.getSource().method_9222())))
+				.executes(commandContext -> method_13650(commandContext.getSource(), new BlockPos(commandContext.getSource().getPosition())))
 				.then(
 					ServerCommandManager.argument("pos", BlockPosArgumentType.create())
-						.executes(commandContext -> method_13650(commandContext.getSource(), BlockPosArgumentType.method_9697(commandContext, "pos")))
+						.executes(commandContext -> method_13650(commandContext.getSource(), BlockPosArgumentType.getPosArgument(commandContext, "pos")))
 				)
 		);
 	}
 
 	private static int method_13650(ServerCommandSource serverCommandSource, BlockPos blockPos) {
-		serverCommandSource.method_9225().method_8554(blockPos);
-		serverCommandSource.getMinecraftServer().method_3760().sendToAll(new PlayerSpawnPositionS2CPacket(blockPos));
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.setworldspawn.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
+		serverCommandSource.getWorld().setSpawnPos(blockPos);
+		serverCommandSource.getMinecraftServer().getPlayerManager().sendToAll(new PlayerSpawnPositionS2CPacket(blockPos));
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.setworldspawn.success", blockPos.getX(), blockPos.getY(), blockPos.getZ()), true);
 		return 1;
 	}
 }

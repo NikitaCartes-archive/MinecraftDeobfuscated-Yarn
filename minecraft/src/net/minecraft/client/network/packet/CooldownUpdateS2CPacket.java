@@ -33,7 +33,7 @@ public class CooldownUpdateS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	public void method_11455(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11087(this);
+		clientPlayPacketListener.onCooldownUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

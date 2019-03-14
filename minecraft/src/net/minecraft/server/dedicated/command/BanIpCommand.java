@@ -29,7 +29,7 @@ public class BanIpCommand {
 		commandDispatcher.register(
 			ServerCommandManager.literal("ban-ip")
 				.requires(
-					serverCommandSource -> serverCommandSource.getMinecraftServer().method_3760().getIpBanList().isEnabled() && serverCommandSource.hasPermissionLevel(3)
+					serverCommandSource -> serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled() && serverCommandSource.hasPermissionLevel(3)
 				)
 				.then(
 					ServerCommandManager.argument("target", StringArgumentType.word())
@@ -38,7 +38,7 @@ public class BanIpCommand {
 							ServerCommandManager.argument("reason", MessageArgumentType.create())
 								.executes(
 									commandContext -> method_13009(
-											commandContext.getSource(), StringArgumentType.getString(commandContext, "target"), MessageArgumentType.method_9339(commandContext, "reason")
+											commandContext.getSource(), StringArgumentType.getString(commandContext, "target"), MessageArgumentType.getMessageArgument(commandContext, "reason")
 										)
 								)
 						)
@@ -51,7 +51,7 @@ public class BanIpCommand {
 		if (matcher.matches()) {
 			return method_13007(serverCommandSource, string, textComponent);
 		} else {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().method_3760().getPlayer(string);
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(string);
 			if (serverPlayerEntity != null) {
 				return method_13007(serverCommandSource, serverPlayerEntity.getServerBrand(), textComponent);
 			} else {
@@ -61,20 +61,20 @@ public class BanIpCommand {
 	}
 
 	private static int method_13007(ServerCommandSource serverCommandSource, String string, @Nullable TextComponent textComponent) throws CommandSyntaxException {
-		BannedIpList bannedIpList = serverCommandSource.getMinecraftServer().method_3760().getIpBanList();
+		BannedIpList bannedIpList = serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList();
 		if (bannedIpList.method_14529(string)) {
 			throw field_13467.create();
 		} else {
-			List<ServerPlayerEntity> list = serverCommandSource.getMinecraftServer().method_3760().getPlayersByIp(string);
+			List<ServerPlayerEntity> list = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayersByIp(string);
 			BannedIpEntry bannedIpEntry = new BannedIpEntry(string, null, serverCommandSource.getName(), null, textComponent == null ? null : textComponent.getString());
 			bannedIpList.add(bannedIpEntry);
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.banip.success", string, bannedIpEntry.getReason()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.banip.success", string, bannedIpEntry.getReason()), true);
 			if (!list.isEmpty()) {
-				serverCommandSource.method_9226(new TranslatableTextComponent("commands.banip.info", list.size(), EntitySelector.method_9822(list)), true);
+				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.banip.info", list.size(), EntitySelector.getNames(list)), true);
 			}
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {
-				serverPlayerEntity.field_13987.disconnect(new TranslatableTextComponent("multiplayer.disconnect.ip_banned"));
+				serverPlayerEntity.networkHandler.disconnect(new TranslatableTextComponent("multiplayer.disconnect.ip_banned"));
 			}
 
 			return list.size();

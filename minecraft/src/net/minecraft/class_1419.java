@@ -90,7 +90,7 @@ public class class_1419 {
 			ZombieEntity zombieEntity;
 			try {
 				zombieEntity = new ZombieEntity(this.field_6727);
-				zombieEntity.method_5943(this.field_6727, this.field_6727.method_8404(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
+				zombieEntity.prepareEntityData(this.field_6727, this.field_6727.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16467, null, null);
 			} catch (Exception var4) {
 				var4.printStackTrace();
 				return;
@@ -105,7 +105,7 @@ public class class_1419 {
 	private Vec3d method_6448(BlockPos blockPos) {
 		for (int i = 0; i < 10; i++) {
 			BlockPos blockPos2 = blockPos.add(this.field_6727.random.nextInt(16) - 8, this.field_6727.random.nextInt(6) - 3, this.field_6727.random.nextInt(16) - 8);
-			if (this.field_6727.method_19500(blockPos2) && SpawnHelper.method_8660(SpawnRestriction.Location.field_6317, this.field_6727, blockPos2, null)) {
+			if (this.field_6727.method_19500(blockPos2) && SpawnHelper.canSpawn(SpawnRestriction.Location.field_6317, this.field_6727, blockPos2, null)) {
 				return new Vec3d((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 			}
 		}

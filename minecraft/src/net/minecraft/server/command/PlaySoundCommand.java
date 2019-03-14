@@ -9,7 +9,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.client.network.packet.PlaySoundIdS2CPacket;
 import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.ResourceLocationArgumentType;
+import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.command.arguments.Vec3ArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,9 +23,7 @@ public class PlaySoundCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.playsound.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		RequiredArgumentBuilder<ServerCommandSource, Identifier> requiredArgumentBuilder = ServerCommandManager.argument(
-				"sound", ResourceLocationArgumentType.create()
-			)
+		RequiredArgumentBuilder<ServerCommandSource, Identifier> requiredArgumentBuilder = ServerCommandManager.argument("sound", IdentifierArgumentType.create())
 			.suggests(SuggestionProviders.AVAILABLE_SOUNDS);
 
 		for (SoundCategory soundCategory : SoundCategory.values()) {
@@ -45,9 +43,9 @@ public class PlaySoundCommand {
 						commandContext -> method_13504(
 								commandContext.getSource(),
 								EntityArgumentType.method_9312(commandContext, "targets"),
-								ResourceLocationArgumentType.method_9443(commandContext, "sound"),
+								IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
 								soundCategory,
-								commandContext.getSource().method_9222(),
+								commandContext.getSource().getPosition(),
 								1.0F,
 								1.0F,
 								0.0F
@@ -59,7 +57,7 @@ public class PlaySoundCommand {
 								commandContext -> method_13504(
 										commandContext.getSource(),
 										EntityArgumentType.method_9312(commandContext, "targets"),
-										ResourceLocationArgumentType.method_9443(commandContext, "sound"),
+										IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
 										soundCategory,
 										Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 										1.0F,
@@ -73,7 +71,7 @@ public class PlaySoundCommand {
 										commandContext -> method_13504(
 												commandContext.getSource(),
 												EntityArgumentType.method_9312(commandContext, "targets"),
-												ResourceLocationArgumentType.method_9443(commandContext, "sound"),
+												IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
 												soundCategory,
 												Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 												commandContext.<Float>getArgument("volume", Float.class),
@@ -87,7 +85,7 @@ public class PlaySoundCommand {
 												commandContext -> method_13504(
 														commandContext.getSource(),
 														EntityArgumentType.method_9312(commandContext, "targets"),
-														ResourceLocationArgumentType.method_9443(commandContext, "sound"),
+														IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
 														soundCategory,
 														Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 														commandContext.<Float>getArgument("volume", Float.class),
@@ -101,7 +99,7 @@ public class PlaySoundCommand {
 														commandContext -> method_13504(
 																commandContext.getSource(),
 																EntityArgumentType.method_9312(commandContext, "targets"),
-																ResourceLocationArgumentType.method_9443(commandContext, "sound"),
+																IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
 																soundCategory,
 																Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
 																commandContext.<Float>getArgument("volume", Float.class),
@@ -146,7 +144,7 @@ public class PlaySoundCommand {
 				m = h;
 			}
 
-			serverPlayerEntity.field_13987.sendPacket(new PlaySoundIdS2CPacket(identifier, soundCategory, vec3d2, m, g));
+			serverPlayerEntity.networkHandler.sendPacket(new PlaySoundIdS2CPacket(identifier, soundCategory, vec3d2, m, g));
 			i++;
 		}
 
@@ -154,12 +152,12 @@ public class PlaySoundCommand {
 			throw FAILED_EXCEPTION.create();
 		} else {
 			if (collection.size() == 1) {
-				serverCommandSource.method_9226(
-					new TranslatableTextComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
+				serverCommandSource.sendFeedback(
+					new TranslatableTextComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 				);
 			} else {
-				serverCommandSource.method_9226(
-					new TranslatableTextComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).method_5476()), true
+				serverCommandSource.sendFeedback(
+					new TranslatableTextComponent("commands.playsound.success.single", identifier, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()), true
 				);
 			}
 

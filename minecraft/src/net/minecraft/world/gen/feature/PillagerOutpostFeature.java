@@ -5,9 +5,9 @@ import com.mojang.datafixers.Dynamic;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_4183;
 import net.minecraft.entity.EntityType;
 import net.minecraft.structure.StructureManager;
+import net.minecraft.structure.VillageStructureStart;
 import net.minecraft.structure.generator.PillagerOutpostGenerator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -48,8 +48,8 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 			if (random.nextInt(5) != 0) {
 				return false;
 			} else {
-				Biome biome = chunkGenerator.getBiomeSource().method_8758(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-				return chunkGenerator.method_12097(biome, Feature.field_16655);
+				Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+				return chunkGenerator.hasStructure(biome, Feature.PILLAGER_OUTPOST);
 			}
 		} else {
 			return false;
@@ -66,15 +66,15 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 		return 165745296;
 	}
 
-	public static class Start extends class_4183 {
+	public static class Start extends VillageStructureStart {
 		public Start(StructureFeature<?> structureFeature, int i, int j, Biome biome, MutableIntBoundingBox mutableIntBoundingBox, int k, long l) {
 			super(structureFeature, i, j, biome, mutableIntBoundingBox, k, l);
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			BlockPos blockPos = new BlockPos(i * 16, 90, j * 16);
-			PillagerOutpostGenerator.method_16650(chunkGenerator, structureManager, blockPos, this.children, this.random);
+			PillagerOutpostGenerator.addPieces(chunkGenerator, structureManager, blockPos, this.children, this.random);
 			this.setBoundingBoxFromChildren();
 		}
 	}

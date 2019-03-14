@@ -7,24 +7,24 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 public interface RecipeUnlocker {
-	void method_7662(@Nullable Recipe<?> recipe);
+	void setLastRecipe(@Nullable Recipe<?> recipe);
 
 	@Nullable
-	Recipe<?> method_7663();
+	Recipe<?> getLastRecipe();
 
 	default void unlockLastRecipe(PlayerEntity playerEntity) {
-		Recipe<?> recipe = this.method_7663();
+		Recipe<?> recipe = this.getLastRecipe();
 		if (recipe != null && !recipe.isIgnoredInRecipeBook()) {
 			playerEntity.unlockRecipes(Collections.singleton(recipe));
-			this.method_7662(null);
+			this.setLastRecipe(null);
 		}
 	}
 
-	default boolean method_7665(World world, ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
-		if (!recipe.isIgnoredInRecipeBook() && world.getGameRules().getBoolean("doLimitedCrafting") && !serverPlayerEntity.method_14253().contains(recipe)) {
+	default boolean shouldCraftRecipe(World world, ServerPlayerEntity serverPlayerEntity, Recipe<?> recipe) {
+		if (!recipe.isIgnoredInRecipeBook() && world.getGameRules().getBoolean("doLimitedCrafting") && !serverPlayerEntity.getRecipeBook().contains(recipe)) {
 			return false;
 		} else {
-			this.method_7662(recipe);
+			this.setLastRecipe(recipe);
 			return true;
 		}
 	}

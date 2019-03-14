@@ -27,7 +27,7 @@ public class LoginHelloC2SPacket implements Packet<ServerLoginPacketListener> {
 	}
 
 	public void method_12649(ServerLoginPacketListener serverLoginPacketListener) {
-		serverLoginPacketListener.method_12641(this);
+		serverLoginPacketListener.onHello(this);
 	}
 
 	public GameProfile getProfile() {

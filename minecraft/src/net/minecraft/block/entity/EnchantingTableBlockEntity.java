@@ -22,27 +22,27 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	public float field_11963;
 	public float field_11962;
 	private static final Random RANDOM = new Random();
-	private TextComponent field_11959;
+	private TextComponent customName;
 
 	public EnchantingTableBlockEntity() {
 		super(BlockEntityType.ENCHANTING_TABLE);
 	}
 
 	@Override
-	public CompoundTag method_11007(CompoundTag compoundTag) {
-		super.method_11007(compoundTag);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
 		if (this.hasCustomName()) {
-			compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.field_11959));
+			compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.customName));
 		}
 
 		return compoundTag;
 	}
 
 	@Override
-	public void method_11014(CompoundTag compoundTag) {
-		super.method_11014(compoundTag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		if (compoundTag.containsKey("CustomName", 8)) {
-			this.field_11959 = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
+			this.customName = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
 		}
 	}
 
@@ -51,16 +51,10 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 		this.pageTurningSpeed = this.nextPageTurningSpeed;
 		this.field_11963 = this.field_11964;
 		PlayerEntity playerEntity = this.world
-			.method_18459(
-				(double)((float)this.field_11867.getX() + 0.5F),
-				(double)((float)this.field_11867.getY() + 0.5F),
-				(double)((float)this.field_11867.getZ() + 0.5F),
-				3.0,
-				false
-			);
+			.method_18459((double)((float)this.pos.getX() + 0.5F), (double)((float)this.pos.getY() + 0.5F), (double)((float)this.pos.getZ() + 0.5F), 3.0, false);
 		if (playerEntity != null) {
-			double d = playerEntity.x - (double)((float)this.field_11867.getX() + 0.5F);
-			double e = playerEntity.z - (double)((float)this.field_11867.getZ() + 0.5F);
+			double d = playerEntity.x - (double)((float)this.pos.getX() + 0.5F);
+			double e = playerEntity.z - (double)((float)this.pos.getZ() + 0.5F);
 			this.field_11962 = (float)MathHelper.atan2(e, d);
 			this.nextPageTurningSpeed += 0.1F;
 			if (this.nextPageTurningSpeed < 0.5F || RANDOM.nextInt(40) == 0) {
@@ -113,17 +107,17 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable,
 	}
 
 	@Override
-	public TextComponent method_5477() {
-		return (TextComponent)(this.field_11959 != null ? this.field_11959 : new TranslatableTextComponent("container.enchant"));
+	public TextComponent getName() {
+		return (TextComponent)(this.customName != null ? this.customName : new TranslatableTextComponent("container.enchant"));
 	}
 
-	public void method_11179(@Nullable TextComponent textComponent) {
-		this.field_11959 = textComponent;
+	public void setCustomName(@Nullable TextComponent textComponent) {
+		this.customName = textComponent;
 	}
 
 	@Nullable
 	@Override
-	public TextComponent method_5797() {
-		return this.field_11959;
+	public TextComponent getCustomName() {
+		return this.customName;
 	}
 }

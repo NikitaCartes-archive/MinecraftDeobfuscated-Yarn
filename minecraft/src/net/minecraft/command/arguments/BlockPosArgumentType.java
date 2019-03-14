@@ -29,13 +29,13 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 		return new BlockPosArgumentType();
 	}
 
-	public static BlockPos method_9696(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		BlockPos blockPos = commandContext.<PosArgument>getArgument(string, PosArgument.class).method_9704(commandContext.getSource());
-		if (!commandContext.getSource().method_9225().method_8591(blockPos)) {
+	public static BlockPos getValidPosArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		BlockPos blockPos = commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
+		if (!commandContext.getSource().getWorld().isBlockLoaded(blockPos)) {
 			throw UNLOADED_EXCEPTION.create();
 		} else {
-			commandContext.getSource().method_9225();
-			if (!ServerWorld.method_8558(blockPos)) {
+			commandContext.getSource().getWorld();
+			if (!ServerWorld.isValid(blockPos)) {
 				throw OUT_OF_WORLD_EXCEPTION.create();
 			} else {
 				return blockPos;
@@ -43,8 +43,8 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 		}
 	}
 
-	public static BlockPos method_9697(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<PosArgument>getArgument(string, PosArgument.class).method_9704(commandContext.getSource());
+	public static BlockPos getPosArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
 	}
 
 	public PosArgument method_9699(StringReader stringReader) throws CommandSyntaxException {

@@ -10,7 +10,7 @@ public abstract class AmbientEntity extends MobEntity {
 	}
 
 	@Override
-	public boolean method_5931(PlayerEntity playerEntity) {
+	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
 		return false;
 	}
 }

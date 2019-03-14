@@ -16,12 +16,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Conditions> {
-	private static final Identifier field_9612 = new Identifier("filled_bucket");
+	private static final Identifier ID = new Identifier("filled_bucket");
 	private final Map<PlayerAdvancementTracker, FilledBucketCriterion.class_2055> field_9613 = Maps.<PlayerAdvancementTracker, FilledBucketCriterion.class_2055>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return field_9612;
+		return ID;
 	}
 
 	@Override
@@ -68,25 +68,25 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final ItemPredicate field_9616;
+		private final ItemPredicate item;
 
 		public Conditions(ItemPredicate itemPredicate) {
-			super(FilledBucketCriterion.field_9612);
-			this.field_9616 = itemPredicate;
+			super(FilledBucketCriterion.ID);
+			this.item = itemPredicate;
 		}
 
-		public static FilledBucketCriterion.Conditions method_8937(ItemPredicate itemPredicate) {
+		public static FilledBucketCriterion.Conditions create(ItemPredicate itemPredicate) {
 			return new FilledBucketCriterion.Conditions(itemPredicate);
 		}
 
-		public boolean method_8938(ItemStack itemStack) {
-			return this.field_9616.test(itemStack);
+		public boolean matches(ItemStack itemStack) {
+			return this.item.test(itemStack);
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("item", this.field_9616.serialize());
+			jsonObject.add("item", this.item.serialize());
 			return jsonObject;
 		}
 	}
@@ -115,7 +115,7 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 			List<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer : this.field_9614) {
-				if (conditionsContainer.method_797().method_8938(itemStack)) {
+				if (conditionsContainer.getConditions().matches(itemStack)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>>newArrayList();
 					}

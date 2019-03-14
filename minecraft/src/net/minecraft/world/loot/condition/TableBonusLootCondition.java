@@ -31,7 +31,7 @@ public class TableBonusLootCondition implements LootCondition {
 	}
 
 	public boolean method_799(LootContext lootContext) {
-		ItemStack itemStack = lootContext.method_296(LootContextParameters.field_1229);
+		ItemStack itemStack = lootContext.get(LootContextParameters.field_1229);
 		int i = itemStack != null ? EnchantmentHelper.getLevel(this.enchantment, itemStack) : 0;
 		float f = this.chances[Math.min(i, this.chances.length - 1)];
 		return lootContext.getRandom().nextFloat() < f;
@@ -47,14 +47,14 @@ public class TableBonusLootCondition implements LootCondition {
 		}
 
 		public void method_805(JsonObject jsonObject, TableBonusLootCondition tableBonusLootCondition, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.method_10221(tableBonusLootCondition.enchantment).toString());
+			jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(tableBonusLootCondition.enchantment).toString());
 			jsonObject.add("chances", jsonSerializationContext.serialize(tableBonusLootCondition.chances));
 		}
 
 		public TableBonusLootCondition method_804(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
 			Enchantment enchantment = (Enchantment)Registry.ENCHANTMENT
-				.method_17966(identifier)
+				.getOrEmpty(identifier)
 				.orElseThrow(() -> new JsonParseException("Invalid enchantment id: " + identifier));
 			float[] fs = JsonHelper.deserialize(jsonObject, "chances", jsonDeserializationContext, float[].class);
 			return new TableBonusLootCondition(enchantment, fs);

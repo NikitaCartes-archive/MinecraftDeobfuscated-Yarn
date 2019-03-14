@@ -9,31 +9,31 @@ import net.minecraft.tag.TagManager;
 import net.minecraft.util.PacketByteBuf;
 
 public class SynchronizeTagsS2CPacket implements Packet<ClientPlayPacketListener> {
-	private TagManager field_12757;
+	private TagManager tagManager;
 
 	public SynchronizeTagsS2CPacket() {
 	}
 
 	public SynchronizeTagsS2CPacket(TagManager tagManager) {
-		this.field_12757 = tagManager;
+		this.tagManager = tagManager;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_12757 = TagManager.fromPacket(packetByteBuf);
+		this.tagManager = TagManager.fromPacket(packetByteBuf);
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_12757.toPacket(packetByteBuf);
+		this.tagManager.toPacket(packetByteBuf);
 	}
 
 	public void method_12001(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11126(this);
+		clientPlayPacketListener.onSynchronizeTags(this);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TagManager method_12000() {
-		return this.field_12757;
+	public TagManager getTagManager() {
+		return this.tagManager;
 	}
 }

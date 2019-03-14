@@ -14,8 +14,8 @@ import net.minecraft.util.math.Direction;
 @Environment(EnvType.CLIENT)
 public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlockEntity> {
 	public void method_17581(CampfireBlockEntity campfireBlockEntity, double d, double e, double f, float g, int i) {
-		Direction direction = campfireBlockEntity.method_11010().method_11654(CampfireBlock.field_17564);
-		DefaultedList<ItemStack> defaultedList = campfireBlockEntity.method_17505();
+		Direction direction = campfireBlockEntity.getCachedState().get(CampfireBlock.FACING);
+		DefaultedList<ItemStack> defaultedList = campfireBlockEntity.getItemsBeingCooked();
 
 		for (int j = 0; j < defaultedList.size(); j++) {
 			ItemStack itemStack = defaultedList.get(j);
@@ -27,7 +27,7 @@ public class CampfireBlockEntityRenderer extends BlockEntityRenderer<CampfireBlo
 				GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.translatef(-0.3125F, -0.3125F, 0.0F);
 				GlStateManager.scalef(0.375F, 0.375F, 0.375F);
-				MinecraftClient.getInstance().method_1480().renderItem(itemStack, ModelTransformation.Type.FIXED);
+				MinecraftClient.getInstance().getItemRenderer().renderItem(itemStack, ModelTransformation.Type.FIXED);
 				GlStateManager.popMatrix();
 			}
 		}

@@ -11,9 +11,9 @@ public final class VoidBiome extends Biome {
 	public VoidBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.NOPE, SurfaceBuilder.field_15670)
+				.configureSurfaceBuilder(SurfaceBuilder.NOPE, SurfaceBuilder.STONE_CONFIG)
 				.precipitation(Biome.Precipitation.NONE)
-				.method_8738(Biome.Category.NONE)
+				.category(Biome.Category.NONE)
 				.depth(0.1F)
 				.scale(0.2F)
 				.temperature(0.5F)
@@ -22,8 +22,8 @@ public final class VoidBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8719(
-			GenerationStep.Feature.TOP_LAYER_MODIFICATION, method_8699(Feature.field_13591, FeatureConfig.field_13603, Decorator.NOPE, DecoratorConfig.field_13436)
+		this.addFeature(
+			GenerationStep.Feature.TOP_LAYER_MODIFICATION, configureFeature(Feature.field_13591, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT)
 		);
 	}
 }

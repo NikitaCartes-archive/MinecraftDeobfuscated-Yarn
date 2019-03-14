@@ -3,7 +3,6 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1399;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -11,6 +10,7 @@ import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -50,74 +50,74 @@ public class PolarBearEntity extends AnimalEntity {
 
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.POLAR_BEAR.method_5883(this.field_6002);
+		return EntityType.POLAR_BEAR.create(this.world);
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
+	public boolean isBreedingItem(ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.field_6201.add(0, new SwimGoal(this));
-		this.field_6201.add(1, new PolarBearEntity.class_1460());
-		this.field_6201.add(1, new PolarBearEntity.class_1461());
-		this.field_6201.add(4, new FollowParentGoal(this, 1.25));
-		this.field_6201.add(5, new WanderAroundGoal(this, 1.0));
-		this.field_6201.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
-		this.field_6201.add(7, new LookAroundGoal(this));
-		this.field_6185.add(1, new PolarBearEntity.class_1459());
-		this.field_6185.add(2, new PolarBearEntity.class_1457());
-		this.field_6185.add(3, new FollowTargetGoal(this, FoxEntity.class, 10, true, true, null));
+		this.goalSelector.add(0, new SwimGoal(this));
+		this.goalSelector.add(1, new PolarBearEntity.class_1460());
+		this.goalSelector.add(1, new PolarBearEntity.class_1461());
+		this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
+		this.goalSelector.add(5, new WanderAroundGoal(this, 1.0));
+		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
+		this.goalSelector.add(7, new LookAroundGoal(this));
+		this.targetSelector.add(1, new PolarBearEntity.class_1459());
+		this.targetSelector.add(2, new PolarBearEntity.class_1457());
+		this.targetSelector.add(3, new FollowTargetGoal(this, FoxEntity.class, 10, true, true, null));
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(30.0);
-		this.method_5996(EntityAttributes.FOLLOW_RANGE).setBaseValue(20.0);
-		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
-		this.method_6127().register(EntityAttributes.ATTACK_DAMAGE);
-		this.method_5996(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(30.0);
+		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(20.0);
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+		this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE);
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(6.0);
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.method_5829().minY);
+		int j = MathHelper.floor(this.getBoundingBox().minY);
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		Biome biome = iWorld.method_8310(blockPos);
+		Biome biome = iWorld.getBiome(blockPos);
 		return biome != Biomes.field_9435 && biome != Biomes.field_9418
-			? super.method_5979(iWorld, spawnType)
-			: iWorld.method_8624(blockPos, 0) > 8 && iWorld.method_8320(blockPos.down()).getBlock() == Blocks.field_10295;
+			? super.canSpawn(iWorld, spawnType)
+			: iWorld.getLightLevel(blockPos, 0) > 8 && iWorld.getBlockState(blockPos.down()).getBlock() == Blocks.field_10295;
 	}
 
 	@Override
-	protected SoundEvent method_5994() {
+	protected SoundEvent getAmbientSound() {
 		return this.isChild() ? SoundEvents.field_14605 : SoundEvents.field_15078;
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_15107;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_15209;
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
-		this.method_5783(SoundEvents.field_15036, 0.15F, 1.0F);
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
+		this.playSound(SoundEvents.field_15036, 0.15F, 1.0F);
 	}
 
 	protected void method_6602() {
 		if (this.field_6839 <= 0) {
-			this.method_5783(SoundEvents.field_14937, 1.0F, 1.0F);
+			this.playSound(SoundEvents.field_14937, 1.0F, 1.0F);
 			this.field_6839 = 40;
 		}
 	}
@@ -125,13 +125,13 @@ public class PolarBearEntity extends AnimalEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.field_6011.startTracking(field_6840, false);
+		this.dataTracker.startTracking(field_6840, false);
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		if (this.field_6002.isClient) {
+		if (this.world.isClient) {
 			this.field_6838 = this.field_6837;
 			if (this.method_6600()) {
 				this.field_6837 = MathHelper.clamp(this.field_6837 + 1.0F, 0.0F, 6.0F);
@@ -147,20 +147,20 @@ public class PolarBearEntity extends AnimalEntity {
 
 	@Override
 	public boolean attack(Entity entity) {
-		boolean bl = entity.damage(DamageSource.method_5511(this), (float)((int)this.method_5996(EntityAttributes.ATTACK_DAMAGE).getValue()));
+		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
-			this.method_5723(this, entity);
+			this.dealDamage(this, entity);
 		}
 
 		return bl;
 	}
 
 	public boolean method_6600() {
-		return this.field_6011.get(field_6840);
+		return this.dataTracker.get(field_6840);
 	}
 
 	public void method_6603(boolean bl) {
-		this.field_6011.set(field_6840, bl);
+		this.dataTracker.set(field_6840, bl);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -174,7 +174,7 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityData method_5943(
+	public EntityData prepareEntityData(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		if (entityData instanceof PolarBearEntity.class_1458) {
@@ -197,8 +197,8 @@ public class PolarBearEntity extends AnimalEntity {
 				return false;
 			} else {
 				if (super.canStart()) {
-					for (PolarBearEntity polarBearEntity : PolarBearEntity.this.field_6002
-						.method_18467(PolarBearEntity.class, PolarBearEntity.this.method_5829().expand(8.0, 4.0, 8.0))) {
+					for (PolarBearEntity polarBearEntity : PolarBearEntity.this.world
+						.method_18467(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
 						if (polarBearEntity.isChild()) {
 							return true;
 						}
@@ -221,7 +221,7 @@ public class PolarBearEntity extends AnimalEntity {
 		}
 	}
 
-	class class_1459 extends class_1399 {
+	class class_1459 extends AvoidGoal {
 		public class_1459() {
 			super(PolarBearEntity.this);
 		}

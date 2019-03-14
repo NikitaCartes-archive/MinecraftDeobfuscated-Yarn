@@ -23,7 +23,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AnimalEntity extends PassiveEntity {
-	protected Block field_6746 = Blocks.field_10219;
+	protected Block spawningGround = Blocks.field_10219;
 	private int loveTicks;
 	private UUID lovingPlayer;
 
@@ -53,8 +53,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
-				this.field_6002
-					.method_8406(
+				this.world
+					.addParticle(
 						ParticleTypes.field_11201,
 						this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 						this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),
@@ -78,13 +78,13 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return viewableWorld.method_8320(blockPos.down()).getBlock() == this.field_6746 ? 10.0F : viewableWorld.method_8610(blockPos) - 0.5F;
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return viewableWorld.getBlockState(blockPos.down()).getBlock() == this.spawningGround ? 10.0F : viewableWorld.getBrightness(blockPos) - 0.5F;
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("InLove", this.loveTicks);
 		if (this.lovingPlayer != null) {
 			compoundTag.putUuid("LoveCause", this.lovingPlayer);
@@ -97,19 +97,19 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		this.loveTicks = compoundTag.getInt("InLove");
 		this.lovingPlayer = compoundTag.hasUuid("LoveCause") ? compoundTag.getUuid("LoveCause") : null;
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.method_5829().minY);
+		int j = MathHelper.floor(this.getBoundingBox().minY);
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		return iWorld.method_8320(blockPos.down()).getBlock() == this.field_6746 && iWorld.method_8624(blockPos, 0) > 8 && super.method_5979(iWorld, spawnType);
+		return iWorld.getBlockState(blockPos.down()).getBlock() == this.spawningGround && iWorld.getLightLevel(blockPos, 0) > 8 && super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override
@@ -123,18 +123,18 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	protected int method_6110(PlayerEntity playerEntity) {
-		return 1 + this.field_6002.random.nextInt(3);
+	protected int getCurrentExperience(PlayerEntity playerEntity) {
+		return 1 + this.world.random.nextInt(3);
 	}
 
-	public boolean method_6481(ItemStack itemStack) {
+	public boolean isBreedingItem(ItemStack itemStack) {
 		return itemStack.getItem() == Items.field_8861;
 	}
 
 	@Override
-	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
-		if (this.method_6481(itemStack)) {
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		if (this.isBreedingItem(itemStack)) {
 			if (this.getBreedingAge() == 0 && this.method_6482()) {
 				this.method_6475(playerEntity, itemStack);
 				this.method_6480(playerEntity);
@@ -148,7 +148,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 			}
 		}
 
-		return super.method_5992(playerEntity, hand);
+		return super.interactMob(playerEntity, hand);
 	}
 
 	protected void method_6475(PlayerEntity playerEntity, ItemStack itemStack) {
@@ -167,7 +167,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 			this.lovingPlayer = playerEntity.getUuid();
 		}
 
-		this.field_6002.summonParticle(this, (byte)18);
+		this.world.summonParticle(this, (byte)18);
 	}
 
 	public void setLoveTicks(int i) {
@@ -175,11 +175,11 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Nullable
-	public ServerPlayerEntity method_6478() {
+	public ServerPlayerEntity getLovingPlayer() {
 		if (this.lovingPlayer == null) {
 			return null;
 		} else {
-			PlayerEntity playerEntity = this.field_6002.method_18470(this.lovingPlayer);
+			PlayerEntity playerEntity = this.world.method_18470(this.lovingPlayer);
 			return playerEntity instanceof ServerPlayerEntity ? (ServerPlayerEntity)playerEntity : null;
 		}
 	}
@@ -208,8 +208,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 				double d = this.random.nextGaussian() * 0.02;
 				double e = this.random.nextGaussian() * 0.02;
 				double f = this.random.nextGaussian() * 0.02;
-				this.field_6002
-					.method_8406(
+				this.world
+					.addParticle(
 						ParticleTypes.field_11201,
 						this.x + (double)(this.random.nextFloat() * this.getWidth() * 2.0F) - (double)this.getWidth(),
 						this.y + 0.5 + (double)(this.random.nextFloat() * this.getHeight()),

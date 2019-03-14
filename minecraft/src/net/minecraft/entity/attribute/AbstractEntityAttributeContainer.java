@@ -12,7 +12,7 @@ import net.minecraft.util.LowercaseMap;
 public abstract class AbstractEntityAttributeContainer {
 	protected final Map<EntityAttribute, EntityAttributeInstance> instancesByKey = Maps.<EntityAttribute, EntityAttributeInstance>newHashMap();
 	protected final Map<String, EntityAttributeInstance> instancesById = new LowercaseMap();
-	protected final Multimap<EntityAttribute, EntityAttribute> field_6336 = HashMultimap.create();
+	protected final Multimap<EntityAttribute, EntityAttribute> attributeHierarchy = HashMultimap.create();
 
 	@Nullable
 	public EntityAttributeInstance get(EntityAttribute entityAttribute) {
@@ -33,7 +33,7 @@ public abstract class AbstractEntityAttributeContainer {
 			this.instancesByKey.put(entityAttribute, entityAttributeInstance);
 
 			for (EntityAttribute entityAttribute2 = entityAttribute.getParent(); entityAttribute2 != null; entityAttribute2 = entityAttribute2.getParent()) {
-				this.field_6336.put(entityAttribute2, entityAttribute);
+				this.attributeHierarchy.put(entityAttribute2, entityAttribute);
 			}
 
 			return entityAttributeInstance;
@@ -46,14 +46,14 @@ public abstract class AbstractEntityAttributeContainer {
 		return this.instancesById.values();
 	}
 
-	public void method_6211(EntityAttributeInstance entityAttributeInstance) {
+	public void add(EntityAttributeInstance entityAttributeInstance) {
 	}
 
 	public void method_6209(Multimap<String, EntityAttributeModifier> multimap) {
 		for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
 			EntityAttributeInstance entityAttributeInstance = this.get((String)entry.getKey());
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.method_6202((EntityAttributeModifier)entry.getValue());
+				entityAttributeInstance.removeModifier((EntityAttributeModifier)entry.getValue());
 			}
 		}
 	}
@@ -62,8 +62,8 @@ public abstract class AbstractEntityAttributeContainer {
 		for (Entry<String, EntityAttributeModifier> entry : multimap.entries()) {
 			EntityAttributeInstance entityAttributeInstance = this.get((String)entry.getKey());
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.method_6202((EntityAttributeModifier)entry.getValue());
-				entityAttributeInstance.method_6197((EntityAttributeModifier)entry.getValue());
+				entityAttributeInstance.removeModifier((EntityAttributeModifier)entry.getValue());
+				entityAttributeInstance.addModifier((EntityAttributeModifier)entry.getValue());
 			}
 		}
 	}

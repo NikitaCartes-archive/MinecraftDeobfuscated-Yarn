@@ -29,7 +29,7 @@ public class MutableIntBoundingBox {
 		return new MutableIntBoundingBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
 
-	public static MutableIntBoundingBox method_14667(int i, int j, int k, int l, int m, int n, int o, int p, int q, Direction direction) {
+	public static MutableIntBoundingBox createRotated(int i, int j, int k, int l, int m, int n, int o, int p, int q, Direction direction) {
 		switch (direction) {
 			case NORTH:
 				return new MutableIntBoundingBox(i + l, j + m, k - q + 1 + n, i + o - 1 + l, j + p - 1 + m, k + n);
@@ -119,7 +119,7 @@ public class MutableIntBoundingBox {
 		return new MutableIntBoundingBox(this.minX + i, this.minY + j, this.minZ + k, this.maxX + i, this.maxY + j, this.maxZ + k);
 	}
 
-	public boolean method_14662(Vec3i vec3i) {
+	public boolean contains(Vec3i vec3i) {
 		return vec3i.getX() >= this.minX
 			&& vec3i.getX() <= this.maxX
 			&& vec3i.getZ() >= this.minZ
@@ -128,7 +128,7 @@ public class MutableIntBoundingBox {
 			&& vec3i.getY() <= this.maxY;
 	}
 
-	public Vec3i method_14659() {
+	public Vec3i getSize() {
 		return new Vec3i(this.maxX - this.minX, this.maxY - this.minY, this.maxZ - this.minZ);
 	}
 
@@ -155,7 +155,7 @@ public class MutableIntBoundingBox {
 			.toString();
 	}
 
-	public IntArrayTag method_14658() {
+	public IntArrayTag toNbt() {
 		return new IntArrayTag(new int[]{this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
 	}
 }

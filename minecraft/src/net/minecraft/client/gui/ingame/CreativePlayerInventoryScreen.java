@@ -12,7 +12,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_478;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.item.TooltipContext;
@@ -50,7 +49,7 @@ import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen<CreativePlayerInventoryScreen.CreativeContainer> {
-	private static final Identifier field_2893 = new Identifier("textures/gui/container/creative_inventory/tabs.png");
+	private static final Identifier TEXTURE = new Identifier("textures/gui/container/creative_inventory/tabs.png");
 	private static final BasicInventory inventory = new BasicInventory(45);
 	private static int selectedTab = ItemGroup.BUILDING_BLOCKS.getIndex();
 	private float scrollPosition;
@@ -58,14 +57,14 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	private TextFieldWidget searchBox;
 	private List<Slot> slots;
 	private Slot deleteItemSlot;
-	private class_478 field_2891;
+	private CreativePlayerInventoryContainerListener field_2891;
 	private boolean field_2888;
 	private boolean field_2887;
 	private final Map<Identifier, Tag<Item>> field_16201 = Maps.<Identifier, Tag<Item>>newTreeMap();
 
 	public CreativePlayerInventoryScreen(PlayerEntity playerEntity) {
 		super(new CreativePlayerInventoryScreen.CreativeContainer(playerEntity), playerEntity.inventory, new StringTextComponent(""));
-		playerEntity.field_7512 = this.container;
+		playerEntity.container = this.container;
 		this.field_2558 = true;
 		this.height = 136;
 		this.width = 195;
@@ -73,8 +72,8 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 	@Override
 	public void update() {
-		if (!this.client.field_1761.hasCreativeInventory()) {
-			this.client.method_1507(new PlayerInventoryScreen(this.client.field_1724));
+		if (!this.client.interactionManager.hasCreativeInventory()) {
+			this.client.openScreen(new PlayerInventoryScreen(this.client.player));
 		} else if (this.searchBox != null) {
 			this.searchBox.tick();
 		}
@@ -90,69 +89,69 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		boolean bl = slotActionType == SlotActionType.field_7794;
 		slotActionType = i == -999 && slotActionType == SlotActionType.field_7790 ? SlotActionType.field_7795 : slotActionType;
 		if (slot == null && selectedTab != ItemGroup.INVENTORY.getIndex() && slotActionType != SlotActionType.field_7789) {
-			PlayerInventory playerInventory = this.client.field_1724.inventory;
-			if (!playerInventory.method_7399().isEmpty() && this.field_2887) {
+			PlayerInventory playerInventory = this.client.player.inventory;
+			if (!playerInventory.getCursorStack().isEmpty() && this.field_2887) {
 				if (j == 0) {
-					this.client.field_1724.method_7328(playerInventory.method_7399(), true);
-					this.client.field_1761.method_2915(playerInventory.method_7399());
-					playerInventory.method_7396(ItemStack.EMPTY);
+					this.client.player.dropItem(playerInventory.getCursorStack(), true);
+					this.client.interactionManager.method_2915(playerInventory.getCursorStack());
+					playerInventory.setCursorStack(ItemStack.EMPTY);
 				}
 
 				if (j == 1) {
-					ItemStack itemStack2 = playerInventory.method_7399().split(1);
-					this.client.field_1724.method_7328(itemStack2, true);
-					this.client.field_1761.method_2915(itemStack2);
+					ItemStack itemStack2 = playerInventory.getCursorStack().split(1);
+					this.client.player.dropItem(itemStack2, true);
+					this.client.interactionManager.method_2915(itemStack2);
 				}
 			}
 		} else {
-			if (slot != null && !slot.canTakeItems(this.client.field_1724)) {
+			if (slot != null && !slot.canTakeItems(this.client.player)) {
 				return;
 			}
 
 			if (slot == this.deleteItemSlot && bl) {
-				for (int k = 0; k < this.client.field_1724.field_7498.method_7602().size(); k++) {
-					this.client.field_1761.method_2909(ItemStack.EMPTY, k);
+				for (int k = 0; k < this.client.player.playerContainer.getStacks().size(); k++) {
+					this.client.interactionManager.method_2909(ItemStack.EMPTY, k);
 				}
 			} else if (selectedTab == ItemGroup.INVENTORY.getIndex()) {
 				if (slot == this.deleteItemSlot) {
-					this.client.field_1724.inventory.method_7396(ItemStack.EMPTY);
+					this.client.player.inventory.setCursorStack(ItemStack.EMPTY);
 				} else if (slotActionType == SlotActionType.field_7795 && slot != null && slot.hasStack()) {
-					ItemStack itemStack = slot.method_7671(j == 0 ? 1 : slot.method_7677().getMaxAmount());
-					ItemStack itemStack2 = slot.method_7677();
-					this.client.field_1724.method_7328(itemStack, true);
-					this.client.field_1761.method_2915(itemStack);
-					this.client.field_1761.method_2909(itemStack2, ((CreativePlayerInventoryScreen.CreativeSlot)slot).slot.id);
-				} else if (slotActionType == SlotActionType.field_7795 && !this.client.field_1724.inventory.method_7399().isEmpty()) {
-					this.client.field_1724.method_7328(this.client.field_1724.inventory.method_7399(), true);
-					this.client.field_1761.method_2915(this.client.field_1724.inventory.method_7399());
-					this.client.field_1724.inventory.method_7396(ItemStack.EMPTY);
+					ItemStack itemStack = slot.takeStack(j == 0 ? 1 : slot.getStack().getMaxAmount());
+					ItemStack itemStack2 = slot.getStack();
+					this.client.player.dropItem(itemStack, true);
+					this.client.interactionManager.method_2915(itemStack);
+					this.client.interactionManager.method_2909(itemStack2, ((CreativePlayerInventoryScreen.CreativeSlot)slot).slot.id);
+				} else if (slotActionType == SlotActionType.field_7795 && !this.client.player.inventory.getCursorStack().isEmpty()) {
+					this.client.player.dropItem(this.client.player.inventory.getCursorStack(), true);
+					this.client.interactionManager.method_2915(this.client.player.inventory.getCursorStack());
+					this.client.player.inventory.setCursorStack(ItemStack.EMPTY);
 				} else {
 					this.client
-						.field_1724
-						.field_7498
-						.method_7593(slot == null ? i : ((CreativePlayerInventoryScreen.CreativeSlot)slot).slot.id, j, slotActionType, this.client.field_1724);
-					this.client.field_1724.field_7498.sendContentUpdates();
+						.player
+						.playerContainer
+						.onSlotClick(slot == null ? i : ((CreativePlayerInventoryScreen.CreativeSlot)slot).slot.id, j, slotActionType, this.client.player);
+					this.client.player.playerContainer.sendContentUpdates();
 				}
 			} else if (slotActionType != SlotActionType.field_7789 && slot.inventory == inventory) {
-				PlayerInventory playerInventory = this.client.field_1724.inventory;
-				ItemStack itemStack2 = playerInventory.method_7399();
-				ItemStack itemStack3 = slot.method_7677();
+				PlayerInventory playerInventory = this.client.player.inventory;
+				ItemStack itemStack2 = playerInventory.getCursorStack();
+				ItemStack itemStack3 = slot.getStack();
 				if (slotActionType == SlotActionType.field_7791) {
 					if (!itemStack3.isEmpty() && j >= 0 && j < 9) {
 						ItemStack itemStack4 = itemStack3.copy();
 						itemStack4.setAmount(itemStack4.getMaxAmount());
-						this.client.field_1724.inventory.method_5447(j, itemStack4);
-						this.client.field_1724.field_7498.sendContentUpdates();
+						this.client.player.inventory.setInvStack(j, itemStack4);
+						this.client.player.playerContainer.sendContentUpdates();
 					}
 
 					return;
 				}
 
 				if (slotActionType == SlotActionType.field_7796) {
-					if (playerInventory.method_7399().isEmpty() && slot.hasStack()) {
-						ItemStack itemStack4 = slot.method_7677().copy();
+					if (playerInventory.getCursorStack().isEmpty() && slot.hasStack()) {
+						ItemStack itemStack4 = slot.getStack().copy();
 						itemStack4.setAmount(itemStack4.getMaxAmount());
-						playerInventory.method_7396(itemStack4);
+						playerInventory.setCursorStack(itemStack4);
 					}
 
 					return;
@@ -162,8 +161,8 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 					if (!itemStack3.isEmpty()) {
 						ItemStack itemStack4 = itemStack3.copy();
 						itemStack4.setAmount(j == 0 ? 1 : itemStack4.getMaxAmount());
-						this.client.field_1724.method_7328(itemStack4, true);
-						this.client.field_1761.method_2915(itemStack4);
+						this.client.player.dropItem(itemStack4, true);
+						this.client.interactionManager.method_2915(itemStack4);
 					}
 
 					return;
@@ -180,37 +179,37 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 						itemStack2.subtractAmount(1);
 					}
 				} else if (!itemStack3.isEmpty() && itemStack2.isEmpty()) {
-					playerInventory.method_7396(itemStack3.copy());
-					itemStack2 = playerInventory.method_7399();
+					playerInventory.setCursorStack(itemStack3.copy());
+					itemStack2 = playerInventory.getCursorStack();
 					if (bl) {
 						itemStack2.setAmount(itemStack2.getMaxAmount());
 					}
 				} else if (j == 0) {
-					playerInventory.method_7396(ItemStack.EMPTY);
+					playerInventory.setCursorStack(ItemStack.EMPTY);
 				} else {
-					playerInventory.method_7399().subtractAmount(1);
+					playerInventory.getCursorStack().subtractAmount(1);
 				}
 			} else if (this.container != null) {
-				ItemStack itemStack = slot == null ? ItemStack.EMPTY : this.container.method_7611(slot.id).method_7677();
-				this.container.method_7593(slot == null ? i : slot.id, j, slotActionType, this.client.field_1724);
+				ItemStack itemStack = slot == null ? ItemStack.EMPTY : this.container.getSlot(slot.id).getStack();
+				this.container.onSlotClick(slot == null ? i : slot.id, j, slotActionType, this.client.player);
 				if (Container.unpackButtonId(j) == 2) {
 					for (int l = 0; l < 9; l++) {
-						this.client.field_1761.method_2909(this.container.method_7611(45 + l).method_7677(), 36 + l);
+						this.client.interactionManager.method_2909(this.container.getSlot(45 + l).getStack(), 36 + l);
 					}
 				} else if (slot != null) {
-					ItemStack itemStack2x = this.container.method_7611(slot.id).method_7677();
-					this.client.field_1761.method_2909(itemStack2x, slot.id - this.container.slotList.size() + 9 + 36);
+					ItemStack itemStack2x = this.container.getSlot(slot.id).getStack();
+					this.client.interactionManager.method_2909(itemStack2x, slot.id - this.container.slotList.size() + 9 + 36);
 					int m = 45 + j;
 					if (slotActionType == SlotActionType.field_7791) {
-						this.client.field_1761.method_2909(itemStack, m - this.container.slotList.size() + 9 + 36);
+						this.client.interactionManager.method_2909(itemStack, m - this.container.slotList.size() + 9 + 36);
 					} else if (slotActionType == SlotActionType.field_7795 && !itemStack.isEmpty()) {
 						ItemStack itemStack4 = itemStack.copy();
 						itemStack4.setAmount(j == 0 ? 1 : itemStack4.getMaxAmount());
-						this.client.field_1724.method_7328(itemStack4, true);
-						this.client.field_1761.method_2915(itemStack4);
+						this.client.player.dropItem(itemStack4, true);
+						this.client.interactionManager.method_2915(itemStack4);
 					}
 
-					this.client.field_1724.field_7498.sendContentUpdates();
+					this.client.player.playerContainer.sendContentUpdates();
 				}
 			}
 		}
@@ -231,7 +230,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 	@Override
 	protected void onInitialized() {
-		if (this.client.field_1761.hasCreativeInventory()) {
+		if (this.client.interactionManager.hasCreativeInventory()) {
 			super.onInitialized();
 			this.client.keyboard.enableRepeatEvents(true);
 			this.searchBox = new TextFieldWidget(this.fontRenderer, this.left + 82, this.top + 6, 80, 9);
@@ -243,11 +242,11 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			int i = selectedTab;
 			selectedTab = -1;
 			this.setSelectedTab(ItemGroup.GROUPS[i]);
-			this.client.field_1724.field_7498.method_7603(this.field_2891);
-			this.field_2891 = new class_478(this.client);
-			this.client.field_1724.field_7498.method_7596(this.field_2891);
+			this.client.player.playerContainer.removeListener(this.field_2891);
+			this.field_2891 = new CreativePlayerInventoryContainerListener(this.client);
+			this.client.player.playerContainer.addListener(this.field_2891);
 		} else {
-			this.client.method_1507(new PlayerInventoryScreen(this.client.field_1724));
+			this.client.openScreen(new PlayerInventoryScreen(this.client.player));
 		}
 	}
 
@@ -264,8 +263,8 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	@Override
 	public void onClosed() {
 		super.onClosed();
-		if (this.client.field_1724 != null && this.client.field_1724.inventory != null) {
-			this.client.field_1724.field_7498.method_7603(this.field_2891);
+		if (this.client.player != null && this.client.player.inventory != null) {
+			this.client.player.playerContainer.removeListener(this.field_2891);
 		}
 
 		this.client.keyboard.enableRepeatEvents(false);
@@ -295,7 +294,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	public boolean keyPressed(int i, int j, int k) {
 		this.field_2888 = false;
 		if (selectedTab != ItemGroup.SEARCH.getIndex()) {
-			if (this.client.field_1690.keyChat.matchesKey(i, j)) {
+			if (this.client.options.keyChat.matchesKey(i, j)) {
 				this.field_2888 = true;
 				this.setSelectedTab(ItemGroup.SEARCH);
 				return true;
@@ -329,24 +328,24 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	}
 
 	private void method_2464() {
-		this.container.field_2897.clear();
+		this.container.itemList.clear();
 		this.field_16201.clear();
 		String string = this.searchBox.getText();
 		if (string.isEmpty()) {
 			for (Item item : Registry.ITEM) {
-				item.method_7850(ItemGroup.SEARCH, this.container.field_2897);
+				item.appendItemsForGroup(ItemGroup.SEARCH, this.container.itemList);
 			}
 		} else {
 			Searchable<ItemStack> searchable;
 			if (string.startsWith("#")) {
 				string = string.substring(1);
-				searchable = this.client.method_1484(SearchManager.ITEM_TAG);
+				searchable = this.client.getSearchableContainer(SearchManager.ITEM_TAG);
 				this.method_15871(string);
 			} else {
-				searchable = this.client.method_1484(SearchManager.ITEM_TOOLTIP);
+				searchable = this.client.getSearchableContainer(SearchManager.ITEM_TOOLTIP);
 			}
 
-			this.container.field_2897.addAll(searchable.findAll(string.toLowerCase(Locale.ROOT)));
+			this.container.itemList.addAll(searchable.findAll(string.toLowerCase(Locale.ROOT)));
 		}
 
 		this.scrollPosition = 0.0F;
@@ -364,7 +363,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			predicate = identifier -> identifier.getNamespace().contains(string2) && identifier.getPath().contains(string3);
 		}
 
-		TagContainer<Item> tagContainer = ItemTags.method_15106();
+		TagContainer<Item> tagContainer = ItemTags.getContainer();
 		tagContainer.getKeys().stream().filter(predicate).forEach(identifier -> {
 			Tag var10000 = (Tag)this.field_16201.put(identifier, tagContainer.get(identifier));
 		});
@@ -426,35 +425,35 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		int i = selectedTab;
 		selectedTab = itemGroup.getIndex();
 		this.cursorDragSlots.clear();
-		this.container.field_2897.clear();
+		this.container.itemList.clear();
 		if (itemGroup == ItemGroup.HOTBAR) {
 			HotbarStorage hotbarStorage = this.client.getCreativeHotbarStorage();
 
 			for (int j = 0; j < 9; j++) {
-				HotbarStorageEntry hotbarStorageEntry = hotbarStorage.method_1410(j);
+				HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(j);
 				if (hotbarStorageEntry.isEmpty()) {
 					for (int k = 0; k < 9; k++) {
 						if (k == j) {
 							ItemStack itemStack = new ItemStack(Items.field_8407);
-							itemStack.method_7911("CustomCreativeLock");
-							String string = this.client.field_1690.keysHotbar[j].getLocalizedName();
-							String string2 = this.client.field_1690.keySaveToolbarActivator.getLocalizedName();
-							itemStack.method_7977(new TranslatableTextComponent("inventory.hotbarInfo", string2, string));
-							this.container.field_2897.add(itemStack);
+							itemStack.getOrCreateSubCompoundTag("CustomCreativeLock");
+							String string = this.client.options.keysHotbar[j].getLocalizedName();
+							String string2 = this.client.options.keySaveToolbarActivator.getLocalizedName();
+							itemStack.setDisplayName(new TranslatableTextComponent("inventory.hotbarInfo", string2, string));
+							this.container.itemList.add(itemStack);
 						} else {
-							this.container.field_2897.add(ItemStack.EMPTY);
+							this.container.itemList.add(ItemStack.EMPTY);
 						}
 					}
 				} else {
-					this.container.field_2897.addAll(hotbarStorageEntry);
+					this.container.itemList.addAll(hotbarStorageEntry);
 				}
 			}
 		} else if (itemGroup != ItemGroup.SEARCH) {
-			itemGroup.method_7738(this.container.field_2897);
+			itemGroup.appendItems(this.container.itemList);
 		}
 
 		if (itemGroup == ItemGroup.INVENTORY) {
-			Container container = this.client.field_1724.field_7498;
+			Container container = this.client.player.playerContainer;
 			if (this.slots == null) {
 				this.slots = ImmutableList.copyOf(this.container.slotList);
 			}
@@ -524,7 +523,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		if (!this.doRenderScrollBar()) {
 			return false;
 		} else {
-			int i = (this.container.field_2897.size() + 9 - 1) / 9 - 5;
+			int i = (this.container.itemList.size() + 9 - 1) / 9 - 5;
 			this.scrollPosition = (float)((double)this.scrollPosition - f / (double)i);
 			this.scrollPosition = MathHelper.clamp(this.scrollPosition, 0.0F, 1.0F);
 			this.container.method_2473(this.scrollPosition);
@@ -588,8 +587,8 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	@Override
 	protected void drawStackTooltip(ItemStack itemStack, int i, int j) {
 		if (selectedTab == ItemGroup.SEARCH.getIndex()) {
-			List<TextComponent> list = itemStack.method_7950(
-				this.client.field_1724, this.client.field_1690.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
+			List<TextComponent> list = itemStack.getTooltipText(
+				this.client.player, this.client.options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.NORMAL
 			);
 			List<String> list2 = Lists.<String>newArrayListWithCapacity(list.size());
 
@@ -605,7 +604,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 					Enchantment enchantment = (Enchantment)map.keySet().iterator().next();
 
 					for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
-						if (itemGroup2.method_7740(enchantment.field_9083)) {
+						if (itemGroup2.containsEnchantments(enchantment.type)) {
 							itemGroup = itemGroup2;
 							break;
 						}
@@ -624,7 +623,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 			for (int k = 0; k < list2.size(); k++) {
 				if (k == 0) {
-					list2.set(k, itemStack.method_7932().field_8908 + (String)list2.get(k));
+					list2.set(k, itemStack.getRarity().formatting + (String)list2.get(k));
 				} else {
 					list2.set(k, TextFormat.field_1080 + (String)list2.get(k));
 				}
@@ -643,27 +642,27 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
 
 		for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
-			this.client.method_1531().method_4618(field_2893);
+			this.client.getTextureManager().bindTexture(TEXTURE);
 			if (itemGroup2.getIndex() != selectedTab) {
 				this.method_2468(itemGroup2);
 			}
 		}
 
-		this.client.method_1531().method_4618(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
+		this.client.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
 		this.drawTexturedRect(this.left, this.top, 0, 0, this.width, this.height);
 		this.searchBox.draw(i, j, f);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int k = this.left + 175;
 		int l = this.top + 18;
 		int m = l + 112;
-		this.client.method_1531().method_4618(field_2893);
+		this.client.getTextureManager().bindTexture(TEXTURE);
 		if (itemGroup.hasScrollbar()) {
 			this.drawTexturedRect(k, l + (int)((float)(m - l - 17) * this.scrollPosition), 232 + (this.doRenderScrollBar() ? 0 : 12), 0, 12, 15);
 		}
 
 		this.method_2468(itemGroup);
 		if (itemGroup == ItemGroup.INVENTORY) {
-			PlayerInventoryScreen.drawEntity(this.left + 88, this.top + 45, 20, (float)(this.left + 88 - i), (float)(this.top + 45 - 30 - j), this.client.field_1724);
+			PlayerInventoryScreen.drawEntity(this.left + 88, this.top + 45, 20, (float)(this.left + 88 - i), (float)(this.top + 45 - 30 - j), this.client.player);
 		}
 	}
 
@@ -739,16 +738,16 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		GlStateManager.disableLighting();
 		this.drawTexturedRect(l, m, j, k, 28, 32);
 		this.zOffset = 100.0F;
-		this.field_2560.zOffset = 100.0F;
+		this.itemRenderer.zOffset = 100.0F;
 		l += 6;
 		m += 8 + (bl2 ? 1 : -1);
 		GlStateManager.enableLighting();
 		GlStateManager.enableRescaleNormal();
-		ItemStack itemStack = itemGroup.method_7747();
-		this.field_2560.renderGuiItem(itemStack, l, m);
-		this.field_2560.renderGuiItemOverlay(this.fontRenderer, itemStack, l, m);
+		ItemStack itemStack = itemGroup.getIcon();
+		this.itemRenderer.renderGuiItem(itemStack, l, m);
+		this.itemRenderer.renderGuiItemOverlay(this.fontRenderer, itemStack, l, m);
 		GlStateManager.disableLighting();
-		this.field_2560.zOffset = 0.0F;
+		this.itemRenderer.zOffset = 0.0F;
 		this.zOffset = 0.0F;
 	}
 
@@ -757,32 +756,32 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	}
 
 	public static void onHotbarKeyPress(MinecraftClient minecraftClient, int i, boolean bl, boolean bl2) {
-		ClientPlayerEntity clientPlayerEntity = minecraftClient.field_1724;
+		ClientPlayerEntity clientPlayerEntity = minecraftClient.player;
 		HotbarStorage hotbarStorage = minecraftClient.getCreativeHotbarStorage();
-		HotbarStorageEntry hotbarStorageEntry = hotbarStorage.method_1410(i);
+		HotbarStorageEntry hotbarStorageEntry = hotbarStorage.getSavedHotbar(i);
 		if (bl) {
 			for (int j = 0; j < PlayerInventory.getHotbarSize(); j++) {
 				ItemStack itemStack = hotbarStorageEntry.get(j).copy();
-				clientPlayerEntity.inventory.method_5447(j, itemStack);
-				minecraftClient.field_1761.method_2909(itemStack, 36 + j);
+				clientPlayerEntity.inventory.setInvStack(j, itemStack);
+				minecraftClient.interactionManager.method_2909(itemStack, 36 + j);
 			}
 
-			clientPlayerEntity.field_7498.sendContentUpdates();
+			clientPlayerEntity.playerContainer.sendContentUpdates();
 		} else if (bl2) {
 			for (int j = 0; j < PlayerInventory.getHotbarSize(); j++) {
-				hotbarStorageEntry.set(j, clientPlayerEntity.inventory.method_5438(j).copy());
+				hotbarStorageEntry.set(j, clientPlayerEntity.inventory.getInvStack(j).copy());
 			}
 
-			String string = minecraftClient.field_1690.keysHotbar[i].getLocalizedName();
-			String string2 = minecraftClient.field_1690.keyLoadToolbarActivator.getLocalizedName();
-			minecraftClient.field_1705.method_1758(new TranslatableTextComponent("inventory.hotbarSaved", string2, string), false);
+			String string = minecraftClient.options.keysHotbar[i].getLocalizedName();
+			String string2 = minecraftClient.options.keyLoadToolbarActivator.getLocalizedName();
+			minecraftClient.inGameHud.setOverlayMessage(new TranslatableTextComponent("inventory.hotbarSaved", string2, string), false);
 			hotbarStorage.save();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class CreativeContainer extends Container {
-		public final DefaultedList<ItemStack> field_2897 = DefaultedList.create();
+		public final DefaultedList<ItemStack> itemList = DefaultedList.create();
 
 		public CreativeContainer(PlayerEntity playerEntity) {
 			super(null, 0);
@@ -790,12 +789,12 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 			for (int i = 0; i < 5; i++) {
 				for (int j = 0; j < 9; j++) {
-					this.method_7621(new CreativePlayerInventoryScreen.class_482(CreativePlayerInventoryScreen.inventory, i * 9 + j, 9 + j * 18, 18 + i * 18));
+					this.addSlot(new CreativePlayerInventoryScreen.class_482(CreativePlayerInventoryScreen.inventory, i * 9 + j, 9 + j * 18, 18 + i * 18));
 				}
 			}
 
 			for (int i = 0; i < 9; i++) {
-				this.method_7621(new Slot(playerInventory, i, 9 + i * 18, 112));
+				this.addSlot(new Slot(playerInventory, i, 9 + i * 18, 112));
 			}
 
 			this.method_2473(0.0F);
@@ -807,7 +806,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		public void method_2473(float f) {
-			int i = (this.field_2897.size() + 9 - 1) / 9 - 5;
+			int i = (this.itemList.size() + 9 - 1) / 9 - 5;
 			int j = (int)((double)(f * (float)i) + 0.5);
 			if (j < 0) {
 				j = 0;
@@ -816,25 +815,25 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			for (int k = 0; k < 5; k++) {
 				for (int l = 0; l < 9; l++) {
 					int m = l + (k + j) * 9;
-					if (m >= 0 && m < this.field_2897.size()) {
-						CreativePlayerInventoryScreen.inventory.method_5447(l + k * 9, this.field_2897.get(m));
+					if (m >= 0 && m < this.itemList.size()) {
+						CreativePlayerInventoryScreen.inventory.setInvStack(l + k * 9, this.itemList.get(m));
 					} else {
-						CreativePlayerInventoryScreen.inventory.method_5447(l + k * 9, ItemStack.EMPTY);
+						CreativePlayerInventoryScreen.inventory.setInvStack(l + k * 9, ItemStack.EMPTY);
 					}
 				}
 			}
 		}
 
 		public boolean method_2474() {
-			return this.field_2897.size() > 45;
+			return this.itemList.size() > 45;
 		}
 
 		@Override
-		public ItemStack method_7601(PlayerEntity playerEntity, int i) {
+		public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 			if (i >= this.slotList.size() - 9 && i < this.slotList.size()) {
 				Slot slot = (Slot)this.slotList.get(i);
 				if (slot != null && slot.hasStack()) {
-					slot.method_7673(ItemStack.EMPTY);
+					slot.setStack(ItemStack.EMPTY);
 				}
 			}
 
@@ -842,12 +841,12 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		@Override
-		public boolean method_7613(ItemStack itemStack, Slot slot) {
+		public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
 			return slot.inventory != CreativePlayerInventoryScreen.inventory;
 		}
 
 		@Override
-		public boolean method_7615(Slot slot) {
+		public boolean canInsertIntoSlot(Slot slot) {
 			return slot.inventory != CreativePlayerInventoryScreen.inventory;
 		}
 	}
@@ -862,19 +861,19 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		@Override
-		public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
-			this.slot.method_7667(playerEntity, itemStack);
+		public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+			this.slot.onTakeItem(playerEntity, itemStack);
 			return itemStack;
 		}
 
 		@Override
-		public boolean method_7680(ItemStack itemStack) {
-			return this.slot.method_7680(itemStack);
+		public boolean canInsert(ItemStack itemStack) {
+			return this.slot.canInsert(itemStack);
 		}
 
 		@Override
-		public ItemStack method_7677() {
-			return this.slot.method_7677();
+		public ItemStack getStack() {
+			return this.slot.getStack();
 		}
 
 		@Override
@@ -883,8 +882,8 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		@Override
-		public void method_7673(ItemStack itemStack) {
-			this.slot.method_7673(itemStack);
+		public void setStack(ItemStack itemStack) {
+			this.slot.setStack(itemStack);
 		}
 
 		@Override
@@ -898,8 +897,8 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		@Override
-		public int method_7676(ItemStack itemStack) {
-			return this.slot.method_7676(itemStack);
+		public int getMaxStackAmount(ItemStack itemStack) {
+			return this.slot.getMaxStackAmount(itemStack);
 		}
 
 		@Nullable
@@ -909,8 +908,8 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		}
 
 		@Override
-		public ItemStack method_7671(int i) {
-			return this.slot.method_7671(i);
+		public ItemStack takeStack(int i) {
+			return this.slot.takeStack(i);
 		}
 
 		@Override
@@ -932,7 +931,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 		@Override
 		public boolean canTakeItems(PlayerEntity playerEntity) {
-			return super.canTakeItems(playerEntity) && this.hasStack() ? this.method_7677().method_7941("CustomCreativeLock") == null : !this.hasStack();
+			return super.canTakeItems(playerEntity) && this.hasStack() ? this.getStack().getSubCompoundTag("CustomCreativeLock") == null : !this.hasStack();
 		}
 	}
 }

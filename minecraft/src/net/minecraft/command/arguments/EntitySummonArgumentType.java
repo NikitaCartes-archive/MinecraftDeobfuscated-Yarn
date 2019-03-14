@@ -23,17 +23,17 @@ public class EntitySummonArgumentType implements ArgumentType<Identifier> {
 		return new EntitySummonArgumentType();
 	}
 
-	public static Identifier method_9322(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return method_9326(commandContext.getArgument(string, Identifier.class));
+	public static Identifier getSummonArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return validate(commandContext.getArgument(string, Identifier.class));
 	}
 
-	private static Identifier method_9326(Identifier identifier) throws CommandSyntaxException {
-		Registry.ENTITY_TYPE.method_17966(identifier).filter(EntityType::isSummonable).orElseThrow(() -> NOTFOUND_EXCEPTION.create(identifier));
+	private static Identifier validate(Identifier identifier) throws CommandSyntaxException {
+		Registry.ENTITY_TYPE.getOrEmpty(identifier).filter(EntityType::isSummonable).orElseThrow(() -> NOTFOUND_EXCEPTION.create(identifier));
 		return identifier;
 	}
 
 	public Identifier method_9325(StringReader stringReader) throws CommandSyntaxException {
-		return method_9326(Identifier.parse(stringReader));
+		return validate(Identifier.parse(stringReader));
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class WrittenBookItem extends Item {
 		super(settings);
 	}
 
-	public static boolean method_8053(@Nullable CompoundTag compoundTag) {
+	public static boolean isValidBook(@Nullable CompoundTag compoundTag) {
 		if (!WritableBookItem.method_8047(compoundTag)) {
 			return false;
 		} else if (!compoundTag.containsKey("title", 8)) {
@@ -43,32 +43,32 @@ public class WrittenBookItem extends Item {
 	}
 
 	public static int getBookGeneration(ItemStack itemStack) {
-		return itemStack.method_7969().getInt("generation");
+		return itemStack.getTag().getInt("generation");
 	}
 
 	public static int getPageCount(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.method_7969();
-		return compoundTag != null ? compoundTag.method_10554("pages", 8).size() : 0;
+		CompoundTag compoundTag = itemStack.getTag();
+		return compoundTag != null ? compoundTag.getList("pages", 8).size() : 0;
 	}
 
 	@Override
-	public TextComponent method_7864(ItemStack itemStack) {
+	public TextComponent getTranslatedNameTrimmed(ItemStack itemStack) {
 		if (itemStack.hasTag()) {
-			CompoundTag compoundTag = itemStack.method_7969();
+			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("title");
 			if (!ChatUtil.isEmpty(string)) {
 				return new StringTextComponent(string);
 			}
 		}
 
-		return super.method_7864(itemStack);
+		return super.getTranslatedNameTrimmed(itemStack);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_7851(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		if (itemStack.hasTag()) {
-			CompoundTag compoundTag = itemStack.method_7969();
+			CompoundTag compoundTag = itemStack.getTag();
 			String string = compoundTag.getString("author");
 			if (!ChatUtil.isEmpty(string)) {
 				list.add(new TranslatableTextComponent("book.byAuthor", string).applyFormat(TextFormat.field_1080));
@@ -79,33 +79,33 @@ public class WrittenBookItem extends Item {
 	}
 
 	@Override
-	public ActionResult method_7884(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.method_8045();
-		BlockPos blockPos = itemUsageContext.method_8037();
-		BlockState blockState = world.method_8320(blockPos);
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
+		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() == Blocks.field_16330) {
-			return LecternBlock.method_17472(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.field_5812 : ActionResult.PASS;
+			return LecternBlock.putBookIfAbsent(world, blockPos, blockState, itemUsageContext.getItemStack()) ? ActionResult.field_5812 : ActionResult.PASS;
 		} else {
 			return ActionResult.PASS;
 		}
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
-		playerEntity.method_7315(itemStack, hand);
-		playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
+		playerEntity.openEditBookScreen(itemStack, hand);
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 
-	public static boolean method_8054(ItemStack itemStack, @Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity) {
-		CompoundTag compoundTag = itemStack.method_7969();
+	public static boolean resolve(ItemStack itemStack, @Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity) {
+		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && !compoundTag.getBoolean("resolved")) {
 			compoundTag.putBoolean("resolved", true);
-			if (!method_8053(compoundTag)) {
+			if (!isValidBook(compoundTag)) {
 				return false;
 			} else {
-				ListTag listTag = compoundTag.method_10554("pages", 8);
+				ListTag listTag = compoundTag.getList("pages", 8);
 
 				for (int i = 0; i < listTag.size(); i++) {
 					String string = listTag.getString(i);
@@ -121,7 +121,7 @@ public class WrittenBookItem extends Item {
 					listTag.method_10606(i, new StringTag(TextComponent.Serializer.toJsonString(textComponent)));
 				}
 
-				compoundTag.method_10566("pages", listTag);
+				compoundTag.put("pages", listTag);
 				return true;
 			}
 		} else {
@@ -131,7 +131,7 @@ public class WrittenBookItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_7886(ItemStack itemStack) {
+	public boolean hasEnchantmentGlint(ItemStack itemStack) {
 		return true;
 	}
 }

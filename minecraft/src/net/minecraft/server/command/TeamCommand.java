@@ -81,7 +81,9 @@ public class TeamCommand {
 									ServerCommandManager.argument("displayName", ComponentArgumentType.create())
 										.executes(
 											commandContext -> method_13715(
-													commandContext.getSource(), StringArgumentType.getString(commandContext, "team"), ComponentArgumentType.method_9280(commandContext, "displayName")
+													commandContext.getSource(),
+													StringArgumentType.getString(commandContext, "team"),
+													ComponentArgumentType.getComponentArgument(commandContext, "displayName")
 												)
 										)
 								)
@@ -145,7 +147,7 @@ public class TeamCommand {
 													commandContext -> method_13711(
 															commandContext.getSource(),
 															TeamArgumentType.getTeamArgument(commandContext, "team"),
-															ComponentArgumentType.method_9280(commandContext, "displayName")
+															ComponentArgumentType.getComponentArgument(commandContext, "displayName")
 														)
 												)
 										)
@@ -302,7 +304,7 @@ public class TeamCommand {
 													commandContext -> method_13743(
 															commandContext.getSource(),
 															TeamArgumentType.getTeamArgument(commandContext, "team"),
-															ComponentArgumentType.method_9280(commandContext, "prefix")
+															ComponentArgumentType.getComponentArgument(commandContext, "prefix")
 														)
 												)
 										)
@@ -315,7 +317,7 @@ public class TeamCommand {
 													commandContext -> method_13756(
 															commandContext.getSource(),
 															TeamArgumentType.getTeamArgument(commandContext, "team"),
-															ComponentArgumentType.method_9280(commandContext, "suffix")
+															ComponentArgumentType.getComponentArgument(commandContext, "suffix")
 														)
 												)
 										)
@@ -326,34 +328,34 @@ public class TeamCommand {
 	}
 
 	private static int method_13714(ServerCommandSource serverCommandSource, Collection<String> collection) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 
 		for (String string : collection) {
 			scoreboard.clearPlayerTeam(string);
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.leave.success.single", collection.iterator().next()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.leave.success.single", collection.iterator().next()), true);
 		} else {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.leave.success.multiple", collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.leave.success.multiple", collection.size()), true);
 		}
 
 		return collection.size();
 	}
 
 	private static int method_13720(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam, Collection<String> collection) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 
 		for (String string : collection) {
 			scoreboard.addPlayerToTeam(string, scoreboardTeam);
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.team.join.success.single", collection.iterator().next(), scoreboardTeam.method_1148()), true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.join.success.multiple", collection.size(), scoreboardTeam.method_1148()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.join.success.multiple", collection.size(), scoreboardTeam.method_1148()), true);
 		}
 
 		return collection.size();
@@ -363,8 +365,8 @@ public class TeamCommand {
 		if (scoreboardTeam.getNameTagVisibilityRule() == visibilityRule) {
 			throw OPTION_NAMETAGEVISIBILITY_UNCHANGED_EXCEPTION.create();
 		} else {
-			scoreboardTeam.method_1149(visibilityRule);
-			serverCommandSource.method_9226(
+			scoreboardTeam.setNameTagVisibilityRule(visibilityRule);
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.team.option.nametagVisibility.success", scoreboardTeam.method_1148(), visibilityRule.method_1214()), true
 			);
 			return 0;
@@ -375,8 +377,8 @@ public class TeamCommand {
 		if (scoreboardTeam.getDeathMessageVisibilityRule() == visibilityRule) {
 			throw OPTION_DEATHMESSAGEVISIBILITY_UNCHANGED_EXCEPTION.create();
 		} else {
-			scoreboardTeam.method_1133(visibilityRule);
-			serverCommandSource.method_9226(
+			scoreboardTeam.setDeathMessageVisibilityRule(visibilityRule);
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.team.option.deathMessageVisibility.success", scoreboardTeam.method_1148(), visibilityRule.method_1214()), true
 			);
 			return 0;
@@ -387,8 +389,8 @@ public class TeamCommand {
 		if (scoreboardTeam.getCollisionRule() == collisionRule) {
 			throw OPTION_COLLISIONRULE_UNCHANGED_EXCEPTION.create();
 		} else {
-			scoreboardTeam.method_1145(collisionRule);
-			serverCommandSource.method_9226(
+			scoreboardTeam.setCollisionRule(collisionRule);
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.team.option.collisionRule.success", scoreboardTeam.method_1148(), collisionRule.method_1209()), true
 			);
 			return 0;
@@ -404,7 +406,7 @@ public class TeamCommand {
 			}
 		} else {
 			scoreboardTeam.setShowFriendlyInvisibles(bl);
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.team.option.seeFriendlyInvisibles." + (bl ? "enabled" : "disabled"), scoreboardTeam.method_1148()), true
 			);
 			return 0;
@@ -420,7 +422,7 @@ public class TeamCommand {
 			}
 		} else {
 			scoreboardTeam.setFriendlyFireAllowed(bl);
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.team.option.friendlyfire." + (bl ? "enabled" : "disabled"), scoreboardTeam.method_1148()), true
 			);
 			return 0;
@@ -428,11 +430,11 @@ public class TeamCommand {
 	}
 
 	private static int method_13711(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam, TextComponent textComponent) throws CommandSyntaxException {
-		if (scoreboardTeam.method_1140().equals(textComponent)) {
+		if (scoreboardTeam.getDisplayName().equals(textComponent)) {
 			throw OPTION_NAME_UNCHANGED_EXCEPTION.create();
 		} else {
-			scoreboardTeam.method_1137(textComponent);
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.option.name.success", scoreboardTeam.method_1148()), true);
+			scoreboardTeam.setDisplayName(textComponent);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.option.name.success", scoreboardTeam.method_1148()), true);
 			return 0;
 		}
 	}
@@ -442,7 +444,7 @@ public class TeamCommand {
 			throw OPTION_COLOR_UNCHANGED_EXCEPTION.create();
 		} else {
 			scoreboardTeam.setColor(textFormat);
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.team.option.color.success", scoreboardTeam.method_1148(), textFormat.getFormatName()), true
 			);
 			return 0;
@@ -450,7 +452,7 @@ public class TeamCommand {
 	}
 
 	private static int method_13723(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam) throws CommandSyntaxException {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		Collection<String> collection = Lists.<String>newArrayList(scoreboardTeam.getPlayerList());
 		if (collection.isEmpty()) {
 			throw EMPTY_UNCHANGED_EXCEPTION.create();
@@ -459,15 +461,15 @@ public class TeamCommand {
 				scoreboard.removePlayerFromTeam(string, scoreboardTeam);
 			}
 
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.empty.success", collection.size(), scoreboardTeam.method_1148()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.empty.success", collection.size(), scoreboardTeam.method_1148()), true);
 			return collection.size();
 		}
 	}
 
 	private static int method_13747(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		scoreboard.removeTeam(scoreboardTeam);
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.remove.success", scoreboardTeam.method_1148()), true);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.remove.success", scoreboardTeam.method_1148()), true);
 		return scoreboard.getTeams().size();
 	}
 
@@ -476,15 +478,15 @@ public class TeamCommand {
 	}
 
 	private static int method_13715(ServerCommandSource serverCommandSource, String string, TextComponent textComponent) throws CommandSyntaxException {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		if (scoreboard.getTeam(string) != null) {
 			throw ADD_DUPLICATE_EXCEPTION.create();
 		} else if (string.length() > 16) {
 			throw ADD_LONGNAME_EXCEPTION.create(16);
 		} else {
 			ScoreboardTeam scoreboardTeam = scoreboard.addTeam(string);
-			scoreboardTeam.method_1137(textComponent);
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.add.success", scoreboardTeam.method_1148()), true);
+			scoreboardTeam.setDisplayName(textComponent);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.add.success", scoreboardTeam.method_1148()), true);
 			return scoreboard.getTeams().size();
 		}
 	}
@@ -492,9 +494,9 @@ public class TeamCommand {
 	private static int method_13748(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam) {
 		Collection<String> collection = scoreboardTeam.getPlayerList();
 		if (collection.isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.list.members.empty", scoreboardTeam.method_1148()), false);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.list.members.empty", scoreboardTeam.method_1148()), false);
 		} else {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.team.list.members.success", scoreboardTeam.method_1148(), collection.size(), TextFormatter.sortedJoin(collection)),
 				false
 			);
@@ -504,11 +506,11 @@ public class TeamCommand {
 	}
 
 	private static int method_13728(ServerCommandSource serverCommandSource) {
-		Collection<ScoreboardTeam> collection = serverCommandSource.getMinecraftServer().method_3845().getTeams();
+		Collection<ScoreboardTeam> collection = serverCommandSource.getMinecraftServer().getScoreboard().getTeams();
 		if (collection.isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.list.teams.empty"), false);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.list.teams.empty"), false);
 		} else {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.team.list.teams.success", collection.size(), TextFormatter.join(collection, ScoreboardTeam::method_1148)), false
 			);
 		}
@@ -517,14 +519,14 @@ public class TeamCommand {
 	}
 
 	private static int method_13743(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam, TextComponent textComponent) {
-		scoreboardTeam.method_1138(textComponent);
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.option.prefix.success", textComponent), false);
+		scoreboardTeam.setPrefix(textComponent);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.option.prefix.success", textComponent), false);
 		return 1;
 	}
 
 	private static int method_13756(ServerCommandSource serverCommandSource, ScoreboardTeam scoreboardTeam, TextComponent textComponent) {
-		scoreboardTeam.method_1139(textComponent);
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.team.option.suffix.success", textComponent), false);
+		scoreboardTeam.setSuffix(textComponent);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.team.option.suffix.success", textComponent), false);
 		return 1;
 	}
 }

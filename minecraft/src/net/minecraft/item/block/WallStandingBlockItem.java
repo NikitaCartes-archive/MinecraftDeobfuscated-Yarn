@@ -12,25 +12,25 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.ViewableWorld;
 
 public class WallStandingBlockItem extends BlockItem {
-	protected final Block field_8918;
+	protected final Block block;
 
 	public WallStandingBlockItem(Block block, Block block2, Item.Settings settings) {
 		super(block, settings);
-		this.field_8918 = block2;
+		this.block = block2;
 	}
 
 	@Nullable
 	@Override
-	protected BlockState method_7707(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.field_8918.method_9605(itemPlacementContext);
+	protected BlockState getBlockState(ItemPlacementContext itemPlacementContext) {
+		BlockState blockState = this.block.getPlacementState(itemPlacementContext);
 		BlockState blockState2 = null;
-		ViewableWorld viewableWorld = itemPlacementContext.method_8045();
-		BlockPos blockPos = itemPlacementContext.method_8037();
+		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
 
-		for (Direction direction : itemPlacementContext.method_7718()) {
+		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
 			if (direction != Direction.UP) {
-				BlockState blockState3 = direction == Direction.DOWN ? this.method_7711().method_9605(itemPlacementContext) : blockState;
-				if (blockState3 != null && blockState3.method_11591(viewableWorld, blockPos)) {
+				BlockState blockState3 = direction == Direction.DOWN ? this.getBlock().getPlacementState(itemPlacementContext) : blockState;
+				if (blockState3 != null && blockState3.canPlaceAt(viewableWorld, blockPos)) {
 					blockState2 = blockState3;
 					break;
 				}
@@ -41,8 +41,8 @@ public class WallStandingBlockItem extends BlockItem {
 	}
 
 	@Override
-	public void method_7713(Map<Block, Item> map, Item item) {
-		super.method_7713(map, item);
-		map.put(this.field_8918, item);
+	public void registerBlockItemMap(Map<Block, Item> map, Item item) {
+		super.registerBlockItemMap(map, item);
+		map.put(this.block, item);
 	}
 }

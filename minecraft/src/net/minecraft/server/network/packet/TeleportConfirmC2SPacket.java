@@ -29,7 +29,7 @@ public class TeleportConfirmC2SPacket implements Packet<ServerPlayPacketListener
 	}
 
 	public void method_12085(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12050(this);
+		serverPlayPacketListener.onTeleportConfirm(this);
 	}
 
 	public int getTeleportId() {

@@ -14,7 +14,7 @@ public class Snooper {
 	private final Map<String, Object> info = Maps.<String, Object>newHashMap();
 	private final String token = UUID.randomUUID().toString();
 	private final URL snooperUrl;
-	private final SnooperListener field_5827;
+	private final SnooperListener listener;
 	private final Timer timer = new Timer("Snooper Timer", true);
 	private final Object syncObject = new Object();
 	private final long startTime;
@@ -27,7 +27,7 @@ public class Snooper {
 			throw new IllegalArgumentException();
 		}
 
-		this.field_5827 = snooperListener;
+		this.listener = snooperListener;
 		this.startTime = l;
 	}
 
@@ -41,7 +41,7 @@ public class Snooper {
 		this.addInitialInfo("memory_max", Runtime.getRuntime().maxMemory());
 		this.addInitialInfo("memory_free", Runtime.getRuntime().freeMemory());
 		this.addInitialInfo("cpu_cores", Runtime.getRuntime().availableProcessors());
-		this.field_5827.addSnooperInfo(this);
+		this.listener.addSnooperInfo(this);
 	}
 
 	public void addInfo(String string, Object object) {

@@ -22,46 +22,46 @@ public class ScaffoldingItem extends BlockItem {
 
 	@Nullable
 	@Override
-	public ItemPlacementContext method_16356(ItemPlacementContext itemPlacementContext) {
-		BlockPos blockPos = itemPlacementContext.method_8037();
-		World world = itemPlacementContext.method_8045();
-		BlockState blockState = world.method_8320(blockPos);
-		Block block = this.method_7711();
+	public ItemPlacementContext getPlacementContext(ItemPlacementContext itemPlacementContext) {
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		World world = itemPlacementContext.getWorld();
+		BlockState blockState = world.getBlockState(blockPos);
+		Block block = this.getBlock();
 		if (blockState.getBlock() != block) {
 			return itemPlacementContext;
 		} else {
 			Direction direction;
 			if (itemPlacementContext.isPlayerSneaking()) {
-				direction = itemPlacementContext.method_17699() ? itemPlacementContext.method_8038().getOpposite() : itemPlacementContext.method_8038();
+				direction = itemPlacementContext.method_17699() ? itemPlacementContext.getFacing().getOpposite() : itemPlacementContext.getFacing();
 			} else {
-				direction = itemPlacementContext.method_8038() == Direction.UP ? itemPlacementContext.method_8042() : Direction.UP;
+				direction = itemPlacementContext.getFacing() == Direction.UP ? itemPlacementContext.getPlayerHorizontalFacing() : Direction.UP;
 			}
 
 			int i = 0;
-			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).method_10098(direction);
+			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(direction);
 
 			while (i < 7) {
-				if (!world.isClient && !World.method_8558(mutable)) {
+				if (!world.isClient && !World.isValid(mutable)) {
 					PlayerEntity playerEntity = itemPlacementContext.getPlayer();
 					int j = world.getHeight();
 					if (playerEntity instanceof ServerPlayerEntity && mutable.getY() >= j) {
 						ChatMessageS2CPacket chatMessageS2CPacket = new ChatMessageS2CPacket(
 							new TranslatableTextComponent("build.tooHigh", j).applyFormat(TextFormat.field_1061), ChatMessageType.field_11733
 						);
-						((ServerPlayerEntity)playerEntity).field_13987.sendPacket(chatMessageS2CPacket);
+						((ServerPlayerEntity)playerEntity).networkHandler.sendPacket(chatMessageS2CPacket);
 					}
 					break;
 				}
 
-				blockState = world.method_8320(mutable);
-				if (blockState.getBlock() != this.method_7711()) {
+				blockState = world.getBlockState(mutable);
+				if (blockState.getBlock() != this.getBlock()) {
 					if (blockState.method_11587(itemPlacementContext)) {
-						return ItemPlacementContext.method_16355(itemPlacementContext, mutable, direction);
+						return ItemPlacementContext.create(itemPlacementContext, mutable, direction);
 					}
 					break;
 				}
 
-				mutable.method_10098(direction);
+				mutable.setOffset(direction);
 				if (direction.getAxis().isHorizontal()) {
 					i++;
 				}

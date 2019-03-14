@@ -37,32 +37,32 @@ public class WeatherCommand {
 	}
 
 	private static int method_13824(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.method_9225().method_8401().setClearWeatherTime(i);
-		serverCommandSource.method_9225().method_8401().setRainTime(0);
-		serverCommandSource.method_9225().method_8401().setThunderTime(0);
-		serverCommandSource.method_9225().method_8401().setRaining(false);
-		serverCommandSource.method_9225().method_8401().setThundering(false);
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.weather.set.clear"), true);
+		serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setRainTime(0);
+		serverCommandSource.getWorld().getLevelProperties().setThunderTime(0);
+		serverCommandSource.getWorld().getLevelProperties().setRaining(false);
+		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.weather.set.clear"), true);
 		return i;
 	}
 
 	private static int method_13828(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.method_9225().method_8401().setClearWeatherTime(0);
-		serverCommandSource.method_9225().method_8401().setRainTime(i);
-		serverCommandSource.method_9225().method_8401().setThunderTime(i);
-		serverCommandSource.method_9225().method_8401().setRaining(true);
-		serverCommandSource.method_9225().method_8401().setThundering(false);
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.weather.set.rain"), true);
+		serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(0);
+		serverCommandSource.getWorld().getLevelProperties().setRainTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
+		serverCommandSource.getWorld().getLevelProperties().setThundering(false);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.weather.set.rain"), true);
 		return i;
 	}
 
 	private static int method_13833(ServerCommandSource serverCommandSource, int i) {
-		serverCommandSource.method_9225().method_8401().setClearWeatherTime(0);
-		serverCommandSource.method_9225().method_8401().setRainTime(i);
-		serverCommandSource.method_9225().method_8401().setThunderTime(i);
-		serverCommandSource.method_9225().method_8401().setRaining(true);
-		serverCommandSource.method_9225().method_8401().setThundering(true);
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.weather.set.thunder"), true);
+		serverCommandSource.getWorld().getLevelProperties().setClearWeatherTime(0);
+		serverCommandSource.getWorld().getLevelProperties().setRainTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setThunderTime(i);
+		serverCommandSource.getWorld().getLevelProperties().setRaining(true);
+		serverCommandSource.getWorld().getLevelProperties().setThundering(true);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.weather.set.thunder"), true);
 		return i;
 	}
 }

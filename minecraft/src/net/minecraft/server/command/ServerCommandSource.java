@@ -35,18 +35,18 @@ public class ServerCommandSource implements CommandSource {
 		new TranslatableTextComponent("permissions.requires.entity")
 	);
 	private final CommandOutput output;
-	private final Vec3d field_9817;
-	private final ServerWorld field_9828;
+	private final Vec3d position;
+	private final ServerWorld world;
 	private final int level;
 	private final String name;
-	private final TextComponent field_9825;
+	private final TextComponent textComponent;
 	private final MinecraftServer minecraftServer;
 	private final boolean silent;
 	@Nullable
 	private final Entity entity;
 	private final ResultConsumer<ServerCommandSource> resultConsumer;
 	private final EntityAnchorArgumentType.EntityAnchor entityAnchor;
-	private final Vec2f field_9822;
+	private final Vec2f rotation;
 
 	public ServerCommandSource(
 		CommandOutput commandOutput,
@@ -78,17 +78,17 @@ public class ServerCommandSource implements CommandSource {
 		EntityAnchorArgumentType.EntityAnchor entityAnchor
 	) {
 		this.output = commandOutput;
-		this.field_9817 = vec3d;
-		this.field_9828 = serverWorld;
+		this.position = vec3d;
+		this.world = serverWorld;
 		this.silent = bl;
 		this.entity = entity;
 		this.level = i;
 		this.name = string;
-		this.field_9825 = textComponent;
+		this.textComponent = textComponent;
 		this.minecraftServer = minecraftServer;
 		this.resultConsumer = resultConsumer;
 		this.entityAnchor = entityAnchor;
-		this.field_9822 = vec2f;
+		this.rotation = vec2f;
 	}
 
 	public ServerCommandSource withEntity(Entity entity) {
@@ -96,12 +96,12 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.field_9817,
-				this.field_9822,
-				this.field_9828,
+				this.position,
+				this.rotation,
+				this.world,
 				this.level,
-				entity.method_5477().getString(),
-				entity.method_5476(),
+				entity.getName().getString(),
+				entity.getDisplayName(),
 				this.minecraftServer,
 				entity,
 				this.silent,
@@ -110,17 +110,17 @@ public class ServerCommandSource implements CommandSource {
 			);
 	}
 
-	public ServerCommandSource method_9208(Vec3d vec3d) {
-		return this.field_9817.equals(vec3d)
+	public ServerCommandSource withPosition(Vec3d vec3d) {
+		return this.position.equals(vec3d)
 			? this
 			: new ServerCommandSource(
 				this.output,
 				vec3d,
-				this.field_9822,
-				this.field_9828,
+				this.rotation,
+				this.world,
 				this.level,
 				this.name,
-				this.field_9825,
+				this.textComponent,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -129,17 +129,17 @@ public class ServerCommandSource implements CommandSource {
 			);
 	}
 
-	public ServerCommandSource method_9216(Vec2f vec2f) {
-		return this.field_9822.equals(vec2f)
+	public ServerCommandSource withRotation(Vec2f vec2f) {
+		return this.rotation.equals(vec2f)
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.field_9817,
+				this.position,
 				vec2f,
-				this.field_9828,
+				this.world,
 				this.level,
 				this.name,
-				this.field_9825,
+				this.textComponent,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -153,12 +153,12 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.field_9817,
-				this.field_9822,
-				this.field_9828,
+				this.position,
+				this.rotation,
+				this.world,
 				this.level,
 				this.name,
-				this.field_9825,
+				this.textComponent,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -179,12 +179,12 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.field_9817,
-				this.field_9822,
-				this.field_9828,
+				this.position,
+				this.rotation,
+				this.world,
 				this.level,
 				this.name,
-				this.field_9825,
+				this.textComponent,
 				this.minecraftServer,
 				this.entity,
 				true,
@@ -198,12 +198,12 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.field_9817,
-				this.field_9822,
-				this.field_9828,
+				this.position,
+				this.rotation,
+				this.world,
 				i,
 				this.name,
-				this.field_9825,
+				this.textComponent,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -217,12 +217,12 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.field_9817,
-				this.field_9822,
-				this.field_9828,
+				this.position,
+				this.rotation,
+				this.world,
 				i,
 				this.name,
-				this.field_9825,
+				this.textComponent,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -236,12 +236,12 @@ public class ServerCommandSource implements CommandSource {
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.field_9817,
-				this.field_9822,
-				this.field_9828,
+				this.position,
+				this.rotation,
+				this.world,
 				this.level,
 				this.name,
-				this.field_9825,
+				this.textComponent,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -250,17 +250,17 @@ public class ServerCommandSource implements CommandSource {
 			);
 	}
 
-	public ServerCommandSource method_9227(ServerWorld serverWorld) {
-		return serverWorld == this.field_9828
+	public ServerCommandSource withWorld(ServerWorld serverWorld) {
+		return serverWorld == this.world
 			? this
 			: new ServerCommandSource(
 				this.output,
-				this.field_9817,
-				this.field_9822,
+				this.position,
+				this.rotation,
 				serverWorld,
 				this.level,
 				this.name,
-				this.field_9825,
+				this.textComponent,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -270,22 +270,22 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	public ServerCommandSource withLookingAt(Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor) throws CommandSyntaxException {
-		return this.method_9221(entityAnchor.method_9302(entity));
+		return this.withLookingAt(entityAnchor.positionAt(entity));
 	}
 
-	public ServerCommandSource method_9221(Vec3d vec3d) throws CommandSyntaxException {
-		Vec3d vec3d2 = this.entityAnchor.method_9299(this);
+	public ServerCommandSource withLookingAt(Vec3d vec3d) throws CommandSyntaxException {
+		Vec3d vec3d2 = this.entityAnchor.positionAt(this);
 		double d = vec3d.x - vec3d2.x;
 		double e = vec3d.y - vec3d2.y;
 		double f = vec3d.z - vec3d2.z;
 		double g = (double)MathHelper.sqrt(d * d + f * f);
 		float h = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI)));
 		float i = MathHelper.wrapDegrees((float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F);
-		return this.method_9216(new Vec2f(h, i));
+		return this.withRotation(new Vec2f(h, i));
 	}
 
-	public TextComponent method_9223() {
-		return this.field_9825;
+	public TextComponent getDisplayName() {
+		return this.textComponent;
 	}
 
 	public String getName() {
@@ -297,12 +297,12 @@ public class ServerCommandSource implements CommandSource {
 		return this.level >= i;
 	}
 
-	public Vec3d method_9222() {
-		return this.field_9817;
+	public Vec3d getPosition() {
+		return this.position;
 	}
 
-	public ServerWorld method_9225() {
-		return this.field_9828;
+	public ServerWorld getWorld() {
+		return this.world;
 	}
 
 	@Nullable
@@ -318,7 +318,7 @@ public class ServerCommandSource implements CommandSource {
 		}
 	}
 
-	public ServerPlayerEntity method_9207() throws CommandSyntaxException {
+	public ServerPlayerEntity getPlayer() throws CommandSyntaxException {
 		if (!(this.entity instanceof ServerPlayerEntity)) {
 			throw REQUIRES_PLAYER_EXCEPTION.create();
 		} else {
@@ -326,8 +326,8 @@ public class ServerCommandSource implements CommandSource {
 		}
 	}
 
-	public Vec2f method_9210() {
-		return this.field_9822;
+	public Vec2f getRotation() {
+		return this.rotation;
 	}
 
 	public MinecraftServer getMinecraftServer() {
@@ -338,35 +338,35 @@ public class ServerCommandSource implements CommandSource {
 		return this.entityAnchor;
 	}
 
-	public void method_9226(TextComponent textComponent, boolean bl) {
+	public void sendFeedback(TextComponent textComponent, boolean bl) {
 		if (this.output.sendCommandFeedback() && !this.silent) {
-			this.output.method_9203(textComponent);
+			this.output.appendCommandFeedback(textComponent);
 		}
 
 		if (bl && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
-			this.method_9212(textComponent);
+			this.sendToOps(textComponent);
 		}
 	}
 
-	private void method_9212(TextComponent textComponent) {
-		TextComponent textComponent2 = new TranslatableTextComponent("chat.type.admin", this.method_9223(), textComponent)
+	private void sendToOps(TextComponent textComponent) {
+		TextComponent textComponent2 = new TranslatableTextComponent("chat.type.admin", this.getDisplayName(), textComponent)
 			.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056});
 		if (this.minecraftServer.getGameRules().getBoolean("sendCommandFeedback")) {
-			for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.method_3760().getPlayerList()) {
-				if (serverPlayerEntity != this.output && this.minecraftServer.method_3760().isOperator(serverPlayerEntity.getGameProfile())) {
-					serverPlayerEntity.method_9203(textComponent2);
+			for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
+				if (serverPlayerEntity != this.output && this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
+					serverPlayerEntity.appendCommandFeedback(textComponent2);
 				}
 			}
 		}
 
 		if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean("logAdminCommands")) {
-			this.minecraftServer.method_9203(textComponent2);
+			this.minecraftServer.appendCommandFeedback(textComponent2);
 		}
 	}
 
-	public void method_9213(TextComponent textComponent) {
+	public void sendError(TextComponent textComponent) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.method_9203(new StringTextComponent("").append(textComponent).applyFormat(TextFormat.field_1061));
+			this.output.appendCommandFeedback(new StringTextComponent("").append(textComponent).applyFormat(TextFormat.field_1061));
 		}
 	}
 
@@ -383,7 +383,7 @@ public class ServerCommandSource implements CommandSource {
 
 	@Override
 	public Collection<String> getTeamNames() {
-		return this.minecraftServer.method_3845().getTeamNames();
+		return this.minecraftServer.getScoreboard().getTeamNames();
 	}
 
 	@Override

@@ -42,8 +42,8 @@ public class ScoreboardHud extends DrawableHelper {
 	}
 
 	public TextComponent method_1918(ScoreboardEntry scoreboardEntry) {
-		return scoreboardEntry.method_2971() != null
-			? scoreboardEntry.method_2971()
+		return scoreboardEntry.getDisplayName() != null
+			? scoreboardEntry.getDisplayName()
 			: ScoreboardTeam.method_1142(scoreboardEntry.getScoreboardTeam(), new StringTextComponent(scoreboardEntry.getProfile().getName()));
 	}
 
@@ -56,16 +56,16 @@ public class ScoreboardHud extends DrawableHelper {
 	}
 
 	public void method_1919(int i, Scoreboard scoreboard, @Nullable ScoreboardObjective scoreboardObjective) {
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.field_1724.networkHandler;
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
 		List<ScoreboardEntry> list = ENTRY_ORDERING.sortedCopy(clientPlayNetworkHandler.getScoreboardEntries());
 		int j = 0;
 		int k = 0;
 
 		for (ScoreboardEntry scoreboardEntry : list) {
-			int l = this.client.field_1772.getStringWidth(this.method_1918(scoreboardEntry).getFormattedText());
+			int l = this.client.textRenderer.getStringWidth(this.method_1918(scoreboardEntry).getFormattedText());
 			j = Math.max(j, l);
-			if (scoreboardObjective != null && scoreboardObjective.method_1118() != ScoreboardCriterion.Type.HEARTS) {
-				l = this.client.field_1772.getStringWidth(" " + scoreboard.getPlayerScore(scoreboardEntry.getProfile().getName(), scoreboardObjective).getScore());
+			if (scoreboardObjective != null && scoreboardObjective.getCriterionType() != ScoreboardCriterion.Type.HEARTS) {
+				l = this.client.textRenderer.getStringWidth(" " + scoreboard.getPlayerScore(scoreboardEntry.getProfile().getName(), scoreboardObjective).getScore());
 				k = Math.max(k, l);
 			}
 		}
@@ -79,10 +79,10 @@ public class ScoreboardHud extends DrawableHelper {
 			l++;
 		}
 
-		boolean bl = this.client.isInSingleplayer() || this.client.method_1562().method_2872().isEncrypted();
+		boolean bl = this.client.isInSingleplayer() || this.client.getNetworkHandler().getClientConnection().isEncrypted();
 		int o;
 		if (scoreboardObjective != null) {
-			if (scoreboardObjective.method_1118() == ScoreboardCriterion.Type.HEARTS) {
+			if (scoreboardObjective.getCriterionType() == ScoreboardCriterion.Type.HEARTS) {
 				o = 90;
 			} else {
 				o = k;
@@ -97,19 +97,19 @@ public class ScoreboardHud extends DrawableHelper {
 		int s = p * l + (l - 1) * 5;
 		List<String> list2 = null;
 		if (this.field_2153 != null) {
-			list2 = this.client.field_1772.wrapStringToWidthAsList(this.field_2153.getFormattedText(), i - 50);
+			list2 = this.client.textRenderer.wrapStringToWidthAsList(this.field_2153.getFormattedText(), i - 50);
 
 			for (String string : list2) {
-				s = Math.max(s, this.client.field_1772.getStringWidth(string));
+				s = Math.max(s, this.client.textRenderer.getStringWidth(string));
 			}
 		}
 
 		List<String> list3 = null;
 		if (this.field_2154 != null) {
-			list3 = this.client.field_1772.wrapStringToWidthAsList(this.field_2154.getFormattedText(), i - 50);
+			list3 = this.client.textRenderer.wrapStringToWidthAsList(this.field_2154.getFormattedText(), i - 50);
 
 			for (String string2 : list3) {
-				s = Math.max(s, this.client.field_1772.getStringWidth(string2));
+				s = Math.max(s, this.client.textRenderer.getStringWidth(string2));
 			}
 		}
 
@@ -117,8 +117,8 @@ public class ScoreboardHud extends DrawableHelper {
 			drawRect(i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list2.size() * 9, Integer.MIN_VALUE);
 
 			for (String string2 : list2) {
-				int t = this.client.field_1772.getStringWidth(string2);
-				this.client.field_1772.drawWithShadow(string2, (float)(i / 2 - t / 2), (float)r, -1);
+				int t = this.client.textRenderer.getStringWidth(string2);
+				this.client.textRenderer.drawWithShadow(string2, (float)(i / 2 - t / 2), (float)r, -1);
 				r += 9;
 			}
 
@@ -126,7 +126,7 @@ public class ScoreboardHud extends DrawableHelper {
 		}
 
 		drawRect(i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + n * 9, Integer.MIN_VALUE);
-		int u = this.client.field_1690.method_19344(553648127);
+		int u = this.client.options.method_19344(553648127);
 
 		for (int v = 0; v < m; v++) {
 			int t = v / n;
@@ -144,15 +144,15 @@ public class ScoreboardHud extends DrawableHelper {
 				ScoreboardEntry scoreboardEntry2 = (ScoreboardEntry)list.get(v);
 				GameProfile gameProfile = scoreboardEntry2.getProfile();
 				if (bl) {
-					PlayerEntity playerEntity = this.client.field_1687.method_18470(gameProfile.getId());
+					PlayerEntity playerEntity = this.client.world.method_18470(gameProfile.getId());
 					boolean bl2 = playerEntity != null
-						&& playerEntity.method_7348(PlayerModelPart.CAPE)
+						&& playerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)
 						&& ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
-					this.client.method_1531().method_4618(scoreboardEntry2.method_2968());
+					this.client.getTextureManager().bindTexture(scoreboardEntry2.getSkinTexture());
 					int z = 8 + (bl2 ? 8 : 0);
 					int aa = 8 * (bl2 ? -1 : 1);
 					DrawableHelper.drawTexturedRect(x, y, 8.0F, (float)z, 8, aa, 8, 8, 64.0F, 64.0F);
-					if (playerEntity != null && playerEntity.method_7348(PlayerModelPart.HEAD)) {
+					if (playerEntity != null && playerEntity.isSkinOverlayVisible(PlayerModelPart.HEAD)) {
 						int ab = 8 + (bl2 ? 8 : 0);
 						int ac = 8 * (bl2 ? -1 : 1);
 						DrawableHelper.drawTexturedRect(x, y, 40.0F, (float)ab, 8, ac, 8, 8, 64.0F, 64.0F);
@@ -163,9 +163,9 @@ public class ScoreboardHud extends DrawableHelper {
 
 				String string3 = this.method_1918(scoreboardEntry2).getFormattedText();
 				if (scoreboardEntry2.getGameMode() == GameMode.field_9219) {
-					this.client.field_1772.drawWithShadow(TextFormat.field_1056 + string3, (float)x, (float)y, -1862270977);
+					this.client.textRenderer.drawWithShadow(TextFormat.field_1056 + string3, (float)x, (float)y, -1862270977);
 				} else {
-					this.client.field_1772.drawWithShadow(string3, (float)x, (float)y, -1);
+					this.client.textRenderer.drawWithShadow(string3, (float)x, (float)y, -1);
 				}
 
 				if (scoreboardObjective != null && scoreboardEntry2.getGameMode() != GameMode.field_9219) {
@@ -185,8 +185,8 @@ public class ScoreboardHud extends DrawableHelper {
 			drawRect(i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list3.size() * 9, Integer.MIN_VALUE);
 
 			for (String string4 : list3) {
-				int w = this.client.field_1772.getStringWidth(string4);
-				this.client.field_1772.drawWithShadow(string4, (float)(i / 2 - w / 2), (float)r, -1);
+				int w = this.client.textRenderer.getStringWidth(string4);
+				this.client.textRenderer.drawWithShadow(string4, (float)(i / 2 - w / 2), (float)r, -1);
 				r += 9;
 			}
 		}
@@ -194,7 +194,7 @@ public class ScoreboardHud extends DrawableHelper {
 
 	protected void method_1923(int i, int j, int k, ScoreboardEntry scoreboardEntry) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.method_1531().method_4618(field_2053);
+		this.client.getTextureManager().bindTexture(ICONS);
 		int l = 0;
 		int m;
 		if (scoreboardEntry.getLatency() < 0) {
@@ -217,9 +217,9 @@ public class ScoreboardHud extends DrawableHelper {
 	}
 
 	private void method_1922(ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, ScoreboardEntry scoreboardEntry) {
-		int l = scoreboardObjective.method_1117().getPlayerScore(string, scoreboardObjective).getScore();
-		if (scoreboardObjective.method_1118() == ScoreboardCriterion.Type.HEARTS) {
-			this.client.method_1531().method_4618(field_2053);
+		int l = scoreboardObjective.getScoreboard().getPlayerScore(string, scoreboardObjective).getScore();
+		if (scoreboardObjective.getCriterionType() == ScoreboardCriterion.Type.HEARTS) {
+			this.client.getTextureManager().bindTexture(ICONS);
 			long m = SystemUtil.getMeasuringTimeMs();
 			if (this.field_2152 == scoreboardEntry.method_2976()) {
 				if (l < scoreboardEntry.method_2973()) {
@@ -274,16 +274,16 @@ public class ScoreboardHud extends DrawableHelper {
 					float g = MathHelper.clamp((float)l / 20.0F, 0.0F, 1.0F);
 					int q = (int)((1.0F - g) * 255.0F) << 16 | (int)(g * 255.0F) << 8;
 					String string2 = "" + (float)l / 2.0F;
-					if (k - this.client.field_1772.getStringWidth(string2 + "hp") >= j) {
+					if (k - this.client.textRenderer.getStringWidth(string2 + "hp") >= j) {
 						string2 = string2 + "hp";
 					}
 
-					this.client.field_1772.drawWithShadow(string2, (float)((k + j) / 2 - this.client.field_1772.getStringWidth(string2) / 2), (float)i, q);
+					this.client.textRenderer.drawWithShadow(string2, (float)((k + j) / 2 - this.client.textRenderer.getStringWidth(string2) / 2), (float)i, q);
 				}
 			}
 		} else {
 			String string3 = TextFormat.field_1054 + "" + l;
-			this.client.field_1772.drawWithShadow(string3, (float)(k - this.client.field_1772.getStringWidth(string3)), (float)i, 16777215);
+			this.client.textRenderer.drawWithShadow(string3, (float)(k - this.client.textRenderer.getStringWidth(string3)), (float)i, 16777215);
 		}
 	}
 

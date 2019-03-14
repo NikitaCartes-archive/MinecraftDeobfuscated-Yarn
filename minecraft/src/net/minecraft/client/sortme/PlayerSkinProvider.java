@@ -54,16 +54,16 @@ public class PlayerSkinProvider {
 			});
 	}
 
-	public Identifier method_4656(MinecraftProfileTexture minecraftProfileTexture, Type type) {
-		return this.method_4651(minecraftProfileTexture, type, null);
+	public Identifier loadSkin(MinecraftProfileTexture minecraftProfileTexture, Type type) {
+		return this.loadSkin(minecraftProfileTexture, type, null);
 	}
 
-	public Identifier method_4651(
+	public Identifier loadSkin(
 		MinecraftProfileTexture minecraftProfileTexture, Type type, @Nullable PlayerSkinProvider.SkinTextureAvailableCallback skinTextureAvailableCallback
 	) {
 		String string = Hashing.sha1().hashUnencodedChars(minecraftProfileTexture.getHash()).toString();
 		final Identifier identifier = new Identifier("skins/" + string);
-		Texture texture = this.textureManager.method_4619(identifier);
+		Texture texture = this.textureManager.getTexture(identifier);
 		if (texture != null) {
 			if (skinTextureAvailableCallback != null) {
 				skinTextureAvailableCallback.onSkinTextureAvailable(type, identifier, minecraftProfileTexture);
@@ -72,7 +72,7 @@ public class PlayerSkinProvider {
 			File file = new File(this.skinCacheDir, string.length() > 2 ? string.substring(0, 2) : "xx");
 			File file2 = new File(file, string);
 			final ImageFilter imageFilter = type == Type.SKIN ? new SkinRemappingImageFilter() : null;
-			PlayerSkinTexture playerSkinTexture = new PlayerSkinTexture(file2, minecraftProfileTexture.getUrl(), DefaultSkinHelper.method_4649(), new ImageFilter() {
+			PlayerSkinTexture playerSkinTexture = new PlayerSkinTexture(file2, minecraftProfileTexture.getUrl(), DefaultSkinHelper.getTexture(), new ImageFilter() {
 				@Override
 				public NativeImage filterImage(NativeImage nativeImage) {
 					return imageFilter != null ? imageFilter.filterImage(nativeImage) : nativeImage;
@@ -89,7 +89,7 @@ public class PlayerSkinProvider {
 					}
 				}
 			});
-			this.textureManager.method_4616(identifier, playerSkinTexture);
+			this.textureManager.registerTexture(identifier, playerSkinTexture);
 		}
 
 		return identifier;
@@ -106,7 +106,7 @@ public class PlayerSkinProvider {
 
 			if (map.isEmpty()) {
 				gameProfile.getProperties().clear();
-				if (gameProfile.getId().equals(MinecraftClient.getInstance().method_1548().getProfile().getId())) {
+				if (gameProfile.getId().equals(MinecraftClient.getInstance().getSession().getProfile().getId())) {
 					gameProfile.getProperties().putAll(MinecraftClient.getInstance().getSessionProperties());
 					map.putAll(this.sessionService.getTextures(gameProfile, false));
 				} else {
@@ -121,11 +121,11 @@ public class PlayerSkinProvider {
 
 			MinecraftClient.getInstance().execute(() -> {
 				if (map.containsKey(Type.SKIN)) {
-					this.method_4651((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN, skinTextureAvailableCallback);
+					this.loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN, skinTextureAvailableCallback);
 				}
 
 				if (map.containsKey(Type.CAPE)) {
-					this.method_4651((MinecraftProfileTexture)map.get(Type.CAPE), Type.CAPE, skinTextureAvailableCallback);
+					this.loadSkin((MinecraftProfileTexture)map.get(Type.CAPE), Type.CAPE, skinTextureAvailableCallback);
 				}
 			});
 		});

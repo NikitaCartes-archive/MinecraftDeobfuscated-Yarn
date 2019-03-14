@@ -65,7 +65,7 @@ public class ArgumentTypes {
 		register("swizzle", SwizzleArgumentType.class, new ConstantArgumentSerializer(SwizzleArgumentType::create));
 		register("team", TeamArgumentType.class, new ConstantArgumentSerializer(TeamArgumentType::create));
 		register("item_slot", ItemSlotArgumentType.class, new ConstantArgumentSerializer(ItemSlotArgumentType::create));
-		register("resource_location", ResourceLocationArgumentType.class, new ConstantArgumentSerializer(ResourceLocationArgumentType::create));
+		register("resource_location", IdentifierArgumentType.class, new ConstantArgumentSerializer(IdentifierArgumentType::create));
 		register("mob_effect", MobEffectArgumentType.class, new ConstantArgumentSerializer(MobEffectArgumentType::create));
 		register("function", FunctionArgumentType.class, new ConstantArgumentSerializer(FunctionArgumentType::create));
 		register("entity_anchor", EntityAnchorArgumentType.class, new ConstantArgumentSerializer(EntityAnchorArgumentType::create));
@@ -78,7 +78,7 @@ public class ArgumentTypes {
 	}
 
 	@Nullable
-	private static ArgumentTypes.Entry<?> method_10018(Identifier identifier) {
+	private static ArgumentTypes.Entry<?> byId(Identifier identifier) {
 		return (ArgumentTypes.Entry<?>)idMap.get(identifier);
 	}
 
@@ -87,26 +87,26 @@ public class ArgumentTypes {
 		return (ArgumentTypes.Entry<?>)classMap.get(argumentType.getClass());
 	}
 
-	public static <T extends ArgumentType<?>> void method_10019(PacketByteBuf packetByteBuf, T argumentType) {
+	public static <T extends ArgumentType<?>> void toPacket(PacketByteBuf packetByteBuf, T argumentType) {
 		ArgumentTypes.Entry<T> entry = (ArgumentTypes.Entry<T>)byClass(argumentType);
 		if (entry == null) {
 			LOGGER.error("Could not serialize {} ({}) - will not be sent to client!", argumentType, argumentType.getClass());
-			packetByteBuf.method_10812(new Identifier(""));
+			packetByteBuf.writeIdentifier(new Identifier(""));
 		} else {
-			packetByteBuf.method_10812(entry.field_10925);
-			entry.serializer.method_10007(argumentType, packetByteBuf);
+			packetByteBuf.writeIdentifier(entry.id);
+			entry.serializer.toPacket(argumentType, packetByteBuf);
 		}
 	}
 
 	@Nullable
-	public static ArgumentType<?> method_10014(PacketByteBuf packetByteBuf) {
-		Identifier identifier = packetByteBuf.method_10810();
-		ArgumentTypes.Entry<?> entry = method_10018(identifier);
+	public static ArgumentType<?> fromPacket(PacketByteBuf packetByteBuf) {
+		Identifier identifier = packetByteBuf.readIdentifier();
+		ArgumentTypes.Entry<?> entry = byId(identifier);
 		if (entry == null) {
 			LOGGER.error("Could not deserialize {}", identifier);
 			return null;
 		} else {
-			return entry.serializer.method_10005(packetByteBuf);
+			return entry.serializer.fromPacket(packetByteBuf);
 		}
 	}
 
@@ -117,7 +117,7 @@ public class ArgumentTypes {
 			jsonObject.addProperty("type", "unknown");
 		} else {
 			jsonObject.addProperty("type", "argument");
-			jsonObject.addProperty("parser", entry.field_10925.toString());
+			jsonObject.addProperty("parser", entry.id.toString());
 			JsonObject jsonObject2 = new JsonObject();
 			entry.serializer.toJson(argumentType, jsonObject2);
 			if (jsonObject2.size() > 0) {
@@ -172,12 +172,12 @@ public class ArgumentTypes {
 	static class Entry<T extends ArgumentType<?>> {
 		public final Class<T> argClass;
 		public final ArgumentSerializer<T> serializer;
-		public final Identifier field_10925;
+		public final Identifier id;
 
 		private Entry(Class<T> class_, ArgumentSerializer<T> argumentSerializer, Identifier identifier) {
 			this.argClass = class_;
 			this.serializer = argumentSerializer;
-			this.field_10925 = identifier;
+			this.id = identifier;
 		}
 	}
 }

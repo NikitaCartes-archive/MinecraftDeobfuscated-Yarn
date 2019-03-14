@@ -42,13 +42,13 @@ public class UpdateCommandBlockMinecartC2SPacket implements Packet<ServerPlayPac
 	}
 
 	public void method_12477(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12049(this);
+		serverPlayPacketListener.onUpdateCommandBlockMinecart(this);
 	}
 
 	@Nullable
 	public CommandBlockExecutor getMinecartCommandExecutor(World world) {
 		Entity entity = world.getEntityById(this.entityId);
-		return entity instanceof CommandBlockMinecartEntity ? ((CommandBlockMinecartEntity)entity).method_7567() : null;
+		return entity instanceof CommandBlockMinecartEntity ? ((CommandBlockMinecartEntity)entity).getCommandExecutor() : null;
 	}
 
 	public String getCommand() {

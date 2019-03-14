@@ -20,13 +20,13 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class LanguageManager implements SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	protected static final TranslationStorage field_5322 = new TranslationStorage();
+	protected static final TranslationStorage STORAGE = new TranslationStorage();
 	private String currentLanguageCode;
 	private final Map<String, LanguageDefinition> languageDefs = Maps.<String, LanguageDefinition>newHashMap();
 
 	public LanguageManager(String string) {
 		this.currentLanguageCode = string;
-		I18n.method_4661(field_5322);
+		I18n.setLanguage(STORAGE);
 	}
 
 	public void reloadResources(List<ResourcePack> list) {
@@ -34,7 +34,7 @@ public class LanguageManager implements SynchronousResourceReloadListener {
 
 		for (ResourcePack resourcePack : list) {
 			try {
-				LanguageResourceMetadata languageResourceMetadata = resourcePack.method_14407(LanguageResourceMetadata.field_5343);
+				LanguageResourceMetadata languageResourceMetadata = resourcePack.parseMetadata(LanguageResourceMetadata.READER);
 				if (languageResourceMetadata != null) {
 					for (LanguageDefinition languageDefinition : languageResourceMetadata.getLanguageDefinitions()) {
 						if (!this.languageDefs.containsKey(languageDefinition.getCode())) {
@@ -55,8 +55,8 @@ public class LanguageManager implements SynchronousResourceReloadListener {
 			list.add(this.currentLanguageCode);
 		}
 
-		field_5322.method_4675(resourceManager, list);
-		Language.load(field_5322.translations);
+		STORAGE.load(resourceManager, list);
+		Language.load(STORAGE.translations);
 	}
 
 	public boolean isRightToLeft() {

@@ -21,12 +21,12 @@ import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
 public class ItemColorMap {
-	private final IdList<ItemColorMapper> field_1996 = new IdList<>(32);
+	private final IdList<ItemColorMapper> mappers = new IdList<>(32);
 
 	public static ItemColorMap create(BlockColorMap blockColorMap) {
 		ItemColorMap itemColorMap = new ItemColorMap();
 		itemColorMap.register(
-			(itemStack, i) -> i > 0 ? -1 : ((DyeableItem)itemStack.getItem()).method_7800(itemStack),
+			(itemStack, i) -> i > 0 ? -1 : ((DyeableItem)itemStack.getItem()).getColor(itemStack),
 			Items.field_8267,
 			Items.field_8577,
 			Items.field_8570,
@@ -38,7 +38,7 @@ public class ItemColorMap {
 			if (i != 1) {
 				return -1;
 			} else {
-				CompoundTag compoundTag = itemStack.method_7941("Explosion");
+				CompoundTag compoundTag = itemStack.getSubCompoundTag("Explosion");
 				int[] is = compoundTag != null && compoundTag.containsKey("Colors", 11) ? compoundTag.getIntArray("Colors") : null;
 				if (is == null) {
 					return 9079434;
@@ -70,8 +70,8 @@ public class ItemColorMap {
 
 		itemColorMap.register(
 			(itemStack, i) -> {
-				BlockState blockState = ((BlockItem)itemStack.getItem()).method_7711().method_9564();
-				return blockColorMap.method_1697(blockState, null, null, i);
+				BlockState blockState = ((BlockItem)itemStack.getItem()).getBlock().getDefaultState();
+				return blockColorMap.getRenderColor(blockState, null, null, i);
 			},
 			Blocks.field_10219,
 			Blocks.field_10479,
@@ -91,13 +91,13 @@ public class ItemColorMap {
 	}
 
 	public int getRenderColor(ItemStack itemStack, int i) {
-		ItemColorMapper itemColorMapper = this.field_1996.get(Registry.ITEM.getRawId(itemStack.getItem()));
+		ItemColorMapper itemColorMapper = this.mappers.get(Registry.ITEM.getRawId(itemStack.getItem()));
 		return itemColorMapper == null ? -1 : itemColorMapper.getColor(itemStack, i);
 	}
 
 	public void register(ItemColorMapper itemColorMapper, ItemProvider... itemProviders) {
 		for (ItemProvider itemProvider : itemProviders) {
-			this.field_1996.set(itemColorMapper, Item.getRawIdByItem(itemProvider.getItem()));
+			this.mappers.set(itemColorMapper, Item.getRawIdByItem(itemProvider.getItem()));
 		}
 	}
 }

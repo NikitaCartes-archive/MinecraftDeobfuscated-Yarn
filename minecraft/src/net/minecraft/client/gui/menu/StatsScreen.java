@@ -9,13 +9,13 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
-import net.minecraft.class_452;
 import net.minecraft.block.Block;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.StatsListener;
 import net.minecraft.client.gui.widget.AbstractListWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.GuiLighting;
@@ -40,27 +40,27 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 
 @Environment(EnvType.CLIENT)
-public class StatsScreen extends Screen implements class_452 {
-	protected final Screen field_2648;
+public class StatsScreen extends Screen implements StatsListener {
+	protected final Screen parent;
 	protected String field_2649 = "Select world";
 	private StatsScreen.class_4198 field_2644;
 	private StatsScreen.class_4200 field_2642;
 	private StatsScreen.class_4202 field_2646;
-	private final StatHandler field_2647;
+	private final StatHandler statHandler;
 	@Nullable
-	private AbstractListWidget field_2643;
+	private AbstractListWidget listWidget;
 	private boolean field_2645 = true;
 
 	public StatsScreen(Screen screen, StatHandler statHandler) {
-		this.field_2648 = screen;
-		this.field_2647 = statHandler;
+		this.parent = screen;
+		this.statHandler = statHandler;
 	}
 
 	@Override
 	protected void onInitialized() {
 		this.field_2649 = I18n.translate("gui.stats");
 		this.field_2645 = true;
-		this.client.method_1562().method_2883(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12775));
+		this.client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12775));
 	}
 
 	public void method_2270() {
@@ -70,36 +70,36 @@ public class StatsScreen extends Screen implements class_452 {
 	}
 
 	public void method_2267() {
-		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight - 28, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 28, I18n.translate("gui.done")) {
 			@Override
-			public void method_1826() {
-				StatsScreen.this.client.method_1507(StatsScreen.this.field_2648);
+			public void onPressed() {
+				StatsScreen.this.client.openScreen(StatsScreen.this.parent);
 			}
 		});
-		this.addButton(new class_4185(this.screenWidth / 2 - 120, this.screenHeight - 52, 80, 20, I18n.translate("stat.generalButton")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 120, this.screenHeight - 52, 80, 20, I18n.translate("stat.generalButton")) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				StatsScreen.this.method_19390(StatsScreen.this.field_2644);
 			}
 		});
-		class_4185 lv = this.addButton(new class_4185(this.screenWidth / 2 - 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.itemsButton")) {
+		ButtonWidget buttonWidget = this.addButton(new ButtonWidget(this.screenWidth / 2 - 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.itemsButton")) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				StatsScreen.this.method_19390(StatsScreen.this.field_2642);
 			}
 		});
-		class_4185 lv2 = this.addButton(new class_4185(this.screenWidth / 2 + 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.mobsButton")) {
+		ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.screenWidth / 2 + 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.mobsButton")) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				StatsScreen.this.method_19390(StatsScreen.this.field_2646);
 			}
 		});
 		if (this.field_2642.getInputListeners().isEmpty()) {
-			lv.enabled = false;
+			buttonWidget.enabled = false;
 		}
 
 		if (this.field_2646.getInputListeners().isEmpty()) {
-			lv2.enabled = false;
+			buttonWidget2.enabled = false;
 		}
 	}
 
@@ -110,7 +110,7 @@ public class StatsScreen extends Screen implements class_452 {
 			this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.downloadingStats"), this.screenWidth / 2, this.screenHeight / 2, 16777215);
 			this.drawStringCentered(
 				this.fontRenderer,
-				field_2668[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)field_2668.length)],
+				PROGRESS_BAR_STAGES[(int)(SystemUtil.getMeasuringTimeMs() / 150L % (long)PROGRESS_BAR_STAGES.length)],
 				this.screenWidth / 2,
 				this.screenHeight / 2 + 9 * 2,
 				16777215
@@ -123,7 +123,7 @@ public class StatsScreen extends Screen implements class_452 {
 	}
 
 	@Override
-	public void method_2300() {
+	public void onStatsReady() {
 		if (this.field_2645) {
 			this.method_2270();
 			this.method_2267();
@@ -139,7 +139,7 @@ public class StatsScreen extends Screen implements class_452 {
 
 	@Nullable
 	public AbstractListWidget method_19399() {
-		return this.field_2643;
+		return this.listWidget;
 	}
 
 	public void method_19390(@Nullable AbstractListWidget abstractListWidget) {
@@ -148,7 +148,7 @@ public class StatsScreen extends Screen implements class_452 {
 		this.listeners.remove(this.field_2646);
 		if (abstractListWidget != null) {
 			this.listeners.add(abstractListWidget);
-			this.field_2643 = abstractListWidget;
+			this.listWidget = abstractListWidget;
 		}
 	}
 
@@ -160,7 +160,7 @@ public class StatsScreen extends Screen implements class_452 {
 		this.method_2272(i + 1, j + 1);
 		GlStateManager.enableRescaleNormal();
 		GuiLighting.enableForItems();
-		this.field_2560.renderGuiItemIcon(item.method_7854(), i + 2, j + 2);
+		this.itemRenderer.renderGuiItemIcon(item.getDefaultStack(), i + 2, j + 2);
 		GuiLighting.disable();
 		GlStateManager.disableRescaleNormal();
 	}
@@ -171,14 +171,14 @@ public class StatsScreen extends Screen implements class_452 {
 
 	private void method_2282(int i, int j, int k, int l) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.method_1531().method_4618(field_2052);
+		this.client.getTextureManager().bindTexture(STAT_ICONS);
 		float f = 0.0078125F;
 		float g = 0.0078125F;
 		int m = 18;
 		int n = 18;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1585);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 		bufferBuilder.vertex((double)(i + 0), (double)(j + 18), (double)this.zOffset)
 			.texture((double)((float)(k + 0) * 0.0078125F), (double)((float)(l + 18) * 0.0078125F))
 			.next();
@@ -209,7 +209,7 @@ public class StatsScreen extends Screen implements class_452 {
 			int m = this.getX();
 			int n = this.getY();
 			StatsScreen.this.drawString(StatsScreen.this.fontRenderer, textComponent.getString(), m + 2, n + 1, this.field_2143 % 2 == 0 ? 16777215 : 9474192);
-			String string = this.field_18749.format(StatsScreen.this.field_2647.getStat(this.field_18749));
+			String string = this.field_18749.format(StatsScreen.this.statHandler.getStat(this.field_18749));
 			StatsScreen.this.drawString(
 				StatsScreen.this.fontRenderer,
 				string,
@@ -252,7 +252,7 @@ public class StatsScreen extends Screen implements class_452 {
 			for (int o = 0; o < StatsScreen.this.field_2642.field_18754.size(); o++) {
 				Stat<Block> stat;
 				if (item instanceof BlockItem) {
-					stat = ((StatType)StatsScreen.this.field_2642.field_18754.get(o)).getOrCreateStat(((BlockItem)item).method_7711());
+					stat = ((StatType)StatsScreen.this.field_2642.field_18754.get(o)).getOrCreateStat(((BlockItem)item).getBlock());
 				} else {
 					stat = null;
 				}
@@ -271,7 +271,7 @@ public class StatsScreen extends Screen implements class_452 {
 		}
 
 		protected void method_19405(@Nullable Stat<?> stat, int i, int j, boolean bl) {
-			String string = stat == null ? "-" : stat.format(StatsScreen.this.field_2647.getStat(stat));
+			String string = stat == null ? "-" : stat.format(StatsScreen.this.statHandler.getStat(stat));
 			StatsScreen.this.drawString(StatsScreen.this.fontRenderer, string, i - StatsScreen.this.fontRenderer.getStringWidth(string), j + 5, bl ? 16777215 : 9474192);
 		}
 	}
@@ -301,7 +301,7 @@ public class StatsScreen extends Screen implements class_452 {
 				boolean bl = false;
 
 				for (StatType<Item> statType : this.field_18755) {
-					if (statType.hasStat(item) && StatsScreen.this.field_2647.getStat(statType.getOrCreateStat(item)) > 0) {
+					if (statType.hasStat(item) && StatsScreen.this.statHandler.getStat(statType.getOrCreateStat(item)) > 0) {
 						bl = true;
 					}
 				}
@@ -315,7 +315,7 @@ public class StatsScreen extends Screen implements class_452 {
 				boolean bl = false;
 
 				for (StatType<Block> statTypex : this.field_18754) {
-					if (statTypex.hasStat(block) && StatsScreen.this.field_2647.getStat(statTypex.getOrCreateStat(block)) > 0) {
+					if (statTypex.hasStat(block) && StatsScreen.this.statHandler.getStat(statTypex.getOrCreateStat(block)) > 0) {
 						bl = true;
 					}
 				}
@@ -335,7 +335,7 @@ public class StatsScreen extends Screen implements class_452 {
 
 		@Override
 		protected void method_1940(int i, int j, Tessellator tessellator) {
-			if (!this.client.field_1729.method_1608()) {
+			if (!this.client.mouse.method_1608()) {
 				this.field_18756 = -1;
 			}
 
@@ -384,7 +384,7 @@ public class StatsScreen extends Screen implements class_452 {
 
 			if (this.field_18756 >= 0) {
 				this.method_19408(this.method_19410(this.field_18756));
-				this.client.method_1483().play(PositionedSoundInstance.method_4758(SoundEvents.field_15015, 1.0F));
+				this.client.getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
 			}
 		}
 
@@ -404,7 +404,7 @@ public class StatsScreen extends Screen implements class_452 {
 
 		@Override
 		protected void method_1942(int i, int j) {
-			if (j >= this.y1 && j <= this.y2) {
+			if (j >= this.y && j <= this.bottom) {
 				int k = this.getSelectedEntry((double)i, (double)j);
 				int l = (this.width - this.getEntryWidth()) / 2;
 				if (k >= 0) {
@@ -443,7 +443,7 @@ public class StatsScreen extends Screen implements class_452 {
 		}
 
 		protected TextComponent method_19406(Item item) {
-			return item.method_7848();
+			return item.getTextComponent();
 		}
 
 		protected void method_19408(StatType<?> statType) {
@@ -473,12 +473,12 @@ public class StatsScreen extends Screen implements class_452 {
 					j = 0;
 				} else if (class_4200.this.field_18754.contains(class_4200.this.field_18759)) {
 					StatType<Block> statType = (StatType<Block>)class_4200.this.field_18759;
-					i = item instanceof BlockItem ? StatsScreen.this.field_2647.method_15024(statType, ((BlockItem)item).method_7711()) : -1;
-					j = item2 instanceof BlockItem ? StatsScreen.this.field_2647.method_15024(statType, ((BlockItem)item2).method_7711()) : -1;
+					i = item instanceof BlockItem ? StatsScreen.this.statHandler.method_15024(statType, ((BlockItem)item).getBlock()) : -1;
+					j = item2 instanceof BlockItem ? StatsScreen.this.statHandler.method_15024(statType, ((BlockItem)item2).getBlock()) : -1;
 				} else {
 					StatType<Item> statType = (StatType<Item>)class_4200.this.field_18759;
-					i = StatsScreen.this.field_2647.method_15024(statType, item);
-					j = StatsScreen.this.field_2647.method_15024(statType, item2);
+					i = StatsScreen.this.statHandler.method_15024(statType, item);
+					j = StatsScreen.this.statHandler.method_15024(statType, item2);
 				}
 
 				return i == j
@@ -498,9 +498,9 @@ public class StatsScreen extends Screen implements class_452 {
 
 		@Override
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
-			String string = I18n.translate(SystemUtil.method_646("entity", EntityType.method_5890(this.field_18762)));
-			int m = StatsScreen.this.field_2647.getStat(Stats.field_15403.getOrCreateStat(this.field_18762));
-			int n = StatsScreen.this.field_2647.getStat(Stats.field_15411.getOrCreateStat(this.field_18762));
+			String string = I18n.translate(SystemUtil.createTranslationKey("entity", EntityType.getId(this.field_18762)));
+			int m = StatsScreen.this.statHandler.getStat(Stats.field_15403.getOrCreateStat(this.field_18762));
+			int n = StatsScreen.this.statHandler.getStat(Stats.field_15411.getOrCreateStat(this.field_18762));
 			int o = this.getX();
 			int p = this.getY();
 			StatsScreen.this.drawString(StatsScreen.this.fontRenderer, string, o + 2 - 10, p + 1, 16777215);
@@ -526,8 +526,8 @@ public class StatsScreen extends Screen implements class_452 {
 			this.method_1943(false);
 
 			for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
-				if (StatsScreen.this.field_2647.getStat(Stats.field_15403.getOrCreateStat(entityType)) > 0
-					|| StatsScreen.this.field_2647.getStat(Stats.field_15411.getOrCreateStat(entityType)) > 0) {
+				if (StatsScreen.this.statHandler.getStat(Stats.field_15403.getOrCreateStat(entityType)) > 0
+					|| StatsScreen.this.statHandler.getStat(Stats.field_15411.getOrCreateStat(entityType)) > 0) {
 					this.addEntry(StatsScreen.this.new class_4201(entityType));
 				}
 			}

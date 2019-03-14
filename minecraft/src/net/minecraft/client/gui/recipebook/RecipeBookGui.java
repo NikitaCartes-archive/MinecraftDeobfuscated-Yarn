@@ -39,20 +39,20 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RecipeBookGui extends DrawableHelper implements Drawable, InputListener, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
-	protected static final Identifier field_3097 = new Identifier("textures/gui/recipe_book.png");
+	protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
 	private int leftOffset;
 	private int parentWidth;
 	private int parentHeight;
 	protected final RecipeBookGhostSlots ghostSlots = new RecipeBookGhostSlots();
 	private final List<GroupButtonWidget> tabButtons = Lists.<GroupButtonWidget>newArrayList();
-	private GroupButtonWidget field_3098;
+	private GroupButtonWidget currentTab;
 	protected ToggleButtonWidget toggleCraftableButton;
 	protected CraftingContainer<?> craftingContainer;
 	protected MinecraftClient client;
 	private TextFieldWidget searchField;
 	private String searchText = "";
 	protected ClientRecipeBook recipeBook;
-	protected final RecipeBookGuiResults field_3086 = new RecipeBookGuiResults();
+	protected final RecipeBookGuiResults recipesArea = new RecipeBookGuiResults();
 	protected final RecipeFinder recipeFinder = new RecipeFinder();
 	private int cachedInvChangeCount;
 	private boolean field_3087;
@@ -62,9 +62,9 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 		this.parentWidth = i;
 		this.parentHeight = j;
 		this.craftingContainer = craftingContainer;
-		minecraftClient.field_1724.field_7512 = craftingContainer;
-		this.recipeBook = minecraftClient.field_1724.getRecipeBook();
-		this.cachedInvChangeCount = minecraftClient.field_1724.inventory.getChangeCount();
+		minecraftClient.player.container = craftingContainer;
+		this.recipeBook = minecraftClient.player.getRecipeBook();
+		this.cachedInvChangeCount = minecraftClient.player.inventory.getChangeCount();
 		if (this.isOpen()) {
 			this.reset(bl);
 		}
@@ -77,17 +77,17 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 		int i = (this.parentWidth - 147) / 2 - this.leftOffset;
 		int j = (this.parentHeight - 166) / 2;
 		this.recipeFinder.clear();
-		this.client.field_1724.inventory.method_7387(this.recipeFinder);
+		this.client.player.inventory.populateRecipeFinder(this.recipeFinder);
 		this.craftingContainer.populateRecipeFinder(this.recipeFinder);
 		String string = this.searchField != null ? this.searchField.getText() : "";
-		this.searchField = new TextFieldWidget(this.client.field_1772, i + 25, j + 14, 80, 9 + 5);
+		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, 9 + 5);
 		this.searchField.setMaxLength(50);
 		this.searchField.setHasBorder(false);
 		this.searchField.setVisible(true);
 		this.searchField.method_1868(16777215);
 		this.searchField.setText(string);
-		this.field_3086.initialize(this.client, i, j);
-		this.field_3086.setGui(this);
+		this.recipesArea.initialize(this.client, i, j);
+		this.recipesArea.setGui(this);
 		this.toggleCraftableButton = new ToggleButtonWidget(i + 110, j + 12, 26, 16, this.recipeBook.isFilteringCraftable(this.craftingContainer));
 		this.setBookButtonTexture();
 		this.tabButtons.clear();
@@ -96,30 +96,30 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			this.tabButtons.add(new GroupButtonWidget(recipeBookGroup));
 		}
 
-		if (this.field_3098 != null) {
-			this.field_3098 = (GroupButtonWidget)this.tabButtons
+		if (this.currentTab != null) {
+			this.currentTab = (GroupButtonWidget)this.tabButtons
 				.stream()
-				.filter(groupButtonWidget -> groupButtonWidget.getCategory().equals(this.field_3098.getCategory()))
+				.filter(groupButtonWidget -> groupButtonWidget.getCategory().equals(this.currentTab.getCategory()))
 				.findFirst()
 				.orElse(null);
 		}
 
-		if (this.field_3098 == null) {
-			this.field_3098 = (GroupButtonWidget)this.tabButtons.get(0);
+		if (this.currentTab == null) {
+			this.currentTab = (GroupButtonWidget)this.tabButtons.get(0);
 		}
 
-		this.field_3098.setToggled(true);
+		this.currentTab.setToggled(true);
 		this.refreshResults(false);
 		this.refreshTabButtons();
 	}
 
 	protected void setBookButtonTexture() {
-		this.toggleCraftableButton.method_1962(152, 41, 28, 18, field_3097);
+		this.toggleCraftableButton.setTextureUV(152, 41, 28, 18, TEXTURE);
 	}
 
 	public void close() {
 		this.searchField = null;
-		this.field_3098 = null;
+		this.currentTab = null;
 		this.client.keyboard.enableRepeatEvents(false);
 	}
 
@@ -145,7 +145,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 	protected void setOpen(boolean bl) {
 		this.recipeBook.setGuiOpen(bl);
 		if (!bl) {
-			this.field_3086.hideAlternates();
+			this.recipesArea.hideAlternates();
 		}
 
 		this.sendBookDataPacket();
@@ -161,9 +161,9 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 	}
 
 	private void refreshResults(boolean bl) {
-		List<RecipeResultCollection> list = this.recipeBook.method_1396(this.field_3098.getCategory());
+		List<RecipeResultCollection> list = this.recipeBook.getResultsForGroup(this.currentTab.getCategory());
 		list.forEach(
-			recipeResultCollection -> recipeResultCollection.method_2649(
+			recipeResultCollection -> recipeResultCollection.computeCraftables(
 					this.recipeFinder, this.craftingContainer.getCraftingWidth(), this.craftingContainer.getCraftingHeight(), this.recipeBook
 				)
 		);
@@ -173,7 +173,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 		String string = this.searchField.getText();
 		if (!string.isEmpty()) {
 			ObjectSet<RecipeResultCollection> objectSet = new ObjectLinkedOpenHashSet<>(
-				this.client.method_1484(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT))
+				this.client.getSearchableContainer(SearchManager.RECIPE_OUTPUT).findAll(string.toLowerCase(Locale.ROOT))
 			);
 			list2.removeIf(recipeResultCollection -> !objectSet.contains(recipeResultCollection));
 		}
@@ -182,7 +182,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			list2.removeIf(recipeResultCollection -> !recipeResultCollection.hasCraftableResults());
 		}
 
-		this.field_3086.setResults(list2, bl);
+		this.recipesArea.setResults(list2, bl);
 	}
 
 	private void refreshTabButtons() {
@@ -205,16 +205,16 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 
 	public void update() {
 		if (this.isOpen()) {
-			if (this.cachedInvChangeCount != this.client.field_1724.inventory.getChangeCount()) {
+			if (this.cachedInvChangeCount != this.client.player.inventory.getChangeCount()) {
 				this.refreshInputs();
-				this.cachedInvChangeCount = this.client.field_1724.inventory.getChangeCount();
+				this.cachedInvChangeCount = this.client.player.inventory.getChangeCount();
 			}
 		}
 	}
 
 	private void refreshInputs() {
 		this.recipeFinder.clear();
-		this.client.field_1724.inventory.method_7387(this.recipeFinder);
+		this.client.player.inventory.populateRecipeFinder(this.recipeFinder);
 		this.craftingContainer.populateRecipeFinder(this.recipeFinder);
 		this.refreshResults(false);
 	}
@@ -226,7 +226,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			GlStateManager.disableLighting();
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, 0.0F, 100.0F);
-			this.client.method_1531().method_4618(field_3097);
+			this.client.getTextureManager().bindTexture(TEXTURE);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int k = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int l = (this.parentHeight - 166) / 2;
@@ -239,18 +239,18 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			}
 
 			this.toggleCraftableButton.draw(i, j, f);
-			this.field_3086.draw(k, l, i, j, f);
+			this.recipesArea.draw(k, l, i, j, f);
 			GlStateManager.popMatrix();
 		}
 	}
 
 	public void drawTooltip(int i, int j, int k, int l) {
 		if (this.isOpen()) {
-			this.field_3086.drawTooltip(k, l);
+			this.recipesArea.drawTooltip(k, l);
 			if (this.toggleCraftableButton.isHovered()) {
 				String string = this.getCraftableButtonText();
-				if (this.client.field_1755 != null) {
-					this.client.field_1755.drawTooltip(string, k, l);
+				if (this.client.currentScreen != null) {
+					this.client.currentScreen.drawTooltip(string, k, l);
 				}
 			}
 
@@ -274,8 +274,8 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			}
 		}
 
-		if (itemStack != null && this.client.field_1755 != null) {
-			this.client.field_1755.drawTooltip(this.client.field_1755.getStackTooltip(itemStack), k, l);
+		if (itemStack != null && this.client.currentScreen != null) {
+			this.client.currentScreen.drawTooltip(this.client.currentScreen.getStackTooltip(itemStack), k, l);
 		}
 	}
 
@@ -285,17 +285,17 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		if (this.isOpen() && !this.client.field_1724.isSpectator()) {
-			if (this.field_3086.mouseClicked(d, e, i, (this.parentWidth - 147) / 2 - this.leftOffset, (this.parentHeight - 166) / 2, 147, 166)) {
-				Recipe<?> recipe = this.field_3086.getLastClickedRecipe();
-				RecipeResultCollection recipeResultCollection = this.field_3086.method_2635();
+		if (this.isOpen() && !this.client.player.isSpectator()) {
+			if (this.recipesArea.mouseClicked(d, e, i, (this.parentWidth - 147) / 2 - this.leftOffset, (this.parentHeight - 166) / 2, 147, 166)) {
+				Recipe<?> recipe = this.recipesArea.getLastClickedRecipe();
+				RecipeResultCollection recipeResultCollection = this.recipesArea.getLastClickedResults();
 				if (recipe != null && recipeResultCollection != null) {
 					if (!recipeResultCollection.isCraftable(recipe) && this.ghostSlots.getRecipe() == recipe) {
 						return false;
 					}
 
 					this.ghostSlots.reset();
-					this.client.field_1761.clickRecipe(this.client.field_1724.field_7512.syncId, recipe, Screen.isShiftPressed());
+					this.client.interactionManager.clickRecipe(this.client.player.container.syncId, recipe, Screen.isShiftPressed());
 					if (!this.isWide()) {
 						this.setOpen(false);
 					}
@@ -313,10 +313,10 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			} else {
 				for (GroupButtonWidget groupButtonWidget : this.tabButtons) {
 					if (groupButtonWidget.mouseClicked(d, e, i)) {
-						if (this.field_3098 != groupButtonWidget) {
-							this.field_3098.setToggled(false);
-							this.field_3098 = groupButtonWidget;
-							this.field_3098.setToggled(true);
+						if (this.currentTab != groupButtonWidget) {
+							this.currentTab.setToggled(false);
+							this.currentTab = groupButtonWidget;
+							this.currentTab.setToggled(true);
 							this.refreshResults(true);
 						}
 
@@ -343,14 +343,14 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 		} else {
 			boolean bl = d < (double)i || e < (double)j || d >= (double)(i + k) || e >= (double)(j + l);
 			boolean bl2 = (double)(i - 147) < d && d < (double)i && (double)j < e && e < (double)(j + l);
-			return bl && !bl2 && !this.field_3098.isHovered();
+			return bl && !bl2 && !this.currentTab.isHovered();
 		}
 	}
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		this.field_3087 = false;
-		if (!this.isOpen() || this.client.field_1724.isSpectator()) {
+		if (!this.isOpen() || this.client.player.isSpectator()) {
 			return false;
 		} else if (i == 256 && !this.isWide()) {
 			this.setOpen(false);
@@ -360,7 +360,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			return true;
 		} else if (this.searchField.isFocused() && this.searchField.isVisible() && i != 256) {
 			return true;
-		} else if (this.client.field_1690.keyChat.matchesKey(i, j) && !this.searchField.isFocused()) {
+		} else if (this.client.options.keyChat.matchesKey(i, j) && !this.searchField.isFocused()) {
 			this.field_3087 = true;
 			this.searchField.setFocused(true);
 			return true;
@@ -379,7 +379,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 	public boolean charTyped(char c, int i) {
 		if (this.field_3087) {
 			return false;
-		} else if (!this.isOpen() || this.client.field_1724.isSpectator()) {
+		} else if (!this.isOpen() || this.client.player.isSpectator()) {
 			return false;
 		} else if (this.searchField.charTyped(c, i)) {
 			this.refreshSearchResults();
@@ -405,17 +405,17 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 
 	private void triggerPirateSpeakEasterEgg(String string) {
 		if ("excitedze".equals(string)) {
-			LanguageManager languageManager = this.client.method_1526();
+			LanguageManager languageManager = this.client.getLanguageManager();
 			LanguageDefinition languageDefinition = languageManager.method_4668("en_pt");
 			if (languageManager.getLanguage().method_4673(languageDefinition) == 0) {
 				return;
 			}
 
 			languageManager.setLanguage(languageDefinition);
-			this.client.field_1690.language = languageDefinition.getCode();
+			this.client.options.language = languageDefinition.getCode();
 			this.client.reloadResources();
-			this.client.field_1772.setRightToLeft(languageManager.isRightToLeft());
-			this.client.field_1690.write();
+			this.client.textRenderer.setRightToLeft(languageManager.isRightToLeft());
+			this.client.options.write();
 		}
 	}
 
@@ -433,7 +433,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 	@Override
 	public void onRecipesDisplayed(List<Recipe<?>> list) {
 		for (Recipe<?> recipe : list) {
-			this.client.field_1724.onRecipeDisplayed(recipe);
+			this.client.player.onRecipeDisplayed(recipe);
 		}
 	}
 
@@ -446,7 +446,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			this.craftingContainer.getCraftingHeight(),
 			this.craftingContainer.getCraftingResultSlotIndex(),
 			recipe,
-			recipe.method_8117().iterator(),
+			recipe.getPreviewInputs().iterator(),
 			0
 		);
 	}
@@ -461,10 +461,10 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 	}
 
 	protected void sendBookDataPacket() {
-		if (this.client.method_1562() != null) {
+		if (this.client.getNetworkHandler() != null) {
 			this.client
-				.method_1562()
-				.method_2883(
+				.getNetworkHandler()
+				.sendPacket(
 					new RecipeBookDataC2SPacket(
 						this.recipeBook.isGuiOpen(),
 						this.recipeBook.isFilteringCraftable(),

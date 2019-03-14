@@ -12,9 +12,9 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public abstract class DrawableHelper {
-	public static final Identifier field_2051 = new Identifier("textures/gui/options_background.png");
-	public static final Identifier field_2052 = new Identifier("textures/gui/container/stats_icons.png");
-	public static final Identifier field_2053 = new Identifier("textures/gui/icons.png");
+	public static final Identifier OPTIONS_BG = new Identifier("textures/gui/options_background.png");
+	public static final Identifier STAT_ICONS = new Identifier("textures/gui/container/stats_icons.png");
+	public static final Identifier ICONS = new Identifier("textures/gui/icons.png");
 	protected float zOffset;
 
 	protected void drawHorizontalLine(int i, int j, int k, int l) {
@@ -62,7 +62,7 @@ public abstract class DrawableHelper {
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.color4f(g, h, o, f);
-		bufferBuilder.method_1328(7, VertexFormats.field_1592);
+		bufferBuilder.begin(7, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)j, 0.0).next();
@@ -90,7 +90,7 @@ public abstract class DrawableHelper {
 		GlStateManager.shadeModel(7425);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1576);
+		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex((double)k, (double)j, (double)this.zOffset).color(g, h, o, f).next();
 		bufferBuilder.vertex((double)i, (double)j, (double)this.zOffset).color(g, h, o, f).next();
 		bufferBuilder.vertex((double)i, (double)l, (double)this.zOffset).color(q, r, s, p).next();
@@ -115,7 +115,7 @@ public abstract class DrawableHelper {
 		float g = 0.00390625F;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1585);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 		bufferBuilder.vertex((double)(i + 0), (double)(j + n), (double)this.zOffset)
 			.texture((double)((float)(k + 0) * 0.00390625F), (double)((float)(l + n) * 0.00390625F))
 			.next();
@@ -136,7 +136,7 @@ public abstract class DrawableHelper {
 		float m = 0.00390625F;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1585);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 		bufferBuilder.vertex((double)(f + 0.0F), (double)(g + (float)l), (double)this.zOffset)
 			.texture((double)((float)(i + 0) * 0.00390625F), (double)((float)(j + l) * 0.00390625F))
 			.next();
@@ -152,10 +152,10 @@ public abstract class DrawableHelper {
 		tessellator.draw();
 	}
 
-	public void method_1790(int i, int j, Sprite sprite, int k, int l) {
+	public void drawTexturedRect(int i, int j, Sprite sprite, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1585);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 		bufferBuilder.vertex((double)(i + 0), (double)(j + l), (double)this.zOffset).texture((double)sprite.getMinU(), (double)sprite.getMaxV()).next();
 		bufferBuilder.vertex((double)(i + k), (double)(j + l), (double)this.zOffset).texture((double)sprite.getMaxU(), (double)sprite.getMaxV()).next();
 		bufferBuilder.vertex((double)(i + k), (double)(j + 0), (double)this.zOffset).texture((double)sprite.getMaxU(), (double)sprite.getMinV()).next();
@@ -168,7 +168,7 @@ public abstract class DrawableHelper {
 		float o = 1.0F / m;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1585);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 		bufferBuilder.vertex((double)i, (double)(j + l), 0.0).texture((double)(f * n), (double)((g + (float)l) * o)).next();
 		bufferBuilder.vertex((double)(i + k), (double)(j + l), 0.0).texture((double)((f + (float)k) * n), (double)((g + (float)l) * o)).next();
 		bufferBuilder.vertex((double)(i + k), (double)j, 0.0).texture((double)((f + (float)k) * n), (double)(g * o)).next();
@@ -181,7 +181,7 @@ public abstract class DrawableHelper {
 		float q = 1.0F / o;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1585);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 		bufferBuilder.vertex((double)i, (double)(j + n), 0.0).texture((double)(f * p), (double)((g + (float)l) * q)).next();
 		bufferBuilder.vertex((double)(i + m), (double)(j + n), 0.0).texture((double)((f + (float)k) * p), (double)((g + (float)l) * q)).next();
 		bufferBuilder.vertex((double)(i + m), (double)j, 0.0).texture((double)((f + (float)k) * p), (double)(g * q)).next();

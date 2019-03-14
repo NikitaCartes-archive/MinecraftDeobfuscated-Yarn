@@ -14,20 +14,20 @@ public class GiantEntity extends HostileEntity {
 	}
 
 	@Override
-	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 10.440001F;
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(100.0);
-		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
-		this.method_5996(EntityAttributes.ATTACK_DAMAGE).setBaseValue(50.0);
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(100.0);
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.5);
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(50.0);
 	}
 
 	@Override
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return viewableWorld.method_8610(blockPos) - 0.5F;
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return viewableWorld.getBrightness(blockPos) - 0.5F;
 	}
 }

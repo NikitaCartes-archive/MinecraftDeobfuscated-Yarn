@@ -8,8 +8,8 @@ public class SwimGoal extends Goal {
 
 	public SwimGoal(MobEntity mobEntity) {
 		this.entityMob = mobEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407));
-		mobEntity.method_5942().setCanSwim(true);
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407));
+		mobEntity.getNavigation().setCanSwim(true);
 	}
 
 	@Override
@@ -20,7 +20,7 @@ public class SwimGoal extends Goal {
 	@Override
 	public void tick() {
 		if (this.entityMob.getRand().nextFloat() < 0.8F) {
-			this.entityMob.method_5993().setActive();
+			this.entityMob.getJumpControl().setActive();
 		}
 	}
 }

@@ -35,7 +35,7 @@ public class TriggerCommand {
 						.executes(
 							commandContext -> method_13818(
 									commandContext.getSource(),
-									method_13821(commandContext.getSource().method_9207(), ObjectiveArgumentType.getObjectiveArgument(commandContext, "objective"))
+									method_13821(commandContext.getSource().getPlayer(), ObjectiveArgumentType.getObjectiveArgument(commandContext, "objective"))
 								)
 						)
 						.then(
@@ -45,7 +45,7 @@ public class TriggerCommand {
 										.executes(
 											commandContext -> method_13817(
 													commandContext.getSource(),
-													method_13821(commandContext.getSource().method_9207(), ObjectiveArgumentType.getObjectiveArgument(commandContext, "objective")),
+													method_13821(commandContext.getSource().getPlayer(), ObjectiveArgumentType.getObjectiveArgument(commandContext, "objective")),
 													IntegerArgumentType.getInteger(commandContext, "value")
 												)
 										)
@@ -58,7 +58,7 @@ public class TriggerCommand {
 										.executes(
 											commandContext -> method_13820(
 													commandContext.getSource(),
-													method_13821(commandContext.getSource().method_9207(), ObjectiveArgumentType.getObjectiveArgument(commandContext, "objective")),
+													method_13821(commandContext.getSource().getPlayer(), ObjectiveArgumentType.getObjectiveArgument(commandContext, "objective")),
 													IntegerArgumentType.getInteger(commandContext, "value")
 												)
 										)
@@ -72,11 +72,11 @@ public class TriggerCommand {
 		Entity entity = serverCommandSource.getEntity();
 		List<String> list = Lists.<String>newArrayList();
 		if (entity != null) {
-			Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+			Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 			String string = entity.getEntityName();
 
 			for (ScoreboardObjective scoreboardObjective : scoreboard.getObjectives()) {
-				if (scoreboardObjective.method_1116() == ScoreboardCriterion.TRIGGER && scoreboard.playerHasObjective(string, scoreboardObjective)) {
+				if (scoreboardObjective.getCriterion() == ScoreboardCriterion.TRIGGER && scoreboard.playerHasObjective(string, scoreboardObjective)) {
 					ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
 					if (!scoreboardPlayerScore.isLocked()) {
 						list.add(scoreboardObjective.getName());
@@ -90,27 +90,33 @@ public class TriggerCommand {
 
 	private static int method_13817(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
 		scoreboardPlayerScore.incrementScore(i);
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.trigger.add.success", scoreboardPlayerScore.getObjective().method_1120(), i), true);
+		serverCommandSource.sendFeedback(
+			new TranslatableTextComponent("commands.trigger.add.success", scoreboardPlayerScore.getObjective().getTextComponent(), i), true
+		);
 		return scoreboardPlayerScore.getScore();
 	}
 
 	private static int method_13820(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore, int i) {
 		scoreboardPlayerScore.setScore(i);
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.trigger.set.success", scoreboardPlayerScore.getObjective().method_1120(), i), true);
+		serverCommandSource.sendFeedback(
+			new TranslatableTextComponent("commands.trigger.set.success", scoreboardPlayerScore.getObjective().getTextComponent(), i), true
+		);
 		return i;
 	}
 
 	private static int method_13818(ServerCommandSource serverCommandSource, ScoreboardPlayerScore scoreboardPlayerScore) {
 		scoreboardPlayerScore.incrementScore(1);
-		serverCommandSource.method_9226(new TranslatableTextComponent("commands.trigger.simple.success", scoreboardPlayerScore.getObjective().method_1120()), true);
+		serverCommandSource.sendFeedback(
+			new TranslatableTextComponent("commands.trigger.simple.success", scoreboardPlayerScore.getObjective().getTextComponent()), true
+		);
 		return scoreboardPlayerScore.getScore();
 	}
 
 	private static ScoreboardPlayerScore method_13821(ServerPlayerEntity serverPlayerEntity, ScoreboardObjective scoreboardObjective) throws CommandSyntaxException {
-		if (scoreboardObjective.method_1116() != ScoreboardCriterion.TRIGGER) {
+		if (scoreboardObjective.getCriterion() != ScoreboardCriterion.TRIGGER) {
 			throw FAILED_INVALID_EXCEPTION.create();
 		} else {
-			Scoreboard scoreboard = serverPlayerEntity.method_7327();
+			Scoreboard scoreboard = serverPlayerEntity.getScoreboard();
 			String string = serverPlayerEntity.getEntityName();
 			if (!scoreboard.playerHasObjective(string, scoreboardObjective)) {
 				throw FAILED_UMPRIMED_EXCEPTION.create();

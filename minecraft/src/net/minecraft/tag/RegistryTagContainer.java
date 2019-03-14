@@ -11,7 +11,7 @@ public class RegistryTagContainer<T> extends TagContainer<T> {
 	private final Registry<T> registry;
 
 	public RegistryTagContainer(Registry<T> registry, String string, String string2) {
-		super(registry::method_17966, string, false, string2);
+		super(registry::getOrEmpty, string, false, string2);
 		this.registry = registry;
 	}
 
@@ -19,7 +19,7 @@ public class RegistryTagContainer<T> extends TagContainer<T> {
 		packetByteBuf.writeVarInt(this.getEntries().size());
 
 		for (Entry<Identifier, Tag<T>> entry : this.getEntries().entrySet()) {
-			packetByteBuf.method_10812((Identifier)entry.getKey());
+			packetByteBuf.writeIdentifier((Identifier)entry.getKey());
 			packetByteBuf.writeVarInt(((Tag)entry.getValue()).values().size());
 
 			for (T object : ((Tag)entry.getValue()).values()) {
@@ -32,7 +32,7 @@ public class RegistryTagContainer<T> extends TagContainer<T> {
 		int i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			Identifier identifier = packetByteBuf.method_10810();
+			Identifier identifier = packetByteBuf.readIdentifier();
 			int k = packetByteBuf.readVarInt();
 			List<T> list = Lists.<T>newArrayList();
 

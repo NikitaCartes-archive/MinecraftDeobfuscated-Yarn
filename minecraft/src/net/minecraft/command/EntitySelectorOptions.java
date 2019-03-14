@@ -70,7 +70,7 @@ public class EntitySelectorOptions {
 		object -> new TranslatableTextComponent("argument.entity.options.type.invalid", object)
 	);
 
-	private static void method_9961(
+	private static void putOption(
 		String string, EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, TextComponent textComponent
 	) {
 		options.put(string, new EntitySelectorOptions.SelectorOption(selectorHandler, predicate, textComponent));
@@ -78,7 +78,7 @@ public class EntitySelectorOptions {
 
 	public static void register() {
 		if (options.isEmpty()) {
-			method_9961("name", entitySelectorReader -> {
+			putOption("name", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
 				boolean bl = entitySelectorReader.method_9892();
 				String string = entitySelectorReader.getReader().readString();
@@ -92,10 +92,10 @@ public class EntitySelectorOptions {
 						entitySelectorReader.method_9899(true);
 					}
 
-					entitySelectorReader.setPredicate(entity -> entity.method_5477().getText().equals(string) != bl);
+					entitySelectorReader.setPredicate(entity -> entity.getName().getText().equals(string) != bl);
 				}
 			}, entitySelectorReader -> !entitySelectorReader.method_9912(), new TranslatableTextComponent("argument.entity.options.name.description"));
-			method_9961("distance", entitySelectorReader -> {
+			putOption("distance", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
 				NumberRange.Float float_ = NumberRange.Float.method_9049(entitySelectorReader.getReader());
 				if ((float_.getMin() == null || !((Float)float_.getMin() < 0.0F)) && (float_.getMax() == null || !((Float)float_.getMax() < 0.0F))) {
@@ -106,7 +106,7 @@ public class EntitySelectorOptions {
 					throw NEGATIVE_DISTANCE_EXCEPTION.createWithContext(entitySelectorReader.getReader());
 				}
 			}, entitySelectorReader -> entitySelectorReader.method_9873().isDummy(), new TranslatableTextComponent("argument.entity.options.distance.description"));
-			method_9961("level", entitySelectorReader -> {
+			putOption("level", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
 				NumberRange.Integer integer = NumberRange.Integer.method_9060(entitySelectorReader.getReader());
 				if ((integer.getMin() == null || (Integer)integer.getMin() >= 0) && (integer.getMax() == null || (Integer)integer.getMax() >= 0)) {
@@ -117,43 +117,43 @@ public class EntitySelectorOptions {
 					throw NEGATIVE_LEVEL_EXCEPTION.createWithContext(entitySelectorReader.getReader());
 				}
 			}, entitySelectorReader -> entitySelectorReader.method_9895().isDummy(), new TranslatableTextComponent("argument.entity.options.level.description"));
-			method_9961("x", entitySelectorReader -> {
+			putOption("x", entitySelectorReader -> {
 				entitySelectorReader.method_9852();
 				entitySelectorReader.method_9850(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.method_9902() == null, new TranslatableTextComponent("argument.entity.options.x.description"));
-			method_9961("y", entitySelectorReader -> {
+			putOption("y", entitySelectorReader -> {
 				entitySelectorReader.method_9852();
 				entitySelectorReader.method_9864(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.method_9884() == null, new TranslatableTextComponent("argument.entity.options.y.description"));
-			method_9961("z", entitySelectorReader -> {
+			putOption("z", entitySelectorReader -> {
 				entitySelectorReader.method_9852();
 				entitySelectorReader.method_9879(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.method_9868() == null, new TranslatableTextComponent("argument.entity.options.z.description"));
-			method_9961("dx", entitySelectorReader -> {
+			putOption("dx", entitySelectorReader -> {
 				entitySelectorReader.method_9852();
 				entitySelectorReader.method_9891(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.method_9851() == null, new TranslatableTextComponent("argument.entity.options.dx.description"));
-			method_9961("dy", entitySelectorReader -> {
+			putOption("dy", entitySelectorReader -> {
 				entitySelectorReader.method_9852();
 				entitySelectorReader.method_9905(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.method_9840() == null, new TranslatableTextComponent("argument.entity.options.dy.description"));
-			method_9961("dz", entitySelectorReader -> {
+			putOption("dz", entitySelectorReader -> {
 				entitySelectorReader.method_9852();
 				entitySelectorReader.method_9918(entitySelectorReader.getReader().readDouble());
 			}, entitySelectorReader -> entitySelectorReader.method_9907() == null, new TranslatableTextComponent("argument.entity.options.dz.description"));
-			method_9961(
+			putOption(
 				"x_rotation",
 				entitySelectorReader -> entitySelectorReader.setPitchRange(FloatRange.parse(entitySelectorReader.getReader(), true, MathHelper::wrapDegrees)),
 				entitySelectorReader -> entitySelectorReader.getPitchRange() == FloatRange.ANY,
 				new TranslatableTextComponent("argument.entity.options.x_rotation.description")
 			);
-			method_9961(
+			putOption(
 				"y_rotation",
 				entitySelectorReader -> entitySelectorReader.setYawRange(FloatRange.parse(entitySelectorReader.getReader(), true, MathHelper::wrapDegrees)),
 				entitySelectorReader -> entitySelectorReader.getYawRange() == FloatRange.ANY,
 				new TranslatableTextComponent("argument.entity.options.y_rotation.description")
 			);
-			method_9961(
+			putOption(
 				"limit",
 				entitySelectorReader -> {
 					int i = entitySelectorReader.getReader().getCursor();
@@ -169,7 +169,7 @@ public class EntitySelectorOptions {
 				entitySelectorReader -> !entitySelectorReader.method_9885() && !entitySelectorReader.method_9866(),
 				new TranslatableTextComponent("argument.entity.options.limit.description")
 			);
-			method_9961(
+			putOption(
 				"sort",
 				entitySelectorReader -> {
 					int i = entitySelectorReader.getReader().getCursor();
@@ -202,7 +202,7 @@ public class EntitySelectorOptions {
 				entitySelectorReader -> !entitySelectorReader.method_9885() && !entitySelectorReader.method_9889(),
 				new TranslatableTextComponent("argument.entity.options.sort.description")
 			);
-			method_9961("gamemode", entitySelectorReader -> {
+			putOption("gamemode", entitySelectorReader -> {
 				entitySelectorReader.setSuggestionProvider((suggestionsBuilder, consumer) -> {
 					String stringx = suggestionsBuilder.getRemaining().toLowerCase(Locale.ROOT);
 					boolean blx = !entitySelectorReader.method_9837();
@@ -247,7 +247,7 @@ public class EntitySelectorOptions {
 							if (!(entity instanceof ServerPlayerEntity)) {
 								return false;
 							} else {
-								GameMode gameMode2 = ((ServerPlayerEntity)entity).field_13974.getGameMode();
+								GameMode gameMode2 = ((ServerPlayerEntity)entity).interactionManager.getGameMode();
 								return bl ? gameMode2 != gameMode : gameMode2 == gameMode;
 							}
 						});
@@ -259,14 +259,14 @@ public class EntitySelectorOptions {
 					}
 				}
 			}, entitySelectorReader -> !entitySelectorReader.method_9839(), new TranslatableTextComponent("argument.entity.options.gamemode.description"));
-			method_9961("team", entitySelectorReader -> {
+			putOption("team", entitySelectorReader -> {
 				boolean bl = entitySelectorReader.method_9892();
 				String string = entitySelectorReader.getReader().readUnquotedString();
 				entitySelectorReader.setPredicate(entity -> {
 					if (!(entity instanceof LivingEntity)) {
 						return false;
 					} else {
-						AbstractScoreboardTeam abstractScoreboardTeam = entity.method_5781();
+						AbstractScoreboardTeam abstractScoreboardTeam = entity.getScoreboardTeam();
 						String string2 = abstractScoreboardTeam == null ? "" : abstractScoreboardTeam.getName();
 						return string2.equals(string) != bl;
 					}
@@ -277,13 +277,13 @@ public class EntitySelectorOptions {
 					entitySelectorReader.method_9865(true);
 				}
 			}, entitySelectorReader -> !entitySelectorReader.method_9904(), new TranslatableTextComponent("argument.entity.options.team.description"));
-			method_9961("type", entitySelectorReader -> {
+			putOption("type", entitySelectorReader -> {
 				entitySelectorReader.setSuggestionProvider((suggestionsBuilder, consumer) -> {
 					CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder, String.valueOf('!'));
-					CommandSource.suggestIdentifiers(EntityTags.method_15082().getKeys(), suggestionsBuilder, "!#");
+					CommandSource.suggestIdentifiers(EntityTags.getContainer().getKeys(), suggestionsBuilder, "!#");
 					if (!entitySelectorReader.method_9910()) {
 						CommandSource.suggestIdentifiers(Registry.ENTITY_TYPE.getIds(), suggestionsBuilder);
-						CommandSource.suggestIdentifiers(EntityTags.method_15082().getKeys(), suggestionsBuilder, String.valueOf('#'));
+						CommandSource.suggestIdentifiers(EntityTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
 					}
 
 					return suggestionsBuilder.buildFuture();
@@ -300,16 +300,16 @@ public class EntitySelectorOptions {
 
 					if (entitySelectorReader.method_9915()) {
 						Identifier identifier = Identifier.parse(entitySelectorReader.getReader());
-						Tag<EntityType<?>> tag = EntityTags.method_15082().get(identifier);
+						Tag<EntityType<?>> tag = EntityTags.getContainer().get(identifier);
 						if (tag == null) {
 							entitySelectorReader.getReader().setCursor(i);
 							throw INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
 						}
 
-						entitySelectorReader.setPredicate(entity -> tag.contains(entity.method_5864()) != bl);
+						entitySelectorReader.setPredicate(entity -> tag.contains(entity.getType()) != bl);
 					} else {
 						Identifier identifier = Identifier.parse(entitySelectorReader.getReader());
-						EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.method_17966(identifier).orElseThrow(() -> {
+						EntityType<?> entityType = (EntityType<?>)Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {
 							entitySelectorReader.getReader().setCursor(i);
 							return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
 						});
@@ -317,14 +317,14 @@ public class EntitySelectorOptions {
 							entitySelectorReader.method_9841(false);
 						}
 
-						entitySelectorReader.setPredicate(entity -> Objects.equals(entityType, entity.method_5864()) != bl);
+						entitySelectorReader.setPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
 						if (!bl) {
 							entitySelectorReader.setEntityType(entityType);
 						}
 					}
 				}
 			}, entitySelectorReader -> !entitySelectorReader.hasEntityType(), new TranslatableTextComponent("argument.entity.options.type.description"));
-			method_9961(
+			putOption(
 				"tag",
 				entitySelectorReader -> {
 					boolean bl = entitySelectorReader.method_9892();
@@ -336,22 +336,22 @@ public class EntitySelectorOptions {
 				entitySelectorReader -> true,
 				new TranslatableTextComponent("argument.entity.options.tag.description")
 			);
-			method_9961("nbt", entitySelectorReader -> {
+			putOption("nbt", entitySelectorReader -> {
 				boolean bl = entitySelectorReader.method_9892();
 				CompoundTag compoundTag = new JsonLikeTagParser(entitySelectorReader.getReader()).parseCompoundTag();
 				entitySelectorReader.setPredicate(entity -> {
-					CompoundTag compoundTag2 = entity.method_5647(new CompoundTag());
+					CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
 					if (entity instanceof ServerPlayerEntity) {
-						ItemStack itemStack = ((ServerPlayerEntity)entity).inventory.method_7391();
+						ItemStack itemStack = ((ServerPlayerEntity)entity).inventory.getMainHandStack();
 						if (!itemStack.isEmpty()) {
-							compoundTag2.method_10566("SelectedItem", itemStack.method_7953(new CompoundTag()));
+							compoundTag2.put("SelectedItem", itemStack.toTag(new CompoundTag()));
 						}
 					}
 
-					return TagHelper.method_10687(compoundTag, compoundTag2, true) != bl;
+					return TagHelper.areTagsEqual(compoundTag, compoundTag2, true) != bl;
 				});
 			}, entitySelectorReader -> true, new TranslatableTextComponent("argument.entity.options.nbt.description"));
-			method_9961("scores", entitySelectorReader -> {
+			putOption("scores", entitySelectorReader -> {
 				StringReader stringReader = entitySelectorReader.getReader();
 				Map<String, NumberRange.Integer> map = Maps.<String, NumberRange.Integer>newHashMap();
 				stringReader.expect('{');
@@ -374,7 +374,7 @@ public class EntitySelectorOptions {
 				stringReader.expect('}');
 				if (!map.isEmpty()) {
 					entitySelectorReader.setPredicate(entity -> {
-						Scoreboard scoreboard = entity.getServer().method_3845();
+						Scoreboard scoreboard = entity.getServer().getScoreboard();
 						String stringx = entity.getEntityName();
 
 						for (Entry<String, NumberRange.Integer> entry : map.entrySet()) {
@@ -400,7 +400,7 @@ public class EntitySelectorOptions {
 
 				entitySelectorReader.method_9848(true);
 			}, entitySelectorReader -> !entitySelectorReader.method_9843(), new TranslatableTextComponent("argument.entity.options.scores.description"));
-			method_9961("advancements", entitySelectorReader -> {
+			putOption("advancements", entitySelectorReader -> {
 				StringReader stringReader = entitySelectorReader.getReader();
 				Map<Identifier, Predicate<AdvancementProgress>> map = Maps.<Identifier, Predicate<AdvancementProgress>>newHashMap();
 				stringReader.expect('{');
@@ -437,7 +437,7 @@ public class EntitySelectorOptions {
 						stringReader.skipWhitespace();
 						map.put(identifier, (Predicate)advancementProgress -> {
 							for (Entry<String, Predicate<CriterionProgress>> entry : map2.entrySet()) {
-								CriterionProgress criterionProgress = advancementProgress.method_737((String)entry.getKey());
+								CriterionProgress criterionProgress = advancementProgress.getCriterionProgress((String)entry.getKey());
 								if (criterionProgress == null || !((Predicate)entry.getValue()).test(criterionProgress)) {
 									return false;
 								}
@@ -464,11 +464,11 @@ public class EntitySelectorOptions {
 						} else {
 							ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 							PlayerAdvancementTracker playerAdvancementTracker = serverPlayerEntity.getAdvancementManager();
-							ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().method_3851();
+							ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementManager();
 
 							for (Entry<Identifier, Predicate<AdvancementProgress>> entry : map.entrySet()) {
 								SimpleAdvancement simpleAdvancement = serverAdvancementLoader.get((Identifier)entry.getKey());
-								if (simpleAdvancement == null || !((Predicate)entry.getValue()).test(playerAdvancementTracker.method_12882(simpleAdvancement))) {
+								if (simpleAdvancement == null || !((Predicate)entry.getValue()).test(playerAdvancementTracker.getProgress(simpleAdvancement))) {
 									return false;
 								}
 							}
@@ -504,7 +504,7 @@ public class EntitySelectorOptions {
 		for (Entry<String, EntitySelectorOptions.SelectorOption> entry : options.entrySet()) {
 			if (((EntitySelectorOptions.SelectorOption)entry.getValue()).applicable.test(entitySelectorReader)
 				&& ((String)entry.getKey()).toLowerCase(Locale.ROOT).startsWith(string)) {
-				suggestionsBuilder.suggest((String)entry.getKey() + '=', ((EntitySelectorOptions.SelectorOption)entry.getValue()).field_10894);
+				suggestionsBuilder.suggest((String)entry.getKey() + '=', ((EntitySelectorOptions.SelectorOption)entry.getValue()).description);
 			}
 		}
 	}
@@ -516,12 +516,12 @@ public class EntitySelectorOptions {
 	static class SelectorOption {
 		public final EntitySelectorOptions.SelectorHandler handler;
 		public final Predicate<EntitySelectorReader> applicable;
-		public final TextComponent field_10894;
+		public final TextComponent description;
 
 		private SelectorOption(EntitySelectorOptions.SelectorHandler selectorHandler, Predicate<EntitySelectorReader> predicate, TextComponent textComponent) {
 			this.handler = selectorHandler;
 			this.applicable = predicate;
-			this.field_10894 = textComponent;
+			this.description = textComponent;
 		}
 	}
 }

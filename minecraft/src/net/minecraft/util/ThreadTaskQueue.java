@@ -13,32 +13,32 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class ThreadTaskQueue<R extends Runnable> implements Actor<R>, Executor {
-	private final String field_18318;
+	private final String name;
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Queue<R> taskQueue = Queues.<R>newConcurrentLinkedQueue();
-	private int field_18319;
+	private int waitCount;
 
 	protected ThreadTaskQueue(String string) {
-		this.field_18318 = string;
+		this.name = string;
 	}
 
-	protected abstract R method_16211(Runnable runnable);
+	protected abstract R prepareRunnable(Runnable runnable);
 
-	protected abstract boolean method_18856(R runnable);
+	protected abstract boolean canRun(R runnable);
 
-	public boolean method_18854() {
-		return Thread.currentThread() == this.method_3777();
+	public boolean isOnThread() {
+		return Thread.currentThread() == this.thread();
 	}
 
-	protected abstract Thread method_3777();
+	protected abstract Thread thread();
 
 	protected boolean isOffThread() {
-		return !this.method_18854();
+		return !this.isOnThread();
 	}
 
 	@Override
 	public String getName() {
-		return this.field_18318;
+		return this.name;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -60,19 +60,19 @@ public abstract class ThreadTaskQueue<R extends Runnable> implements Actor<R>, E
 
 	public void method_18858(R runnable) {
 		this.taskQueue.add(runnable);
-		LockSupport.unpark(this.method_3777());
+		LockSupport.unpark(this.thread());
 	}
 
 	public void execute(Runnable runnable) {
 		if (this.isOffThread()) {
-			this.method_18858(this.method_16211(runnable));
+			this.method_18858(this.prepareRunnable(runnable));
 		} else {
 			runnable.run();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	protected void method_18855() {
+	protected void clear() {
 		this.taskQueue.clear();
 	}
 
@@ -85,16 +85,16 @@ public abstract class ThreadTaskQueue<R extends Runnable> implements Actor<R>, E
 		R runnable = (R)this.taskQueue.peek();
 		if (runnable == null) {
 			return false;
-		} else if (this.field_18319 == 0 && !this.method_18856(runnable)) {
+		} else if (this.waitCount == 0 && !this.canRun(runnable)) {
 			return false;
 		} else {
-			this.method_18859((R)this.taskQueue.remove());
+			this.runSafely((R)this.taskQueue.remove());
 			return true;
 		}
 	}
 
-	public void method_18857(BooleanSupplier booleanSupplier) {
-		this.field_18319++;
+	public void waitFor(BooleanSupplier booleanSupplier) {
+		this.waitCount++;
 
 		try {
 			while (!booleanSupplier.getAsBoolean()) {
@@ -103,11 +103,11 @@ public abstract class ThreadTaskQueue<R extends Runnable> implements Actor<R>, E
 				}
 			}
 		} finally {
-			this.field_18319--;
+			this.waitCount--;
 		}
 	}
 
-	protected void method_18859(R runnable) {
+	protected void runSafely(R runnable) {
 		try {
 			runnable.run();
 		} catch (Exception var3) {

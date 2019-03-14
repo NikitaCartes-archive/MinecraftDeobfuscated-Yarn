@@ -31,7 +31,7 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 	}
 
 	protected void method_2476() {
-		if (this.client.field_1724.getPotionEffects().isEmpty()) {
+		if (this.client.player.getPotionEffects().isEmpty()) {
 			this.left = (this.screenWidth - this.width) / 2;
 			this.offsetGuiForEffects = false;
 		} else {
@@ -50,7 +50,7 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 
 	private void drawPotionEffects() {
 		int i = this.left - 124;
-		Collection<StatusEffectInstance> collection = this.client.field_1724.getPotionEffects();
+		Collection<StatusEffectInstance> collection = this.client.player.getPotionEffects();
 		if (!collection.isEmpty()) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
@@ -67,7 +67,7 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 	}
 
 	private void method_18642(int i, int j, Iterable<StatusEffectInstance> iterable) {
-		this.client.method_1531().method_4618(field_2801);
+		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
@@ -78,13 +78,13 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 	}
 
 	private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
-		this.client.method_1531().method_4618(SpriteAtlasTexture.field_18229);
+		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
 		StatusEffectSpriteManager statusEffectSpriteManager = this.client.method_18505();
 		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
-			this.method_1790(i + 6, k + 7, statusEffectSpriteManager.getSprite(statusEffect), 18, 18);
+			this.drawTexturedRect(i + 6, k + 7, statusEffectSpriteManager.getSprite(statusEffect), 18, 18);
 			k += j;
 		}
 	}

@@ -9,14 +9,14 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ChickenEntityRenderer extends MobEntityRenderer<ChickenEntity, ChickenEntityModel<ChickenEntity>> {
-	private static final Identifier field_4649 = new Identifier("textures/entity/chicken.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/chicken.png");
 
 	public ChickenEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new ChickenEntityModel<>(), 0.3F);
 	}
 
 	protected Identifier method_3892(ChickenEntity chickenEntity) {
-		return field_4649;
+		return SKIN;
 	}
 
 	protected float method_3893(ChickenEntity chickenEntity, float f) {

@@ -27,19 +27,19 @@ public class RuleStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo method_15110(
+	public Structure.StructureBlockInfo process(
 		ViewableWorld viewableWorld,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
 		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData structurePlacementData
 	) {
-		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.field_15597));
-		BlockState blockState = viewableWorld.method_8320(structureBlockInfo2.field_15597);
+		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
+		BlockState blockState = viewableWorld.getBlockState(structureBlockInfo2.pos);
 
 		for (StructureProcessorRule structureProcessorRule : this.rules) {
 			if (structureProcessorRule.test(structureBlockInfo2.state, blockState, random)) {
-				return new Structure.StructureBlockInfo(structureBlockInfo2.field_15597, structureProcessorRule.getOutputState(), structureProcessorRule.method_16760());
+				return new Structure.StructureBlockInfo(structureBlockInfo2.pos, structureProcessorRule.getOutputState(), structureProcessorRule.getTag());
 			}
 		}
 
@@ -47,7 +47,7 @@ public class RuleStructureProcessor extends StructureProcessor {
 	}
 
 	@Override
-	protected StructureProcessorType method_16772() {
+	protected StructureProcessorType getType() {
 		return StructureProcessorType.field_16990;
 	}
 

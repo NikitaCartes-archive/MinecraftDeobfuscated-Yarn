@@ -20,13 +20,13 @@ public class PardonCommand {
 		commandDispatcher.register(
 			ServerCommandManager.literal("pardon")
 				.requires(
-					serverCommandSource -> serverCommandSource.getMinecraftServer().method_3760().getIpBanList().isEnabled() && serverCommandSource.hasPermissionLevel(3)
+					serverCommandSource -> serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled() && serverCommandSource.hasPermissionLevel(3)
 				)
 				.then(
 					ServerCommandManager.argument("targets", GameProfileArgumentType.create())
 						.suggests(
 							(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-									commandContext.getSource().getMinecraftServer().method_3760().method_14563().getNames(), suggestionsBuilder
+									commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().getNames(), suggestionsBuilder
 								)
 						)
 						.executes(commandContext -> method_13473(commandContext.getSource(), GameProfileArgumentType.getProfilesArgument(commandContext, "targets")))
@@ -35,14 +35,14 @@ public class PardonCommand {
 	}
 
 	private static int method_13473(ServerCommandSource serverCommandSource, Collection<GameProfile> collection) throws CommandSyntaxException {
-		BannedPlayerList bannedPlayerList = serverCommandSource.getMinecraftServer().method_3760().method_14563();
+		BannedPlayerList bannedPlayerList = serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {
 			if (bannedPlayerList.contains(gameProfile)) {
 				bannedPlayerList.remove(gameProfile);
 				i++;
-				serverCommandSource.method_9226(new TranslatableTextComponent("commands.pardon.success", TextFormatter.profile(gameProfile)), true);
+				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.pardon.success", TextFormatter.profile(gameProfile)), true);
 			}
 		}
 

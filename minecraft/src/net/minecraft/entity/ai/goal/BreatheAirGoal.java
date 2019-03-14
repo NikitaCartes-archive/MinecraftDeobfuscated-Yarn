@@ -16,7 +16,7 @@ public class BreatheAirGoal extends Goal {
 
 	public BreatheAirGoal(MobEntityWithAi mobEntityWithAi) {
 		this.owner = mobEntityWithAi;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class BreatheAirGoal extends Goal {
 		BlockPos blockPos = null;
 
 		for (BlockPos blockPos2 : iterable) {
-			if (this.method_6253(this.owner.field_6002, blockPos2)) {
+			if (this.isAirPos(this.owner.world, blockPos2)) {
 				blockPos = blockPos2;
 				break;
 			}
@@ -61,20 +61,20 @@ public class BreatheAirGoal extends Goal {
 			blockPos = new BlockPos(this.owner.x, this.owner.y + 8.0, this.owner.z);
 		}
 
-		this.owner.method_5942().startMovingTo((double)blockPos.getX(), (double)(blockPos.getY() + 1), (double)blockPos.getZ(), 1.0);
+		this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)(blockPos.getY() + 1), (double)blockPos.getZ(), 1.0);
 	}
 
 	@Override
 	public void tick() {
 		this.moveToAir();
 		this.owner
-			.method_5724(0.02F, new Vec3d((double)this.owner.movementInputSideways, (double)this.owner.movementInputUp, (double)this.owner.movementInputForward));
-		this.owner.method_5784(MovementType.field_6308, this.owner.method_18798());
+			.updateVelocity(0.02F, new Vec3d((double)this.owner.movementInputSideways, (double)this.owner.movementInputUp, (double)this.owner.movementInputForward));
+		this.owner.move(MovementType.field_6308, this.owner.getVelocity());
 	}
 
-	private boolean method_6253(ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState = viewableWorld.method_8320(blockPos);
-		return (viewableWorld.method_8316(blockPos).isEmpty() || blockState.getBlock() == Blocks.field_10422)
-			&& blockState.method_11609(viewableWorld, blockPos, BlockPlacementEnvironment.field_50);
+	private boolean isAirPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+		BlockState blockState = viewableWorld.getBlockState(blockPos);
+		return (viewableWorld.getFluidState(blockPos).isEmpty() || blockState.getBlock() == Blocks.field_10422)
+			&& blockState.canPlaceAtSide(viewableWorld, blockPos, BlockPlacementEnvironment.field_50);
 	}
 }

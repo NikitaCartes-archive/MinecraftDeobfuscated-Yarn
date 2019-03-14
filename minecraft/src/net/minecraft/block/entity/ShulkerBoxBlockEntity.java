@@ -34,7 +34,7 @@ import net.minecraft.util.shape.VoxelShapes;
 
 public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implements SidedInventory, Tickable {
 	private static final int[] AVAILABLE_SLOTS = IntStream.range(0, 27).toArray();
-	private DefaultedList<ItemStack> field_12054 = DefaultedList.create(27, ItemStack.EMPTY);
+	private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
 	private int viewerCount;
 	private ShulkerBoxBlockEntity.AnimationStage animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
 	private float animationProgress;
@@ -90,12 +90,12 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		return this.animationStage;
 	}
 
-	public BoundingBox method_11314(BlockState blockState) {
-		return this.method_11311(blockState.method_11654(ShulkerBoxBlock.field_11496));
+	public BoundingBox getBoundingBox(BlockState blockState) {
+		return this.getBoundingBox(blockState.get(ShulkerBoxBlock.FACING));
 	}
 
-	public BoundingBox method_11311(Direction direction) {
-		return VoxelShapes.method_1077()
+	public BoundingBox getBoundingBox(Direction direction) {
+		return VoxelShapes.fullCube()
 			.getBoundingBox()
 			.stretch(
 				(double)(0.5F * this.getAnimationProgress(1.0F) * (float)direction.getOffsetX()),
@@ -106,23 +106,23 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 	private BoundingBox method_11315(Direction direction) {
 		Direction direction2 = direction.getOpposite();
-		return this.method_11311(direction).shrink((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
+		return this.getBoundingBox(direction).shrink((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
 	}
 
 	private void method_11316() {
-		BlockState blockState = this.world.method_8320(this.method_11016());
+		BlockState blockState = this.world.getBlockState(this.getPos());
 		if (blockState.getBlock() instanceof ShulkerBoxBlock) {
-			Direction direction = blockState.method_11654(ShulkerBoxBlock.field_11496);
-			BoundingBox boundingBox = this.method_11315(direction).method_996(this.field_11867);
-			List<Entity> list = this.world.method_8335(null, boundingBox);
+			Direction direction = blockState.get(ShulkerBoxBlock.FACING);
+			BoundingBox boundingBox = this.method_11315(direction).offset(this.pos);
+			List<Entity> list = this.world.getVisibleEntities(null, boundingBox);
 			if (!list.isEmpty()) {
 				for (int i = 0; i < list.size(); i++) {
 					Entity entity = (Entity)list.get(i);
-					if (entity.method_5657() != PistonBehavior.field_15975) {
+					if (entity.getPistonBehavior() != PistonBehavior.field_15975) {
 						double d = 0.0;
 						double e = 0.0;
 						double f = 0.0;
-						BoundingBox boundingBox2 = entity.method_5829();
+						BoundingBox boundingBox2 = entity.getBoundingBox();
 						switch (direction.getAxis()) {
 							case X:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
@@ -152,7 +152,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 								f += 0.01;
 						}
 
-						entity.method_5784(
+						entity.move(
 							MovementType.field_6306, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ())
 						);
 					}
@@ -163,7 +163,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 
 	@Override
 	public int getInvSize() {
-		return this.field_12054.size();
+		return this.inventory.size();
 	}
 
 	@Override
@@ -185,76 +185,76 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void method_5435(PlayerEntity playerEntity) {
+	public void onInvOpen(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
 			if (this.viewerCount < 0) {
 				this.viewerCount = 0;
 			}
 
 			this.viewerCount++;
-			this.world.method_8427(this.field_11867, this.method_11010().getBlock(), 1, this.viewerCount);
+			this.world.addBlockAction(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount == 1) {
-				this.world.method_8396(null, this.field_11867, SoundEvents.field_14825, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+				this.world.playSound(null, this.pos, SoundEvents.field_14825, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
 		}
 	}
 
 	@Override
-	public void method_5432(PlayerEntity playerEntity) {
+	public void onInvClose(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
 			this.viewerCount--;
-			this.world.method_8427(this.field_11867, this.method_11010().getBlock(), 1, this.viewerCount);
+			this.world.addBlockAction(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount <= 0) {
-				this.world.method_8396(null, this.field_11867, SoundEvents.field_14751, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+				this.world.playSound(null, this.pos, SoundEvents.field_14751, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
 		}
 	}
 
 	@Override
-	protected TextComponent method_17823() {
+	protected TextComponent getContainerName() {
 		return new TranslatableTextComponent("container.shulkerBox");
 	}
 
 	@Override
-	public void method_11014(CompoundTag compoundTag) {
-		super.method_11014(compoundTag);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
 		this.method_11319(compoundTag);
 	}
 
 	@Override
-	public CompoundTag method_11007(CompoundTag compoundTag) {
-		super.method_11007(compoundTag);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
 		return this.method_11317(compoundTag);
 	}
 
 	public void method_11319(CompoundTag compoundTag) {
-		this.field_12054 = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.method_11283(compoundTag) && compoundTag.containsKey("Items", 9)) {
-			Inventories.method_5429(compoundTag, this.field_12054);
+		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+		if (!this.deserializeLootTable(compoundTag) && compoundTag.containsKey("Items", 9)) {
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 
 	public CompoundTag method_11317(CompoundTag compoundTag) {
-		if (!this.method_11286(compoundTag)) {
-			Inventories.method_5427(compoundTag, this.field_12054, false);
+		if (!this.serializeLootTable(compoundTag)) {
+			Inventories.toTag(compoundTag, this.inventory, false);
 		}
 
 		return compoundTag;
 	}
 
 	@Override
-	protected DefaultedList<ItemStack> method_11282() {
-		return this.field_12054;
+	protected DefaultedList<ItemStack> getInvStackList() {
+		return this.inventory;
 	}
 
 	@Override
-	protected void method_11281(DefaultedList<ItemStack> defaultedList) {
-		this.field_12054 = defaultedList;
+	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
+		this.inventory = defaultedList;
 	}
 
 	@Override
 	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.field_12054) {
+		for (ItemStack itemStack : this.inventory) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -264,17 +264,17 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public int[] method_5494(Direction direction) {
+	public int[] getInvAvailableSlots(Direction direction) {
 		return AVAILABLE_SLOTS;
 	}
 
 	@Override
-	public boolean method_5492(int i, ItemStack itemStack, @Nullable Direction direction) {
+	public boolean canInsertInvStack(int i, ItemStack itemStack, @Nullable Direction direction) {
 		return !(Block.getBlockFromItem(itemStack.getItem()) instanceof ShulkerBoxBlock);
 	}
 
 	@Override
-	public boolean method_5493(int i, ItemStack itemStack, Direction direction) {
+	public boolean canExtractInvStack(int i, ItemStack itemStack, Direction direction) {
 		return true;
 	}
 
@@ -285,7 +285,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	@Environment(EnvType.CLIENT)
 	public DyeColor getColor() {
 		if (this.cachedColorUpdateNeeded) {
-			this.cachedColor = ShulkerBoxBlock.getColor(this.method_11010().getBlock());
+			this.cachedColor = ShulkerBoxBlock.getColor(this.getCachedState().getBlock());
 			this.cachedColorUpdateNeeded = false;
 		}
 

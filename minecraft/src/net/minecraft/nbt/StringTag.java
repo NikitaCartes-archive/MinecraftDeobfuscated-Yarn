@@ -59,7 +59,7 @@ public class StringTag implements Tag {
 	}
 
 	@Override
-	public TextComponent method_10710(String string, int i) {
+	public TextComponent toTextComponent(String string, int i) {
 		String string2 = escape(this.value);
 		String string3 = string2.substring(0, 1);
 		TextComponent textComponent = new StringTextComponent(string2.substring(1, string2.length() - 1)).applyFormat(GREEN);

@@ -18,35 +18,35 @@ import net.minecraft.world.World;
 public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 	protected JigsawBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_10927, Direction.UP));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.UP));
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_10927);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(FACING);
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, Rotation rotation) {
-		return blockState.method_11657(field_10927, rotation.method_10503(blockState.method_11654(field_10927)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		return this.method_9564().method_11657(field_10927, itemPlacementContext.method_8038());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState().with(FACING, itemPlacementContext.getFacing());
 	}
 
 	@Nullable
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new JigsawBlockEntity();
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		BlockEntity blockEntity = world.method_8321(blockPos);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof JigsawBlockEntity && playerEntity.isCreativeLevelTwoOp()) {
-			playerEntity.method_16354((JigsawBlockEntity)blockEntity);
+			playerEntity.openJigsawScreen((JigsawBlockEntity)blockEntity);
 			return true;
 		} else {
 			return false;
@@ -54,7 +54,7 @@ public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 	}
 
 	public static boolean method_16546(Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2) {
-		return structureBlockInfo.state.method_11654(field_10927) == ((Direction)structureBlockInfo2.state.method_11654(field_10927)).getOpposite()
-			&& structureBlockInfo.field_15595.getString("attachement_type").equals(structureBlockInfo2.field_15595.getString("attachement_type"));
+		return structureBlockInfo.state.get(FACING) == ((Direction)structureBlockInfo2.state.get(FACING)).getOpposite()
+			&& structureBlockInfo.tag.getString("attachement_type").equals(structureBlockInfo2.tag.getString("attachement_type"));
 	}
 }

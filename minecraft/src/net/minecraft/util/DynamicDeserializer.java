@@ -11,7 +11,7 @@ public interface DynamicDeserializer<T> {
 	T deserialize(Dynamic<?> dynamic);
 
 	static <T, V, U extends DynamicDeserializer<V>> V deserialize(Dynamic<T> dynamic, Registry<U> registry, String string, V object) {
-		U dynamicDeserializer = (U)registry.method_10223(new Identifier(dynamic.get(string).asString("")));
+		U dynamicDeserializer = (U)registry.get(new Identifier(dynamic.get(string).asString("")));
 		V object2;
 		if (dynamicDeserializer != null) {
 			object2 = dynamicDeserializer.deserialize(dynamic);

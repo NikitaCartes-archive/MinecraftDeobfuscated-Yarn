@@ -36,7 +36,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	private final Map<Identifier, CommandFunction> idMap = Maps.<Identifier, CommandFunction>newHashMap();
 	private final ArrayDeque<CommandFunctionManager.Entry> chain = new ArrayDeque();
 	private boolean field_13411;
-	private final TagContainer<CommandFunction> field_13416 = new TagContainer<>(this::getFunction, "tags/functions", true, "function");
+	private final TagContainer<CommandFunction> tags = new TagContainer<>(this::getFunction, "tags/functions", true, "function");
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
 	private boolean justLoaded;
 
@@ -74,7 +74,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		this.server.getProfiler().pop();
 		if (this.justLoaded) {
 			this.justLoaded = false;
-			Collection<CommandFunction> collection = this.method_12901().getOrCreate(LOAD_FUNCTION).values();
+			Collection<CommandFunction> collection = this.getTags().getOrCreate(LOAD_FUNCTION).values();
 			this.server.getProfiler().push(LOAD_FUNCTION::toString);
 
 			for (CommandFunction commandFunction2 : collection) {
@@ -98,7 +98,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			try {
 				this.field_13411 = true;
 				int j = 0;
-				CommandFunction.Element[] elements = commandFunction.method_9193();
+				CommandFunction.Element[] elements = commandFunction.getElements();
 
 				for (int k = elements.length - 1; k >= 0; k--) {
 					this.chain.push(new CommandFunctionManager.Entry(this, serverCommandSource, elements[k]));
@@ -132,7 +132,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	public void apply(ResourceManager resourceManager) {
 		this.idMap.clear();
 		this.tickFunctions.clear();
-		this.field_13416.clear();
+		this.tags.clear();
 		Collection<Identifier> collection = resourceManager.findResources("functions", stringx -> stringx.endsWith(".mcfunction"));
 		List<CompletableFuture<CommandFunction>> list = Lists.<CompletableFuture<CommandFunction>>newArrayList();
 
@@ -140,8 +140,8 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			String string = identifier.getPath();
 			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(PATH_PREFIX_LENGTH, string.length() - EXTENSION_LENGTH));
 			list.add(
-				CompletableFuture.supplyAsync(() -> method_12906(resourceManager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR)
-					.thenApplyAsync(listx -> CommandFunction.method_9195(identifier2, this, listx), this.server.getWorkerExecutor())
+				CompletableFuture.supplyAsync(() -> readLines(resourceManager, identifier), ResourceImpl.RESOURCE_IO_EXECUTOR)
+					.thenApplyAsync(listx -> CommandFunction.create(identifier2, this, listx), this.server.getWorkerExecutor())
 					.handle((commandFunction, throwable) -> this.load(commandFunction, throwable, identifier))
 			);
 		}
@@ -151,9 +151,8 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			LOGGER.info("Loaded {} custom command functions", this.idMap.size());
 		}
 
-		this.field_13416
-			.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.field_13416.prepareReload(resourceManager, this.server.getWorkerExecutor()).join());
-		this.tickFunctions.addAll(this.field_13416.getOrCreate(TICK_FUNCTION).values());
+		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(resourceManager, this.server.getWorkerExecutor()).join());
+		this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
 		this.justLoaded = true;
 	}
 
@@ -164,13 +163,13 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 			return null;
 		} else {
 			synchronized (this.idMap) {
-				this.idMap.put(commandFunction.method_9194(), commandFunction);
+				this.idMap.put(commandFunction.getId(), commandFunction);
 				return commandFunction;
 			}
 		}
 	}
 
-	private static List<String> method_12906(ResourceManager resourceManager, Identifier identifier) {
+	private static List<String> readLines(ResourceManager resourceManager, Identifier identifier) {
 		try {
 			Resource resource = resourceManager.getResource(identifier);
 			Throwable var3 = null;
@@ -205,8 +204,8 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		return this.server.getCommandSource().withLevel(2).withSilent();
 	}
 
-	public TagContainer<CommandFunction> method_12901() {
-		return this.field_13416;
+	public TagContainer<CommandFunction> getTags() {
+		return this.tags;
 	}
 
 	public static class Entry {
@@ -222,7 +221,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 
 		public void execute(ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i) {
 			try {
-				this.element.method_9198(this.manager, this.source, arrayDeque, i);
+				this.element.execute(this.manager, this.source, arrayDeque, i);
 			} catch (Throwable var4) {
 			}
 		}

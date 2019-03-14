@@ -6,16 +6,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import net.minecraft.class_1414;
-import net.minecraft.class_4153;
-import net.minecraft.class_4158;
-import net.minecraft.entity.ai.pathing.EntityMobNavigation;
+import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 
 public class MoveThroughVillageGoal extends Goal {
 	protected final MobEntityWithAi field_6525;
@@ -33,8 +33,8 @@ public class MoveThroughVillageGoal extends Goal {
 		this.field_6524 = bl;
 		this.field_18414 = i;
 		this.field_18415 = booleanSupplier;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
-		if (!(mobEntityWithAi.method_5942() instanceof EntityMobNavigation)) {
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+		if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
 		}
 	}
@@ -42,12 +42,12 @@ public class MoveThroughVillageGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		this.method_6297();
-		if (this.field_6524 && this.field_6525.field_6002.isDaylight()) {
+		if (this.field_6524 && this.field_6525.world.isDaylight()) {
 			return false;
 		} else {
-			ServerWorld serverWorld = (ServerWorld)this.field_6525.field_6002;
+			ServerWorld serverWorld = (ServerWorld)this.field_6525.world;
 			BlockPos blockPos = new BlockPos(this.field_6525);
-			Vec3d vec3d = class_1414.method_19108(
+			Vec3d vec3d = AiUtil.method_19108(
 				this.field_6525,
 				15,
 				7,
@@ -55,8 +55,8 @@ public class MoveThroughVillageGoal extends Goal {
 					if (!serverWorld.method_19500(blockPos2x)) {
 						return Double.NEGATIVE_INFINITY;
 					} else {
-						Optional<BlockPos> optionalx = serverWorld.method_19494()
-							.method_19127(class_4158.field_18501, this::method_19052, blockPos2x, 10, class_4153.class_4155.field_18488);
+						Optional<BlockPos> optionalx = serverWorld.getPointOfInterestStorage()
+							.getPosition(PointOfInterestType.ALWAYS_TRUE, this::method_19052, blockPos2x, 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
 						return !optionalx.isPresent() ? Double.NEGATIVE_INFINITY : -((BlockPos)optionalx.get()).squaredDistanceTo(blockPos);
 					}
 				}
@@ -64,28 +64,28 @@ public class MoveThroughVillageGoal extends Goal {
 			if (vec3d == null) {
 				return false;
 			} else {
-				Optional<BlockPos> optional = serverWorld.method_19494()
-					.method_19127(class_4158.field_18501, this::method_19052, new BlockPos(vec3d), 10, class_4153.class_4155.field_18488);
+				Optional<BlockPos> optional = serverWorld.getPointOfInterestStorage()
+					.getPosition(PointOfInterestType.ALWAYS_TRUE, this::method_19052, new BlockPos(vec3d), 10, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED);
 				if (!optional.isPresent()) {
 					return false;
 				} else {
 					this.field_18412 = ((BlockPos)optional.get()).toImmutable();
-					EntityMobNavigation entityMobNavigation = (EntityMobNavigation)this.field_6525.method_5942();
-					boolean bl = entityMobNavigation.canEnterOpenDoors();
-					entityMobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
-					this.field_6523 = entityMobNavigation.method_6348(this.field_18412);
-					entityMobNavigation.setCanPathThroughDoors(bl);
+					MobNavigation mobNavigation = (MobNavigation)this.field_6525.getNavigation();
+					boolean bl = mobNavigation.canEnterOpenDoors();
+					mobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
+					this.field_6523 = mobNavigation.findPathTo(this.field_18412);
+					mobNavigation.setCanPathThroughDoors(bl);
 					if (this.field_6523 == null) {
-						Vec3d vec3d2 = class_1414.method_6373(
+						Vec3d vec3d2 = AiUtil.method_6373(
 							this.field_6525, 10, 7, new Vec3d((double)this.field_18412.getX(), (double)this.field_18412.getY(), (double)this.field_18412.getZ())
 						);
 						if (vec3d2 == null) {
 							return false;
 						}
 
-						entityMobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
-						this.field_6523 = this.field_6525.method_5942().method_6352(vec3d2.x, vec3d2.y, vec3d2.z);
-						entityMobNavigation.setCanPathThroughDoors(bl);
+						mobNavigation.setCanPathThroughDoors(this.field_18415.getAsBoolean());
+						this.field_6523 = this.field_6525.getNavigation().findPathTo(vec3d2.x, vec3d2.y, vec3d2.z);
+						mobNavigation.setCanPathThroughDoors(bl);
 						if (this.field_6523 == null) {
 							return false;
 						}
@@ -94,8 +94,8 @@ public class MoveThroughVillageGoal extends Goal {
 					for (int i = 0; i < this.field_6523.getLength(); i++) {
 						PathNode pathNode = this.field_6523.getNode(i);
 						BlockPos blockPos2 = new BlockPos(pathNode.x, pathNode.y + 1, pathNode.z);
-						if (DoorInteractGoal.method_6254(this.field_6525.field_6002, blockPos2)) {
-							this.field_6523 = this.field_6525.method_5942().method_6352((double)pathNode.x, (double)pathNode.y, (double)pathNode.z);
+						if (DoorInteractGoal.getDoor(this.field_6525.world, blockPos2)) {
+							this.field_6523 = this.field_6525.getNavigation().findPathTo((double)pathNode.x, (double)pathNode.y, (double)pathNode.z);
 							break;
 						}
 					}
@@ -108,22 +108,22 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		if (this.field_6525.method_5942().isIdle()) {
+		if (this.field_6525.getNavigation().isIdle()) {
 			return false;
 		} else {
 			float f = this.field_6525.getWidth() + (float)this.field_18414;
-			return this.field_6525.method_5831(this.field_18412) > (double)(f * f);
+			return this.field_6525.squaredDistanceTo(this.field_18412) > (double)(f * f);
 		}
 	}
 
 	@Override
 	public void start() {
-		this.field_6525.method_5942().method_6334(this.field_6523, this.field_6520);
+		this.field_6525.getNavigation().startMovingAlong(this.field_6523, this.field_6520);
 	}
 
 	@Override
 	public void onRemove() {
-		if (this.field_6525.method_5942().isIdle() || this.field_6525.method_5831(this.field_18412) < (double)(this.field_18414 * this.field_18414)) {
+		if (this.field_6525.getNavigation().isIdle() || this.field_6525.squaredDistanceTo(this.field_18412) < (double)(this.field_18414 * this.field_18414)) {
 			this.field_18413.add(this.field_18412);
 		}
 	}

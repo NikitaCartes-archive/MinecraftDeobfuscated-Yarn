@@ -9,13 +9,13 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, RabbitEntityModel<RabbitEntity>> {
-	private static final Identifier field_4770 = new Identifier("textures/entity/rabbit/brown.png");
-	private static final Identifier field_4773 = new Identifier("textures/entity/rabbit/white.png");
-	private static final Identifier field_4775 = new Identifier("textures/entity/rabbit/black.png");
-	private static final Identifier field_4768 = new Identifier("textures/entity/rabbit/gold.png");
-	private static final Identifier field_4774 = new Identifier("textures/entity/rabbit/salt.png");
-	private static final Identifier field_4772 = new Identifier("textures/entity/rabbit/white_splotched.png");
-	private static final Identifier field_4771 = new Identifier("textures/entity/rabbit/toast.png");
+	private static final Identifier BROWN_SKIN = new Identifier("textures/entity/rabbit/brown.png");
+	private static final Identifier WHITE_SKIN = new Identifier("textures/entity/rabbit/white.png");
+	private static final Identifier BLACK_SKIN = new Identifier("textures/entity/rabbit/black.png");
+	private static final Identifier GOLD_SKIN = new Identifier("textures/entity/rabbit/gold.png");
+	private static final Identifier SALT_SKIN = new Identifier("textures/entity/rabbit/salt.png");
+	private static final Identifier WHITE_SPOTTED_SKIN = new Identifier("textures/entity/rabbit/white_splotched.png");
+	private static final Identifier TOAST_SKIN = new Identifier("textures/entity/rabbit/toast.png");
 	private static final Identifier field_4769 = new Identifier("textures/entity/rabbit/caerbannog.png");
 
 	public RabbitEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -23,24 +23,24 @@ public class RabbitEntityRenderer extends MobEntityRenderer<RabbitEntity, Rabbit
 	}
 
 	protected Identifier method_4102(RabbitEntity rabbitEntity) {
-		String string = TextFormat.stripFormatting(rabbitEntity.method_5477().getString());
+		String string = TextFormat.stripFormatting(rabbitEntity.getName().getString());
 		if (string != null && "Toast".equals(string)) {
-			return field_4771;
+			return TOAST_SKIN;
 		} else {
 			switch (rabbitEntity.getRabbitType()) {
 				case 0:
 				default:
-					return field_4770;
+					return BROWN_SKIN;
 				case 1:
-					return field_4773;
+					return WHITE_SKIN;
 				case 2:
-					return field_4775;
+					return BLACK_SKIN;
 				case 3:
-					return field_4772;
+					return WHITE_SPOTTED_SKIN;
 				case 4:
-					return field_4768;
+					return GOLD_SKIN;
 				case 5:
-					return field_4774;
+					return SALT_SKIN;
 				case 99:
 					return field_4769;
 			}

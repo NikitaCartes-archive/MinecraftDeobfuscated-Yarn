@@ -14,9 +14,9 @@ import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class LightmapTextureManager implements AutoCloseable {
-	private final NativeImageBackedTexture field_4138;
+	private final NativeImageBackedTexture texture;
 	private final NativeImage image;
-	private final Identifier field_4136;
+	private final Identifier textureIdentifier;
 	private boolean isDirty;
 	private float prevFlicker;
 	private float flicker;
@@ -26,13 +26,13 @@ public class LightmapTextureManager implements AutoCloseable {
 	public LightmapTextureManager(GameRenderer gameRenderer) {
 		this.worldRenderer = gameRenderer;
 		this.client = gameRenderer.getClient();
-		this.field_4138 = new NativeImageBackedTexture(16, 16, false);
-		this.field_4136 = this.client.method_1531().method_4617("light_map", this.field_4138);
-		this.image = this.field_4138.getImage();
+		this.texture = new NativeImageBackedTexture(16, 16, false);
+		this.textureIdentifier = this.client.getTextureManager().registerDynamicTexture("light_map", this.texture);
+		this.image = this.texture.getImage();
 	}
 
 	public void close() {
-		this.field_4138.close();
+		this.texture.close();
 	}
 
 	public void tick() {
@@ -56,7 +56,7 @@ public class LightmapTextureManager implements AutoCloseable {
 		GlStateManager.scalef(0.00390625F, 0.00390625F, 0.00390625F);
 		GlStateManager.translatef(8.0F, 8.0F, 8.0F);
 		GlStateManager.matrixMode(5888);
-		this.client.method_1531().method_4618(this.field_4136);
+		this.client.getTextureManager().bindTexture(this.textureIdentifier);
 		GlStateManager.texParameter(3553, 10241, 9729);
 		GlStateManager.texParameter(3553, 10240, 9729);
 		GlStateManager.texParameter(3553, 10242, 10496);
@@ -69,15 +69,15 @@ public class LightmapTextureManager implements AutoCloseable {
 	public void update(float f) {
 		if (this.isDirty) {
 			this.client.getProfiler().push("lightTex");
-			World world = this.client.field_1687;
+			World world = this.client.world;
 			if (world != null) {
 				float g = world.getAmbientLight(1.0F);
 				float h = g * 0.95F + 0.05F;
-				float i = this.client.field_1724.method_3140();
+				float i = this.client.player.method_3140();
 				float j;
-				if (this.client.field_1724.hasPotionEffect(StatusEffects.field_5925)) {
-					j = this.worldRenderer.method_3174(this.client.field_1724, f);
-				} else if (i > 0.0F && this.client.field_1724.hasPotionEffect(StatusEffects.field_5927)) {
+				if (this.client.player.hasPotionEffect(StatusEffects.field_5925)) {
+					j = this.worldRenderer.method_3174(this.client.player, f);
+				} else if (i > 0.0F && this.client.player.hasPotionEffect(StatusEffects.field_5927)) {
 					j = i;
 				} else {
 					j = 0.0F;
@@ -85,10 +85,10 @@ public class LightmapTextureManager implements AutoCloseable {
 
 				for (int k = 0; k < 16; k++) {
 					for (int l = 0; l < 16; l++) {
-						float m = world.field_9247.getLightLevelToBrightness()[k] * h;
-						float n = world.field_9247.getLightLevelToBrightness()[l] * (this.prevFlicker * 0.1F + 1.5F);
+						float m = world.dimension.getLightLevelToBrightness()[k] * h;
+						float n = world.dimension.getLightLevelToBrightness()[l] * (this.prevFlicker * 0.1F + 1.5F);
 						if (world.getTicksSinceLightning() > 0) {
-							m = world.field_9247.getLightLevelToBrightness()[k];
+							m = world.dimension.getLightLevelToBrightness()[k];
 						}
 
 						float o = m * (g * 0.65F + 0.35F);
@@ -108,7 +108,7 @@ public class LightmapTextureManager implements AutoCloseable {
 							w = w * (1.0F - x) + w * 0.6F * x;
 						}
 
-						if (world.field_9247.method_12460() == DimensionType.field_13078) {
+						if (world.dimension.getType() == DimensionType.field_13078) {
 							u = 0.22F + n * 0.75F;
 							v = 0.28F + s * 0.75F;
 							w = 0.25F + t * 0.75F;
@@ -141,7 +141,7 @@ public class LightmapTextureManager implements AutoCloseable {
 							w = 1.0F;
 						}
 
-						float xx = (float)this.client.field_1690.gamma;
+						float xx = (float)this.client.options.gamma;
 						float y = 1.0F - u;
 						float z = 1.0F - v;
 						float aa = 1.0F - w;
@@ -186,7 +186,7 @@ public class LightmapTextureManager implements AutoCloseable {
 					}
 				}
 
-				this.field_4138.upload();
+				this.texture.upload();
 				this.isDirty = false;
 				this.client.getProfiler().pop();
 			}

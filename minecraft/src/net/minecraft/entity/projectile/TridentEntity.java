@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 public class TridentEntity extends ProjectileEntity {
 	private static final TrackedData<Byte> field_7647 = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private ItemStack field_7650 = new ItemStack(Items.field_8547);
+	private ItemStack tridentStack = new ItemStack(Items.field_8547);
 	private boolean dealtDamage;
 	public int field_7649;
 
@@ -37,8 +37,8 @@ public class TridentEntity extends ProjectileEntity {
 
 	public TridentEntity(World world, LivingEntity livingEntity, ItemStack itemStack) {
 		super(EntityType.TRIDENT, livingEntity, world);
-		this.field_7650 = itemStack.copy();
-		this.field_6011.set(field_7647, (byte)EnchantmentHelper.getLoyalty(itemStack));
+		this.tridentStack = itemStack.copy();
+		this.dataTracker.set(field_7647, (byte)EnchantmentHelper.getLoyalty(itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -49,7 +49,7 @@ public class TridentEntity extends ProjectileEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.field_6011.startTracking(field_7647, (byte)0);
+		this.dataTracker.startTracking(field_7647, (byte)0);
 	}
 
 	@Override
@@ -60,10 +60,10 @@ public class TridentEntity extends ProjectileEntity {
 
 		Entity entity = this.getOwner();
 		if ((this.dealtDamage || this.isNoClip()) && entity != null) {
-			int i = this.field_6011.get(field_7647);
+			int i = this.dataTracker.get(field_7647);
 			if (i > 0 && !this.method_7493()) {
-				if (!this.field_6002.isClient && this.pickupType == ProjectileEntity.PickupType.PICKUP) {
-					this.method_5699(this.method_7445(), 0.1F);
+				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupType.PICKUP) {
+					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
 				this.invalidate();
@@ -71,14 +71,14 @@ public class TridentEntity extends ProjectileEntity {
 				this.setNoClip(true);
 				Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y + (double)entity.getStandingEyeHeight() - this.y, entity.z - this.z);
 				this.y = this.y + vec3d.y * 0.015 * (double)i;
-				if (this.field_6002.isClient) {
+				if (this.world.isClient) {
 					this.prevRenderY = this.y;
 				}
 
 				double d = 0.05 * (double)i;
-				this.method_18799(this.method_18798().multiply(0.95).add(vec3d.normalize().multiply(d)));
+				this.setVelocity(this.getVelocity().multiply(0.95).add(vec3d.normalize().multiply(d)));
 				if (this.field_7649 == 0) {
-					this.method_5783(SoundEvents.field_14698, 10.0F, 1.0F);
+					this.playSound(SoundEvents.field_14698, 10.0F, 1.0F);
 				}
 
 				this.field_7649++;
@@ -94,8 +94,8 @@ public class TridentEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected ItemStack method_7445() {
-		return this.field_7650.copy();
+	protected ItemStack asItemStack() {
+		return this.tridentStack.copy();
 	}
 
 	@Nullable
@@ -110,11 +110,11 @@ public class TridentEntity extends ProjectileEntity {
 		float f = 8.0F;
 		if (entity instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)entity;
-			f += EnchantmentHelper.getAttackDamage(this.field_7650, livingEntity.method_6046());
+			f += EnchantmentHelper.getAttackDamage(this.tridentStack, livingEntity.getGroup());
 		}
 
 		Entity entity2 = this.getOwner();
-		DamageSource damageSource = DamageSource.method_5520(this, (Entity)(entity2 == null ? this : entity2));
+		DamageSource damageSource = DamageSource.trident(this, (Entity)(entity2 == null ? this : entity2));
 		this.dealtDamage = true;
 		SoundEvent soundEvent = SoundEvents.field_15213;
 		if (entity.damage(damageSource, f) && entity instanceof LivingEntity) {
@@ -127,58 +127,58 @@ public class TridentEntity extends ProjectileEntity {
 			this.onHit(livingEntity2);
 		}
 
-		this.method_18799(this.method_18798().multiply(-0.01, -0.1, -0.01));
+		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
 		float g = 1.0F;
-		if (this.field_6002 instanceof ServerWorld && this.field_6002.isThundering() && EnchantmentHelper.hasChanneling(this.field_7650)) {
-			BlockPos blockPos = entity.method_5704();
-			if (this.field_6002.method_8311(blockPos)) {
+		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
+			BlockPos blockPos = entity.getPos();
+			if (this.world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = new LightningEntity(
-					this.field_6002, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
+					this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false
 				);
-				lightningEntity.method_6961(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
-				((ServerWorld)this.field_6002).addLightning(lightningEntity);
+				lightningEntity.setChanneller(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
+				((ServerWorld)this.world).addLightning(lightningEntity);
 				soundEvent = SoundEvents.field_14896;
 				g = 5.0F;
 			}
 		}
 
-		this.method_5783(soundEvent, g, 1.0F);
+		this.playSound(soundEvent, g, 1.0F);
 	}
 
 	@Override
-	protected SoundEvent method_7440() {
+	protected SoundEvent getSound() {
 		return SoundEvents.field_15104;
 	}
 
 	@Override
-	public void method_5694(PlayerEntity playerEntity) {
+	public void onPlayerCollision(PlayerEntity playerEntity) {
 		Entity entity = this.getOwner();
 		if (entity == null || entity.getUuid() == playerEntity.getUuid()) {
-			super.method_5694(playerEntity);
+			super.onPlayerCollision(playerEntity);
 		}
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("Trident", 10)) {
-			this.field_7650 = ItemStack.method_7915(compoundTag.getCompound("Trident"));
+			this.tridentStack = ItemStack.fromTag(compoundTag.getCompound("Trident"));
 		}
 
 		this.dealtDamage = compoundTag.getBoolean("DealtDamage");
-		this.field_6011.set(field_7647, (byte)EnchantmentHelper.getLoyalty(this.field_7650));
+		this.dataTracker.set(field_7647, (byte)EnchantmentHelper.getLoyalty(this.tridentStack));
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
-		compoundTag.method_10566("Trident", this.field_7650.method_7953(new CompoundTag()));
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.put("Trident", this.tridentStack.toTag(new CompoundTag()));
 		compoundTag.putBoolean("DealtDamage", this.dealtDamage);
 	}
 
 	@Override
 	protected void method_7446() {
-		int i = this.field_6011.get(field_7647);
+		int i = this.dataTracker.get(field_7647);
 		if (this.pickupType != ProjectileEntity.PickupType.PICKUP || i <= 0) {
 			super.method_7446();
 		}

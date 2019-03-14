@@ -26,7 +26,7 @@ public class ResourcePackStatusC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	public void method_12409(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12081(this);
+		serverPlayPacketListener.onResourcePackStatus(this);
 	}
 
 	public static enum Status {

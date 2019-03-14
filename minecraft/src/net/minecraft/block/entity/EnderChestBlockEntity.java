@@ -29,18 +29,18 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 	@Override
 	public void tick() {
 		if (++this.ticks % 20 * 4 == 0) {
-			this.world.method_8427(this.field_11867, Blocks.field_10443, 1, this.viewerCount);
+			this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewerCount);
 		}
 
 		this.lastAnimationProgress = this.animationProgress;
-		int i = this.field_11867.getX();
-		int j = this.field_11867.getY();
-		int k = this.field_11867.getZ();
+		int i = this.pos.getX();
+		int j = this.pos.getY();
+		int k = this.pos.getZ();
 		float f = 0.1F;
 		if (this.viewerCount > 0 && this.animationProgress == 0.0F) {
 			double d = (double)i + 0.5;
 			double e = (double)k + 0.5;
-			this.world.method_8465(null, d, (double)j + 0.5, e, SoundEvents.field_14952, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+			this.world.playSound(null, d, (double)j + 0.5, e, SoundEvents.field_14952, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 		}
 
 		if (this.viewerCount == 0 && this.animationProgress > 0.0F || this.viewerCount > 0 && this.animationProgress < 1.0F) {
@@ -59,7 +59,7 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 			if (this.animationProgress < 0.5F && g >= 0.5F) {
 				double e = (double)i + 0.5;
 				double l = (double)k + 0.5;
-				this.world.method_8465(null, e, (double)j + 0.5, l, SoundEvents.field_15206, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
+				this.world.playSound(null, e, (double)j + 0.5, l, SoundEvents.field_15206, SoundCategory.field_15245, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
 
 			if (this.animationProgress < 0.0F) {
@@ -86,20 +86,18 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 
 	public void onOpen() {
 		this.viewerCount++;
-		this.world.method_8427(this.field_11867, Blocks.field_10443, 1, this.viewerCount);
+		this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewerCount);
 	}
 
 	public void onClose() {
 		this.viewerCount--;
-		this.world.method_8427(this.field_11867, Blocks.field_10443, 1, this.viewerCount);
+		this.world.addBlockAction(this.pos, Blocks.field_10443, 1, this.viewerCount);
 	}
 
 	public boolean canPlayerUse(PlayerEntity playerEntity) {
-		return this.world.method_8321(this.field_11867) != this
+		return this.world.getBlockEntity(this.pos) != this
 			? false
-			: !(
-				playerEntity.squaredDistanceTo((double)this.field_11867.getX() + 0.5, (double)this.field_11867.getY() + 0.5, (double)this.field_11867.getZ() + 0.5) > 64.0
-			);
+			: !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
 	}
 
 	@Environment(EnvType.CLIENT)

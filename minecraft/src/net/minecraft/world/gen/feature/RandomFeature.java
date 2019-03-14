@@ -18,10 +18,10 @@ public class RandomFeature extends Feature<RandomFeatureConfig> {
 	) {
 		for (RandomFeatureEntry<?> randomFeatureEntry : randomFeatureConfig.features) {
 			if (random.nextFloat() < randomFeatureEntry.chance) {
-				return randomFeatureEntry.method_14271(iWorld, chunkGenerator, random, blockPos);
+				return randomFeatureEntry.generate(iWorld, chunkGenerator, random, blockPos);
 			}
 		}
 
-		return randomFeatureConfig.defaultFeature.method_12862(iWorld, chunkGenerator, random, blockPos);
+		return randomFeatureConfig.defaultFeature.generate(iWorld, chunkGenerator, random, blockPos);
 	}
 }

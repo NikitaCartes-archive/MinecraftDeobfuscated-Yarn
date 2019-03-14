@@ -15,26 +15,26 @@ import net.minecraft.util.registry.Registry;
 
 public class EnchantmentPredicate {
 	public static final EnchantmentPredicate ANY = new EnchantmentPredicate();
-	private final Enchantment field_9569;
+	private final Enchantment enchantment;
 	private final NumberRange.Integer levels;
 
 	public EnchantmentPredicate() {
-		this.field_9569 = null;
+		this.enchantment = null;
 		this.levels = NumberRange.Integer.ANY;
 	}
 
 	public EnchantmentPredicate(@Nullable Enchantment enchantment, NumberRange.Integer integer) {
-		this.field_9569 = enchantment;
+		this.enchantment = enchantment;
 		this.levels = integer;
 	}
 
 	public boolean test(Map<Enchantment, Integer> map) {
-		if (this.field_9569 != null) {
-			if (!map.containsKey(this.field_9569)) {
+		if (this.enchantment != null) {
+			if (!map.containsKey(this.enchantment)) {
 				return false;
 			}
 
-			int i = (Integer)map.get(this.field_9569);
+			int i = (Integer)map.get(this.enchantment);
 			if (this.levels != null && !this.levels.test(i)) {
 				return false;
 			}
@@ -56,8 +56,8 @@ public class EnchantmentPredicate {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			if (this.field_9569 != null) {
-				jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.method_10221(this.field_9569).toString());
+			if (this.enchantment != null) {
+				jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(this.enchantment).toString());
 			}
 
 			jsonObject.add("levels", this.levels.serialize());
@@ -72,7 +72,7 @@ public class EnchantmentPredicate {
 			if (jsonObject.has("enchantment")) {
 				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "enchantment"));
 				enchantment = (Enchantment)Registry.ENCHANTMENT
-					.method_17966(identifier)
+					.getOrEmpty(identifier)
 					.orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + identifier + "'"));
 			}
 

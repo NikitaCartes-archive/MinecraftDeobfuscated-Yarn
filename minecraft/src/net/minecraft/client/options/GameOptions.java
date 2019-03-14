@@ -23,7 +23,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4060;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.client.resource.ClientResourcePackContainer;
@@ -33,8 +32,8 @@ import net.minecraft.client.util.VideoMode;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.ResourcePackContainerManager;
 import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
-import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.Difficulty;
@@ -66,7 +65,7 @@ public class GameOptions {
 	public int maxFps = 120;
 	public CloudRenderMode cloudRenderMode = CloudRenderMode.field_18164;
 	public boolean fancyGraphics = true;
-	public class_4060 ao = class_4060.field_18146;
+	public AoOption ao = AoOption.field_18146;
 	public List<String> resourcePacks = Lists.<String>newArrayList();
 	public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
 	public ChatVisibility chatVisibility = ChatVisibility.FULL;
@@ -78,7 +77,7 @@ public class GameOptions {
 	public boolean advancedItemTooltips;
 	public boolean pauseOnLostFocus = true;
 	private final Set<PlayerModelPart> enabledPlayerModelParts = Sets.<PlayerModelPart>newHashSet(PlayerModelPart.values());
-	public OptionMainHand mainHand = OptionMainHand.field_6183;
+	public AbsoluteHand mainHand = AbsoluteHand.field_6183;
 	public int overrideWidth;
 	public int overrideHeight;
 	public boolean heldItemTooltips = true;
@@ -90,7 +89,7 @@ public class GameOptions {
 	private final Map<SoundCategory, Float> soundVolumeLevels = Maps.newEnumMap(SoundCategory.class);
 	public boolean useNativeTransport = true;
 	public AttackIndicator attackIndicator = AttackIndicator.field_18152;
-	public TutorialStep field_1875 = TutorialStep.MOVEMENT;
+	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
 	public int glDebugVerbosity = 1;
@@ -188,7 +187,7 @@ public class GameOptions {
 	public double fov = 70.0;
 	public double gamma;
 	public int guiScale;
-	public ParticlesOption field_1882 = ParticlesOption.field_18197;
+	public ParticlesOption particles = ParticlesOption.field_18197;
 	public NarratorOption narrator = NarratorOption.field_18176;
 	public String language = "en_us";
 
@@ -196,9 +195,9 @@ public class GameOptions {
 		this.client = minecraftClient;
 		this.optionsFile = new File(file, "options.txt");
 		if (minecraftClient.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
-			GameOption.field_1933.method_18612(32.0F);
+			GameOption.RENDER_DISTANCE.method_18612(32.0F);
 		} else {
-			GameOption.field_1933.method_18612(16.0F);
+			GameOption.RENDER_DISTANCE.method_18612(16.0F);
 		}
 
 		this.viewDistance = minecraftClient.is64Bit() ? 12 : 8;
@@ -332,7 +331,7 @@ public class GameOptions {
 					}
 
 					if ("particles".equals(string)) {
-						this.field_1882 = ParticlesOption.byId(Integer.parseInt(string2));
+						this.particles = ParticlesOption.byId(Integer.parseInt(string2));
 					}
 
 					if ("maxFps".equals(string)) {
@@ -349,16 +348,16 @@ public class GameOptions {
 					}
 
 					if ("tutorialStep".equals(string)) {
-						this.field_1875 = TutorialStep.byName(string2);
+						this.tutorialStep = TutorialStep.byName(string2);
 					}
 
 					if ("ao".equals(string)) {
 						if ("true".equals(string2)) {
-							this.ao = class_4060.field_18146;
+							this.ao = AoOption.field_18146;
 						} else if ("false".equals(string2)) {
-							this.ao = class_4060.field_18144;
+							this.ao = AoOption.field_18144;
 						} else {
-							this.ao = class_4060.method_18484(Integer.parseInt(string2));
+							this.ao = AoOption.getOption(Integer.parseInt(string2));
 						}
 					}
 
@@ -467,7 +466,7 @@ public class GameOptions {
 					}
 
 					if ("mainHand".equals(string)) {
-						this.mainHand = "left".equals(string2) ? OptionMainHand.field_6182 : OptionMainHand.field_6183;
+						this.mainHand = "left".equals(string2) ? AbsoluteHand.field_6182 : AbsoluteHand.field_6183;
 					}
 
 					if ("narrator".equals(string)) {
@@ -561,11 +560,11 @@ public class GameOptions {
 				printWriter.println("gamma:" + this.gamma);
 				printWriter.println("renderDistance:" + this.viewDistance);
 				printWriter.println("guiScale:" + this.guiScale);
-				printWriter.println("particles:" + this.field_1882.getId());
+				printWriter.println("particles:" + this.particles.getId());
 				printWriter.println("maxFps:" + this.maxFps);
 				printWriter.println("difficulty:" + this.difficulty.getId());
 				printWriter.println("fancyGraphics:" + this.fancyGraphics);
-				printWriter.println("ao:" + this.ao.method_18483());
+				printWriter.println("ao:" + this.ao.getValue());
 				printWriter.println("biomeBlendRadius:" + this.biomeBlendRadius);
 				switch (this.cloudRenderMode) {
 					case field_18164:
@@ -602,10 +601,10 @@ public class GameOptions {
 				printWriter.println("chatWidth:" + this.chatWidth);
 				printWriter.println("mipmapLevels:" + this.mipmapLevels);
 				printWriter.println("useNativeTransport:" + this.useNativeTransport);
-				printWriter.println("mainHand:" + (this.mainHand == OptionMainHand.field_6182 ? "left" : "right"));
+				printWriter.println("mainHand:" + (this.mainHand == AbsoluteHand.field_6182 ? "left" : "right"));
 				printWriter.println("attackIndicator:" + this.attackIndicator.getId());
 				printWriter.println("narrator:" + this.narrator.getId());
-				printWriter.println("tutorialStep:" + this.field_1875.getName());
+				printWriter.println("tutorialStep:" + this.tutorialStep.getName());
 				printWriter.println("mouseWheelSensitivity:" + this.mouseWheelSensitivity);
 				printWriter.println("glDebugVerbosity:" + this.glDebugVerbosity);
 
@@ -614,7 +613,7 @@ public class GameOptions {
 				}
 
 				for (SoundCategory soundCategory : SoundCategory.values()) {
-					printWriter.println("soundCategory_" + soundCategory.getName() + ":" + this.method_1630(soundCategory));
+					printWriter.println("soundCategory_" + soundCategory.getName() + ":" + this.getSoundVolume(soundCategory));
 				}
 
 				for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
@@ -643,17 +642,17 @@ public class GameOptions {
 		this.onPlayerModelPartChange();
 	}
 
-	public float method_1630(SoundCategory soundCategory) {
+	public float getSoundVolume(SoundCategory soundCategory) {
 		return this.soundVolumeLevels.containsKey(soundCategory) ? (Float)this.soundVolumeLevels.get(soundCategory) : 1.0F;
 	}
 
-	public void method_1624(SoundCategory soundCategory, float f) {
-		this.client.method_1483().method_4865(soundCategory, f);
+	public void setSoundVolume(SoundCategory soundCategory, float f) {
+		this.client.getSoundLoader().updateSoundVolume(soundCategory, f);
 		this.soundVolumeLevels.put(soundCategory, f);
 	}
 
 	public void onPlayerModelPartChange() {
-		if (this.client.field_1724 != null) {
+		if (this.client.player != null) {
 			int i = 0;
 
 			for (PlayerModelPart playerModelPart : this.enabledPlayerModelParts) {
@@ -661,9 +660,9 @@ public class GameOptions {
 			}
 
 			this.client
-				.field_1724
+				.player
 				.networkHandler
-				.method_2883(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainHand));
+				.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainHand));
 		}
 	}
 
@@ -699,16 +698,16 @@ public class GameOptions {
 		return this.useNativeTransport;
 	}
 
-	public void method_1627(ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager) {
+	public void addResourcePackContainersToManager(ResourcePackContainerManager<ClientResourcePackContainer> resourcePackContainerManager) {
 		resourcePackContainerManager.callCreators();
 		Set<ClientResourcePackContainer> set = Sets.<ClientResourcePackContainer>newLinkedHashSet();
 		Iterator<String> iterator = this.resourcePacks.iterator();
 
 		while (iterator.hasNext()) {
 			String string = (String)iterator.next();
-			ClientResourcePackContainer clientResourcePackContainer = resourcePackContainerManager.method_14449(string);
+			ClientResourcePackContainer clientResourcePackContainer = resourcePackContainerManager.getContainer(string);
 			if (clientResourcePackContainer == null && !string.startsWith("file/")) {
-				clientResourcePackContainer = resourcePackContainerManager.method_14449("file/" + string);
+				clientResourcePackContainer = resourcePackContainerManager.getContainer("file/" + string);
 			}
 
 			if (clientResourcePackContainer == null) {

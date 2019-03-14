@@ -27,7 +27,7 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 	@Override
 	protected InputStream findInputStream(ResourceType resourceType, Identifier identifier) {
 		if (resourceType == ResourceType.ASSETS) {
-			File file = this.index.method_4630(identifier);
+			File file = this.index.getResource(identifier);
 			if (file != null && file.exists()) {
 				try {
 					return new FileInputStream(file);
@@ -54,8 +54,8 @@ public class DefaultClientResourcePack extends DefaultResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> method_14408(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
-		Collection<Identifier> collection = super.method_14408(resourceType, string, i, predicate);
+	public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
+		Collection<Identifier> collection = super.findResources(resourceType, string, i, predicate);
 		collection.addAll((Collection)this.index.getFilesRecursively(string, i, predicate).stream().map(Identifier::new).collect(Collectors.toList()));
 		return collection;
 	}

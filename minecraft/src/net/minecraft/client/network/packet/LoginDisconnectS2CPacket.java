@@ -25,11 +25,11 @@ public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListene
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.method_10805(this.reason);
+		packetByteBuf.writeTextComponent(this.reason);
 	}
 
 	public void method_12637(ClientLoginPacketListener clientLoginPacketListener) {
-		clientLoginPacketListener.method_12584(this);
+		clientLoginPacketListener.onDisconnect(this);
 	}
 
 	@Environment(EnvType.CLIENT)

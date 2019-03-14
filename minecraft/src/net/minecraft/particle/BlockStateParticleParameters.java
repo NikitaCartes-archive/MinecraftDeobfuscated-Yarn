@@ -18,30 +18,30 @@ public class BlockStateParticleParameters implements ParticleParameters {
 		}
 
 		public BlockStateParticleParameters method_10280(ParticleType<BlockStateParticleParameters> particleType, PacketByteBuf packetByteBuf) {
-			return new BlockStateParticleParameters(particleType, Block.field_10651.get(packetByteBuf.readVarInt()));
+			return new BlockStateParticleParameters(particleType, Block.STATE_IDS.get(packetByteBuf.readVarInt()));
 		}
 	};
-	private final ParticleType<BlockStateParticleParameters> field_11183;
+	private final ParticleType<BlockStateParticleParameters> type;
 	private final BlockState blockState;
 
 	public BlockStateParticleParameters(ParticleType<BlockStateParticleParameters> particleType, BlockState blockState) {
-		this.field_11183 = particleType;
+		this.type = particleType;
 		this.blockState = blockState;
 	}
 
 	@Override
-	public void method_10294(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeVarInt(Block.field_10651.getId(this.blockState));
+	public void write(PacketByteBuf packetByteBuf) {
+		packetByteBuf.writeVarInt(Block.STATE_IDS.getId(this.blockState));
 	}
 
 	@Override
 	public String asString() {
-		return Registry.PARTICLE_TYPE.method_10221(this.method_10295()) + " " + BlockArgumentParser.stringifyBlockState(this.blockState);
+		return Registry.PARTICLE_TYPE.getId(this.getType()) + " " + BlockArgumentParser.stringifyBlockState(this.blockState);
 	}
 
 	@Override
-	public ParticleType<BlockStateParticleParameters> method_10295() {
-		return this.field_11183;
+	public ParticleType<BlockStateParticleParameters> getType() {
+		return this.type;
 	}
 
 	@Environment(EnvType.CLIENT)

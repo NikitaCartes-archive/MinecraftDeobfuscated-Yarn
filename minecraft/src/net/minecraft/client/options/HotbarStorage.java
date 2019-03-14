@@ -17,7 +17,7 @@ public class HotbarStorage {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final File file;
 	private final DataFixer dataFixer;
-	private final HotbarStorageEntry[] field_1644 = new HotbarStorageEntry[9];
+	private final HotbarStorageEntry[] entries = new HotbarStorageEntry[9];
 	private boolean loaded;
 
 	public HotbarStorage(File file, DataFixer dataFixer) {
@@ -25,7 +25,7 @@ public class HotbarStorage {
 		this.dataFixer = dataFixer;
 
 		for (int i = 0; i < 9; i++) {
-			this.field_1644[i] = new HotbarStorageEntry();
+			this.entries[i] = new HotbarStorageEntry();
 		}
 	}
 
@@ -43,7 +43,7 @@ public class HotbarStorage {
 			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.HOTBAR, compoundTag, compoundTag.getInt("DataVersion"));
 
 			for (int i = 0; i < 9; i++) {
-				this.field_1644[i].method_3152(compoundTag.method_10554(String.valueOf(i), 10));
+				this.entries[i].fromListTag(compoundTag.getList(String.valueOf(i), 10));
 			}
 		} catch (Exception var3) {
 			LOGGER.error("Failed to load creative mode options", (Throwable)var3);
@@ -56,7 +56,7 @@ public class HotbarStorage {
 			compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 
 			for (int i = 0; i < 9; i++) {
-				compoundTag.method_10566(String.valueOf(i), this.method_1410(i).method_3153());
+				compoundTag.put(String.valueOf(i), this.getSavedHotbar(i).toListTag());
 			}
 
 			NbtIo.write(compoundTag, this.file);
@@ -65,12 +65,12 @@ public class HotbarStorage {
 		}
 	}
 
-	public HotbarStorageEntry method_1410(int i) {
+	public HotbarStorageEntry getSavedHotbar(int i) {
 		if (!this.loaded) {
 			this.load();
 			this.loaded = true;
 		}
 
-		return this.field_1644[i];
+		return this.entries[i];
 	}
 }

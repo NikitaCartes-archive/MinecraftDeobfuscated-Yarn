@@ -12,7 +12,7 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 	}
 
 	public TraderRecipeList(CompoundTag compoundTag) {
-		ListTag listTag = compoundTag.method_10554("Recipes", 10);
+		ListTag listTag = compoundTag.getList("Recipes", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			this.add(new TraderRecipe(listTag.getCompoundTag(i)));
@@ -36,7 +36,7 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 		}
 	}
 
-	public void method_8270(PacketByteBuf packetByteBuf) {
+	public void toPacket(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeByte((byte)(this.size() & 0xFF));
 
 		for (int i = 0; i < this.size(); i++) {
@@ -52,13 +52,13 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 			packetByteBuf.writeBoolean(traderRecipe.isDisabled());
 			packetByteBuf.writeInt(traderRecipe.getUses());
 			packetByteBuf.writeInt(traderRecipe.getMaxUses());
-			packetByteBuf.writeInt(traderRecipe.method_19279());
+			packetByteBuf.writeInt(traderRecipe.getRewardedExp());
 			packetByteBuf.writeInt(traderRecipe.method_19277());
-			packetByteBuf.writeFloat(traderRecipe.method_19278());
+			packetByteBuf.writeFloat(traderRecipe.getPriceMultiplier());
 		}
 	}
 
-	public static TraderRecipeList method_8265(PacketByteBuf packetByteBuf) {
+	public static TraderRecipeList fromPacket(PacketByteBuf packetByteBuf) {
 		TraderRecipeList traderRecipeList = new TraderRecipeList();
 		int i = packetByteBuf.readByte() & 255;
 
@@ -88,16 +88,16 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 		return traderRecipeList;
 	}
 
-	public CompoundTag method_8268() {
+	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
 		ListTag listTag = new ListTag();
 
 		for (int i = 0; i < this.size(); i++) {
 			TraderRecipe traderRecipe = (TraderRecipe)this.get(i);
-			listTag.add(traderRecipe.method_8251());
+			listTag.add(traderRecipe.serialize());
 		}
 
-		compoundTag.method_10566("Recipes", listTag);
+		compoundTag.put("Recipes", listTag);
 		return compoundTag;
 	}
 }

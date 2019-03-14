@@ -411,7 +411,7 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 	}
 
 	@Override
-	protected Path method_10510(Identifier identifier) {
+	protected Path getOutput(Identifier identifier) {
 		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/blocks/" + identifier.getPath() + ".json");
 	}
 
@@ -422,6 +422,6 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 
 	@Override
 	protected void method_10511(TagContainer<Block> tagContainer) {
-		BlockTags.method_15070(tagContainer);
+		BlockTags.setContainer(tagContainer);
 	}
 }

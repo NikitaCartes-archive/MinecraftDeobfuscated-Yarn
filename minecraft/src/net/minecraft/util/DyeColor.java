@@ -34,7 +34,7 @@ public enum DyeColor implements StringRepresentable {
 	);
 	private final int id;
 	private final String name;
-	private final MaterialColor field_7956;
+	private final MaterialColor materialColor;
 	private final int color;
 	private final int colorSwapped;
 	private final float[] colorComponents;
@@ -45,7 +45,7 @@ public enum DyeColor implements StringRepresentable {
 		this.id = j;
 		this.name = string2;
 		this.color = k;
-		this.field_7956 = materialColor;
+		this.materialColor = materialColor;
 		this.field_16537 = m;
 		int n = (k & 0xFF0000) >> 16;
 		int o = (k & 0xFF00) >> 8;
@@ -72,8 +72,8 @@ public enum DyeColor implements StringRepresentable {
 		return this.colorComponents;
 	}
 
-	public MaterialColor method_7794() {
-		return this.field_7956;
+	public MaterialColor getMaterialColor() {
+		return this.materialColor;
 	}
 
 	public int getFireworkColor() {

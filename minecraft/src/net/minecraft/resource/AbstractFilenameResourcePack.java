@@ -25,7 +25,7 @@ public abstract class AbstractFilenameResourcePack implements ResourcePack {
 		this.base = file;
 	}
 
-	private static String method_14395(ResourceType resourceType, Identifier identifier) {
+	private static String getFilename(ResourceType resourceType, Identifier identifier) {
 		return String.format("%s/%s/%s", resourceType.getName(), identifier.getNamespace(), identifier.getPath());
 	}
 
@@ -34,13 +34,13 @@ public abstract class AbstractFilenameResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public InputStream method_14405(ResourceType resourceType, Identifier identifier) throws IOException {
-		return this.openFilename(method_14395(resourceType, identifier));
+	public InputStream open(ResourceType resourceType, Identifier identifier) throws IOException {
+		return this.openFilename(getFilename(resourceType, identifier));
 	}
 
 	@Override
-	public boolean method_14411(ResourceType resourceType, Identifier identifier) {
-		return this.containsFilename(method_14395(resourceType, identifier));
+	public boolean contains(ResourceType resourceType, Identifier identifier) {
+		return this.containsFilename(getFilename(resourceType, identifier));
 	}
 
 	protected abstract InputStream openFilename(String string) throws IOException;
@@ -63,13 +63,13 @@ public abstract class AbstractFilenameResourcePack implements ResourcePack {
 
 	@Nullable
 	@Override
-	public <T> T method_14407(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
+	public <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
 		InputStream inputStream = this.openFilename("pack.mcmeta");
 		Throwable var3 = null;
 
 		Object var4;
 		try {
-			var4 = method_14392(resourceMetadataReader, inputStream);
+			var4 = parseMetadata(resourceMetadataReader, inputStream);
 		} catch (Throwable var13) {
 			var3 = var13;
 			throw var13;
@@ -91,7 +91,7 @@ public abstract class AbstractFilenameResourcePack implements ResourcePack {
 	}
 
 	@Nullable
-	public static <T> T method_14392(ResourceMetadataReader<T> resourceMetadataReader, InputStream inputStream) {
+	public static <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader, InputStream inputStream) {
 		JsonObject jsonObject;
 		try {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));

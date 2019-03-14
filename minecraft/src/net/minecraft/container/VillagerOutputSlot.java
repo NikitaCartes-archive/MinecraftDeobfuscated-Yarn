@@ -11,60 +11,60 @@ public class VillagerOutputSlot extends Slot {
 	private final TraderInventory villagerInventory;
 	private final PlayerEntity player;
 	private int amount;
-	private final Trader field_7858;
+	private final Trader villager;
 
 	public VillagerOutputSlot(PlayerEntity playerEntity, Trader trader, TraderInventory traderInventory, int i, int j, int k) {
 		super(traderInventory, i, j, k);
 		this.player = playerEntity;
-		this.field_7858 = trader;
+		this.villager = trader;
 		this.villagerInventory = traderInventory;
 	}
 
 	@Override
-	public boolean method_7680(ItemStack itemStack) {
+	public boolean canInsert(ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
-	public ItemStack method_7671(int i) {
+	public ItemStack takeStack(int i) {
 		if (this.hasStack()) {
-			this.amount = this.amount + Math.min(i, this.method_7677().getAmount());
+			this.amount = this.amount + Math.min(i, this.getStack().getAmount());
 		}
 
-		return super.method_7671(i);
+		return super.takeStack(i);
 	}
 
 	@Override
-	protected void method_7678(ItemStack itemStack, int i) {
+	protected void onCrafted(ItemStack itemStack, int i) {
 		this.amount += i;
-		this.method_7669(itemStack);
+		this.onCrafted(itemStack);
 	}
 
 	@Override
-	protected void method_7669(ItemStack itemStack) {
-		itemStack.method_7982(this.player.field_6002, this.player, this.amount);
+	protected void onCrafted(ItemStack itemStack) {
+		itemStack.onCrafted(this.player.world, this.player, this.amount);
 		this.amount = 0;
 	}
 
 	@Override
-	public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
-		this.method_7669(itemStack);
-		TraderRecipe traderRecipe = this.villagerInventory.method_7642();
+	public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+		this.onCrafted(itemStack);
+		TraderRecipe traderRecipe = this.villagerInventory.getVillagerRecipe();
 		if (traderRecipe != null) {
-			if (!this.field_7858.method_8260().isClient() && traderRecipe.isDisabled()) {
-				this.field_7858.method_8262(traderRecipe);
+			if (!this.villager.getTraderWorld().isClient() && traderRecipe.isDisabled()) {
+				this.villager.useRecipe(traderRecipe);
 			} else if (!traderRecipe.isDisabled()) {
-				ItemStack itemStack2 = this.villagerInventory.method_5438(0);
-				ItemStack itemStack3 = this.villagerInventory.method_5438(1);
+				ItemStack itemStack2 = this.villagerInventory.getInvStack(0);
+				ItemStack itemStack3 = this.villagerInventory.getInvStack(1);
 				if (traderRecipe.depleteBuyItems(itemStack2, itemStack3) || traderRecipe.depleteBuyItems(itemStack3, itemStack2)) {
-					this.field_7858.method_8262(traderRecipe);
-					playerEntity.method_7281(Stats.field_15378);
-					this.villagerInventory.method_5447(0, itemStack2);
-					this.villagerInventory.method_5447(1, itemStack3);
+					this.villager.useRecipe(traderRecipe);
+					playerEntity.increaseStat(Stats.field_15378);
+					this.villagerInventory.setInvStack(0, itemStack2);
+					this.villagerInventory.setInvStack(1, itemStack3);
 				}
 			}
 
-			this.field_7858.method_19271(this.field_7858.method_19269() + traderRecipe.method_19279());
+			this.villager.setExperience(this.villager.getExperience() + traderRecipe.getRewardedExp());
 		}
 
 		return itemStack;

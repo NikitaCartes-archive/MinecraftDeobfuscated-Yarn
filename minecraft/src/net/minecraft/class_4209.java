@@ -1,18 +1,20 @@
 package net.minecraft;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.goal.Goals;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPos;
 
 public class class_4209 {
-	public static void method_19471(World world, class_4153 arg, ChunkPos chunkPos, ServerPlayerEntity serverPlayerEntity) {
+	public static void method_19471(World world, PointOfInterestStorage pointOfInterestStorage, ChunkPos chunkPos, ServerPlayerEntity serverPlayerEntity) {
 	}
 
 	public static void method_19473(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
@@ -30,6 +32,6 @@ public class class_4209 {
 	public static void method_19469(World world, MobEntity mobEntity, Goals goals) {
 	}
 
-	public static void method_19468(World world, MobEntity mobEntity, class_4095 arg) {
+	public static void method_19468(World world, MobEntity mobEntity, Brain brain) {
 	}
 }

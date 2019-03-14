@@ -2,12 +2,11 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4186;
 import net.minecraft.client.gui.widget.RealmsButtonWidget;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class RealmsButton extends class_4186<RealmsButtonWidget> {
+public abstract class RealmsButton extends RealmsAbstractButton<RealmsButtonWidget> {
 	protected static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
 	private final int field_18237;
 	private final RealmsButtonWidget proxy;

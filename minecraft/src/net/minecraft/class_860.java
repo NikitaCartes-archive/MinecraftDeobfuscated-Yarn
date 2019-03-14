@@ -10,6 +10,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.world.ClientChunkManager;
 import net.minecraft.client.world.ClientWorld;
@@ -22,7 +23,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
-public class class_860 implements DebugRenderer.DebugRenderer {
+public class class_860 implements DebugRenderer.Renderer {
 	private final MinecraftClient field_4509;
 	private double field_4510 = Double.MIN_VALUE;
 	private final int field_4511 = 12;
@@ -38,7 +39,7 @@ public class class_860 implements DebugRenderer.DebugRenderer {
 		double d = (double)SystemUtil.getMeasuringTimeNano();
 		if (d - this.field_4510 > 3.0E9) {
 			this.field_4510 = d;
-			IntegratedServer integratedServer = this.field_4509.method_1576();
+			IntegratedServer integratedServer = this.field_4509.getServer();
 			if (integratedServer != null) {
 				this.field_4512 = new class_860.class_861(integratedServer);
 			} else {
@@ -56,7 +57,7 @@ public class class_860 implements DebugRenderer.DebugRenderer {
 			GlStateManager.disableTexture();
 			GlStateManager.depthMask(false);
 			Map<ChunkPos, String> map = (Map<ChunkPos, String>)this.field_4512.field_4514.getNow(null);
-			double e = this.field_4509.field_1773.method_19418().method_19326().y * 0.85;
+			double e = this.field_4509.gameRenderer.method_19418().getPos().y * 0.85;
 
 			for (Entry<ChunkPos, String> entry : this.field_4512.field_4515.entrySet()) {
 				ChunkPos chunkPos = (ChunkPos)entry.getKey();
@@ -87,18 +88,18 @@ public class class_860 implements DebugRenderer.DebugRenderer {
 		private final CompletableFuture<Map<ChunkPos, String>> field_4514;
 
 		private class_861(IntegratedServer integratedServer) {
-			ClientWorld clientWorld = class_860.this.field_4509.field_1687;
-			DimensionType dimensionType = class_860.this.field_4509.field_1687.field_9247.method_12460();
+			ClientWorld clientWorld = class_860.this.field_4509.world;
+			DimensionType dimensionType = class_860.this.field_4509.world.dimension.getType();
 			ServerWorld serverWorld;
-			if (integratedServer.method_3847(dimensionType) != null) {
-				serverWorld = integratedServer.method_3847(dimensionType);
+			if (integratedServer.getWorld(dimensionType) != null) {
+				serverWorld = integratedServer.getWorld(dimensionType);
 			} else {
 				serverWorld = null;
 			}
 
-			class_4184 lv = class_860.this.field_4509.field_1773.method_19418();
-			int i = (int)lv.method_19326().x >> 4;
-			int j = (int)lv.method_19326().z >> 4;
+			Camera camera = class_860.this.field_4509.gameRenderer.method_19418();
+			int i = (int)camera.getPos().x >> 4;
+			int j = (int)camera.getPos().z >> 4;
 			Builder<ChunkPos, String> builder = ImmutableMap.builder();
 			ClientChunkManager clientChunkManager = clientWorld.method_2935();
 
@@ -106,7 +107,7 @@ public class class_860 implements DebugRenderer.DebugRenderer {
 				for (int l = j - 12; l <= j + 12; l++) {
 					ChunkPos chunkPos = new ChunkPos(k, l);
 					String string = "";
-					WorldChunk worldChunk = clientChunkManager.method_12126(k, l, false);
+					WorldChunk worldChunk = clientChunkManager.getWorldChunk(k, l, false);
 					string = string + "Client: ";
 					if (worldChunk == null) {
 						string = string + "0n/a\n";

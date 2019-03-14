@@ -13,7 +13,7 @@ public class PounceAtTargetGoal extends Goal {
 	public PounceAtTargetGoal(MobEntity mobEntity, float f) {
 		this.owner = mobEntity;
 		this.field_6475 = f;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407, Goal.ControlBit.field_18405));
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class PounceAtTargetGoal extends Goal {
 
 	@Override
 	public void start() {
-		Vec3d vec3d = this.owner.method_18798();
+		Vec3d vec3d = this.owner.getVelocity();
 		Vec3d vec3d2 = new Vec3d(this.target.x - this.owner.x, 0.0, this.target.z - this.owner.z);
 		if (vec3d2.lengthSquared() > 1.0E-7) {
 			vec3d2 = vec3d2.normalize().multiply(0.4).add(vec3d.multiply(0.2));

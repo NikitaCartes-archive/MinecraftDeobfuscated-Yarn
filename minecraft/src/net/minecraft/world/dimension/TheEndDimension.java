@@ -19,21 +19,21 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorType;
 import net.minecraft.world.gen.chunk.FloatingIslandsChunkGeneratorConfig;
 
 public class TheEndDimension extends Dimension {
-	public static final BlockPos field_13103 = new BlockPos(100, 50, 0);
+	public static final BlockPos SPAWN_POINT = new BlockPos(100, 50, 0);
 	private final EnderDragonFight enderDragonFight;
 
 	public TheEndDimension(World world, DimensionType dimensionType) {
 		super(world, dimensionType);
-		CompoundTag compoundTag = world.method_8401().method_170(DimensionType.field_13078);
+		CompoundTag compoundTag = world.getLevelProperties().getWorldData(DimensionType.field_13078);
 		this.enderDragonFight = world instanceof ServerWorld ? new EnderDragonFight((ServerWorld)world, compoundTag.getCompound("DragonFight")) : null;
 	}
 
 	@Override
 	public ChunkGenerator<?> createChunkGenerator() {
-		FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = ChunkGeneratorType.field_12770.method_12117();
-		floatingIslandsChunkGeneratorConfig.setDefaultBlock(Blocks.field_10471.method_9564());
-		floatingIslandsChunkGeneratorConfig.setDefaultFluid(Blocks.field_10124.method_9564());
-		floatingIslandsChunkGeneratorConfig.method_12651(this.method_12466());
+		FloatingIslandsChunkGeneratorConfig floatingIslandsChunkGeneratorConfig = ChunkGeneratorType.field_12770.createSettings();
+		floatingIslandsChunkGeneratorConfig.setDefaultBlock(Blocks.field_10471.getDefaultState());
+		floatingIslandsChunkGeneratorConfig.setDefaultFluid(Blocks.field_10124.getDefaultState());
+		floatingIslandsChunkGeneratorConfig.withCenter(this.getForcedSpawnPoint());
 		return ChunkGeneratorType.field_12770
 			.create(
 				this.world, BiomeSourceType.THE_END.applyConfig(BiomeSourceType.THE_END.getConfig().method_9205(this.world.getSeed())), floatingIslandsChunkGeneratorConfig
@@ -54,7 +54,7 @@ public class TheEndDimension extends Dimension {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public Vec3d method_12445(float f, float g) {
+	public Vec3d getFogColor(float f, float g) {
 		int i = 10518688;
 		float h = MathHelper.cos(f * (float) (Math.PI * 2)) * 2.0F + 0.5F;
 		h = MathHelper.clamp(h, 0.0F, 1.0F);
@@ -91,21 +91,21 @@ public class TheEndDimension extends Dimension {
 
 	@Nullable
 	@Override
-	public BlockPos method_12452(ChunkPos chunkPos, boolean bl) {
+	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
 		Random random = new Random(this.world.getSeed());
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX() + random.nextInt(15), 0, chunkPos.getEndZ() + random.nextInt(15));
-		return this.world.method_8495(blockPos).method_11620().suffocates() ? blockPos : null;
+		return this.world.getTopNonAirState(blockPos).getMaterial().suffocates() ? blockPos : null;
 	}
 
 	@Override
-	public BlockPos method_12466() {
-		return field_13103;
+	public BlockPos getForcedSpawnPoint() {
+		return SPAWN_POINT;
 	}
 
 	@Nullable
 	@Override
-	public BlockPos method_12444(int i, int j, boolean bl) {
-		return this.method_12452(new ChunkPos(i >> 4, j >> 4), bl);
+	public BlockPos getTopSpawningBlockPosition(int i, int j, boolean bl) {
+		return this.getSpawningBlockInChunk(new ChunkPos(i >> 4, j >> 4), bl);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -115,7 +115,7 @@ public class TheEndDimension extends Dimension {
 	}
 
 	@Override
-	public DimensionType method_12460() {
+	public DimensionType getType() {
 		return DimensionType.field_13078;
 	}
 
@@ -123,10 +123,10 @@ public class TheEndDimension extends Dimension {
 	public void saveWorldData() {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.enderDragonFight != null) {
-			compoundTag.method_10566("DragonFight", this.enderDragonFight.method_12530());
+			compoundTag.put("DragonFight", this.enderDragonFight.toTag());
 		}
 
-		this.world.method_8401().method_160(DimensionType.field_13078, compoundTag);
+		this.world.getLevelProperties().setWorldData(DimensionType.field_13078, compoundTag);
 	}
 
 	@Override

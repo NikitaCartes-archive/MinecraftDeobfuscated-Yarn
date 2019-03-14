@@ -8,19 +8,20 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1050;
 import net.minecraft.client.resource.metadata.AnimationFrameResourceMetadata;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
+import net.minecraft.client.util.PngFile;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import net.minecraft.util.crash.ICrashCallable;
 
 @Environment(EnvType.CLIENT)
 public class Sprite {
-	private final Identifier field_5257;
+	private final Identifier id;
 	protected final int width;
 	protected final int height;
 	protected NativeImage[] images;
@@ -29,7 +30,7 @@ public class Sprite {
 	@Nullable
 	protected int[] field_5264;
 	protected NativeImage[] interpolatedImages;
-	private AnimationResourceMetadata field_5271;
+	private AnimationResourceMetadata animationMetadata;
 	protected int x;
 	protected int y;
 	private float uMin;
@@ -46,28 +47,28 @@ public class Sprite {
 	});
 
 	protected Sprite(Identifier identifier, int i, int j) {
-		this.field_5257 = identifier;
+		this.id = identifier;
 		this.width = i;
 		this.height = j;
 	}
 
-	protected Sprite(Identifier identifier, class_1050 arg, @Nullable AnimationResourceMetadata animationResourceMetadata) {
-		this.field_5257 = identifier;
+	protected Sprite(Identifier identifier, PngFile pngFile, @Nullable AnimationResourceMetadata animationResourceMetadata) {
+		this.id = identifier;
 		if (animationResourceMetadata != null) {
-			Pair<Integer, Integer> pair = method_18341(animationResourceMetadata.getWidth(), animationResourceMetadata.getHeight(), arg.field_5227, arg.field_5226);
+			Pair<Integer, Integer> pair = method_18341(animationResourceMetadata.getWidth(), animationResourceMetadata.getHeight(), pngFile.width, pngFile.height);
 			this.width = pair.getFirst();
 			this.height = pair.getSecond();
-			if (!method_18340(arg.field_5227, this.width) || !method_18340(arg.field_5226, this.height)) {
+			if (!method_18340(pngFile.width, this.width) || !method_18340(pngFile.height, this.height)) {
 				throw new IllegalArgumentException(
-					String.format("Image size %s,%s is not multiply of frame size %s,%s", this.width, this.height, arg.field_5227, arg.field_5226)
+					String.format("Image size %s,%s is not multiply of frame size %s,%s", this.width, this.height, pngFile.width, pngFile.height)
 				);
 			}
 		} else {
-			this.width = arg.field_5227;
-			this.height = arg.field_5226;
+			this.width = pngFile.width;
+			this.height = pngFile.height;
 		}
 
-		this.field_5271 = animationResourceMetadata;
+		this.animationMetadata = animationResourceMetadata;
 	}
 
 	private static Pair<Integer, Integer> method_18341(int i, int j, int k, int l) {
@@ -265,31 +266,31 @@ public class Sprite {
 		return (f - this.vMin) / g * 16.0F;
 	}
 
-	public Identifier method_4598() {
-		return this.field_5257;
+	public Identifier getId() {
+		return this.id;
 	}
 
 	public void tick() {
 		this.ticks++;
-		if (this.ticks >= this.field_5271.getFrameTime(this.framePos)) {
-			int i = this.field_5271.getFrameIndex(this.framePos);
-			int j = this.field_5271.getFrameCount() == 0 ? this.method_4592() : this.field_5271.getFrameCount();
+		if (this.ticks >= this.animationMetadata.getFrameTime(this.framePos)) {
+			int i = this.animationMetadata.getFrameIndex(this.framePos);
+			int j = this.animationMetadata.getFrameCount() == 0 ? this.method_4592() : this.animationMetadata.getFrameCount();
 			this.framePos = (this.framePos + 1) % j;
 			this.ticks = 0;
-			int k = this.field_5271.getFrameIndex(this.framePos);
+			int k = this.animationMetadata.getFrameIndex(this.framePos);
 			if (i != k && k >= 0 && k < this.method_4592()) {
 				this.method_4573(k);
 			}
-		} else if (this.field_5271.shouldInterpolate()) {
+		} else if (this.animationMetadata.shouldInterpolate()) {
 			this.interpolateFrames();
 		}
 	}
 
 	private void interpolateFrames() {
-		double d = 1.0 - (double)this.ticks / (double)this.field_5271.getFrameTime(this.framePos);
-		int i = this.field_5271.getFrameIndex(this.framePos);
-		int j = this.field_5271.getFrameCount() == 0 ? this.method_4592() : this.field_5271.getFrameCount();
-		int k = this.field_5271.getFrameIndex((this.framePos + 1) % j);
+		double d = 1.0 - (double)this.ticks / (double)this.animationMetadata.getFrameTime(this.framePos);
+		int i = this.animationMetadata.getFrameIndex(this.framePos);
+		int j = this.animationMetadata.getFrameCount() == 0 ? this.method_4592() : this.animationMetadata.getFrameCount();
+		int k = this.animationMetadata.getFrameIndex((this.framePos + 1) % j);
 		if (i != k && k >= 0 && k < this.method_4592()) {
 			if (this.interpolatedImages == null || this.interpolatedImages.length != this.images.length) {
 				if (this.interpolatedImages != null) {
@@ -334,32 +335,32 @@ public class Sprite {
 		return this.field_5265 == null ? 0 : this.field_5265.length;
 	}
 
-	public void method_4576(Resource resource, int i) throws IOException {
+	public void load(Resource resource, int i) throws IOException {
 		NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());
 		this.images = new NativeImage[i];
 		this.images[0] = nativeImage;
 		int j;
-		if (this.field_5271 != null && this.field_5271.getWidth() != -1) {
-			j = nativeImage.getWidth() / this.field_5271.getWidth();
+		if (this.animationMetadata != null && this.animationMetadata.getWidth() != -1) {
+			j = nativeImage.getWidth() / this.animationMetadata.getWidth();
 		} else {
 			j = nativeImage.getWidth() / this.width;
 		}
 
 		int k;
-		if (this.field_5271 != null && this.field_5271.getHeight() != -1) {
-			k = nativeImage.getHeight() / this.field_5271.getHeight();
+		if (this.animationMetadata != null && this.animationMetadata.getHeight() != -1) {
+			k = nativeImage.getHeight() / this.animationMetadata.getHeight();
 		} else {
 			k = nativeImage.getHeight() / this.height;
 		}
 
-		if (this.field_5271 != null && this.field_5271.getFrameCount() > 0) {
-			int l = (Integer)this.field_5271.getFrameIndexSet().stream().max(Integer::compareTo).get() + 1;
+		if (this.animationMetadata != null && this.animationMetadata.getFrameCount() > 0) {
+			int l = (Integer)this.animationMetadata.getFrameIndexSet().stream().max(Integer::compareTo).get() + 1;
 			this.field_5265 = new int[l];
 			this.field_5264 = new int[l];
 			Arrays.fill(this.field_5265, -1);
 			Arrays.fill(this.field_5264, -1);
 
-			for (int m : this.field_5271.getFrameIndexSet()) {
+			for (int m : this.animationMetadata.getFrameIndexSet()) {
 				if (m >= j * k) {
 					throw new RuntimeException("invalid frameindex " + m);
 				}
@@ -386,12 +387,12 @@ public class Sprite {
 
 			int m = 1;
 			boolean bl = false;
-			if (this.field_5271 != null) {
-				m = this.field_5271.getDefaultFrameTime();
-				bl = this.field_5271.shouldInterpolate();
+			if (this.animationMetadata != null) {
+				m = this.animationMetadata.getDefaultFrameTime();
+				bl = this.animationMetadata.shouldInterpolate();
 			}
 
-			this.field_5271 = new AnimationResourceMetadata(list, this.width, this.height, m, bl);
+			this.animationMetadata = new AnimationResourceMetadata(list, this.width, this.height, m, bl);
 		}
 	}
 
@@ -400,8 +401,8 @@ public class Sprite {
 			this.generateMipmapsInternal(i);
 		} catch (Throwable var5) {
 			CrashReport crashReport = CrashReport.create(var5, "Generating mipmaps for frame");
-			CrashReportSection crashReportSection = crashReport.method_562("Frame being iterated");
-			crashReportSection.method_577("Frame sizes", () -> {
+			CrashReportSection crashReportSection = crashReport.addElement("Frame being iterated");
+			crashReportSection.add("Frame sizes", (ICrashCallable<String>)(() -> {
 				StringBuilder stringBuilder = new StringBuilder();
 
 				for (NativeImage nativeImage : this.images) {
@@ -413,7 +414,7 @@ public class Sprite {
 				}
 
 				return stringBuilder.toString();
-			});
+			}));
 			throw new CrashException(crashReport);
 		}
 	}
@@ -440,13 +441,13 @@ public class Sprite {
 	}
 
 	public boolean isAnimated() {
-		return this.field_5271 != null && this.field_5271.getFrameCount() > 1;
+		return this.animationMetadata != null && this.animationMetadata.getFrameCount() > 1;
 	}
 
 	public String toString() {
 		int i = this.field_5265 == null ? 0 : this.field_5265.length;
 		return "TextureAtlasSprite{name='"
-			+ this.field_5257
+			+ this.id
 			+ '\''
 			+ ", frameCount="
 			+ i

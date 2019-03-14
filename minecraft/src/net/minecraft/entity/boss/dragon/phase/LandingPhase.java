@@ -30,8 +30,8 @@ public class LandingPhase extends AbstractPhase {
 			double g = d + random.nextGaussian() / 2.0;
 			double h = e + random.nextGaussian() / 2.0;
 			double j = f + random.nextGaussian() / 2.0;
-			Vec3d vec3d2 = this.dragon.method_18798();
-			this.dragon.field_6002.method_8406(ParticleTypes.field_11216, g, h, j, -vec3d.x * 0.08F + vec3d2.x, -vec3d.y * 0.3F + vec3d2.y, -vec3d.z * 0.08F + vec3d2.z);
+			Vec3d vec3d2 = this.dragon.getVelocity();
+			this.dragon.world.addParticle(ParticleTypes.field_11216, g, h, j, -vec3d.x * 0.08F + vec3d2.x, -vec3d.y * 0.3F + vec3d2.y, -vec3d.z * 0.08F + vec3d2.z);
 			vec3d.rotateY((float) (Math.PI / 16));
 		}
 	}
@@ -39,12 +39,12 @@ public class LandingPhase extends AbstractPhase {
 	@Override
 	public void method_6855() {
 		if (this.field_7046 == null) {
-			this.field_7046 = new Vec3d(this.dragon.field_6002.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.field_13600));
+			this.field_7046 = new Vec3d(this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN));
 		}
 
 		if (this.field_7046.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z) < 1.0) {
-			this.dragon.method_6831().create(PhaseType.SITTING_FLAMING).method_6857();
-			this.dragon.method_6831().setPhase(PhaseType.SITTING_SCANNING);
+			this.dragon.getPhaseManager().create(PhaseType.SITTING_FLAMING).method_6857();
+			this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
 		}
 	}
 
@@ -55,7 +55,7 @@ public class LandingPhase extends AbstractPhase {
 
 	@Override
 	public float method_6847() {
-		float f = MathHelper.sqrt(Entity.method_17996(this.dragon.method_18798())) + 1.0F;
+		float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.dragon.getVelocity())) + 1.0F;
 		float g = Math.min(f, 40.0F);
 		return g / f;
 	}
@@ -67,12 +67,12 @@ public class LandingPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d method_6851() {
+	public Vec3d getTarget() {
 		return this.field_7046;
 	}
 
 	@Override
-	public PhaseType<LandingPhase> method_6849() {
+	public PhaseType<LandingPhase> getType() {
 		return PhaseType.LANDING;
 	}
 }

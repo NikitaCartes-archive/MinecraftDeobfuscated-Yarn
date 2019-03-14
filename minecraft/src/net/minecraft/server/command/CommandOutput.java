@@ -5,7 +5,7 @@ import net.minecraft.text.TextComponent;
 public interface CommandOutput {
 	CommandOutput field_17395 = new CommandOutput() {
 		@Override
-		public void method_9203(TextComponent textComponent) {
+		public void appendCommandFeedback(TextComponent textComponent) {
 		}
 
 		@Override
@@ -24,7 +24,7 @@ public interface CommandOutput {
 		}
 	};
 
-	void method_9203(TextComponent textComponent);
+	void appendCommandFeedback(TextComponent textComponent);
 
 	boolean sendCommandFeedback();
 

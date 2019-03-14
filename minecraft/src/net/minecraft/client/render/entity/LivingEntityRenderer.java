@@ -28,17 +28,19 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public abstract class LivingEntityRenderer<T extends LivingEntity, M extends EntityModel<T>> extends EntityRenderer<T> implements FeatureRendererContext<T, M> {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final NativeImageBackedTexture field_4742 = SystemUtil.consume(new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
-		nativeImageBackedTexture.getImage().method_4302();
+	private static final NativeImageBackedTexture colorOverlayTexture = SystemUtil.consume(
+		new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
+			nativeImageBackedTexture.getImage().method_4302();
 
-		for (int i = 0; i < 16; i++) {
-			for (int j = 0; j < 16; j++) {
-				nativeImageBackedTexture.getImage().setPixelRGBA(j, i, -1);
+			for (int i = 0; i < 16; i++) {
+				for (int j = 0; j < 16; j++) {
+					nativeImageBackedTexture.getImage().setPixelRGBA(j, i, -1);
+				}
 			}
-		}
 
-		nativeImageBackedTexture.upload();
-	});
+			nativeImageBackedTexture.upload();
+		}
+	);
 	protected M model;
 	protected final FloatBuffer colorOverlayBuffer = GlAllocationUtils.allocateFloatBuffer(4);
 	protected final List<FeatureRenderer<T, M>> features = Lists.<FeatureRenderer<T, M>>newArrayList();
@@ -50,7 +52,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		this.field_4673 = f;
 	}
 
-	protected final boolean method_4046(FeatureRenderer<T, M> featureRenderer) {
+	protected final boolean addFeature(FeatureRenderer<T, M> featureRenderer) {
 		return this.features.add(featureRenderer);
 	}
 
@@ -182,7 +184,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	protected void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
 		boolean bl = this.method_4056(livingEntity);
-		boolean bl2 = !bl && !livingEntity.method_5756(MinecraftClient.getInstance().field_1724);
+		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
 		if (bl || bl2) {
 			if (!this.bindEntityTexture(livingEntity)) {
 				return;
@@ -262,7 +264,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.texEnv(8960, 8705, this.colorOverlayBuffer);
 			GlStateManager.activeTexture(GLX.GL_TEXTURE2);
 			GlStateManager.enableTexture();
-			GlStateManager.bindTexture(field_4742.getGlId());
+			GlStateManager.bindTexture(colorOverlayTexture.getGlId());
 			GlStateManager.texEnv(8960, 8704, GLX.GL_COMBINE);
 			GlStateManager.texEnv(8960, GLX.GL_COMBINE_RGB, 8448);
 			GlStateManager.texEnv(8960, GLX.GL_SOURCE0_RGB, GLX.GL_PREVIOUS);
@@ -318,10 +320,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected void method_4048(T livingEntity, double d, double e, double f) {
-		if (livingEntity.method_18376() == EntityPose.field_18078) {
+		if (livingEntity.getPose() == EntityPose.field_18078) {
 			Direction direction = livingEntity.method_18401();
 			if (direction != null) {
-				float g = livingEntity.method_18381(EntityPose.field_18076) - 0.1F;
+				float g = livingEntity.getEyeHeight(EntityPose.field_18076) - 0.1F;
 				GlStateManager.translatef((float)d - (float)direction.getOffsetX() * g, (float)e, (float)f - (float)direction.getOffsetZ() * g);
 				return;
 			}
@@ -346,7 +348,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected void setupTransforms(T livingEntity, float f, float g, float h) {
-		EntityPose entityPose = livingEntity.method_18376();
+		EntityPose entityPose = livingEntity.getPose();
 		if (entityPose != EntityPose.field_18078) {
 			GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
 		}
@@ -368,10 +370,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);
 		} else if (livingEntity.hasCustomName() || livingEntity instanceof PlayerEntity) {
-			String string = TextFormat.stripFormatting(livingEntity.method_5477().getString());
+			String string = TextFormat.stripFormatting(livingEntity.getName().getString());
 			if (string != null
 				&& ("Dinnerbone".equals(string) || "Grumm".equals(string))
-				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).method_7348(PlayerModelPart.CAPE))) {
+				&& (!(livingEntity instanceof PlayerEntity) || ((PlayerEntity)livingEntity).isSkinOverlayVisible(PlayerModelPart.CAPE))) {
 				GlStateManager.translatef(0.0F, livingEntity.getHeight() + 0.1F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 0.0F, 1.0F);
 			}
@@ -409,10 +411,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	public void method_4041(T livingEntity, double d, double e, double f) {
 		if (this.method_4055(livingEntity)) {
-			double g = livingEntity.method_5707(this.renderManager.field_4686.method_19326());
+			double g = livingEntity.squaredDistanceTo(this.renderManager.field_4686.getPos());
 			float h = livingEntity.isSneaking() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
-				String string = livingEntity.method_5476().getFormattedText();
+				String string = livingEntity.getDisplayName().getFormattedText();
 				GlStateManager.alphaFunc(516, 0.1F);
 				this.method_3930(livingEntity, d, e, f, string, g);
 			}
@@ -420,11 +422,11 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected boolean method_4055(T livingEntity) {
-		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().field_1724;
-		boolean bl = !livingEntity.method_5756(clientPlayerEntity);
+		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
+		boolean bl = !livingEntity.canSeePlayer(clientPlayerEntity);
 		if (livingEntity != clientPlayerEntity) {
-			AbstractScoreboardTeam abstractScoreboardTeam = livingEntity.method_5781();
-			AbstractScoreboardTeam abstractScoreboardTeam2 = clientPlayerEntity.method_5781();
+			AbstractScoreboardTeam abstractScoreboardTeam = livingEntity.getScoreboardTeam();
+			AbstractScoreboardTeam abstractScoreboardTeam2 = clientPlayerEntity.getScoreboardTeam();
 			if (abstractScoreboardTeam != null) {
 				AbstractScoreboardTeam.VisibilityRule visibilityRule = abstractScoreboardTeam.getNameTagVisibilityRule();
 				switch (visibilityRule) {
@@ -444,6 +446,6 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			}
 		}
 
-		return MinecraftClient.isHudEnabled() && livingEntity != this.renderManager.field_4686.method_19331() && bl && !livingEntity.hasPassengers();
+		return MinecraftClient.isHudEnabled() && livingEntity != this.renderManager.field_4686.getFocusedEntity() && bl && !livingEntity.hasPassengers();
 	}
 }

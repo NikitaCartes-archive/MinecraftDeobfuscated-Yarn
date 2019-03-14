@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public interface FocusedInputListener extends InputListener {
 	@Nullable
-	InputListener method_19357();
+	InputListener getFocused();
 
 	@Override
 	default boolean mouseClicked(double d, double e, int i) {
@@ -35,16 +35,16 @@ public interface FocusedInputListener extends InputListener {
 
 	@Override
 	default boolean keyPressed(int i, int j, int k) {
-		return this.method_19357() != null && this.method_19357().keyPressed(i, j, k);
+		return this.getFocused() != null && this.getFocused().keyPressed(i, j, k);
 	}
 
 	@Override
 	default boolean keyReleased(int i, int j, int k) {
-		return this.method_19357() != null && this.method_19357().keyReleased(i, j, k);
+		return this.getFocused() != null && this.getFocused().keyReleased(i, j, k);
 	}
 
 	@Override
 	default boolean charTyped(char c, int i) {
-		return this.method_19357() != null && this.method_19357().charTyped(c, i);
+		return this.getFocused() != null && this.getFocused().charTyped(c, i);
 	}
 }

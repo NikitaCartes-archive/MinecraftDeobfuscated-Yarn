@@ -11,46 +11,46 @@ import net.minecraft.client.world.SafeWorldView;
 
 @Environment(EnvType.CLIENT)
 public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
-	private final ChunkRenderer field_4418;
+	private final ChunkRenderer chunkRenderer;
 	private final ReentrantLock lock = new ReentrantLock();
 	private final List<Runnable> runnables = Lists.<Runnable>newArrayList();
 	private final ChunkRenderTask.Mode mode;
 	private final double distanceToPlayerSquared;
 	@Nullable
-	private SafeWorldView field_4414;
+	private SafeWorldView worldView;
 	private BlockLayeredBufferBuilder bufferBuilder;
-	private ChunkRenderData field_4417;
+	private ChunkRenderData renderData;
 	private ChunkRenderTask.Stage stage = ChunkRenderTask.Stage.field_4422;
 	private boolean cancelled;
 
 	public ChunkRenderTask(ChunkRenderer chunkRenderer, ChunkRenderTask.Mode mode, double d, @Nullable SafeWorldView safeWorldView) {
-		this.field_4418 = chunkRenderer;
+		this.chunkRenderer = chunkRenderer;
 		this.mode = mode;
 		this.distanceToPlayerSquared = d;
-		this.field_4414 = safeWorldView;
+		this.worldView = safeWorldView;
 	}
 
 	public ChunkRenderTask.Stage getStage() {
 		return this.stage;
 	}
 
-	public ChunkRenderer method_3608() {
-		return this.field_4418;
+	public ChunkRenderer getChunkRenderer() {
+		return this.chunkRenderer;
 	}
 
 	@Nullable
-	public SafeWorldView method_3606() {
-		SafeWorldView safeWorldView = this.field_4414;
-		this.field_4414 = null;
+	public SafeWorldView getAndInvalidateWorldView() {
+		SafeWorldView safeWorldView = this.worldView;
+		this.worldView = null;
 		return safeWorldView;
 	}
 
-	public ChunkRenderData method_3609() {
-		return this.field_4417;
+	public ChunkRenderData getRenderData() {
+		return this.renderData;
 	}
 
-	public void method_3598(ChunkRenderData chunkRenderData) {
-		this.field_4417 = chunkRenderData;
+	public void setRenderData(ChunkRenderData chunkRenderData) {
+		this.renderData = chunkRenderData;
 	}
 
 	public BlockLayeredBufferBuilder getBufferBuilders() {
@@ -75,9 +75,9 @@ public class ChunkRenderTask implements Comparable<ChunkRenderTask> {
 		this.lock.lock();
 
 		try {
-			this.field_4414 = null;
+			this.worldView = null;
 			if (this.mode == ChunkRenderTask.Mode.field_4426 && this.stage != ChunkRenderTask.Stage.field_4423) {
-				this.field_4418.scheduleRender(false);
+				this.chunkRenderer.scheduleRender(false);
 			}
 
 			this.cancelled = true;

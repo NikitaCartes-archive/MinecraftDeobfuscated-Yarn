@@ -13,11 +13,11 @@ public class ConstantArgumentSerializer<T extends ArgumentType<?>> implements Ar
 	}
 
 	@Override
-	public void method_10007(T argumentType, PacketByteBuf packetByteBuf) {
+	public void toPacket(T argumentType, PacketByteBuf packetByteBuf) {
 	}
 
 	@Override
-	public T method_10005(PacketByteBuf packetByteBuf) {
+	public T fromPacket(PacketByteBuf packetByteBuf) {
 		return (T)this.supplier.get();
 	}
 

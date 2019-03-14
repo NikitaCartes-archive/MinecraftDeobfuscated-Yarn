@@ -19,15 +19,15 @@ import net.minecraft.util.Identifier;
 
 public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions> {
 	private final Map<PlayerAdvancementTracker, OnKilledCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, OnKilledCriterion.Handler>newHashMap();
-	private final Identifier field_9661;
+	private final Identifier id;
 
 	public OnKilledCriterion(Identifier identifier) {
-		this.field_9661 = identifier;
+		this.id = identifier;
 	}
 
 	@Override
 	public Identifier getId() {
-		return this.field_9661;
+		return this.id;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.method_8993(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 	) {
 		OnKilledCriterion.Handler handler = (OnKilledCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.method_8996(conditionsContainer);
+			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -63,14 +63,14 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 
 	public OnKilledCriterion.Conditions method_8989(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		return new OnKilledCriterion.Conditions(
-			this.field_9661, EntityPredicate.deserialize(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow"))
+			this.id, EntityPredicate.deserialize(jsonObject.get("entity")), DamageSourcePredicate.deserialize(jsonObject.get("killing_blow"))
 		);
 	}
 
-	public void method_8990(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
 		OnKilledCriterion.Handler handler = (OnKilledCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.method_8994(serverPlayerEntity, entity, damageSource);
+			handler.handle(serverPlayerEntity, entity, damageSource);
 		}
 	}
 
@@ -85,23 +85,23 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 		}
 
 		public static OnKilledCriterion.Conditions createKill(EntityPredicate.Builder builder) {
-			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.field_9661, builder.build(), DamageSourcePredicate.EMPTY);
+			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.id, builder.build(), DamageSourcePredicate.EMPTY);
 		}
 
 		public static OnKilledCriterion.Conditions method_8999() {
-			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.field_9661, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
+			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
 		}
 
 		public static OnKilledCriterion.Conditions method_9001(EntityPredicate.Builder builder, DamageSourcePredicate.Builder builder2) {
-			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.field_9661, builder.build(), builder2.build());
+			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.id, builder.build(), builder2.build());
 		}
 
 		public static OnKilledCriterion.Conditions method_8998() {
-			return new OnKilledCriterion.Conditions(Criterions.ENTITY_KILLED_PLAYER.field_9661, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
+			return new OnKilledCriterion.Conditions(Criterions.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
 		}
 
-		public boolean method_9000(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
-			return !this.killingBlow.method_8847(serverPlayerEntity, damageSource) ? false : this.entity.method_8914(serverPlayerEntity, entity);
+		public boolean test(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
+			return !this.killingBlow.test(serverPlayerEntity, damageSource) ? false : this.entity.test(serverPlayerEntity, entity);
 		}
 
 		@Override
@@ -114,30 +114,30 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker field_9666;
+		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<OnKilledCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<OnKilledCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9666 = playerAdvancementTracker;
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void method_8993(Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer) {
+		public void addCondition(Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_8996(Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer) {
+		public void removeCondition(Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_8994(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, Entity entity, DamageSource damageSource) {
 			List<Criterion.ConditionsContainer<OnKilledCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.method_797().method_9000(serverPlayerEntity, entity, damageSource)) {
+				if (conditionsContainer.getConditions().test(serverPlayerEntity, entity, damageSource)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<OnKilledCriterion.Conditions>>newArrayList();
 					}
@@ -148,7 +148,7 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<OnKilledCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_9666);
+					conditionsContainerx.apply(this.manager);
 				}
 			}
 		}

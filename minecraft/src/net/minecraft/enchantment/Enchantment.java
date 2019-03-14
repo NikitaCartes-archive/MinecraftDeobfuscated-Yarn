@@ -21,7 +21,7 @@ public abstract class Enchantment {
 	private final EquipmentSlot[] slotTypes;
 	private final Enchantment.Weight weight;
 	@Nullable
-	public EnchantmentTarget field_9083;
+	public EnchantmentTarget type;
 	@Nullable
 	protected String translationName;
 
@@ -33,7 +33,7 @@ public abstract class Enchantment {
 
 	protected Enchantment(Enchantment.Weight weight, EnchantmentTarget enchantmentTarget, EquipmentSlot[] equipmentSlots) {
 		this.weight = weight;
-		this.field_9083 = enchantmentTarget;
+		this.type = enchantmentTarget;
 		this.slotTypes = equipmentSlots;
 	}
 
@@ -41,7 +41,7 @@ public abstract class Enchantment {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
 		for (EquipmentSlot equipmentSlot : this.slotTypes) {
-			ItemStack itemStack = livingEntity.method_6118(equipmentSlot);
+			ItemStack itemStack = livingEntity.getEquippedStack(equipmentSlot);
 			if (!itemStack.isEmpty()) {
 				list.add(itemStack);
 			}
@@ -84,7 +84,7 @@ public abstract class Enchantment {
 
 	protected String getOrCreateTranslationKey() {
 		if (this.translationName == null) {
-			this.translationName = SystemUtil.method_646("enchantment", Registry.ENCHANTMENT.method_10221(this));
+			this.translationName = SystemUtil.createTranslationKey("enchantment", Registry.ENCHANTMENT.getId(this));
 		}
 
 		return this.translationName;
@@ -94,7 +94,7 @@ public abstract class Enchantment {
 		return this.getOrCreateTranslationKey();
 	}
 
-	public TextComponent method_8179(int i) {
+	public TextComponent getTextComponent(int i) {
 		TextComponent textComponent = new TranslatableTextComponent(this.getTranslationKey());
 		if (this.isCursed()) {
 			textComponent.applyFormat(TextFormat.field_1061);
@@ -110,7 +110,7 @@ public abstract class Enchantment {
 	}
 
 	public boolean isAcceptableItem(ItemStack itemStack) {
-		return this.field_9083.isAcceptableItem(itemStack.getItem());
+		return this.type.isAcceptableItem(itemStack.getItem());
 	}
 
 	public void onTargetDamaged(LivingEntity livingEntity, Entity entity, int i) {

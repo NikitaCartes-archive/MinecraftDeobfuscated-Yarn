@@ -21,15 +21,15 @@ public class MapExtendingRecipe extends ShapedRecipe {
 			3,
 			DefaultedList.create(
 				Ingredient.EMPTY,
-				Ingredient.method_8091(Items.field_8407),
-				Ingredient.method_8091(Items.field_8407),
-				Ingredient.method_8091(Items.field_8407),
-				Ingredient.method_8091(Items.field_8407),
-				Ingredient.method_8091(Items.field_8204),
-				Ingredient.method_8091(Items.field_8407),
-				Ingredient.method_8091(Items.field_8407),
-				Ingredient.method_8091(Items.field_8407),
-				Ingredient.method_8091(Items.field_8407)
+				Ingredient.ofItems(Items.field_8407),
+				Ingredient.ofItems(Items.field_8407),
+				Ingredient.ofItems(Items.field_8407),
+				Ingredient.ofItems(Items.field_8407),
+				Ingredient.ofItems(Items.field_8204),
+				Ingredient.ofItems(Items.field_8407),
+				Ingredient.ofItems(Items.field_8407),
+				Ingredient.ofItems(Items.field_8407),
+				Ingredient.ofItems(Items.field_8407)
 			),
 			new ItemStack(Items.field_8895)
 		);
@@ -43,7 +43,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 			ItemStack itemStack = ItemStack.EMPTY;
 
 			for (int i = 0; i < craftingInventory.getInvSize() && itemStack.isEmpty(); i++) {
-				ItemStack itemStack2 = craftingInventory.method_5438(i);
+				ItemStack itemStack2 = craftingInventory.getInvStack(i);
 				if (itemStack2.getItem() == Items.field_8204) {
 					itemStack = itemStack2;
 				}
@@ -79,7 +79,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.getInvSize() && itemStack.isEmpty(); i++) {
-			ItemStack itemStack2 = craftingInventory.method_5438(i);
+			ItemStack itemStack2 = craftingInventory.getInvStack(i);
 			if (itemStack2.getItem() == Items.field_8204) {
 				itemStack = itemStack2;
 			}
@@ -87,7 +87,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 
 		itemStack = itemStack.copy();
 		itemStack.setAmount(1);
-		itemStack.method_7948().putInt("map_scale_direction", 1);
+		itemStack.getOrCreateTag().putInt("map_scale_direction", 1);
 		return itemStack;
 	}
 
@@ -97,7 +97,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9039;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.MAP_EXTENDING;
 	}
 }

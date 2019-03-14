@@ -21,27 +21,25 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class FossilFeature extends Feature<DefaultFeatureConfig> {
-	private static final Identifier field_13624 = new Identifier("fossil/spine_1");
-	private static final Identifier field_13615 = new Identifier("fossil/spine_2");
-	private static final Identifier field_13627 = new Identifier("fossil/spine_3");
-	private static final Identifier field_13619 = new Identifier("fossil/spine_4");
-	private static final Identifier field_13620 = new Identifier("fossil/spine_1_coal");
-	private static final Identifier field_13618 = new Identifier("fossil/spine_2_coal");
-	private static final Identifier field_13625 = new Identifier("fossil/spine_3_coal");
-	private static final Identifier field_13616 = new Identifier("fossil/spine_4_coal");
-	private static final Identifier field_13611 = new Identifier("fossil/skull_1");
-	private static final Identifier field_13621 = new Identifier("fossil/skull_2");
-	private static final Identifier field_13612 = new Identifier("fossil/skull_3");
-	private static final Identifier field_13622 = new Identifier("fossil/skull_4");
-	private static final Identifier field_13614 = new Identifier("fossil/skull_1_coal");
-	private static final Identifier field_13613 = new Identifier("fossil/skull_2_coal");
-	private static final Identifier field_13623 = new Identifier("fossil/skull_3_coal");
-	private static final Identifier field_13610 = new Identifier("fossil/skull_4_coal");
-	private static final Identifier[] field_13617 = new Identifier[]{
-		field_13624, field_13615, field_13627, field_13619, field_13611, field_13621, field_13612, field_13622
-	};
-	private static final Identifier[] field_13626 = new Identifier[]{
-		field_13620, field_13618, field_13625, field_13616, field_13614, field_13613, field_13623, field_13610
+	private static final Identifier SPINE_1 = new Identifier("fossil/spine_1");
+	private static final Identifier SPINE_2 = new Identifier("fossil/spine_2");
+	private static final Identifier SPINE_3 = new Identifier("fossil/spine_3");
+	private static final Identifier SPINE_4 = new Identifier("fossil/spine_4");
+	private static final Identifier SPINE_1_COAL = new Identifier("fossil/spine_1_coal");
+	private static final Identifier SPINE_2_COAL = new Identifier("fossil/spine_2_coal");
+	private static final Identifier SPINE_3_COAL = new Identifier("fossil/spine_3_coal");
+	private static final Identifier SPINE_4_COAL = new Identifier("fossil/spine_4_coal");
+	private static final Identifier SKULL_1 = new Identifier("fossil/skull_1");
+	private static final Identifier SKULL_2 = new Identifier("fossil/skull_2");
+	private static final Identifier SKULL_3 = new Identifier("fossil/skull_3");
+	private static final Identifier SKULL_4 = new Identifier("fossil/skull_4");
+	private static final Identifier SKULL_1_COAL = new Identifier("fossil/skull_1_coal");
+	private static final Identifier SKULL_2_COAL = new Identifier("fossil/skull_2_coal");
+	private static final Identifier SKULL_3_COAL = new Identifier("fossil/skull_3_coal");
+	private static final Identifier SKULL_4_COAL = new Identifier("fossil/skull_4_coal");
+	private static final Identifier[] FOSSILS = new Identifier[]{SPINE_1, SPINE_2, SPINE_3, SPINE_4, SKULL_1, SKULL_2, SKULL_3, SKULL_4};
+	private static final Identifier[] COAL_FOSSILS = new Identifier[]{
+		SPINE_1_COAL, SPINE_2_COAL, SPINE_3_COAL, SPINE_4_COAL, SKULL_1_COAL, SKULL_2_COAL, SKULL_3_COAL, SKULL_4_COAL
 	};
 
 	public FossilFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
@@ -54,10 +52,10 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		Random random2 = iWorld.getRandom();
 		Rotation[] rotations = Rotation.values();
 		Rotation rotation = rotations[random2.nextInt(rotations.length)];
-		int i = random2.nextInt(field_13617.length);
+		int i = random2.nextInt(FOSSILS.length);
 		StructureManager structureManager = ((ServerWorld)iWorld.getWorld()).getSaveHandler().getStructureManager();
-		Structure structure = structureManager.method_15091(field_13617[i]);
-		Structure structure2 = structureManager.method_15091(field_13626[i]);
+		Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
+		Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
 		ChunkPos chunkPos = new ChunkPos(blockPos);
 		MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(
 			chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 256, chunkPos.getEndZ()
@@ -66,7 +64,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 			.setRotation(rotation)
 			.setBoundingBox(mutableIntBoundingBox)
 			.setRandom(random2)
-			.method_16184(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+			.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 		BlockPos blockPos2 = structure.method_15166(rotation);
 		int j = random2.nextInt(16 - blockPos2.getX());
 		int k = random2.nextInt(16 - blockPos2.getZ());
@@ -74,18 +72,18 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int m = 0; m < blockPos2.getX(); m++) {
 			for (int n = 0; n < blockPos2.getX(); n++) {
-				l = Math.min(l, iWorld.method_8589(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
+				l = Math.min(l, iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
 			}
 		}
 
 		int m = Math.max(l - 15 - random2.nextInt(10), 10);
 		BlockPos blockPos3 = structure.method_15167(blockPos.add(j, m, k), Mirror.NONE, rotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
-		structurePlacementData.clearProcessors().method_16184(blockRotStructureProcessor);
+		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
 		structure.method_15172(iWorld, blockPos3, structurePlacementData, 4);
-		structurePlacementData.method_16664(blockRotStructureProcessor);
+		structurePlacementData.removeProcessor(blockRotStructureProcessor);
 		BlockRotStructureProcessor blockRotStructureProcessor2 = new BlockRotStructureProcessor(0.1F);
-		structurePlacementData.clearProcessors().method_16184(blockRotStructureProcessor2);
+		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor2);
 		structure2.method_15172(iWorld, blockPos3, structurePlacementData, 4);
 		return true;
 	}

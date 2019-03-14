@@ -26,7 +26,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.IWorld;
 
 public class SinglePoolElement extends StructurePoolElement {
-	protected final Identifier field_16672;
+	protected final Identifier location;
 	protected final ImmutableList<StructureProcessor> processors;
 
 	@Deprecated
@@ -36,7 +36,7 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	public SinglePoolElement(String string, List<StructureProcessor> list, StructurePool.Projection projection) {
 		super(projection);
-		this.field_16672 = new Identifier(string);
+		this.location = new Identifier(string);
 		this.processors = ImmutableList.copyOf(list);
 	}
 
@@ -47,7 +47,7 @@ public class SinglePoolElement extends StructurePoolElement {
 
 	public SinglePoolElement(Dynamic<?> dynamic) {
 		super(dynamic);
-		this.field_16672 = new Identifier(dynamic.get("location").asString(""));
+		this.location = new Identifier(dynamic.get("location").asString(""));
 		this.processors = ImmutableList.copyOf(
 			dynamic.get("processors")
 				.asList(dynamicx -> DynamicDeserializer.deserialize(dynamicx, Registry.STRUCTURE_PROCESSOR, "processor_type", NopStructureProcessor.INSTANCE))
@@ -55,13 +55,13 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	public List<Structure.StructureBlockInfo> method_16614(StructureManager structureManager, BlockPos blockPos, Rotation rotation, boolean bl) {
-		Structure structure = structureManager.method_15091(this.field_16672);
+		Structure structure = structureManager.getStructureOrBlank(this.location);
 		List<Structure.StructureBlockInfo> list = structure.method_15165(blockPos, new StructurePlacementData().setRotation(rotation), Blocks.field_10465, bl);
 		List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 
 		for (Structure.StructureBlockInfo structureBlockInfo : list) {
-			if (structureBlockInfo.field_15595 != null) {
-				StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.field_15595.getString("mode"));
+			if (structureBlockInfo.tag != null) {
+				StructureBlockMode structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"));
 				if (structureBlockMode == StructureBlockMode.field_12696) {
 					list2.add(structureBlockInfo);
 				}
@@ -72,29 +72,29 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
-		Structure structure = structureManager.method_15091(this.field_16672);
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+		Structure structure = structureManager.getStructureOrBlank(this.location);
 		List<Structure.StructureBlockInfo> list = structure.method_15165(blockPos, new StructurePlacementData().setRotation(rotation), Blocks.field_16540, true);
 		Collections.shuffle(list, random);
 		return list;
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
-		Structure structure = structureManager.method_15091(this.field_16672);
-		return structure.method_16187(new StructurePlacementData().setRotation(rotation), blockPos);
+	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
+		Structure structure = structureManager.getStructureOrBlank(this.location);
+		return structure.calculateBoundingBox(new StructurePlacementData().setRotation(rotation), blockPos);
 	}
 
 	@Override
-	public boolean method_16626(
+	public boolean generate(
 		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	) {
-		Structure structure = structureManager.method_15091(this.field_16672);
+		Structure structure = structureManager.getStructureOrBlank(this.location);
 		StructurePlacementData structurePlacementData = this.method_16616(rotation, mutableIntBoundingBox);
 		if (!structure.method_15172(iWorld, blockPos, structurePlacementData, 18)) {
 			return false;
 		} else {
-			for (Structure.StructureBlockInfo structureBlockInfo : Structure.method_16446(
+			for (Structure.StructureBlockInfo structureBlockInfo : Structure.process(
 				iWorld, blockPos, structurePlacementData, this.method_16614(structureManager, blockPos, rotation, false)
 			)) {
 				this.method_16756(iWorld, structureBlockInfo, blockPos, rotation, random, mutableIntBoundingBox);
@@ -110,15 +110,15 @@ public class SinglePoolElement extends StructurePoolElement {
 		structurePlacementData.setRotation(rotation);
 		structurePlacementData.method_15131(true);
 		structurePlacementData.setIgnoreEntities(false);
-		structurePlacementData.method_16184(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-		structurePlacementData.method_16184(JigsawReplacementStructureProcessor.INSTANCE);
-		this.processors.forEach(structurePlacementData::method_16184);
-		this.method_16624().getProcessors().forEach(structurePlacementData::method_16184);
+		structurePlacementData.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
+		structurePlacementData.addProcessor(JigsawReplacementStructureProcessor.INSTANCE);
+		this.processors.forEach(structurePlacementData::addProcessor);
+		this.getProjection().getProcessors().forEach(structurePlacementData::addProcessor);
 		return structurePlacementData;
 	}
 
 	@Override
-	public StructurePoolElementType method_16757() {
+	public StructurePoolElementType getType() {
 		return StructurePoolElementType.SINGLE_POOL_ELEMENT;
 	}
 
@@ -129,7 +129,7 @@ public class SinglePoolElement extends StructurePoolElement {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("location"),
-					dynamicOps.createString(this.field_16672.toString()),
+					dynamicOps.createString(this.location.toString()),
 					dynamicOps.createString("processors"),
 					dynamicOps.createList(this.processors.stream().map(structureProcessor -> structureProcessor.method_16771(dynamicOps).getValue()))
 				)
@@ -138,6 +138,6 @@ public class SinglePoolElement extends StructurePoolElement {
 	}
 
 	public String toString() {
-		return "Single[" + this.field_16672 + "]";
+		return "Single[" + this.location + "]";
 	}
 }

@@ -22,13 +22,13 @@ public class TextureCache {
 	public static final TextureCache.Manager SHIELD = new TextureCache.Manager(
 		"shield_", new Identifier("textures/entity/shield_base.png"), "textures/entity/shield/"
 	);
-	public static final Identifier field_4152 = new Identifier("textures/entity/shield_base_nopattern.png");
-	public static final Identifier field_4153 = new Identifier("textures/entity/banner/base.png");
+	public static final Identifier DEFAULT_SHIELD = new Identifier("textures/entity/shield_base_nopattern.png");
+	public static final Identifier DEFAULT_BANNER = new Identifier("textures/entity/banner/base.png");
 
 	@Environment(EnvType.CLIENT)
 	static class Entry {
 		public long lastRequestTimeMillis;
-		public Identifier field_4160;
+		public Identifier filename;
 
 		private Entry() {
 		}
@@ -37,18 +37,18 @@ public class TextureCache {
 	@Environment(EnvType.CLIENT)
 	public static class Manager {
 		private final Map<String, TextureCache.Entry> cacheMap = Maps.<String, TextureCache.Entry>newLinkedHashMap();
-		private final Identifier field_4157;
+		private final Identifier filename;
 		private final String baseDir;
 		private final String id;
 
 		public Manager(String string, Identifier identifier, String string2) {
 			this.id = string;
-			this.field_4157 = identifier;
+			this.filename = identifier;
 			this.baseDir = string2;
 		}
 
 		@Nullable
-		public Identifier method_3331(String string, List<BannerPattern> list, List<DyeColor> list2) {
+		public Identifier get(String string, List<BannerPattern> list, List<DyeColor> list2) {
 			if (string.isEmpty()) {
 				return null;
 			} else if (!list.isEmpty() && !list2.isEmpty()) {
@@ -56,7 +56,7 @@ public class TextureCache {
 				TextureCache.Entry entry = (TextureCache.Entry)this.cacheMap.get(string);
 				if (entry == null) {
 					if (this.cacheMap.size() >= 256 && !this.removeOldEntries()) {
-						return TextureCache.field_4153;
+						return TextureCache.DEFAULT_BANNER;
 					}
 
 					List<String> list3 = Lists.<String>newArrayList();
@@ -66,15 +66,15 @@ public class TextureCache {
 					}
 
 					entry = new TextureCache.Entry();
-					entry.field_4160 = new Identifier(string);
-					MinecraftClient.getInstance().method_1531().method_4616(entry.field_4160, new BannerTexture(this.field_4157, list3, list2));
+					entry.filename = new Identifier(string);
+					MinecraftClient.getInstance().getTextureManager().registerTexture(entry.filename, new BannerTexture(this.filename, list3, list2));
 					this.cacheMap.put(string, entry);
 				}
 
 				entry.lastRequestTimeMillis = SystemUtil.getMeasuringTimeMs();
-				return entry.field_4160;
+				return entry.filename;
 			} else {
-				return MissingSprite.method_4539();
+				return MissingSprite.getMissingSpriteId();
 			}
 		}
 
@@ -86,7 +86,7 @@ public class TextureCache {
 				String string = (String)iterator.next();
 				TextureCache.Entry entry = (TextureCache.Entry)this.cacheMap.get(string);
 				if (l - entry.lastRequestTimeMillis > 5000L) {
-					MinecraftClient.getInstance().method_1531().method_4615(entry.field_4160);
+					MinecraftClient.getInstance().getTextureManager().destroyTexture(entry.filename);
 					iterator.remove();
 					return true;
 				}

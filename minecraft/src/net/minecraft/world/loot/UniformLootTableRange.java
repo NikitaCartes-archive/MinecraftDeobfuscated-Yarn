@@ -54,8 +54,8 @@ public class UniformLootTableRange implements LootTableRange {
 	}
 
 	@Override
-	public Identifier method_365() {
-		return field_967;
+	public Identifier getType() {
+		return UNIFORM;
 	}
 
 	public static class Serializer implements JsonDeserializer<UniformLootTableRange>, JsonSerializer<UniformLootTableRange> {

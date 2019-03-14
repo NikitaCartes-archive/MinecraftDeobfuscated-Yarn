@@ -45,16 +45,16 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
-		return ((StructurePoolElement)this.elements.get(0)).method_16627(structureManager, blockPos, rotation, random);
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+		return ((StructurePoolElement)this.elements.get(0)).getStructureBlockInfos(structureManager, blockPos, rotation, random);
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
+	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
 		MutableIntBoundingBox mutableIntBoundingBox = MutableIntBoundingBox.empty();
 
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement.method_16628(structureManager, blockPos, rotation);
+			MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement.getBoundingBox(structureManager, blockPos, rotation);
 			mutableIntBoundingBox.setFrom(mutableIntBoundingBox2);
 		}
 
@@ -62,11 +62,11 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public boolean method_16626(
+	public boolean generate(
 		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	) {
 		for (StructurePoolElement structurePoolElement : this.elements) {
-			if (!structurePoolElement.method_16626(structureManager, iWorld, blockPos, rotation, mutableIntBoundingBox, random)) {
+			if (!structurePoolElement.generate(structureManager, iWorld, blockPos, rotation, mutableIntBoundingBox, random)) {
 				return false;
 			}
 		}
@@ -75,13 +75,13 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public StructurePoolElementType method_16757() {
+	public StructurePoolElementType getType() {
 		return StructurePoolElementType.LIST_POOL_ELEMENT;
 	}
 
 	@Override
-	public StructurePoolElement method_16622(StructurePool.Projection projection) {
-		super.method_16622(projection);
+	public StructurePoolElement setProjection(StructurePool.Projection projection) {
+		super.setProjection(projection);
 		this.method_19307(projection);
 		return this;
 	}
@@ -97,6 +97,6 @@ public class ListPoolElement extends StructurePoolElement {
 	}
 
 	private void method_19307(StructurePool.Projection projection) {
-		this.elements.forEach(structurePoolElement -> structurePoolElement.method_16622(projection));
+		this.elements.forEach(structurePoolElement -> structurePoolElement.setProjection(projection));
 	}
 }

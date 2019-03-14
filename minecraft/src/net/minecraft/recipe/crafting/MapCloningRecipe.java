@@ -19,7 +19,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.method_5438(j);
+			ItemStack itemStack2 = craftingInventory.getInvStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() == Items.field_8204) {
 					if (!itemStack.isEmpty()) {
@@ -45,7 +45,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.method_5438(j);
+			ItemStack itemStack2 = craftingInventory.getInvStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() == Items.field_8204) {
 					if (!itemStack.isEmpty()) {
@@ -79,7 +79,7 @@ public class MapCloningRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9044;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.MAP_CLONING;
 	}
 }

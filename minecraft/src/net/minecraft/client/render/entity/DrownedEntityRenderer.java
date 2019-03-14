@@ -17,7 +17,7 @@ public class DrownedEntityRenderer extends ZombieBaseEntityRenderer<DrownedEntit
 
 	public DrownedEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new DrownedEntityModel<>(0.0F, 0.0F, 64, 64), new DrownedEntityModel<>(0.5F, true), new DrownedEntityModel<>(1.0F, true));
-		this.method_4046(new DrownedOverlayFeatureRenderer<>(this));
+		this.addFeature(new DrownedOverlayFeatureRenderer<>(this));
 	}
 
 	@Nullable

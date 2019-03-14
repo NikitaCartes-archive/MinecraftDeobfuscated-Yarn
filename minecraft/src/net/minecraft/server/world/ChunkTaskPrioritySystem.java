@@ -46,7 +46,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 		return createRunnableMessage(runnable, chunkHolder.getPos().toLong(), chunkHolder::getLastLevelUpdatedTo);
 	}
 
-	public static ChunkTaskPrioritySystem.SorterMessage method_17627(Runnable runnable, long l, boolean bl) {
+	public static ChunkTaskPrioritySystem.SorterMessage createPrioritySorterMessage(Runnable runnable, long l, boolean bl) {
 		return new ChunkTaskPrioritySystem.SorterMessage(runnable, l, bl);
 	}
 

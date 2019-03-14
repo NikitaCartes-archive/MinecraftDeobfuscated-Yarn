@@ -6,8 +6,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_1414;
-import net.minecraft.class_4051;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -21,6 +19,8 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
@@ -57,10 +57,10 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class TurtleEntity extends AnimalEntity {
-	private static final TrackedData<BlockPos> field_6920 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
-	private static final TrackedData<Boolean> field_6919 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<BlockPos> HOME_POS = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
+	private static final TrackedData<Boolean> HAS_EGG = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> field_6923 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final TrackedData<BlockPos> field_6922 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
+	private static final TrackedData<BlockPos> TRAVEL_POS = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 	private static final TrackedData<Boolean> field_6924 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> field_6925 = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private int field_6918;
@@ -68,131 +68,131 @@ public class TurtleEntity extends AnimalEntity {
 
 	public TurtleEntity(EntityType<? extends TurtleEntity> entityType, World world) {
 		super(entityType, world);
-		this.field_6207 = new TurtleEntity.TurtleMoveControl(this);
-		this.field_6746 = Blocks.field_10102;
+		this.moveControl = new TurtleEntity.TurtleMoveControl(this);
+		this.spawningGround = Blocks.field_10102;
 		this.stepHeight = 1.0F;
 	}
 
-	public void method_6683(BlockPos blockPos) {
-		this.field_6011.set(field_6920, blockPos);
+	public void setHomePos(BlockPos blockPos) {
+		this.dataTracker.set(HOME_POS, blockPos);
 	}
 
-	private BlockPos method_6693() {
-		return this.field_6011.get(field_6920);
+	private BlockPos getHomePos() {
+		return this.dataTracker.get(HOME_POS);
 	}
 
-	private void method_6699(BlockPos blockPos) {
-		this.field_6011.set(field_6922, blockPos);
+	private void setTravelPos(BlockPos blockPos) {
+		this.dataTracker.set(TRAVEL_POS, blockPos);
 	}
 
-	private BlockPos method_6687() {
-		return this.field_6011.get(field_6922);
+	private BlockPos getTravelPos() {
+		return this.dataTracker.get(TRAVEL_POS);
 	}
 
 	public boolean getHasEgg() {
-		return this.field_6011.get(field_6919);
+		return this.dataTracker.get(HAS_EGG);
 	}
 
 	private void setHasEgg(boolean bl) {
-		this.field_6011.set(field_6919, bl);
+		this.dataTracker.set(HAS_EGG, bl);
 	}
 
 	public boolean method_6695() {
-		return this.field_6011.get(field_6923);
+		return this.dataTracker.get(field_6923);
 	}
 
 	private void method_6676(boolean bl) {
 		this.field_6918 = bl ? 1 : 0;
-		this.field_6011.set(field_6923, bl);
+		this.dataTracker.set(field_6923, bl);
 	}
 
 	private boolean method_6684() {
-		return this.field_6011.get(field_6924);
+		return this.dataTracker.get(field_6924);
 	}
 
 	private void method_6697(boolean bl) {
-		this.field_6011.set(field_6924, bl);
+		this.dataTracker.set(field_6924, bl);
 	}
 
 	private boolean method_6691() {
-		return this.field_6011.get(field_6925);
+		return this.dataTracker.get(field_6925);
 	}
 
 	private void method_6696(boolean bl) {
-		this.field_6011.set(field_6925, bl);
+		this.dataTracker.set(field_6925, bl);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.field_6011.startTracking(field_6920, BlockPos.ORIGIN);
-		this.field_6011.startTracking(field_6919, false);
-		this.field_6011.startTracking(field_6922, BlockPos.ORIGIN);
-		this.field_6011.startTracking(field_6924, false);
-		this.field_6011.startTracking(field_6925, false);
-		this.field_6011.startTracking(field_6923, false);
+		this.dataTracker.startTracking(HOME_POS, BlockPos.ORIGIN);
+		this.dataTracker.startTracking(HAS_EGG, false);
+		this.dataTracker.startTracking(TRAVEL_POS, BlockPos.ORIGIN);
+		this.dataTracker.startTracking(field_6924, false);
+		this.dataTracker.startTracking(field_6925, false);
+		this.dataTracker.startTracking(field_6923, false);
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
-		compoundTag.putInt("HomePosX", this.method_6693().getX());
-		compoundTag.putInt("HomePosY", this.method_6693().getY());
-		compoundTag.putInt("HomePosZ", this.method_6693().getZ());
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("HomePosX", this.getHomePos().getX());
+		compoundTag.putInt("HomePosY", this.getHomePos().getY());
+		compoundTag.putInt("HomePosZ", this.getHomePos().getZ());
 		compoundTag.putBoolean("HasEgg", this.getHasEgg());
-		compoundTag.putInt("TravelPosX", this.method_6687().getX());
-		compoundTag.putInt("TravelPosY", this.method_6687().getY());
-		compoundTag.putInt("TravelPosZ", this.method_6687().getZ());
+		compoundTag.putInt("TravelPosX", this.getTravelPos().getX());
+		compoundTag.putInt("TravelPosY", this.getTravelPos().getY());
+		compoundTag.putInt("TravelPosZ", this.getTravelPos().getZ());
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		int i = compoundTag.getInt("HomePosX");
 		int j = compoundTag.getInt("HomePosY");
 		int k = compoundTag.getInt("HomePosZ");
-		this.method_6683(new BlockPos(i, j, k));
-		super.method_5749(compoundTag);
+		this.setHomePos(new BlockPos(i, j, k));
+		super.readCustomDataFromTag(compoundTag);
 		this.setHasEgg(compoundTag.getBoolean("HasEgg"));
 		int l = compoundTag.getInt("TravelPosX");
 		int m = compoundTag.getInt("TravelPosY");
 		int n = compoundTag.getInt("TravelPosZ");
-		this.method_6699(new BlockPos(l, m, n));
+		this.setTravelPos(new BlockPos(l, m, n));
 	}
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
+	public EntityData prepareEntityData(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		this.method_6683(new BlockPos(this));
-		this.method_6699(BlockPos.ORIGIN);
-		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.setHomePos(new BlockPos(this));
+		this.setTravelPos(BlockPos.ORIGIN);
+		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
-		BlockPos blockPos = new BlockPos(this.x, this.method_5829().minY, this.z);
-		return blockPos.getY() < iWorld.getSeaLevel() + 4 && super.method_5979(iWorld, spawnType);
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
+		BlockPos blockPos = new BlockPos(this.x, this.getBoundingBox().minY, this.z);
+		return blockPos.getY() < iWorld.getSeaLevel() + 4 && super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override
 	protected void initGoals() {
-		this.field_6201.add(0, new TurtleEntity.class_1487(this, 1.2));
-		this.field_6201.add(1, new TurtleEntity.TurtleMateGoal(this, 1.0));
-		this.field_6201.add(1, new TurtleEntity.class_1485(this, 1.0));
-		this.field_6201.add(2, new TurtleEntity.class_1490(this, 1.1, Blocks.field_10376.getItem()));
-		this.field_6201.add(3, new TurtleEntity.class_1484(this, 1.0));
-		this.field_6201.add(4, new TurtleEntity.class_1483(this, 1.0));
-		this.field_6201.add(7, new TurtleEntity.class_1491(this, 1.0));
-		this.field_6201.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-		this.field_6201.add(9, new TurtleEntity.class_1489(this, 1.0, 100));
+		this.goalSelector.add(0, new TurtleEntity.class_1487(this, 1.2));
+		this.goalSelector.add(1, new TurtleEntity.TurtleMateGoal(this, 1.0));
+		this.goalSelector.add(1, new TurtleEntity.class_1485(this, 1.0));
+		this.goalSelector.add(2, new TurtleEntity.class_1490(this, 1.1, Blocks.field_10376.getItem()));
+		this.goalSelector.add(3, new TurtleEntity.class_1484(this, 1.0));
+		this.goalSelector.add(4, new TurtleEntity.class_1483(this, 1.0));
+		this.goalSelector.add(7, new TurtleEntity.class_1491(this, 1.0));
+		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.add(9, new TurtleEntity.class_1489(this, 1.0, 100));
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(30.0);
-		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(30.0);
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
 	}
 
 	@Override
@@ -206,7 +206,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public EntityGroup method_6046() {
+	public EntityGroup getGroup() {
 		return EntityGroup.AQUATIC;
 	}
 
@@ -217,8 +217,8 @@ public class TurtleEntity extends AnimalEntity {
 
 	@Nullable
 	@Override
-	protected SoundEvent method_5994() {
-		return !this.isInsideWater() && this.onGround && !this.isChild() ? SoundEvents.field_14722 : super.method_5994();
+	protected SoundEvent getAmbientSound() {
+		return !this.isInsideWater() && this.onGround && !this.isChild() ? SoundEvents.field_14722 : super.getAmbientSound();
 	}
 
 	@Override
@@ -227,26 +227,26 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected SoundEvent method_5737() {
+	protected SoundEvent getSwimSound() {
 		return SoundEvents.field_14764;
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return this.isChild() ? SoundEvents.field_15070 : SoundEvents.field_15183;
 	}
 
 	@Nullable
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return this.isChild() ? SoundEvents.field_14618 : SoundEvents.field_14856;
 	}
 
 	@Override
-	protected void method_5712(BlockPos blockPos, BlockState blockState) {
+	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
 		SoundEvent soundEvent = this.isChild() ? SoundEvents.field_14864 : SoundEvents.field_14549;
-		this.method_5783(soundEvent, 0.15F, 1.0F);
+		this.playSound(soundEvent, 0.15F, 1.0F);
 	}
 
 	@Override
@@ -265,24 +265,26 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected EntityNavigation method_5965(World world) {
+	protected EntityNavigation createNavigation(World world) {
 		return new TurtleEntity.TurtleSwimNavigation(this, world);
 	}
 
 	@Nullable
 	@Override
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
-		return EntityType.TURTLE.method_5883(this.field_6002);
+		return EntityType.TURTLE.create(this.world);
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
+	public boolean isBreedingItem(ItemStack itemStack) {
 		return itemStack.getItem() == Blocks.field_10376.getItem();
 	}
 
 	@Override
-	public float method_6144(BlockPos blockPos, ViewableWorld viewableWorld) {
-		return !this.method_6684() && viewableWorld.method_8316(blockPos).method_15767(FluidTags.field_15517) ? 10.0F : super.method_6144(blockPos, viewableWorld);
+	public float getPathfindingFavor(BlockPos blockPos, ViewableWorld viewableWorld) {
+		return !this.method_6684() && viewableWorld.getFluidState(blockPos).matches(FluidTags.field_15517)
+			? 10.0F
+			: super.getPathfindingFavor(blockPos, viewableWorld);
 	}
 
 	@Override
@@ -290,8 +292,8 @@ public class TurtleEntity extends AnimalEntity {
 		super.updateMovement();
 		if (this.isValid() && this.method_6695() && this.field_6918 >= 1 && this.field_6918 % 5 == 0) {
 			BlockPos blockPos = new BlockPos(this);
-			if (this.field_6002.method_8320(blockPos.down()).getBlock() == Blocks.field_10102) {
-				this.field_6002.method_8535(2001, blockPos, Block.method_9507(Blocks.field_10102.method_9564()));
+			if (this.world.getBlockState(blockPos.down()).getBlock() == Blocks.field_10102) {
+				this.world.playEvent(2001, blockPos, Block.getRawIdFromState(Blocks.field_10102.getDefaultState()));
 			}
 		}
 	}
@@ -299,32 +301,32 @@ public class TurtleEntity extends AnimalEntity {
 	@Override
 	protected void method_5619() {
 		super.method_5619();
-		if (!this.isChild() && this.field_6002.getGameRules().getBoolean("doMobLoot")) {
-			this.method_5870(Items.field_8161, 1);
+		if (!this.isChild() && this.world.getGameRules().getBoolean("doMobLoot")) {
+			this.dropItem(Items.field_8161, 1);
 		}
 	}
 
 	@Override
-	public void method_6091(Vec3d vec3d) {
+	public void travel(Vec3d vec3d) {
 		if (this.method_6034() && this.isInsideWater()) {
-			this.method_5724(0.1F, vec3d);
-			this.method_5784(MovementType.field_6308, this.method_18798());
-			this.method_18799(this.method_18798().multiply(0.9));
-			if (this.getTarget() == null && (!this.method_6684() || !(this.method_5831(this.method_6693()) < 400.0))) {
-				this.method_18799(this.method_18798().add(0.0, -0.005, 0.0));
+			this.updateVelocity(0.1F, vec3d);
+			this.move(MovementType.field_6308, this.getVelocity());
+			this.setVelocity(this.getVelocity().multiply(0.9));
+			if (this.getTarget() == null && (!this.method_6684() || !(this.squaredDistanceTo(this.getHomePos()) < 400.0))) {
+				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
 			}
 		} else {
-			super.method_6091(vec3d);
+			super.travel(vec3d);
 		}
 	}
 
 	@Override
-	public boolean method_5931(PlayerEntity playerEntity) {
+	public boolean canBeLeashedBy(PlayerEntity playerEntity) {
 		return false;
 	}
 
 	@Override
-	public void method_5800(LightningEntity lightningEntity) {
+	public void onStruckByLightning(LightningEntity lightningEntity) {
 		this.damage(DamageSource.LIGHTNING_BOLT, Float.MAX_VALUE);
 	}
 
@@ -343,22 +345,22 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		protected void method_6249() {
-			ServerPlayerEntity serverPlayerEntity = this.field_6404.method_6478();
-			if (serverPlayerEntity == null && this.field_6406.method_6478() != null) {
-				serverPlayerEntity = this.field_6406.method_6478();
+			ServerPlayerEntity serverPlayerEntity = this.owner.getLovingPlayer();
+			if (serverPlayerEntity == null && this.mate.getLovingPlayer() != null) {
+				serverPlayerEntity = this.mate.getLovingPlayer();
 			}
 
 			if (serverPlayerEntity != null) {
-				serverPlayerEntity.method_7281(Stats.field_15410);
-				Criterions.BRED_ANIMALS.method_855(serverPlayerEntity, this.field_6404, this.field_6406, null);
+				serverPlayerEntity.increaseStat(Stats.field_15410);
+				Criterions.BRED_ANIMALS.handle(serverPlayerEntity, this.owner, this.mate, null);
 			}
 
 			this.field_6926.setHasEgg(true);
-			this.field_6404.resetLoveTicks();
-			this.field_6406.resetLoveTicks();
-			Random random = this.field_6404.getRand();
-			if (this.field_6405.getGameRules().getBoolean("doMobLoot")) {
-				this.field_6405.spawnEntity(new ExperienceOrbEntity(this.field_6405, this.field_6404.x, this.field_6404.y, this.field_6404.z, random.nextInt(7) + 1));
+			this.owner.resetLoveTicks();
+			this.mate.resetLoveTicks();
+			Random random = this.owner.getRand();
+			if (this.world.getGameRules().getBoolean("doMobLoot")) {
+				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.owner.x, this.owner.y, this.owner.z, random.nextInt(7) + 1));
 			}
 		}
 	}
@@ -373,8 +375,8 @@ public class TurtleEntity extends AnimalEntity {
 
 		private void method_6700() {
 			if (this.turtle.isInsideWater()) {
-				this.turtle.method_18799(this.turtle.method_18798().add(0.0, 0.005, 0.0));
-				if (this.turtle.method_5831(this.turtle.method_6693()) > 256.0) {
+				this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, 0.005, 0.0));
+				if (this.turtle.squaredDistanceTo(this.turtle.getHomePos()) > 256.0) {
 					this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 2.0F, 0.08F));
 				}
 
@@ -389,7 +391,7 @@ public class TurtleEntity extends AnimalEntity {
 		@Override
 		public void tick() {
 			this.method_6700();
-			if (this.state == MoveControl.State.field_6378 && !this.turtle.method_5942().isIdle()) {
+			if (this.state == MoveControl.State.field_6378 && !this.turtle.getNavigation().isIdle()) {
 				double d = this.targetX - this.turtle.x;
 				double e = this.targetY - this.turtle.y;
 				double f = this.targetZ - this.turtle.z;
@@ -398,9 +400,9 @@ public class TurtleEntity extends AnimalEntity {
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
 				this.turtle.yaw = this.method_6238(this.turtle.yaw, h, 90.0F);
 				this.turtle.field_6283 = this.turtle.yaw;
-				float i = (float)(this.speed * this.turtle.method_5996(EntityAttributes.MOVEMENT_SPEED).getValue());
+				float i = (float)(this.speed * this.turtle.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				this.turtle.setMovementSpeed(MathHelper.lerp(0.125F, this.turtle.getMovementSpeed(), i));
-				this.turtle.method_18799(this.turtle.method_18798().add(0.0, (double)this.turtle.getMovementSpeed() * e * 0.1, 0.0));
+				this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, (double)this.turtle.getMovementSpeed() * e * 0.1, 0.0));
 			} else {
 				this.turtle.setMovementSpeed(0.0F);
 			}
@@ -418,20 +420,20 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected PathNodeNavigator method_6336(int i) {
+		protected PathNodeNavigator createPathNodeNavigator(int i) {
 			return new PathNodeNavigator(new AmphibiousPathNodeMaker(), i);
 		}
 
 		@Override
-		public boolean method_6333(BlockPos blockPos) {
+		public boolean isValidPosition(BlockPos blockPos) {
 			if (this.entity instanceof TurtleEntity) {
 				TurtleEntity turtleEntity = (TurtleEntity)this.entity;
 				if (turtleEntity.method_6691()) {
-					return this.field_6677.method_8320(blockPos).getBlock() == Blocks.field_10382;
+					return this.world.getBlockState(blockPos).getBlock() == Blocks.field_10382;
 				}
 			}
 
-			return !this.field_6677.method_8320(blockPos.down()).isAir();
+			return !this.world.getBlockState(blockPos.down()).isAir();
 		}
 	}
 
@@ -453,7 +455,7 @@ public class TurtleEntity extends AnimalEntity {
 			} else if (this.field_6930.getHasEgg()) {
 				return true;
 			} else {
-				return this.field_6930.getRand().nextInt(700) != 0 ? false : this.field_6930.method_5831(this.field_6930.method_6693()) >= 4096.0;
+				return this.field_6930.getRand().nextInt(700) != 0 ? false : this.field_6930.squaredDistanceTo(this.field_6930.getHomePos()) >= 4096.0;
 			}
 		}
 
@@ -471,27 +473,27 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return this.field_6930.method_5831(this.field_6930.method_6693()) >= 49.0 && !this.field_6929 && this.field_6928 <= 600;
+			return this.field_6930.squaredDistanceTo(this.field_6930.getHomePos()) >= 49.0 && !this.field_6929 && this.field_6928 <= 600;
 		}
 
 		@Override
 		public void tick() {
-			BlockPos blockPos = this.field_6930.method_6693();
-			boolean bl = this.field_6930.method_5831(blockPos) <= 256.0;
+			BlockPos blockPos = this.field_6930.getHomePos();
+			boolean bl = this.field_6930.squaredDistanceTo(blockPos) <= 256.0;
 			if (bl) {
 				this.field_6928++;
 			}
 
-			if (this.field_6930.method_5942().isIdle()) {
-				Vec3d vec3d = class_1414.method_6377(
+			if (this.field_6930.getNavigation().isIdle()) {
+				Vec3d vec3d = AiUtil.method_6377(
 					this.field_6930, 16, 3, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 10)
 				);
 				if (vec3d == null) {
-					vec3d = class_1414.method_6373(this.field_6930, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = AiUtil.method_6373(this.field_6930, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
-				if (vec3d != null && !bl && this.field_6930.field_6002.method_8320(new BlockPos(vec3d)).getBlock() != Blocks.field_10382) {
-					vec3d = class_1414.method_6373(this.field_6930, 16, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+				if (vec3d != null && !bl && this.field_6930.world.getBlockState(new BlockPos(vec3d)).getBlock() != Blocks.field_10382) {
+					vec3d = AiUtil.method_6373(this.field_6930, 16, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d == null) {
@@ -499,7 +501,7 @@ public class TurtleEntity extends AnimalEntity {
 					return;
 				}
 
-				this.field_6930.method_5942().startMovingTo(vec3d.x, vec3d.y, vec3d.z, this.field_6927);
+				this.field_6930.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, this.field_6927);
 			}
 		}
 	}
@@ -515,7 +517,7 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return !this.field_6931.isInsideWater() && this.tryingTime <= 1200 && this.method_6296(this.field_6931.field_6002, this.field_6512);
+			return !this.field_6931.isInsideWater() && this.tryingTime <= 1200 && this.isTargetPos(this.field_6931.world, this.targetPos);
 		}
 
 		@Override
@@ -533,8 +535,8 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
-			Block block = viewableWorld.method_8320(blockPos).getBlock();
+		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+			Block block = viewableWorld.getBlockState(blockPos).getBlock();
 			return block == Blocks.field_10382;
 		}
 	}
@@ -549,12 +551,12 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return this.field_6932.getHasEgg() && this.field_6932.method_5831(this.field_6932.method_6693()) < 81.0 ? super.canStart() : false;
+			return this.field_6932.getHasEgg() && this.field_6932.squaredDistanceTo(this.field_6932.getHomePos()) < 81.0 ? super.canStart() : false;
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			return super.shouldContinue() && this.field_6932.getHasEgg() && this.field_6932.method_5831(this.field_6932.method_6693()) < 81.0;
+			return super.shouldContinue() && this.field_6932.getHasEgg() && this.field_6932.squaredDistanceTo(this.field_6932.getHomePos()) < 81.0;
 		}
 
 		@Override
@@ -565,12 +567,10 @@ public class TurtleEntity extends AnimalEntity {
 				if (this.field_6932.field_6918 < 1) {
 					this.field_6932.method_6676(true);
 				} else if (this.field_6932.field_6918 > 200) {
-					World world = this.field_6932.field_6002;
-					world.method_8396(null, blockPos, SoundEvents.field_14634, SoundCategory.field_15245, 0.3F, 0.9F + world.random.nextFloat() * 0.2F);
-					world.method_8652(
-						this.field_6512.up(),
-						Blocks.field_10195.method_9564().method_11657(TurtleEggBlock.field_11710, Integer.valueOf(this.field_6932.random.nextInt(4) + 1)),
-						3
+					World world = this.field_6932.world;
+					world.playSound(null, blockPos, SoundEvents.field_14634, SoundCategory.field_15245, 0.3F, 0.9F + world.random.nextFloat() * 0.2F);
+					world.setBlockState(
+						this.targetPos.up(), Blocks.field_10195.getDefaultState().with(TurtleEggBlock.field_11710, Integer.valueOf(this.field_6932.random.nextInt(4) + 1)), 3
 					);
 					this.field_6932.setHasEgg(false);
 					this.field_6932.method_6676(false);
@@ -584,11 +584,11 @@ public class TurtleEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
-			if (!viewableWorld.method_8623(blockPos.up())) {
+		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+			if (!viewableWorld.isAir(blockPos.up())) {
 				return false;
 			} else {
-				Block block = viewableWorld.method_8320(blockPos).getBlock();
+				Block block = viewableWorld.getBlockState(blockPos).getBlock();
 				return block == Blocks.field_10102;
 			}
 		}
@@ -604,7 +604,7 @@ public class TurtleEntity extends AnimalEntity {
 			if (this.owner.getAttacker() == null && !this.owner.isOnFire()) {
 				return false;
 			} else {
-				BlockPos blockPos = this.method_6300(this.owner.field_6002, this.owner, 7, 4);
+				BlockPos blockPos = this.locateClosestWater(this.owner.world, this.owner, 7, 4);
 				if (blockPos != null) {
 					this.targetX = (double)blockPos.getX();
 					this.targetY = (double)blockPos.getY();
@@ -632,7 +632,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	static class class_1490 extends Goal {
-		private static final class_4051 field_18117 = new class_4051().method_18418(10.0).method_18421().method_18417();
+		private static final TargetPredicate field_18117 = new TargetPredicate().setBaseMaxDistance(10.0).includeTeammates().includeInvulnerable();
 		private final TurtleEntity field_6938;
 		private final double field_6935;
 		private PlayerEntity field_6939;
@@ -643,7 +643,7 @@ public class TurtleEntity extends AnimalEntity {
 			this.field_6938 = turtleEntity;
 			this.field_6935 = d;
 			this.field_6937 = Sets.<Item>newHashSet(item);
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
 		}
 
 		@Override
@@ -652,8 +652,8 @@ public class TurtleEntity extends AnimalEntity {
 				this.field_6936--;
 				return false;
 			} else {
-				this.field_6939 = this.field_6938.field_6002.method_18462(field_18117, this.field_6938);
-				return this.field_6939 == null ? false : this.method_6701(this.field_6939.method_6047()) || this.method_6701(this.field_6939.method_6079());
+				this.field_6939 = this.field_6938.world.method_18462(field_18117, this.field_6938);
+				return this.field_6939 == null ? false : this.method_6701(this.field_6939.getMainHandStack()) || this.method_6701(this.field_6939.getOffHandStack());
 			}
 		}
 
@@ -669,17 +669,17 @@ public class TurtleEntity extends AnimalEntity {
 		@Override
 		public void onRemove() {
 			this.field_6939 = null;
-			this.field_6938.method_5942().stop();
+			this.field_6938.getNavigation().stop();
 			this.field_6936 = 100;
 		}
 
 		@Override
 		public void tick() {
-			this.field_6938.method_5988().lookAt(this.field_6939, (float)(this.field_6938.method_5986() + 20), (float)this.field_6938.method_5978());
+			this.field_6938.getLookControl().lookAt(this.field_6939, (float)(this.field_6938.method_5986() + 20), (float)this.field_6938.method_5978());
 			if (this.field_6938.squaredDistanceTo(this.field_6939) < 6.25) {
-				this.field_6938.method_5942().stop();
+				this.field_6938.getNavigation().stop();
 			} else {
-				this.field_6938.method_5942().startMovingTo(this.field_6939, this.field_6935);
+				this.field_6938.getNavigation().startMovingTo(this.field_6939, this.field_6935);
 			}
 		}
 	}
@@ -707,32 +707,32 @@ public class TurtleEntity extends AnimalEntity {
 			int k = random.nextInt(1025) - 512;
 			int l = random.nextInt(9) - 4;
 			int m = random.nextInt(1025) - 512;
-			if ((double)l + this.field_6942.y > (double)(this.field_6942.field_6002.getSeaLevel() - 1)) {
+			if ((double)l + this.field_6942.y > (double)(this.field_6942.world.getSeaLevel() - 1)) {
 				l = 0;
 			}
 
 			BlockPos blockPos = new BlockPos((double)k + this.field_6942.x, (double)l + this.field_6942.y, (double)m + this.field_6942.z);
-			this.field_6942.method_6699(blockPos);
+			this.field_6942.setTravelPos(blockPos);
 			this.field_6942.method_6696(true);
 			this.field_6941 = false;
 		}
 
 		@Override
 		public void tick() {
-			if (this.field_6942.method_5942().isIdle()) {
-				BlockPos blockPos = this.field_6942.method_6687();
-				Vec3d vec3d = class_1414.method_6377(
+			if (this.field_6942.getNavigation().isIdle()) {
+				BlockPos blockPos = this.field_6942.getTravelPos();
+				Vec3d vec3d = AiUtil.method_6377(
 					this.field_6942, 16, 3, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 10)
 				);
 				if (vec3d == null) {
-					vec3d = class_1414.method_6373(this.field_6942, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = AiUtil.method_6373(this.field_6942, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d != null) {
 					int i = MathHelper.floor(vec3d.x);
 					int j = MathHelper.floor(vec3d.z);
 					int k = 34;
-					if (!this.field_6942.field_6002.isAreaLoaded(i - 34, 0, j - 34, i + 34, 0, j + 34)) {
+					if (!this.field_6942.world.isAreaLoaded(i - 34, 0, j - 34, i + 34, 0, j + 34)) {
 						vec3d = null;
 					}
 				}
@@ -742,13 +742,13 @@ public class TurtleEntity extends AnimalEntity {
 					return;
 				}
 
-				this.field_6942.method_5942().startMovingTo(vec3d.x, vec3d.y, vec3d.z, this.field_6940);
+				this.field_6942.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, this.field_6940);
 			}
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			return !this.field_6942.method_5942().isIdle()
+			return !this.field_6942.getNavigation().isIdle()
 				&& !this.field_6941
 				&& !this.field_6942.method_6684()
 				&& !this.field_6942.isInLove()

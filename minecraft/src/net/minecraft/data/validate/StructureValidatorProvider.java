@@ -28,7 +28,7 @@ public class StructureValidatorProvider implements DataProvider {
 	}
 
 	@Override
-	public void method_10319(DataCache dataCache) throws IOException {
+	public void run(DataCache dataCache) throws IOException {
 		for (Path path : this.generator.getInputs()) {
 			Path path2 = path.resolve("data/minecraft/structures/");
 			if (Files.isDirectory(path2, new LinkOption[0])) {
@@ -152,8 +152,8 @@ public class StructureValidatorProvider implements DataProvider {
 
 	private static CompoundTag method_16878(DataFixer dataFixer, CompoundTag compoundTag) {
 		Structure structure = new Structure();
-		structure.method_15183(TagHelper.update(dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
-		return structure.method_15175(new CompoundTag());
+		structure.fromTag(TagHelper.update(dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
+		return structure.toTag(new CompoundTag());
 	}
 
 	static class class_3844 extends RuntimeException {

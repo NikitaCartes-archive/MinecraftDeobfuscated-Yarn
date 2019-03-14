@@ -20,7 +20,7 @@ public class ButtonClickServerPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	public void method_12185(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12055(this);
+		serverPlayPacketListener.onButtonClick(this);
 	}
 
 	@Override

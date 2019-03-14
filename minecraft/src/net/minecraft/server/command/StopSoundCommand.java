@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.network.packet.StopSoundS2CPacket;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.arguments.EntityArgumentType;
-import net.minecraft.command.arguments.ResourceLocationArgumentType;
+import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.command.suggestion.SuggestionProviders;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -23,14 +23,14 @@ public class StopSoundCommand {
 			.then(
 				ServerCommandManager.literal("*")
 					.then(
-						ServerCommandManager.argument("sound", ResourceLocationArgumentType.create())
+						ServerCommandManager.argument("sound", IdentifierArgumentType.create())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
 								commandContext -> method_13685(
 										commandContext.getSource(),
 										EntityArgumentType.method_9312(commandContext, "targets"),
 										null,
-										ResourceLocationArgumentType.method_9443(commandContext, "sound")
+										IdentifierArgumentType.getIdentifierArgument(commandContext, "sound")
 									)
 							)
 					)
@@ -41,14 +41,14 @@ public class StopSoundCommand {
 				ServerCommandManager.literal(soundCategory.getName())
 					.executes(commandContext -> method_13685(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), soundCategory, null))
 					.then(
-						ServerCommandManager.argument("sound", ResourceLocationArgumentType.create())
+						ServerCommandManager.argument("sound", IdentifierArgumentType.create())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
 								commandContext -> method_13685(
 										commandContext.getSource(),
 										EntityArgumentType.method_9312(commandContext, "targets"),
 										soundCategory,
-										ResourceLocationArgumentType.method_9443(commandContext, "sound")
+										IdentifierArgumentType.getIdentifierArgument(commandContext, "sound")
 									)
 							)
 					)
@@ -66,19 +66,19 @@ public class StopSoundCommand {
 		StopSoundS2CPacket stopSoundS2CPacket = new StopSoundS2CPacket(identifier, soundCategory);
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.field_13987.sendPacket(stopSoundS2CPacket);
+			serverPlayerEntity.networkHandler.sendPacket(stopSoundS2CPacket);
 		}
 
 		if (soundCategory != null) {
 			if (identifier != null) {
-				serverCommandSource.method_9226(new TranslatableTextComponent("commands.stopsound.success.source.sound", identifier, soundCategory.getName()), true);
+				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.stopsound.success.source.sound", identifier, soundCategory.getName()), true);
 			} else {
-				serverCommandSource.method_9226(new TranslatableTextComponent("commands.stopsound.success.source.any", soundCategory.getName()), true);
+				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.stopsound.success.source.any", soundCategory.getName()), true);
 			}
 		} else if (identifier != null) {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.stopsound.success.sourceless.sound", identifier), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.stopsound.success.sourceless.sound", identifier), true);
 		} else {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.stopsound.success.sourceless.any"), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.stopsound.success.sourceless.any"), true);
 		}
 
 		return collection.size();

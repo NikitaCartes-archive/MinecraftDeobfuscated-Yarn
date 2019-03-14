@@ -9,8 +9,8 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 
 public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLightStorage.Data, BlockLightStorage> {
-	private static final Direction[] field_15778 = Direction.values();
-	private final BlockPos.Mutable field_16511 = new BlockPos.Mutable();
+	private static final Direction[] DIRECTIONS_BLOCKLIGHT = Direction.values();
+	private final BlockPos.Mutable mutablePos = new BlockPos.Mutable();
 
 	public ChunkBlockLightProvider(ChunkProvider chunkProvider) {
 		super(chunkProvider, LightType.BLOCK, new BlockLightStorage(chunkProvider));
@@ -21,11 +21,11 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 		int j = BlockPos.unpackLongY(l);
 		int k = BlockPos.unpackLongZ(l);
 		BlockView blockView = this.chunkProvider.getChunk(i >> 4, k >> 4);
-		return blockView != null ? blockView.method_8317(this.field_16511.set(i, j, k)) : 0;
+		return blockView != null ? blockView.getLuminance(this.mutablePos.set(i, j, k)) : 0;
 	}
 
 	@Override
-	protected int getBaseLevelFor(long l, long m, int i) {
+	protected int getBaseLevel(long l, long m, int i) {
 		if (m == Long.MAX_VALUE) {
 			return 15;
 		} else if (l == Long.MAX_VALUE) {
@@ -36,13 +36,13 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	}
 
 	@Override
-	protected void processLevelAt(long l, int i, boolean bl) {
+	protected void processLevel(long l, int i, boolean bl) {
 		long m = ChunkSectionPos.toChunkLong(l);
 
-		for (Direction direction : field_15778) {
-			long n = BlockPos.method_10060(l, direction);
+		for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
+			long n = BlockPos.offset(l, direction);
 			long o = ChunkSectionPos.toChunkLong(n);
-			if (m == o || this.field_15793.hasChunk(o)) {
+			if (m == o || this.lightStorage.hasChunk(o)) {
 				this.scheduleUpdateRecursively(l, n, i, bl);
 			}
 		}
@@ -52,7 +52,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	protected int getMergedLevel(long l, long m, int i) {
 		int j = i;
 		if (Long.MAX_VALUE != m) {
-			int k = this.getBaseLevelFor(Long.MAX_VALUE, l, 0);
+			int k = this.getBaseLevel(Long.MAX_VALUE, l, 0);
 			if (i > k) {
 				j = k;
 			}
@@ -63,21 +63,21 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 		}
 
 		long n = ChunkSectionPos.toChunkLong(l);
-		ChunkNibbleArray chunkNibbleArray = this.field_15793.getDataForChunk(n, true);
+		ChunkNibbleArray chunkNibbleArray = this.lightStorage.getDataForChunk(n, true);
 
-		for (Direction direction : field_15778) {
-			long o = BlockPos.method_10060(l, direction);
+		for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
+			long o = BlockPos.offset(l, direction);
 			if (o != m) {
 				long p = ChunkSectionPos.toChunkLong(o);
 				ChunkNibbleArray chunkNibbleArray2;
 				if (n == p) {
 					chunkNibbleArray2 = chunkNibbleArray;
 				} else {
-					chunkNibbleArray2 = this.field_15793.getDataForChunk(p, true);
+					chunkNibbleArray2 = this.lightStorage.getDataForChunk(p, true);
 				}
 
 				if (chunkNibbleArray2 != null) {
-					int q = this.getBaseLevelFor(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
+					int q = this.getBaseLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
 					if (j > q) {
 						j = q;
 					}
@@ -94,7 +94,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 
 	@Override
 	public void method_15514(BlockPos blockPos, int i) {
-		this.field_15793.updateAll();
+		this.lightStorage.updateAll();
 		this.scheduleNewLevelUpdate(Long.MAX_VALUE, blockPos.asLong(), 15 - i, true);
 	}
 }

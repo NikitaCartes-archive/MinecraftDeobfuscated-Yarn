@@ -11,15 +11,15 @@ import net.minecraft.world.gen.feature.OakTreeFeature;
 public class JungleSaplingGenerator extends LargeTreeSaplingGenerator {
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> method_11430(Random random) {
+	protected AbstractTreeFeature<DefaultFeatureConfig> createTreeFeature(Random random) {
 		return new OakTreeFeature(
-			DefaultFeatureConfig::deserialize, true, 4 + random.nextInt(7), Blocks.field_10306.method_9564(), Blocks.field_10335.method_9564(), false
+			DefaultFeatureConfig::deserialize, true, 4 + random.nextInt(7), Blocks.field_10306.getDefaultState(), Blocks.field_10335.getDefaultState(), false
 		);
 	}
 
 	@Nullable
 	@Override
-	protected AbstractTreeFeature<DefaultFeatureConfig> method_11443(Random random) {
-		return new MegaJungleTreeFeature(DefaultFeatureConfig::deserialize, true, 10, 20, Blocks.field_10306.method_9564(), Blocks.field_10335.method_9564());
+	protected AbstractTreeFeature<DefaultFeatureConfig> createLargeTreeFeature(Random random) {
+		return new MegaJungleTreeFeature(DefaultFeatureConfig::deserialize, true, 10, 20, Blocks.field_10306.getDefaultState(), Blocks.field_10335.getDefaultState());
 	}
 }

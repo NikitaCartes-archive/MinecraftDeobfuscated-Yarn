@@ -26,7 +26,7 @@ import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 
 public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig> {
 	private final Biome biome;
-	private final PhantomSpawner field_13184 = new PhantomSpawner();
+	private final PhantomSpawner phantomSpawner = new PhantomSpawner();
 
 	public FlatChunkGenerator(IWorld iWorld, BiomeSource biomeSource, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
 		super(iWorld, biomeSource, flatChunkGeneratorConfig);
@@ -34,9 +34,9 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	private Biome getBiome() {
-		Biome biome = this.field_16567.getBiome();
+		Biome biome = this.config.getBiome();
 		FlatChunkGenerator.FlatChunkGeneratorBiome flatChunkGeneratorBiome = new FlatChunkGenerator.FlatChunkGeneratorBiome(
-			biome.method_8692(),
+			biome.getSurfaceBuilder(),
 			biome.getPrecipitation(),
 			biome.getCategory(),
 			biome.getDepth(),
@@ -47,18 +47,18 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			biome.getWaterFogColor(),
 			biome.getParent()
 		);
-		Map<String, Map<String, String>> map = this.field_16567.getStructures();
+		Map<String, Map<String, String>> map = this.config.getStructures();
 
 		for (String string : map.keySet()) {
 			ConfiguredFeature<?>[] configuredFeatures = (ConfiguredFeature<?>[])FlatChunkGeneratorConfig.STRUCTURE_TO_FEATURES.get(string);
 			if (configuredFeatures != null) {
 				for (ConfiguredFeature<?> configuredFeature : configuredFeatures) {
-					flatChunkGeneratorBiome.method_8719((GenerationStep.Feature)FlatChunkGeneratorConfig.FEATURE_TO_GENERATION_STEP.get(configuredFeature), configuredFeature);
-					ConfiguredFeature<?> configuredFeature2 = ((DecoratedFeatureConfig)configuredFeature.field_13375).feature;
-					if (configuredFeature2.field_13376 instanceof StructureFeature) {
-						StructureFeature<FeatureConfig> structureFeature = (StructureFeature<FeatureConfig>)configuredFeature2.field_13376;
-						FeatureConfig featureConfig = biome.method_8706(structureFeature);
-						flatChunkGeneratorBiome.method_8710(
+					flatChunkGeneratorBiome.addFeature((GenerationStep.Feature)FlatChunkGeneratorConfig.FEATURE_TO_GENERATION_STEP.get(configuredFeature), configuredFeature);
+					ConfiguredFeature<?> configuredFeature2 = ((DecoratedFeatureConfig)configuredFeature.config).feature;
+					if (configuredFeature2.feature instanceof StructureFeature) {
+						StructureFeature<FeatureConfig> structureFeature = (StructureFeature<FeatureConfig>)configuredFeature2.feature;
+						FeatureConfig featureConfig = biome.getStructureFeatureConfig(structureFeature);
+						flatChunkGeneratorBiome.addStructureFeature(
 							structureFeature, featureConfig != null ? featureConfig : (FeatureConfig)FlatChunkGeneratorConfig.FEATURE_TO_FEATURE_CONFIG.get(configuredFeature)
 						);
 					}
@@ -66,7 +66,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			}
 		}
 
-		boolean bl = (!this.field_16567.hasNoTerrain() || biome == Biomes.field_9473) && map.containsKey("decoration");
+		boolean bl = (!this.config.hasNoTerrain() || biome == Biomes.field_9473) && map.containsKey("decoration");
 		if (bl) {
 			List<GenerationStep.Feature> list = Lists.<GenerationStep.Feature>newArrayList();
 			list.add(GenerationStep.Feature.UNDERGROUND_STRUCTURES);
@@ -74,8 +74,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 
 			for (GenerationStep.Feature feature : GenerationStep.Feature.values()) {
 				if (!list.contains(feature)) {
-					for (ConfiguredFeature<?> configuredFeature2 : biome.method_8721(feature)) {
-						flatChunkGeneratorBiome.method_8719(feature, configuredFeature2);
+					for (ConfiguredFeature<?> configuredFeature2 : biome.getFeaturesForStep(feature)) {
+						flatChunkGeneratorBiome.addFeature(feature, configuredFeature2);
 					}
 				}
 			}
@@ -90,8 +90,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 
 	@Override
 	public int getSpawnHeight() {
-		Chunk chunk = this.world.method_8392(0, 0);
-		return chunk.method_12005(Heightmap.Type.MOTION_BLOCKING, 8, 8);
+		Chunk chunk = this.world.getChunk(0, 0);
+		return chunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, 8, 8);
 	}
 
 	@Override
@@ -100,23 +100,23 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	protected Biome method_16554(ChunkRegion chunkRegion, int i, int j) {
+	protected Biome getDecorationBiome(ChunkRegion chunkRegion, int i, int j) {
 		return this.biome;
 	}
 
 	@Override
 	public void populateNoise(IWorld iWorld, Chunk chunk) {
-		BlockState[] blockStates = this.field_16567.getLayerBlocks();
+		BlockState[] blockStates = this.config.getLayerBlocks();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		Heightmap heightmap = ((ProtoChunk)chunk).method_12032(Heightmap.Type.OCEAN_FLOOR_WG);
-		Heightmap heightmap2 = ((ProtoChunk)chunk).method_12032(Heightmap.Type.WORLD_SURFACE_WG);
+		Heightmap heightmap = ((ProtoChunk)chunk).getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
+		Heightmap heightmap2 = ((ProtoChunk)chunk).getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
 
 		for (int i = 0; i < blockStates.length; i++) {
 			BlockState blockState = blockStates[i];
 			if (blockState != null) {
 				for (int j = 0; j < 16; j++) {
 					for (int k = 0; k < 16; k++) {
-						chunk.method_12010(mutable.set(j, i, k), blockState, false);
+						chunk.setBlockState(mutable.set(j, i, k), blockState, false);
 						heightmap.trackUpdate(j, i, k, blockState);
 						heightmap2.trackUpdate(j, i, k, blockState);
 					}
@@ -126,8 +126,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	public int method_16397(int i, int j, Heightmap.Type type) {
-		BlockState[] blockStates = this.field_16567.getLayerBlocks();
+	public int getHeightOnGround(int i, int j, Heightmap.Type type) {
+		BlockState[] blockStates = this.config.getLayerBlocks();
 
 		for (int k = blockStates.length - 1; k >= 0; k--) {
 			BlockState blockState = blockStates[k];
@@ -141,24 +141,24 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 
 	@Override
 	public void spawnEntities(World world, boolean bl, boolean bl2) {
-		this.field_13184.spawn(world, bl, bl2);
+		this.phantomSpawner.spawn(world, bl, bl2);
 	}
 
 	@Override
-	public boolean method_12097(Biome biome, StructureFeature<? extends FeatureConfig> structureFeature) {
-		return this.biome.method_8684(structureFeature);
-	}
-
-	@Nullable
-	@Override
-	public <C extends FeatureConfig> C method_12105(Biome biome, StructureFeature<C> structureFeature) {
-		return this.biome.method_8706(structureFeature);
+	public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> structureFeature) {
+		return this.biome.hasStructureFeature(structureFeature);
 	}
 
 	@Nullable
 	@Override
-	public BlockPos method_12103(World world, String string, BlockPos blockPos, int i, boolean bl) {
-		return !this.field_16567.getStructures().keySet().contains(string.toLowerCase(Locale.ROOT)) ? null : super.method_12103(world, string, blockPos, i, bl);
+	public <C extends FeatureConfig> C getStructureConfig(Biome biome, StructureFeature<C> structureFeature) {
+		return this.biome.getStructureFeatureConfig(structureFeature);
+	}
+
+	@Nullable
+	@Override
+	public BlockPos locateStructure(World world, String string, BlockPos blockPos, int i, boolean bl) {
+		return !this.config.getStructures().keySet().contains(string.toLowerCase(Locale.ROOT)) ? null : super.locateStructure(world, string, blockPos, i, bl);
 	}
 
 	class FlatChunkGeneratorBiome extends Biome {
@@ -176,9 +176,9 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 		) {
 			super(
 				new Biome.Settings()
-					.method_8731(configuredSurfaceBuilder)
+					.surfaceBuilder(configuredSurfaceBuilder)
 					.precipitation(precipitation)
-					.method_8738(category)
+					.category(category)
 					.depth(f)
 					.scale(g)
 					.temperature(h)

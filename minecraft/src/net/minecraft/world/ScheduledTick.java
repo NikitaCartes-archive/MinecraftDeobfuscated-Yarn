@@ -6,9 +6,9 @@ import net.minecraft.util.math.BlockPos;
 public class ScheduledTick<T> implements Comparable<ScheduledTick<?>> {
 	private static long idCounter;
 	private final T object;
-	public final BlockPos field_9322;
+	public final BlockPos pos;
 	public final long time;
-	public final TaskPriority field_9320;
+	public final TaskPriority priority;
 	private final long id;
 
 	public ScheduledTick(BlockPos blockPos, T object) {
@@ -17,10 +17,10 @@ public class ScheduledTick<T> implements Comparable<ScheduledTick<?>> {
 
 	public ScheduledTick(BlockPos blockPos, T object, long l, TaskPriority taskPriority) {
 		this.id = idCounter++;
-		this.field_9322 = blockPos.toImmutable();
+		this.pos = blockPos.toImmutable();
 		this.object = object;
 		this.time = l;
-		this.field_9320 = taskPriority;
+		this.priority = taskPriority;
 	}
 
 	public boolean equals(Object object) {
@@ -28,12 +28,12 @@ public class ScheduledTick<T> implements Comparable<ScheduledTick<?>> {
 			return false;
 		} else {
 			ScheduledTick<?> scheduledTick = (ScheduledTick<?>)object;
-			return this.field_9322.equals(scheduledTick.field_9322) && this.object == scheduledTick.object;
+			return this.pos.equals(scheduledTick.pos) && this.object == scheduledTick.object;
 		}
 	}
 
 	public int hashCode() {
-		return this.field_9322.hashCode();
+		return this.pos.hashCode();
 	}
 
 	public int method_8682(ScheduledTick<?> scheduledTick) {
@@ -41,13 +41,13 @@ public class ScheduledTick<T> implements Comparable<ScheduledTick<?>> {
 		if (i != 0) {
 			return i;
 		} else {
-			i = Integer.compare(this.field_9320.ordinal(), scheduledTick.field_9320.ordinal());
+			i = Integer.compare(this.priority.ordinal(), scheduledTick.priority.ordinal());
 			return i != 0 ? i : Long.compare(this.id, scheduledTick.id);
 		}
 	}
 
 	public String toString() {
-		return this.object + ": " + this.field_9322 + ", " + this.time + ", " + this.field_9320 + ", " + this.id;
+		return this.object + ": " + this.pos + ", " + this.time + ", " + this.priority + ", " + this.id;
 	}
 
 	public T getObject() {

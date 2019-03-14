@@ -12,27 +12,27 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public abstract class CookingRecipe implements Recipe<Inventory> {
-	protected final RecipeType<?> field_17544;
-	protected final Identifier field_9060;
+	protected final RecipeType<?> type;
+	protected final Identifier id;
 	protected final String group;
-	protected final Ingredient field_9061;
+	protected final Ingredient input;
 	protected final ItemStack output;
 	protected final float experience;
 	protected final int cookTime;
 
 	public CookingRecipe(RecipeType<?> recipeType, Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack, float f, int i) {
-		this.field_17544 = recipeType;
-		this.field_9060 = identifier;
+		this.type = recipeType;
+		this.id = identifier;
 		this.group = string;
-		this.field_9061 = ingredient;
+		this.input = ingredient;
 		this.output = itemStack;
 		this.experience = f;
 		this.cookTime = i;
 	}
 
 	@Override
-	public boolean method_8115(Inventory inventory, World world) {
-		return this.field_9061.method_8093(inventory.method_5438(0));
+	public boolean matches(Inventory inventory, World world) {
+		return this.input.method_8093(inventory.getInvStack(0));
 	}
 
 	@Override
@@ -47,9 +47,9 @@ public abstract class CookingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public DefaultedList<Ingredient> method_8117() {
+	public DefaultedList<Ingredient> getPreviewInputs() {
 		DefaultedList<Ingredient> defaultedList = DefaultedList.create();
-		defaultedList.add(this.field_9061);
+		defaultedList.add(this.input);
 		return defaultedList;
 	}
 
@@ -73,12 +73,12 @@ public abstract class CookingRecipe implements Recipe<Inventory> {
 	}
 
 	@Override
-	public Identifier method_8114() {
-		return this.field_9060;
+	public Identifier getId() {
+		return this.id;
 	}
 
 	@Override
-	public RecipeType<?> method_17716() {
-		return this.field_17544;
+	public RecipeType<?> getType() {
+		return this.type;
 	}
 }

@@ -44,7 +44,7 @@ import org.apache.logging.log4j.Logger;
 		itf = FlyingItemEntity.class
 	)})
 public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity {
-	private static final TrackedData<ItemStack> field_7652 = DataTracker.registerData(ThrownPotionEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+	private static final TrackedData<ItemStack> ITEM_STACK = DataTracker.registerData(ThrownPotionEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Predicate<LivingEntity> field_7653 = ThrownPotionEntity::doesWaterHurt;
 
@@ -62,14 +62,14 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 
 	@Override
 	protected void initDataTracker() {
-		this.method_5841().startTracking(field_7652, ItemStack.EMPTY);
+		this.getDataTracker().startTracking(ITEM_STACK, ItemStack.EMPTY);
 	}
 
 	@Override
-	public ItemStack method_7495() {
-		ItemStack itemStack = this.method_5841().get(field_7652);
+	public ItemStack getItem() {
+		ItemStack itemStack = this.getDataTracker().get(ITEM_STACK);
 		if (itemStack.getItem() != Items.field_8436 && itemStack.getItem() != Items.field_8150) {
-			if (this.field_6002 != null) {
+			if (this.world != null) {
 				LOGGER.error("ThrownPotion entity {} has no item?!", this.getEntityId());
 			}
 
@@ -79,8 +79,8 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 		}
 	}
 
-	public void method_7494(ItemStack itemStack) {
-		this.method_5841().set(field_7652, itemStack);
+	public void setItemStack(ItemStack itemStack) {
+		this.getDataTracker().set(ITEM_STACK, itemStack.copy());
 	}
 
 	@Override
@@ -89,25 +89,25 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	@Override
-	protected void method_7492(HitResult hitResult) {
-		if (!this.field_6002.isClient) {
-			ItemStack itemStack = this.method_7495();
+	protected void onCollision(HitResult hitResult) {
+		if (!this.world.isClient) {
+			ItemStack itemStack = this.getItem();
 			Potion potion = PotionUtil.getPotion(itemStack);
 			List<StatusEffectInstance> list = PotionUtil.getPotionEffects(itemStack);
 			boolean bl = potion == Potions.field_8991 && list.isEmpty();
 			if (hitResult.getType() == HitResult.Type.BLOCK && bl) {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
-				Direction direction = blockHitResult.method_17780();
-				BlockPos blockPos = blockHitResult.method_17777();
-				BlockState blockState = this.field_6002.method_8320(blockPos);
+				Direction direction = blockHitResult.getSide();
+				BlockPos blockPos = blockHitResult.getBlockPos();
+				BlockState blockState = this.world.getBlockState(blockPos);
 				if (blockState.getBlock() == Blocks.field_10036) {
-					blockPos = blockPos.method_10093(direction);
+					blockPos = blockPos.offset(direction);
 				}
 
-				this.method_7499(blockPos, direction);
+				this.extinguishFire(blockPos, direction);
 
 				for (Direction direction2 : Direction.Type.HORIZONTAL) {
-					this.method_7499(blockPos.method_10093(direction2), direction2);
+					this.extinguishFire(blockPos.offset(direction2), direction2);
 				}
 			}
 
@@ -122,14 +122,14 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 			}
 
 			int i = potion.hasInstantEffect() ? 2007 : 2002;
-			this.field_6002.method_8535(i, new BlockPos(this), PotionUtil.getColor(itemStack));
+			this.world.playEvent(i, new BlockPos(this), PotionUtil.getColor(itemStack));
 			this.invalidate();
 		}
 	}
 
 	private void method_7500() {
-		BoundingBox boundingBox = this.method_5829().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list = this.field_6002.method_8390(LivingEntity.class, boundingBox, field_7653);
+		BoundingBox boundingBox = this.getBoundingBox().expand(4.0, 2.0, 4.0);
+		List<LivingEntity> list = this.world.getEntities(LivingEntity.class, boundingBox, field_7653);
 		if (!list.isEmpty()) {
 			for (LivingEntity livingEntity : list) {
 				double d = this.squaredDistanceTo(livingEntity);
@@ -141,8 +141,8 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private void method_7498(List<StatusEffectInstance> list, @Nullable Entity entity) {
-		BoundingBox boundingBox = this.method_5829().expand(4.0, 2.0, 4.0);
-		List<LivingEntity> list2 = this.field_6002.method_18467(LivingEntity.class, boundingBox);
+		BoundingBox boundingBox = this.getBoundingBox().expand(4.0, 2.0, 4.0);
+		List<LivingEntity> list2 = this.world.method_18467(LivingEntity.class, boundingBox);
 		if (!list2.isEmpty()) {
 			for (LivingEntity livingEntity : list2) {
 				if (livingEntity.method_6086()) {
@@ -156,7 +156,7 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 						for (StatusEffectInstance statusEffectInstance : list) {
 							StatusEffect statusEffect = statusEffectInstance.getEffectType();
 							if (statusEffect.isInstant()) {
-								statusEffect.method_5564(this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
+								statusEffect.applyInstantEffect(this, this.getOwner(), livingEntity, statusEffectInstance.getAmplifier(), e);
 							} else {
 								int i = (int)(e * (double)statusEffectInstance.getDuration() + 0.5);
 								if (i > 20) {
@@ -175,58 +175,58 @@ public class ThrownPotionEntity extends ThrownEntity implements FlyingItemEntity
 	}
 
 	private void method_7497(ItemStack itemStack, Potion potion) {
-		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.field_6002, this.x, this.y, this.z);
-		areaEffectCloudEntity.method_5607(this.getOwner());
+		AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
+		areaEffectCloudEntity.setOwner(this.getOwner());
 		areaEffectCloudEntity.setRadius(3.0F);
 		areaEffectCloudEntity.setRadiusStart(-0.5F);
 		areaEffectCloudEntity.setWaitTime(10);
 		areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
-		areaEffectCloudEntity.method_5612(potion);
+		areaEffectCloudEntity.setPotion(potion);
 
 		for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(itemStack)) {
 			areaEffectCloudEntity.setPotionEffect(new StatusEffectInstance(statusEffectInstance));
 		}
 
-		CompoundTag compoundTag = itemStack.method_7969();
+		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && compoundTag.containsKey("CustomPotionColor", 99)) {
 			areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
 		}
 
-		this.field_6002.spawnEntity(areaEffectCloudEntity);
+		this.world.spawnEntity(areaEffectCloudEntity);
 	}
 
 	private boolean isLingering() {
-		return this.method_7495().getItem() == Items.field_8150;
+		return this.getItem().getItem() == Items.field_8150;
 	}
 
-	private void method_7499(BlockPos blockPos, Direction direction) {
-		BlockState blockState = this.field_6002.method_8320(blockPos);
+	private void extinguishFire(BlockPos blockPos, Direction direction) {
+		BlockState blockState = this.world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		if (block == Blocks.field_10036) {
-			this.field_6002.method_8506(null, blockPos.method_10093(direction), direction.getOpposite());
-		} else if (block == Blocks.field_17350 && (Boolean)blockState.method_11654(CampfireBlock.field_17352)) {
-			this.field_6002.method_8444(null, 1009, blockPos, 0);
-			this.field_6002.method_8501(blockPos, blockState.method_11657(CampfireBlock.field_17352, Boolean.valueOf(false)));
+			this.world.method_8506(null, blockPos.offset(direction), direction.getOpposite());
+		} else if (block == Blocks.field_17350 && (Boolean)blockState.get(CampfireBlock.LIT)) {
+			this.world.playEvent(null, 1009, blockPos, 0);
+			this.world.setBlockState(blockPos, blockState.with(CampfireBlock.LIT, Boolean.valueOf(false)));
 		}
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
-		ItemStack itemStack = ItemStack.method_7915(compoundTag.getCompound("Potion"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Potion"));
 		if (itemStack.isEmpty()) {
 			this.invalidate();
 		} else {
-			this.method_7494(itemStack);
+			this.setItemStack(itemStack);
 		}
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
-		ItemStack itemStack = this.method_7495();
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		ItemStack itemStack = this.getItem();
 		if (!itemStack.isEmpty()) {
-			compoundTag.method_10566("Potion", itemStack.method_7953(new CompoundTag()));
+			compoundTag.put("Potion", itemStack.toTag(new CompoundTag()));
 		}
 	}
 

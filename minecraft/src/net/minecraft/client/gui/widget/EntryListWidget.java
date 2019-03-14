@@ -50,12 +50,12 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	public void method_19349(E entry) {
-		int i = entry.getY() - this.y1 - 4 - this.getEntryHeight();
+		int i = entry.getY() - this.y - 4 - this.getEntryHeight();
 		if (i < 0) {
 			this.scroll(i);
 		}
 
-		int j = this.y2 - entry.getY() - this.getEntryHeight() - this.getEntryHeight();
+		int j = this.bottom - entry.getY() - this.getEntryHeight() - this.getEntryHeight();
 		if (j < 0) {
 			this.scroll(-j);
 		}
@@ -134,11 +134,11 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 
 		public int getY() {
-			return this.parent.y1 + 4 - this.parent.getScrollY() + this.field_2143 * this.parent.entryHeight + this.parent.field_2174;
+			return this.parent.y + 4 - this.parent.getScrollY() + this.field_2143 * this.parent.entryHeight + this.parent.field_2174;
 		}
 
 		protected int getX() {
-			return this.parent.x1 + this.parent.width / 2 - this.parent.getEntryWidth() / 2 + 2;
+			return this.parent.x + this.parent.width / 2 - this.parent.getEntryWidth() / 2 + 2;
 		}
 
 		protected void method_1904(float f) {

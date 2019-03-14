@@ -31,13 +31,13 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class LootPool {
-	private final LootEntry[] field_953;
-	private final LootCondition[] field_954;
+	private final LootEntry[] entries;
+	private final LootCondition[] conditions;
 	private final Predicate<LootContext> predicate;
-	private final LootFunction[] field_956;
+	private final LootFunction[] functions;
 	private final BiFunction<ItemStack, LootContext, ItemStack> javaFunctions;
-	private final LootTableRange field_957;
-	private final UniformLootTableRange field_958;
+	private final LootTableRange rolls;
+	private final UniformLootTableRange bonusRolls;
 
 	private LootPool(
 		LootEntry[] lootEntrys,
@@ -46,13 +46,13 @@ public class LootPool {
 		LootTableRange lootTableRange,
 		UniformLootTableRange uniformLootTableRange
 	) {
-		this.field_953 = lootEntrys;
-		this.field_954 = lootConditions;
+		this.entries = lootEntrys;
+		this.conditions = lootConditions;
 		this.predicate = LootConditions.joinAnd(lootConditions);
-		this.field_956 = lootFunctions;
+		this.functions = lootFunctions;
 		this.javaFunctions = LootFunctions.join(lootFunctions);
-		this.field_957 = lootTableRange;
-		this.field_958 = uniformLootTableRange;
+		this.rolls = lootTableRange;
+		this.bonusRolls = uniformLootTableRange;
 	}
 
 	private void supplyOnce(Consumer<ItemStack> consumer, LootContext lootContext) {
@@ -60,7 +60,7 @@ public class LootPool {
 		List<LootChoice> list = Lists.<LootChoice>newArrayList();
 		MutableInt mutableInt = new MutableInt();
 
-		for (LootEntry lootEntry : this.field_953) {
+		for (LootEntry lootEntry : this.entries) {
 			lootEntry.expand(lootContext, lootChoicex -> {
 				int i = lootChoicex.getWeight(lootContext.getLuck());
 				if (i > 0) {
@@ -92,7 +92,7 @@ public class LootPool {
 		if (this.predicate.test(lootContext)) {
 			Consumer<ItemStack> consumer2 = LootFunction.apply(this.javaFunctions, consumer, lootContext);
 			Random random = lootContext.getRandom();
-			int i = this.field_957.next(random) + MathHelper.floor(this.field_958.nextFloat(random) * lootContext.getLuck());
+			int i = this.rolls.next(random) + MathHelper.floor(this.bonusRolls.nextFloat(random) * lootContext.getLuck());
 
 			for (int j = 0; j < i; j++) {
 				this.supplyOnce(consumer2, lootContext);
@@ -100,17 +100,17 @@ public class LootPool {
 		}
 	}
 
-	public void method_349(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
-		for (int i = 0; i < this.field_954.length; i++) {
-			this.field_954[i].method_292(lootTableReporter.makeChild(".condition[" + i + "]"), function, set, lootContextType);
+	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
+		for (int i = 0; i < this.conditions.length; i++) {
+			this.conditions[i].check(lootTableReporter.makeChild(".condition[" + i + "]"), function, set, lootContextType);
 		}
 
-		for (int i = 0; i < this.field_956.length; i++) {
-			this.field_956[i].method_292(lootTableReporter.makeChild(".functions[" + i + "]"), function, set, lootContextType);
+		for (int i = 0; i < this.functions.length; i++) {
+			this.functions[i].check(lootTableReporter.makeChild(".functions[" + i + "]"), function, set, lootContextType);
 		}
 
-		for (int i = 0; i < this.field_953.length; i++) {
-			this.field_953[i].method_415(lootTableReporter.makeChild(".entries[" + i + "]"), function, set, lootContextType);
+		for (int i = 0; i < this.entries.length; i++) {
+			this.entries[i].check(lootTableReporter.makeChild(".entries[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
@@ -122,11 +122,11 @@ public class LootPool {
 		private final List<LootEntry> entries = Lists.<LootEntry>newArrayList();
 		private final List<LootCondition> conditions = Lists.<LootCondition>newArrayList();
 		private final List<LootFunction> functions = Lists.<LootFunction>newArrayList();
-		private LootTableRange field_959 = new UniformLootTableRange(1.0F);
-		private UniformLootTableRange field_962 = new UniformLootTableRange(0.0F, 0.0F);
+		private LootTableRange rolls = new UniformLootTableRange(1.0F);
+		private UniformLootTableRange range = new UniformLootTableRange(0.0F, 0.0F);
 
-		public LootPool.Builder method_352(LootTableRange lootTableRange) {
-			this.field_959 = lootTableRange;
+		public LootPool.Builder withRolls(LootTableRange lootTableRange) {
+			this.rolls = lootTableRange;
 			return this;
 		}
 
@@ -134,7 +134,7 @@ public class LootPool {
 			return this;
 		}
 
-		public LootPool.Builder method_351(LootEntry.Builder<?> builder) {
+		public LootPool.Builder withEntry(LootEntry.Builder<?> builder) {
 			this.entries.add(builder.build());
 			return this;
 		}
@@ -150,15 +150,15 @@ public class LootPool {
 		}
 
 		public LootPool build() {
-			if (this.field_959 == null) {
+			if (this.rolls == null) {
 				throw new IllegalArgumentException("Rolls not set");
 			} else {
 				return new LootPool(
 					(LootEntry[])this.entries.toArray(new LootEntry[0]),
 					(LootCondition[])this.conditions.toArray(new LootCondition[0]),
 					(LootFunction[])this.functions.toArray(new LootFunction[0]),
-					this.field_959,
-					this.field_962
+					this.rolls,
+					this.range
 				);
 			}
 		}
@@ -179,18 +179,18 @@ public class LootPool {
 
 		public JsonElement method_357(LootPool lootPool, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("rolls", LootTableRanges.serialize(lootPool.field_957, jsonSerializationContext));
-			jsonObject.add("entries", jsonSerializationContext.serialize(lootPool.field_953));
-			if (lootPool.field_958.getMinValue() != 0.0F && lootPool.field_958.getMaxValue() != 0.0F) {
-				jsonObject.add("bonus_rolls", jsonSerializationContext.serialize(lootPool.field_958));
+			jsonObject.add("rolls", LootTableRanges.serialize(lootPool.rolls, jsonSerializationContext));
+			jsonObject.add("entries", jsonSerializationContext.serialize(lootPool.entries));
+			if (lootPool.bonusRolls.getMinValue() != 0.0F && lootPool.bonusRolls.getMaxValue() != 0.0F) {
+				jsonObject.add("bonus_rolls", jsonSerializationContext.serialize(lootPool.bonusRolls));
 			}
 
-			if (!ArrayUtils.isEmpty((Object[])lootPool.field_954)) {
-				jsonObject.add("conditions", jsonSerializationContext.serialize(lootPool.field_954));
+			if (!ArrayUtils.isEmpty((Object[])lootPool.conditions)) {
+				jsonObject.add("conditions", jsonSerializationContext.serialize(lootPool.conditions));
 			}
 
-			if (!ArrayUtils.isEmpty((Object[])lootPool.field_956)) {
-				jsonObject.add("functions", jsonSerializationContext.serialize(lootPool.field_956));
+			if (!ArrayUtils.isEmpty((Object[])lootPool.functions)) {
+				jsonObject.add("functions", jsonSerializationContext.serialize(lootPool.functions));
 			}
 
 			return jsonObject;

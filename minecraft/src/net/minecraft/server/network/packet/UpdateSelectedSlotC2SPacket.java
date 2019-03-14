@@ -29,7 +29,7 @@ public class UpdateSelectedSlotC2SPacket implements Packet<ServerPlayPacketListe
 	}
 
 	public void method_12441(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12056(this);
+		serverPlayPacketListener.onUpdateSelectedSlot(this);
 	}
 
 	public int getSelectedSlot() {

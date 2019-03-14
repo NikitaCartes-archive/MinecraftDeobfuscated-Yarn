@@ -17,46 +17,46 @@ public class HopperContainer extends Container {
 		super(ContainerType.HOPPER, i);
 		this.inventory = inventory;
 		checkContainerSize(inventory, 5);
-		inventory.method_5435(playerInventory.field_7546);
+		inventory.onInvOpen(playerInventory.player);
 		int j = 51;
 
 		for (int k = 0; k < 5; k++) {
-			this.method_7621(new Slot(inventory, k, 44 + k * 18, 20));
+			this.addSlot(new Slot(inventory, k, 44 + k * 18, 20));
 		}
 
 		for (int k = 0; k < 3; k++) {
 			for (int l = 0; l < 9; l++) {
-				this.method_7621(new Slot(playerInventory, l + k * 9 + 9, 8 + l * 18, k * 18 + 51));
+				this.addSlot(new Slot(playerInventory, l + k * 9 + 9, 8 + l * 18, k * 18 + 51));
 			}
 		}
 
 		for (int k = 0; k < 9; k++) {
-			this.method_7621(new Slot(playerInventory, k, 8 + k * 18, 109));
+			this.addSlot(new Slot(playerInventory, k, 8 + k * 18, 109));
 		}
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return this.inventory.method_5443(playerEntity);
+		return this.inventory.canPlayerUseInv(playerEntity);
 	}
 
 	@Override
-	public ItemStack method_7601(PlayerEntity playerEntity, int i) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.method_7677();
+			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (i < this.inventory.getInvSize()) {
-				if (!this.method_7616(itemStack2, this.inventory.getInvSize(), this.slotList.size(), true)) {
+				if (!this.insertItem(itemStack2, this.inventory.getInvSize(), this.slotList.size(), true)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.method_7616(itemStack2, 0, this.inventory.getInvSize(), false)) {
+			} else if (!this.insertItem(itemStack2, 0, this.inventory.getInvSize(), false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.method_7673(ItemStack.EMPTY);
+				slot.setStack(ItemStack.EMPTY);
 			} else {
 				slot.markDirty();
 			}
@@ -68,6 +68,6 @@ public class HopperContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.inventory.method_5432(playerEntity);
+		this.inventory.onInvClose(playerEntity);
 	}
 }

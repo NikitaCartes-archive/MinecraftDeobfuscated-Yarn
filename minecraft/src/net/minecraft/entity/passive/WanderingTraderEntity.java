@@ -3,16 +3,16 @@ package net.minecraft.entity.passive;
 import java.util.EnumSet;
 import javax.annotation.Nullable;
 import net.minecraft.class_1358;
-import net.minecraft.class_1390;
 import net.minecraft.class_1394;
-import net.minecraft.class_3993;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.HoldInHandsGoal;
 import net.minecraft.entity.ai.goal.LookAtCustomerGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.StopFollowingCustomerGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EvokerEntity;
@@ -43,7 +43,7 @@ import net.minecraft.world.World;
 
 public class WanderingTraderEntity extends AbstractTraderEntity {
 	@Nullable
-	private BlockPos field_17758;
+	private BlockPos wanderTarget;
 	private int despawnDelay;
 
 	public WanderingTraderEntity(EntityType<? extends WanderingTraderEntity> entityType, World world) {
@@ -53,40 +53,37 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 
 	@Override
 	protected void initGoals() {
-		this.field_6201.add(0, new SwimGoal(this));
-		this.field_6201
+		this.goalSelector.add(0, new SwimGoal(this));
+		this.goalSelector
 			.add(
 				0,
-				new class_3993<>(
+				new HoldInHandsGoal<>(
 					this,
 					PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8997),
 					SoundEvents.field_18315,
-					wanderingTraderEntity -> !this.field_6002.isDaylight() && !wanderingTraderEntity.isInvisible()
+					wanderingTraderEntity -> !this.world.isDaylight() && !wanderingTraderEntity.isInvisible()
 				)
 			);
-		this.field_6201
+		this.goalSelector
 			.add(
 				0,
-				new class_3993<>(
-					this,
-					new ItemStack(Items.field_8103),
-					SoundEvents.field_18314,
-					wanderingTraderEntity -> this.field_6002.isDaylight() && wanderingTraderEntity.isInvisible()
+				new HoldInHandsGoal<>(
+					this, new ItemStack(Items.field_8103), SoundEvents.field_18314, wanderingTraderEntity -> this.world.isDaylight() && wanderingTraderEntity.isInvisible()
 				)
 			);
-		this.field_6201.add(1, new class_1390(this));
-		this.field_6201.add(1, new FleeEntityGoal(this, ZombieEntity.class, 8.0F, 0.5, 0.5));
-		this.field_6201.add(1, new FleeEntityGoal(this, EvokerEntity.class, 12.0F, 0.5, 0.5));
-		this.field_6201.add(1, new FleeEntityGoal(this, VindicatorEntity.class, 8.0F, 0.5, 0.5));
-		this.field_6201.add(1, new FleeEntityGoal(this, VexEntity.class, 8.0F, 0.5, 0.5));
-		this.field_6201.add(1, new FleeEntityGoal(this, PillagerEntity.class, 15.0F, 0.5, 0.5));
-		this.field_6201.add(1, new FleeEntityGoal(this, IllusionerEntity.class, 12.0F, 0.5, 0.5));
-		this.field_6201.add(1, new EscapeDangerGoal(this, 0.5));
-		this.field_6201.add(1, new LookAtCustomerGoal(this));
-		this.field_6201.add(2, new WanderingTraderEntity.WanderToTargetGoal(this, 2.0, 0.35));
-		this.field_6201.add(8, new class_1394(this, 0.35));
-		this.field_6201.add(9, new class_1358(this, PlayerEntity.class, 3.0F, 1.0F));
-		this.field_6201.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
+		this.goalSelector.add(1, new StopFollowingCustomerGoal(this));
+		this.goalSelector.add(1, new FleeEntityGoal(this, ZombieEntity.class, 8.0F, 0.5, 0.5));
+		this.goalSelector.add(1, new FleeEntityGoal(this, EvokerEntity.class, 12.0F, 0.5, 0.5));
+		this.goalSelector.add(1, new FleeEntityGoal(this, VindicatorEntity.class, 8.0F, 0.5, 0.5));
+		this.goalSelector.add(1, new FleeEntityGoal(this, VexEntity.class, 8.0F, 0.5, 0.5));
+		this.goalSelector.add(1, new FleeEntityGoal(this, PillagerEntity.class, 15.0F, 0.5, 0.5));
+		this.goalSelector.add(1, new FleeEntityGoal(this, IllusionerEntity.class, 12.0F, 0.5, 0.5));
+		this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5));
+		this.goalSelector.add(1, new LookAtCustomerGoal(this));
+		this.goalSelector.add(2, new WanderingTraderEntity.WanderToTargetGoal(this, 2.0, 0.35));
+		this.goalSelector.add(8, new class_1394(this, 0.35));
+		this.goalSelector.add(9, new class_1358(this, PlayerEntity.class, 3.0F, 1.0F));
+		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 	}
 
 	@Nullable
@@ -101,29 +98,29 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	public boolean method_5992(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
+	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		boolean bl = itemStack.getItem() == Items.field_8448;
 		if (bl) {
 			itemStack.interactWithEntity(playerEntity, this, hand);
 			return true;
 		} else if (itemStack.getItem() != Items.field_8086 && this.isValid() && !this.hasCustomer() && !this.isChild()) {
 			if (hand == Hand.MAIN) {
-				playerEntity.method_7281(Stats.field_15384);
+				playerEntity.increaseStat(Stats.field_15384);
 			}
 
-			if (this.method_8264().isEmpty()) {
-				return super.method_5992(playerEntity, hand);
+			if (this.getRecipes().isEmpty()) {
+				return super.interactMob(playerEntity, hand);
 			} else {
-				if (!this.field_6002.isClient) {
+				if (!this.world.isClient) {
 					this.setCurrentCustomer(playerEntity);
-					this.method_17449(playerEntity, this.method_5476(), 1);
+					this.sendRecipes(playerEntity, this.getDisplayName(), 1);
 				}
 
 				return true;
 			}
 		} else {
-			return super.method_5992(playerEntity, hand);
+			return super.interactMob(playerEntity, hand);
 		}
 	}
 
@@ -132,11 +129,11 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		Trades.Factory[] factorys = Trades.WANDERING_TRADER_TRADES.get(1);
 		Trades.Factory[] factorys2 = Trades.WANDERING_TRADER_TRADES.get(2);
 		if (factorys != null && factorys2 != null) {
-			TraderRecipeList traderRecipeList = this.method_8264();
-			this.method_19170(traderRecipeList, factorys, 5);
+			TraderRecipeList traderRecipeList = this.getRecipes();
+			this.fillRecipesFromPool(traderRecipeList, factorys, 5);
 			int i = this.random.nextInt(factorys2.length);
 			Trades.Factory factory = factorys2[i];
-			TraderRecipe traderRecipe = factory.method_7246(this, this.random);
+			TraderRecipe traderRecipe = factory.create(this, this.random);
 			if (traderRecipe != null) {
 				traderRecipeList.add(traderRecipe);
 			}
@@ -144,23 +141,23 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("DespawnDelay", this.despawnDelay);
-		if (this.field_17758 != null) {
-			compoundTag.method_10566("WanderTarget", TagHelper.serializeBlockPos(this.field_17758));
+		if (this.wanderTarget != null) {
+			compoundTag.put("WanderTarget", TagHelper.serializeBlockPos(this.wanderTarget));
 		}
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("DespawnDelay", 99)) {
 			this.despawnDelay = compoundTag.getInt("DespawnDelay");
 		}
 
 		if (compoundTag.containsKey("WanderTarget")) {
-			this.field_17758 = TagHelper.deserializeBlockPos(compoundTag.getCompound("WanderTarget"));
+			this.wanderTarget = TagHelper.deserializeBlockPos(compoundTag.getCompound("WanderTarget"));
 		}
 	}
 
@@ -170,41 +167,41 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	protected void method_18008(TraderRecipe traderRecipe) {
-		if (traderRecipe.getRewardExp()) {
+	protected void afterUsing(TraderRecipe traderRecipe) {
+		if (traderRecipe.shouldRewardExp()) {
 			int i = 3 + this.random.nextInt(4);
-			this.field_6002.spawnEntity(new ExperienceOrbEntity(this.field_6002, this.x, this.y + 0.5, this.z, i));
+			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
 		}
 	}
 
 	@Override
-	protected SoundEvent method_5994() {
+	protected SoundEvent getAmbientSound() {
 		return this.hasCustomer() ? SoundEvents.field_17751 : SoundEvents.field_17747;
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_17749;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_17748;
 	}
 
 	@Override
-	protected SoundEvent method_18807(ItemStack itemStack) {
+	protected SoundEvent getDrinkSound(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		return item == Items.field_8103 ? SoundEvents.field_18316 : SoundEvents.field_18313;
 	}
 
 	@Override
-	protected SoundEvent method_18012(boolean bl) {
+	protected SoundEvent getTradingSound(boolean bl) {
 		return bl ? SoundEvents.field_17752 : SoundEvents.field_17750;
 	}
 
 	@Override
-	protected SoundEvent method_18010() {
+	protected SoundEvent getYesSound() {
 		return SoundEvents.field_17752;
 	}
 
@@ -224,13 +221,13 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		}
 	}
 
-	public void method_18069(@Nullable BlockPos blockPos) {
-		this.field_17758 = blockPos;
+	public void setWanderTarget(@Nullable BlockPos blockPos) {
+		this.wanderTarget = blockPos;
 	}
 
 	@Nullable
-	private BlockPos method_18065() {
-		return this.field_17758;
+	private BlockPos getWanderTarget() {
+		return this.wanderTarget;
 	}
 
 	class WanderToTargetGoal extends Goal {
@@ -242,40 +239,40 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 			this.field_17759 = wanderingTraderEntity2;
 			this.proximityDistance = d;
 			this.speed = e;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
 		}
 
 		@Override
 		public void onRemove() {
-			this.field_17759.method_18069(null);
-			WanderingTraderEntity.this.field_6189.stop();
+			this.field_17759.setWanderTarget(null);
+			WanderingTraderEntity.this.navigation.stop();
 		}
 
 		@Override
 		public boolean canStart() {
-			BlockPos blockPos = this.field_17759.method_18065();
-			return blockPos != null && this.method_18070(blockPos, this.proximityDistance);
+			BlockPos blockPos = this.field_17759.getWanderTarget();
+			return blockPos != null && this.isTooFarFrom(blockPos, this.proximityDistance);
 		}
 
 		@Override
 		public void tick() {
-			BlockPos blockPos = this.field_17759.method_18065();
-			if (blockPos != null && WanderingTraderEntity.this.field_6189.isIdle()) {
-				if (this.method_18070(blockPos, 10.0)) {
+			BlockPos blockPos = this.field_17759.getWanderTarget();
+			if (blockPos != null && WanderingTraderEntity.this.navigation.isIdle()) {
+				if (this.isTooFarFrom(blockPos, 10.0)) {
 					Vec3d vec3d = new Vec3d(
 							(double)blockPos.getX() - this.field_17759.x, (double)blockPos.getY() - this.field_17759.y, (double)blockPos.getZ() - this.field_17759.z
 						)
 						.normalize();
 					Vec3d vec3d2 = vec3d.multiply(10.0).add(this.field_17759.x, this.field_17759.y, this.field_17759.z);
-					WanderingTraderEntity.this.field_6189.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, this.speed);
+					WanderingTraderEntity.this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, this.speed);
 				} else {
-					WanderingTraderEntity.this.field_6189.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.speed);
+					WanderingTraderEntity.this.navigation.startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), this.speed);
 				}
 			}
 		}
 
-		private boolean method_18070(BlockPos blockPos, double d) {
-			return this.field_17759.method_5831(blockPos) > d * d;
+		private boolean isTooFarFrom(BlockPos blockPos, double d) {
+			return this.field_17759.squaredDistanceTo(blockPos) > d * d;
 		}
 	}
 }

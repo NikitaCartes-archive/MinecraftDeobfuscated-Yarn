@@ -16,12 +16,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Conditions> {
-	private static final Identifier field_9753 = new Identifier("tame_animal");
+	private static final Identifier ID = new Identifier("tame_animal");
 	private final Map<PlayerAdvancementTracker, TameAnimalCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, TameAnimalCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return field_9753;
+		return ID;
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.method_9134(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 	) {
 		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.method_9137(conditionsContainer);
+			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -60,10 +60,10 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 		return new TameAnimalCriterion.Conditions(entityPredicate);
 	}
 
-	public void method_9132(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
 		TameAnimalCriterion.Handler handler = (TameAnimalCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.method_9136(serverPlayerEntity, animalEntity);
+			handler.handle(serverPlayerEntity, animalEntity);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 		private final EntityPredicate entity;
 
 		public Conditions(EntityPredicate entityPredicate) {
-			super(TameAnimalCriterion.field_9753);
+			super(TameAnimalCriterion.ID);
 			this.entity = entityPredicate;
 		}
 
@@ -83,8 +83,8 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 			return new TameAnimalCriterion.Conditions(entityPredicate);
 		}
 
-		public boolean method_9139(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
-			return this.entity.method_8914(serverPlayerEntity, animalEntity);
+		public boolean matches(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
+			return this.entity.test(serverPlayerEntity, animalEntity);
 		}
 
 		@Override
@@ -96,30 +96,30 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker field_9756;
+		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<TameAnimalCriterion.Conditions>> Conditions = Sets.<Criterion.ConditionsContainer<TameAnimalCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9756 = playerAdvancementTracker;
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.Conditions.isEmpty();
 		}
 
-		public void method_9134(Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer) {
+		public void addCondition(Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer) {
 			this.Conditions.add(conditionsContainer);
 		}
 
-		public void method_9137(Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer) {
+		public void removeCondition(Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer) {
 			this.Conditions.remove(conditionsContainer);
 		}
 
-		public void method_9136(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity) {
 			List<Criterion.ConditionsContainer<TameAnimalCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainer : this.Conditions) {
-				if (conditionsContainer.method_797().method_9139(serverPlayerEntity, animalEntity)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, animalEntity)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<TameAnimalCriterion.Conditions>>newArrayList();
 					}
@@ -130,7 +130,7 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<TameAnimalCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_9756);
+					conditionsContainerx.apply(this.manager);
 				}
 			}
 		}

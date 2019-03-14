@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 public abstract class RaiderEntity extends PatrolEntity {
 	private static final Predicate<ItemEntity> OBTAINABLE_ILLAGER_BANNER_ITEM = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isValid()
-			&& ItemStack.areEqual(itemEntity.method_6983(), Raid.field_16609);
+			&& ItemStack.areEqual(itemEntity.getStack(), Raid.ILLAGER_BANNER);
 	@Nullable
 	protected Raid raid;
 	private int wave;
@@ -51,13 +51,13 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 	@Override
 	public void updateMovement() {
-		if (this.field_6002 instanceof ServerWorld && this.isValid()) {
+		if (this.world instanceof ServerWorld && this.isValid()) {
 			Raid raid = this.getRaid();
 			if (raid == null) {
-				if (this.field_6002.getTime() % 20L == 0L) {
-					Raid raid2 = ((ServerWorld)this.field_6002).method_19502(new BlockPos(this));
+				if (this.world.getTime() % 20L == 0L) {
+					Raid raid2 = ((ServerWorld)this.world).getRaidAt(new BlockPos(this));
 					if (raid2 != null && RaidManager.isValidRaiderFor(this, raid2)) {
-						raid2.method_16516(raid2.getGroupsSpawned(), this, null, true);
+						raid2.addRaider(raid2.getGroupsSpawned(), this, null, true);
 					}
 				}
 			} else {
@@ -78,19 +78,19 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		if (this.field_6002 instanceof ServerWorld) {
+		if (this.world instanceof ServerWorld) {
 			if (this.getRaid() != null) {
 				if (this.isPatrolLeader()) {
 					this.getRaid().removeLeader(this.getWave());
 				}
 
-				this.getRaid().method_16510(this, false);
+				this.getRaid().removeFromWave(this, false);
 			}
 
-			if (this.isPatrolLeader() && this.getRaid() == null && ((ServerWorld)this.field_6002).method_19502(new BlockPos(this)) == null) {
-				ItemStack itemStack = this.method_6118(EquipmentSlot.HEAD);
+			if (this.isPatrolLeader() && this.getRaid() == null && ((ServerWorld)this.world).getRaidAt(new BlockPos(this)) == null) {
+				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 				PlayerEntity playerEntity = null;
-				Entity entity = damageSource.method_5529();
+				Entity entity = damageSource.getAttacker();
 				if (entity instanceof PlayerEntity) {
 					playerEntity = (PlayerEntity)entity;
 				} else if (entity instanceof WolfEntity) {
@@ -101,7 +101,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 					}
 				}
 
-				if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.field_16609) && playerEntity != null) {
+				if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.ILLAGER_BANNER) && playerEntity != null) {
 					StatusEffectInstance statusEffectInstance = playerEntity.getPotionEffect(StatusEffects.field_16595);
 					int i = Raid.getBadOmenLevel(this.random, this.isRaidCenterSet());
 					if (statusEffectInstance != null) {
@@ -124,8 +124,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.field_6201.add(2, new RaiderEntity.PickupBannerAsLeaderGoal<>(this));
-		this.field_6201.add(3, new MoveToRaidCenterGoal<>(this));
+		this.goalSelector.add(2, new RaiderEntity.PickupBannerAsLeaderGoal<>(this));
+		this.goalSelector.add(3, new MoveToRaidCenterGoal<>(this));
 	}
 
 	@Override
@@ -155,8 +155,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("Wave", this.wave);
 		compoundTag.putBoolean("HasRaidGoal", this.hasRaidGoal);
 		if (this.raid != null) {
@@ -165,43 +165,43 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		this.wave = compoundTag.getInt("Wave");
 		this.hasRaidGoal = compoundTag.getBoolean("HasRaidGoal");
 		if (compoundTag.containsKey("RaidId", 3)) {
-			if (this.field_6002 instanceof ServerWorld) {
-				this.raid = ((ServerWorld)this.field_6002).method_19495().getRaid(compoundTag.getInt("RaidId"));
+			if (this.world instanceof ServerWorld) {
+				this.raid = ((ServerWorld)this.world).getRaidManager().getRaid(compoundTag.getInt("RaidId"));
 			}
 
 			if (this.raid != null) {
-				this.raid.method_16487(this.wave, this, false);
+				this.raid.addToWave(this.wave, this, false);
 				if (this.isPatrolLeader()) {
-					this.raid.method_16491(this.wave, this);
+					this.raid.setRaidLeader(this.wave, this);
 				}
 			}
 		}
 	}
 
 	@Override
-	protected void method_5949(ItemEntity itemEntity) {
-		ItemStack itemStack = itemEntity.method_6983();
-		boolean bl = this.hasActiveRaid() && this.getRaid().method_16496(this.getWave()) != null;
-		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.field_16609)) {
+	protected void pickupItem(ItemEntity itemEntity) {
+		ItemStack itemStack = itemEntity.getStack();
+		boolean bl = this.hasActiveRaid() && this.getRaid().getLeader(this.getWave()) != null;
+		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.ILLAGER_BANNER)) {
 			EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
-			ItemStack itemStack2 = this.method_6118(equipmentSlot);
+			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.method_5929(equipmentSlot);
 			if (!itemStack2.isEmpty() && (double)(this.random.nextFloat() - 0.1F) < d) {
-				this.method_5775(itemStack2);
+				this.dropStack(itemStack2);
 			}
 
-			this.method_5673(equipmentSlot, itemStack);
+			this.setEquippedStack(equipmentSlot, itemStack);
 			this.pickUpEntity(itemEntity, itemStack.getAmount());
 			itemEntity.invalidate();
-			this.getRaid().method_16491(this.getWave(), this);
+			this.getRaid().setRaidLeader(this.getWave(), this);
 			this.setPatrolLeader(true);
 		} else {
-			super.method_5949(itemEntity);
+			super.pickupItem(itemEntity);
 		}
 	}
 
@@ -228,7 +228,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		public PickupBannerAsLeaderGoal(T raiderEntity2) {
 			this.field_16603 = raiderEntity2;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
 		}
 
 		@Override
@@ -236,16 +236,16 @@ public abstract class RaiderEntity extends PatrolEntity {
 			Raid raid = this.field_16603.getRaid();
 			if (!RaiderEntity.this.hasActiveRaid()
 				|| !this.field_16603.canLead()
-				|| ItemStack.areEqual(this.field_16603.method_6118(EquipmentSlot.HEAD), Raid.field_16609)) {
+				|| ItemStack.areEqual(this.field_16603.getEquippedStack(EquipmentSlot.HEAD), Raid.ILLAGER_BANNER)) {
 				return false;
-			} else if (raid.method_16496(this.field_16603.getWave()) != null && raid.method_16496(this.field_16603.getWave()).isValid()) {
+			} else if (raid.getLeader(this.field_16603.getWave()) != null && raid.getLeader(this.field_16603.getWave()).isValid()) {
 				return false;
 			} else {
 				List<ItemEntity> list = this.field_16603
-					.field_6002
-					.method_8390(ItemEntity.class, this.field_16603.method_5829().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
+					.world
+					.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
 				if (!list.isEmpty()) {
-					this.field_16603.method_5942().startMovingTo((Entity)list.get(0), 1.2F);
+					this.field_16603.getNavigation().startMovingTo((Entity)list.get(0), 1.2F);
 				}
 
 				return !list.isEmpty();
@@ -254,12 +254,12 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		@Override
 		public void tick() {
-			if (this.field_16603.method_5831(this.field_16603.method_5942().method_6355()) < 2.0) {
+			if (this.field_16603.squaredDistanceTo(this.field_16603.getNavigation().getTargetPos()) < 2.0) {
 				List<ItemEntity> list = this.field_16603
-					.field_6002
-					.method_8390(ItemEntity.class, this.field_16603.method_5829().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
+					.world
+					.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
 				if (!list.isEmpty()) {
-					this.field_16603.method_5949((ItemEntity)list.get(0));
+					this.field_16603.pickupItem((ItemEntity)list.get(0));
 				}
 			}
 		}

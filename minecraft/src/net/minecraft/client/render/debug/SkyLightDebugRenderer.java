@@ -5,8 +5,8 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
@@ -14,7 +14,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
-public class SkyLightDebugRenderer implements DebugRenderer.DebugRenderer {
+public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 
 	public SkyLightDebugRenderer(MinecraftClient minecraftClient) {
@@ -23,25 +23,25 @@ public class SkyLightDebugRenderer implements DebugRenderer.DebugRenderer {
 
 	@Override
 	public void render(long l) {
-		class_4184 lv = this.client.field_1773.method_19418();
-		World world = this.client.field_1687;
+		Camera camera = this.client.gameRenderer.method_19418();
+		World world = this.client.world;
 		GlStateManager.pushMatrix();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.disableTexture();
-		BlockPos blockPos = new BlockPos(lv.method_19326());
+		BlockPos blockPos = new BlockPos(camera.getPos());
 		LongSet longSet = new LongOpenHashSet();
 
 		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
-			int i = world.method_8314(LightType.SKY, blockPos2);
+			int i = world.getLightLevel(LightType.SKY, blockPos2);
 			float f = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
 			int j = MathHelper.hsvToRgb(f, 0.9F, 0.9F);
 			long m = ChunkSectionPos.toChunkLong(blockPos2.asLong());
 			if (longSet.add(m)) {
 				DebugRenderer.method_19429(
-					world.method_8398().method_12130().method_15564(LightType.SKY, BlockPos.fromLong(m)),
+					world.getChunkManager().getLightingProvider().method_15564(LightType.SKY, BlockPos.fromLong(m)),
 					(double)(BlockPos.unpackLongX(m) + 8),
 					(double)(BlockPos.unpackLongY(m) + 8),
 					(double)(BlockPos.unpackLongZ(m) + 8),

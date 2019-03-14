@@ -36,7 +36,7 @@ public class ItemPickupAnimationS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	public void method_11914(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11150(this);
+		clientPlayPacketListener.onItemPickupAnimation(this);
 	}
 
 	@Environment(EnvType.CLIENT)

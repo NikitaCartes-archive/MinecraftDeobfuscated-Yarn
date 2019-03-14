@@ -2,8 +2,8 @@ package net.minecraft.client.gui.menu.settings;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
@@ -17,23 +17,23 @@ public class ChatSettingsScreen extends Screen {
 		GameOption.CHAT_COLOR,
 		GameOption.CHAT_LINKS,
 		GameOption.CHAT_LINKS_PROMPT,
-		GameOption.field_1921,
-		GameOption.field_18723,
-		GameOption.field_1946,
-		GameOption.field_1941,
-		GameOption.field_1940,
-		GameOption.field_1939,
+		GameOption.CHAT_OPACITY,
+		GameOption.TEXT_BACKGROUND_OPACITY,
+		GameOption.CHAT_SCALE,
+		GameOption.CHAT_WIDTH,
+		GameOption.CHAT_HEIGHT_FOCUSED,
+		GameOption.SATURATION,
 		GameOption.REDUCED_DEBUG_INFO,
 		GameOption.AUTO_SUGGESTIONS,
-		GameOption.field_18194
+		GameOption.NARRATOR
 	};
-	private final Screen field_2354;
+	private final Screen parent;
 	private final GameOptions settings;
 	private String field_2353;
-	private ButtonWidget field_2355;
+	private AbstractButtonWidget field_2355;
 
 	public ChatSettingsScreen(Screen screen, GameOptions gameOptions) {
-		this.field_2354 = screen;
+		this.parent = screen;
 		this.settings = gameOptions;
 	}
 
@@ -45,27 +45,27 @@ public class ChatSettingsScreen extends Screen {
 		for (GameOption gameOption : SETTINGS) {
 			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
 			int k = this.screenHeight / 6 + 24 * (i >> 1);
-			ButtonWidget buttonWidget = gameOption.method_18520(this.client.field_1690, j, k, 150);
-			this.addButton(buttonWidget);
-			if (gameOption == GameOption.field_18194) {
-				this.field_2355 = buttonWidget;
-				buttonWidget.enabled = NarratorManager.INSTANCE.isActive();
+			AbstractButtonWidget abstractButtonWidget = gameOption.method_18520(this.client.options, j, k, 150);
+			this.addButton(abstractButtonWidget);
+			if (gameOption == GameOption.NARRATOR) {
+				this.field_2355 = abstractButtonWidget;
+				abstractButtonWidget.enabled = NarratorManager.INSTANCE.isActive();
 			}
 
 			i++;
 		}
 
-		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 6 + 24 * (i + 1) / 2, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 24 * (i + 1) / 2, I18n.translate("gui.done")) {
 			@Override
-			public void method_1826() {
-				ChatSettingsScreen.this.client.method_1507(ChatSettingsScreen.this.field_2354);
+			public void onPressed() {
+				ChatSettingsScreen.this.client.openScreen(ChatSettingsScreen.this.parent);
 			}
 		});
 	}
 
 	@Override
 	public void onClosed() {
-		this.client.field_1690.write();
+		this.client.options.write();
 	}
 
 	@Override
@@ -76,6 +76,6 @@ public class ChatSettingsScreen extends Screen {
 	}
 
 	public void method_2096() {
-		this.field_2355.setText(GameOption.field_18194.method_18501(this.settings));
+		this.field_2355.setText(GameOption.NARRATOR.method_18501(this.settings));
 	}
 }

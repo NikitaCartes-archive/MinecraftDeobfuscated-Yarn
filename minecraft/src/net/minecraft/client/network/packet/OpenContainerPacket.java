@@ -29,18 +29,18 @@ public class OpenContainerPacket implements Packet<ClientPlayPacketListener> {
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.syncId = packetByteBuf.readVarInt();
 		this.containerId = packetByteBuf.readVarInt();
-		this.name = packetByteBuf.method_10808();
+		this.name = packetByteBuf.readTextComponent();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeVarInt(this.syncId);
 		packetByteBuf.writeVarInt(this.containerId);
-		packetByteBuf.method_10805(this.name);
+		packetByteBuf.writeTextComponent(this.name);
 	}
 
 	public void method_17591(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_17587(this);
+		clientPlayPacketListener.onOpenContainer(this);
 	}
 
 	@Environment(EnvType.CLIENT)

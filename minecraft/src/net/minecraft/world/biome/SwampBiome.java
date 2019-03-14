@@ -19,9 +19,9 @@ public final class SwampBiome extends Biome {
 	protected SwampBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.SWAMP, SurfaceBuilder.field_15677)
+				.configureSurfaceBuilder(SurfaceBuilder.SWAMP, SurfaceBuilder.GRASS_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
-				.method_8738(Biome.Category.SWAMP)
+				.category(Biome.Category.SWAMP)
 				.depth(-0.2F)
 				.scale(0.1F)
 				.temperature(0.8F)
@@ -30,8 +30,8 @@ public final class SwampBiome extends Biome {
 				.waterFogColor(2302743)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13520, FeatureConfig.field_13603);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.SWAMP_HUT, FeatureConfig.DEFAULT);
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
@@ -43,9 +43,9 @@ public final class SwampBiome extends Biome {
 		DefaultBiomeFeatures.addDefaultMushrooms(this);
 		DefaultBiomeFeatures.addSwampVegetation(this);
 		DefaultBiomeFeatures.addSprings(this);
-		this.method_8719(
+		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			method_8699(Feature.field_13567, new SeagrassFeatureConfig(64, 0.6), Decorator.field_14231, DecoratorConfig.field_13436)
+			configureFeature(Feature.field_13567, new SeagrassFeatureConfig(64, 0.6), Decorator.field_14231, DecoratorConfig.DEFAULT)
 		);
 		DefaultBiomeFeatures.addFossils(this);
 		DefaultBiomeFeatures.addFrozenTopLayer(this);
@@ -67,14 +67,14 @@ public final class SwampBiome extends Biome {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int method_8711(BlockPos blockPos) {
-		double d = field_9324.sample((double)blockPos.getX() * 0.0225, (double)blockPos.getZ() * 0.0225);
+	public int getGrassColorAt(BlockPos blockPos) {
+		double d = FOLIAGE_NOISE.sample((double)blockPos.getX() * 0.0225, (double)blockPos.getZ() * 0.0225);
 		return d < -0.1 ? 5011004 : 6975545;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int method_8698(BlockPos blockPos) {
+	public int getFoliageColorAt(BlockPos blockPos) {
 		return 6975545;
 	}
 }

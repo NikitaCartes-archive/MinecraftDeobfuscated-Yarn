@@ -11,7 +11,7 @@ public class RealmsEditBox extends RealmsGuiEventListener {
 	private final TextFieldWidget editBox;
 
 	public RealmsEditBox(int i, int j, int k, int l, int m) {
-		this.editBox = new TextFieldWidget(MinecraftClient.getInstance().field_1772, j, k, l, m);
+		this.editBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, j, k, l, m);
 	}
 
 	public String getValue() {

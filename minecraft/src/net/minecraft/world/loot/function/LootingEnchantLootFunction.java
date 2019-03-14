@@ -38,7 +38,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Entity entity = lootContext.method_296(LootContextParameters.field_1230);
+		Entity entity = lootContext.get(LootContextParameters.field_1230);
 		if (entity instanceof LivingEntity) {
 			int i = EnchantmentHelper.getLooting((LivingEntity)entity);
 			if (i == 0) {
@@ -99,7 +99,7 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new LootingEnchantLootFunction(this.method_526(), this.field_1084, this.field_1085);
+			return new LootingEnchantLootFunction(this.getConditions(), this.field_1084, this.field_1085);
 		}
 	}
 }

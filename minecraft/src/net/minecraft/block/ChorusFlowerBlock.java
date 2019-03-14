@@ -15,36 +15,36 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ChorusFlowerBlock extends Block {
-	public static final IntegerProperty field_10762 = Properties.field_12482;
-	private final ChorusPlantBlock field_10763;
+	public static final IntegerProperty AGE = Properties.AGE_5;
+	private final ChorusPlantBlock plantBlock;
 
 	protected ChorusFlowerBlock(ChorusPlantBlock chorusPlantBlock, Block.Settings settings) {
 		super(settings);
-		this.field_10763 = chorusPlantBlock;
-		this.method_9590(this.field_10647.method_11664().method_11657(field_10762, Integer.valueOf(0)));
+		this.plantBlock = chorusPlantBlock;
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (!blockState.method_11591(world, blockPos)) {
-			world.method_8651(blockPos, true);
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!blockState.canPlaceAt(world, blockPos)) {
+			world.breakBlock(blockPos, true);
 		} else {
 			BlockPos blockPos2 = blockPos.up();
-			if (world.method_8623(blockPos2) && blockPos2.getY() < 256) {
-				int i = (Integer)blockState.method_11654(field_10762);
+			if (world.isAir(blockPos2) && blockPos2.getY() < 256) {
+				int i = (Integer)blockState.get(AGE);
 				if (i < 5) {
 					boolean bl = false;
 					boolean bl2 = false;
-					BlockState blockState2 = world.method_8320(blockPos.down());
+					BlockState blockState2 = world.getBlockState(blockPos.down());
 					Block block = blockState2.getBlock();
 					if (block == Blocks.field_10471) {
 						bl = true;
-					} else if (block == this.field_10763) {
+					} else if (block == this.plantBlock) {
 						int j = 1;
 
 						for (int k = 0; k < 4; k++) {
-							Block block2 = world.method_8320(blockPos.down(j + 1)).getBlock();
-							if (block2 != this.field_10763) {
+							Block block2 = world.getBlockState(blockPos.down(j + 1)).getBlock();
+							if (block2 != this.plantBlock) {
 								if (block2 == Blocks.field_10471) {
 									bl2 = true;
 								}
@@ -61,9 +61,9 @@ public class ChorusFlowerBlock extends Block {
 						bl = true;
 					}
 
-					if (bl && method_9746(world, blockPos2, null) && world.method_8623(blockPos.up(2))) {
-						world.method_8652(blockPos, this.field_10763.method_9759(world, blockPos), 2);
-						this.method_9745(world, blockPos2, i);
+					if (bl && isSurroundedByAir(world, blockPos2, null) && world.isAir(blockPos.up(2))) {
+						world.setBlockState(blockPos, this.plantBlock.withConnectionProperties(world, blockPos), 2);
+						this.grow(world, blockPos2, i);
 					} else if (i < 4) {
 						int j = random.nextInt(4);
 						if (bl2) {
@@ -74,39 +74,39 @@ public class ChorusFlowerBlock extends Block {
 
 						for (int l = 0; l < j; l++) {
 							Direction direction = Direction.Type.HORIZONTAL.random(random);
-							BlockPos blockPos3 = blockPos.method_10093(direction);
-							if (world.method_8623(blockPos3) && world.method_8623(blockPos3.down()) && method_9746(world, blockPos3, direction.getOpposite())) {
-								this.method_9745(world, blockPos3, i + 1);
+							BlockPos blockPos3 = blockPos.offset(direction);
+							if (world.isAir(blockPos3) && world.isAir(blockPos3.down()) && isSurroundedByAir(world, blockPos3, direction.getOpposite())) {
+								this.grow(world, blockPos3, i + 1);
 								bl3 = true;
 							}
 						}
 
 						if (bl3) {
-							world.method_8652(blockPos, this.field_10763.method_9759(world, blockPos), 2);
+							world.setBlockState(blockPos, this.plantBlock.withConnectionProperties(world, blockPos), 2);
 						} else {
-							this.method_9747(world, blockPos);
+							this.die(world, blockPos);
 						}
 					} else {
-						this.method_9747(world, blockPos);
+						this.die(world, blockPos);
 					}
 				}
 			}
 		}
 	}
 
-	private void method_9745(World world, BlockPos blockPos, int i) {
-		world.method_8652(blockPos, this.method_9564().method_11657(field_10762, Integer.valueOf(i)), 2);
-		world.method_8535(1033, blockPos, 0);
+	private void grow(World world, BlockPos blockPos, int i) {
+		world.setBlockState(blockPos, this.getDefaultState().with(AGE, Integer.valueOf(i)), 2);
+		world.playEvent(1033, blockPos, 0);
 	}
 
-	private void method_9747(World world, BlockPos blockPos) {
-		world.method_8652(blockPos, this.method_9564().method_11657(field_10762, Integer.valueOf(5)), 2);
-		world.method_8535(1034, blockPos, 0);
+	private void die(World world, BlockPos blockPos) {
+		world.setBlockState(blockPos, this.getDefaultState().with(AGE, Integer.valueOf(5)), 2);
+		world.playEvent(1034, blockPos, 0);
 	}
 
-	private static boolean method_9746(ViewableWorld viewableWorld, BlockPos blockPos, @Nullable Direction direction) {
+	private static boolean isSurroundedByAir(ViewableWorld viewableWorld, BlockPos blockPos, @Nullable Direction direction) {
 		for (Direction direction2 : Direction.Type.HORIZONTAL) {
-			if (direction2 != direction && !viewableWorld.method_8623(blockPos.method_10093(direction2))) {
+			if (direction2 != direction && !viewableWorld.isAir(blockPos.offset(direction2))) {
 				return false;
 			}
 		}
@@ -115,27 +115,29 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		if (direction != Direction.UP && !blockState.method_11591(iWorld, blockPos)) {
-			iWorld.method_8397().method_8676(blockPos, this, 1);
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if (direction != Direction.UP && !blockState.canPlaceAt(iWorld, blockPos)) {
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
-		return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockState blockState2 = viewableWorld.method_8320(blockPos.down());
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		BlockState blockState2 = viewableWorld.getBlockState(blockPos.down());
 		Block block = blockState2.getBlock();
-		if (block != this.field_10763 && block != Blocks.field_10471) {
+		if (block != this.plantBlock && block != Blocks.field_10471) {
 			if (!blockState2.isAir()) {
 				return false;
 			} else {
 				boolean bl = false;
 
 				for (Direction direction : Direction.Type.HORIZONTAL) {
-					BlockState blockState3 = viewableWorld.method_8320(blockPos.method_10093(direction));
-					if (blockState3.getBlock() == this.field_10763) {
+					BlockState blockState3 = viewableWorld.getBlockState(blockPos.offset(direction));
+					if (blockState3.getBlock() == this.plantBlock) {
 						if (bl) {
 							return false;
 						}
@@ -159,16 +161,16 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_10762);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(AGE);
 	}
 
-	public static void method_9744(IWorld iWorld, BlockPos blockPos, Random random, int i) {
-		iWorld.method_8652(blockPos, ((ChorusPlantBlock)Blocks.field_10021).method_9759(iWorld, blockPos), 2);
-		method_9748(iWorld, blockPos, random, blockPos, i, 0);
+	public static void generate(IWorld iWorld, BlockPos blockPos, Random random, int i) {
+		iWorld.setBlockState(blockPos, ((ChorusPlantBlock)Blocks.field_10021).withConnectionProperties(iWorld, blockPos), 2);
+		generate(iWorld, blockPos, random, blockPos, i, 0);
 	}
 
-	private static void method_9748(IWorld iWorld, BlockPos blockPos, Random random, BlockPos blockPos2, int i, int j) {
+	private static void generate(IWorld iWorld, BlockPos blockPos, Random random, BlockPos blockPos2, int i, int j) {
 		ChorusPlantBlock chorusPlantBlock = (ChorusPlantBlock)Blocks.field_10021;
 		int k = random.nextInt(4) + 1;
 		if (j == 0) {
@@ -177,12 +179,12 @@ public class ChorusFlowerBlock extends Block {
 
 		for (int l = 0; l < k; l++) {
 			BlockPos blockPos3 = blockPos.up(l + 1);
-			if (!method_9746(iWorld, blockPos3, null)) {
+			if (!isSurroundedByAir(iWorld, blockPos3, null)) {
 				return;
 			}
 
-			iWorld.method_8652(blockPos3, chorusPlantBlock.method_9759(iWorld, blockPos3), 2);
-			iWorld.method_8652(blockPos3.down(), chorusPlantBlock.method_9759(iWorld, blockPos3.down()), 2);
+			iWorld.setBlockState(blockPos3, chorusPlantBlock.withConnectionProperties(iWorld, blockPos3), 2);
+			iWorld.setBlockState(blockPos3.down(), chorusPlantBlock.withConnectionProperties(iWorld, blockPos3.down()), 2);
 		}
 
 		boolean bl = false;
@@ -194,31 +196,31 @@ public class ChorusFlowerBlock extends Block {
 
 			for (int n = 0; n < m; n++) {
 				Direction direction = Direction.Type.HORIZONTAL.random(random);
-				BlockPos blockPos4 = blockPos.up(k).method_10093(direction);
+				BlockPos blockPos4 = blockPos.up(k).offset(direction);
 				if (Math.abs(blockPos4.getX() - blockPos2.getX()) < i
 					&& Math.abs(blockPos4.getZ() - blockPos2.getZ()) < i
-					&& iWorld.method_8623(blockPos4)
-					&& iWorld.method_8623(blockPos4.down())
-					&& method_9746(iWorld, blockPos4, direction.getOpposite())) {
+					&& iWorld.isAir(blockPos4)
+					&& iWorld.isAir(blockPos4.down())
+					&& isSurroundedByAir(iWorld, blockPos4, direction.getOpposite())) {
 					bl = true;
-					iWorld.method_8652(blockPos4, chorusPlantBlock.method_9759(iWorld, blockPos4), 2);
-					iWorld.method_8652(
-						blockPos4.method_10093(direction.getOpposite()), chorusPlantBlock.method_9759(iWorld, blockPos4.method_10093(direction.getOpposite())), 2
+					iWorld.setBlockState(blockPos4, chorusPlantBlock.withConnectionProperties(iWorld, blockPos4), 2);
+					iWorld.setBlockState(
+						blockPos4.offset(direction.getOpposite()), chorusPlantBlock.withConnectionProperties(iWorld, blockPos4.offset(direction.getOpposite())), 2
 					);
-					method_9748(iWorld, blockPos4, random, blockPos2, i, j + 1);
+					generate(iWorld, blockPos4, random, blockPos2, i, j + 1);
 				}
 			}
 		}
 
 		if (!bl) {
-			iWorld.method_8652(blockPos.up(k), Blocks.field_10528.method_9564().method_11657(field_10762, Integer.valueOf(5)), 2);
+			iWorld.setBlockState(blockPos.up(k), Blocks.field_10528.getDefaultState().with(AGE, Integer.valueOf(5)), 2);
 		}
 	}
 
 	@Override
 	public void method_19286(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
-		BlockPos blockPos = blockHitResult.method_17777();
-		method_9577(world, blockPos, new ItemStack(this));
-		world.method_8651(blockPos, true);
+		BlockPos blockPos = blockHitResult.getBlockPos();
+		dropStack(world, blockPos, new ItemStack(this));
+		world.breakBlock(blockPos, true);
 	}
 }

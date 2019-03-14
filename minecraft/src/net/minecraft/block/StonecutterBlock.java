@@ -23,40 +23,40 @@ import net.minecraft.world.World;
 
 public class StonecutterBlock extends Block {
 	private static final TranslatableTextComponent field_17650 = new TranslatableTextComponent("container.stonecutter");
-	public static final DirectionProperty field_17649 = HorizontalFacingBlock.field_11177;
-	protected static final VoxelShape field_16407 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 9.0, 16.0);
 
 	public StonecutterBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(this.field_10647.method_11664().method_11657(field_17649, Direction.NORTH));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH));
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		return this.method_9564().method_11657(field_17649, itemPlacementContext.method_8042().getOpposite());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		playerEntity.openContainer(blockState.method_17526(world, blockPos));
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
 		return true;
 	}
 
 	@Nullable
 	@Override
-	public NameableContainerProvider method_17454(BlockState blockState, World world, BlockPos blockPos) {
+	public NameableContainerProvider createContainerProvider(BlockState blockState, World world, BlockPos blockPos) {
 		return new ClientDummyContainerProvider(
-			(i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, BlockContext.method_17392(world, blockPos)), field_17650
+			(i, playerInventory, playerEntity) -> new StonecutterContainer(i, playerInventory, BlockContext.create(world, blockPos)), field_17650
 		);
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_16407;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return SHAPE;
 	}
 
 	@Override
-	public BlockRenderType method_9604(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
@@ -66,17 +66,17 @@ public class StonecutterBlock extends Block {
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, Rotation rotation) {
-		return blockState.method_11657(field_17649, rotation.method_10503(blockState.method_11654(field_17649)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.method_10345(blockState.method_11654(field_17649)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_17649);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(FACING);
 	}
 }

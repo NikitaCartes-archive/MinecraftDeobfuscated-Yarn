@@ -28,7 +28,7 @@ public abstract class BiomeSource {
 		return SPAWN_BIOMES;
 	}
 
-	public Biome method_8758(BlockPos blockPos) {
+	public Biome getBiome(BlockPos blockPos) {
 		return this.getBiome(blockPos.getX(), blockPos.getZ());
 	}
 
@@ -47,13 +47,13 @@ public abstract class BiomeSource {
 	public abstract Set<Biome> getBiomesInArea(int i, int j, int k);
 
 	@Nullable
-	public abstract BlockPos method_8762(int i, int j, int k, List<Biome> list, Random random);
+	public abstract BlockPos locateBiome(int i, int j, int k, List<Biome> list, Random random);
 
 	public float method_8757(int i, int j) {
 		return 0.0F;
 	}
 
-	public abstract boolean method_8754(StructureFeature<?> structureFeature);
+	public abstract boolean hasStructureFeature(StructureFeature<?> structureFeature);
 
 	public abstract Set<BlockState> getTopMaterials();
 }

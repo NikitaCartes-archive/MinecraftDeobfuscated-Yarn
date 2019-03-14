@@ -50,18 +50,18 @@ public class PillagerSpawner {
 							)) {
 								return 0;
 							} else {
-								Biome biome = world.method_8310(blockPos);
+								Biome biome = world.getBiome(blockPos);
 								Biome.Category category = biome.getCategory();
 								if (category != Biome.Category.PLAINS && category != Biome.Category.TAIGA && category != Biome.Category.DESERT && category != Biome.Category.SAVANNA) {
 									return 0;
 								} else {
 									int m = 1;
-									this.method_16575(world, blockPos, random, true);
-									int n = (int)Math.ceil((double)world.method_8404(blockPos).getLocalDifficulty());
+									this.spawnOneEntity(world, blockPos, random, true);
+									int n = (int)Math.ceil((double)world.getLocalDifficulty(blockPos).getLocalDifficulty());
 
 									for (int o = 0; o < n; o++) {
 										m++;
-										this.method_16575(world, blockPos, random, false);
+										this.spawnOneEntity(world, blockPos, random, false);
 									}
 
 									return m;
@@ -74,20 +74,20 @@ public class PillagerSpawner {
 		}
 	}
 
-	private void method_16575(World world, BlockPos blockPos, Random random, boolean bl) {
+	private void spawnOneEntity(World world, BlockPos blockPos, Random random, boolean bl) {
 		PillagerSpawner.SpawnEntry spawnEntry = WeightedPicker.getRandom(random, SPAWN_ENTRIES);
-		PatrolEntity patrolEntity = spawnEntry.entityType.method_5883(world);
+		PatrolEntity patrolEntity = spawnEntry.entityType.create(world);
 		if (patrolEntity != null) {
 			double d = (double)(blockPos.getX() + random.nextInt(5) - random.nextInt(5));
 			double e = (double)(blockPos.getZ() + random.nextInt(5) - random.nextInt(5));
-			BlockPos blockPos2 = patrolEntity.field_6002.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(d, (double)blockPos.getY(), e));
+			BlockPos blockPos2 = patrolEntity.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(d, (double)blockPos.getY(), e));
 			if (bl) {
 				patrolEntity.setPatrolLeader(true);
 				patrolEntity.setRandomRaidCenter();
 			}
 
 			patrolEntity.setPosition((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
-			patrolEntity.method_5943(world, world.method_8404(blockPos2), SpawnType.field_16527, null, null);
+			patrolEntity.prepareEntityData(world, world.getLocalDifficulty(blockPos2), SpawnType.field_16527, null, null);
 			world.spawnEntity(patrolEntity);
 		}
 	}

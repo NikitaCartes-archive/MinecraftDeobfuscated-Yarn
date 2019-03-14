@@ -14,7 +14,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEntity> {
-	private static final Identifier field_4701 = new Identifier("textures/entity/experience_orb.png");
+	private static final Identifier TEX = new Identifier("textures/entity/experience_orb.png");
 
 	public ExperienceOrbEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -53,7 +53,7 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 			GlStateManager.scalef(0.3F, 0.3F, 0.3F);
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			bufferBuilder.method_1328(7, VertexFormats.field_1577);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR_NORMAL);
 			bufferBuilder.vertex(-0.5, -0.25, 0.0).texture((double)j, (double)m).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, -0.25, 0.0).texture((double)k, (double)m).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(0.5, 0.75, 0.0).texture((double)k, (double)l).color(v, 255, x, 128).normal(0.0F, 1.0F, 0.0F).next();
@@ -67,6 +67,6 @@ public class ExperienceOrbEntityRenderer extends EntityRenderer<ExperienceOrbEnt
 	}
 
 	protected Identifier method_3967(ExperienceOrbEntity experienceOrbEntity) {
-		return field_4701;
+		return TEX;
 	}
 }

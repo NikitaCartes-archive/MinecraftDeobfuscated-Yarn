@@ -8,8 +8,8 @@ import net.minecraft.recipe.RecipeUnlocker;
 import net.minecraft.util.DefaultedList;
 
 public class CraftingResultInventory implements Inventory, RecipeUnlocker {
-	private final DefaultedList<ItemStack> field_7866 = DefaultedList.create(1, ItemStack.EMPTY);
-	private Recipe<?> field_7865;
+	private final DefaultedList<ItemStack> stack = DefaultedList.create(1, ItemStack.EMPTY);
+	private Recipe<?> lastRecipe;
 
 	@Override
 	public int getInvSize() {
@@ -18,7 +18,7 @@ public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 
 	@Override
 	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.field_7866) {
+		for (ItemStack itemStack : this.stack) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -28,23 +28,23 @@ public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 	}
 
 	@Override
-	public ItemStack method_5438(int i) {
-		return this.field_7866.get(0);
+	public ItemStack getInvStack(int i) {
+		return this.stack.get(0);
 	}
 
 	@Override
-	public ItemStack method_5434(int i, int j) {
-		return Inventories.method_5428(this.field_7866, 0);
+	public ItemStack takeInvStack(int i, int j) {
+		return Inventories.removeStack(this.stack, 0);
 	}
 
 	@Override
-	public ItemStack method_5441(int i) {
-		return Inventories.method_5428(this.field_7866, 0);
+	public ItemStack removeInvStack(int i) {
+		return Inventories.removeStack(this.stack, 0);
 	}
 
 	@Override
-	public void method_5447(int i, ItemStack itemStack) {
-		this.field_7866.set(0, itemStack);
+	public void setInvStack(int i, ItemStack itemStack) {
+		this.stack.set(0, itemStack);
 	}
 
 	@Override
@@ -52,23 +52,23 @@ public class CraftingResultInventory implements Inventory, RecipeUnlocker {
 	}
 
 	@Override
-	public boolean method_5443(PlayerEntity playerEntity) {
+	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 		return true;
 	}
 
 	@Override
 	public void clear() {
-		this.field_7866.clear();
+		this.stack.clear();
 	}
 
 	@Override
-	public void method_7662(@Nullable Recipe<?> recipe) {
-		this.field_7865 = recipe;
+	public void setLastRecipe(@Nullable Recipe<?> recipe) {
+		this.lastRecipe = recipe;
 	}
 
 	@Nullable
 	@Override
-	public Recipe<?> method_7663() {
-		return this.field_7865;
+	public Recipe<?> getLastRecipe() {
+		return this.lastRecipe;
 	}
 }

@@ -23,7 +23,7 @@ import net.minecraft.world.gen.feature.ConfiguredFeature;
 
 public class FeaturePoolElement extends StructurePoolElement {
 	private final ConfiguredFeature<?> feature;
-	private final CompoundTag field_16662;
+	private final CompoundTag tag;
 
 	@Deprecated
 	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature) {
@@ -33,13 +33,13 @@ public class FeaturePoolElement extends StructurePoolElement {
 	public FeaturePoolElement(ConfiguredFeature<?> configuredFeature, StructurePool.Projection projection) {
 		super(projection);
 		this.feature = configuredFeature;
-		this.field_16662 = this.method_19299();
+		this.tag = this.method_19299();
 	}
 
 	public <T> FeaturePoolElement(Dynamic<T> dynamic) {
 		super(dynamic);
 		this.feature = ConfiguredFeature.deserialize(dynamic.get("feature").orElseEmptyMap());
-		this.field_16662 = this.method_19299();
+		this.tag = this.method_19299();
 	}
 
 	public CompoundTag method_19299() {
@@ -55,14 +55,14 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> method_16627(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
-		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.method_9564().method_11657(JigsawBlock.field_10927, Direction.DOWN), this.field_16662));
+		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.tag));
 		return list;
 	}
 
 	@Override
-	public MutableIntBoundingBox method_16628(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
+	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
 		BlockPos blockPos2 = this.method_16601(structureManager, rotation);
 		return new MutableIntBoundingBox(
 			blockPos.getX(),
@@ -75,11 +75,11 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public boolean method_16626(
+	public boolean generate(
 		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	) {
-		ChunkGenerator<?> chunkGenerator = iWorld.method_8398().getChunkGenerator();
-		return this.feature.method_12862(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
+		ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
+		return this.feature.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);
 	}
 
 	@Override
@@ -88,11 +88,11 @@ public class FeaturePoolElement extends StructurePoolElement {
 	}
 
 	@Override
-	public StructurePoolElementType method_16757() {
+	public StructurePoolElementType getType() {
 		return StructurePoolElementType.FEATURE_POOL_ELEMENT;
 	}
 
 	public String toString() {
-		return "Feature[" + Registry.FEATURE.method_10221(this.feature.field_13376) + "]";
+		return "Feature[" + Registry.FEATURE.getId(this.feature.feature) + "]";
 	}
 }

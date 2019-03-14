@@ -16,16 +16,16 @@ public class EnderPearlItem extends Item {
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (!playerEntity.abilities.creativeMode) {
 			itemStack.subtractAmount(1);
 		}
 
-		world.method_8465(
+		world.playSound(
 			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14757, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 		);
-		playerEntity.method_7357().set(this, 20);
+		playerEntity.getItemCooldownManager().set(this, 20);
 		if (!world.isClient) {
 			ThrownEnderpearlEntity thrownEnderpearlEntity = new ThrownEnderpearlEntity(world, playerEntity);
 			thrownEnderpearlEntity.method_16940(itemStack);
@@ -33,7 +33,7 @@ public class EnderPearlItem extends Item {
 			world.spawnEntity(thrownEnderpearlEntity);
 		}
 
-		playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 }

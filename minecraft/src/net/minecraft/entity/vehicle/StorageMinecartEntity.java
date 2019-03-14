@@ -26,10 +26,10 @@ import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
 
 public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements Inventory, NameableContainerProvider {
-	private DefaultedList<ItemStack> field_7735 = DefaultedList.create(36, ItemStack.EMPTY);
+	private DefaultedList<ItemStack> inventory = DefaultedList.create(36, ItemStack.EMPTY);
 	private boolean field_7733 = true;
 	@Nullable
-	private Identifier field_7734;
+	private Identifier lootTableId;
 	private long lootSeed;
 
 	protected StorageMinecartEntity(EntityType<?> entityType, World world) {
@@ -43,14 +43,14 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	public void dropItems(DamageSource damageSource) {
 		super.dropItems(damageSource);
-		if (this.field_6002.getGameRules().getBoolean("doEntityDrops")) {
-			ItemScatterer.method_5452(this.field_6002, this, this);
+		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+			ItemScatterer.spawn(this.world, this, this);
 		}
 	}
 
 	@Override
 	public boolean isInvEmpty() {
-		for (ItemStack itemStack : this.field_7735) {
+		for (ItemStack itemStack : this.inventory) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -60,33 +60,33 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public ItemStack method_5438(int i) {
+	public ItemStack getInvStack(int i) {
 		this.method_7563(null);
-		return this.field_7735.get(i);
+		return this.inventory.get(i);
 	}
 
 	@Override
-	public ItemStack method_5434(int i, int j) {
+	public ItemStack takeInvStack(int i, int j) {
 		this.method_7563(null);
-		return Inventories.method_5430(this.field_7735, i, j);
+		return Inventories.splitStack(this.inventory, i, j);
 	}
 
 	@Override
-	public ItemStack method_5441(int i) {
+	public ItemStack removeInvStack(int i) {
 		this.method_7563(null);
-		ItemStack itemStack = this.field_7735.get(i);
+		ItemStack itemStack = this.inventory.get(i);
 		if (itemStack.isEmpty()) {
 			return ItemStack.EMPTY;
 		} else {
-			this.field_7735.set(i, ItemStack.EMPTY);
+			this.inventory.set(i, ItemStack.EMPTY);
 			return itemStack;
 		}
 	}
 
 	@Override
-	public void method_5447(int i, ItemStack itemStack) {
+	public void setInvStack(int i, ItemStack itemStack) {
 		this.method_7563(null);
-		this.field_7735.set(i, itemStack);
+		this.inventory.set(i, itemStack);
 		if (!itemStack.isEmpty() && itemStack.getAmount() > this.getInvMaxStackAmount()) {
 			itemStack.setAmount(this.getInvMaxStackAmount());
 		}
@@ -95,7 +95,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	public boolean method_5758(int i, ItemStack itemStack) {
 		if (i >= 0 && i < this.getInvSize()) {
-			this.method_5447(i, itemStack);
+			this.setInvStack(i, itemStack);
 			return true;
 		} else {
 			return false;
@@ -107,53 +107,53 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public boolean method_5443(PlayerEntity playerEntity) {
+	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
 		return this.invalid ? false : !(playerEntity.squaredDistanceTo(this) > 64.0);
 	}
 
 	@Nullable
 	@Override
-	public Entity method_5731(DimensionType dimensionType) {
+	public Entity changeDimension(DimensionType dimensionType) {
 		this.field_7733 = false;
-		return super.method_5731(dimensionType);
+		return super.changeDimension(dimensionType);
 	}
 
 	@Override
 	public void invalidate() {
-		if (!this.field_6002.isClient && this.field_7733) {
-			ItemScatterer.method_5452(this.field_6002, this, this);
+		if (!this.world.isClient && this.field_7733) {
+			ItemScatterer.spawn(this.world, this, this);
 		}
 
 		super.invalidate();
 	}
 
 	@Override
-	protected void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
-		if (this.field_7734 != null) {
-			compoundTag.putString("LootTable", this.field_7734.toString());
+	protected void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		if (this.lootTableId != null) {
+			compoundTag.putString("LootTable", this.lootTableId.toString());
 			if (this.lootSeed != 0L) {
 				compoundTag.putLong("LootTableSeed", this.lootSeed);
 			}
 		} else {
-			Inventories.method_5426(compoundTag, this.field_7735);
+			Inventories.toTag(compoundTag, this.inventory);
 		}
 	}
 
 	@Override
-	protected void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
-		this.field_7735 = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+	protected void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
+		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
 		if (compoundTag.containsKey("LootTable", 8)) {
-			this.field_7734 = new Identifier(compoundTag.getString("LootTable"));
+			this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
 			this.lootSeed = compoundTag.getLong("LootTableSeed");
 		} else {
-			Inventories.method_5429(compoundTag, this.field_7735);
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 
 	@Override
-	public boolean method_5688(PlayerEntity playerEntity, Hand hand) {
+	public boolean interact(PlayerEntity playerEntity, Hand hand) {
 		playerEntity.openContainer(this);
 		return true;
 	}
@@ -161,47 +161,47 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	@Override
 	protected void method_7525() {
 		float f = 0.98F;
-		if (this.field_7734 == null) {
+		if (this.lootTableId == null) {
 			int i = 15 - Container.calculateComparatorOutput(this);
 			f += (float)i * 0.001F;
 		}
 
-		this.method_18799(this.method_18798().multiply((double)f, 0.0, (double)f));
+		this.setVelocity(this.getVelocity().multiply((double)f, 0.0, (double)f));
 	}
 
 	public void method_7563(@Nullable PlayerEntity playerEntity) {
-		if (this.field_7734 != null && this.field_6002.getServer() != null) {
-			LootSupplier lootSupplier = this.field_6002.getServer().getLootManager().method_367(this.field_7734);
-			this.field_7734 = null;
-			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.field_6002)
-				.method_312(LootContextParameters.field_1232, new BlockPos(this))
+		if (this.lootTableId != null && this.world.getServer() != null) {
+			LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(this.lootTableId);
+			this.lootTableId = null;
+			LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
+				.put(LootContextParameters.field_1232, new BlockPos(this))
 				.setRandom(this.lootSeed);
 			if (playerEntity != null) {
-				builder.setLuck(playerEntity.getLuck()).method_312(LootContextParameters.field_1226, playerEntity);
+				builder.setLuck(playerEntity.getLuck()).put(LootContextParameters.field_1226, playerEntity);
 			}
 
-			lootSupplier.supplyInventory(this, builder.method_309(LootContextTypes.CHEST));
+			lootSupplier.supplyInventory(this, builder.build(LootContextTypes.CHEST));
 		}
 	}
 
 	@Override
 	public void clear() {
 		this.method_7563(null);
-		this.field_7735.clear();
+		this.inventory.clear();
 	}
 
-	public void method_7562(Identifier identifier, long l) {
-		this.field_7734 = identifier;
+	public void setLootTable(Identifier identifier, long l) {
+		this.lootTableId = identifier;
 		this.lootSeed = l;
 	}
 
 	@Nullable
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		if (this.field_7734 != null && playerEntity.isSpectator()) {
+		if (this.lootTableId != null && playerEntity.isSpectator()) {
 			return null;
 		} else {
-			this.method_7563(playerInventory.field_7546);
+			this.method_7563(playerInventory.player);
 			return this.method_17357(i, playerInventory);
 		}
 	}

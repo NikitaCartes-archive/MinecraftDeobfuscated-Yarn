@@ -27,9 +27,9 @@ public class MountainSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig>
 		TernarySurfaceConfig ternarySurfaceConfig
 	) {
 		if (d > 1.0) {
-			SurfaceBuilder.DEFAULT.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.field_15670);
+			SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.STONE_CONFIG);
 		} else {
-			SurfaceBuilder.DEFAULT.method_15305(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.field_15677);
+			SurfaceBuilder.DEFAULT.generate(random, chunk, biome, i, j, k, d, blockState, blockState2, l, m, SurfaceBuilder.GRASS_CONFIG);
 		}
 	}
 }

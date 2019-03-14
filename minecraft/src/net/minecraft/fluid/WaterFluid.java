@@ -27,12 +27,12 @@ import net.minecraft.world.World;
 
 public abstract class WaterFluid extends BaseFluid {
 	@Override
-	public Fluid method_15750() {
+	public Fluid getFlowing() {
 		return Fluids.FLOWING_WATER;
 	}
 
 	@Override
-	public Fluid method_15751() {
+	public Fluid getStill() {
 		return Fluids.WATER;
 	}
 
@@ -49,10 +49,10 @@ public abstract class WaterFluid extends BaseFluid {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_15776(World world, BlockPos blockPos, FluidState fluidState, Random random) {
-		if (!fluidState.isStill() && !(Boolean)fluidState.method_11654(FALLING)) {
+	public void randomDisplayTick(World world, BlockPos blockPos, FluidState fluidState, Random random) {
+		if (!fluidState.isStill() && !(Boolean)fluidState.get(FALLING)) {
 			if (random.nextInt(64) == 0) {
-				world.method_8486(
+				world.playSound(
 					(double)blockPos.getX() + 0.5,
 					(double)blockPos.getY() + 0.5,
 					(double)blockPos.getZ() + 0.5,
@@ -64,7 +64,7 @@ public abstract class WaterFluid extends BaseFluid {
 				);
 			}
 		} else if (random.nextInt(10) == 0) {
-			world.method_8406(
+			world.addParticle(
 				ParticleTypes.field_11210,
 				(double)((float)blockPos.getX() + random.nextFloat()),
 				(double)((float)blockPos.getY() + random.nextFloat()),
@@ -79,7 +79,7 @@ public abstract class WaterFluid extends BaseFluid {
 	@Nullable
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ParticleParameters method_15787() {
+	public ParticleParameters getParticle() {
 		return ParticleTypes.field_11232;
 	}
 
@@ -90,8 +90,8 @@ public abstract class WaterFluid extends BaseFluid {
 
 	@Override
 	protected void method_15730(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-		BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? iWorld.method_8321(blockPos) : null;
-		Block.method_9610(blockState, iWorld.getWorld(), blockPos, blockEntity);
+		BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? iWorld.getBlockEntity(blockPos) : null;
+		Block.dropStacks(blockState, iWorld.getWorld(), blockPos, blockEntity);
 	}
 
 	@Override
@@ -100,8 +100,8 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	public BlockState method_15790(FluidState fluidState) {
-		return Blocks.field_10382.method_9564().method_11657(FluidBlock.field_11278, Integer.valueOf(method_15741(fluidState)));
+	public BlockState toBlockState(FluidState fluidState) {
+		return Blocks.field_10382.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(fluidState)));
 	}
 
 	@Override
@@ -121,7 +121,7 @@ public abstract class WaterFluid extends BaseFluid {
 
 	@Override
 	public boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction) {
-		return direction == Direction.DOWN && !fluid.method_15791(FluidTags.field_15517);
+		return direction == Direction.DOWN && !fluid.matches(FluidTags.field_15517);
 	}
 
 	@Override
@@ -133,28 +133,28 @@ public abstract class WaterFluid extends BaseFluid {
 		@Override
 		protected void appendProperties(StateFactory.Builder<Fluid, FluidState> builder) {
 			super.appendProperties(builder);
-			builder.method_11667(LEVEL);
+			builder.with(LEVEL);
 		}
 
 		@Override
-		public int method_15779(FluidState fluidState) {
-			return (Integer)fluidState.method_11654(LEVEL);
+		public int getLevel(FluidState fluidState) {
+			return (Integer)fluidState.get(LEVEL);
 		}
 
 		@Override
-		public boolean method_15793(FluidState fluidState) {
+		public boolean isStill(FluidState fluidState) {
 			return false;
 		}
 	}
 
 	public static class Still extends WaterFluid {
 		@Override
-		public int method_15779(FluidState fluidState) {
+		public int getLevel(FluidState fluidState) {
 			return 8;
 		}
 
 		@Override
-		public boolean method_15793(FluidState fluidState) {
+		public boolean isStill(FluidState fluidState) {
 			return true;
 		}
 	}

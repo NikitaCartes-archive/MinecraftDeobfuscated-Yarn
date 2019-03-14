@@ -11,7 +11,7 @@ import net.minecraft.util.PacketByteBuf;
 
 public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 	private int syncId;
-	private Identifier field_12931;
+	private Identifier recipe;
 	private boolean craftAll;
 
 	public CraftRequestC2SPacket() {
@@ -20,34 +20,34 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 	@Environment(EnvType.CLIENT)
 	public CraftRequestC2SPacket(int i, Recipe<?> recipe, boolean bl) {
 		this.syncId = i;
-		this.field_12931 = recipe.method_8114();
+		this.recipe = recipe.getId();
 		this.craftAll = bl;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.syncId = packetByteBuf.readByte();
-		this.field_12931 = packetByteBuf.method_10810();
+		this.recipe = packetByteBuf.readIdentifier();
 		this.craftAll = packetByteBuf.readBoolean();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeByte(this.syncId);
-		packetByteBuf.method_10812(this.field_12931);
+		packetByteBuf.writeIdentifier(this.recipe);
 		packetByteBuf.writeBoolean(this.craftAll);
 	}
 
 	public void method_12317(ServerPlayPacketListener serverPlayPacketListener) {
-		serverPlayPacketListener.method_12061(this);
+		serverPlayPacketListener.onCraftRequest(this);
 	}
 
 	public int getSyncId() {
 		return this.syncId;
 	}
 
-	public Identifier method_12320() {
-		return this.field_12931;
+	public Identifier getRecipe() {
+		return this.recipe;
 	}
 
 	public boolean shouldCraftAll() {

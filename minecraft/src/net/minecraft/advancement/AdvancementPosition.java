@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class AdvancementPosition {
-	private final SimpleAdvancement field_1263;
+	private final SimpleAdvancement advancement;
 	private final AdvancementPosition parent;
 	private final AdvancementPosition previousSibling;
 	private final int childrenSize;
@@ -21,10 +21,10 @@ public class AdvancementPosition {
 	public AdvancementPosition(
 		SimpleAdvancement simpleAdvancement, @Nullable AdvancementPosition advancementPosition, @Nullable AdvancementPosition advancementPosition2, int i, int j
 	) {
-		if (simpleAdvancement.method_686() == null) {
+		if (simpleAdvancement.getDisplay() == null) {
 			throw new IllegalArgumentException("Can't position an invisible advancement!");
 		} else {
-			this.field_1263 = simpleAdvancement;
+			this.advancement = simpleAdvancement;
 			this.parent = advancementPosition;
 			this.previousSibling = advancementPosition2;
 			this.childrenSize = i;
@@ -34,19 +34,19 @@ public class AdvancementPosition {
 			AdvancementPosition advancementPosition3 = null;
 
 			for (SimpleAdvancement simpleAdvancement2 : simpleAdvancement.getChildren()) {
-				advancementPosition3 = this.method_846(simpleAdvancement2, advancementPosition3);
+				advancementPosition3 = this.adjust(simpleAdvancement2, advancementPosition3);
 			}
 		}
 	}
 
 	@Nullable
-	private AdvancementPosition method_846(SimpleAdvancement simpleAdvancement, @Nullable AdvancementPosition advancementPosition) {
-		if (simpleAdvancement.method_686() != null) {
+	private AdvancementPosition adjust(SimpleAdvancement simpleAdvancement, @Nullable AdvancementPosition advancementPosition) {
+		if (simpleAdvancement.getDisplay() != null) {
 			advancementPosition = new AdvancementPosition(simpleAdvancement, this, advancementPosition, this.children.size() + 1, this.depth + 1);
 			this.children.add(advancementPosition);
 		} else {
 			for (SimpleAdvancement simpleAdvancement2 : simpleAdvancement.getChildren()) {
-				advancementPosition = this.method_846(simpleAdvancement2, advancementPosition);
+				advancementPosition = this.adjust(simpleAdvancement2, advancementPosition);
 			}
 		}
 
@@ -199,8 +199,8 @@ public class AdvancementPosition {
 	}
 
 	private void apply() {
-		if (this.field_1263.method_686() != null) {
-			this.field_1263.method_686().setPosition((float)this.depth, this.row);
+		if (this.advancement.getDisplay() != null) {
+			this.advancement.getDisplay().setPosition((float)this.depth, this.row);
 		}
 
 		if (!this.children.isEmpty()) {
@@ -210,8 +210,8 @@ public class AdvancementPosition {
 		}
 	}
 
-	public static void method_852(SimpleAdvancement simpleAdvancement) {
-		if (simpleAdvancement.method_686() == null) {
+	public static void arrangeForRoot(SimpleAdvancement simpleAdvancement) {
+		if (simpleAdvancement.getDisplay() == null) {
 			throw new IllegalArgumentException("Can't position children of an invisible root!");
 		} else {
 			AdvancementPosition advancementPosition = new AdvancementPosition(simpleAdvancement, null, null, 1, 0);

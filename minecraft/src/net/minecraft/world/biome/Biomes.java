@@ -85,7 +85,7 @@ public abstract class Biomes {
 	private static Biome register(int i, String string, Biome biome) {
 		Registry.register(Registry.BIOME, i, string, biome);
 		if (biome.hasParent()) {
-			Biome.field_9328.set(biome, Registry.BIOME.getRawId(Registry.BIOME.method_10223(new Identifier(biome.parent))));
+			Biome.PARENT_BIOME_ID_MAP.set(biome, Registry.BIOME.getRawId(Registry.BIOME.get(new Identifier(biome.parent))));
 		}
 
 		return biome;

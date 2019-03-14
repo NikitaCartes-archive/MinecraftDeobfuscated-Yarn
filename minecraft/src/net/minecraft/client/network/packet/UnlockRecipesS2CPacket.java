@@ -43,7 +43,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public void method_11753(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11115(this);
+		clientPlayPacketListener.onUnlockRecipes(this);
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.recipeIdsToChange = Lists.<Identifier>newArrayList();
 
 		for (int j = 0; j < i; j++) {
-			this.recipeIdsToChange.add(packetByteBuf.method_10810());
+			this.recipeIdsToChange.add(packetByteBuf.readIdentifier());
 		}
 
 		if (this.action == UnlockRecipesS2CPacket.Action.field_12416) {
@@ -65,7 +65,7 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 			this.recipeIdsToInit = Lists.<Identifier>newArrayList();
 
 			for (int j = 0; j < i; j++) {
-				this.recipeIdsToInit.add(packetByteBuf.method_10810());
+				this.recipeIdsToInit.add(packetByteBuf.readIdentifier());
 			}
 		}
 	}
@@ -80,14 +80,14 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 		packetByteBuf.writeVarInt(this.recipeIdsToChange.size());
 
 		for (Identifier identifier : this.recipeIdsToChange) {
-			packetByteBuf.method_10812(identifier);
+			packetByteBuf.writeIdentifier(identifier);
 		}
 
 		if (this.action == UnlockRecipesS2CPacket.Action.field_12416) {
 			packetByteBuf.writeVarInt(this.recipeIdsToInit.size());
 
 			for (Identifier identifier : this.recipeIdsToInit) {
-				packetByteBuf.method_10812(identifier);
+				packetByteBuf.writeIdentifier(identifier);
 			}
 		}
 	}

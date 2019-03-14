@@ -27,10 +27,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3238;
 import net.minecraft.client.network.packet.DisconnectS2CPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.DecoderHandler;
+import net.minecraft.network.LegacyQueryHandler;
 import net.minecraft.network.NetworkSide;
 import net.minecraft.network.PacketEncoder;
 import net.minecraft.network.SizePrepender;
@@ -48,37 +48,37 @@ import org.apache.logging.log4j.Logger;
 
 public class ServerNetworkIO {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final Lazy<NioEventLoopGroup> field_14111 = new Lazy<>(
+	public static final Lazy<NioEventLoopGroup> DEFAULT_CHANNEL = new Lazy<>(
 		() -> new NioEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Server IO #%d").setDaemon(true).build())
 	);
-	public static final Lazy<EpollEventLoopGroup> field_14105 = new Lazy<>(
+	public static final Lazy<EpollEventLoopGroup> EPOLL_CHANNEL = new Lazy<>(
 		() -> new EpollEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Epoll Server IO #%d").setDaemon(true).build())
 	);
 	private final MinecraftServer server;
-	public volatile boolean field_14108;
-	private final List<ChannelFuture> field_14106 = Collections.synchronizedList(Lists.newArrayList());
-	private final List<ClientConnection> field_14107 = Collections.synchronizedList(Lists.newArrayList());
+	public volatile boolean active;
+	private final List<ChannelFuture> channels = Collections.synchronizedList(Lists.newArrayList());
+	private final List<ClientConnection> connections = Collections.synchronizedList(Lists.newArrayList());
 
 	public ServerNetworkIO(MinecraftServer minecraftServer) {
 		this.server = minecraftServer;
-		this.field_14108 = true;
+		this.active = true;
 	}
 
-	public void method_14354(@Nullable InetAddress inetAddress, int i) throws IOException {
-		synchronized (this.field_14106) {
+	public void bind(@Nullable InetAddress inetAddress, int i) throws IOException {
+		synchronized (this.channels) {
 			Class<? extends ServerSocketChannel> class_;
 			Lazy<? extends EventLoopGroup> lazy;
 			if (Epoll.isAvailable() && this.server.isUsingNativeTransport()) {
 				class_ = EpollServerSocketChannel.class;
-				lazy = field_14105;
+				lazy = EPOLL_CHANNEL;
 				LOGGER.info("Using epoll channel type");
 			} else {
 				class_ = NioServerSocketChannel.class;
-				lazy = field_14111;
+				lazy = DEFAULT_CHANNEL;
 				LOGGER.info("Using default channel type");
 			}
 
-			this.field_14106
+			this.channels
 				.add(
 					new ServerBootstrap()
 						.channel(class_)
@@ -93,15 +93,15 @@ public class ServerNetworkIO {
 
 									channel.pipeline()
 										.addLast("timeout", new ReadTimeoutHandler(30))
-										.addLast("legacy_query", new class_3238(ServerNetworkIO.this))
+										.addLast("legacy_query", new LegacyQueryHandler(ServerNetworkIO.this))
 										.addLast("splitter", new SplitterHandler())
 										.addLast("decoder", new DecoderHandler(NetworkSide.SERVER))
 										.addLast("prepender", new SizePrepender())
 										.addLast("encoder", new PacketEncoder(NetworkSide.CLIENT));
 									ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVER);
-									ServerNetworkIO.this.field_14107.add(clientConnection);
+									ServerNetworkIO.this.connections.add(clientConnection);
 									channel.pipeline().addLast("packet_handler", clientConnection);
-									clientConnection.method_10763(new ServerHandshakeNetworkHandler(ServerNetworkIO.this.server, clientConnection));
+									clientConnection.setPacketListener(new ServerHandshakeNetworkHandler(ServerNetworkIO.this.server, clientConnection));
 								}
 							}
 						)
@@ -116,26 +116,26 @@ public class ServerNetworkIO {
 	@Environment(EnvType.CLIENT)
 	public SocketAddress method_14353() {
 		ChannelFuture channelFuture;
-		synchronized (this.field_14106) {
+		synchronized (this.channels) {
 			channelFuture = new ServerBootstrap().channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>() {
 				@Override
 				protected void initChannel(Channel channel) throws Exception {
 					ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVER);
-					clientConnection.method_10763(new IntegratedServerHandshakeNetworkHandler(ServerNetworkIO.this.server, clientConnection));
-					ServerNetworkIO.this.field_14107.add(clientConnection);
+					clientConnection.setPacketListener(new IntegratedServerHandshakeNetworkHandler(ServerNetworkIO.this.server, clientConnection));
+					ServerNetworkIO.this.connections.add(clientConnection);
 					channel.pipeline().addLast("packet_handler", clientConnection);
 				}
-			}).group(field_14111.get()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
-			this.field_14106.add(channelFuture);
+			}).group(DEFAULT_CHANNEL.get()).localAddress(LocalAddress.ANY).bind().syncUninterruptibly();
+			this.channels.add(channelFuture);
 		}
 
 		return channelFuture.channel().localAddress();
 	}
 
 	public void stop() {
-		this.field_14108 = false;
+		this.active = false;
 
-		for (ChannelFuture channelFuture : this.field_14106) {
+		for (ChannelFuture channelFuture : this.channels) {
 			try {
 				channelFuture.channel().close().sync();
 			} catch (InterruptedException var4) {
@@ -145,8 +145,8 @@ public class ServerNetworkIO {
 	}
 
 	public void tick() {
-		synchronized (this.field_14107) {
-			Iterator<ClientConnection> iterator = this.field_14107.iterator();
+		synchronized (this.connections) {
+			Iterator<ClientConnection> iterator = this.connections.iterator();
 
 			while (iterator.hasNext()) {
 				ClientConnection clientConnection = (ClientConnection)iterator.next();
@@ -157,14 +157,14 @@ public class ServerNetworkIO {
 						} catch (Exception var8) {
 							if (clientConnection.isLocal()) {
 								CrashReport crashReport = CrashReport.create(var8, "Ticking memory connection");
-								CrashReportSection crashReportSection = crashReport.method_562("Ticking connection");
-								crashReportSection.method_577("Connection", clientConnection::toString);
+								CrashReportSection crashReportSection = crashReport.addElement("Ticking connection");
+								crashReportSection.add("Connection", clientConnection::toString);
 								throw new CrashException(crashReport);
 							}
 
 							LOGGER.warn("Failed to handle packet for {}", clientConnection.getAddress(), var8);
 							TextComponent textComponent = new StringTextComponent("Internal server error");
-							clientConnection.method_10752(new DisconnectS2CPacket(textComponent), future -> clientConnection.method_10747(textComponent));
+							clientConnection.sendPacket(new DisconnectS2CPacket(textComponent), future -> clientConnection.disconnect(textComponent));
 							clientConnection.disableAutoRead();
 						}
 					} else {

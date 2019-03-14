@@ -33,10 +33,10 @@ public class ModelItemPropertyOverrideList {
 		this.models = (List<BakedModel>)list.stream()
 			.map(
 				modelItemOverride -> {
-					UnbakedModel unbakedModel = (UnbakedModel)function.apply(modelItemOverride.method_3472());
+					UnbakedModel unbakedModel = (UnbakedModel)function.apply(modelItemOverride.getModelId());
 					return Objects.equals(unbakedModel, jsonUnbakedModel)
 						? null
-						: modelLoader.method_15878(modelItemOverride.method_3472(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
+						: modelLoader.bake(modelItemOverride.getModelId(), net.minecraft.client.render.model.ModelRotation.X0_Y0);
 				}
 			)
 			.collect(Collectors.toList());
@@ -48,7 +48,7 @@ public class ModelItemPropertyOverrideList {
 	}
 
 	@Nullable
-	public BakedModel method_3495(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
+	public BakedModel apply(BakedModel bakedModel, ItemStack itemStack, @Nullable World world, @Nullable LivingEntity livingEntity) {
 		if (!this.overrides.isEmpty()) {
 			for (int i = 0; i < this.overrides.size(); i++) {
 				ModelItemOverride modelItemOverride = (ModelItemOverride)this.overrides.get(i);

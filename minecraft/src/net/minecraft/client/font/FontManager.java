@@ -39,9 +39,9 @@ public class FontManager implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<Identifier, TextRenderer> textRenderers = Maps.<Identifier, TextRenderer>newHashMap();
 	private final Set<Font> fonts = Sets.<Font>newHashSet();
-	private final TextureManager field_2260;
+	private final TextureManager textureManager;
 	private boolean forceUnicodeFont;
-	private final ResourceReloadListener field_18215 = new SupplyingResourceReloadListener<Map<Identifier, List<Font>>>() {
+	private final ResourceReloadListener resourceReloadListener = new SupplyingResourceReloadListener<Map<Identifier, List<Font>>>() {
 		protected Map<Identifier, List<Font>> method_18638(ResourceManager resourceManager, Profiler profiler) {
 			profiler.startTick();
 			Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
@@ -74,9 +74,9 @@ public class FontManager implements AutoCloseable {
 									try {
 										String string2 = JsonHelper.getString(jsonObject, "type");
 										FontType fontType = FontType.byId(string2);
-										if (!FontManager.this.forceUnicodeFont || fontType == FontType.LEGACY_UNICODE || !identifier2.equals(MinecraftClient.field_1740)) {
+										if (!FontManager.this.forceUnicodeFont || fontType == FontType.LEGACY_UNICODE || !identifier2.equals(MinecraftClient.DEFAULT_TEXT_RENDERER_ID)) {
 											profiler.push(string2);
-											list.add(fontType.createLoader(jsonObject).method_2039(resourceManager));
+											list.add(fontType.createLoader(jsonObject).load(resourceManager));
 											profiler.pop();
 										}
 									} catch (RuntimeException var29) {
@@ -118,7 +118,7 @@ public class FontManager implements AutoCloseable {
 				for (char c = 0; c < '\uffff'; c++) {
 					if (c != ' ') {
 						for (Font font : Lists.reverse(list)) {
-							if (font.method_2040(c) != null) {
+							if (font.getGlyph(c) != null) {
 								break;
 							}
 						}
@@ -143,7 +143,9 @@ public class FontManager implements AutoCloseable {
 						List<Font> list = (List<Font>)map.getOrDefault(identifier, Collections.emptyList());
 						Collections.reverse(list);
 						((TextRenderer)FontManager.this.textRenderers
-								.computeIfAbsent(identifier, identifierx -> new TextRenderer(FontManager.this.field_2260, new FontStorage(FontManager.this.field_2260, identifierx))))
+								.computeIfAbsent(
+									identifier, identifierx -> new TextRenderer(FontManager.this.textureManager, new FontStorage(FontManager.this.textureManager, identifierx))
+								))
 							.setFonts(list);
 					}
 				);
@@ -154,14 +156,14 @@ public class FontManager implements AutoCloseable {
 	};
 
 	public FontManager(TextureManager textureManager, boolean bl) {
-		this.field_2260 = textureManager;
+		this.textureManager = textureManager;
 		this.forceUnicodeFont = bl;
 	}
 
 	@Nullable
-	public TextRenderer method_2019(Identifier identifier) {
+	public TextRenderer getTextRenderer(Identifier identifier) {
 		return (TextRenderer)this.textRenderers.computeIfAbsent(identifier, identifierx -> {
-			TextRenderer textRenderer = new TextRenderer(this.field_2260, new FontStorage(this.field_2260, identifierx));
+			TextRenderer textRenderer = new TextRenderer(this.textureManager, new FontStorage(this.textureManager, identifierx));
 			textRenderer.setFonts(Lists.<Font>newArrayList(new BlankFont()));
 			return textRenderer;
 		});
@@ -170,19 +172,19 @@ public class FontManager implements AutoCloseable {
 	public void setForceUnicodeFont(boolean bl, Executor executor, Executor executor2) {
 		if (bl != this.forceUnicodeFont) {
 			this.forceUnicodeFont = bl;
-			ResourceManager resourceManager = MinecraftClient.getInstance().method_1478();
+			ResourceManager resourceManager = MinecraftClient.getInstance().getResourceManager();
 			ResourceReloadListener.Helper helper = new ResourceReloadListener.Helper() {
 				@Override
 				public <T> CompletableFuture<T> waitForAll(T object) {
 					return CompletableFuture.completedFuture(object);
 				}
 			};
-			this.field_18215.method_18222(helper, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);
+			this.resourceReloadListener.apply(helper, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);
 		}
 	}
 
-	public ResourceReloadListener method_18627() {
-		return this.field_18215;
+	public ResourceReloadListener getResourceReloadListener() {
+		return this.resourceReloadListener;
 	}
 
 	public void close() {

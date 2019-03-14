@@ -2,6 +2,7 @@ package net.minecraft;
 
 import java.util.EnumSet;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.AiUtil;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.Vec3d;
@@ -19,7 +20,7 @@ public class class_1369 extends Goal {
 		this.field_6528 = mobEntityWithAi;
 		this.field_6530 = d;
 		this.field_6532 = f;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
 	}
 
 	@Override
@@ -30,7 +31,7 @@ public class class_1369 extends Goal {
 		} else if (this.field_6529.squaredDistanceTo(this.field_6528) > (double)(this.field_6532 * this.field_6532)) {
 			return false;
 		} else {
-			Vec3d vec3d = class_1414.method_6373(this.field_6528, 16, 7, new Vec3d(this.field_6529.x, this.field_6529.y, this.field_6529.z));
+			Vec3d vec3d = AiUtil.method_6373(this.field_6528, 16, 7, new Vec3d(this.field_6529.x, this.field_6529.y, this.field_6529.z));
 			if (vec3d == null) {
 				return false;
 			} else {
@@ -44,7 +45,7 @@ public class class_1369 extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.field_6528.method_5942().isIdle()
+		return !this.field_6528.getNavigation().isIdle()
 			&& this.field_6529.isValid()
 			&& this.field_6529.squaredDistanceTo(this.field_6528) < (double)(this.field_6532 * this.field_6532);
 	}
@@ -56,6 +57,6 @@ public class class_1369 extends Goal {
 
 	@Override
 	public void start() {
-		this.field_6528.method_5942().startMovingTo(this.field_6527, this.field_6526, this.field_6531, this.field_6530);
+		this.field_6528.getNavigation().startMovingTo(this.field_6527, this.field_6526, this.field_6531, this.field_6530);
 	}
 }

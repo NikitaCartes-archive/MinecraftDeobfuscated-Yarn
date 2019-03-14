@@ -19,7 +19,7 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTntEntity> {
 	}
 
 	public void method_4135(PrimedTntEntity primedTntEntity, double d, double e, double f, float g, float h) {
-		BlockRenderManager blockRenderManager = MinecraftClient.getInstance().method_1541();
+		BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e + 0.5F, (float)f);
 		if ((float)primedTntEntity.getFuseTimer() - h + 1.0F < 10.0F) {
@@ -35,12 +35,12 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTntEntity> {
 		this.bindEntityTexture(primedTntEntity);
 		GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
-		blockRenderManager.renderDynamic(Blocks.field_10375.method_9564(), primedTntEntity.method_5718());
+		blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), primedTntEntity.method_5718());
 		GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(primedTntEntity));
-			blockRenderManager.renderDynamic(Blocks.field_10375.method_9564(), 1.0F);
+			blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), 1.0F);
 			GlStateManager.tearDownSolidRenderingTextureCombine();
 			GlStateManager.disableColorMaterial();
 		} else if (primedTntEntity.getFuseTimer() / 5 % 2 == 0) {
@@ -51,7 +51,7 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTntEntity> {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, i);
 			GlStateManager.polygonOffset(-3.0F, -3.0F);
 			GlStateManager.enablePolygonOffset();
-			blockRenderManager.renderDynamic(Blocks.field_10375.method_9564(), 1.0F);
+			blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), 1.0F);
 			GlStateManager.polygonOffset(0.0F, 0.0F);
 			GlStateManager.disablePolygonOffset();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -65,6 +65,6 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTntEntity> {
 	}
 
 	protected Identifier method_4136(PrimedTntEntity primedTntEntity) {
-		return SpriteAtlasTexture.field_5275;
+		return SpriteAtlasTexture.BLOCK_ATLAS_TEX;
 	}
 }

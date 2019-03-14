@@ -14,7 +14,7 @@ public class IdCountsState extends PersistentState {
 	}
 
 	@Override
-	public void method_77(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag compoundTag) {
 		this.idCounts.clear();
 
 		for (String string : compoundTag.getKeys()) {
@@ -25,7 +25,7 @@ public class IdCountsState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag method_75(CompoundTag compoundTag) {
+	public CompoundTag toTag(CompoundTag compoundTag) {
 		for (Entry<String> entry : this.idCounts.object2IntEntrySet()) {
 			compoundTag.putInt((String)entry.getKey(), entry.getIntValue());
 		}

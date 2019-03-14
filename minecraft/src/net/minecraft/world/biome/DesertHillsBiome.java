@@ -12,9 +12,9 @@ public final class DesertHillsBiome extends Biome {
 	public DesertHillsBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15694)
+				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG)
 				.precipitation(Biome.Precipitation.NONE)
-				.method_8738(Biome.Category.DESERT)
+				.category(Biome.Category.DESERT)
 				.depth(0.45F)
 				.scale(0.3F)
 				.temperature(2.0F)
@@ -23,9 +23,9 @@ public final class DesertHillsBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13515, FeatureConfig.field_13603);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
+		this.addStructureFeature(Feature.DESERT_PYRAMID, FeatureConfig.DEFAULT);
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDesertLakes(this);

@@ -48,13 +48,13 @@ public class BlockPattern {
 	}
 
 	@Nullable
-	private BlockPattern.Result method_11711(
+	private BlockPattern.Result testTransform(
 		BlockPos blockPos, Direction direction, Direction direction2, LoadingCache<BlockPos, CachedBlockPosition> loadingCache
 	) {
 		for (int i = 0; i < this.width; i++) {
 			for (int j = 0; j < this.height; j++) {
 				for (int k = 0; k < this.depth; k++) {
-					if (!this.pattern[k][j][i].test(loadingCache.getUnchecked(method_11707(blockPos, direction, direction2, i, j, k)))) {
+					if (!this.pattern[k][j][i].test(loadingCache.getUnchecked(translate(blockPos, direction, direction2, i, j, k)))) {
 						return null;
 					}
 				}
@@ -65,7 +65,7 @@ public class BlockPattern {
 	}
 
 	@Nullable
-	public BlockPattern.Result method_11708(ViewableWorld viewableWorld, BlockPos blockPos) {
+	public BlockPattern.Result searchAround(ViewableWorld viewableWorld, BlockPos blockPos) {
 		LoadingCache<BlockPos, CachedBlockPosition> loadingCache = makeCache(viewableWorld, false);
 		int i = Math.max(Math.max(this.width, this.height), this.depth);
 
@@ -73,7 +73,7 @@ public class BlockPattern {
 			for (Direction direction : Direction.values()) {
 				for (Direction direction2 : Direction.values()) {
 					if (direction2 != direction && direction2 != direction.getOpposite()) {
-						BlockPattern.Result result = this.method_11711(blockPos2, direction, direction2, loadingCache);
+						BlockPattern.Result result = this.testTransform(blockPos2, direction, direction2, loadingCache);
 						if (result != null) {
 							return result;
 						}
@@ -89,7 +89,7 @@ public class BlockPattern {
 		return CacheBuilder.newBuilder().build(new BlockPattern.BlockStateCacheLoader(viewableWorld, bl));
 	}
 
-	protected static BlockPos method_11707(BlockPos blockPos, Direction direction, Direction direction2, int i, int j, int k) {
+	protected static BlockPos translate(BlockPos blockPos, Direction direction, Direction direction2, int i, int j, int k) {
 		if (direction != direction2 && direction != direction2.getOpposite()) {
 			Vec3i vec3i = new Vec3i(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
 			Vec3i vec3i2 = new Vec3i(direction2.getOffsetX(), direction2.getOffsetY(), direction2.getOffsetZ());
@@ -119,34 +119,34 @@ public class BlockPattern {
 	}
 
 	public static class Result {
-		private final BlockPos field_12367;
-		private final Direction field_12365;
-		private final Direction field_12364;
+		private final BlockPos frontTopLeft;
+		private final Direction forwards;
+		private final Direction up;
 		private final LoadingCache<BlockPos, CachedBlockPosition> cache;
 		private final int width;
 		private final int height;
 		private final int depth;
 
 		public Result(BlockPos blockPos, Direction direction, Direction direction2, LoadingCache<BlockPos, CachedBlockPosition> loadingCache, int i, int j, int k) {
-			this.field_12367 = blockPos;
-			this.field_12365 = direction;
-			this.field_12364 = direction2;
+			this.frontTopLeft = blockPos;
+			this.forwards = direction;
+			this.up = direction2;
 			this.cache = loadingCache;
 			this.width = i;
 			this.height = j;
 			this.depth = k;
 		}
 
-		public BlockPos method_11715() {
-			return this.field_12367;
+		public BlockPos getFrontTopLeft() {
+			return this.frontTopLeft;
 		}
 
-		public Direction method_11719() {
-			return this.field_12365;
+		public Direction getForwards() {
+			return this.forwards;
 		}
 
-		public Direction method_11716() {
-			return this.field_12364;
+		public Direction getUp() {
+			return this.up;
 		}
 
 		public int getWidth() {
@@ -158,30 +158,30 @@ public class BlockPattern {
 		}
 
 		public CachedBlockPosition translate(int i, int j, int k) {
-			return this.cache.getUnchecked(BlockPattern.method_11707(this.field_12367, this.method_11719(), this.method_11716(), i, j, k));
+			return this.cache.getUnchecked(BlockPattern.translate(this.frontTopLeft, this.getForwards(), this.getUp(), i, j, k));
 		}
 
 		public String toString() {
-			return MoreObjects.toStringHelper(this).add("up", this.field_12364).add("forwards", this.field_12365).add("frontTopLeft", this.field_12367).toString();
+			return MoreObjects.toStringHelper(this).add("up", this.up).add("forwards", this.forwards).add("frontTopLeft", this.frontTopLeft).toString();
 		}
 
 		public Pair<Vec3d, Pair<Vec3d, Integer>> method_18478(Direction direction, BlockPos blockPos, double d, Vec3d vec3d, double e) {
-			Direction direction2 = this.method_11719();
+			Direction direction2 = this.getForwards();
 			Direction direction3 = direction2.rotateYClockwise();
-			double f = (double)(this.method_11715().getY() + 1) - d * (double)this.getHeight();
+			double f = (double)(this.getFrontTopLeft().getY() + 1) - d * (double)this.getHeight();
 			double g;
 			double h;
 			if (direction3 == Direction.NORTH) {
 				g = (double)blockPos.getX() + 0.5;
-				h = (double)(this.method_11715().getZ() + 1) - (1.0 - e) * (double)this.getWidth();
+				h = (double)(this.getFrontTopLeft().getZ() + 1) - (1.0 - e) * (double)this.getWidth();
 			} else if (direction3 == Direction.SOUTH) {
 				g = (double)blockPos.getX() + 0.5;
-				h = (double)this.method_11715().getZ() + (1.0 - e) * (double)this.getWidth();
+				h = (double)this.getFrontTopLeft().getZ() + (1.0 - e) * (double)this.getWidth();
 			} else if (direction3 == Direction.WEST) {
-				g = (double)(this.method_11715().getX() + 1) - (1.0 - e) * (double)this.getWidth();
+				g = (double)(this.getFrontTopLeft().getX() + 1) - (1.0 - e) * (double)this.getWidth();
 				h = (double)blockPos.getZ() + 0.5;
 			} else {
-				g = (double)this.method_11715().getX() + (1.0 - e) * (double)this.getWidth();
+				g = (double)this.getFrontTopLeft().getX() + (1.0 - e) * (double)this.getWidth();
 				h = (double)blockPos.getZ() + 0.5;
 			}
 

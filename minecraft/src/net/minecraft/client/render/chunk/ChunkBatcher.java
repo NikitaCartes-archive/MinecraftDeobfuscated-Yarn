@@ -45,7 +45,7 @@ public class ChunkBatcher {
 	private final BufferRenderer bufferRenderer = new BufferRenderer();
 	private final class_294 field_4441 = new class_294();
 	private final Queue<ChunkBatcher.ChunkUploadTask> pendingUploads = Queues.<ChunkBatcher.ChunkUploadTask>newPriorityQueue();
-	private final ChunkRenderWorker field_4439;
+	private final ChunkRenderWorker activeWorker;
 	private Vec3d field_18766 = Vec3d.ZERO;
 
 	public ChunkBatcher() {
@@ -68,7 +68,7 @@ public class ChunkBatcher {
 			this.availableBuffers.add(new BlockLayeredBufferBuilder());
 		}
 
-		this.field_4439 = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
+		this.activeWorker = new ChunkRenderWorker(this, new BlockLayeredBufferBuilder());
 	}
 
 	public String getDebugString() {
@@ -95,7 +95,7 @@ public class ChunkBatcher {
 				ChunkRenderTask chunkRenderTask = (ChunkRenderTask)this.pendingChunks.poll();
 				if (chunkRenderTask != null) {
 					try {
-						this.field_4439.runTask(chunkRenderTask);
+						this.activeWorker.runTask(chunkRenderTask);
 						bl2 = true;
 					} catch (InterruptedException var8) {
 						LOGGER.warn("Skipped task due to interrupt");
@@ -143,7 +143,7 @@ public class ChunkBatcher {
 			ChunkRenderTask chunkRenderTask = chunkRenderer.method_3674();
 
 			try {
-				this.field_4439.runTask(chunkRenderTask);
+				this.activeWorker.runTask(chunkRenderTask);
 			} catch (InterruptedException var7) {
 			}
 
@@ -205,7 +205,7 @@ public class ChunkBatcher {
 	public ListenableFuture<Object> method_3635(
 		BlockRenderLayer blockRenderLayer, BufferBuilder bufferBuilder, ChunkRenderer chunkRenderer, ChunkRenderData chunkRenderData, double d
 	) {
-		if (MinecraftClient.getInstance().method_18854()) {
+		if (MinecraftClient.getInstance().isOnThread()) {
 			if (GLX.useVbo()) {
 				this.method_3621(bufferBuilder, chunkRenderer.getGlBuffer(blockRenderLayer.ordinal()));
 			} else {

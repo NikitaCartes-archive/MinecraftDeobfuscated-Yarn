@@ -50,7 +50,7 @@ public class IntTag extends AbstractNumberTag {
 	}
 
 	@Override
-	public TextComponent method_10710(String string, int i) {
+	public TextComponent toTextComponent(String string, int i) {
 		return new StringTextComponent(String.valueOf(this.value)).applyFormat(GOLD);
 	}
 

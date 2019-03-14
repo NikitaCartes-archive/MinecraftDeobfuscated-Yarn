@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GlyphRenderer {
-	private final Identifier field_2277;
+	private final Identifier id;
 	private final float uMin;
 	private final float uMax;
 	private final float vMin;
@@ -20,7 +20,7 @@ public class GlyphRenderer {
 	private final float yMax;
 
 	public GlyphRenderer(Identifier identifier, float f, float g, float h, float i, float j, float k, float l, float m) {
-		this.field_2277 = identifier;
+		this.id = identifier;
 		this.uMin = f;
 		this.uMax = g;
 		this.vMin = h;
@@ -31,7 +31,7 @@ public class GlyphRenderer {
 		this.yMax = m;
 	}
 
-	public void method_2025(TextureManager textureManager, boolean bl, float f, float g, BufferBuilder bufferBuilder, float h, float i, float j, float k) {
+	public void draw(TextureManager textureManager, boolean bl, float f, float g, BufferBuilder bufferBuilder, float h, float i, float j, float k) {
 		int l = 3;
 		float m = f + this.xMin;
 		float n = f + this.xMax;
@@ -48,7 +48,7 @@ public class GlyphRenderer {
 	}
 
 	@Nullable
-	public Identifier method_2026() {
-		return this.field_2277;
+	public Identifier getId() {
+		return this.id;
 	}
 }

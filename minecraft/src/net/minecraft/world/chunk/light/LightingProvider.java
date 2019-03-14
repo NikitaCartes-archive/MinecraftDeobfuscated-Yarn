@@ -21,13 +21,13 @@ public class LightingProvider implements LightingView {
 		this.skyLightProvider = bl2 ? new ChunkSkyLightProvider(chunkProvider) : null;
 	}
 
-	public void method_15559(BlockPos blockPos) {
+	public void enqueueLightUpdate(BlockPos blockPos) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.method_15513(blockPos);
+			this.blockLightProvider.queueLightCheck(blockPos);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.method_15513(blockPos);
+			this.skyLightProvider.queueLightCheck(blockPos);
 		}
 	}
 
@@ -56,13 +56,13 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Override
-	public void method_15551(ChunkSectionPos chunkSectionPos, boolean bl) {
+	public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.method_15551(chunkSectionPos, bl);
+			this.blockLightProvider.scheduleChunkLightUpdate(chunkSectionPos, bl);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.method_15551(chunkSectionPos, bl);
+			this.skyLightProvider.scheduleChunkLightUpdate(chunkSectionPos, bl);
 		}
 	}
 
@@ -97,7 +97,7 @@ public class LightingProvider implements LightingView {
 		return "n/a";
 	}
 
-	public void method_15558(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
+	public void setSection(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
 				this.blockLightProvider.setSection(chunkSectionPos.asLong(), chunkNibbleArray);

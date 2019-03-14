@@ -24,7 +24,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowmanEntity
 			GlStateManager.translatef(0.0F, -0.34375F, 0.0F);
 			GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 			GlStateManager.scalef(0.625F, -0.625F, -0.625F);
-			MinecraftClient.getInstance().method_1489().method_3233(snowmanEntity, new ItemStack(Blocks.field_10147), ModelTransformation.Type.field_4316);
+			MinecraftClient.getInstance().getFirstPersonRenderer().renderItem(snowmanEntity, new ItemStack(Blocks.field_10147), ModelTransformation.Type.field_4316);
 			GlStateManager.popMatrix();
 		}
 	}

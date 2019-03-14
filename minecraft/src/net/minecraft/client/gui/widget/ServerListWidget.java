@@ -50,7 +50,7 @@ public class ServerListWidget extends EntryListWidget<ServerListWidget.Entry> {
 		return this.selectedIndex;
 	}
 
-	public void method_2564(ServerList serverList) {
+	public void setUserServers(ServerList serverList) {
 		this.userServers.clear();
 
 		for (int i = 0; i < serverList.size(); i++) {
@@ -87,7 +87,7 @@ public class ServerListWidget extends EntryListWidget<ServerListWidget.Entry> {
 
 	@Override
 	protected boolean method_19352() {
-		return this.multiplayerScreen.method_19357() == this;
+		return this.multiplayerScreen.getFocused() == this;
 	}
 
 	@Override

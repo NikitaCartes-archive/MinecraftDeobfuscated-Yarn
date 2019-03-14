@@ -447,7 +447,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 		GlStateManager.disableTexture();
 		GlStateManager.enableColorLogicOp();
 		GlStateManager.logicOp(GlStateManager.LogicOp.field_5110);
-		bufferBuilder.method_1328(7, VertexFormats.field_1592);
+		bufferBuilder.begin(7, VertexFormats.POSITION);
 		bufferBuilder.vertex((double)i, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)l, 0.0).next();
 		bufferBuilder.vertex((double)k, (double)j, 0.0).next();

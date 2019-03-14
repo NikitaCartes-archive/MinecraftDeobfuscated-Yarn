@@ -12,20 +12,20 @@ import net.minecraft.world.loot.context.LootContext;
 import net.minecraft.world.loot.function.LootFunction;
 
 public class DynamicEntry extends LeafEntry {
-	public static final Identifier field_981 = new Identifier("dynamic");
-	private final Identifier field_980;
+	public static final Identifier instance = new Identifier("dynamic");
+	private final Identifier name;
 
 	private DynamicEntry(Identifier identifier, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
 		super(i, j, lootConditions, lootFunctions);
-		this.field_980 = identifier;
+		this.name = identifier;
 	}
 
 	@Override
 	public void drop(Consumer<ItemStack> consumer, LootContext lootContext) {
-		lootContext.method_297(this.field_980, consumer);
+		lootContext.drop(this.name, consumer);
 	}
 
-	public static LeafEntry.Builder<?> method_390(Identifier identifier) {
+	public static LeafEntry.Builder<?> create(Identifier identifier) {
 		return create((i, j, lootConditions, lootFunctions) -> new DynamicEntry(identifier, i, j, lootConditions, lootFunctions));
 	}
 
@@ -36,7 +36,7 @@ public class DynamicEntry extends LeafEntry {
 
 		public void method_393(JsonObject jsonObject, DynamicEntry dynamicEntry, JsonSerializationContext jsonSerializationContext) {
 			super.method_442(jsonObject, dynamicEntry, jsonSerializationContext);
-			jsonObject.addProperty("name", dynamicEntry.field_980.toString());
+			jsonObject.addProperty("name", dynamicEntry.name.toString());
 		}
 
 		protected DynamicEntry method_392(

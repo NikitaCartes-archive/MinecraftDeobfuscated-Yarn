@@ -16,21 +16,21 @@ public class SpawnPointCommand {
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.executes(
 					commandContext -> method_13645(
-							commandContext.getSource(), Collections.singleton(commandContext.getSource().method_9207()), new BlockPos(commandContext.getSource().method_9222())
+							commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), new BlockPos(commandContext.getSource().getPosition())
 						)
 				)
 				.then(
 					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
 						.executes(
 							commandContext -> method_13645(
-									commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), new BlockPos(commandContext.getSource().method_9222())
+									commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), new BlockPos(commandContext.getSource().getPosition())
 								)
 						)
 						.then(
 							ServerCommandManager.argument("pos", BlockPosArgumentType.create())
 								.executes(
 									commandContext -> method_13645(
-											commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), BlockPosArgumentType.method_9697(commandContext, "pos")
+											commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), BlockPosArgumentType.getPosArgument(commandContext, "pos")
 										)
 								)
 						)
@@ -40,18 +40,22 @@ public class SpawnPointCommand {
 
 	private static int method_13645(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, BlockPos blockPos) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.method_7289(blockPos, true);
+			serverPlayerEntity.setPlayerSpawn(blockPos, true);
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent(
-					"commands.spawnpoint.success.single", blockPos.getX(), blockPos.getY(), blockPos.getZ(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()
+					"commands.spawnpoint.success.single",
+					blockPos.getX(),
+					blockPos.getY(),
+					blockPos.getZ(),
+					((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.spawnpoint.success.multiple", blockPos.getX(), blockPos.getY(), blockPos.getZ(), collection.size()), true
 			);
 		}

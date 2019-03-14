@@ -21,7 +21,7 @@ public class WeatherCheckLootCondition implements LootCondition {
 	}
 
 	public boolean method_957(LootContext lootContext) {
-		ServerWorld serverWorld = lootContext.method_299();
+		ServerWorld serverWorld = lootContext.getWorld();
 		return this.raining != null && this.raining != serverWorld.isRaining() ? false : this.thundering == null || this.thundering == serverWorld.isThundering();
 	}
 

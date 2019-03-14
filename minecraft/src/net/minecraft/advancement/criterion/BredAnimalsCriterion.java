@@ -18,12 +18,12 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 public class BredAnimalsCriterion implements Criterion<BredAnimalsCriterion.Conditions> {
-	private static final Identifier field_1271 = new Identifier("bred_animals");
+	private static final Identifier ID = new Identifier("bred_animals");
 	private final Map<PlayerAdvancementTracker, BredAnimalsCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, BredAnimalsCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return field_1271;
+		return ID;
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class BredAnimalsCriterion implements Criterion<BredAnimalsCriterion.Cond
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.method_856(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
@@ -45,7 +45,7 @@ public class BredAnimalsCriterion implements Criterion<BredAnimalsCriterion.Cond
 	) {
 		BredAnimalsCriterion.Handler handler = (BredAnimalsCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.method_859(conditionsContainer);
+			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -64,25 +64,25 @@ public class BredAnimalsCriterion implements Criterion<BredAnimalsCriterion.Cond
 		return new BredAnimalsCriterion.Conditions(entityPredicate, entityPredicate2, entityPredicate3);
 	}
 
-	public void method_855(
+	public void handle(
 		ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity
 	) {
 		BredAnimalsCriterion.Handler handler = (BredAnimalsCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
-			handler.method_858(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity);
+			handler.handle(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity);
 		}
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final EntityPredicate field_1276;
-		private final EntityPredicate field_1277;
-		private final EntityPredicate field_1275;
+		private final EntityPredicate parent;
+		private final EntityPredicate partner;
+		private final EntityPredicate child;
 
 		public Conditions(EntityPredicate entityPredicate, EntityPredicate entityPredicate2, EntityPredicate entityPredicate3) {
-			super(BredAnimalsCriterion.field_1271);
-			this.field_1276 = entityPredicate;
-			this.field_1277 = entityPredicate2;
-			this.field_1275 = entityPredicate3;
+			super(BredAnimalsCriterion.ID);
+			this.parent = entityPredicate;
+			this.partner = entityPredicate2;
+			this.child = entityPredicate3;
 		}
 
 		public static BredAnimalsCriterion.Conditions any() {
@@ -93,52 +93,52 @@ public class BredAnimalsCriterion implements Criterion<BredAnimalsCriterion.Cond
 			return new BredAnimalsCriterion.Conditions(builder.build(), EntityPredicate.ANY, EntityPredicate.ANY);
 		}
 
-		public boolean method_862(
+		public boolean matches(
 			ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity
 		) {
-			return !this.field_1275.method_8914(serverPlayerEntity, passiveEntity)
+			return !this.child.test(serverPlayerEntity, passiveEntity)
 				? false
-				: this.field_1276.method_8914(serverPlayerEntity, animalEntity) && this.field_1277.method_8914(serverPlayerEntity, animalEntity2)
-					|| this.field_1276.method_8914(serverPlayerEntity, animalEntity2) && this.field_1277.method_8914(serverPlayerEntity, animalEntity);
+				: this.parent.test(serverPlayerEntity, animalEntity) && this.partner.test(serverPlayerEntity, animalEntity2)
+					|| this.parent.test(serverPlayerEntity, animalEntity2) && this.partner.test(serverPlayerEntity, animalEntity);
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("parent", this.field_1276.serialize());
-			jsonObject.add("partner", this.field_1277.serialize());
-			jsonObject.add("child", this.field_1275.serialize());
+			jsonObject.add("parent", this.parent.serialize());
+			jsonObject.add("partner", this.partner.serialize());
+			jsonObject.add("child", this.child.serialize());
 			return jsonObject;
 		}
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker field_1274;
+		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_1274 = playerAdvancementTracker;
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void method_856(Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions> conditionsContainer) {
+		public void addCondition(Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_859(Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions> conditionsContainer) {
+		public void removeCondition(Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_858(
+		public void handle(
 			ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, @Nullable AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity
 		) {
 			List<Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.method_797().method_862(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity)) {
+				if (conditionsContainer.getConditions().matches(serverPlayerEntity, animalEntity, animalEntity2, passiveEntity)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions>>newArrayList();
 					}
@@ -149,7 +149,7 @@ public class BredAnimalsCriterion implements Criterion<BredAnimalsCriterion.Cond
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<BredAnimalsCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_1274);
+					conditionsContainerx.apply(this.manager);
 				}
 			}
 		}

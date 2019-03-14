@@ -9,23 +9,22 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-import net.minecraft.class_2290;
 import net.minecraft.sortme.ItemStringReader;
 
-public class ItemStackArgumentType implements ArgumentType<class_2290> {
+public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "stick{foo=bar}");
 
 	public static ItemStackArgumentType create() {
 		return new ItemStackArgumentType();
 	}
 
-	public class_2290 method_9778(StringReader stringReader) throws CommandSyntaxException {
+	public ItemStackArgument method_9778(StringReader stringReader) throws CommandSyntaxException {
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
-		return new class_2290(itemStringReader.getItem(), itemStringReader.method_9797());
+		return new ItemStackArgument(itemStringReader.getItem(), itemStringReader.method_9797());
 	}
 
-	public static <S> class_2290 method_9777(CommandContext<S> commandContext, String string) {
-		return commandContext.getArgument(string, class_2290.class);
+	public static <S> ItemStackArgument method_9777(CommandContext<S> commandContext, String string) {
+		return commandContext.getArgument(string, ItemStackArgument.class);
 	}
 
 	@Override

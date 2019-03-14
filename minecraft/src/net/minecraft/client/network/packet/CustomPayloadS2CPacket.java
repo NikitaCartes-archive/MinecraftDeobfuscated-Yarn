@@ -9,23 +9,23 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 
 public class CustomPayloadS2CPacket implements Packet<ClientPlayPacketListener> {
-	public static final Identifier field_12158 = new Identifier("brand");
-	public static final Identifier field_12161 = new Identifier("debug/path");
-	public static final Identifier field_12157 = new Identifier("debug/neighbors_update");
-	public static final Identifier field_12156 = new Identifier("debug/caves");
-	public static final Identifier field_12163 = new Identifier("debug/structures");
-	public static final Identifier field_12164 = new Identifier("debug/worldgen_attempt");
-	public static final Identifier field_18798 = new Identifier("debug/poi");
-	public static final Identifier field_18799 = new Identifier("debug/goal_selector");
-	public static final Identifier field_18800 = new Identifier("debug/brain");
-	private Identifier field_12165;
+	public static final Identifier BRAND = new Identifier("brand");
+	public static final Identifier DEBUG_PATH = new Identifier("debug/path");
+	public static final Identifier DEBUG_NEIGHBORS_UPDATE = new Identifier("debug/neighbors_update");
+	public static final Identifier DEBUG_CAVES = new Identifier("debug/caves");
+	public static final Identifier DEBUG_STRUCTURES = new Identifier("debug/structures");
+	public static final Identifier DEBUG_WORLDGEN_ATTEMPT = new Identifier("debug/worldgen_attempt");
+	public static final Identifier DEBUG_POI = new Identifier("debug/poi");
+	public static final Identifier DEBUG_GOAL_SELECTOR = new Identifier("debug/goal_selector");
+	public static final Identifier DEBUG_BRAIN = new Identifier("debug/brain");
+	private Identifier channel;
 	private PacketByteBuf data;
 
 	public CustomPayloadS2CPacket() {
 	}
 
 	public CustomPayloadS2CPacket(Identifier identifier, PacketByteBuf packetByteBuf) {
-		this.field_12165 = identifier;
+		this.channel = identifier;
 		this.data = packetByteBuf;
 		if (packetByteBuf.writerIndex() > 1048576) {
 			throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
@@ -34,7 +34,7 @@ public class CustomPayloadS2CPacket implements Packet<ClientPlayPacketListener> 
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_12165 = packetByteBuf.method_10810();
+		this.channel = packetByteBuf.readIdentifier();
 		int i = packetByteBuf.readableBytes();
 		if (i >= 0 && i <= 1048576) {
 			this.data = new PacketByteBuf(packetByteBuf.readBytes(i));
@@ -45,17 +45,17 @@ public class CustomPayloadS2CPacket implements Packet<ClientPlayPacketListener> 
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.method_10812(this.field_12165);
+		packetByteBuf.writeIdentifier(this.channel);
 		packetByteBuf.writeBytes(this.data.copy());
 	}
 
 	public void method_11457(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11152(this);
+		clientPlayPacketListener.onCustomPayload(this);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier method_11456() {
-		return this.field_12165;
+	public Identifier getChannel() {
+		return this.channel;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -14,10 +14,10 @@ import org.apache.logging.log4j.MarkerManager;
 public class DecoderHandler extends ByteToMessageDecoder {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Marker MARKER = MarkerManager.getMarker("PACKET_RECEIVED", ClientConnection.MARKER_NETWORK_PACKETS);
-	private final NetworkSide field_11714;
+	private final NetworkSide side;
 
 	public DecoderHandler(NetworkSide networkSide) {
-		this.field_11714 = networkSide;
+		this.side = networkSide;
 	}
 
 	@Override
@@ -25,7 +25,7 @@ public class DecoderHandler extends ByteToMessageDecoder {
 		if (byteBuf.readableBytes() != 0) {
 			PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf);
 			int i = packetByteBuf.readVarInt();
-			Packet<?> packet = channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get().method_10783(this.field_11714, i);
+			Packet<?> packet = channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get().getPacketHandler(this.side, i);
 			if (packet == null) {
 				throw new IOException("Bad packet id " + i);
 			} else {

@@ -21,7 +21,7 @@ public class DrownedOverlayFeatureRenderer<T extends ZombieEntity> extends Featu
 			this.getModel().setAttributes(this.field_4855);
 			this.field_4855.method_17077(zombieEntity, f, g, h);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.method_17164(field_4854);
+			this.bindTexture(field_4854);
 			this.field_4855.method_17088(zombieEntity, f, g, i, j, k, l);
 		}
 	}

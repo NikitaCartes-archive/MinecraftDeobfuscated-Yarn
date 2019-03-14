@@ -26,7 +26,7 @@ public class ShapelessRecipeJsonFactory {
 	private final Item output;
 	private final int outputCount;
 	private final List<Ingredient> inputs = Lists.<Ingredient>newArrayList();
-	private final SimpleAdvancement.Builder field_11393 = SimpleAdvancement.Builder.create();
+	private final SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.create();
 	private String group;
 
 	public ShapelessRecipeJsonFactory(ItemProvider itemProvider, int i) {
@@ -42,8 +42,8 @@ public class ShapelessRecipeJsonFactory {
 		return new ShapelessRecipeJsonFactory(itemProvider, i);
 	}
 
-	public ShapelessRecipeJsonFactory method_10446(Tag<Item> tag) {
-		return this.input(Ingredient.method_8106(tag));
+	public ShapelessRecipeJsonFactory input(Tag<Item> tag) {
+		return this.input(Ingredient.fromTag(tag));
 	}
 
 	public ShapelessRecipeJsonFactory input(ItemProvider itemProvider) {
@@ -52,7 +52,7 @@ public class ShapelessRecipeJsonFactory {
 
 	public ShapelessRecipeJsonFactory input(ItemProvider itemProvider, int i) {
 		for (int j = 0; j < i; j++) {
-			this.input(Ingredient.method_8091(itemProvider));
+			this.input(Ingredient.ofItems(itemProvider));
 		}
 
 		return this;
@@ -70,8 +70,8 @@ public class ShapelessRecipeJsonFactory {
 		return this;
 	}
 
-	public ShapelessRecipeJsonFactory method_10442(String string, CriterionConditions criterionConditions) {
-		this.field_11393.method_709(string, criterionConditions);
+	public ShapelessRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
+		this.builder.criterion(string, criterionConditions);
 		return this;
 	}
 
@@ -81,24 +81,24 @@ public class ShapelessRecipeJsonFactory {
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer) {
-		this.method_10443(consumer, Registry.ITEM.method_10221(this.output));
+		this.offerTo(consumer, Registry.ITEM.getId(this.output));
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer, String string) {
-		Identifier identifier = Registry.ITEM.method_10221(this.output);
+		Identifier identifier = Registry.ITEM.getId(this.output);
 		if (new Identifier(string).equals(identifier)) {
 			throw new IllegalStateException("Shapeless Recipe " + string + " should remove its 'save' argument");
 		} else {
-			this.method_10443(consumer, new Identifier(string));
+			this.offerTo(consumer, new Identifier(string));
 		}
 	}
 
-	public void method_10443(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
-		this.method_10445(identifier);
-		this.field_11393
-			.method_708(new Identifier("recipes/root"))
-			.method_709("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
-			.method_703(AdvancementRewards.Builder.recipe(identifier))
+	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
+		this.validate(identifier);
+		this.builder
+			.parent(new Identifier("recipes/root"))
+			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
+			.rewards(AdvancementRewards.Builder.recipe(identifier))
 			.criteriaMerger(CriteriaMerger.OR);
 		consumer.accept(
 			new ShapelessRecipeJsonFactory.ShapelessRecipeJsonProvider(
@@ -107,37 +107,37 @@ public class ShapelessRecipeJsonFactory {
 				this.outputCount,
 				this.group == null ? "" : this.group,
 				this.inputs,
-				this.field_11393,
+				this.builder,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())
 			)
 		);
 	}
 
-	private void method_10445(Identifier identifier) {
-		if (this.field_11393.getCriteria().isEmpty()) {
+	private void validate(Identifier identifier) {
+		if (this.builder.getCriteria().isEmpty()) {
 			throw new IllegalStateException("No way of obtaining recipe " + identifier);
 		}
 	}
 
 	public static class ShapelessRecipeJsonProvider implements RecipeJsonProvider {
-		private final Identifier field_11402;
+		private final Identifier recipeId;
 		private final Item output;
 		private final int count;
 		private final String group;
 		private final List<Ingredient> inputs;
-		private final SimpleAdvancement.Builder field_11401;
-		private final Identifier field_11405;
+		private final SimpleAdvancement.Builder builder;
+		private final Identifier advancementId;
 
 		public ShapelessRecipeJsonProvider(
 			Identifier identifier, Item item, int i, String string, List<Ingredient> list, SimpleAdvancement.Builder builder, Identifier identifier2
 		) {
-			this.field_11402 = identifier;
+			this.recipeId = identifier;
 			this.output = item;
 			this.count = i;
 			this.group = string;
 			this.inputs = list;
-			this.field_11401 = builder;
-			this.field_11405 = identifier2;
+			this.builder = builder;
+			this.advancementId = identifier2;
 		}
 
 		@Override
@@ -154,7 +154,7 @@ public class ShapelessRecipeJsonFactory {
 
 			jsonObject.add("ingredients", jsonArray);
 			JsonObject jsonObject2 = new JsonObject();
-			jsonObject2.addProperty("item", Registry.ITEM.method_10221(this.output).toString());
+			jsonObject2.addProperty("item", Registry.ITEM.getId(this.output).toString());
 			if (this.count > 1) {
 				jsonObject2.addProperty("count", this.count);
 			}
@@ -168,20 +168,20 @@ public class ShapelessRecipeJsonFactory {
 		}
 
 		@Override
-		public Identifier method_10417() {
-			return this.field_11402;
+		public Identifier getRecipeId() {
+			return this.recipeId;
 		}
 
 		@Nullable
 		@Override
 		public JsonObject toAdvancementJson() {
-			return this.field_11401.toJson();
+			return this.builder.toJson();
 		}
 
 		@Nullable
 		@Override
-		public Identifier method_10418() {
-			return this.field_11405;
+		public Identifier getAdvancementId() {
+			return this.advancementId;
 		}
 	}
 }

@@ -4,10 +4,10 @@ import com.mojang.text2speech.Narrator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_370;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.NarratorOption;
 import net.minecraft.client.sortme.ClientChatListener;
+import net.minecraft.client.toast.SystemToast;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.text.TextComponent;
@@ -22,8 +22,8 @@ public class NarratorManager implements ClientChatListener {
 	private final Narrator narrator = Narrator.getNarrator();
 
 	@Override
-	public void method_1794(ChatMessageType chatMessageType, TextComponent textComponent) {
-		NarratorOption narratorOption = MinecraftClient.getInstance().field_1690.narrator;
+	public void onChatMessage(ChatMessageType chatMessageType, TextComponent textComponent) {
+		NarratorOption narratorOption = MinecraftClient.getInstance().options.narrator;
 		if (narratorOption != NarratorOption.field_18176 && this.narrator.active()) {
 			if (narratorOption == NarratorOption.field_18177
 				|| narratorOption == NarratorOption.field_18178 && chatMessageType == ChatMessageType.field_11737
@@ -53,22 +53,22 @@ public class NarratorManager implements ClientChatListener {
 			.say(
 				new TranslatableTextComponent("options.narrator").getString() + " : " + new TranslatableTextComponent(narratorOption.getTranslationKey()).getString(), true
 			);
-		ToastManager toastManager = MinecraftClient.getInstance().method_1566();
+		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		if (this.narrator.active()) {
 			if (narratorOption == NarratorOption.field_18176) {
-				class_370.method_1990(toastManager, class_370.class_371.field_2219, new TranslatableTextComponent("narrator.toast.disabled"), null);
+				SystemToast.method_1990(toastManager, SystemToast.Type.field_2219, new TranslatableTextComponent("narrator.toast.disabled"), null);
 			} else {
-				class_370.method_1990(
+				SystemToast.method_1990(
 					toastManager,
-					class_370.class_371.field_2219,
+					SystemToast.Type.field_2219,
 					new TranslatableTextComponent("narrator.toast.enabled"),
 					new TranslatableTextComponent(narratorOption.getTranslationKey())
 				);
 			}
 		} else {
-			class_370.method_1990(
+			SystemToast.method_1990(
 				toastManager,
-				class_370.class_371.field_2219,
+				SystemToast.Type.field_2219,
 				new TranslatableTextComponent("narrator.toast.disabled"),
 				new TranslatableTextComponent("options.narrator.notavailable")
 			);

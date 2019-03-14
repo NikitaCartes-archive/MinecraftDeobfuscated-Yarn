@@ -21,7 +21,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack2 = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack3 = craftingInventory.method_5438(i);
+			ItemStack itemStack3 = craftingInventory.getInvStack(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack3.getItem() instanceof BannerItem) {
 					if (!itemStack2.isEmpty()) {
@@ -38,7 +38,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 						return false;
 					}
 
-					if (itemStack3.method_7941("BlockEntityTag") != null) {
+					if (itemStack3.getSubCompoundTag("BlockEntityTag") != null) {
 						return false;
 					}
 
@@ -55,7 +55,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack2 = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack3 = craftingInventory.method_5438(i);
+			ItemStack itemStack3 = craftingInventory.getInvStack(i);
 			if (!itemStack3.isEmpty()) {
 				if (itemStack3.getItem() instanceof BannerItem) {
 					itemStack = itemStack3;
@@ -68,10 +68,10 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 		if (itemStack2.isEmpty()) {
 			return itemStack2;
 		} else {
-			CompoundTag compoundTag = itemStack.method_7941("BlockEntityTag");
+			CompoundTag compoundTag = itemStack.getSubCompoundTag("BlockEntityTag");
 			CompoundTag compoundTag2 = compoundTag == null ? new CompoundTag() : compoundTag.method_10553();
-			compoundTag2.putInt("Base", ((BannerItem)itemStack.getItem()).method_7706().getId());
-			itemStack2.method_7959("BlockEntityTag", compoundTag2);
+			compoundTag2.putInt("Base", ((BannerItem)itemStack.getItem()).getColor().getId());
+			itemStack2.setChildTag("BlockEntityTag", compoundTag2);
 			return itemStack2;
 		}
 	}
@@ -83,7 +83,7 @@ public class ShieldDecorationRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9040;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.SHIELD_DECORATION;
 	}
 }

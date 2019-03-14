@@ -33,22 +33,22 @@ public class FrostWalkerEnchantment extends Enchantment {
 
 	public static void method_8236(LivingEntity livingEntity, World world, BlockPos blockPos, int i) {
 		if (livingEntity.onGround) {
-			BlockState blockState = Blocks.field_10110.method_9564();
+			BlockState blockState = Blocks.field_10110.getDefaultState();
 			float f = (float)Math.min(16, 2 + i);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add((double)(-f), -1.0, (double)(-f)), blockPos.add((double)f, -1.0, (double)f))) {
 				if (blockPos2.squaredDistanceToCenter(livingEntity.x, livingEntity.y, livingEntity.z) <= (double)(f * f)) {
 					mutable.set(blockPos2.getX(), blockPos2.getY() + 1, blockPos2.getZ());
-					BlockState blockState2 = world.method_8320(mutable);
+					BlockState blockState2 = world.getBlockState(mutable);
 					if (blockState2.isAir()) {
-						BlockState blockState3 = world.method_8320(blockPos2);
-						if (blockState3.method_11620() == Material.WATER
-							&& (Integer)blockState3.method_11654(FluidBlock.field_11278) == 0
-							&& blockState.method_11591(world, blockPos2)
+						BlockState blockState3 = world.getBlockState(blockPos2);
+						if (blockState3.getMaterial() == Material.WATER
+							&& (Integer)blockState3.get(FluidBlock.LEVEL) == 0
+							&& blockState.canPlaceAt(world, blockPos2)
 							&& world.method_8628(blockState, blockPos2, VerticalEntityPosition.minValue())) {
-							world.method_8501(blockPos2, blockState);
-							world.method_8397().method_8676(blockPos2.toImmutable(), Blocks.field_10110, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
+							world.setBlockState(blockPos2, blockState);
+							world.getBlockTickScheduler().schedule(blockPos2.toImmutable(), Blocks.field_10110, MathHelper.nextInt(livingEntity.getRand(), 60, 120));
 						}
 					}
 				}

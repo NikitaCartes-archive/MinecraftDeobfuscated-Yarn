@@ -19,9 +19,9 @@ public final class DarkForestBiome extends Biome {
 	public DarkForestBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15677)
+				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.GRASS_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
-				.method_8738(Biome.Category.FOREST)
+				.category(Biome.Category.FOREST)
 				.depth(0.1F)
 				.scale(0.2F)
 				.temperature(0.7F)
@@ -30,26 +30,26 @@ public final class DarkForestBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13528, FeatureConfig.field_13603);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
+		this.addStructureFeature(Feature.WOODLAND_MANSION, FeatureConfig.DEFAULT);
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
-		this.method_8719(
+		this.addFeature(
 			GenerationStep.Feature.VEGETAL_DECORATION,
-			method_8699(
+			configureFeature(
 				Feature.field_13593,
 				new RandomFeatureConfig(
 					new Feature[]{Feature.field_13531, Feature.field_13571, Feature.field_13532, Feature.field_13529},
-					new FeatureConfig[]{FeatureConfig.field_13603, FeatureConfig.field_13603, FeatureConfig.field_13603, FeatureConfig.field_13603},
+					new FeatureConfig[]{FeatureConfig.DEFAULT, FeatureConfig.DEFAULT, FeatureConfig.DEFAULT, FeatureConfig.DEFAULT},
 					new float[]{0.025F, 0.05F, 0.6666667F, 0.1F},
 					Feature.field_13510,
-					FeatureConfig.field_13603
+					FeatureConfig.DEFAULT
 				),
 				Decorator.field_14239,
-				DecoratorConfig.field_13436
+				DecoratorConfig.DEFAULT
 			)
 		);
 		DefaultBiomeFeatures.addForestFlowers(this);
@@ -79,8 +79,8 @@ public final class DarkForestBiome extends Biome {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public int method_8711(BlockPos blockPos) {
-		int i = super.method_8711(blockPos);
+	public int getGrassColorAt(BlockPos blockPos) {
+		int i = super.getGrassColorAt(blockPos);
 		return (i & 16711422) + 2634762 >> 1;
 	}
 }

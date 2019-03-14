@@ -19,32 +19,32 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCommand {
 	private final GameProfile gameProfile;
-	private final Identifier field_3252;
+	private final Identifier skinId;
 
 	public TeleportToSpecificPlayerSpectatorCommand(GameProfile gameProfile) {
 		this.gameProfile = gameProfile;
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		Map<Type, MinecraftProfileTexture> map = minecraftClient.method_1582().getTextures(gameProfile);
+		Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
 		if (map.containsKey(Type.SKIN)) {
-			this.field_3252 = minecraftClient.method_1582().method_4656((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
+			this.skinId = minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN);
 		} else {
-			this.field_3252 = DefaultSkinHelper.method_4648(PlayerEntity.getUuidFromProfile(gameProfile));
+			this.skinId = DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile));
 		}
 	}
 
 	@Override
 	public void use(SpectatorMenu spectatorMenu) {
-		MinecraftClient.getInstance().method_1562().method_2883(new SpectatorTeleportC2SPacket(this.gameProfile.getId()));
+		MinecraftClient.getInstance().getNetworkHandler().sendPacket(new SpectatorTeleportC2SPacket(this.gameProfile.getId()));
 	}
 
 	@Override
-	public TextComponent method_16892() {
+	public TextComponent getName() {
 		return new StringTextComponent(this.gameProfile.getName());
 	}
 
 	@Override
 	public void renderIcon(float f, int i) {
-		MinecraftClient.getInstance().method_1531().method_4618(this.field_3252);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, (float)i / 255.0F);
 		DrawableHelper.drawTexturedRect(2, 2, 8.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
 		DrawableHelper.drawTexturedRect(2, 2, 40.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);

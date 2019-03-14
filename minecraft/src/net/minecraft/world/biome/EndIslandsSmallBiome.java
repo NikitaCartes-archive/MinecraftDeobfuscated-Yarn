@@ -15,9 +15,9 @@ public class EndIslandsSmallBiome extends Biome {
 	public EndIslandsSmallBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15671)
+				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.END_CONFIG)
 				.precipitation(Biome.Precipitation.NONE)
-				.method_8738(Biome.Category.THE_END)
+				.category(Biome.Category.THE_END)
 				.depth(0.1F)
 				.scale(0.2F)
 				.temperature(0.5F)
@@ -26,12 +26,10 @@ public class EndIslandsSmallBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8719(
-			GenerationStep.Feature.RAW_GENERATION, method_8699(Feature.field_13574, FeatureConfig.field_13603, Decorator.field_14251, DecoratorConfig.field_13436)
+		this.addFeature(
+			GenerationStep.Feature.RAW_GENERATION, configureFeature(Feature.field_13574, FeatureConfig.DEFAULT, Decorator.field_14251, DecoratorConfig.DEFAULT)
 		);
-		this.method_8719(
-			GenerationStep.Feature.SURFACE_STRUCTURES, method_8699(Feature.field_13553, FeatureConfig.field_13603, Decorator.NOPE, DecoratorConfig.field_13436)
-		);
+		this.addFeature(GenerationStep.Feature.SURFACE_STRUCTURES, configureFeature(Feature.END_CITY, FeatureConfig.DEFAULT, Decorator.NOPE, DecoratorConfig.DEFAULT));
 		this.addSpawn(EntityCategory.field_6302, new Biome.SpawnEntry(EntityType.ENDERMAN, 10, 4, 4));
 	}
 

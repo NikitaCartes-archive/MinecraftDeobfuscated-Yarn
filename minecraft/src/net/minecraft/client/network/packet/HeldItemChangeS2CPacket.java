@@ -28,7 +28,7 @@ public class HeldItemChangeS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	public void method_11802(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11135(this);
+		clientPlayPacketListener.onHeldItemChange(this);
 	}
 
 	@Environment(EnvType.CLIENT)

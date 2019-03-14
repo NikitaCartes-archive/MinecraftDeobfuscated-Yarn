@@ -14,7 +14,7 @@ public abstract class class_4079 extends LevelIndexedProcessor {
 	}
 
 	@Override
-	protected void processLevelAt(long l, int i, boolean bl) {
+	protected void processLevel(long l, int i, boolean bl) {
 		for (int j = -1; j <= 1; j++) {
 			for (int k = -1; k <= 1; k++) {
 				for (int m = -1; m <= 1; m++) {
@@ -40,7 +40,7 @@ public abstract class class_4079 extends LevelIndexedProcessor {
 					}
 
 					if (p != m) {
-						int q = this.getBaseLevelFor(p, l, this.getCurrentLevelFor(p));
+						int q = this.getBaseLevel(p, l, this.getLevel(p));
 						if (j > q) {
 							j = q;
 						}
@@ -57,13 +57,13 @@ public abstract class class_4079 extends LevelIndexedProcessor {
 	}
 
 	@Override
-	protected int getBaseLevelFor(long l, long m, int i) {
+	protected int getBaseLevel(long l, long m, int i) {
 		return l == Long.MAX_VALUE ? this.method_18749(m) : i + 1;
 	}
 
 	protected abstract int method_18749(long l);
 
-	public void method_18750(long l, int i, boolean bl) {
+	public void scheduleNewLevelUpdate(long l, int i, boolean bl) {
 		this.scheduleNewLevelUpdate(Long.MAX_VALUE, l, i, bl);
 	}
 }

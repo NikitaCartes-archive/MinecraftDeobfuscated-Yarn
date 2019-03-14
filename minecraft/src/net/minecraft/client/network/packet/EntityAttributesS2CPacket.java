@@ -48,7 +48,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 				UUID uUID = packetByteBuf.readUuid();
 				list.add(
 					new EntityAttributeModifier(
-						uUID, "Unknown synced attribute modifier", packetByteBuf.readDouble(), EntityAttributeModifier.Operation.method_6190(packetByteBuf.readByte())
+						uUID, "Unknown synced attribute modifier", packetByteBuf.readDouble(), EntityAttributeModifier.Operation.fromId(packetByteBuf.readByte())
 					)
 				);
 			}
@@ -76,7 +76,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public void method_11936(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11149(this);
+		clientPlayPacketListener.onEntityAttributes(this);
 	}
 
 	@Environment(EnvType.CLIENT)

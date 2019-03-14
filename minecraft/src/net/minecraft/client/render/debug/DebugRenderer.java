@@ -3,33 +3,30 @@ package net.minecraft.client.render.debug;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
-import net.minecraft.class_4203;
-import net.minecraft.class_4205;
-import net.minecraft.class_4207;
 import net.minecraft.class_860;
 import net.minecraft.class_871;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 
 @Environment(EnvType.CLIENT)
 public class DebugRenderer {
-	public final PathfindingDebugRenderer field_4523;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer waterDebugRenderer;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer chunkBorderDebugRenderer;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer heightmapDebugRenderer;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer voxelDebugRenderer;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer neighborUpdateDebugRenderer;
+	public final PathfindingDebugRenderer pathfindingDebugRenderer;
+	public final DebugRenderer.Renderer waterDebugRenderer;
+	public final DebugRenderer.Renderer chunkBorderDebugRenderer;
+	public final DebugRenderer.Renderer heightmapDebugRenderer;
+	public final DebugRenderer.Renderer voxelDebugRenderer;
+	public final DebugRenderer.Renderer neighborUpdateDebugRenderer;
 	public final CaveDebugRenderer caveDebugRenderer;
-	public final StructureDebugRenderer field_4539;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer skyLightDebugRenderer;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer worldGenAttemptDebugRenderer;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer field_4517;
-	public final net.minecraft.client.render.debug.DebugRenderer.DebugRenderer field_4533;
-	public final class_4207 field_18777;
-	public final class_4205 field_18778;
-	public final class_4203 field_18779;
+	public final StructureDebugRenderer structureDebugRenderer;
+	public final DebugRenderer.Renderer skyLightDebugRenderer;
+	public final DebugRenderer.Renderer worldGenAttemptDebugRenderer;
+	public final DebugRenderer.Renderer field_4517;
+	public final DebugRenderer.Renderer field_4533;
+	public final PointOfInterestDebugRenderer pointsOfInterestDebugRenderer;
+	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
+	public final BrainDebugRenderer brainDebugRenderer;
 	private boolean showChunkBorder;
 	private boolean showPathfinding;
 	private boolean showWater;
@@ -45,21 +42,21 @@ public class DebugRenderer {
 	private boolean field_18776;
 
 	public DebugRenderer(MinecraftClient minecraftClient) {
-		this.field_4523 = new PathfindingDebugRenderer(minecraftClient);
+		this.pathfindingDebugRenderer = new PathfindingDebugRenderer(minecraftClient);
 		this.waterDebugRenderer = new WaterDebugRenderer(minecraftClient);
 		this.chunkBorderDebugRenderer = new ChunkBorderDebugRenderer(minecraftClient);
 		this.heightmapDebugRenderer = new HeightmapDebugRenderer(minecraftClient);
 		this.voxelDebugRenderer = new VoxelDebugRenderer(minecraftClient);
 		this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(minecraftClient);
 		this.caveDebugRenderer = new CaveDebugRenderer(minecraftClient);
-		this.field_4539 = new StructureDebugRenderer(minecraftClient);
+		this.structureDebugRenderer = new StructureDebugRenderer(minecraftClient);
 		this.skyLightDebugRenderer = new SkyLightDebugRenderer(minecraftClient);
 		this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer(minecraftClient);
 		this.field_4517 = new class_871(minecraftClient);
 		this.field_4533 = new class_860(minecraftClient);
-		this.field_18777 = new class_4207(minecraftClient);
-		this.field_18778 = new class_4205(minecraftClient);
-		this.field_18779 = new class_4203(minecraftClient);
+		this.pointsOfInterestDebugRenderer = new PointOfInterestDebugRenderer(minecraftClient);
+		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
+		this.brainDebugRenderer = new BrainDebugRenderer(minecraftClient);
 	}
 
 	public boolean shouldRender() {
@@ -83,7 +80,7 @@ public class DebugRenderer {
 
 	public void renderDebuggers(long l) {
 		if (this.showPathfinding) {
-			this.field_4523.render(l);
+			this.pathfindingDebugRenderer.render(l);
 		}
 
 		if (this.showChunkBorder && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
@@ -111,7 +108,7 @@ public class DebugRenderer {
 		}
 
 		if (this.showStructures) {
-			this.field_4539.render(l);
+			this.structureDebugRenderer.render(l);
 		}
 
 		if (this.showSkyLight) {
@@ -127,15 +124,15 @@ public class DebugRenderer {
 		}
 
 		if (this.field_18775) {
-			this.field_18777.render(l);
+			this.pointsOfInterestDebugRenderer.render(l);
 		}
 
 		if (this.field_18776) {
-			this.field_18778.render(l);
+			this.goalSelectorDebugRenderer.render(l);
 		}
 
 		if (this.field_18776) {
-			this.field_18779.render(l);
+			this.brainDebugRenderer.render(l);
 		}
 	}
 
@@ -153,17 +150,17 @@ public class DebugRenderer {
 
 	public static void method_3712(String string, double d, double e, double f, int i, float g, boolean bl, float h, boolean bl2) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		class_4184 lv = minecraftClient.field_1773.method_19418();
-		if (lv.method_19332() && minecraftClient.method_1561() != null && minecraftClient.method_1561().settings != null) {
-			TextRenderer textRenderer = minecraftClient.field_1772;
-			double j = lv.method_19326().x;
-			double k = lv.method_19326().y;
-			double l = lv.method_19326().z;
+		Camera camera = minecraftClient.gameRenderer.method_19418();
+		if (camera.isReady() && minecraftClient.getEntityRenderManager() != null && minecraftClient.getEntityRenderManager().settings != null) {
+			TextRenderer textRenderer = minecraftClient.textRenderer;
+			double j = camera.getPos().x;
+			double k = camera.getPos().y;
+			double l = camera.getPos().z;
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)(d - j), (float)(e - k) + 0.07F, (float)(f - l));
 			GlStateManager.normal3f(0.0F, 1.0F, 0.0F);
 			GlStateManager.scalef(g, -g, g);
-			EntityRenderDispatcher entityRenderDispatcher = minecraftClient.method_1561();
+			EntityRenderDispatcher entityRenderDispatcher = minecraftClient.getEntityRenderManager();
 			GlStateManager.rotatef(-entityRenderDispatcher.field_4679, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(-entityRenderDispatcher.field_4677, 1.0F, 0.0F, 0.0F);
 			GlStateManager.disableLighting();
@@ -187,7 +184,7 @@ public class DebugRenderer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public interface DebugRenderer {
+	public interface Renderer {
 		void render(long l);
 	}
 }

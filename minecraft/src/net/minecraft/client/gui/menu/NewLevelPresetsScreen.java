@@ -8,11 +8,11 @@ import java.util.Collections;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.render.BufferBuilder;
@@ -39,7 +39,7 @@ public class NewLevelPresetsScreen extends Screen {
 	private String field_2520;
 	private String field_2524;
 	private NewLevelPresetsScreen.class_4196 field_2521;
-	private class_4185 field_2525;
+	private ButtonWidget field_2525;
 	private TextFieldWidget field_2523;
 	public int field_18746 = -1;
 
@@ -60,18 +60,18 @@ public class NewLevelPresetsScreen extends Screen {
 		this.field_2521 = new NewLevelPresetsScreen.class_4196();
 		this.listeners.add(this.field_2521);
 		this.field_2525 = this.addButton(
-			new class_4185(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("createWorld.customize.presets.select")) {
+			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("createWorld.customize.presets.select")) {
 				@Override
-				public void method_1826() {
+				public void onPressed() {
 					NewLevelPresetsScreen.this.field_2519.method_2139(NewLevelPresetsScreen.this.field_2523.getText());
-					NewLevelPresetsScreen.this.client.method_1507(NewLevelPresetsScreen.this.field_2519);
+					NewLevelPresetsScreen.this.client.openScreen(NewLevelPresetsScreen.this.field_2519);
 				}
 			}
 		);
-		this.addButton(new class_4185(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
-			public void method_1826() {
-				NewLevelPresetsScreen.this.client.method_1507(NewLevelPresetsScreen.this.field_2519);
+			public void onPressed() {
+				NewLevelPresetsScreen.this.client.openScreen(NewLevelPresetsScreen.this.field_2519);
 			}
 		});
 		this.method_2191();
@@ -120,7 +120,7 @@ public class NewLevelPresetsScreen extends Screen {
 	}
 
 	private static void method_2195(String string, ItemProvider itemProvider, Biome biome, List<String> list, FlatChunkGeneratorLayer... flatChunkGeneratorLayers) {
-		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.method_12117();
+		FlatChunkGeneratorConfig flatChunkGeneratorConfig = ChunkGeneratorType.field_12766.createSettings();
 
 		for (int i = flatChunkGeneratorLayers.length - 1; i >= 0; i--) {
 			flatChunkGeneratorConfig.getLayers().add(flatChunkGeneratorLayers[i]);
@@ -259,7 +259,7 @@ public class NewLevelPresetsScreen extends Screen {
 
 		@Override
 		protected boolean method_19352() {
-			return NewLevelPresetsScreen.this.method_19357() == this;
+			return NewLevelPresetsScreen.this.getFocused() == this;
 		}
 
 		@Override
@@ -333,7 +333,7 @@ public class NewLevelPresetsScreen extends Screen {
 			this.method_2198(i + 1, j + 1);
 			GlStateManager.enableRescaleNormal();
 			GuiLighting.enableForItems();
-			NewLevelPresetsScreen.this.field_2560.renderGuiItemIcon(new ItemStack(item), i + 2, j + 2);
+			NewLevelPresetsScreen.this.itemRenderer.renderGuiItemIcon(new ItemStack(item), i + 2, j + 2);
 			GuiLighting.disable();
 			GlStateManager.disableRescaleNormal();
 		}
@@ -344,14 +344,14 @@ public class NewLevelPresetsScreen extends Screen {
 
 		private void method_2199(int i, int j, int k, int l) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			NewLevelPresetsScreen.this.client.method_1531().method_4618(DrawableHelper.field_2052);
+			NewLevelPresetsScreen.this.client.getTextureManager().bindTexture(DrawableHelper.STAT_ICONS);
 			float f = 0.0078125F;
 			float g = 0.0078125F;
 			int m = 18;
 			int n = 18;
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			bufferBuilder.method_1328(7, VertexFormats.field_1585);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 			bufferBuilder.vertex((double)(i + 0), (double)(j + 18), (double)NewLevelPresetsScreen.this.zOffset)
 				.texture((double)((float)(k + 0) * 0.0078125F), (double)((float)(l + 18) * 0.0078125F))
 				.next();

@@ -27,13 +27,13 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		boolean bl4 = false;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack = craftingInventory.method_5438(i);
+			ItemStack itemStack = craftingInventory.getInvStack(i);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem() == Blocks.field_10251.getItem() && !bl3) {
 					bl3 = true;
 				} else if (itemStack.getItem() == Blocks.field_10559.getItem() && !bl2) {
 					bl2 = true;
-				} else if (itemStack.getItem().method_7855(ItemTags.field_15543) && !bl) {
+				} else if (itemStack.getItem().matches(ItemTags.field_15543) && !bl) {
 					bl = true;
 				} else {
 					if (itemStack.getItem() != Items.field_8428 || bl4) {
@@ -52,16 +52,16 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = craftingInventory.method_5438(i);
-			if (!itemStack2.isEmpty() && itemStack2.getItem().method_7855(ItemTags.field_15543)) {
+			ItemStack itemStack2 = craftingInventory.getInvStack(i);
+			if (!itemStack2.isEmpty() && itemStack2.getItem().matches(ItemTags.field_15543)) {
 				itemStack = itemStack2;
 				break;
 			}
 		}
 
 		ItemStack itemStack3 = new ItemStack(Items.field_8766, 1);
-		if (itemStack.getItem() instanceof BlockItem && ((BlockItem)itemStack.getItem()).method_7711() instanceof FlowerBlock) {
-			FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)itemStack.getItem()).method_7711();
+		if (itemStack.getItem() instanceof BlockItem && ((BlockItem)itemStack.getItem()).getBlock() instanceof FlowerBlock) {
+			FlowerBlock flowerBlock = (FlowerBlock)((BlockItem)itemStack.getItem()).getBlock();
 			StatusEffect statusEffect = flowerBlock.getEffectInStew();
 			SuspiciousStewItem.addEffectToStew(itemStack3, statusEffect, flowerBlock.getEffectInStewDuration());
 		}
@@ -76,7 +76,7 @@ public class SuspiciousStewRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9030;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.SUSPICIOUS_STEW;
 	}
 }

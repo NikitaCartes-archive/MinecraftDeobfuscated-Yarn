@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WitherSkeletonEntityRenderer extends SkeletonEntityRenderer {
-	private static final Identifier field_4818 = new Identifier("textures/entity/skeleton/wither_skeleton.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/skeleton/wither_skeleton.png");
 
 	public WitherSkeletonEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher);
@@ -16,7 +16,7 @@ public class WitherSkeletonEntityRenderer extends SkeletonEntityRenderer {
 
 	@Override
 	protected Identifier method_4119(AbstractSkeletonEntity abstractSkeletonEntity) {
-		return field_4818;
+		return SKIN;
 	}
 
 	protected void method_4161(AbstractSkeletonEntity abstractSkeletonEntity, float f) {

@@ -25,7 +25,7 @@ public class StatisticsS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11270(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11129(this);
+		clientPlayPacketListener.onStatistics(this);
 	}
 
 	@Override
@@ -34,11 +34,11 @@ public class StatisticsS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.stats = new Object2IntOpenHashMap<>(i);
 
 		for (int j = 0; j < i; j++) {
-			this.method_11271(Registry.STAT_TYPE.get(packetByteBuf.readVarInt()), packetByteBuf);
+			this.readStat(Registry.STAT_TYPE.get(packetByteBuf.readVarInt()), packetByteBuf);
 		}
 	}
 
-	private <T> void method_11271(StatType<T> statType, PacketByteBuf packetByteBuf) {
+	private <T> void readStat(StatType<T> statType, PacketByteBuf packetByteBuf) {
 		int i = packetByteBuf.readVarInt();
 		int j = packetByteBuf.readVarInt();
 		this.stats.put(statType.getOrCreateStat(statType.getRegistry().get(i)), j);
@@ -50,14 +50,14 @@ public class StatisticsS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		for (Entry<Stat<?>> entry : this.stats.object2IntEntrySet()) {
 			Stat<?> stat = (Stat<?>)entry.getKey();
-			packetByteBuf.writeVarInt(Registry.STAT_TYPE.getRawId(stat.method_14949()));
+			packetByteBuf.writeVarInt(Registry.STAT_TYPE.getRawId(stat.getType()));
 			packetByteBuf.writeVarInt(this.method_11272(stat));
 			packetByteBuf.writeVarInt(entry.getIntValue());
 		}
 	}
 
 	private <T> int method_11272(Stat<T> stat) {
-		return stat.method_14949().getRegistry().getRawId(stat.getValue());
+		return stat.getType().getRegistry().getRawId(stat.getValue());
 	}
 
 	@Environment(EnvType.CLIENT)

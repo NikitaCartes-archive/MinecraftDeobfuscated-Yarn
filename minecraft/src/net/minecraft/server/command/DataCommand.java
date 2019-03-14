@@ -74,7 +74,7 @@ public class DataCommand {
 								ServerCommandManager.argument("nbt", NbtCompoundTagArgumentType.create())
 									.executes(
 										commandContext -> method_13901(
-												commandContext.getSource(), lv.method_13924(commandContext), NbtCompoundTagArgumentType.method_9285(commandContext, "nbt")
+												commandContext.getSource(), lv.method_13924(commandContext), NbtCompoundTagArgumentType.getCompoundArgument(commandContext, "nbt")
 											)
 									)
 							)
@@ -178,7 +178,7 @@ public class DataCommand {
 
 			for (Tag tag2 : list) {
 				try {
-					if (abstractListTag.method_10533(k, tag2.copy())) {
+					if (abstractListTag.addTag(k, tag2.copy())) {
 						k++;
 						bl = true;
 					}
@@ -221,7 +221,7 @@ public class DataCommand {
 						argumentBuilder2,
 						(DataCommand.class_3166)arg2 -> (LiteralArgumentBuilder)ServerCommandManager.literal("value")
 								.then(ServerCommandManager.argument("value", NbtTagArgumentType.create()).executes(commandContext -> {
-									List<Tag> list = Collections.singletonList(NbtTagArgumentType.method_9390(commandContext, "value"));
+									List<Tag> list = Collections.singletonList(NbtTagArgumentType.getNbtTagArgument(commandContext, "value"));
 									return method_13920(commandContext, lv, arg2, list);
 								}))
 					);
@@ -242,7 +242,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.method_13880(compoundTag);
-			commandContext.getSource().method_9226(dataCommandObject.method_13883(), true);
+			commandContext.getSource().sendFeedback(dataCommandObject.method_13883(), true);
 			return i;
 		}
 	}
@@ -254,7 +254,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.method_13880(compoundTag);
-			serverCommandSource.method_9226(dataCommandObject.method_13883(), true);
+			serverCommandSource.sendFeedback(dataCommandObject.method_13883(), true);
 			return i;
 		}
 	}
@@ -287,7 +287,7 @@ public class DataCommand {
 			i = tag.asString().length();
 		}
 
-		serverCommandSource.method_9226(dataCommandObject.method_13882(tag), false);
+		serverCommandSource.sendFeedback(dataCommandObject.method_13882(tag), false);
 		return i;
 	}
 
@@ -297,13 +297,13 @@ public class DataCommand {
 			throw GET_INVALID_EXCEPTION.create(arg.toString());
 		} else {
 			int i = MathHelper.floor(((AbstractNumberTag)tag).getDouble() * d);
-			serverCommandSource.method_9226(dataCommandObject.method_13879(arg, d, i), false);
+			serverCommandSource.sendFeedback(dataCommandObject.method_13879(arg, d, i), false);
 			return i;
 		}
 	}
 
 	private static int method_13908(ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject) throws CommandSyntaxException {
-		serverCommandSource.method_9226(dataCommandObject.method_13882(dataCommandObject.method_13881()), false);
+		serverCommandSource.sendFeedback(dataCommandObject.method_13882(dataCommandObject.method_13881()), false);
 		return 1;
 	}
 
@@ -314,7 +314,7 @@ public class DataCommand {
 			throw MERGE_FAILED_EXCEPTION.create();
 		} else {
 			dataCommandObject.method_13880(compoundTag3);
-			serverCommandSource.method_9226(dataCommandObject.method_13883(), true);
+			serverCommandSource.sendFeedback(dataCommandObject.method_13883(), true);
 			return 1;
 		}
 	}

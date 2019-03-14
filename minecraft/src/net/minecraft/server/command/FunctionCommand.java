@@ -10,8 +10,8 @@ import net.minecraft.text.TranslatableTextComponent;
 
 public class FunctionCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
-		CommandFunctionManager commandFunctionManager = commandContext.getSource().getMinecraftServer().method_3740();
-		CommandSource.suggestIdentifiers(commandFunctionManager.method_12901().getKeys(), suggestionsBuilder, "#");
+		CommandFunctionManager commandFunctionManager = commandContext.getSource().getMinecraftServer().getCommandFunctionManager();
+		CommandSource.suggestIdentifiers(commandFunctionManager.getTags().getKeys(), suggestionsBuilder, "#");
 		return CommandSource.suggestIdentifiers(commandFunctionManager.getFunctions().keySet(), suggestionsBuilder);
 	};
 
@@ -31,15 +31,15 @@ public class FunctionCommand {
 		int i = 0;
 
 		for (CommandFunction commandFunction : collection) {
-			i += serverCommandSource.getMinecraftServer().method_3740().execute(commandFunction, serverCommandSource.withSilent().withMaxLevel(2));
+			i += serverCommandSource.getMinecraftServer().getCommandFunctionManager().execute(commandFunction, serverCommandSource.withSilent().withMaxLevel(2));
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
-				new TranslatableTextComponent("commands.function.success.single", i, ((CommandFunction)collection.iterator().next()).method_9194()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableTextComponent("commands.function.success.single", i, ((CommandFunction)collection.iterator().next()).getId()), true
 			);
 		} else {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.function.success.multiple", i, collection.size()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.function.success.multiple", i, collection.size()), true);
 		}
 
 		return i;

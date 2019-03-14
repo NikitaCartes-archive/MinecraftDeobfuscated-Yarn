@@ -14,9 +14,9 @@ public class MeCommand {
 							commandContext -> {
 								commandContext.getSource()
 									.getMinecraftServer()
-									.method_3760()
+									.getPlayerManager()
 									.sendToAll(
-										new TranslatableTextComponent("chat.type.emote", commandContext.getSource().method_9223(), StringArgumentType.getString(commandContext, "action"))
+										new TranslatableTextComponent("chat.type.emote", commandContext.getSource().getDisplayName(), StringArgumentType.getString(commandContext, "action"))
 									);
 								return 1;
 							}

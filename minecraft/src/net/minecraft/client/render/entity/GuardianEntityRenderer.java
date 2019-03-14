@@ -18,8 +18,8 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
-	private static final Identifier field_4708 = new Identifier("textures/entity/guardian.png");
-	private static final Identifier field_4709 = new Identifier("textures/entity/guardian_beam.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/guardian.png");
+	private static final Identifier EXPLOSION_BEAM_TEX = new Identifier("textures/entity/guardian_beam.png");
 
 	public GuardianEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		this(entityRenderDispatcher, 0.5F);
@@ -62,7 +62,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			float i = guardianEntity.getBeamProgress(h);
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-			this.method_3924(field_4709);
+			this.bindTexture(EXPLOSION_BEAM_TEX);
 			GlStateManager.texParameter(3553, 10242, 10497);
 			GlStateManager.texParameter(3553, 10243, 10497);
 			GlStateManager.disableLighting();
@@ -74,7 +74,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			GlStateManager.blendFuncSeparate(
 				GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 			);
-			float k = (float)guardianEntity.field_6002.getTime() + h;
+			float k = (float)guardianEntity.world.getTime() + h;
 			float l = k * 0.5F % 1.0F;
 			float m = guardianEntity.getStandingEyeHeight();
 			GlStateManager.pushMatrix();
@@ -90,7 +90,7 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 			GlStateManager.rotatef(o * (180.0F / (float)Math.PI), 1.0F, 0.0F, 0.0F);
 			int q = 1;
 			double r = (double)k * 0.05 * -1.5;
-			bufferBuilder.method_1328(7, VertexFormats.field_1575);
+			bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 			float s = i * i;
 			int t = 64 + (int)(s * 191.0F);
 			int u = 32 + (int)(s * 191.0F);
@@ -140,6 +140,6 @@ public class GuardianEntityRenderer extends MobEntityRenderer<GuardianEntity, Gu
 	}
 
 	protected Identifier method_3976(GuardianEntity guardianEntity) {
-		return field_4708;
+		return SKIN;
 	}
 }

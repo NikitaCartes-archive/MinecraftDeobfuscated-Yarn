@@ -13,9 +13,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class FireworkRocketRecipe extends SpecialCraftingRecipe {
-	private static final Ingredient field_9007 = Ingredient.method_8091(Items.field_8407);
-	private static final Ingredient field_9006 = Ingredient.method_8091(Items.field_8054);
-	private static final Ingredient field_9008 = Ingredient.method_8091(Items.field_8450);
+	private static final Ingredient field_9007 = Ingredient.ofItems(Items.field_8407);
+	private static final Ingredient field_9006 = Ingredient.ofItems(Items.field_8054);
+	private static final Ingredient field_9008 = Ingredient.ofItems(Items.field_8450);
 
 	public FireworkRocketRecipe(Identifier identifier) {
 		super(identifier);
@@ -26,7 +26,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 		int i = 0;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack = craftingInventory.method_5438(j);
+			ItemStack itemStack = craftingInventory.getInvStack(j);
 			if (!itemStack.isEmpty()) {
 				if (field_9007.method_8093(itemStack)) {
 					if (bl) {
@@ -49,17 +49,17 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 
 	public ItemStack method_17708(CraftingInventory craftingInventory) {
 		ItemStack itemStack = new ItemStack(Items.field_8639, 3);
-		CompoundTag compoundTag = itemStack.method_7911("Fireworks");
+		CompoundTag compoundTag = itemStack.getOrCreateSubCompoundTag("Fireworks");
 		ListTag listTag = new ListTag();
 		int i = 0;
 
 		for (int j = 0; j < craftingInventory.getInvSize(); j++) {
-			ItemStack itemStack2 = craftingInventory.method_5438(j);
+			ItemStack itemStack2 = craftingInventory.getInvStack(j);
 			if (!itemStack2.isEmpty()) {
 				if (field_9006.method_8093(itemStack2)) {
 					i++;
 				} else if (field_9008.method_8093(itemStack2)) {
-					CompoundTag compoundTag2 = itemStack2.method_7941("Explosion");
+					CompoundTag compoundTag2 = itemStack2.getSubCompoundTag("Explosion");
 					if (compoundTag2 != null) {
 						listTag.add(compoundTag2);
 					}
@@ -69,7 +69,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 
 		compoundTag.putByte("Flight", (byte)i);
 		if (!listTag.isEmpty()) {
-			compoundTag.method_10566("Explosions", listTag);
+			compoundTag.put("Explosions", listTag);
 		}
 
 		return itemStack;
@@ -87,7 +87,7 @@ public class FireworkRocketRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9043;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.FIREWORK_ROCKET;
 	}
 }

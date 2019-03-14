@@ -32,7 +32,7 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 
 	@Nullable
 	@Override
-	public Structure.StructureBlockInfo method_15110(
+	public Structure.StructureBlockInfo process(
 		ViewableWorld viewableWorld,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,
@@ -43,7 +43,7 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 	}
 
 	@Override
-	protected StructureProcessorType method_16772() {
+	protected StructureProcessorType getType() {
 		return StructureProcessorType.field_16986;
 	}
 
@@ -54,7 +54,7 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("blocks"),
-					dynamicOps.createList(this.blocks.stream().map(block -> BlockState.serialize(dynamicOps, block.method_9564()).getValue()))
+					dynamicOps.createList(this.blocks.stream().map(block -> BlockState.serialize(dynamicOps, block.getDefaultState()).getValue()))
 				)
 			)
 		);

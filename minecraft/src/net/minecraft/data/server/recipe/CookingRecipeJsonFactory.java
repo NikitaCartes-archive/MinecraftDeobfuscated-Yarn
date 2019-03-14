@@ -22,7 +22,7 @@ public class CookingRecipeJsonFactory {
 	private final Ingredient input;
 	private final float exp;
 	private final int time;
-	private final SimpleAdvancement.Builder field_11416 = SimpleAdvancement.Builder.create();
+	private final SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.create();
 	private String group;
 	private final CookingRecipeSerializer<?> serializer;
 
@@ -41,38 +41,38 @@ public class CookingRecipeJsonFactory {
 	}
 
 	public static CookingRecipeJsonFactory createBlasting(Ingredient ingredient, ItemProvider itemProvider, float f, int i) {
-		return create(ingredient, itemProvider, f, i, RecipeSerializer.field_17084);
+		return create(ingredient, itemProvider, f, i, RecipeSerializer.BLASTING);
 	}
 
 	public static CookingRecipeJsonFactory createSmelting(Ingredient ingredient, ItemProvider itemProvider, float f, int i) {
-		return create(ingredient, itemProvider, f, i, RecipeSerializer.field_9042);
+		return create(ingredient, itemProvider, f, i, RecipeSerializer.SMELTING);
 	}
 
-	public CookingRecipeJsonFactory method_10469(String string, CriterionConditions criterionConditions) {
-		this.field_11416.method_709(string, criterionConditions);
+	public CookingRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
+		this.builder.criterion(string, criterionConditions);
 		return this;
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer) {
-		this.method_10468(consumer, Registry.ITEM.method_10221(this.output));
+		this.offerTo(consumer, Registry.ITEM.getId(this.output));
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer, String string) {
-		Identifier identifier = Registry.ITEM.method_10221(this.output);
+		Identifier identifier = Registry.ITEM.getId(this.output);
 		Identifier identifier2 = new Identifier(string);
 		if (identifier2.equals(identifier)) {
 			throw new IllegalStateException("Recipe " + identifier2 + " should remove its 'save' argument");
 		} else {
-			this.method_10468(consumer, identifier2);
+			this.offerTo(consumer, identifier2);
 		}
 	}
 
-	public void method_10468(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
-		this.method_10471(identifier);
-		this.field_11416
-			.method_708(new Identifier("recipes/root"))
-			.method_709("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
-			.method_703(AdvancementRewards.Builder.recipe(identifier))
+	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
+		this.validate(identifier);
+		this.builder
+			.parent(new Identifier("recipes/root"))
+			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
+			.rewards(AdvancementRewards.Builder.recipe(identifier))
 			.criteriaMerger(CriteriaMerger.OR);
 		consumer.accept(
 			new CookingRecipeJsonFactory.CookingRecipeJsonProvider(
@@ -82,28 +82,28 @@ public class CookingRecipeJsonFactory {
 				this.output,
 				this.exp,
 				this.time,
-				this.field_11416,
+				this.builder,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath()),
 				(RecipeSerializer<? extends CookingRecipe>)this.serializer
 			)
 		);
 	}
 
-	private void method_10471(Identifier identifier) {
-		if (this.field_11416.getCriteria().isEmpty()) {
+	private void validate(Identifier identifier) {
+		if (this.builder.getCriteria().isEmpty()) {
 			throw new IllegalStateException("No way of obtaining recipe " + identifier);
 		}
 	}
 
 	public static class CookingRecipeJsonProvider implements RecipeJsonProvider {
-		private final Identifier field_11424;
+		private final Identifier recipeId;
 		private final String group;
 		private final Ingredient ingredient;
 		private final Item result;
 		private final float experience;
 		private final int cookingTime;
-		private final SimpleAdvancement.Builder field_11423;
-		private final Identifier field_11427;
+		private final SimpleAdvancement.Builder builder;
+		private final Identifier advancementId;
 		private final RecipeSerializer<? extends CookingRecipe> cookingRecipeSerializer;
 
 		public CookingRecipeJsonProvider(
@@ -117,14 +117,14 @@ public class CookingRecipeJsonFactory {
 			Identifier identifier2,
 			RecipeSerializer<? extends CookingRecipe> recipeSerializer
 		) {
-			this.field_11424 = identifier;
+			this.recipeId = identifier;
 			this.group = string;
 			this.ingredient = ingredient;
 			this.result = item;
 			this.experience = f;
 			this.cookingTime = i;
-			this.field_11423 = builder;
-			this.field_11427 = identifier2;
+			this.builder = builder;
+			this.advancementId = identifier2;
 			this.cookingRecipeSerializer = recipeSerializer;
 		}
 
@@ -135,7 +135,7 @@ public class CookingRecipeJsonFactory {
 			}
 
 			jsonObject.add("ingredient", this.ingredient.toJson());
-			jsonObject.addProperty("result", Registry.ITEM.method_10221(this.result).toString());
+			jsonObject.addProperty("result", Registry.ITEM.getId(this.result).toString());
 			jsonObject.addProperty("experience", this.experience);
 			jsonObject.addProperty("cookingtime", this.cookingTime);
 		}
@@ -146,20 +146,20 @@ public class CookingRecipeJsonFactory {
 		}
 
 		@Override
-		public Identifier method_10417() {
-			return this.field_11424;
+		public Identifier getRecipeId() {
+			return this.recipeId;
 		}
 
 		@Nullable
 		@Override
 		public JsonObject toAdvancementJson() {
-			return this.field_11423.toJson();
+			return this.builder.toJson();
 		}
 
 		@Nullable
 		@Override
-		public Identifier method_10418() {
-			return this.field_11427;
+		public Identifier getAdvancementId() {
+			return this.advancementId;
 		}
 	}
 }

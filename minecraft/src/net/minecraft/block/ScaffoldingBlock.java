@@ -19,42 +19,38 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class ScaffoldingBlock extends Block implements Waterloggable {
-	private static final VoxelShape field_16494;
-	private static final VoxelShape field_16497;
-	private static final VoxelShape field_17577 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
-	private static final VoxelShape field_17578 = VoxelShapes.method_1077().offset(0.0, -1.0, 0.0);
-	public static final IntegerProperty field_16495 = Properties.field_16503;
-	public static final BooleanProperty field_16496 = Properties.field_12508;
-	public static final BooleanProperty field_16547 = Properties.field_16562;
+	private static final VoxelShape NORMAL_OUTLINE_SHAPE;
+	private static final VoxelShape BOTTOM_OUTLINE_SHAPE;
+	private static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+	private static final VoxelShape field_17578 = VoxelShapes.fullCube().offset(0.0, -1.0, 0.0);
+	public static final IntegerProperty DISTANCE = Properties.DISTANCE_0_7;
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	public static final BooleanProperty BOTTOM = Properties.BOTTOM;
 
 	protected ScaffoldingBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_16495, Integer.valueOf(7))
-				.method_11657(field_16496, Boolean.valueOf(false))
-				.method_11657(field_16547, Boolean.valueOf(false))
+		this.setDefaultState(
+			this.stateFactory.getDefaultState().with(DISTANCE, Integer.valueOf(7)).with(WATERLOGGED, Boolean.valueOf(false)).with(BOTTOM, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_16495, field_16496, field_16547);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(DISTANCE, WATERLOGGED, BOTTOM);
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		if (!verticalEntityPosition.method_17785(blockState.getBlock().getItem())) {
-			return blockState.method_11654(field_16547) ? field_16497 : field_16494;
+			return blockState.get(BOTTOM) ? BOTTOM_OUTLINE_SHAPE : NORMAL_OUTLINE_SHAPE;
 		} else {
-			return VoxelShapes.method_1077();
+			return VoxelShapes.fullCube();
 		}
 	}
 
 	@Override
-	public VoxelShape method_9584(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return VoxelShapes.method_1077();
+	public VoxelShape getRayTraceShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return VoxelShapes.fullCube();
 	}
 
 	@Override
@@ -63,99 +59,96 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public boolean method_9616(BlockState blockState, ItemPlacementContext itemPlacementContext) {
+	public boolean canReplace(BlockState blockState, ItemPlacementContext itemPlacementContext) {
 		return itemPlacementContext.getItemStack().getItem() == this.getItem();
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		BlockPos blockPos = itemPlacementContext.method_8037();
-		World world = itemPlacementContext.method_8045();
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		World world = itemPlacementContext.getWorld();
 		int i = this.method_16372(world, blockPos);
-		return this.method_9564()
-			.method_11657(field_16496, Boolean.valueOf(world.method_8316(blockPos).getFluid() == Fluids.WATER))
-			.method_11657(field_16495, Integer.valueOf(i))
-			.method_11657(field_16547, Boolean.valueOf(this.method_16373(world, blockPos, i)));
+		return this.getDefaultState()
+			.with(WATERLOGGED, Boolean.valueOf(world.getFluidState(blockPos).getFluid() == Fluids.WATER))
+			.with(DISTANCE, Integer.valueOf(i))
+			.with(BOTTOM, Boolean.valueOf(this.method_16373(world, blockPos, i)));
 	}
 
 	@Override
-	public void method_9615(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (!world.isClient) {
-			world.method_8397().method_8676(blockPos, this, 1);
+			world.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		if ((Boolean)blockState.method_11654(field_16496)) {
-			iWorld.method_8405().method_8676(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if ((Boolean)blockState.get(WATERLOGGED)) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
 		if (!iWorld.isClient()) {
-			iWorld.method_8397().method_8676(blockPos, this, 1);
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
 
 		return blockState;
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		int i = this.method_16372(world, blockPos);
-		BlockState blockState2 = blockState.method_11657(field_16495, Integer.valueOf(i))
-			.method_11657(field_16547, Boolean.valueOf(this.method_16373(world, blockPos, i)));
-		if ((Integer)blockState2.method_11654(field_16495) == 7) {
-			if ((Integer)blockState.method_11654(field_16495) == 7) {
+		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.method_16373(world, blockPos, i)));
+		if ((Integer)blockState2.get(DISTANCE) == 7) {
+			if ((Integer)blockState.get(DISTANCE) == 7) {
 				world.spawnEntity(
 					new FallingBlockEntity(
-						world,
-						(double)blockPos.getX() + 0.5,
-						(double)blockPos.getY(),
-						(double)blockPos.getZ() + 0.5,
-						blockState2.method_11657(field_16496, Boolean.valueOf(false))
+						world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, blockState2.with(WATERLOGGED, Boolean.valueOf(false))
 					)
 				);
 			} else {
-				world.method_8651(blockPos, true);
+				world.breakBlock(blockPos, true);
 			}
 		} else if (blockState != blockState2) {
-			world.method_8652(blockPos, blockState2, 3);
+			world.setBlockState(blockPos, blockState2, 3);
 		}
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		if (verticalEntityPosition.method_16192(VoxelShapes.method_1077(), blockPos, true) && !verticalEntityPosition.isSneaking()) {
-			return field_16494;
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		if (verticalEntityPosition.isAboveBlock(VoxelShapes.fullCube(), blockPos, true) && !verticalEntityPosition.isSneaking()) {
+			return NORMAL_OUTLINE_SHAPE;
 		} else {
-			return blockState.method_11654(field_16495) != 0 && blockState.method_11654(field_16547) && verticalEntityPosition.method_16192(field_17578, blockPos, true)
-				? field_17577
-				: VoxelShapes.method_1073();
+			return blockState.get(DISTANCE) != 0 && blockState.get(BOTTOM) && verticalEntityPosition.isAboveBlock(field_17578, blockPos, true)
+				? COLLISION_SHAPE
+				: VoxelShapes.empty();
 		}
 	}
 
 	@Override
-	public FluidState method_9545(BlockState blockState) {
-		return blockState.method_11654(field_16496) ? Fluids.WATER.method_15729(false) : super.method_9545(blockState);
+	public FluidState getFluidState(BlockState blockState) {
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
 	}
 
 	private boolean method_16373(BlockView blockView, BlockPos blockPos, int i) {
-		return i > 0 && blockView.method_8320(blockPos.down()).getBlock() != this;
+		return i > 0 && blockView.getBlockState(blockPos.down()).getBlock() != this;
 	}
 
 	private int method_16372(BlockView blockView, BlockPos blockPos) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).method_10098(Direction.DOWN);
-		BlockState blockState = blockView.method_8320(mutable);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.DOWN);
+		BlockState blockState = blockView.getBlockState(mutable);
 		int i = 7;
 		if (blockState.getBlock() == this) {
-			i = (Integer)blockState.method_11654(field_16495);
-		} else if (Block.method_9501(blockState.method_11628(blockView, mutable), Direction.UP)) {
+			i = (Integer)blockState.get(DISTANCE);
+		} else if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, mutable), Direction.UP)) {
 			return 0;
 		}
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
-			BlockState blockState2 = blockView.method_8320(mutable.method_10101(blockPos).method_10098(direction));
+			BlockState blockState2 = blockView.getBlockState(mutable.set(blockPos).setOffset(direction));
 			if (blockState2.getBlock() == this) {
-				i = Math.min(i, (Integer)blockState2.method_11654(field_16495) + 1);
+				i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
 				if (i == 1) {
 					break;
 				}
@@ -166,16 +159,16 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	static {
-		VoxelShape voxelShape = Block.method_9541(0.0, 14.0, 0.0, 16.0, 16.0, 16.0);
-		VoxelShape voxelShape2 = Block.method_9541(0.0, 0.0, 0.0, 2.0, 16.0, 2.0);
-		VoxelShape voxelShape3 = Block.method_9541(14.0, 0.0, 0.0, 16.0, 16.0, 2.0);
-		VoxelShape voxelShape4 = Block.method_9541(0.0, 0.0, 14.0, 2.0, 16.0, 16.0);
-		VoxelShape voxelShape5 = Block.method_9541(14.0, 0.0, 14.0, 16.0, 16.0, 16.0);
-		field_16494 = VoxelShapes.method_17786(voxelShape, voxelShape2, voxelShape3, voxelShape4, voxelShape5);
-		VoxelShape voxelShape6 = Block.method_9541(0.0, 0.0, 0.0, 2.0, 2.0, 16.0);
-		VoxelShape voxelShape7 = Block.method_9541(14.0, 0.0, 0.0, 16.0, 2.0, 16.0);
-		VoxelShape voxelShape8 = Block.method_9541(0.0, 0.0, 14.0, 16.0, 2.0, 16.0);
-		VoxelShape voxelShape9 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 2.0, 2.0);
-		field_16497 = VoxelShapes.method_17786(ScaffoldingBlock.field_17577, field_16494, voxelShape7, voxelShape6, voxelShape9, voxelShape8);
+		VoxelShape voxelShape = Block.createCuboidShape(0.0, 14.0, 0.0, 16.0, 16.0, 16.0);
+		VoxelShape voxelShape2 = Block.createCuboidShape(0.0, 0.0, 0.0, 2.0, 16.0, 2.0);
+		VoxelShape voxelShape3 = Block.createCuboidShape(14.0, 0.0, 0.0, 16.0, 16.0, 2.0);
+		VoxelShape voxelShape4 = Block.createCuboidShape(0.0, 0.0, 14.0, 2.0, 16.0, 16.0);
+		VoxelShape voxelShape5 = Block.createCuboidShape(14.0, 0.0, 14.0, 16.0, 16.0, 16.0);
+		NORMAL_OUTLINE_SHAPE = VoxelShapes.union(voxelShape, voxelShape2, voxelShape3, voxelShape4, voxelShape5);
+		VoxelShape voxelShape6 = Block.createCuboidShape(0.0, 0.0, 0.0, 2.0, 2.0, 16.0);
+		VoxelShape voxelShape7 = Block.createCuboidShape(14.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+		VoxelShape voxelShape8 = Block.createCuboidShape(0.0, 0.0, 14.0, 16.0, 2.0, 16.0);
+		VoxelShape voxelShape9 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 2.0);
+		BOTTOM_OUTLINE_SHAPE = VoxelShapes.union(ScaffoldingBlock.COLLISION_SHAPE, NORMAL_OUTLINE_SHAPE, voxelShape7, voxelShape6, voxelShape9, voxelShape8);
 	}
 }

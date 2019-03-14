@@ -16,7 +16,7 @@ public class Fluids {
 	static {
 		for (Fluid fluid : Registry.FLUID) {
 			for (FluidState fluidState : fluid.getStateFactory().getStates()) {
-				Fluid.field_15904.add(fluidState);
+				Fluid.STATE_IDS.add(fluidState);
 			}
 		}
 	}

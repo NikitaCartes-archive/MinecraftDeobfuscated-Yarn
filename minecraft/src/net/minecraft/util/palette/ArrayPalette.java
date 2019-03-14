@@ -1,5 +1,6 @@
 package net.minecraft.util.palette;
 
+import java.util.Arrays;
 import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -10,18 +11,18 @@ import net.minecraft.util.IdList;
 import net.minecraft.util.PacketByteBuf;
 
 public class ArrayPalette<T> implements Palette<T> {
-	private final IdList<T> field_12900;
+	private final IdList<T> idList;
 	private final T[] field_12904;
-	private final PaletteResizeListener<T> field_12905;
+	private final PaletteResizeListener<T> resizeListener;
 	private final Function<CompoundTag, T> valueDeserializer;
 	private final int indexBits;
 	private int size;
 
 	public ArrayPalette(IdList<T> idList, int i, PaletteResizeListener<T> paletteResizeListener, Function<CompoundTag, T> function) {
-		this.field_12900 = idList;
+		this.idList = idList;
 		this.field_12904 = (T[])(new Object[1 << i]);
 		this.indexBits = i;
-		this.field_12905 = paletteResizeListener;
+		this.resizeListener = paletteResizeListener;
 		this.valueDeserializer = function;
 	}
 
@@ -39,8 +40,13 @@ public class ArrayPalette<T> implements Palette<T> {
 			this.size++;
 			return ix;
 		} else {
-			return this.field_12905.onResize(this.indexBits + 1, object);
+			return this.resizeListener.onResize(this.indexBits + 1, object);
 		}
+	}
+
+	@Override
+	public boolean method_19525(T object) {
+		return Arrays.stream(this.field_12904).anyMatch(object2 -> object2 == object);
 	}
 
 	@Nullable
@@ -51,20 +57,20 @@ public class ArrayPalette<T> implements Palette<T> {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_12289(PacketByteBuf packetByteBuf) {
+	public void fromPacket(PacketByteBuf packetByteBuf) {
 		this.size = packetByteBuf.readVarInt();
 
 		for (int i = 0; i < this.size; i++) {
-			this.field_12904[i] = this.field_12900.get(packetByteBuf.readVarInt());
+			this.field_12904[i] = this.idList.get(packetByteBuf.readVarInt());
 		}
 	}
 
 	@Override
-	public void method_12287(PacketByteBuf packetByteBuf) {
+	public void toPacket(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeVarInt(this.size);
 
 		for (int i = 0; i < this.size; i++) {
-			packetByteBuf.writeVarInt(this.field_12900.getId(this.field_12904[i]));
+			packetByteBuf.writeVarInt(this.idList.getId(this.field_12904[i]));
 		}
 	}
 
@@ -73,7 +79,7 @@ public class ArrayPalette<T> implements Palette<T> {
 		int i = PacketByteBuf.getVarIntSizeBytes(this.method_12282());
 
 		for (int j = 0; j < this.method_12282(); j++) {
-			i += PacketByteBuf.getVarIntSizeBytes(this.field_12900.getId(this.field_12904[j]));
+			i += PacketByteBuf.getVarIntSizeBytes(this.idList.getId(this.field_12904[j]));
 		}
 
 		return i;
@@ -84,7 +90,7 @@ public class ArrayPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void method_12286(ListTag listTag) {
+	public void fromTag(ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
 			this.field_12904[i] = (T)this.valueDeserializer.apply(listTag.getCompoundTag(i));
 		}

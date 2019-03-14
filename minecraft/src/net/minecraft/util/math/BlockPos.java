@@ -12,14 +12,14 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.concurrent.Immutable;
-import net.minecraft.class_4213;
 import net.minecraft.entity.Entity;
 import net.minecraft.sortme.CuboidBlockIterator;
+import net.minecraft.util.DynamicSerializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Immutable
-public class BlockPos extends Vec3i implements class_4213 {
+public class BlockPos extends Vec3i implements DynamicSerializable {
 	private static final Logger field_18789 = LogManager.getLogger();
 	public static final BlockPos ORIGIN = new BlockPos(0, 0, 0);
 	private static final int SIZE_BITS_X = 1 + MathHelper.log2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
@@ -66,11 +66,11 @@ public class BlockPos extends Vec3i implements class_4213 {
 	}
 
 	@Override
-	public <T> T method_19508(DynamicOps<T> dynamicOps) {
+	public <T> T serialize(DynamicOps<T> dynamicOps) {
 		return dynamicOps.createIntList(IntStream.of(new int[]{this.getX(), this.getY(), this.getZ()}));
 	}
 
-	public static long method_10060(long l, Direction direction) {
+	public static long offset(long l, Direction direction) {
 		return add(l, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ());
 	}
 
@@ -122,11 +122,11 @@ public class BlockPos extends Vec3i implements class_4213 {
 		return i == 0 && j == 0 && k == 0 ? this : new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
 	}
 
-	public BlockPos method_10081(Vec3i vec3i) {
+	public BlockPos add(Vec3i vec3i) {
 		return this.add(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 	}
 
-	public BlockPos method_10059(Vec3i vec3i) {
+	public BlockPos subtract(Vec3i vec3i) {
 		return this.add(-vec3i.getX(), -vec3i.getY(), -vec3i.getZ());
 	}
 
@@ -135,7 +135,7 @@ public class BlockPos extends Vec3i implements class_4213 {
 	}
 
 	public BlockPos up(int i) {
-		return this.method_10079(Direction.UP, i);
+		return this.offset(Direction.UP, i);
 	}
 
 	public BlockPos down() {
@@ -143,7 +143,7 @@ public class BlockPos extends Vec3i implements class_4213 {
 	}
 
 	public BlockPos down(int i) {
-		return this.method_10079(Direction.DOWN, i);
+		return this.offset(Direction.DOWN, i);
 	}
 
 	public BlockPos north() {
@@ -151,7 +151,7 @@ public class BlockPos extends Vec3i implements class_4213 {
 	}
 
 	public BlockPos north(int i) {
-		return this.method_10079(Direction.NORTH, i);
+		return this.offset(Direction.NORTH, i);
 	}
 
 	public BlockPos south() {
@@ -159,7 +159,7 @@ public class BlockPos extends Vec3i implements class_4213 {
 	}
 
 	public BlockPos south(int i) {
-		return this.method_10079(Direction.SOUTH, i);
+		return this.offset(Direction.SOUTH, i);
 	}
 
 	public BlockPos west() {
@@ -167,7 +167,7 @@ public class BlockPos extends Vec3i implements class_4213 {
 	}
 
 	public BlockPos west(int i) {
-		return this.method_10079(Direction.WEST, i);
+		return this.offset(Direction.WEST, i);
 	}
 
 	public BlockPos east() {
@@ -175,14 +175,14 @@ public class BlockPos extends Vec3i implements class_4213 {
 	}
 
 	public BlockPos east(int i) {
-		return this.method_10079(Direction.EAST, i);
+		return this.offset(Direction.EAST, i);
 	}
 
-	public BlockPos method_10093(Direction direction) {
-		return this.method_10079(direction, 1);
+	public BlockPos offset(Direction direction) {
+		return this.offset(direction, 1);
 	}
 
-	public BlockPos method_10079(Direction direction, int i) {
+	public BlockPos offset(Direction direction, int i) {
 		return i == 0
 			? this
 			: new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
@@ -227,12 +227,12 @@ public class BlockPos extends Vec3i implements class_4213 {
 
 	public static Stream<BlockPos> getBlocksInCuboid(int i, int j, int k, int l, int m, int n) {
 		return StreamSupport.stream(new AbstractSpliterator<BlockPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64) {
-			final CuboidBlockIterator field_17676 = new CuboidBlockIterator(i, j, k, l, m, n);
+			final CuboidBlockIterator connector = new CuboidBlockIterator(i, j, k, l, m, n);
 			final BlockPos.Mutable field_18231 = new BlockPos.Mutable();
 
 			public boolean tryAdvance(Consumer<? super BlockPos> consumer) {
-				if (this.field_17676.step()) {
-					consumer.accept(this.field_18231.set(this.field_17676.method_18671(), this.field_17676.method_18672(), this.field_17676.method_18673()));
+				if (this.connector.step()) {
+					consumer.accept(this.field_18231.set(this.connector.getX(), this.connector.getY(), this.connector.getZ()));
 					return true;
 				} else {
 					return false;
@@ -248,7 +248,7 @@ public class BlockPos extends Vec3i implements class_4213 {
 
 				protected BlockPos method_10106() {
 					return (BlockPos)(this.field_17596.step()
-						? this.field_18232.set(this.field_17596.method_18671(), this.field_17596.method_18672(), this.field_17596.method_18673())
+						? this.field_18232.set(this.field_17596.getX(), this.field_17596.getY(), this.field_17596.getZ())
 						: this.endOfData());
 				}
 			};
@@ -289,8 +289,8 @@ public class BlockPos extends Vec3i implements class_4213 {
 		}
 
 		@Override
-		public BlockPos method_10079(Direction direction, int i) {
-			return super.method_10079(direction, i).toImmutable();
+		public BlockPos offset(Direction direction, int i) {
+			return super.offset(direction, i).toImmutable();
 		}
 
 		@Override
@@ -328,7 +328,7 @@ public class BlockPos extends Vec3i implements class_4213 {
 			return this.set(MathHelper.floor(d), MathHelper.floor(e), MathHelper.floor(f));
 		}
 
-		public BlockPos.Mutable method_10101(Vec3i vec3i) {
+		public BlockPos.Mutable set(Vec3i vec3i) {
 			return this.set(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 		}
 
@@ -342,11 +342,11 @@ public class BlockPos extends Vec3i implements class_4213 {
 			);
 		}
 
-		public BlockPos.Mutable method_10098(Direction direction) {
-			return this.method_10104(direction, 1);
+		public BlockPos.Mutable setOffset(Direction direction) {
+			return this.setOffset(direction, 1);
 		}
 
-		public BlockPos.Mutable method_10104(Direction direction, int i) {
+		public BlockPos.Mutable setOffset(Direction direction, int i) {
 			return this.set(this.x + direction.getOffsetX() * i, this.y + direction.getOffsetY() * i, this.z + direction.getOffsetZ() * i);
 		}
 
@@ -412,15 +412,15 @@ public class BlockPos extends Vec3i implements class_4213 {
 		}
 
 		public BlockPos.PooledMutable method_10114(Vec3i vec3i) {
-			return (BlockPos.PooledMutable)super.method_10101(vec3i);
+			return (BlockPos.PooledMutable)super.set(vec3i);
 		}
 
 		public BlockPos.PooledMutable method_10118(Direction direction) {
-			return (BlockPos.PooledMutable)super.method_10098(direction);
+			return (BlockPos.PooledMutable)super.setOffset(direction);
 		}
 
 		public BlockPos.PooledMutable method_10116(Direction direction, int i) {
-			return (BlockPos.PooledMutable)super.method_10104(direction, i);
+			return (BlockPos.PooledMutable)super.setOffset(direction, i);
 		}
 
 		public BlockPos.PooledMutable method_10108(int i, int j, int k) {

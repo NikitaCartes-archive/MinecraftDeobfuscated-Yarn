@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, EndermiteEntityModel<EndermiteEntity>> {
-	private static final Identifier field_4671 = new Identifier("textures/entity/endermite.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/endermite.png");
 
 	public EndermiteEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new EndermiteEntityModel<>(), 0.3F);
@@ -19,6 +19,6 @@ public class EndermiteEntityRenderer extends MobEntityRenderer<EndermiteEntity, 
 	}
 
 	protected Identifier method_3920(EndermiteEntity endermiteEntity) {
-		return field_4671;
+		return SKIN;
 	}
 }

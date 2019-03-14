@@ -22,10 +22,10 @@ public class CrashReportSection {
 
 	@Environment(EnvType.CLIENT)
 	public static String createPositionString(double d, double e, double f) {
-		return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", d, e, f, method_582(new BlockPos(d, e, f)));
+		return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", d, e, f, createPositionString(new BlockPos(d, e, f)));
 	}
 
-	public static String method_582(BlockPos blockPos) {
+	public static String createPositionString(BlockPos blockPos) {
 		return createPositionString(blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 
@@ -76,7 +76,7 @@ public class CrashReportSection {
 		return stringBuilder.toString();
 	}
 
-	public void method_577(String string, ICrashCallable<String> iCrashCallable) {
+	public void add(String string, ICrashCallable<String> iCrashCallable) {
 		try {
 			this.add(string, iCrashCallable.call());
 		} catch (Throwable var4) {
@@ -157,12 +157,12 @@ public class CrashReportSection {
 		return this.stackTrace;
 	}
 
-	public static void method_586(CrashReportSection crashReportSection, BlockPos blockPos, @Nullable BlockState blockState) {
+	public static void addBlockInfo(CrashReportSection crashReportSection, BlockPos blockPos, @Nullable BlockState blockState) {
 		if (blockState != null) {
-			crashReportSection.method_577("Block", blockState::toString);
+			crashReportSection.add("Block", blockState::toString);
 		}
 
-		crashReportSection.method_577("Block location", () -> method_582(blockPos));
+		crashReportSection.add("Block location", (ICrashCallable<String>)(() -> createPositionString(blockPos)));
 	}
 
 	static class Element {

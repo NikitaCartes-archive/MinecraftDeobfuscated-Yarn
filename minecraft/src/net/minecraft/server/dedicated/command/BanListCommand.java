@@ -16,29 +16,29 @@ public class BanListCommand {
 			ServerCommandManager.literal("banlist")
 				.requires(
 					serverCommandSource -> (
-								serverCommandSource.getMinecraftServer().method_3760().method_14563().isEnabled()
-									|| serverCommandSource.getMinecraftServer().method_3760().getIpBanList().isEnabled()
+								serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList().isEnabled()
+									|| serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList().isEnabled()
 							)
 							&& serverCommandSource.hasPermissionLevel(3)
 				)
 				.executes(
 					commandContext -> {
-						PlayerManager playerManager = commandContext.getSource().getMinecraftServer().method_3760();
+						PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
 						return method_13015(
-							commandContext.getSource(), Lists.newArrayList(Iterables.concat(playerManager.method_14563().values(), playerManager.getIpBanList().values()))
+							commandContext.getSource(), Lists.newArrayList(Iterables.concat(playerManager.getUserBanList().values(), playerManager.getIpBanList().values()))
 						);
 					}
 				)
 				.then(
 					ServerCommandManager.literal("ips")
 						.executes(
-							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().method_3760().getIpBanList().values())
+							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getIpBanList().values())
 						)
 				)
 				.then(
 					ServerCommandManager.literal("players")
 						.executes(
-							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().method_3760().method_14563().values())
+							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().values())
 						)
 				)
 		);
@@ -46,12 +46,12 @@ public class BanListCommand {
 
 	private static int method_13015(ServerCommandSource serverCommandSource, Collection<? extends BanEntry<?>> collection) {
 		if (collection.isEmpty()) {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.banlist.none"), false);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.banlist.none"), false);
 		} else {
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.banlist.list", collection.size()), false);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.banlist.list", collection.size()), false);
 
 			for (BanEntry<?> banEntry : collection) {
-				serverCommandSource.method_9226(
+				serverCommandSource.sendFeedback(
 					new TranslatableTextComponent("commands.banlist.entry", banEntry.asTextComponent(), banEntry.getSource(), banEntry.getReason()), false
 				);
 			}

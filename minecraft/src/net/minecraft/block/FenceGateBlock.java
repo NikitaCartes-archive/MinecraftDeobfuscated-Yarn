@@ -18,149 +18,148 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class FenceGateBlock extends HorizontalFacingBlock {
-	public static final BooleanProperty field_11026 = Properties.field_12537;
-	public static final BooleanProperty field_11021 = Properties.field_12484;
-	public static final BooleanProperty field_11024 = Properties.field_12491;
-	protected static final VoxelShape field_11022 = Block.method_9541(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
-	protected static final VoxelShape field_11017 = Block.method_9541(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
-	protected static final VoxelShape field_11025 = Block.method_9541(0.0, 0.0, 6.0, 16.0, 13.0, 10.0);
-	protected static final VoxelShape field_11016 = Block.method_9541(6.0, 0.0, 0.0, 10.0, 13.0, 16.0);
-	protected static final VoxelShape field_11028 = Block.method_9541(0.0, 0.0, 6.0, 16.0, 24.0, 10.0);
-	protected static final VoxelShape field_11019 = Block.method_9541(6.0, 0.0, 0.0, 10.0, 24.0, 16.0);
-	protected static final VoxelShape field_11018 = VoxelShapes.method_1084(
-		Block.method_9541(0.0, 5.0, 7.0, 2.0, 16.0, 9.0), Block.method_9541(14.0, 5.0, 7.0, 16.0, 16.0, 9.0)
+	public static final BooleanProperty OPEN = Properties.OPEN;
+	public static final BooleanProperty POWERED = Properties.POWERED;
+	public static final BooleanProperty IN_WALL = Properties.IN_WALL;
+	protected static final VoxelShape field_11022 = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 16.0, 10.0);
+	protected static final VoxelShape field_11017 = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 16.0, 16.0);
+	protected static final VoxelShape field_11025 = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 13.0, 10.0);
+	protected static final VoxelShape field_11016 = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 13.0, 16.0);
+	protected static final VoxelShape field_11028 = Block.createCuboidShape(0.0, 0.0, 6.0, 16.0, 24.0, 10.0);
+	protected static final VoxelShape field_11019 = Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 24.0, 16.0);
+	protected static final VoxelShape field_11018 = VoxelShapes.union(
+		Block.createCuboidShape(0.0, 5.0, 7.0, 2.0, 16.0, 9.0), Block.createCuboidShape(14.0, 5.0, 7.0, 16.0, 16.0, 9.0)
 	);
-	protected static final VoxelShape field_11023 = VoxelShapes.method_1084(
-		Block.method_9541(7.0, 5.0, 0.0, 9.0, 16.0, 2.0), Block.method_9541(7.0, 5.0, 14.0, 9.0, 16.0, 16.0)
+	protected static final VoxelShape field_11023 = VoxelShapes.union(
+		Block.createCuboidShape(7.0, 5.0, 0.0, 9.0, 16.0, 2.0), Block.createCuboidShape(7.0, 5.0, 14.0, 9.0, 16.0, 16.0)
 	);
-	protected static final VoxelShape field_11020 = VoxelShapes.method_1084(
-		Block.method_9541(0.0, 2.0, 7.0, 2.0, 13.0, 9.0), Block.method_9541(14.0, 2.0, 7.0, 16.0, 13.0, 9.0)
+	protected static final VoxelShape field_11020 = VoxelShapes.union(
+		Block.createCuboidShape(0.0, 2.0, 7.0, 2.0, 13.0, 9.0), Block.createCuboidShape(14.0, 2.0, 7.0, 16.0, 13.0, 9.0)
 	);
-	protected static final VoxelShape field_11027 = VoxelShapes.method_1084(
-		Block.method_9541(7.0, 2.0, 0.0, 9.0, 13.0, 2.0), Block.method_9541(7.0, 2.0, 14.0, 9.0, 13.0, 16.0)
+	protected static final VoxelShape field_11027 = VoxelShapes.union(
+		Block.createCuboidShape(7.0, 2.0, 0.0, 9.0, 13.0, 2.0), Block.createCuboidShape(7.0, 2.0, 14.0, 9.0, 13.0, 16.0)
 	);
 
 	public FenceGateBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_11026, Boolean.valueOf(false))
-				.method_11657(field_11021, Boolean.valueOf(false))
-				.method_11657(field_11024, Boolean.valueOf(false))
+		this.setDefaultState(
+			this.stateFactory.getDefaultState().with(OPEN, Boolean.valueOf(false)).with(POWERED, Boolean.valueOf(false)).with(IN_WALL, Boolean.valueOf(false))
 		);
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		if ((Boolean)blockState.method_11654(field_11024)) {
-			return ((Direction)blockState.method_11654(field_11177)).getAxis() == Direction.Axis.X ? field_11016 : field_11025;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		if ((Boolean)blockState.get(IN_WALL)) {
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.X ? field_11016 : field_11025;
 		} else {
-			return ((Direction)blockState.method_11654(field_11177)).getAxis() == Direction.Axis.X ? field_11017 : field_11022;
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.X ? field_11017 : field_11022;
 		}
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
 		Direction.Axis axis = direction.getAxis();
-		if (((Direction)blockState.method_11654(field_11177)).rotateYClockwise().getAxis() != axis) {
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		if (((Direction)blockState.get(field_11177)).rotateYClockwise().getAxis() != axis) {
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
-			boolean bl = this.method_10138(blockState2) || this.method_10138(iWorld.method_8320(blockPos.method_10093(direction.getOpposite())));
-			return blockState.method_11657(field_11024, Boolean.valueOf(bl));
+			boolean bl = this.method_10138(blockState2) || this.method_10138(iWorld.getBlockState(blockPos.offset(direction.getOpposite())));
+			return blockState.with(IN_WALL, Boolean.valueOf(bl));
 		}
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		if ((Boolean)blockState.method_11654(field_11026)) {
-			return VoxelShapes.method_1073();
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		if ((Boolean)blockState.get(OPEN)) {
+			return VoxelShapes.empty();
 		} else {
-			return ((Direction)blockState.method_11654(field_11177)).getAxis() == Direction.Axis.Z ? field_11028 : field_11019;
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.Z ? field_11028 : field_11019;
 		}
 	}
 
 	@Override
 	public VoxelShape method_9571(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		if ((Boolean)blockState.method_11654(field_11024)) {
-			return ((Direction)blockState.method_11654(field_11177)).getAxis() == Direction.Axis.X ? field_11027 : field_11020;
+		if ((Boolean)blockState.get(IN_WALL)) {
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.X ? field_11027 : field_11020;
 		} else {
-			return ((Direction)blockState.method_11654(field_11177)).getAxis() == Direction.Axis.X ? field_11023 : field_11018;
+			return ((Direction)blockState.get(field_11177)).getAxis() == Direction.Axis.X ? field_11023 : field_11018;
 		}
 	}
 
 	@Override
-	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		switch (blockPlacementEnvironment) {
 			case field_50:
-				return (Boolean)blockState.method_11654(field_11026);
+				return (Boolean)blockState.get(OPEN);
 			case field_48:
 				return false;
 			case field_51:
-				return (Boolean)blockState.method_11654(field_11026);
+				return (Boolean)blockState.get(OPEN);
 			default:
 				return false;
 		}
 	}
 
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		World world = itemPlacementContext.method_8045();
-		BlockPos blockPos = itemPlacementContext.method_8037();
-		boolean bl = world.method_8479(blockPos);
-		Direction direction = itemPlacementContext.method_8042();
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		World world = itemPlacementContext.getWorld();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		boolean bl = world.isReceivingRedstonePower(blockPos);
+		Direction direction = itemPlacementContext.getPlayerHorizontalFacing();
 		Direction.Axis axis = direction.getAxis();
-		boolean bl2 = axis == Direction.Axis.Z && (this.method_10138(world.method_8320(blockPos.west())) || this.method_10138(world.method_8320(blockPos.east())))
-			|| axis == Direction.Axis.X && (this.method_10138(world.method_8320(blockPos.north())) || this.method_10138(world.method_8320(blockPos.south())));
-		return this.method_9564()
-			.method_11657(field_11177, direction)
-			.method_11657(field_11026, Boolean.valueOf(bl))
-			.method_11657(field_11021, Boolean.valueOf(bl))
-			.method_11657(field_11024, Boolean.valueOf(bl2));
+		boolean bl2 = axis == Direction.Axis.Z
+				&& (this.method_10138(world.getBlockState(blockPos.west())) || this.method_10138(world.getBlockState(blockPos.east())))
+			|| axis == Direction.Axis.X && (this.method_10138(world.getBlockState(blockPos.north())) || this.method_10138(world.getBlockState(blockPos.south())));
+		return this.getDefaultState()
+			.with(field_11177, direction)
+			.with(OPEN, Boolean.valueOf(bl))
+			.with(POWERED, Boolean.valueOf(bl))
+			.with(IN_WALL, Boolean.valueOf(bl2));
 	}
 
 	private boolean method_10138(BlockState blockState) {
-		return blockState.getBlock().method_9525(BlockTags.field_15504);
+		return blockState.getBlock().matches(BlockTags.field_15504);
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if ((Boolean)blockState.method_11654(field_11026)) {
-			blockState = blockState.method_11657(field_11026, Boolean.valueOf(false));
-			world.method_8652(blockPos, blockState, 10);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if ((Boolean)blockState.get(OPEN)) {
+			blockState = blockState.with(OPEN, Boolean.valueOf(false));
+			world.setBlockState(blockPos, blockState, 10);
 		} else {
-			Direction direction = playerEntity.method_5735();
-			if (blockState.method_11654(field_11177) == direction.getOpposite()) {
-				blockState = blockState.method_11657(field_11177, direction);
+			Direction direction = playerEntity.getHorizontalFacing();
+			if (blockState.get(field_11177) == direction.getOpposite()) {
+				blockState = blockState.with(field_11177, direction);
 			}
 
-			blockState = blockState.method_11657(field_11026, Boolean.valueOf(true));
-			world.method_8652(blockPos, blockState, 10);
+			blockState = blockState.with(OPEN, Boolean.valueOf(true));
+			world.setBlockState(blockPos, blockState, 10);
 		}
 
-		world.method_8444(playerEntity, blockState.method_11654(field_11026) ? 1008 : 1014, blockPos, 0);
+		world.playEvent(playerEntity, blockState.get(OPEN) ? 1008 : 1014, blockPos, 0);
 		return true;
 	}
 
 	@Override
-	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
 		if (!world.isClient) {
-			boolean bl = world.method_8479(blockPos);
-			if ((Boolean)blockState.method_11654(field_11021) != bl) {
-				world.method_8652(blockPos, blockState.method_11657(field_11021, Boolean.valueOf(bl)).method_11657(field_11026, Boolean.valueOf(bl)), 2);
-				if ((Boolean)blockState.method_11654(field_11026) != bl) {
-					world.method_8444(null, bl ? 1008 : 1014, blockPos, 0);
+			boolean bl = world.isReceivingRedstonePower(blockPos);
+			if ((Boolean)blockState.get(POWERED) != bl) {
+				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), 2);
+				if ((Boolean)blockState.get(OPEN) != bl) {
+					world.playEvent(null, bl ? 1008 : 1014, blockPos, 0);
 				}
 			}
 		}
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_11177, field_11026, field_11021, field_11024);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(field_11177, OPEN, POWERED, IN_WALL);
 	}
 
-	public static boolean method_16703(BlockState blockState, Direction direction) {
-		return ((Direction)blockState.method_11654(field_11177)).getAxis() == direction.rotateYClockwise().getAxis();
+	public static boolean canWallConnect(BlockState blockState, Direction direction) {
+		return ((Direction)blockState.get(field_11177)).getAxis() == direction.rotateYClockwise().getAxis();
 	}
 }

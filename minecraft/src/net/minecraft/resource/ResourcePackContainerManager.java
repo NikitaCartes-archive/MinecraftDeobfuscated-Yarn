@@ -79,11 +79,11 @@ public class ResourcePackContainerManager<T extends ResourcePackContainer> imple
 	}
 
 	@Nullable
-	public T method_14449(String string) {
+	public T getContainer(String string) {
 		return (T)this.nameToContainer.get(string);
 	}
 
-	public void method_14443(ResourcePackCreator resourcePackCreator) {
+	public void addCreator(ResourcePackCreator resourcePackCreator) {
 		this.creators.add(resourcePackCreator);
 	}
 

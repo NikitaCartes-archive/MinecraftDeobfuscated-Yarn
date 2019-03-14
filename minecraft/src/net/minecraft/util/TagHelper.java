@@ -54,7 +54,7 @@ public final class TagHelper {
 				CompoundTag compoundTag2 = compoundTag.getCompound("Properties");
 
 				for (String string3 : compoundTag2.getKeys()) {
-					ListTag listTag = compoundTag2.method_10554(string3, 10);
+					ListTag listTag = compoundTag2.getList(string3, 10);
 
 					for (int i = 0; i < listTag.size(); i++) {
 						CompoundTag compoundTag3 = listTag.getCompoundTag(i);
@@ -99,17 +99,17 @@ public final class TagHelper {
 					listTag.add(compoundTag3);
 				}
 
-				compoundTag2.method_10566(string, listTag);
+				compoundTag2.put(string, listTag);
 			}
 
-			compoundTag.method_10566("Properties", compoundTag2);
+			compoundTag.put("Properties", compoundTag2);
 		}
 
 		return compoundTag;
 	}
 
 	@VisibleForTesting
-	public static boolean method_10687(@Nullable Tag tag, @Nullable Tag tag2, boolean bl) {
+	public static boolean areTagsEqual(@Nullable Tag tag, @Nullable Tag tag2, boolean bl) {
 		if (tag == tag2) {
 			return true;
 		} else if (tag == null) {
@@ -123,8 +123,8 @@ public final class TagHelper {
 			CompoundTag compoundTag2 = (CompoundTag)tag2;
 
 			for (String string : compoundTag.getKeys()) {
-				Tag tag3 = compoundTag.method_10580(string);
-				if (!method_10687(tag3, compoundTag2.method_10580(string), bl)) {
+				Tag tag3 = compoundTag.getTag(string);
+				if (!areTagsEqual(tag3, compoundTag2.getTag(string), bl)) {
 					return false;
 				}
 			}
@@ -141,7 +141,7 @@ public final class TagHelper {
 					boolean bl2 = false;
 
 					for (int j = 0; j < listTag2.size(); j++) {
-						if (method_10687(tag4, listTag2.method_10534(j), bl)) {
+						if (areTagsEqual(tag4, listTag2.method_10534(j), bl)) {
 							bl2 = true;
 							break;
 						}
@@ -184,16 +184,16 @@ public final class TagHelper {
 
 	public static BlockState deserializeBlockState(CompoundTag compoundTag) {
 		if (!compoundTag.containsKey("Name", 8)) {
-			return Blocks.field_10124.method_9564();
+			return Blocks.field_10124.getDefaultState();
 		} else {
-			Block block = Registry.BLOCK.method_10223(new Identifier(compoundTag.getString("Name")));
-			BlockState blockState = block.method_9564();
+			Block block = Registry.BLOCK.get(new Identifier(compoundTag.getString("Name")));
+			BlockState blockState = block.getDefaultState();
 			if (compoundTag.containsKey("Properties", 10)) {
 				CompoundTag compoundTag2 = compoundTag.getCompound("Properties");
-				StateFactory<Block, BlockState> stateFactory = block.method_9595();
+				StateFactory<Block, BlockState> stateFactory = block.getStateFactory();
 
 				for (String string : compoundTag2.getKeys()) {
-					Property<?> property = stateFactory.method_11663(string);
+					Property<?> property = stateFactory.getProperty(string);
 					if (property != null) {
 						blockState = withProperty(blockState, property, string, compoundTag2, compoundTag);
 					}
@@ -209,7 +209,7 @@ public final class TagHelper {
 	) {
 		Optional<T> optional = property.getValue(compoundTag.getString(string));
 		if (optional.isPresent()) {
-			return propertyContainer.method_11657(property, (Comparable)optional.get());
+			return propertyContainer.with(property, (Comparable)optional.get());
 		} else {
 			LOGGER.warn("Unable to read property: {} with value: {} for blockstate: {}", string, compoundTag.getString(string), compoundTag2.toString());
 			return propertyContainer;
@@ -218,7 +218,7 @@ public final class TagHelper {
 
 	public static CompoundTag serializeBlockState(BlockState blockState) {
 		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", Registry.BLOCK.method_10221(blockState.getBlock()).toString());
+		compoundTag.putString("Name", Registry.BLOCK.getId(blockState.getBlock()).toString());
 		ImmutableMap<Property<?>, Comparable<?>> immutableMap = blockState.getEntries();
 		if (!immutableMap.isEmpty()) {
 			CompoundTag compoundTag2 = new CompoundTag();
@@ -228,7 +228,7 @@ public final class TagHelper {
 				compoundTag2.putString(property.getName(), getPropertyValueAsString(property, (Comparable<?>)entry.getValue()));
 			}
 
-			compoundTag.method_10566("Properties", compoundTag2);
+			compoundTag.put("Properties", compoundTag2);
 		}
 
 		return compoundTag;

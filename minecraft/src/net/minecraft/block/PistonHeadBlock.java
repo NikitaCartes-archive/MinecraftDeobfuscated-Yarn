@@ -22,40 +22,36 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class PistonHeadBlock extends FacingBlock {
-	public static final EnumProperty<PistonType> field_12224 = Properties.field_12492;
-	public static final BooleanProperty field_12227 = Properties.field_12535;
-	protected static final VoxelShape field_12222 = Block.method_9541(12.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12214 = Block.method_9541(0.0, 0.0, 0.0, 4.0, 16.0, 16.0);
-	protected static final VoxelShape field_12228 = Block.method_9541(0.0, 0.0, 12.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12213 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 16.0, 4.0);
-	protected static final VoxelShape field_12230 = Block.method_9541(0.0, 12.0, 0.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape field_12220 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 4.0, 16.0);
-	protected static final VoxelShape field_12215 = Block.method_9541(6.0, -4.0, 6.0, 10.0, 12.0, 10.0);
-	protected static final VoxelShape field_12226 = Block.method_9541(6.0, 4.0, 6.0, 10.0, 20.0, 10.0);
-	protected static final VoxelShape field_12221 = Block.method_9541(6.0, 6.0, -4.0, 10.0, 10.0, 12.0);
-	protected static final VoxelShape field_12229 = Block.method_9541(6.0, 6.0, 4.0, 10.0, 10.0, 20.0);
-	protected static final VoxelShape field_12218 = Block.method_9541(-4.0, 6.0, 6.0, 12.0, 10.0, 10.0);
-	protected static final VoxelShape field_12223 = Block.method_9541(4.0, 6.0, 6.0, 20.0, 10.0, 10.0);
-	protected static final VoxelShape field_12231 = Block.method_9541(6.0, 0.0, 6.0, 10.0, 12.0, 10.0);
-	protected static final VoxelShape field_12217 = Block.method_9541(6.0, 4.0, 6.0, 10.0, 16.0, 10.0);
-	protected static final VoxelShape field_12216 = Block.method_9541(6.0, 6.0, 0.0, 10.0, 10.0, 12.0);
-	protected static final VoxelShape field_12225 = Block.method_9541(6.0, 6.0, 4.0, 10.0, 10.0, 16.0);
-	protected static final VoxelShape field_12219 = Block.method_9541(0.0, 6.0, 6.0, 12.0, 10.0, 10.0);
-	protected static final VoxelShape field_12212 = Block.method_9541(4.0, 6.0, 6.0, 16.0, 10.0, 10.0);
+	public static final EnumProperty<PistonType> field_12224 = Properties.PISTON_TYPE;
+	public static final BooleanProperty field_12227 = Properties.SHORT;
+	protected static final VoxelShape field_12222 = Block.createCuboidShape(12.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_12214 = Block.createCuboidShape(0.0, 0.0, 0.0, 4.0, 16.0, 16.0);
+	protected static final VoxelShape field_12228 = Block.createCuboidShape(0.0, 0.0, 12.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_12213 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 4.0);
+	protected static final VoxelShape field_12230 = Block.createCuboidShape(0.0, 12.0, 0.0, 16.0, 16.0, 16.0);
+	protected static final VoxelShape field_12220 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 4.0, 16.0);
+	protected static final VoxelShape field_12215 = Block.createCuboidShape(6.0, -4.0, 6.0, 10.0, 12.0, 10.0);
+	protected static final VoxelShape field_12226 = Block.createCuboidShape(6.0, 4.0, 6.0, 10.0, 20.0, 10.0);
+	protected static final VoxelShape field_12221 = Block.createCuboidShape(6.0, 6.0, -4.0, 10.0, 10.0, 12.0);
+	protected static final VoxelShape field_12229 = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 20.0);
+	protected static final VoxelShape field_12218 = Block.createCuboidShape(-4.0, 6.0, 6.0, 12.0, 10.0, 10.0);
+	protected static final VoxelShape field_12223 = Block.createCuboidShape(4.0, 6.0, 6.0, 20.0, 10.0, 10.0);
+	protected static final VoxelShape field_12231 = Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 12.0, 10.0);
+	protected static final VoxelShape field_12217 = Block.createCuboidShape(6.0, 4.0, 6.0, 10.0, 16.0, 10.0);
+	protected static final VoxelShape field_12216 = Block.createCuboidShape(6.0, 6.0, 0.0, 10.0, 10.0, 12.0);
+	protected static final VoxelShape field_12225 = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 16.0);
+	protected static final VoxelShape field_12219 = Block.createCuboidShape(0.0, 6.0, 6.0, 12.0, 10.0, 10.0);
+	protected static final VoxelShape field_12212 = Block.createCuboidShape(4.0, 6.0, 6.0, 16.0, 10.0, 10.0);
 
 	public PistonHeadBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_10927, Direction.NORTH)
-				.method_11657(field_12224, PistonType.field_12637)
-				.method_11657(field_12227, Boolean.valueOf(false))
+		this.setDefaultState(
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_12224, PistonType.field_12637).with(field_12227, Boolean.valueOf(false))
 		);
 	}
 
 	private VoxelShape method_11520(BlockState blockState) {
-		switch ((Direction)blockState.method_11654(field_10927)) {
+		switch ((Direction)blockState.get(FACING)) {
 			case DOWN:
 			default:
 				return field_12220;
@@ -78,13 +74,13 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return VoxelShapes.method_1084(this.method_11520(blockState), this.method_11519(blockState));
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return VoxelShapes.union(this.method_11520(blockState), this.method_11519(blockState));
 	}
 
 	private VoxelShape method_11519(BlockState blockState) {
-		boolean bl = (Boolean)blockState.method_11654(field_12227);
-		switch ((Direction)blockState.method_11654(field_10927)) {
+		boolean bl = (Boolean)blockState.get(field_12227);
+		switch ((Direction)blockState.get(FACING)) {
 			case DOWN:
 			default:
 				return bl ? field_12217 : field_12226;
@@ -102,82 +98,83 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public boolean method_9561(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.method_11654(field_10927) == Direction.UP;
+	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return blockState.get(FACING) == Direction.UP;
 	}
 
 	@Override
-	public void method_9576(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
 		if (!world.isClient && playerEntity.abilities.creativeMode) {
-			BlockPos blockPos2 = blockPos.method_10093(((Direction)blockState.method_11654(field_10927)).getOpposite());
-			Block block = world.method_8320(blockPos2).getBlock();
+			BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
+			Block block = world.getBlockState(blockPos2).getBlock();
 			if (block == Blocks.field_10560 || block == Blocks.field_10615) {
-				world.method_8650(blockPos2);
+				world.clearBlockState(blockPos2);
 			}
 		}
 
-		super.method_9576(world, blockPos, blockState, playerEntity);
+		super.onBreak(world, blockPos, blockState, playerEntity);
 	}
 
 	@Override
-	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
-			super.method_9536(blockState, world, blockPos, blockState2, bl);
-			Direction direction = ((Direction)blockState.method_11654(field_10927)).getOpposite();
-			blockPos = blockPos.method_10093(direction);
-			BlockState blockState3 = world.method_8320(blockPos);
-			if ((blockState3.getBlock() == Blocks.field_10560 || blockState3.getBlock() == Blocks.field_10615)
-				&& (Boolean)blockState3.method_11654(PistonBlock.field_12191)) {
-				method_9497(blockState3, world, blockPos);
-				world.method_8650(blockPos);
+			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+			Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
+			blockPos = blockPos.offset(direction);
+			BlockState blockState3 = world.getBlockState(blockPos);
+			if ((blockState3.getBlock() == Blocks.field_10560 || blockState3.getBlock() == Blocks.field_10615) && (Boolean)blockState3.get(PistonBlock.field_12191)) {
+				dropStacks(blockState3, world, blockPos);
+				world.clearBlockState(blockPos);
 			}
 		}
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		return direction.getOpposite() == blockState.method_11654(field_10927) && !blockState.method_11591(iWorld, blockPos)
-			? Blocks.field_10124.method_9564()
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		return direction.getOpposite() == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
+			? Blocks.field_10124.getDefaultState()
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Block block = viewableWorld.method_8320(blockPos.method_10093(((Direction)blockState.method_11654(field_10927)).getOpposite())).getBlock();
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		Block block = viewableWorld.getBlockState(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite())).getBlock();
 		return block == Blocks.field_10560 || block == Blocks.field_10615 || block == Blocks.field_10008;
 	}
 
 	@Override
-	public void method_9612(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		if (blockState.method_11591(world, blockPos)) {
-			BlockPos blockPos3 = blockPos.method_10093(((Direction)blockState.method_11654(field_10927)).getOpposite());
-			world.method_8320(blockPos3).method_11622(world, blockPos3, block, blockPos2);
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+		if (blockState.canPlaceAt(world, blockPos)) {
+			BlockPos blockPos3 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
+			world.getBlockState(blockPos3).neighborUpdate(world, blockPos3, block, blockPos2);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return new ItemStack(blockState.method_11654(field_12224) == PistonType.field_12634 ? Blocks.field_10615 : Blocks.field_10560);
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+		return new ItemStack(blockState.get(field_12224) == PistonType.field_12634 ? Blocks.field_10615 : Blocks.field_10560);
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, Rotation rotation) {
-		return blockState.method_11657(field_10927, rotation.method_10503(blockState.method_11654(field_10927)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.method_10345(blockState.method_11654(field_10927)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_10927, field_12224, field_12227);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(FACING, field_12224, field_12227);
 	}
 
 	@Override
-	public boolean method_9516(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
 		return false;
 	}
 }

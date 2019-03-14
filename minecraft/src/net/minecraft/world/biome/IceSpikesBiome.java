@@ -18,11 +18,12 @@ public final class IceSpikesBiome extends Biome {
 	public IceSpikesBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(
-					SurfaceBuilder.DEFAULT, new TernarySurfaceConfig(Blocks.field_10491.method_9564(), Blocks.field_10566.method_9564(), Blocks.field_10255.method_9564())
+				.configureSurfaceBuilder(
+					SurfaceBuilder.DEFAULT,
+					new TernarySurfaceConfig(Blocks.field_10491.getDefaultState(), Blocks.field_10566.getDefaultState(), Blocks.field_10255.getDefaultState())
 				)
 				.precipitation(Biome.Precipitation.SNOW)
-				.method_8738(Biome.Category.ICY)
+				.category(Biome.Category.ICY)
 				.depth(0.425F)
 				.scale(0.45000002F)
 				.temperature(0.0F)
@@ -31,18 +32,18 @@ public final class IceSpikesBiome extends Biome {
 				.waterFogColor(329011)
 				.parent("snowy_tundra")
 		);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.method_8710(Feature.field_13565, FeatureConfig.field_13603);
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.STRONGHOLD, FeatureConfig.DEFAULT);
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);
 		DefaultBiomeFeatures.addDungeons(this);
-		this.method_8719(
-			GenerationStep.Feature.SURFACE_STRUCTURES, method_8699(Feature.field_13562, FeatureConfig.field_13603, Decorator.field_14238, new CountDecoratorConfig(3))
+		this.addFeature(
+			GenerationStep.Feature.SURFACE_STRUCTURES, configureFeature(Feature.field_13562, FeatureConfig.DEFAULT, Decorator.field_14238, new CountDecoratorConfig(3))
 		);
-		this.method_8719(
+		this.addFeature(
 			GenerationStep.Feature.SURFACE_STRUCTURES,
-			method_8699(Feature.field_13551, new IcePatchFeatureConfig(2), Decorator.field_14238, new CountDecoratorConfig(2))
+			configureFeature(Feature.field_13551, new IcePatchFeatureConfig(2), Decorator.field_14238, new CountDecoratorConfig(2))
 		);
 		DefaultBiomeFeatures.addMineables(this);
 		DefaultBiomeFeatures.addDefaultOres(this);

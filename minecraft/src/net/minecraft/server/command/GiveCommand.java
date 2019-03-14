@@ -4,8 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
-import net.minecraft.class_2290;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.arguments.ItemStackArgument;
 import net.minecraft.command.arguments.ItemStackArgumentType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
@@ -44,24 +44,24 @@ public class GiveCommand {
 		);
 	}
 
-	private static int method_13401(ServerCommandSource serverCommandSource, class_2290 arg, Collection<ServerPlayerEntity> collection, int i) throws CommandSyntaxException {
+	private static int method_13401(ServerCommandSource serverCommandSource, ItemStackArgument itemStackArgument, Collection<ServerPlayerEntity> collection, int i) throws CommandSyntaxException {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			int j = i;
 
 			while (j > 0) {
-				int k = Math.min(arg.method_9785().getMaxAmount(), j);
+				int k = Math.min(itemStackArgument.getItem().getMaxAmount(), j);
 				j -= k;
-				ItemStack itemStack = arg.method_9781(k, false);
-				boolean bl = serverPlayerEntity.inventory.method_7394(itemStack);
+				ItemStack itemStack = itemStackArgument.method_9781(k, false);
+				boolean bl = serverPlayerEntity.inventory.insertStack(itemStack);
 				if (bl && itemStack.isEmpty()) {
 					itemStack.setAmount(1);
-					ItemEntity itemEntity = serverPlayerEntity.method_7328(itemStack, false);
+					ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
 					if (itemEntity != null) {
 						itemEntity.method_6987();
 					}
 
-					serverPlayerEntity.field_6002
-						.method_8465(
+					serverPlayerEntity.world
+						.playSound(
 							null,
 							serverPlayerEntity.x,
 							serverPlayerEntity.y,
@@ -71,9 +71,9 @@ public class GiveCommand {
 							0.2F,
 							((serverPlayerEntity.getRand().nextFloat() - serverPlayerEntity.getRand().nextFloat()) * 0.7F + 1.0F) * 2.0F
 						);
-					serverPlayerEntity.field_7498.sendContentUpdates();
+					serverPlayerEntity.playerContainer.sendContentUpdates();
 				} else {
-					ItemEntity itemEntity = serverPlayerEntity.method_7328(itemStack, false);
+					ItemEntity itemEntity = serverPlayerEntity.dropItem(itemStack, false);
 					if (itemEntity != null) {
 						itemEntity.resetPickupDelay();
 						itemEntity.setOwner(serverPlayerEntity.getUuid());
@@ -83,15 +83,18 @@ public class GiveCommand {
 		}
 
 		if (collection.size() == 1) {
-			serverCommandSource.method_9226(
+			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent(
-					"commands.give.success.single", i, arg.method_9781(i, false).method_7954(), ((ServerPlayerEntity)collection.iterator().next()).method_5476()
+					"commands.give.success.single",
+					i,
+					itemStackArgument.method_9781(i, false).toTextComponent(),
+					((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
-			serverCommandSource.method_9226(
-				new TranslatableTextComponent("commands.give.success.single", i, arg.method_9781(i, false).method_7954(), collection.size()), true
+			serverCommandSource.sendFeedback(
+				new TranslatableTextComponent("commands.give.success.single", i, itemStackArgument.method_9781(i, false).toTextComponent(), collection.size()), true
 			);
 		}
 

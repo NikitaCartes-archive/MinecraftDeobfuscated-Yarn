@@ -16,14 +16,14 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 	public VideoSettingsListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, GameOption... gameOptions) {
 		super(minecraftClient, i, j, k, l, m);
 		this.field_2173 = false;
-		this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.field_1690, i, GameOption.field_1931));
+		this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, GameOption.FULLSCREEN_RESOLUTION));
 
 		for (int n = 0; n < gameOptions.length; n += 2) {
 			GameOption gameOption = gameOptions[n];
 			if (n < gameOptions.length - 1) {
-				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.field_1690, i, gameOption, gameOptions[n + 1]));
+				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, gameOption, gameOptions[n + 1]));
 			} else {
-				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.field_1690, i, gameOption));
+				this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, gameOption));
 			}
 		}
 	}
@@ -42,9 +42,9 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 	public static class class_354 extends EntryListWidget.Entry<VideoSettingsListWidget.class_354> implements MultiInputListener {
 		private boolean field_18212;
 		private InputListener field_18213;
-		private final List<ButtonWidget> field_18214;
+		private final List<AbstractButtonWidget> field_18214;
 
-		private class_354(List<ButtonWidget> list) {
+		private class_354(List<AbstractButtonWidget> list) {
 			this.field_18214 = list;
 		}
 
@@ -58,9 +58,9 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 
 		@Override
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
-			this.field_18214.forEach(buttonWidget -> {
-				buttonWidget.y = this.getY();
-				buttonWidget.draw(k, l, f);
+			this.field_18214.forEach(abstractButtonWidget -> {
+				abstractButtonWidget.y = this.getY();
+				abstractButtonWidget.draw(k, l, f);
 			});
 		}
 
@@ -70,23 +70,23 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 		}
 
 		@Override
-		public boolean method_1970() {
+		public boolean isActive() {
 			return this.field_18212;
 		}
 
 		@Override
-		public void method_1966(boolean bl) {
+		public void setActive(boolean bl) {
 			this.field_18212 = bl;
 		}
 
 		@Override
-		public void method_1967(@Nullable InputListener inputListener) {
+		public void setFocused(@Nullable InputListener inputListener) {
 			this.field_18213 = inputListener;
 		}
 
 		@Nullable
 		@Override
-		public InputListener method_19357() {
+		public InputListener getFocused() {
 			return this.field_18213;
 		}
 

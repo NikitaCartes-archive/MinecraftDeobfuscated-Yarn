@@ -19,11 +19,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public abstract class Container {
-	private final DefaultedList<ItemStack> field_7764 = DefaultedList.create();
+	private final DefaultedList<ItemStack> stackList = DefaultedList.create();
 	public final List<Slot> slotList = Lists.<Slot>newArrayList();
 	private final List<Property> properties = Lists.<Property>newArrayList();
 	@Nullable
-	private final ContainerType<?> field_17493;
+	private final ContainerType<?> type;
 	public final int syncId;
 	@Environment(EnvType.CLIENT)
 	private short actionId;
@@ -34,24 +34,24 @@ public abstract class Container {
 	private final Set<PlayerEntity> restrictedPlayers = Sets.<PlayerEntity>newHashSet();
 
 	protected Container(@Nullable ContainerType<?> containerType, int i) {
-		this.field_17493 = containerType;
+		this.type = containerType;
 		this.syncId = i;
 	}
 
-	protected static boolean method_17695(BlockContext blockContext, PlayerEntity playerEntity, Block block) {
+	protected static boolean canUse(BlockContext blockContext, PlayerEntity playerEntity, Block block) {
 		return blockContext.run(
-			(world, blockPos) -> world.method_8320(blockPos).getBlock() != block
+			(world, blockPos) -> world.getBlockState(blockPos).getBlock() != block
 					? false
 					: playerEntity.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,
 			true
 		);
 	}
 
-	public ContainerType<?> method_17358() {
-		if (this.field_17493 == null) {
+	public ContainerType<?> getType() {
+		if (this.type == null) {
 			throw new UnsupportedOperationException("Unable to construct this menu by type");
 		} else {
-			return this.field_17493;
+			return this.type;
 		}
 	}
 
@@ -62,49 +62,49 @@ public abstract class Container {
 		}
 	}
 
-	protected static void method_17361(PropertyDelegate propertyDelegate, int i) {
+	protected static void checkContainerDataCount(PropertyDelegate propertyDelegate, int i) {
 		int j = propertyDelegate.size();
 		if (j < i) {
 			throw new IllegalArgumentException("Container data count " + j + " is smaller than expected " + i);
 		}
 	}
 
-	protected Slot method_7621(Slot slot) {
+	protected Slot addSlot(Slot slot) {
 		slot.id = this.slotList.size();
 		this.slotList.add(slot);
-		this.field_7764.add(ItemStack.EMPTY);
+		this.stackList.add(ItemStack.EMPTY);
 		return slot;
 	}
 
-	protected Property method_17362(Property property) {
+	protected Property addProperty(Property property) {
 		this.properties.add(property);
 		return property;
 	}
 
-	protected void method_17360(PropertyDelegate propertyDelegate) {
+	protected void addProperties(PropertyDelegate propertyDelegate) {
 		for (int i = 0; i < propertyDelegate.size(); i++) {
-			this.method_17362(Property.create(propertyDelegate, i));
+			this.addProperty(Property.create(propertyDelegate, i));
 		}
 	}
 
-	public void method_7596(ContainerListener containerListener) {
+	public void addListener(ContainerListener containerListener) {
 		if (!this.listeners.contains(containerListener)) {
 			this.listeners.add(containerListener);
-			containerListener.method_7634(this, this.method_7602());
+			containerListener.onContainerRegistered(this, this.getStacks());
 			this.sendContentUpdates();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_7603(ContainerListener containerListener) {
+	public void removeListener(ContainerListener containerListener) {
 		this.listeners.remove(containerListener);
 	}
 
-	public DefaultedList<ItemStack> method_7602() {
+	public DefaultedList<ItemStack> getStacks() {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.create();
 
 		for (int i = 0; i < this.slotList.size(); i++) {
-			defaultedList.add(((Slot)this.slotList.get(i)).method_7677());
+			defaultedList.add(((Slot)this.slotList.get(i)).getStack());
 		}
 
 		return defaultedList;
@@ -112,14 +112,14 @@ public abstract class Container {
 
 	public void sendContentUpdates() {
 		for (int i = 0; i < this.slotList.size(); i++) {
-			ItemStack itemStack = ((Slot)this.slotList.get(i)).method_7677();
-			ItemStack itemStack2 = this.field_7764.get(i);
+			ItemStack itemStack = ((Slot)this.slotList.get(i)).getStack();
+			ItemStack itemStack2 = this.stackList.get(i);
 			if (!ItemStack.areEqual(itemStack2, itemStack)) {
 				itemStack2 = itemStack.isEmpty() ? ItemStack.EMPTY : itemStack.copy();
-				this.field_7764.set(i, itemStack2);
+				this.stackList.set(i, itemStack2);
 
 				for (ContainerListener containerListener : this.listeners) {
-					containerListener.method_7635(this, i, itemStack2);
+					containerListener.onContainerSlotUpdate(this, i, itemStack2);
 				}
 			}
 		}
@@ -138,16 +138,16 @@ public abstract class Container {
 		return false;
 	}
 
-	public Slot method_7611(int i) {
+	public Slot getSlot(int i) {
 		return (Slot)this.slotList.get(i);
 	}
 
-	public ItemStack method_7601(PlayerEntity playerEntity, int i) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		Slot slot = (Slot)this.slotList.get(i);
-		return slot != null ? slot.method_7677() : ItemStack.EMPTY;
+		return slot != null ? slot.getStack() : ItemStack.EMPTY;
 	}
 
-	public ItemStack method_7593(int i, int j, SlotActionType slotActionType, PlayerEntity playerEntity) {
+	public ItemStack onSlotClick(int i, int j, SlotActionType slotActionType, PlayerEntity playerEntity) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		PlayerInventory playerInventory = playerEntity.inventory;
 		if (slotActionType == SlotActionType.field_7789) {
@@ -155,7 +155,7 @@ public abstract class Container {
 			this.quickCraftButton = unpackButtonId(j);
 			if ((k != 1 || this.quickCraftButton != 2) && k != this.quickCraftButton) {
 				this.endQuickCraft();
-			} else if (playerInventory.method_7399().isEmpty()) {
+			} else if (playerInventory.getCursorStack().isEmpty()) {
 				this.endQuickCraft();
 			} else if (this.quickCraftButton == 0) {
 				this.quickCraftStage = unpackQuickCraftStage(j);
@@ -167,41 +167,41 @@ public abstract class Container {
 				}
 			} else if (this.quickCraftButton == 1) {
 				Slot slot = (Slot)this.slotList.get(i);
-				ItemStack itemStack2 = playerInventory.method_7399();
+				ItemStack itemStack2 = playerInventory.getCursorStack();
 				if (slot != null
-					&& method_7592(slot, itemStack2, true)
-					&& slot.method_7680(itemStack2)
+					&& canInsertItemIntoSlot(slot, itemStack2, true)
+					&& slot.canInsert(itemStack2)
 					&& (this.quickCraftStage == 2 || itemStack2.getAmount() > this.quickCraftSlots.size())
-					&& this.method_7615(slot)) {
+					&& this.canInsertIntoSlot(slot)) {
 					this.quickCraftSlots.add(slot);
 				}
 			} else if (this.quickCraftButton == 2) {
 				if (!this.quickCraftSlots.isEmpty()) {
-					ItemStack itemStack3 = playerInventory.method_7399().copy();
-					int l = playerInventory.method_7399().getAmount();
+					ItemStack itemStack3 = playerInventory.getCursorStack().copy();
+					int l = playerInventory.getCursorStack().getAmount();
 
 					for (Slot slot2 : this.quickCraftSlots) {
-						ItemStack itemStack4 = playerInventory.method_7399();
+						ItemStack itemStack4 = playerInventory.getCursorStack();
 						if (slot2 != null
-							&& method_7592(slot2, itemStack4, true)
-							&& slot2.method_7680(itemStack4)
+							&& canInsertItemIntoSlot(slot2, itemStack4, true)
+							&& slot2.canInsert(itemStack4)
 							&& (this.quickCraftStage == 2 || itemStack4.getAmount() >= this.quickCraftSlots.size())
-							&& this.method_7615(slot2)) {
+							&& this.canInsertIntoSlot(slot2)) {
 							ItemStack itemStack5 = itemStack3.copy();
-							int m = slot2.hasStack() ? slot2.method_7677().getAmount() : 0;
-							method_7617(this.quickCraftSlots, this.quickCraftStage, itemStack5, m);
-							int n = Math.min(itemStack5.getMaxAmount(), slot2.method_7676(itemStack5));
+							int m = slot2.hasStack() ? slot2.getStack().getAmount() : 0;
+							calculateStackSize(this.quickCraftSlots, this.quickCraftStage, itemStack5, m);
+							int n = Math.min(itemStack5.getMaxAmount(), slot2.getMaxStackAmount(itemStack5));
 							if (itemStack5.getAmount() > n) {
 								itemStack5.setAmount(n);
 							}
 
 							l -= itemStack5.getAmount() - m;
-							slot2.method_7673(itemStack5);
+							slot2.setStack(itemStack5);
 						}
 					}
 
 					itemStack3.setAmount(l);
-					playerInventory.method_7396(itemStack3);
+					playerInventory.setCursorStack(itemStack3);
 				}
 
 				this.endQuickCraft();
@@ -212,14 +212,14 @@ public abstract class Container {
 			this.endQuickCraft();
 		} else if ((slotActionType == SlotActionType.field_7790 || slotActionType == SlotActionType.field_7794) && (j == 0 || j == 1)) {
 			if (i == -999) {
-				if (!playerInventory.method_7399().isEmpty()) {
+				if (!playerInventory.getCursorStack().isEmpty()) {
 					if (j == 0) {
-						playerEntity.method_7328(playerInventory.method_7399(), true);
-						playerInventory.method_7396(ItemStack.EMPTY);
+						playerEntity.dropItem(playerInventory.getCursorStack(), true);
+						playerInventory.setCursorStack(ItemStack.EMPTY);
 					}
 
 					if (j == 1) {
-						playerEntity.method_7328(playerInventory.method_7399().split(1), true);
+						playerEntity.dropItem(playerInventory.getCursorStack().split(1), true);
 					}
 				}
 			} else if (slotActionType == SlotActionType.field_7794) {
@@ -232,9 +232,9 @@ public abstract class Container {
 					return ItemStack.EMPTY;
 				}
 
-				for (ItemStack itemStack3 = this.method_7601(playerEntity, i);
-					!itemStack3.isEmpty() && ItemStack.areEqualIgnoreTags(slot3.method_7677(), itemStack3);
-					itemStack3 = this.method_7601(playerEntity, i)
+				for (ItemStack itemStack3 = this.transferSlot(playerEntity, i);
+					!itemStack3.isEmpty() && ItemStack.areEqualIgnoreTags(slot3.getStack(), itemStack3);
+					itemStack3 = this.transferSlot(playerEntity, i)
 				) {
 					itemStack = itemStack3.copy();
 				}
@@ -245,40 +245,40 @@ public abstract class Container {
 
 				Slot slot3 = (Slot)this.slotList.get(i);
 				if (slot3 != null) {
-					ItemStack itemStack3 = slot3.method_7677();
-					ItemStack itemStack2 = playerInventory.method_7399();
+					ItemStack itemStack3 = slot3.getStack();
+					ItemStack itemStack2 = playerInventory.getCursorStack();
 					if (!itemStack3.isEmpty()) {
 						itemStack = itemStack3.copy();
 					}
 
 					if (itemStack3.isEmpty()) {
-						if (!itemStack2.isEmpty() && slot3.method_7680(itemStack2)) {
+						if (!itemStack2.isEmpty() && slot3.canInsert(itemStack2)) {
 							int o = j == 0 ? itemStack2.getAmount() : 1;
-							if (o > slot3.method_7676(itemStack2)) {
-								o = slot3.method_7676(itemStack2);
+							if (o > slot3.getMaxStackAmount(itemStack2)) {
+								o = slot3.getMaxStackAmount(itemStack2);
 							}
 
-							slot3.method_7673(itemStack2.split(o));
+							slot3.setStack(itemStack2.split(o));
 						}
 					} else if (slot3.canTakeItems(playerEntity)) {
 						if (itemStack2.isEmpty()) {
 							if (itemStack3.isEmpty()) {
-								slot3.method_7673(ItemStack.EMPTY);
-								playerInventory.method_7396(ItemStack.EMPTY);
+								slot3.setStack(ItemStack.EMPTY);
+								playerInventory.setCursorStack(ItemStack.EMPTY);
 							} else {
 								int o = j == 0 ? itemStack3.getAmount() : (itemStack3.getAmount() + 1) / 2;
-								playerInventory.method_7396(slot3.method_7671(o));
+								playerInventory.setCursorStack(slot3.takeStack(o));
 								if (itemStack3.isEmpty()) {
-									slot3.method_7673(ItemStack.EMPTY);
+									slot3.setStack(ItemStack.EMPTY);
 								}
 
-								slot3.method_7667(playerEntity, playerInventory.method_7399());
+								slot3.onTakeItem(playerEntity, playerInventory.getCursorStack());
 							}
-						} else if (slot3.method_7680(itemStack2)) {
-							if (method_7612(itemStack3, itemStack2)) {
+						} else if (slot3.canInsert(itemStack2)) {
+							if (canStacksCombine(itemStack3, itemStack2)) {
 								int o = j == 0 ? itemStack2.getAmount() : 1;
-								if (o > slot3.method_7676(itemStack2) - itemStack3.getAmount()) {
-									o = slot3.method_7676(itemStack2) - itemStack3.getAmount();
+								if (o > slot3.getMaxStackAmount(itemStack2) - itemStack3.getAmount()) {
+									o = slot3.getMaxStackAmount(itemStack2) - itemStack3.getAmount();
 								}
 
 								if (o > itemStack2.getMaxAmount() - itemStack3.getAmount()) {
@@ -287,20 +287,20 @@ public abstract class Container {
 
 								itemStack2.subtractAmount(o);
 								itemStack3.addAmount(o);
-							} else if (itemStack2.getAmount() <= slot3.method_7676(itemStack2)) {
-								slot3.method_7673(itemStack2);
-								playerInventory.method_7396(itemStack3);
+							} else if (itemStack2.getAmount() <= slot3.getMaxStackAmount(itemStack2)) {
+								slot3.setStack(itemStack2);
+								playerInventory.setCursorStack(itemStack3);
 							}
-						} else if (itemStack2.getMaxAmount() > 1 && method_7612(itemStack3, itemStack2) && !itemStack3.isEmpty()) {
+						} else if (itemStack2.getMaxAmount() > 1 && canStacksCombine(itemStack3, itemStack2) && !itemStack3.isEmpty()) {
 							int ox = itemStack3.getAmount();
 							if (ox + itemStack2.getAmount() <= itemStack2.getMaxAmount()) {
 								itemStack2.addAmount(ox);
-								itemStack3 = slot3.method_7671(ox);
+								itemStack3 = slot3.takeStack(ox);
 								if (itemStack3.isEmpty()) {
-									slot3.method_7673(ItemStack.EMPTY);
+									slot3.setStack(ItemStack.EMPTY);
 								}
 
-								slot3.method_7667(playerEntity, playerInventory.method_7399());
+								slot3.onTakeItem(playerEntity, playerInventory.getCursorStack());
 							}
 						}
 					}
@@ -310,58 +310,58 @@ public abstract class Container {
 			}
 		} else if (slotActionType == SlotActionType.field_7791 && j >= 0 && j < 9) {
 			Slot slot3 = (Slot)this.slotList.get(i);
-			ItemStack itemStack3x = playerInventory.method_5438(j);
-			ItemStack itemStack2x = slot3.method_7677();
+			ItemStack itemStack3x = playerInventory.getInvStack(j);
+			ItemStack itemStack2x = slot3.getStack();
 			if (!itemStack3x.isEmpty() || !itemStack2x.isEmpty()) {
 				if (itemStack3x.isEmpty()) {
 					if (slot3.canTakeItems(playerEntity)) {
-						playerInventory.method_5447(j, itemStack2x);
+						playerInventory.setInvStack(j, itemStack2x);
 						slot3.onTake(itemStack2x.getAmount());
-						slot3.method_7673(ItemStack.EMPTY);
-						slot3.method_7667(playerEntity, itemStack2x);
+						slot3.setStack(ItemStack.EMPTY);
+						slot3.onTakeItem(playerEntity, itemStack2x);
 					}
 				} else if (itemStack2x.isEmpty()) {
-					if (slot3.method_7680(itemStack3x)) {
-						int ox = slot3.method_7676(itemStack3x);
+					if (slot3.canInsert(itemStack3x)) {
+						int ox = slot3.getMaxStackAmount(itemStack3x);
 						if (itemStack3x.getAmount() > ox) {
-							slot3.method_7673(itemStack3x.split(ox));
+							slot3.setStack(itemStack3x.split(ox));
 						} else {
-							slot3.method_7673(itemStack3x);
-							playerInventory.method_5447(j, ItemStack.EMPTY);
+							slot3.setStack(itemStack3x);
+							playerInventory.setInvStack(j, ItemStack.EMPTY);
 						}
 					}
-				} else if (slot3.canTakeItems(playerEntity) && slot3.method_7680(itemStack3x)) {
-					int ox = slot3.method_7676(itemStack3x);
+				} else if (slot3.canTakeItems(playerEntity) && slot3.canInsert(itemStack3x)) {
+					int ox = slot3.getMaxStackAmount(itemStack3x);
 					if (itemStack3x.getAmount() > ox) {
-						slot3.method_7673(itemStack3x.split(ox));
-						slot3.method_7667(playerEntity, itemStack2x);
-						if (!playerInventory.method_7394(itemStack2x)) {
-							playerEntity.method_7328(itemStack2x, true);
+						slot3.setStack(itemStack3x.split(ox));
+						slot3.onTakeItem(playerEntity, itemStack2x);
+						if (!playerInventory.insertStack(itemStack2x)) {
+							playerEntity.dropItem(itemStack2x, true);
 						}
 					} else {
-						slot3.method_7673(itemStack3x);
-						playerInventory.method_5447(j, itemStack2x);
-						slot3.method_7667(playerEntity, itemStack2x);
+						slot3.setStack(itemStack3x);
+						playerInventory.setInvStack(j, itemStack2x);
+						slot3.onTakeItem(playerEntity, itemStack2x);
 					}
 				}
 			}
-		} else if (slotActionType == SlotActionType.field_7796 && playerEntity.abilities.creativeMode && playerInventory.method_7399().isEmpty() && i >= 0) {
+		} else if (slotActionType == SlotActionType.field_7796 && playerEntity.abilities.creativeMode && playerInventory.getCursorStack().isEmpty() && i >= 0) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			if (slot3 != null && slot3.hasStack()) {
-				ItemStack itemStack3x = slot3.method_7677().copy();
+				ItemStack itemStack3x = slot3.getStack().copy();
 				itemStack3x.setAmount(itemStack3x.getMaxAmount());
-				playerInventory.method_7396(itemStack3x);
+				playerInventory.setCursorStack(itemStack3x);
 			}
-		} else if (slotActionType == SlotActionType.field_7795 && playerInventory.method_7399().isEmpty() && i >= 0) {
+		} else if (slotActionType == SlotActionType.field_7795 && playerInventory.getCursorStack().isEmpty() && i >= 0) {
 			Slot slot3 = (Slot)this.slotList.get(i);
 			if (slot3 != null && slot3.hasStack() && slot3.canTakeItems(playerEntity)) {
-				ItemStack itemStack3x = slot3.method_7671(j == 0 ? 1 : slot3.method_7677().getAmount());
-				slot3.method_7667(playerEntity, itemStack3x);
-				playerEntity.method_7328(itemStack3x, true);
+				ItemStack itemStack3x = slot3.takeStack(j == 0 ? 1 : slot3.getStack().getAmount());
+				slot3.onTakeItem(playerEntity, itemStack3x);
+				playerEntity.dropItem(itemStack3x, true);
 			}
 		} else if (slotActionType == SlotActionType.field_7793 && i >= 0) {
 			Slot slot3 = (Slot)this.slotList.get(i);
-			ItemStack itemStack3x = playerInventory.method_7399();
+			ItemStack itemStack3x = playerInventory.getCursorStack();
 			if (!itemStack3x.isEmpty() && (slot3 == null || !slot3.hasStack() || !slot3.canTakeItems(playerEntity))) {
 				int l = j == 0 ? 0 : this.slotList.size() - 1;
 				int ox = j == 0 ? 1 : -1;
@@ -369,17 +369,19 @@ public abstract class Container {
 				for (int p = 0; p < 2; p++) {
 					for (int q = l; q >= 0 && q < this.slotList.size() && itemStack3x.getAmount() < itemStack3x.getMaxAmount(); q += ox) {
 						Slot slot4 = (Slot)this.slotList.get(q);
-						if (slot4.hasStack() && method_7592(slot4, itemStack3x, true) && slot4.canTakeItems(playerEntity) && this.method_7613(itemStack3x, slot4)) {
-							ItemStack itemStack6 = slot4.method_7677();
+						if (slot4.hasStack() && canInsertItemIntoSlot(slot4, itemStack3x, true) && slot4.canTakeItems(playerEntity) && this.canInsertIntoSlot(itemStack3x, slot4)
+							)
+						 {
+							ItemStack itemStack6 = slot4.getStack();
 							if (p != 0 || itemStack6.getAmount() != itemStack6.getMaxAmount()) {
 								int n = Math.min(itemStack3x.getMaxAmount() - itemStack3x.getAmount(), itemStack6.getAmount());
-								ItemStack itemStack7 = slot4.method_7671(n);
+								ItemStack itemStack7 = slot4.takeStack(n);
 								itemStack3x.addAmount(n);
 								if (itemStack7.isEmpty()) {
-									slot4.method_7673(ItemStack.EMPTY);
+									slot4.setStack(ItemStack.EMPTY);
 								}
 
-								slot4.method_7667(playerEntity, itemStack7);
+								slot4.onTakeItem(playerEntity, itemStack7);
 							}
 						}
 					}
@@ -392,30 +394,30 @@ public abstract class Container {
 		return itemStack;
 	}
 
-	public static boolean method_7612(ItemStack itemStack, ItemStack itemStack2) {
+	public static boolean canStacksCombine(ItemStack itemStack, ItemStack itemStack2) {
 		return itemStack.getItem() == itemStack2.getItem() && ItemStack.areTagsEqual(itemStack, itemStack2);
 	}
 
-	public boolean method_7613(ItemStack itemStack, Slot slot) {
+	public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
 		return true;
 	}
 
 	public void close(PlayerEntity playerEntity) {
 		PlayerInventory playerInventory = playerEntity.inventory;
-		if (!playerInventory.method_7399().isEmpty()) {
-			playerEntity.method_7328(playerInventory.method_7399(), false);
-			playerInventory.method_7396(ItemStack.EMPTY);
+		if (!playerInventory.getCursorStack().isEmpty()) {
+			playerEntity.dropItem(playerInventory.getCursorStack(), false);
+			playerInventory.setCursorStack(ItemStack.EMPTY);
 		}
 	}
 
-	protected void method_7607(PlayerEntity playerEntity, World world, Inventory inventory) {
+	protected void dropInventory(PlayerEntity playerEntity, World world, Inventory inventory) {
 		if (!playerEntity.isValid() || playerEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity)playerEntity).method_14239()) {
 			for (int i = 0; i < inventory.getInvSize(); i++) {
-				playerEntity.method_7328(inventory.method_5441(i), false);
+				playerEntity.dropItem(inventory.removeInvStack(i), false);
 			}
 		} else {
 			for (int i = 0; i < inventory.getInvSize(); i++) {
-				playerEntity.inventory.method_7398(world, inventory.method_5441(i));
+				playerEntity.inventory.method_7398(world, inventory.removeInvStack(i));
 			}
 		}
 	}
@@ -424,14 +426,14 @@ public abstract class Container {
 		this.sendContentUpdates();
 	}
 
-	public void method_7619(int i, ItemStack itemStack) {
-		this.method_7611(i).method_7673(itemStack);
+	public void setStackInSlot(int i, ItemStack itemStack) {
+		this.getSlot(i).setStack(itemStack);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void updateSlotStacks(List<ItemStack> list) {
 		for (int i = 0; i < list.size(); i++) {
-			this.method_7611(i).method_7673((ItemStack)list.get(i));
+			this.getSlot(i).setStack((ItemStack)list.get(i));
 		}
 	}
 
@@ -459,7 +461,7 @@ public abstract class Container {
 
 	public abstract boolean canUse(PlayerEntity playerEntity);
 
-	protected boolean method_7616(ItemStack itemStack, int i, int j, boolean bl) {
+	protected boolean insertItem(ItemStack itemStack, int i, int j, boolean bl) {
 		boolean bl2 = false;
 		int k = i;
 		if (bl) {
@@ -469,8 +471,8 @@ public abstract class Container {
 		if (itemStack.canStack()) {
 			while (!itemStack.isEmpty() && (bl ? k >= i : k < j)) {
 				Slot slot = (Slot)this.slotList.get(k);
-				ItemStack itemStack2 = slot.method_7677();
-				if (!itemStack2.isEmpty() && method_7612(itemStack, itemStack2)) {
+				ItemStack itemStack2 = slot.getStack();
+				if (!itemStack2.isEmpty() && canStacksCombine(itemStack, itemStack2)) {
 					int l = itemStack2.getAmount() + itemStack.getAmount();
 					if (l <= itemStack.getMaxAmount()) {
 						itemStack.setAmount(0);
@@ -502,12 +504,12 @@ public abstract class Container {
 
 			while (bl ? k >= i : k < j) {
 				Slot slotx = (Slot)this.slotList.get(k);
-				ItemStack itemStack2x = slotx.method_7677();
-				if (itemStack2x.isEmpty() && slotx.method_7680(itemStack)) {
+				ItemStack itemStack2x = slotx.getStack();
+				if (itemStack2x.isEmpty() && slotx.canInsert(itemStack)) {
 					if (itemStack.getAmount() > slotx.getMaxStackAmount()) {
-						slotx.method_7673(itemStack.split(slotx.getMaxStackAmount()));
+						slotx.setStack(itemStack.split(slotx.getMaxStackAmount()));
 					} else {
-						slotx.method_7673(itemStack.split(itemStack.getAmount()));
+						slotx.setStack(itemStack.split(itemStack.getAmount()));
 					}
 
 					slotx.markDirty();
@@ -552,14 +554,14 @@ public abstract class Container {
 		this.quickCraftSlots.clear();
 	}
 
-	public static boolean method_7592(@Nullable Slot slot, ItemStack itemStack, boolean bl) {
+	public static boolean canInsertItemIntoSlot(@Nullable Slot slot, ItemStack itemStack, boolean bl) {
 		boolean bl2 = slot == null || !slot.hasStack();
-		return !bl2 && itemStack.isEqualIgnoreTags(slot.method_7677()) && ItemStack.areTagsEqual(slot.method_7677(), itemStack)
-			? slot.method_7677().getAmount() + (bl ? 0 : itemStack.getAmount()) <= itemStack.getMaxAmount()
+		return !bl2 && itemStack.isEqualIgnoreTags(slot.getStack()) && ItemStack.areTagsEqual(slot.getStack(), itemStack)
+			? slot.getStack().getAmount() + (bl ? 0 : itemStack.getAmount()) <= itemStack.getMaxAmount()
 			: bl2;
 	}
 
-	public static void method_7617(Set<Slot> set, int i, ItemStack itemStack, int j) {
+	public static void calculateStackSize(Set<Slot> set, int i, ItemStack itemStack, int j) {
 		switch (i) {
 			case 0:
 				itemStack.setAmount(MathHelper.floor((float)itemStack.getAmount() / (float)set.size()));
@@ -574,11 +576,11 @@ public abstract class Container {
 		itemStack.addAmount(j);
 	}
 
-	public boolean method_7615(Slot slot) {
+	public boolean canInsertIntoSlot(Slot slot) {
 		return true;
 	}
 
-	public static int method_7608(@Nullable BlockEntity blockEntity) {
+	public static int calculateComparatorOutput(@Nullable BlockEntity blockEntity) {
 		return blockEntity instanceof Inventory ? calculateComparatorOutput((Inventory)blockEntity) : 0;
 	}
 
@@ -590,7 +592,7 @@ public abstract class Container {
 			float f = 0.0F;
 
 			for (int j = 0; j < inventory.getInvSize(); j++) {
-				ItemStack itemStack = inventory.method_5438(j);
+				ItemStack itemStack = inventory.getInvStack(j);
 				if (!itemStack.isEmpty()) {
 					f += (float)itemStack.getAmount() / (float)Math.min(inventory.getInvMaxStackAmount(), itemStack.getMaxAmount());
 					i++;

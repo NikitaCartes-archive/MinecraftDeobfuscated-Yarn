@@ -14,12 +14,12 @@ public class EmptyGlyphRenderer extends GlyphRenderer {
 	}
 
 	@Override
-	public void method_2025(TextureManager textureManager, boolean bl, float f, float g, BufferBuilder bufferBuilder, float h, float i, float j, float k) {
+	public void draw(TextureManager textureManager, boolean bl, float f, float g, BufferBuilder bufferBuilder, float h, float i, float j, float k) {
 	}
 
 	@Nullable
 	@Override
-	public Identifier method_2026() {
+	public Identifier getId() {
 		return null;
 	}
 }

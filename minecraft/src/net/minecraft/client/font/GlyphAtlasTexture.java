@@ -12,19 +12,19 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
-	private final Identifier field_2262;
+	private final Identifier id;
 	private final boolean hasColor;
 	private final GlyphAtlasTexture.Slot rootSlot;
 
 	public GlyphAtlasTexture(Identifier identifier, boolean bl) {
-		this.field_2262 = identifier;
+		this.id = identifier;
 		this.hasColor = bl;
 		this.rootSlot = new GlyphAtlasTexture.Slot(0, 0, 256, 256);
 		TextureUtil.prepareImage(bl ? NativeImage.class_1013.field_5012 : NativeImage.class_1013.field_5016, this.getGlId(), 256, 256);
 	}
 
 	@Override
-	public void method_4625(ResourceManager resourceManager) {
+	public void load(ResourceManager resourceManager) {
 	}
 
 	public void close() {
@@ -32,7 +32,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 	}
 
 	@Nullable
-	public GlyphRenderer method_2022(RenderableGlyph renderableGlyph) {
+	public GlyphRenderer getGlyphRenderer(RenderableGlyph renderableGlyph) {
 		if (renderableGlyph.hasColor() != this.hasColor) {
 			return null;
 		} else {
@@ -44,7 +44,7 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 				float g = 256.0F;
 				float h = 0.01F;
 				return new GlyphRenderer(
-					this.field_2262,
+					this.id,
 					((float)slot.x + 0.01F) / 256.0F,
 					((float)slot.x - 0.01F + (float)renderableGlyph.getWidth()) / 256.0F,
 					((float)slot.y + 0.01F) / 256.0F,
@@ -60,8 +60,8 @@ public class GlyphAtlasTexture extends AbstractTexture implements Closeable {
 		}
 	}
 
-	public Identifier method_2023() {
-		return this.field_2262;
+	public Identifier getId() {
+		return this.id;
 	}
 
 	@Environment(EnvType.CLIENT)

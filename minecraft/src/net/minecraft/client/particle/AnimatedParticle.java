@@ -2,12 +2,11 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class AnimatedParticle extends SpriteBillboardParticle {
-	protected final class_4002 field_17866;
+	protected final SpriteProvider field_17866;
 	private final float field_3881;
 	private float field_3879 = 0.91F;
 	private float targetColorRed;
@@ -15,9 +14,9 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 	private float targetColorBlue;
 	private boolean changesColor;
 
-	protected AnimatedParticle(World world, double d, double e, double f, class_4002 arg, float g) {
+	protected AnimatedParticle(World world, double d, double e, double f, SpriteProvider spriteProvider, float g) {
 		super(world, d, e, f);
-		this.field_17866 = arg;
+		this.field_17866 = spriteProvider;
 		this.field_3881 = g;
 	}
 
@@ -37,7 +36,7 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT;
 	}
 

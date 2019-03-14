@@ -27,9 +27,9 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 	}
 
 	public boolean method_834(LootContext lootContext) {
-		DamageSource damageSource = lootContext.method_296(LootContextParameters.field_1231);
-		BlockPos blockPos = lootContext.method_296(LootContextParameters.field_1232);
-		return blockPos != null && damageSource != null && this.predicate.method_8845(lootContext.method_299(), new Vec3d(blockPos), damageSource);
+		DamageSource damageSource = lootContext.get(LootContextParameters.field_1231);
+		BlockPos blockPos = lootContext.get(LootContextParameters.field_1232);
+		return blockPos != null && damageSource != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), damageSource);
 	}
 
 	public static LootCondition.Builder method_837(DamageSourcePredicate.Builder builder) {

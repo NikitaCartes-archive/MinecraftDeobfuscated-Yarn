@@ -19,18 +19,18 @@ public class ExperienceBottleItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_7886(ItemStack itemStack) {
+	public boolean hasEnchantmentGlint(ItemStack itemStack) {
 		return true;
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> method_7836(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.method_5998(hand);
+	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
+		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (!playerEntity.abilities.creativeMode) {
 			itemStack.subtractAmount(1);
 		}
 
-		world.method_8465(
+		world.playSound(
 			null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_14637, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 		);
 		if (!world.isClient) {
@@ -40,7 +40,7 @@ public class ExperienceBottleItem extends Item {
 			world.spawnEntity(thrownExperienceBottleEntity);
 		}
 
-		playerEntity.method_7259(Stats.field_15372.getOrCreateStat(this));
+		playerEntity.incrementStat(Stats.field_15372.getOrCreateStat(this));
 		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 }

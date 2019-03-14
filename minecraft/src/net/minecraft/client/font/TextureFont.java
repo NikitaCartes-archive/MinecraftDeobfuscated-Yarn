@@ -37,19 +37,19 @@ public class TextureFont implements Font {
 
 	@Nullable
 	@Override
-	public RenderableGlyph method_2040(char c) {
+	public RenderableGlyph getGlyph(char c) {
 		return this.characterToGlyphMap.get(c);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class Loader implements FontLoader {
-		private final Identifier field_2289;
+		private final Identifier filename;
 		private final List<String> chars;
 		private final int height;
 		private final int ascent;
 
 		public Loader(Identifier identifier, int i, int j, List<String> list) {
-			this.field_2289 = new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
+			this.filename = new Identifier(identifier.getNamespace(), "textures/" + identifier.getPath());
 			this.chars = list;
 			this.height = i;
 			this.ascent = j;
@@ -87,9 +87,9 @@ public class TextureFont implements Font {
 
 		@Nullable
 		@Override
-		public Font method_2039(ResourceManager resourceManager) {
+		public Font load(ResourceManager resourceManager) {
 			try {
-				Resource resource = resourceManager.getResource(this.field_2289);
+				Resource resource = resourceManager.getResource(this.filename);
 				Throwable var3 = null;
 
 				TextureFont var27;

@@ -1,5 +1,6 @@
 package net.minecraft.util.math;
 
+import java.util.stream.Stream;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.chunk.ChunkPos;
 
@@ -44,7 +45,7 @@ public class ChunkSectionPos extends Vec3i {
 		return i & 15;
 	}
 
-	public static short method_19454(BlockPos blockPos) {
+	public static short packToShort(BlockPos blockPos) {
 		int i = toLocalCoord(blockPos.getX());
 		int j = toLocalCoord(blockPos.getY());
 		int k = toLocalCoord(blockPos.getZ());
@@ -79,6 +80,30 @@ public class ChunkSectionPos extends Vec3i {
 		return this.getZ();
 	}
 
+	public int method_19527() {
+		return this.getChunkX() << 4;
+	}
+
+	public int method_19528() {
+		return this.getChunkY() << 4;
+	}
+
+	public int method_19529() {
+		return this.getChunkZ() << 4;
+	}
+
+	public int method_19530() {
+		return (this.getChunkX() << 4) + 15;
+	}
+
+	public int method_19531() {
+		return (this.getChunkY() << 4) + 15;
+	}
+
+	public int method_19532() {
+		return (this.getChunkZ() << 4) + 15;
+	}
+
 	public static long toChunkLong(long l) {
 		return asLong(toChunkCoord(BlockPos.unpackLongX(l)), toChunkCoord(BlockPos.unpackLongY(l)), toChunkCoord(BlockPos.unpackLongZ(l)));
 	}
@@ -100,5 +125,11 @@ public class ChunkSectionPos extends Vec3i {
 
 	public long asLong() {
 		return asLong(this.getChunkX(), this.getChunkY(), this.getChunkZ());
+	}
+
+	public Stream<BlockPos> method_19533() {
+		return BlockPos.getBlocksInCuboid(
+			this.method_19527(), this.method_19528(), this.method_19529(), this.method_19530(), this.method_19531(), this.method_19532()
+		);
 	}
 }

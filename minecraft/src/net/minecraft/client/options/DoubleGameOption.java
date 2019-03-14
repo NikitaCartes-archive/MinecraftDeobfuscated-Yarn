@@ -5,7 +5,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.GameOptionSliderWidget;
 import net.minecraft.util.math.MathHelper;
 
@@ -37,7 +37,7 @@ public class DoubleGameOption extends GameOption {
 	}
 
 	@Override
-	public ButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k) {
+	public AbstractButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k) {
 		return new GameOptionSliderWidget(gameOptions, i, j, k, 20, this);
 	}
 

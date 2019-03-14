@@ -40,15 +40,15 @@ public class ClientRecipeBook extends RecipeBook {
 
 		for (Recipe<?> recipe : this.manager.values()) {
 			if (!recipe.isIgnoredInRecipeBook()) {
-				RecipeBookGroup recipeBookGroup = method_1400(recipe);
+				RecipeBookGroup recipeBookGroup = getGroupForRecipe(recipe);
 				String string = recipe.getGroup();
 				RecipeResultCollection recipeResultCollection;
 				if (string.isEmpty()) {
-					recipeResultCollection = this.method_1394(recipeBookGroup);
+					recipeResultCollection = this.addGroup(recipeBookGroup);
 				} else {
 					recipeResultCollection = table.get(recipeBookGroup, string);
 					if (recipeResultCollection == null) {
-						recipeResultCollection = this.method_1394(recipeBookGroup);
+						recipeResultCollection = this.addGroup(recipeBookGroup);
 						table.put(recipeBookGroup, string, recipeResultCollection);
 					}
 				}
@@ -58,7 +58,7 @@ public class ClientRecipeBook extends RecipeBook {
 		}
 	}
 
-	private RecipeResultCollection method_1394(RecipeBookGroup recipeBookGroup) {
+	private RecipeResultCollection addGroup(RecipeBookGroup recipeBookGroup) {
 		RecipeResultCollection recipeResultCollection = new RecipeResultCollection();
 		this.orderedResults.add(recipeResultCollection);
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
@@ -83,10 +83,10 @@ public class ClientRecipeBook extends RecipeBook {
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 	}
 
-	private static RecipeBookGroup method_1400(Recipe<?> recipe) {
-		RecipeType<?> recipeType = recipe.method_17716();
+	private static RecipeBookGroup getGroupForRecipe(Recipe<?> recipe) {
+		RecipeType<?> recipeType = recipe.getType();
 		if (recipeType == RecipeType.SMELTING) {
-			if (recipe.getOutput().getItem().method_19263()) {
+			if (recipe.getOutput().getItem().isFood()) {
 				return RecipeBookGroup.field_1808;
 			} else {
 				return recipe.getOutput().getItem() instanceof BlockItem ? RecipeBookGroup.field_1811 : RecipeBookGroup.field_1812;
@@ -132,7 +132,7 @@ public class ClientRecipeBook extends RecipeBook {
 		return this.orderedResults;
 	}
 
-	public List<RecipeResultCollection> method_1396(RecipeBookGroup recipeBookGroup) {
+	public List<RecipeResultCollection> getResultsForGroup(RecipeBookGroup recipeBookGroup) {
 		return (List<RecipeResultCollection>)this.resultsByGroup.getOrDefault(recipeBookGroup, Collections.emptyList());
 	}
 }

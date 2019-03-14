@@ -49,7 +49,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookGui {
 	protected void setOpen(boolean bl) {
 		this.setGuiOpen(bl);
 		if (!bl) {
-			this.field_3086.hideAlternates();
+			this.recipesArea.hideAlternates();
 		}
 
 		this.sendBookDataPacket();
@@ -59,7 +59,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookGui {
 
 	@Override
 	protected void setBookButtonTexture() {
-		this.toggleCraftableButton.method_1962(152, 182, 28, 18, field_3097);
+		this.toggleCraftableButton.setTextureUV(152, 182, 28, 18, TEXTURE);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookGui {
 		ItemStack itemStack = recipe.getOutput();
 		this.ghostSlots.setRecipe(recipe);
 		this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), ((Slot)list.get(2)).xPosition, ((Slot)list.get(2)).yPosition);
-		DefaultedList<Ingredient> defaultedList = recipe.method_8117();
+		DefaultedList<Ingredient> defaultedList = recipe.getPreviewInputs();
 		this.outputSlot = (Slot)list.get(1);
 		if (this.field_3149 == null) {
 			this.field_3149 = this.getAllowedFuels();
@@ -120,7 +120,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookGui {
 			int k = this.outputSlot.xPosition + i;
 			int l = this.outputSlot.yPosition + j;
 			DrawableHelper.drawRect(k, l, k + 16, l + 16, 822018048);
-			this.client.method_1480().renderGuiItem(this.client.field_1724, this.method_2658().method_7854(), k, l);
+			this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getDefaultStack(), k, l);
 			GlStateManager.depthFunc(516);
 			DrawableHelper.drawRect(k, l, k + 16, l + 16, 822083583);
 			GlStateManager.depthFunc(515);

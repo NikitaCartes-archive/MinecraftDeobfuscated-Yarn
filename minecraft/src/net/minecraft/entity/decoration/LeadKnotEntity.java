@@ -33,7 +33,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		float f = 0.125F;
 		float g = 0.1875F;
 		float h = 0.25F;
-		this.method_5857(new BoundingBox(this.x - 0.1875, this.y - 0.25 + 0.125, this.z - 0.1875, this.x + 0.1875, this.y + 0.25 + 0.125, this.z + 0.1875));
+		this.setBoundingBox(new BoundingBox(this.x - 0.1875, this.y - 0.25 + 0.125, this.z - 0.1875, this.x + 0.1875, this.y + 0.25 + 0.125, this.z + 0.1875));
 		this.teleporting = true;
 	}
 
@@ -44,13 +44,13 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	protected void method_6895() {
-		this.x = (double)this.field_7100.getX() + 0.5;
-		this.y = (double)this.field_7100.getY() + 0.5;
-		this.z = (double)this.field_7100.getZ() + 0.5;
+		this.x = (double)this.blockPos.getX() + 0.5;
+		this.y = (double)this.blockPos.getY() + 0.5;
+		this.z = (double)this.blockPos.getZ() + 0.5;
 	}
 
 	@Override
-	public void method_6892(Direction direction) {
+	public void setFacing(Direction direction) {
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	protected float method_18378(EntityPose entityPose, EntitySize entitySize) {
+	protected float getEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return -0.0625F;
 	}
 
@@ -75,26 +75,26 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void copyEntityData(@Nullable Entity entity) {
-		this.method_5783(SoundEvents.field_15184, 1.0F, 1.0F);
+	public void onBreak(@Nullable Entity entity) {
+		this.playSound(SoundEvents.field_15184, 1.0F, 1.0F);
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
 	}
 
 	@Override
-	public boolean method_5688(PlayerEntity playerEntity, Hand hand) {
-		if (this.field_6002.isClient) {
+	public boolean interact(PlayerEntity playerEntity, Hand hand) {
+		if (this.world.isClient) {
 			return true;
 		} else {
 			boolean bl = false;
 			double d = 7.0;
-			List<MobEntity> list = this.field_6002
+			List<MobEntity> list = this.world
 				.method_18467(MobEntity.class, new BoundingBox(this.x - 7.0, this.y - 7.0, this.z - 7.0, this.x + 7.0, this.y + 7.0, this.z + 7.0));
 
 			for (MobEntity mobEntity : list) {
@@ -121,7 +121,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 
 	@Override
 	public boolean method_6888() {
-		return this.field_6002.method_8320(this.field_7100).getBlock().method_9525(BlockTags.field_16584);
+		return this.world.getBlockState(this.blockPos).getBlock().matches(BlockTags.field_16584);
 	}
 
 	public static LeadKnotEntity method_6932(World world, BlockPos blockPos) {
@@ -132,24 +132,24 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		for (LeadKnotEntity leadKnotEntity : world.method_18467(
 			LeadKnotEntity.class, new BoundingBox((double)i - 1.0, (double)j - 1.0, (double)k - 1.0, (double)i + 1.0, (double)j + 1.0, (double)k + 1.0)
 		)) {
-			if (leadKnotEntity.method_6896().equals(blockPos)) {
+			if (leadKnotEntity.getDecorationBlockPos().equals(blockPos)) {
 				return leadKnotEntity;
 			}
 		}
 
 		LeadKnotEntity leadKnotEntity2 = new LeadKnotEntity(world, blockPos);
 		world.spawnEntity(leadKnotEntity2);
-		leadKnotEntity2.method_6894();
+		leadKnotEntity2.onPlace();
 		return leadKnotEntity2;
 	}
 
 	@Override
-	public void method_6894() {
-		this.method_5783(SoundEvents.field_15062, 1.0F, 1.0F);
+	public void onPlace() {
+		this.playSound(SoundEvents.field_15062, 1.0F, 1.0F);
 	}
 
 	@Override
-	public Packet<?> method_18002() {
-		return new EntitySpawnS2CPacket(this, this.method_5864(), 0, this.method_6896());
+	public Packet<?> createSpawnPacket() {
+		return new EntitySpawnS2CPacket(this, this.getType(), 0, this.getDecorationBlockPos());
 	}
 }

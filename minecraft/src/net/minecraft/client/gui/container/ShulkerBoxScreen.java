@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBoxScreen extends ContainerScreen<ShulkerBoxContainer> {
-	private static final Identifier field_2973 = new Identifier("textures/gui/container/shulker_box.png");
+	private static final Identifier TEXTURE = new Identifier("textures/gui/container/shulker_box.png");
 
 	public ShulkerBoxScreen(ShulkerBoxContainer shulkerBoxContainer, PlayerInventory playerInventory, TextComponent textComponent) {
 		super(shulkerBoxContainer, playerInventory, textComponent);
@@ -27,14 +27,14 @@ public class ShulkerBoxScreen extends ContainerScreen<ShulkerBoxContainer> {
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.field_17411.getFormattedText(), 8.0F, 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.method_5476().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+		this.fontRenderer.draw(this.name.getFormattedText(), 8.0F, 6.0F, 4210752);
+		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.method_1531().method_4618(field_2973);
+		this.client.getTextureManager().bindTexture(TEXTURE);
 		int k = (this.screenWidth - this.width) / 2;
 		int l = (this.screenHeight - this.height) / 2;
 		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);

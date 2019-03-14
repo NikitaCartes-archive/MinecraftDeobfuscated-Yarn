@@ -56,7 +56,7 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	}
 
 	public static Collection<String> method_9449(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return getHoldersArgument(commandContext, string, commandContext.getSource().getMinecraftServer().method_3845()::getKnownPlayers);
+		return getHoldersArgument(commandContext, string, commandContext.getSource().getMinecraftServer().getScoreboard()::getKnownPlayers);
 	}
 
 	public static Collection<String> getHoldersArgument(CommandContext<ServerCommandSource> commandContext, String string, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
@@ -121,15 +121,15 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 	}
 
 	public static class SelectorScoreHolder implements ScoreHolderArgumentType.ScoreHolder {
-		private final EntitySelector field_9952;
+		private final EntitySelector selector;
 
 		public SelectorScoreHolder(EntitySelector entitySelector) {
-			this.field_9952 = entitySelector;
+			this.selector = entitySelector;
 		}
 
 		@Override
 		public Collection<String> getNames(ServerCommandSource serverCommandSource, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
-			List<? extends Entity> list = this.field_9952.getEntities(serverCommandSource);
+			List<? extends Entity> list = this.selector.getEntities(serverCommandSource);
 			if (list.isEmpty()) {
 				throw EntityArgumentType.ENTITY_NOT_FOUND_EXCEPTION.create();
 			} else {

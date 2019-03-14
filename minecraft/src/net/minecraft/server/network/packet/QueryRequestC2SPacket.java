@@ -15,6 +15,6 @@ public class QueryRequestC2SPacket implements Packet<ServerQueryPacketListener> 
 	}
 
 	public void method_12701(ServerQueryPacketListener serverQueryPacketListener) {
-		serverQueryPacketListener.method_12698(this);
+		serverQueryPacketListener.onRequest(this);
 	}
 }

@@ -25,7 +25,7 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public void method_11997(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11106(this);
+		clientPlayPacketListener.onSynchronizeRecipes(this);
 	}
 
 	@Override
@@ -53,17 +53,17 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public static Recipe<?> method_17817(PacketByteBuf packetByteBuf) {
-		Identifier identifier = packetByteBuf.method_10810();
-		Identifier identifier2 = packetByteBuf.method_10810();
+		Identifier identifier = packetByteBuf.readIdentifier();
+		Identifier identifier2 = packetByteBuf.readIdentifier();
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
-				.method_17966(identifier)
+				.getOrEmpty(identifier)
 				.orElseThrow(() -> new IllegalArgumentException("Unknown recipe serializer " + identifier)))
-			.method_8122(identifier2, packetByteBuf);
+			.read(identifier2, packetByteBuf);
 	}
 
 	public static <T extends Recipe<?>> void method_17816(T recipe, PacketByteBuf packetByteBuf) {
-		packetByteBuf.method_10812(Registry.RECIPE_SERIALIZER.method_10221(recipe.method_8119()));
-		packetByteBuf.method_10812(recipe.method_8114());
-		((RecipeSerializer<T>)recipe.method_8119()).method_8124(packetByteBuf, recipe);
+		packetByteBuf.writeIdentifier(Registry.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
+		packetByteBuf.writeIdentifier(recipe.getId());
+		((RecipeSerializer<T>)recipe.getSerializer()).write(packetByteBuf, recipe);
 	}
 }

@@ -29,8 +29,8 @@ public class AdvancementManager {
 			this.remove(simpleAdvancement2);
 		}
 
-		LOGGER.info("Forgot about advancement {}", simpleAdvancement.method_688());
-		this.advancements.remove(simpleAdvancement.method_688());
+		LOGGER.info("Forgot about advancement {}", simpleAdvancement.getId());
+		this.advancements.remove(simpleAdvancement.getId());
 		if (simpleAdvancement.getParent() == null) {
 			this.roots.remove(simpleAdvancement);
 			if (this.listener != null) {
@@ -68,7 +68,7 @@ public class AdvancementManager {
 				Identifier identifier = (Identifier)entry.getKey();
 				SimpleAdvancement.Builder builder = (SimpleAdvancement.Builder)entry.getValue();
 				if (builder.findParent(function)) {
-					SimpleAdvancement simpleAdvancement = builder.method_695(identifier);
+					SimpleAdvancement simpleAdvancement = builder.build(identifier);
 					this.advancements.put(identifier, simpleAdvancement);
 					bl = true;
 					iterator.remove();
@@ -115,7 +115,7 @@ public class AdvancementManager {
 	}
 
 	@Nullable
-	public SimpleAdvancement method_716(Identifier identifier) {
+	public SimpleAdvancement get(Identifier identifier) {
 		return (SimpleAdvancement)this.advancements.get(identifier);
 	}
 

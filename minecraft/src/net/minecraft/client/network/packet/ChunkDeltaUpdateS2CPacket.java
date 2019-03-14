@@ -34,7 +34,7 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 		this.records = new ChunkDeltaUpdateS2CPacket.ChunkDeltaRecord[packetByteBuf.readVarInt()];
 
 		for (int i = 0; i < this.records.length; i++) {
-			this.records[i] = new ChunkDeltaUpdateS2CPacket.ChunkDeltaRecord(packetByteBuf.readShort(), Block.field_10651.get(packetByteBuf.readVarInt()));
+			this.records[i] = new ChunkDeltaUpdateS2CPacket.ChunkDeltaRecord(packetByteBuf.readShort(), Block.STATE_IDS.get(packetByteBuf.readVarInt()));
 		}
 	}
 
@@ -46,12 +46,12 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 
 		for (ChunkDeltaUpdateS2CPacket.ChunkDeltaRecord chunkDeltaRecord : this.records) {
 			packetByteBuf.writeShort(chunkDeltaRecord.getPosShort());
-			packetByteBuf.writeVarInt(Block.method_9507(chunkDeltaRecord.getState()));
+			packetByteBuf.writeVarInt(Block.getRawIdFromState(chunkDeltaRecord.getState()));
 		}
 	}
 
 	public void method_11392(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11100(this);
+		clientPlayPacketListener.onChunkDeltaUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -70,11 +70,11 @@ public class ChunkDeltaUpdateS2CPacket implements Packet<ClientPlayPacketListene
 
 		public ChunkDeltaRecord(short s, WorldChunk worldChunk) {
 			this.pos = s;
-			this.state = worldChunk.method_8320(this.getBlockPos());
+			this.state = worldChunk.getBlockState(this.getBlockPos());
 		}
 
 		public BlockPos getBlockPos() {
-			return new BlockPos(ChunkDeltaUpdateS2CPacket.this.chunkPos.method_8330(this.pos >> 12 & 15, this.pos & 255, this.pos >> 8 & 15));
+			return new BlockPos(ChunkDeltaUpdateS2CPacket.this.chunkPos.toBlockPos(this.pos >> 12 & 15, this.pos & 255, this.pos >> 8 & 15));
 		}
 
 		public short getPosShort() {

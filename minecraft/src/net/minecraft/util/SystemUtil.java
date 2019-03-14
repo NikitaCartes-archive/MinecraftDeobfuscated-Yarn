@@ -67,7 +67,7 @@ public class SystemUtil {
 		return property.getValueAsString((T)object);
 	}
 
-	public static String method_646(String string, @Nullable Identifier identifier) {
+	public static String createTranslationKey(String string, @Nullable Identifier identifier) {
 		return identifier == null ? string + ".unregistered_sadface" : string + '.' + identifier.getNamespace() + '.' + identifier.getPath().replace('/', '.');
 	}
 

@@ -19,9 +19,9 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ingame.ChatScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.Rect2i;
@@ -36,9 +36,9 @@ import net.minecraft.util.math.Vec2f;
 public abstract class AbstractCommandBlockScreen extends Screen {
 	protected TextFieldWidget consoleCommandTextField;
 	protected TextFieldWidget previousOutputTextField;
-	protected class_4185 doneButton;
-	protected class_4185 cancelButton;
-	protected class_4185 toggleTrackingOutputButton;
+	protected ButtonWidget doneButton;
+	protected ButtonWidget cancelButton;
+	protected ButtonWidget toggleTrackingOutputButton;
 	protected boolean trackingOutput;
 	protected final List<String> field_2761 = Lists.<String>newArrayList();
 	protected int field_2757;
@@ -60,21 +60,21 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.doneButton = this.addButton(new class_4185(this.screenWidth / 2 - 4 - 150, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.done")) {
+		this.doneButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.done")) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				AbstractCommandBlockScreen.this.method_2359();
 			}
 		});
-		this.cancelButton = this.addButton(new class_4185(this.screenWidth / 2 + 4, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel")) {
+		this.cancelButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel")) {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				AbstractCommandBlockScreen.this.method_2358();
 			}
 		});
-		this.toggleTrackingOutputButton = this.addButton(new class_4185(this.screenWidth / 2 + 150 - 20, this.method_2364(), 20, 20, "O") {
+		this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 150 - 20, this.method_2364(), 20, 20, "O") {
 			@Override
-			public void method_1826() {
+			public void onPressed() {
 				CommandBlockExecutor commandBlockExecutor = AbstractCommandBlockScreen.this.getCommandExecutor();
 				commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
 				AbstractCommandBlockScreen.this.updateTrackedOutput();
@@ -90,7 +90,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.previousOutputTextField.setIsEditable(false);
 		this.previousOutputTextField.setText("-");
 		this.listeners.add(this.previousOutputTextField);
-		this.method_18624(this.consoleCommandTextField);
+		this.focusOn(this.consoleCommandTextField);
 		this.updateCommand();
 	}
 
@@ -105,7 +105,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	protected void updateTrackedOutput() {
 		if (this.getCommandExecutor().isTrackingOutput()) {
 			this.toggleTrackingOutputButton.setText("O");
-			this.previousOutputTextField.setText(this.getCommandExecutor().method_8292().getString());
+			this.previousOutputTextField.setText(this.getCommandExecutor().getLastOutput().getString());
 		} else {
 			this.toggleTrackingOutputButton.setText("X");
 			this.previousOutputTextField.setText("-");
@@ -116,10 +116,10 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
 		this.syncSettingsToServer(commandBlockExecutor);
 		if (!commandBlockExecutor.isTrackingOutput()) {
-			commandBlockExecutor.method_8291(null);
+			commandBlockExecutor.setLastOutput(null);
 		}
 
-		this.client.method_1507(null);
+		this.client.openScreen(null);
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	protected void method_2358() {
 		this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
-		this.client.method_1507(null);
+		this.client.openScreen(null);
 	}
 
 	@Override
@@ -150,7 +150,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		} else if (super.keyPressed(i, j, k)) {
 			return true;
 		} else if (i != 257 && i != 335) {
-			if (i == 258 && this.method_19357() == this.consoleCommandTextField) {
+			if (i == 258 && this.getFocused() == this.consoleCommandTextField) {
 				this.method_2357();
 			}
 
@@ -183,7 +183,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		this.field_2761.clear();
-		CommandDispatcher<CommandSource> commandDispatcher = this.client.field_1724.networkHandler.getCommandDispatcher();
+		CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
 		StringReader stringReader = new StringReader(string);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
@@ -191,7 +191,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		int i = stringReader.getCursor();
 		if (this.parsedCommand == null) {
-			this.parsedCommand = commandDispatcher.parse(stringReader, this.client.field_1724.networkHandler.method_2875());
+			this.parsedCommand = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
 		}
 
 		int j = this.consoleCommandTextField.getCursor();
@@ -232,7 +232,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		this.field_2759 = null;
-		if (this.client.field_1690.autoSuggestions) {
+		if (this.client.options.autoSuggestions) {
 			this.method_2357();
 		}
 	}
@@ -245,10 +245,10 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		CommandContextBuilder<CommandSource> commandContextBuilder = this.parsedCommand.getContext();
 		SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.consoleCommandTextField.getCursor());
 		Map<CommandNode<CommandSource>, String> map = this.client
-			.field_1724
+			.player
 			.networkHandler
 			.getCommandDispatcher()
-			.getSmartUsage(suggestionContext.parent, this.client.field_1724.networkHandler.method_2875());
+			.getSmartUsage(suggestionContext.parent, this.client.player.networkHandler.getCommandSource());
 		List<String> list = Lists.<String>newArrayList();
 		int i = 0;
 
@@ -444,12 +444,12 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		public boolean method_2370(double d) {
 			int i = (int)(
-				AbstractCommandBlockScreen.this.client.field_1729.getX()
+				AbstractCommandBlockScreen.this.client.mouse.getX()
 					* (double)AbstractCommandBlockScreen.this.client.window.getScaledWidth()
 					/ (double)AbstractCommandBlockScreen.this.client.window.getWidth()
 			);
 			int j = (int)(
-				AbstractCommandBlockScreen.this.client.field_1729.getY()
+				AbstractCommandBlockScreen.this.client.mouse.getY()
 					* (double)AbstractCommandBlockScreen.this.client.window.getScaledHeight()
 					/ (double)AbstractCommandBlockScreen.this.client.window.getHeight()
 			);

@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_1394;
-import net.minecraft.class_1399;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -17,6 +16,7 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.JumpControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -54,8 +54,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
 public class RabbitEntity extends AnimalEntity {
-	private static final TrackedData<Integer> field_6852 = DataTracker.registerData(RabbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final Identifier field_6846 = new Identifier("killer_bunny");
+	private static final TrackedData<Integer> RABBIT_TYPE = DataTracker.registerData(RabbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final Identifier KILLER_BUNNY = new Identifier("killer_bunny");
 	private int field_6851;
 	private int field_6849;
 	private boolean field_6850;
@@ -64,37 +64,37 @@ public class RabbitEntity extends AnimalEntity {
 
 	public RabbitEntity(EntityType<? extends RabbitEntity> entityType, World world) {
 		super(entityType, world);
-		this.field_6204 = new RabbitEntity.RabbitJumpControl(this);
-		this.field_6207 = new RabbitEntity.RabbitMoveControl(this);
+		this.jumpControl = new RabbitEntity.RabbitJumpControl(this);
+		this.moveControl = new RabbitEntity.RabbitMoveControl(this);
 		this.setSpeed(0.0);
 	}
 
 	@Override
 	protected void initGoals() {
-		this.field_6201.add(1, new SwimGoal(this));
-		this.field_6201.add(1, new RabbitEntity.class_1469(this, 2.2));
-		this.field_6201.add(2, new AnimalMateGoal(this, 0.8));
-		this.field_6201.add(3, new TemptGoal(this, 1.0, Ingredient.method_8091(Items.field_8179, Items.field_8071, Blocks.field_10182), false));
-		this.field_6201.add(4, new RabbitEntity.RabbitFleeGoal(this, PlayerEntity.class, 8.0F, 2.2, 2.2));
-		this.field_6201.add(4, new RabbitEntity.RabbitFleeGoal(this, WolfEntity.class, 10.0F, 2.2, 2.2));
-		this.field_6201.add(4, new RabbitEntity.RabbitFleeGoal(this, HostileEntity.class, 4.0F, 2.2, 2.2));
-		this.field_6201.add(5, new RabbitEntity.class_1470(this));
-		this.field_6201.add(6, new class_1394(this, 0.6));
-		this.field_6201.add(11, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
+		this.goalSelector.add(1, new SwimGoal(this));
+		this.goalSelector.add(1, new RabbitEntity.class_1469(this, 2.2));
+		this.goalSelector.add(2, new AnimalMateGoal(this, 0.8));
+		this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.ofItems(Items.field_8179, Items.field_8071, Blocks.field_10182), false));
+		this.goalSelector.add(4, new RabbitEntity.RabbitFleeGoal(this, PlayerEntity.class, 8.0F, 2.2, 2.2));
+		this.goalSelector.add(4, new RabbitEntity.RabbitFleeGoal(this, WolfEntity.class, 10.0F, 2.2, 2.2));
+		this.goalSelector.add(4, new RabbitEntity.RabbitFleeGoal(this, HostileEntity.class, 4.0F, 2.2, 2.2));
+		this.goalSelector.add(5, new RabbitEntity.class_1470(this));
+		this.goalSelector.add(6, new class_1394(this, 0.6));
+		this.goalSelector.add(11, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
 	}
 
 	@Override
 	protected float getJumpVelocity() {
-		if (!this.horizontalCollision && (!this.field_6207.isMoving() || !(this.field_6207.getTargetY() > this.y + 0.5))) {
-			Path path = this.field_6189.method_6345();
+		if (!this.horizontalCollision && (!this.moveControl.isMoving() || !(this.moveControl.getTargetY() > this.y + 0.5))) {
+			Path path = this.navigation.getCurrentPath();
 			if (path != null && path.getCurrentNodeIndex() < path.getLength()) {
-				Vec3d vec3d = path.method_49(this);
+				Vec3d vec3d = path.getNodePosition(this);
 				if (vec3d.y > this.y + 0.5) {
 					return 0.5F;
 				}
 			}
 
-			return this.field_6207.getSpeed() <= 0.6 ? 0.2F : 0.3F;
+			return this.moveControl.getSpeed() <= 0.6 ? 0.2F : 0.3F;
 		} else {
 			return 0.5F;
 		}
@@ -103,16 +103,16 @@ public class RabbitEntity extends AnimalEntity {
 	@Override
 	protected void jump() {
 		super.jump();
-		double d = this.field_6207.getSpeed();
+		double d = this.moveControl.getSpeed();
 		if (d > 0.0) {
-			double e = method_17996(this.method_18798());
+			double e = squaredHorizontalLength(this.getVelocity());
 			if (e < 0.01) {
-				this.method_5724(0.1F, new Vec3d(0.0, 0.0, 1.0));
+				this.updateVelocity(0.1F, new Vec3d(0.0, 0.0, 1.0));
 			}
 		}
 
-		if (!this.field_6002.isClient) {
-			this.field_6002.summonParticle(this, (byte)1);
+		if (!this.world.isClient) {
+			this.world.summonParticle(this, (byte)1);
 		}
 	}
 
@@ -122,15 +122,15 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	public void setSpeed(double d) {
-		this.method_5942().setSpeed(d);
-		this.field_6207.moveTo(this.field_6207.getTargetX(), this.field_6207.getTargetY(), this.field_6207.getTargetZ(), d);
+		this.getNavigation().setSpeed(d);
+		this.moveControl.moveTo(this.moveControl.getTargetX(), this.moveControl.getTargetY(), this.moveControl.getTargetZ(), d);
 	}
 
 	@Override
 	public void doJump(boolean bl) {
 		super.doJump(bl);
 		if (bl) {
-			this.method_5783(this.method_6615(), this.getSoundVolume(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 0.8F);
+			this.playSound(this.method_6615(), this.getSoundVolume(), ((this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F) * 0.8F);
 		}
 	}
 
@@ -143,7 +143,7 @@ public class RabbitEntity extends AnimalEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.field_6011.startTracking(field_6852, 0);
+		this.dataTracker.startTracking(RABBIT_TYPE, 0);
 	}
 
 	@Override
@@ -169,19 +169,19 @@ public class RabbitEntity extends AnimalEntity {
 				LivingEntity livingEntity = this.getTarget();
 				if (livingEntity != null && this.squaredDistanceTo(livingEntity) < 16.0) {
 					this.method_6616(livingEntity.x, livingEntity.z);
-					this.field_6207.moveTo(livingEntity.x, livingEntity.y, livingEntity.z, this.field_6207.getSpeed());
+					this.moveControl.moveTo(livingEntity.x, livingEntity.y, livingEntity.z, this.moveControl.getSpeed());
 					this.method_6618();
 					this.field_6850 = true;
 				}
 			}
 
-			RabbitEntity.RabbitJumpControl rabbitJumpControl = (RabbitEntity.RabbitJumpControl)this.field_6204;
+			RabbitEntity.RabbitJumpControl rabbitJumpControl = (RabbitEntity.RabbitJumpControl)this.jumpControl;
 			if (!rabbitJumpControl.isActive()) {
-				if (this.field_6207.isMoving() && this.field_6848 == 0) {
-					Path path = this.field_6189.method_6345();
-					Vec3d vec3d = new Vec3d(this.field_6207.getTargetX(), this.field_6207.getTargetY(), this.field_6207.getTargetZ());
+				if (this.moveControl.isMoving() && this.field_6848 == 0) {
+					Path path = this.navigation.getCurrentPath();
+					Vec3d vec3d = new Vec3d(this.moveControl.getTargetX(), this.moveControl.getTargetY(), this.moveControl.getTargetZ());
 					if (path != null && path.getCurrentNodeIndex() < path.getLength()) {
-						vec3d = path.method_49(this);
+						vec3d = path.getNodePosition(this);
 					}
 
 					this.method_6616(vec3d.x, vec3d.z);
@@ -204,15 +204,15 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	private void method_6611() {
-		((RabbitEntity.RabbitJumpControl)this.field_6204).method_6623(true);
+		((RabbitEntity.RabbitJumpControl)this.jumpControl).method_6623(true);
 	}
 
 	private void method_6621() {
-		((RabbitEntity.RabbitJumpControl)this.field_6204).method_6623(false);
+		((RabbitEntity.RabbitJumpControl)this.jumpControl).method_6623(false);
 	}
 
 	private void method_6608() {
-		if (this.field_6207.getSpeed() < 2.2) {
+		if (this.moveControl.getSpeed() < 2.2) {
 			this.field_6848 = 10;
 		} else {
 			this.field_6848 = 1;
@@ -239,20 +239,20 @@ public class RabbitEntity extends AnimalEntity {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_5996(EntityAttributes.MAX_HEALTH).setBaseValue(3.0);
-		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(3.0);
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("RabbitType", this.getRabbitType());
 		compoundTag.putInt("MoreCarrotTicks", this.field_6847);
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		this.setRabbitType(compoundTag.getInt("RabbitType"));
 		this.field_6847 = compoundTag.getInt("MoreCarrotTicks");
 	}
@@ -262,32 +262,32 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected SoundEvent method_5994() {
+	protected SoundEvent getAmbientSound() {
 		return SoundEvents.field_14693;
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_15164;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_14872;
 	}
 
 	@Override
 	public boolean attack(Entity entity) {
 		if (this.getRabbitType() == 99) {
-			this.method_5783(SoundEvents.field_15147, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-			return entity.damage(DamageSource.method_5511(this), 8.0F);
+			this.playSound(SoundEvents.field_15147, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+			return entity.damage(DamageSource.mob(this), 8.0F);
 		} else {
-			return entity.damage(DamageSource.method_5511(this), 3.0F);
+			return entity.damage(DamageSource.mob(this), 3.0F);
 		}
 	}
 
 	@Override
-	public SoundCategory method_5634() {
+	public SoundCategory getSoundCategory() {
 		return this.getRabbitType() == 99 ? SoundCategory.field_15251 : SoundCategory.field_15254;
 	}
 
@@ -296,13 +296,13 @@ public class RabbitEntity extends AnimalEntity {
 		return this.isInvulnerableTo(damageSource) ? false : super.damage(damageSource, f);
 	}
 
-	private boolean method_6614(Item item) {
+	private boolean isBreedingItem(Item item) {
 		return item == Items.field_8179 || item == Items.field_8071 || item == Blocks.field_10182.getItem();
 	}
 
 	public RabbitEntity method_6620(PassiveEntity passiveEntity) {
-		RabbitEntity rabbitEntity = EntityType.RABBIT.method_5883(this.field_6002);
-		int i = this.method_6622(this.field_6002);
+		RabbitEntity rabbitEntity = EntityType.RABBIT.create(this.world);
+		int i = this.method_6622(this.world);
 		if (this.random.nextInt(20) != 0) {
 			if (passiveEntity instanceof RabbitEntity && this.random.nextBoolean()) {
 				i = ((RabbitEntity)passiveEntity).getRabbitType();
@@ -316,35 +316,35 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_6481(ItemStack itemStack) {
-		return this.method_6614(itemStack.getItem());
+	public boolean isBreedingItem(ItemStack itemStack) {
+		return this.isBreedingItem(itemStack.getItem());
 	}
 
 	public int getRabbitType() {
-		return this.field_6011.get(field_6852);
+		return this.dataTracker.get(RABBIT_TYPE);
 	}
 
 	public void setRabbitType(int i) {
 		if (i == 99) {
-			this.method_5996(EntityAttributes.ARMOR).setBaseValue(8.0);
-			this.field_6201.add(4, new RabbitEntity.class_1464(this));
-			this.field_6185.add(1, new class_1399(this).method_6318());
-			this.field_6185.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
-			this.field_6185.add(2, new FollowTargetGoal(this, WolfEntity.class, true));
+			this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(8.0);
+			this.goalSelector.add(4, new RabbitEntity.class_1464(this));
+			this.targetSelector.add(1, new AvoidGoal(this).method_6318());
+			this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
+			this.targetSelector.add(2, new FollowTargetGoal(this, WolfEntity.class, true));
 			if (!this.hasCustomName()) {
-				this.method_5665(new TranslatableTextComponent(SystemUtil.method_646("entity", field_6846)));
+				this.setCustomName(new TranslatableTextComponent(SystemUtil.createTranslationKey("entity", KILLER_BUNNY)));
 			}
 		}
 
-		this.field_6011.set(field_6852, i);
+		this.dataTracker.set(RABBIT_TYPE, i);
 	}
 
 	@Nullable
 	@Override
-	public EntityData method_5943(
+	public EntityData prepareEntityData(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		int i = this.method_6622(iWorld);
 		boolean bl = false;
 		if (entityData instanceof RabbitEntity.class_1466) {
@@ -363,7 +363,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	private int method_6622(IWorld iWorld) {
-		Biome biome = iWorld.method_8310(new BlockPos(this));
+		Biome biome = iWorld.getBiome(new BlockPos(this));
 		int i = this.random.nextInt(100);
 		if (biome.getPrecipitation() == Biome.Precipitation.SNOW) {
 			return i < 80 ? 1 : 3;
@@ -375,13 +375,13 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		int i = MathHelper.floor(this.x);
-		int j = MathHelper.floor(this.method_5829().minY);
+		int j = MathHelper.floor(this.getBoundingBox().minY);
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		Block block = iWorld.method_8320(blockPos.down()).getBlock();
-		return block != Blocks.field_10479 && block != Blocks.field_10477 && block != Blocks.field_10102 ? super.method_5979(iWorld, spawnType) : true;
+		Block block = iWorld.getBlockState(blockPos.down()).getBlock();
+		return block != Blocks.field_10479 && block != Blocks.field_10477 && block != Blocks.field_10102 ? super.canSpawn(iWorld, spawnType) : true;
 	}
 
 	private boolean method_6607() {
@@ -455,7 +455,7 @@ public class RabbitEntity extends AnimalEntity {
 
 		@Override
 		public void tick() {
-			if (this.rabbit.onGround && !this.rabbit.field_6282 && !((RabbitEntity.RabbitJumpControl)this.rabbit.field_6204).isActive()) {
+			if (this.rabbit.onGround && !this.rabbit.field_6282 && !((RabbitEntity.RabbitJumpControl)this.rabbit.jumpControl).isActive()) {
 				this.rabbit.setSpeed(0.0);
 			} else if (this.isMoving()) {
 				this.rabbit.setSpeed(this.field_6858);
@@ -524,7 +524,7 @@ public class RabbitEntity extends AnimalEntity {
 		@Override
 		public boolean canStart() {
 			if (this.counter <= 0) {
-				if (!this.field_6863.field_6002.getGameRules().getBoolean("mobGriefing")) {
+				if (!this.field_6863.world.getGameRules().getBoolean("mobGriefing")) {
 					return false;
 				}
 
@@ -545,27 +545,23 @@ public class RabbitEntity extends AnimalEntity {
 		public void tick() {
 			super.tick();
 			this.field_6863
-				.method_5988()
+				.getLookControl()
 				.lookAt(
-					(double)this.field_6512.getX() + 0.5,
-					(double)(this.field_6512.getY() + 1),
-					(double)this.field_6512.getZ() + 0.5,
-					10.0F,
-					(float)this.field_6863.method_5978()
+					(double)this.targetPos.getX() + 0.5, (double)(this.targetPos.getY() + 1), (double)this.targetPos.getZ() + 0.5, 10.0F, (float)this.field_6863.method_5978()
 				);
 			if (this.hasReached()) {
-				World world = this.field_6863.field_6002;
-				BlockPos blockPos = this.field_6512.up();
-				BlockState blockState = world.method_8320(blockPos);
+				World world = this.field_6863.world;
+				BlockPos blockPos = this.targetPos.up();
+				BlockState blockState = world.getBlockState(blockPos);
 				Block block = blockState.getBlock();
 				if (this.field_6861 && block instanceof CarrotsBlock) {
-					Integer integer = blockState.method_11654(CarrotsBlock.field_10835);
+					Integer integer = blockState.get(CarrotsBlock.AGE);
 					if (integer == 0) {
-						world.method_8652(blockPos, Blocks.field_10124.method_9564(), 2);
-						world.method_8651(blockPos, true);
+						world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
+						world.breakBlock(blockPos, true);
 					} else {
-						world.method_8652(blockPos, blockState.method_11657(CarrotsBlock.field_10835, Integer.valueOf(integer - 1)), 2);
-						world.method_8535(2001, blockPos, Block.method_9507(blockState));
+						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(integer - 1)), 2);
+						world.playEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 					}
 
 					this.field_6863.field_6847 = 40;
@@ -577,13 +573,13 @@ public class RabbitEntity extends AnimalEntity {
 		}
 
 		@Override
-		protected boolean method_6296(ViewableWorld viewableWorld, BlockPos blockPos) {
-			Block block = viewableWorld.method_8320(blockPos).getBlock();
+		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
+			Block block = viewableWorld.getBlockState(blockPos).getBlock();
 			if (block == Blocks.field_10362 && this.field_6862 && !this.field_6861) {
 				blockPos = blockPos.up();
-				BlockState blockState = viewableWorld.method_8320(blockPos);
+				BlockState blockState = viewableWorld.getBlockState(blockPos);
 				block = blockState.getBlock();
-				if (block instanceof CarrotsBlock && ((CarrotsBlock)block).method_9825(blockState)) {
+				if (block instanceof CarrotsBlock && ((CarrotsBlock)block).isValidState(blockState)) {
 					this.field_6861 = true;
 					return true;
 				}

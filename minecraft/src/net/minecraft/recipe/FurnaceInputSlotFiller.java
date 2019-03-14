@@ -17,10 +17,10 @@ public class FurnaceInputSlotFiller<C extends Inventory> extends InputSlotFiller
 
 	@Override
 	protected void fillInputSlots(Recipe<C> recipe, boolean bl) {
-		this.slotMatchesRecipe = this.craftingContainer.method_7652(recipe);
-		int i = this.recipeFinder.method_7407(recipe, null);
+		this.slotMatchesRecipe = this.craftingContainer.matches(recipe);
+		int i = this.recipeFinder.countRecipeCrafts(recipe, null);
 		if (this.slotMatchesRecipe) {
-			ItemStack itemStack = this.craftingContainer.method_7611(0).method_7677();
+			ItemStack itemStack = this.craftingContainer.getSlot(0).getStack();
 			if (itemStack.isEmpty() || i <= itemStack.getAmount()) {
 				return;
 			}
@@ -28,7 +28,7 @@ public class FurnaceInputSlotFiller<C extends Inventory> extends InputSlotFiller
 
 		int j = this.getAmountToFill(bl, i, this.slotMatchesRecipe);
 		IntList intList = new IntArrayList();
-		if (this.recipeFinder.method_7406(recipe, intList, j)) {
+		if (this.recipeFinder.findRecipe(recipe, intList, j)) {
 			if (!this.slotMatchesRecipe) {
 				this.returnSlot(this.craftingContainer.getCraftingResultSlotIndex());
 				this.returnSlot(0);
@@ -46,12 +46,12 @@ public class FurnaceInputSlotFiller<C extends Inventory> extends InputSlotFiller
 
 	protected void fillInputSlot(int i, IntList intList) {
 		Iterator<Integer> iterator = intList.iterator();
-		Slot slot = this.craftingContainer.method_7611(0);
-		ItemStack itemStack = RecipeFinder.method_7405((Integer)iterator.next());
+		Slot slot = this.craftingContainer.getSlot(0);
+		ItemStack itemStack = RecipeFinder.getStackFromId((Integer)iterator.next());
 		if (!itemStack.isEmpty()) {
 			int j = Math.min(itemStack.getMaxAmount(), i);
 			if (this.slotMatchesRecipe) {
-				j -= slot.method_7677().getAmount();
+				j -= slot.getStack().getAmount();
 			}
 
 			for (int k = 0; k < j; k++) {

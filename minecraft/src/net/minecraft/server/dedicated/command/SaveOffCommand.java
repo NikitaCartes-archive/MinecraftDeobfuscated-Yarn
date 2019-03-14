@@ -26,7 +26,7 @@ public class SaveOffCommand {
 				if (!bl) {
 					throw field_13703.create();
 				} else {
-					serverCommandSource.method_9226(new TranslatableTextComponent("commands.save.disabled"), true);
+					serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.save.disabled"), true);
 					return 1;
 				}
 			})

@@ -19,8 +19,8 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		this.width = l;
 		this.height = m;
 		this.depth = n;
-		this.method_14926(Direction.Type.HORIZONTAL.random(random));
-		if (this.method_14934().getAxis() == Direction.Axis.Z) {
+		this.setOrientation(Direction.Type.HORIZONTAL.random(random));
+		if (this.getFacing().getAxis() == Direction.Axis.Z) {
 			this.boundingBox = new MutableIntBoundingBox(i, j, k, i + l - 1, j + m - 1, k + n - 1);
 		} else {
 			this.boundingBox = new MutableIntBoundingBox(i, j, k, i + n - 1, j + m - 1, k + l - 1);
@@ -36,7 +36,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 	}
 
 	@Override
-	protected void method_14943(CompoundTag compoundTag) {
+	protected void toNbt(CompoundTag compoundTag) {
 		compoundTag.putInt("Width", this.width);
 		compoundTag.putInt("Height", this.height);
 		compoundTag.putInt("Depth", this.depth);
@@ -54,8 +54,8 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 			for (int l = this.boundingBox.minZ; l <= this.boundingBox.maxZ; l++) {
 				for (int m = this.boundingBox.minX; m <= this.boundingBox.maxX; m++) {
 					mutable.set(m, 64, l);
-					if (mutableIntBoundingBox.method_14662(mutable)) {
-						j += iWorld.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
+					if (mutableIntBoundingBox.contains(mutable)) {
+						j += iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
 						k++;
 					}
 				}

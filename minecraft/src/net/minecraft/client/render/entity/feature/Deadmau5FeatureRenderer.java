@@ -14,10 +14,10 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 	}
 
 	public void method_4181(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
-		if ("deadmau5".equals(abstractClientPlayerEntity.method_5477().getString())
+		if ("deadmau5".equals(abstractClientPlayerEntity.getName().getString())
 			&& abstractClientPlayerEntity.method_3127()
 			&& !abstractClientPlayerEntity.isInvisible()) {
-			this.method_17164(abstractClientPlayerEntity.method_3117());
+			this.bindTexture(abstractClientPlayerEntity.method_3117());
 
 			for (int m = 0; m < 2; m++) {
 				float n = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw)

@@ -7,10 +7,10 @@ public class CuboidBlockIterator {
 	private final int endX;
 	private final int endY;
 	private final int endZ;
-	private int field_18233;
-	private int field_18234;
-	private int field_18235;
-	private boolean field_18236;
+	private int x;
+	private int y;
+	private int z;
+	private boolean complete;
 
 	public CuboidBlockIterator(int i, int j, int k, int l, int m, int n) {
 		this.startX = i;
@@ -22,39 +22,39 @@ public class CuboidBlockIterator {
 	}
 
 	public boolean step() {
-		if (!this.field_18236) {
-			this.field_18233 = this.startX;
-			this.field_18234 = this.startY;
-			this.field_18235 = this.startZ;
-			this.field_18236 = true;
+		if (!this.complete) {
+			this.x = this.startX;
+			this.y = this.startY;
+			this.z = this.startZ;
+			this.complete = true;
 			return true;
-		} else if (this.field_18233 == this.endX && this.field_18234 == this.endY && this.field_18235 == this.endZ) {
+		} else if (this.x == this.endX && this.y == this.endY && this.z == this.endZ) {
 			return false;
 		} else {
-			if (this.field_18233 < this.endX) {
-				this.field_18233++;
-			} else if (this.field_18234 < this.endY) {
-				this.field_18233 = this.startX;
-				this.field_18234++;
-			} else if (this.field_18235 < this.endZ) {
-				this.field_18233 = this.startX;
-				this.field_18234 = this.startY;
-				this.field_18235++;
+			if (this.x < this.endX) {
+				this.x++;
+			} else if (this.y < this.endY) {
+				this.x = this.startX;
+				this.y++;
+			} else if (this.z < this.endZ) {
+				this.x = this.startX;
+				this.y = this.startY;
+				this.z++;
 			}
 
 			return true;
 		}
 	}
 
-	public int method_18671() {
-		return this.field_18233;
+	public int getX() {
+		return this.x;
 	}
 
-	public int method_18672() {
-		return this.field_18234;
+	public int getY() {
+		return this.y;
 	}
 
-	public int method_18673() {
-		return this.field_18235;
+	public int getZ() {
+		return this.z;
 	}
 }

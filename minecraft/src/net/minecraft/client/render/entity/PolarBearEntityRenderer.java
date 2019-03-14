@@ -9,14 +9,14 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class PolarBearEntityRenderer extends MobEntityRenderer<PolarBearEntity, PolarBearEntityModel<PolarBearEntity>> {
-	private static final Identifier field_4766 = new Identifier("textures/entity/bear/polarbear.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/bear/polarbear.png");
 
 	public PolarBearEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new PolarBearEntityModel<>(), 0.9F);
 	}
 
 	protected Identifier method_4097(PolarBearEntity polarBearEntity) {
-		return field_4766;
+		return SKIN;
 	}
 
 	protected void method_4099(PolarBearEntity polarBearEntity, float f) {

@@ -61,7 +61,7 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 					if (jsonObject == null) {
 						LOGGER.error("Couldn't load recipe {} as it's null or empty", identifier2);
 					} else {
-						this.add(method_17720(identifier2, jsonObject));
+						this.add(deserialize(identifier2, jsonObject));
 					}
 				} catch (Throwable var19) {
 					var8 = var19;
@@ -92,27 +92,23 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 	}
 
 	public void add(Recipe<?> recipe) {
-		Map<Identifier, Recipe<?>> map = (Map<Identifier, Recipe<?>>)this.recipeMap.get(recipe.method_17716());
-		if (map.containsKey(recipe.method_8114())) {
-			throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.method_8114());
+		Map<Identifier, Recipe<?>> map = (Map<Identifier, Recipe<?>>)this.recipeMap.get(recipe.getType());
+		if (map.containsKey(recipe.getId())) {
+			throw new IllegalStateException("Duplicate recipe ignored with ID " + recipe.getId());
 		} else {
-			map.put(recipe.method_8114(), recipe);
+			map.put(recipe.getId(), recipe);
 		}
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> Optional<T> method_8132(RecipeType<T> recipeType, C inventory, World world) {
-		return this.method_17717(recipeType)
-			.values()
-			.stream()
-			.flatMap(recipe -> SystemUtil.method_17815(recipeType.method_17725(recipe, world, inventory)))
-			.findFirst();
+	public <C extends Inventory, T extends Recipe<C>> Optional<T> get(RecipeType<T> recipeType, C inventory, World world) {
+		return this.method_17717(recipeType).values().stream().flatMap(recipe -> SystemUtil.method_17815(recipeType.get(recipe, world, inventory))).findFirst();
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> List<T> method_17877(RecipeType<T> recipeType, C inventory, World world) {
 		return (List<T>)this.method_17717(recipeType)
 			.values()
 			.stream()
-			.flatMap(recipe -> SystemUtil.method_17815(recipeType.method_17725(recipe, world, inventory)))
+			.flatMap(recipe -> SystemUtil.method_17815(recipeType.get(recipe, world, inventory)))
 			.sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey()))
 			.collect(Collectors.toList());
 	}
@@ -122,21 +118,21 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 	}
 
 	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> method_8128(RecipeType<T> recipeType, C inventory, World world) {
-		Optional<T> optional = this.method_8132(recipeType, inventory, world);
+		Optional<T> optional = this.get(recipeType, inventory, world);
 		if (optional.isPresent()) {
-			return ((Recipe)optional.get()).method_8111(inventory);
+			return ((Recipe)optional.get()).getRemainingStacks(inventory);
 		} else {
 			DefaultedList<ItemStack> defaultedList = DefaultedList.create(inventory.getInvSize(), ItemStack.EMPTY);
 
 			for (int i = 0; i < defaultedList.size(); i++) {
-				defaultedList.set(i, inventory.method_5438(i));
+				defaultedList.set(i, inventory.getInvStack(i));
 			}
 
 			return defaultedList;
 		}
 	}
 
-	public Optional<? extends Recipe<?>> method_8130(Identifier identifier) {
+	public Optional<? extends Recipe<?>> get(Identifier identifier) {
 		return this.recipeMap.values().stream().map(map -> (Recipe)map.get(identifier)).filter(Objects::nonNull).findFirst();
 	}
 
@@ -153,12 +149,12 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 		method_17719(this.recipeMap);
 	}
 
-	public static Recipe<?> method_17720(Identifier identifier, JsonObject jsonObject) {
+	public static Recipe<?> deserialize(Identifier identifier, JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "type");
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
-				.method_17966(new Identifier(string))
+				.getOrEmpty(new Identifier(string))
 				.orElseThrow(() -> new JsonSyntaxException("Invalid or unsupported recipe type '" + string + "'")))
-			.method_8121(identifier, jsonObject);
+			.read(identifier, jsonObject);
 	}
 
 	private static void method_17719(Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map) {

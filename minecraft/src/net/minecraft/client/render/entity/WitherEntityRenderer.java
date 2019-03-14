@@ -10,17 +10,17 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class WitherEntityRenderer extends MobEntityRenderer<WitherEntity, WitherEntityModel<WitherEntity>> {
-	private static final Identifier field_4812 = new Identifier("textures/entity/wither/wither_invulnerable.png");
-	private static final Identifier field_4813 = new Identifier("textures/entity/wither/wither.png");
+	private static final Identifier INVINCIBLE_SKIN = new Identifier("textures/entity/wither/wither_invulnerable.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/wither/wither.png");
 
 	public WitherEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
 		super(entityRenderDispatcher, new WitherEntityModel<>(0.0F), 1.0F);
-		this.method_4046(new WitherArmorFeatureRenderer(this));
+		this.addFeature(new WitherArmorFeatureRenderer(this));
 	}
 
 	protected Identifier method_4153(WitherEntity witherEntity) {
 		int i = witherEntity.getInvulTimer();
-		return i > 0 && (i > 80 || i / 5 % 2 != 1) ? field_4812 : field_4813;
+		return i > 0 && (i > 80 || i / 5 % 2 != 1) ? INVINCIBLE_SKIN : SKIN;
 	}
 
 	protected void method_4152(WitherEntity witherEntity, float f) {

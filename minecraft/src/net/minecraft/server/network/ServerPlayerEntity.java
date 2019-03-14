@@ -85,7 +85,6 @@ import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sortme.ChatMessageType;
-import net.minecraft.sortme.OptionMainHand;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.ServerStatHandler;
@@ -97,6 +96,7 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.text.event.HoverEvent;
+import net.minecraft.util.AbsoluteHand;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -120,9 +120,9 @@ import org.apache.logging.log4j.Logger;
 public class ServerPlayerEntity extends PlayerEntity implements ContainerListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private String clientLanguage = "en_US";
-	public ServerPlayNetworkHandler field_13987;
+	public ServerPlayNetworkHandler networkHandler;
 	public final MinecraftServer server;
-	public final ServerPlayerInteractionManager field_13974;
+	public final ServerPlayerInteractionManager interactionManager;
 	private final List<Integer> field_13988 = Lists.<Integer>newLinkedList();
 	private final PlayerAdvancementTracker advancementManager;
 	private final ServerStatHandler field_13966;
@@ -143,7 +143,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	private Entity field_13984;
 	private boolean inTeleportationState;
 	private boolean seenCredits;
-	private final ServerRecipeBook field_13996;
+	private final ServerRecipeBook recipeBook;
 	private Vec3d field_13992;
 	private int field_13973;
 	private boolean field_13964;
@@ -160,20 +160,20 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	) {
 		super(serverWorld, gameProfile);
 		serverPlayerInteractionManager.player = this;
-		this.field_13974 = serverPlayerInteractionManager;
+		this.interactionManager = serverPlayerInteractionManager;
 		this.server = minecraftServer;
-		this.field_13996 = new ServerRecipeBook(minecraftServer.getRecipeManager());
-		this.field_13966 = minecraftServer.method_3760().method_14583(this);
-		this.advancementManager = minecraftServer.method_3760().getAdvancementManager(this);
+		this.recipeBook = new ServerRecipeBook(minecraftServer.getRecipeManager());
+		this.field_13966 = minecraftServer.getPlayerManager().method_14583(this);
+		this.advancementManager = minecraftServer.getPlayerManager().getAdvancementManager(this);
 		this.stepHeight = 1.0F;
 		this.method_14245(serverWorld);
 	}
 
 	private void method_14245(ServerWorld serverWorld) {
-		BlockPos blockPos = serverWorld.method_8395();
-		if (serverWorld.field_9247.hasSkyLight() && serverWorld.method_8401().getGameMode() != GameMode.field_9216) {
-			int i = Math.max(0, this.server.method_3829(serverWorld));
-			int j = MathHelper.floor(serverWorld.method_8621().contains((double)blockPos.getX(), (double)blockPos.getZ()));
+		BlockPos blockPos = serverWorld.getSpawnPos();
+		if (serverWorld.dimension.hasSkyLight() && serverWorld.getLevelProperties().getGameMode() != GameMode.field_9216) {
+			int i = Math.max(0, this.server.getSpawnRadius(serverWorld));
+			int j = MathHelper.floor(serverWorld.getWorldBorder().contains((double)blockPos.getX(), (double)blockPos.getZ()));
 			if (j < i) {
 				i = j;
 			}
@@ -190,16 +190,16 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				int o = (m + l * n) % k;
 				int p = o % (i * 2 + 1);
 				int q = o / (i * 2 + 1);
-				BlockPos blockPos2 = serverWorld.method_8597().method_12444(blockPos.getX() + p - i, blockPos.getZ() + q - i, false);
+				BlockPos blockPos2 = serverWorld.getDimension().getTopSpawningBlockPosition(blockPos.getX() + p - i, blockPos.getZ() + q - i, false);
 				if (blockPos2 != null) {
-					this.method_5725(blockPos2, 0.0F, 0.0F);
+					this.setPositionAndAngles(blockPos2, 0.0F, 0.0F);
 					if (serverWorld.method_17892(this)) {
 						break;
 					}
 				}
 			}
 		} else {
-			this.method_5725(blockPos, 0.0F, 0.0F);
+			this.setPositionAndAngles(blockPos, 0.0F, 0.0F);
 
 			while (!serverWorld.method_17892(this) && this.y < 255.0) {
 				this.setPosition(this.x, this.y + 1.0, this.z);
@@ -212,13 +212,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("playerGameType", 99)) {
 			if (this.getServer().shouldForceGameMode()) {
-				this.field_13974.setGameMode(this.getServer().getDefaultGameMode());
+				this.interactionManager.setGameMode(this.getServer().getDefaultGameMode());
 			} else {
-				this.field_13974.setGameMode(GameMode.byId(compoundTag.getInt("playerGameType")));
+				this.interactionManager.setGameMode(GameMode.byId(compoundTag.getInt("playerGameType")));
 			}
 		}
 
@@ -229,7 +229,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 		this.seenCredits = compoundTag.getBoolean("seenCredits");
 		if (compoundTag.containsKey("recipeBook", 10)) {
-			this.field_13996.fromTag(compoundTag.getCompound("recipeBook"));
+			this.recipeBook.fromTag(compoundTag.getCompound("recipeBook"));
 		}
 
 		if (this.isSleeping()) {
@@ -238,16 +238,16 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
-		compoundTag.putInt("playerGameType", this.field_13974.getGameMode().getId());
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
+		compoundTag.putInt("playerGameType", this.interactionManager.getGameMode().getId());
 		compoundTag.putBoolean("seenCredits", this.seenCredits);
 		if (this.enteredNetherPos != null) {
 			CompoundTag compoundTag2 = new CompoundTag();
 			compoundTag2.putDouble("x", this.enteredNetherPos.x);
 			compoundTag2.putDouble("y", this.enteredNetherPos.y);
 			compoundTag2.putDouble("z", this.enteredNetherPos.z);
-			compoundTag.method_10566("enteredNetherPosition", compoundTag2);
+			compoundTag.put("enteredNetherPosition", compoundTag2);
 		}
 
 		Entity entity = this.getTopmostRiddenEntity();
@@ -255,13 +255,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (entity2 != null && entity != this && entity.method_5817()) {
 			CompoundTag compoundTag3 = new CompoundTag();
 			CompoundTag compoundTag4 = new CompoundTag();
-			entity.method_5662(compoundTag4);
+			entity.saveToTag(compoundTag4);
 			compoundTag3.putUuid("Attach", entity2.getUuid());
-			compoundTag3.method_10566("Entity", compoundTag4);
-			compoundTag.method_10566("RootVehicle", compoundTag3);
+			compoundTag3.put("Entity", compoundTag4);
+			compoundTag.put("RootVehicle", compoundTag3);
 		}
 
-		compoundTag.method_10566("recipeBook", this.field_13996.toTag());
+		compoundTag.put("recipeBook", this.recipeBook.toTag());
 	}
 
 	public void method_14228(int i) {
@@ -289,43 +289,43 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public void method_14235() {
-		this.field_7512.method_7596(this);
+		this.container.addListener(this);
 	}
 
 	@Override
 	public void method_6000() {
 		super.method_6000();
-		this.field_13987.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.BEGIN));
+		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.BEGIN));
 	}
 
 	@Override
 	public void method_6044() {
 		super.method_6044();
-		this.field_13987.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.END));
+		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.END));
 	}
 
 	@Override
-	protected void method_5622(BlockState blockState) {
+	protected void onBlockCollision(BlockState blockState) {
 		Criterions.ENTER_BLOCK.method_8885(this, blockState);
 	}
 
 	@Override
-	protected ItemCooldownManager method_7265() {
+	protected ItemCooldownManager createCooldownManager() {
 		return new ServerItemCooldownManager(this);
 	}
 
 	@Override
 	public void update() {
-		this.field_13974.update();
+		this.interactionManager.update();
 		this.field_13998--;
 		if (this.field_6008 > 0) {
 			this.field_6008--;
 		}
 
-		this.field_7512.sendContentUpdates();
-		if (!this.field_6002.isClient && !this.field_7512.canUse(this)) {
+		this.container.sendContentUpdates();
+		if (!this.world.isClient && !this.container.canUse(this)) {
 			this.closeGui();
-			this.field_7512 = this.field_7498;
+			this.container = this.playerContainer;
 		}
 
 		while (!this.field_13988.isEmpty()) {
@@ -339,14 +339,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				iterator.remove();
 			}
 
-			this.field_13987.sendPacket(new EntitiesDestroyS2CPacket(is));
+			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(is));
 		}
 
 		Entity entity = this.method_14242();
 		if (entity != this) {
 			if (entity.isValid()) {
 				this.setPositionAnglesAndUpdate(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
-				this.getServerWorld().method_14178().method_14096(this);
+				this.getServerWorld().method_14178().addOrRemovePlayer(this);
 				if (this.isSneaking()) {
 					this.method_14224(this);
 				}
@@ -355,37 +355,37 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			}
 		}
 
-		Criterions.TICK.method_9141(this);
+		Criterions.TICK.handle(this);
 		if (this.field_13992 != null) {
-			Criterions.LEVITATION.method_9008(this, this.field_13992, this.age - this.field_13973);
+			Criterions.LEVITATION.handle(this, this.field_13992, this.age - this.field_13973);
 		}
 
-		this.advancementManager.method_12876(this);
+		this.advancementManager.sendUpdate(this);
 	}
 
 	public void method_14226() {
 		try {
-			if (!this.isSpectator() || this.field_6002.method_8591(new BlockPos(this))) {
+			if (!this.isSpectator() || this.world.isBlockLoaded(new BlockPos(this))) {
 				super.update();
 			}
 
 			for (int i = 0; i < this.inventory.getInvSize(); i++) {
-				ItemStack itemStack = this.inventory.method_5438(i);
+				ItemStack itemStack = this.inventory.getInvStack(i);
 				if (itemStack.getItem().isMap()) {
-					Packet<?> packet = ((MapItem)itemStack.getItem()).method_7757(itemStack, this.field_6002, this);
+					Packet<?> packet = ((MapItem)itemStack.getItem()).createMapPacket(itemStack, this.world, this);
 					if (packet != null) {
-						this.field_13987.sendPacket(packet);
+						this.networkHandler.sendPacket(packet);
 					}
 				}
 			}
 
 			if (this.getHealth() != this.field_13997
-				|| this.field_13979 != this.field_7493.getFoodLevel()
-				|| this.field_7493.getSaturationLevel() == 0.0F != this.field_13972) {
-				this.field_13987.sendPacket(new HealthUpdateS2CPacket(this.getHealth(), this.field_7493.getFoodLevel(), this.field_7493.getSaturationLevel()));
+				|| this.field_13979 != this.hungerManager.getFoodLevel()
+				|| this.hungerManager.getSaturationLevel() == 0.0F != this.field_13972) {
+				this.networkHandler.sendPacket(new HealthUpdateS2CPacket(this.getHealth(), this.hungerManager.getFoodLevel(), this.hungerManager.getSaturationLevel()));
 				this.field_13997 = this.getHealth();
-				this.field_13979 = this.field_7493.getFoodLevel();
-				this.field_13972 = this.field_7493.getSaturationLevel() == 0.0F;
+				this.field_13979 = this.hungerManager.getFoodLevel();
+				this.field_13972 = this.hungerManager.getSaturationLevel() == 0.0F;
 			}
 
 			if (this.getHealth() + this.getAbsorptionAmount() != this.field_13963) {
@@ -393,8 +393,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				this.method_14212(ScoreboardCriterion.HEALTH, MathHelper.ceil(this.field_13963));
 			}
 
-			if (this.field_7493.getFoodLevel() != this.field_13983) {
-				this.field_13983 = this.field_7493.getFoodLevel();
+			if (this.hungerManager.getFoodLevel() != this.field_13983) {
+				this.field_13983 = this.hungerManager.getFoodLevel();
 				this.method_14212(ScoreboardCriterion.FOOD, MathHelper.ceil((float)this.field_13983));
 			}
 
@@ -420,30 +420,30 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 			if (this.experienceLevel != this.field_13978) {
 				this.field_13978 = this.experienceLevel;
-				this.field_13987.sendPacket(new ExperienceBarUpdateS2CPacket(this.experienceBarProgress, this.experienceLevel, this.experience));
+				this.networkHandler.sendPacket(new ExperienceBarUpdateS2CPacket(this.experienceBarProgress, this.experienceLevel, this.experience));
 			}
 
 			if (this.age % 20 == 0) {
-				Criterions.LOCATION.method_9027(this);
+				Criterions.LOCATION.handle(this);
 			}
 		} catch (Throwable var4) {
 			CrashReport crashReport = CrashReport.create(var4, "Ticking player");
-			CrashReportSection crashReportSection = crashReport.method_562("Player being ticked");
-			this.method_5819(crashReportSection);
+			CrashReportSection crashReportSection = crashReport.addElement("Player being ticked");
+			this.populateCrashReport(crashReportSection);
 			throw new CrashException(crashReport);
 		}
 	}
 
 	private void method_14212(ScoreboardCriterion scoreboardCriterion, int i) {
-		this.method_7327().method_1162(scoreboardCriterion, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.setScore(i));
+		this.getScoreboard().method_1162(scoreboardCriterion, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.setScore(i));
 	}
 
 	@Override
 	public void onDeath(DamageSource damageSource) {
-		boolean bl = this.field_6002.getGameRules().getBoolean("showDeathMessages");
+		boolean bl = this.world.getGameRules().getBoolean("showDeathMessages");
 		if (bl) {
-			TextComponent textComponent = this.getDamageTracker().method_5548();
-			this.field_13987
+			TextComponent textComponent = this.getDamageTracker().getDeathMessage();
+			this.networkHandler
 				.sendPacket(
 					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.DEATH, textComponent),
 					future -> {
@@ -453,22 +453,22 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 							TextComponent textComponent2 = new TranslatableTextComponent(
 								"death.attack.message_too_long", new StringTextComponent(string).applyFormat(TextFormat.field_1054)
 							);
-							TextComponent textComponent3 = new TranslatableTextComponent("death.attack.even_more_magic", this.method_5476())
+							TextComponent textComponent3 = new TranslatableTextComponent("death.attack.even_more_magic", this.getDisplayName())
 								.modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, textComponent2)));
-							this.field_13987.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.DEATH, textComponent3));
+							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.DEATH, textComponent3));
 						}
 					}
 				);
-			AbstractScoreboardTeam abstractScoreboardTeam = this.method_5781();
+			AbstractScoreboardTeam abstractScoreboardTeam = this.getScoreboardTeam();
 			if (abstractScoreboardTeam == null || abstractScoreboardTeam.getDeathMessageVisibilityRule() == AbstractScoreboardTeam.VisibilityRule.ALWAYS) {
-				this.server.method_3760().sendToAll(textComponent);
+				this.server.getPlayerManager().sendToAll(textComponent);
 			} else if (abstractScoreboardTeam.getDeathMessageVisibilityRule() == AbstractScoreboardTeam.VisibilityRule.HIDDEN_FOR_OTHER_TEAMS) {
-				this.server.method_3760().sendToTeam(this, textComponent);
+				this.server.getPlayerManager().sendToTeam(this, textComponent);
 			} else if (abstractScoreboardTeam.getDeathMessageVisibilityRule() == AbstractScoreboardTeam.VisibilityRule.HIDDEN_FOR_TEAM) {
-				this.server.method_3760().sendToOtherTeams(this, textComponent);
+				this.server.getPlayerManager().sendToOtherTeams(this, textComponent);
 			}
 		} else {
-			this.field_13987.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.DEATH));
+			this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.DEATH));
 		}
 
 		this.dropShoulderEntities();
@@ -476,32 +476,32 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.method_16080(damageSource);
 		}
 
-		this.method_7327().method_1162(ScoreboardCriterion.DEATH_COUNT, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
+		this.getScoreboard().method_1162(ScoreboardCriterion.DEATH_COUNT, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
 		LivingEntity livingEntity = this.method_6124();
 		if (livingEntity != null) {
-			this.method_7259(Stats.field_15411.getOrCreateStat(livingEntity.method_5864()));
+			this.incrementStat(Stats.field_15411.getOrCreateStat(livingEntity.getType()));
 			livingEntity.method_5716(this, this.field_6232, damageSource);
-			if (!this.field_6002.isClient && livingEntity instanceof WitherEntity) {
+			if (!this.world.isClient && livingEntity instanceof WitherEntity) {
 				boolean bl2 = false;
-				if (this.field_6002.getGameRules().getBoolean("mobGriefing")) {
+				if (this.world.getGameRules().getBoolean("mobGriefing")) {
 					BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
-					BlockState blockState = Blocks.field_10606.method_9564();
-					if (this.field_6002.method_8320(blockPos).isAir() && blockState.method_11591(this.field_6002, blockPos)) {
-						this.field_6002.method_8652(blockPos, blockState, 3);
+					BlockState blockState = Blocks.field_10606.getDefaultState();
+					if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
+						this.world.setBlockState(blockPos, blockState, 3);
 						bl2 = true;
 					}
 				}
 
 				if (!bl2) {
-					ItemEntity itemEntity = new ItemEntity(this.field_6002, this.x, this.y, this.z, new ItemStack(Items.WITHER_ROSE));
-					this.field_6002.spawnEntity(itemEntity);
+					ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, new ItemStack(Items.WITHER_ROSE));
+					this.world.spawnEntity(itemEntity);
 				}
 			}
 		}
 
-		this.method_7281(Stats.field_15421);
-		this.method_7266(Stats.field_15419.getOrCreateStat(Stats.field_15400));
-		this.method_7266(Stats.field_15419.getOrCreateStat(Stats.field_15429));
+		this.increaseStat(Stats.field_15421);
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15400));
+		this.resetStat(Stats.field_15419.getOrCreateStat(Stats.field_15429));
 		this.extinguish();
 		this.setEntityFlag(0, false);
 		this.getDamageTracker().update();
@@ -514,26 +514,26 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.addScore(i);
 			String string = this.getEntityName();
 			String string2 = entity.getEntityName();
-			this.method_7327().method_1162(ScoreboardCriterion.TOTAL_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
+			this.getScoreboard().method_1162(ScoreboardCriterion.TOTAL_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
 			if (entity instanceof PlayerEntity) {
-				this.method_7281(Stats.field_15404);
-				this.method_7327().method_1162(ScoreboardCriterion.PLAYER_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
+				this.increaseStat(Stats.field_15404);
+				this.getScoreboard().method_1162(ScoreboardCriterion.PLAYER_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
 			} else {
-				this.method_7281(Stats.field_15414);
+				this.increaseStat(Stats.field_15414);
 			}
 
 			this.method_14227(string, string2, ScoreboardCriterion.TEAM_KILLS);
 			this.method_14227(string2, string, ScoreboardCriterion.KILLED_BY_TEAMS);
-			Criterions.PLAYER_KILLED_ENTITY.method_8990(this, entity, damageSource);
+			Criterions.PLAYER_KILLED_ENTITY.handle(this, entity, damageSource);
 		}
 	}
 
 	private void method_14227(String string, String string2, ScoreboardCriterion[] scoreboardCriterions) {
-		ScoreboardTeam scoreboardTeam = this.method_7327().getPlayerTeam(string2);
+		ScoreboardTeam scoreboardTeam = this.getScoreboard().getPlayerTeam(string2);
 		if (scoreboardTeam != null) {
 			int i = scoreboardTeam.getColor().getId();
 			if (i >= 0 && i < scoreboardCriterions.length) {
-				this.method_7327().method_1162(scoreboardCriterions[i], string, ScoreboardPlayerScore::incrementScore);
+				this.getScoreboard().method_1162(scoreboardCriterions[i], string, ScoreboardPlayerScore::incrementScore);
 			}
 		}
 	}
@@ -548,7 +548,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 				return false;
 			} else {
 				if (damageSource instanceof EntityDamageSource) {
-					Entity entity = damageSource.method_5529();
+					Entity entity = damageSource.getAttacker();
 					if (entity instanceof PlayerEntity && !this.shouldDamagePlayer((PlayerEntity)entity)) {
 						return false;
 					}
@@ -578,27 +578,27 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Nullable
 	@Override
-	public Entity method_5731(DimensionType dimensionType) {
+	public Entity changeDimension(DimensionType dimensionType) {
 		this.inTeleportationState = true;
-		DimensionType dimensionType2 = this.field_6026;
+		DimensionType dimensionType2 = this.dimension;
 		if (dimensionType2 == DimensionType.field_13078 && dimensionType == DimensionType.field_13072) {
 			this.method_18375();
 			this.getServerWorld().method_18770(this);
 			if (!this.notInAnyWorld) {
 				this.notInAnyWorld = true;
-				this.field_13987.sendPacket(new GameStateChangeS2CPacket(4, this.seenCredits ? 0.0F : 1.0F));
+				this.networkHandler.sendPacket(new GameStateChangeS2CPacket(4, this.seenCredits ? 0.0F : 1.0F));
 				this.seenCredits = true;
 			}
 
 			return this;
 		} else {
-			ServerWorld serverWorld = this.server.method_3847(dimensionType2);
-			this.field_6026 = dimensionType;
-			ServerWorld serverWorld2 = this.server.method_3847(dimensionType);
-			LevelProperties levelProperties = this.field_6002.method_8401();
-			this.field_13987.sendPacket(new PlayerRespawnS2CPacket(dimensionType, levelProperties.getGeneratorType(), this.field_13974.getGameMode()));
-			this.field_13987.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
-			PlayerManager playerManager = this.server.method_3760();
+			ServerWorld serverWorld = this.server.getWorld(dimensionType2);
+			this.dimension = dimensionType;
+			ServerWorld serverWorld2 = this.server.getWorld(dimensionType);
+			LevelProperties levelProperties = this.world.getLevelProperties();
+			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(dimensionType, levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
+			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+			PlayerManager playerManager = this.server.getPlayerManager();
 			playerManager.method_14576(this);
 			serverWorld.method_18770(this);
 			this.invalid = false;
@@ -629,10 +629,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.setPositionAndAngles(d, e, f, h, g);
 			serverWorld.getProfiler().pop();
 			serverWorld.getProfiler().push("placing");
-			double k = Math.min(-2.9999872E7, serverWorld2.method_8621().getBoundWest() + 16.0);
-			double l = Math.min(-2.9999872E7, serverWorld2.method_8621().getBoundNorth() + 16.0);
-			double m = Math.min(2.9999872E7, serverWorld2.method_8621().getBoundEast() - 16.0);
-			double n = Math.min(2.9999872E7, serverWorld2.method_8621().getBoundSouth() - 16.0);
+			double k = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundWest() + 16.0);
+			double l = Math.min(-2.9999872E7, serverWorld2.getWorldBorder().getBoundNorth() + 16.0);
+			double m = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundEast() - 16.0);
+			double n = Math.min(2.9999872E7, serverWorld2.getWorldBorder().getBoundSouth() - 16.0);
 			d = MathHelper.clamp(d, k, m);
 			f = MathHelper.clamp(f, l, n);
 			this.setPositionAndAngles(d, e, f, h, g);
@@ -650,33 +650,33 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 							int x = p + v;
 							int y = q + u * 0 - t * 1;
 							boolean bl = v < 0;
-							serverWorld2.method_8501(new BlockPos(w, x, y), bl ? Blocks.field_10540.method_9564() : Blocks.field_10124.method_9564());
+							serverWorld2.setBlockState(new BlockPos(w, x, y), bl ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState());
 						}
 					}
 				}
 
 				this.setPositionAndAngles((double)o, (double)p, (double)q, h, 0.0F);
-				this.method_18799(Vec3d.ZERO);
+				this.setVelocity(Vec3d.ZERO);
 			} else if (!serverWorld2.getPortalForcer().method_8653(this, j)) {
 				serverWorld2.getPortalForcer().method_8654(this);
 				serverWorld2.getPortalForcer().method_8653(this, j);
 			}
 
 			serverWorld.getProfiler().pop();
-			this.method_5866(serverWorld2);
+			this.setWorld(serverWorld2);
 			serverWorld2.method_18211(this);
 			this.method_18783(serverWorld);
-			this.field_13987.teleportRequest(this.x, this.y, this.z, h, g);
-			this.field_13974.setWorld(serverWorld2);
-			this.field_13987.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
+			this.networkHandler.teleportRequest(this.x, this.y, this.z, h, g);
+			this.interactionManager.setWorld(serverWorld2);
+			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
 			playerManager.method_14606(this, serverWorld2);
 			playerManager.method_14594(this);
 
 			for (StatusEffectInstance statusEffectInstance : this.getPotionEffects()) {
-				this.field_13987.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
+				this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
 			}
 
-			this.field_13987.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
+			this.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
 			this.field_13978 = -1;
 			this.field_13997 = -1.0F;
 			this.field_13979 = -1;
@@ -685,11 +685,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	private void method_18783(ServerWorld serverWorld) {
-		DimensionType dimensionType = serverWorld.field_9247.method_12460();
-		DimensionType dimensionType2 = this.field_6002.field_9247.method_12460();
-		Criterions.CHANGED_DIMENSION.method_8794(this, dimensionType, dimensionType2);
+		DimensionType dimensionType = serverWorld.dimension.getType();
+		DimensionType dimensionType2 = this.world.dimension.getType();
+		Criterions.CHANGED_DIMENSION.handle(this, dimensionType, dimensionType2);
 		if (dimensionType == DimensionType.field_13076 && dimensionType2 == DimensionType.field_13072 && this.enteredNetherPos != null) {
-			Criterions.NETHER_TRAVEL.method_9080(this, this.enteredNetherPos);
+			Criterions.NETHER_TRAVEL.handle(this, this.enteredNetherPos);
 		}
 
 		if (dimensionType2 != DimensionType.field_13076) {
@@ -708,9 +708,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	private void sendBlockEntityUpdate(BlockEntity blockEntity) {
 		if (blockEntity != null) {
-			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.method_16886();
+			BlockEntityUpdateS2CPacket blockEntityUpdateS2CPacket = blockEntity.toUpdatePacket();
 			if (blockEntityUpdateS2CPacket != null) {
-				this.field_13987.sendPacket(blockEntityUpdateS2CPacket);
+				this.networkHandler.sendPacket(blockEntityUpdateS2CPacket);
 			}
 		}
 	}
@@ -718,14 +718,14 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void pickUpEntity(Entity entity, int i) {
 		super.pickUpEntity(entity, i);
-		this.field_7512.sendContentUpdates();
+		this.container.sendContentUpdates();
 	}
 
 	@Override
-	public Either<PlayerEntity.SleepResult, Void> method_7269(BlockPos blockPos) {
-		return super.method_7269(blockPos).ifRight(void_ -> {
-			this.method_7281(Stats.field_15381);
-			Criterions.SLEPT_IN_BED.method_9027(this);
+	public Either<PlayerEntity.SleepResult, Void> trySleep(BlockPos blockPos) {
+		return super.trySleep(blockPos).ifRight(void_ -> {
+			this.increaseStat(Stats.field_15381);
+			Criterions.SLEPT_IN_BED.handle(this);
 		});
 	}
 
@@ -736,8 +736,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 
 		super.wakeUp(bl, bl2, bl3);
-		if (this.field_13987 != null) {
-			this.field_13987.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
+		if (this.networkHandler != null) {
+			this.networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
 		}
 	}
 
@@ -748,8 +748,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			return false;
 		} else {
 			Entity entity3 = this.getRiddenEntity();
-			if (entity3 != entity2 && this.field_13987 != null) {
-				this.field_13987.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
+			if (entity3 != entity2 && this.networkHandler != null) {
+				this.networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
 			}
 
 			return true;
@@ -761,8 +761,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		Entity entity = this.getRiddenEntity();
 		super.stopRiding();
 		Entity entity2 = this.getRiddenEntity();
-		if (entity2 != entity && this.field_13987 != null) {
-			this.field_13987.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
+		if (entity2 != entity && this.networkHandler != null) {
+			this.networkHandler.teleportRequest(this.x, this.y, this.z, this.yaw, this.pitch);
 		}
 	}
 
@@ -787,13 +787,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		int j = MathHelper.floor(this.y - 0.2F);
 		int k = MathHelper.floor(this.z);
 		BlockPos blockPos = new BlockPos(i, j, k);
-		if (this.field_6002.method_8591(blockPos)) {
-			BlockState blockState = this.field_6002.method_8320(blockPos);
+		if (this.world.isBlockLoaded(blockPos)) {
+			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.isAir()) {
 				BlockPos blockPos2 = blockPos.down();
-				BlockState blockState2 = this.field_6002.method_8320(blockPos2);
+				BlockState blockState2 = this.world.getBlockState(blockPos2);
 				Block block = blockState2.getBlock();
-				if (block.method_9525(BlockTags.field_16584) || block.method_9525(BlockTags.field_15504) || block instanceof FenceGateBlock) {
+				if (block.matches(BlockTags.field_16584) || block.matches(BlockTags.field_15504) || block instanceof FenceGateBlock) {
 					blockPos = blockPos2;
 					blockState = blockState2;
 				}
@@ -804,9 +804,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_7311(SignBlockEntity signBlockEntity) {
+	public void openEditSignScreen(SignBlockEntity signBlockEntity) {
 		signBlockEntity.setEditor(this);
-		this.field_13987.sendPacket(new SignEditorOpenS2CPacket(signBlockEntity.method_11016()));
+		this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(signBlockEntity.getPos()));
 	}
 
 	private void incrementContainerSyncId() {
@@ -818,7 +818,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (nameableContainerProvider == null) {
 			return OptionalInt.empty();
 		} else {
-			if (this.field_7512 != this.field_7498) {
+			if (this.container != this.playerContainer) {
 				this.closeGui();
 			}
 
@@ -826,97 +826,97 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			Container container = nameableContainerProvider.createMenu(this.containerSyncId, this.inventory, this);
 			if (container == null) {
 				if (this.isSpectator()) {
-					this.method_7353(new TranslatableTextComponent("container.spectatorCantOpen").applyFormat(TextFormat.field_1061), true);
+					this.addChatMessage(new TranslatableTextComponent("container.spectatorCantOpen").applyFormat(TextFormat.field_1061), true);
 				}
 
 				return OptionalInt.empty();
 			} else {
-				this.field_13987.sendPacket(new OpenContainerPacket(container.syncId, container.method_17358(), nameableContainerProvider.method_5476()));
-				container.method_7596(this);
-				this.field_7512 = container;
+				this.networkHandler.sendPacket(new OpenContainerPacket(container.syncId, container.getType(), nameableContainerProvider.getDisplayName()));
+				container.addListener(this);
+				this.container = container;
 				return OptionalInt.of(this.containerSyncId);
 			}
 		}
 	}
 
 	@Override
-	public void method_17354(int i, TraderRecipeList traderRecipeList, int j, int k, boolean bl) {
-		this.field_13987.sendPacket(new SetVillagerRecipesPacket(i, traderRecipeList, j, k, bl));
+	public void sendVillagerRecipes(int i, TraderRecipeList traderRecipeList, int j, int k, boolean bl) {
+		this.networkHandler.sendPacket(new SetVillagerRecipesPacket(i, traderRecipeList, j, k, bl));
 	}
 
 	@Override
 	public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
-		if (this.field_7512 != this.field_7498) {
+		if (this.container != this.playerContainer) {
 			this.closeGui();
 		}
 
 		this.incrementContainerSyncId();
-		this.field_13987.sendPacket(new GuiOpenS2CPacket(this.containerSyncId, inventory.getInvSize(), horseBaseEntity.getEntityId()));
-		this.field_7512 = new HorseContainer(this.containerSyncId, this.inventory, inventory, horseBaseEntity);
-		this.field_7512.method_7596(this);
+		this.networkHandler.sendPacket(new GuiOpenS2CPacket(this.containerSyncId, inventory.getInvSize(), horseBaseEntity.getEntityId()));
+		this.container = new HorseContainer(this.containerSyncId, this.inventory, inventory, horseBaseEntity);
+		this.container.addListener(this);
 	}
 
 	@Override
-	public void method_7315(ItemStack itemStack, Hand hand) {
+	public void openEditBookScreen(ItemStack itemStack, Hand hand) {
 		Item item = itemStack.getItem();
 		if (item == Items.field_8360) {
-			if (WrittenBookItem.method_8054(itemStack, this.method_5671(), this)) {
-				this.field_7512.sendContentUpdates();
+			if (WrittenBookItem.resolve(itemStack, this.getCommandSource(), this)) {
+				this.container.sendContentUpdates();
 			}
 
-			this.field_13987.sendPacket(new OpenWrittenBookS2CPacket(hand));
+			this.networkHandler.sendPacket(new OpenWrittenBookS2CPacket(hand));
 		}
 	}
 
 	@Override
-	public void method_7323(CommandBlockBlockEntity commandBlockBlockEntity) {
+	public void openCommandBlockScreen(CommandBlockBlockEntity commandBlockBlockEntity) {
 		commandBlockBlockEntity.setNeedsUpdatePacket(true);
 		this.sendBlockEntityUpdate(commandBlockBlockEntity);
 	}
 
 	@Override
-	public void method_7635(Container container, int i, ItemStack itemStack) {
-		if (!(container.method_7611(i) instanceof CraftingResultSlot)) {
-			if (container == this.field_7498) {
-				Criterions.INVENTORY_CHANGED.method_8950(this, this.inventory);
+	public void onContainerSlotUpdate(Container container, int i, ItemStack itemStack) {
+		if (!(container.getSlot(i) instanceof CraftingResultSlot)) {
+			if (container == this.playerContainer) {
+				Criterions.INVENTORY_CHANGED.handle(this, this.inventory);
 			}
 
 			if (!this.field_13991) {
-				this.field_13987.sendPacket(new GuiSlotUpdateS2CPacket(container.syncId, i, itemStack));
+				this.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(container.syncId, i, itemStack));
 			}
 		}
 	}
 
 	public void method_14204(Container container) {
-		this.method_7634(container, container.method_7602());
+		this.onContainerRegistered(container, container.getStacks());
 	}
 
 	@Override
-	public void method_7634(Container container, DefaultedList<ItemStack> defaultedList) {
-		this.field_13987.sendPacket(new InventoryS2CPacket(container.syncId, defaultedList));
-		this.field_13987.sendPacket(new GuiSlotUpdateS2CPacket(-1, -1, this.inventory.method_7399()));
+	public void onContainerRegistered(Container container, DefaultedList<ItemStack> defaultedList) {
+		this.networkHandler.sendPacket(new InventoryS2CPacket(container.syncId, defaultedList));
+		this.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 	}
 
 	@Override
 	public void onContainerPropertyUpdate(Container container, int i, int j) {
-		this.field_13987.sendPacket(new GuiUpdateS2CPacket(container.syncId, i, j));
+		this.networkHandler.sendPacket(new GuiUpdateS2CPacket(container.syncId, i, j));
 	}
 
 	@Override
 	public void closeGui() {
-		this.field_13987.sendPacket(new GuiCloseS2CPacket(this.field_7512.syncId));
+		this.networkHandler.sendPacket(new GuiCloseS2CPacket(this.container.syncId));
 		this.method_14247();
 	}
 
 	public void method_14241() {
 		if (!this.field_13991) {
-			this.field_13987.sendPacket(new GuiSlotUpdateS2CPacket(-1, -1, this.inventory.method_7399()));
+			this.networkHandler.sendPacket(new GuiSlotUpdateS2CPacket(-1, -1, this.inventory.getCursorStack()));
 		}
 	}
 
 	public void method_14247() {
-		this.field_7512.close(this);
-		this.field_7512 = this.field_7498;
+		this.container.close(this);
+		this.container = this.playerContainer;
 	}
 
 	public void method_14218(float f, float g, boolean bl, boolean bl2) {
@@ -935,28 +935,28 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_7342(Stat<?> stat, int i) {
+	public void incrementStat(Stat<?> stat, int i) {
 		this.field_13966.increaseStat(this, stat, i);
-		this.method_7327().method_1162(stat, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.incrementScore(i));
+		this.getScoreboard().method_1162(stat, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.incrementScore(i));
 	}
 
 	@Override
-	public void method_7266(Stat<?> stat) {
+	public void resetStat(Stat<?> stat) {
 		this.field_13966.setStat(this, stat, 0);
-		this.method_7327().method_1162(stat, this.getEntityName(), ScoreboardPlayerScore::clearScore);
+		this.getScoreboard().method_1162(stat, this.getEntityName(), ScoreboardPlayerScore::clearScore);
 	}
 
 	@Override
 	public int unlockRecipes(Collection<Recipe<?>> collection) {
-		return this.field_13996.unlockRecipes(collection, this);
+		return this.recipeBook.unlockRecipes(collection, this);
 	}
 
 	@Override
-	public void method_7335(Identifier[] identifiers) {
+	public void unlockRecipes(Identifier[] identifiers) {
 		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 
 		for (Identifier identifier : identifiers) {
-			this.server.getRecipeManager().method_8130(identifier).ifPresent(list::add);
+			this.server.getRecipeManager().get(identifier).ifPresent(list::add);
 		}
 
 		this.unlockRecipes(list);
@@ -964,7 +964,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public int lockRecipes(Collection<Recipe<?>> collection) {
-		return this.field_13996.lockRecipes(collection, this);
+		return this.recipeBook.lockRecipes(collection, this);
 	}
 
 	@Override
@@ -990,43 +990,43 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_7353(TextComponent textComponent, boolean bl) {
-		this.field_13987.sendPacket(new ChatMessageS2CPacket(textComponent, bl ? ChatMessageType.field_11733 : ChatMessageType.field_11737));
+	public void addChatMessage(TextComponent textComponent, boolean bl) {
+		this.networkHandler.sendPacket(new ChatMessageS2CPacket(textComponent, bl ? ChatMessageType.field_11733 : ChatMessageType.field_11737));
 	}
 
 	@Override
 	protected void method_6040() {
-		if (!this.field_6277.isEmpty() && this.isUsingItem()) {
-			this.field_13987.sendPacket(new EntityStatusS2CPacket(this, (byte)9));
+		if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
+			this.networkHandler.sendPacket(new EntityStatusS2CPacket(this, (byte)9));
 			super.method_6040();
 		}
 	}
 
 	@Override
-	public void method_5702(EntityAnchorArgumentType.EntityAnchor entityAnchor, Vec3d vec3d) {
-		super.method_5702(entityAnchor, vec3d);
-		this.field_13987.sendPacket(new LookAtS2CPacket(entityAnchor, vec3d.x, vec3d.y, vec3d.z));
+	public void lookAt(EntityAnchorArgumentType.EntityAnchor entityAnchor, Vec3d vec3d) {
+		super.lookAt(entityAnchor, vec3d);
+		this.networkHandler.sendPacket(new LookAtS2CPacket(entityAnchor, vec3d.x, vec3d.y, vec3d.z));
 	}
 
 	public void method_14222(EntityAnchorArgumentType.EntityAnchor entityAnchor, Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor2) {
-		Vec3d vec3d = entityAnchor2.method_9302(entity);
-		super.method_5702(entityAnchor, vec3d);
-		this.field_13987.sendPacket(new LookAtS2CPacket(entityAnchor, entity, entityAnchor2));
+		Vec3d vec3d = entityAnchor2.positionAt(entity);
+		super.lookAt(entityAnchor, vec3d);
+		this.networkHandler.sendPacket(new LookAtS2CPacket(entityAnchor, entity, entityAnchor2));
 	}
 
 	public void method_14203(ServerPlayerEntity serverPlayerEntity, boolean bl) {
 		if (bl) {
 			this.inventory.clone(serverPlayerEntity.inventory);
 			this.setHealth(serverPlayerEntity.getHealth());
-			this.field_7493 = serverPlayerEntity.field_7493;
+			this.hungerManager = serverPlayerEntity.hungerManager;
 			this.experience = serverPlayerEntity.experience;
 			this.experienceLevel = serverPlayerEntity.experienceLevel;
 			this.experienceBarProgress = serverPlayerEntity.experienceBarProgress;
 			this.setScore(serverPlayerEntity.getScore());
-			this.field_5991 = serverPlayerEntity.field_5991;
+			this.lastPortalPosition = serverPlayerEntity.lastPortalPosition;
 			this.field_6020 = serverPlayerEntity.field_6020;
 			this.field_6028 = serverPlayerEntity.field_6028;
-		} else if (this.field_6002.getGameRules().getBoolean("keepInventory") || serverPlayerEntity.isSpectator()) {
+		} else if (this.world.getGameRules().getBoolean("keepInventory") || serverPlayerEntity.isSpectator()) {
 			this.inventory.clone(serverPlayerEntity.inventory);
 			this.experience = serverPlayerEntity.experience;
 			this.experienceLevel = serverPlayerEntity.experienceLevel;
@@ -1035,52 +1035,52 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 
 		this.enchantmentTableSeed = serverPlayerEntity.enchantmentTableSeed;
-		this.field_7486 = serverPlayerEntity.field_7486;
-		this.method_5841().set(field_7518, serverPlayerEntity.method_5841().get(field_7518));
+		this.enderChestInventory = serverPlayerEntity.enderChestInventory;
+		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, serverPlayerEntity.getDataTracker().get(PLAYER_MODEL_BIT_MASK));
 		this.field_13978 = -1;
 		this.field_13997 = -1.0F;
 		this.field_13979 = -1;
-		this.field_13996.copyFrom(serverPlayerEntity.field_13996);
+		this.recipeBook.copyFrom(serverPlayerEntity.recipeBook);
 		this.field_13988.addAll(serverPlayerEntity.field_13988);
 		this.seenCredits = serverPlayerEntity.seenCredits;
 		this.enteredNetherPos = serverPlayerEntity.enteredNetherPos;
-		this.method_7273(serverPlayerEntity.method_7356());
-		this.method_7345(serverPlayerEntity.method_7308());
+		this.setShoulderEntityLeft(serverPlayerEntity.getShoulderEntityLeft());
+		this.setShoulderEntityRight(serverPlayerEntity.getShoulderEntityRight());
 	}
 
 	@Override
 	protected void method_6020(StatusEffectInstance statusEffectInstance) {
 		super.method_6020(statusEffectInstance);
-		this.field_13987.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
+		this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
 		if (statusEffectInstance.getEffectType() == StatusEffects.field_5902) {
 			this.field_13973 = this.age;
 			this.field_13992 = new Vec3d(this.x, this.y, this.z);
 		}
 
-		Criterions.EFFECTS_CHANGED.method_8863(this);
+		Criterions.EFFECTS_CHANGED.handle(this);
 	}
 
 	@Override
 	protected void method_6009(StatusEffectInstance statusEffectInstance, boolean bl) {
 		super.method_6009(statusEffectInstance, bl);
-		this.field_13987.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
-		Criterions.EFFECTS_CHANGED.method_8863(this);
+		this.networkHandler.sendPacket(new EntityPotionEffectS2CPacket(this.getEntityId(), statusEffectInstance));
+		Criterions.EFFECTS_CHANGED.handle(this);
 	}
 
 	@Override
 	protected void method_6129(StatusEffectInstance statusEffectInstance) {
 		super.method_6129(statusEffectInstance);
-		this.field_13987.sendPacket(new RemoveEntityEffectS2CPacket(this.getEntityId(), statusEffectInstance.getEffectType()));
+		this.networkHandler.sendPacket(new RemoveEntityEffectS2CPacket(this.getEntityId(), statusEffectInstance.getEffectType()));
 		if (statusEffectInstance.getEffectType() == StatusEffects.field_5902) {
 			this.field_13992 = null;
 		}
 
-		Criterions.EFFECTS_CHANGED.method_8863(this);
+		Criterions.EFFECTS_CHANGED.handle(this);
 	}
 
 	@Override
 	public void method_5859(double d, double e, double f) {
-		this.field_13987.teleportRequest(d, e, f, this.yaw, this.pitch);
+		this.networkHandler.teleportRequest(d, e, f, this.yaw, this.pitch);
 	}
 
 	@Override
@@ -1095,20 +1095,20 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void method_7355() {
-		if (this.field_13987 != null) {
-			this.field_13987.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
+		if (this.networkHandler != null) {
+			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
 			this.updatePotionVisibility();
 		}
 	}
 
 	public ServerWorld getServerWorld() {
-		return (ServerWorld)this.field_6002;
+		return (ServerWorld)this.world;
 	}
 
 	@Override
-	public void method_7336(GameMode gameMode) {
-		this.field_13974.setGameMode(gameMode);
-		this.field_13987.sendPacket(new GameStateChangeS2CPacket(3, (float)gameMode.getId()));
+	public void setGameMode(GameMode gameMode) {
+		this.interactionManager.setGameMode(gameMode);
+		this.networkHandler.sendPacket(new GameStateChangeS2CPacket(3, (float)gameMode.getId()));
 		if (gameMode == GameMode.field_9219) {
 			this.dropShoulderEntities();
 			this.stopRiding();
@@ -1122,21 +1122,21 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public boolean isSpectator() {
-		return this.field_13974.getGameMode() == GameMode.field_9219;
+		return this.interactionManager.getGameMode() == GameMode.field_9219;
 	}
 
 	@Override
 	public boolean isCreative() {
-		return this.field_13974.getGameMode() == GameMode.field_9220;
+		return this.interactionManager.getGameMode() == GameMode.field_9220;
 	}
 
 	@Override
-	public void method_9203(TextComponent textComponent) {
+	public void appendCommandFeedback(TextComponent textComponent) {
 		this.sendChatMessage(textComponent, ChatMessageType.field_11735);
 	}
 
 	public void sendChatMessage(TextComponent textComponent, ChatMessageType chatMessageType) {
-		this.field_13987
+		this.networkHandler
 			.sendPacket(
 				new ChatMessageS2CPacket(textComponent, chatMessageType),
 				future -> {
@@ -1144,7 +1144,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 						int i = 256;
 						String string = textComponent.getStringTruncated(256);
 						TextComponent textComponent2 = new StringTextComponent(string).applyFormat(TextFormat.field_1054);
-						this.field_13987
+						this.networkHandler
 							.sendPacket(
 								new ChatMessageS2CPacket(
 									new TranslatableTextComponent("multiplayer.message_not_delivered", textComponent2).applyFormat(TextFormat.field_1061), ChatMessageType.field_11735
@@ -1156,7 +1156,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public String getServerBrand() {
-		String string = this.field_13987.client.getAddress().toString();
+		String string = this.networkHandler.client.getAddress().toString();
 		string = string.substring(string.indexOf("/") + 1);
 		return string.substring(0, string.indexOf(":"));
 	}
@@ -1165,8 +1165,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.clientLanguage = clientSettingsC2SPacket.getLanguage();
 		this.clientChatVisibility = clientSettingsC2SPacket.getChatVisibility();
 		this.field_13971 = clientSettingsC2SPacket.method_12135();
-		this.method_5841().set(field_7518, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
-		this.method_5841().set(field_7488, (byte)(clientSettingsC2SPacket.getMainHand() == OptionMainHand.field_6182 ? 0 : 1));
+		this.getDataTracker().set(PLAYER_MODEL_BIT_MASK, (byte)clientSettingsC2SPacket.getPlayerModelBitMask());
+		this.getDataTracker().set(MAIN_HAND, (byte)(clientSettingsC2SPacket.getMainHand() == AbsoluteHand.field_6182 ? 0 : 1));
 	}
 
 	public ChatVisibility getClientChatVisibility() {
@@ -1174,7 +1174,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public void method_14255(String string, String string2) {
-		this.field_13987.sendPacket(new ResourcePackSendS2CPacket(string, string2));
+		this.networkHandler.sendPacket(new ResourcePackSendS2CPacket(string, string2));
 	}
 
 	@Override
@@ -1190,13 +1190,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		return this.field_13966;
 	}
 
-	public ServerRecipeBook method_14253() {
-		return this.field_13996;
+	public ServerRecipeBook getRecipeBook() {
+		return this.recipeBook;
 	}
 
 	public void method_14249(Entity entity) {
 		if (entity instanceof PlayerEntity) {
-			this.field_13987.sendPacket(new EntitiesDestroyS2CPacket(entity.getEntityId()));
+			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(entity.getEntityId()));
 		} else {
 			this.field_13988.add(entity.getEntityId());
 		}
@@ -1224,7 +1224,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		Entity entity2 = this.method_14242();
 		this.field_13984 = (Entity)(entity == null ? this : entity);
 		if (entity2 != this.field_13984) {
-			this.field_13987.sendPacket(new SetCameraEntityS2CPacket(this.field_13984));
+			this.networkHandler.sendPacket(new SetCameraEntityS2CPacket(this.field_13984));
 			this.method_5859(this.field_13984.x, this.field_13984.y, this.field_13984.z);
 		}
 	}
@@ -1238,7 +1238,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void attack(Entity entity) {
-		if (this.field_13974.getGameMode() == GameMode.field_9219) {
+		if (this.interactionManager.getGameMode() == GameMode.field_9219) {
 			this.method_14224(entity);
 		} else {
 			super.attack(entity);
@@ -1284,35 +1284,35 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void method_14251(ServerWorld serverWorld, double d, double e, double f, float g, float h) {
 		this.method_14224(this);
 		this.stopRiding();
-		if (serverWorld == this.field_6002) {
-			this.field_13987.teleportRequest(d, e, f, g, h);
+		if (serverWorld == this.world) {
+			this.networkHandler.teleportRequest(d, e, f, g, h);
 		} else {
 			ServerWorld serverWorld2 = this.getServerWorld();
-			this.field_6026 = serverWorld.field_9247.method_12460();
-			LevelProperties levelProperties = serverWorld.method_8401();
-			this.field_13987.sendPacket(new PlayerRespawnS2CPacket(this.field_6026, levelProperties.getGeneratorType(), this.field_13974.getGameMode()));
-			this.field_13987.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
-			this.server.method_3760().method_14576(this);
+			this.dimension = serverWorld.dimension.getType();
+			LevelProperties levelProperties = serverWorld.getLevelProperties();
+			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.dimension, levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
+			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
+			this.server.getPlayerManager().method_14576(this);
 			serverWorld2.method_18770(this);
 			this.invalid = false;
 			this.setPositionAndAngles(d, e, f, g, h);
-			this.method_5866(serverWorld);
+			this.setWorld(serverWorld);
 			serverWorld.method_18207(this);
 			this.method_18783(serverWorld2);
-			this.field_13987.teleportRequest(d, e, f, g, h);
-			this.field_13974.setWorld(serverWorld);
-			this.server.method_3760().method_14606(this, serverWorld);
-			this.server.method_3760().method_14594(this);
+			this.networkHandler.teleportRequest(d, e, f, g, h);
+			this.interactionManager.setWorld(serverWorld);
+			this.server.getPlayerManager().method_14606(this, serverWorld);
+			this.server.getPlayerManager().method_14594(this);
 		}
 	}
 
 	public void sendInitialChunkPackets(ChunkPos chunkPos, Packet<?> packet, Packet<?> packet2) {
-		this.field_13987.sendPacket(packet);
-		this.field_13987.sendPacket(packet2);
+		this.networkHandler.sendPacket(packet);
+		this.networkHandler.sendPacket(packet2);
 	}
 
 	public void sendUnloadChunkPacket(ChunkPos chunkPos) {
-		this.field_13987.sendPacket(new UnloadChunkS2CPacket(chunkPos.x, chunkPos.z));
+		this.networkHandler.sendPacket(new UnloadChunkS2CPacket(chunkPos.x, chunkPos.z));
 	}
 
 	public ChunkSectionPos getChunkPos() {
@@ -1324,29 +1324,29 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void method_17356(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
-		this.field_13987.sendPacket(new PlaySoundS2CPacket(soundEvent, soundCategory, this.x, this.y, this.z, f, g));
+	public void playSound(SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
+		this.networkHandler.sendPacket(new PlaySoundS2CPacket(soundEvent, soundCategory, this.x, this.y, this.z, f, g));
 	}
 
 	@Override
-	public Packet<?> method_18002() {
+	public Packet<?> createSpawnPacket() {
 		return new PlayerSpawnS2CPacket(this);
 	}
 
 	@Override
-	public ItemEntity method_7329(ItemStack itemStack, boolean bl, boolean bl2) {
-		ItemEntity itemEntity = super.method_7329(itemStack, bl, bl2);
+	public ItemEntity dropItem(ItemStack itemStack, boolean bl, boolean bl2) {
+		ItemEntity itemEntity = super.dropItem(itemStack, bl, bl2);
 		if (itemEntity == null) {
 			return null;
 		} else {
-			this.field_6002.spawnEntity(itemEntity);
-			ItemStack itemStack2 = itemEntity.method_6983();
+			this.world.spawnEntity(itemEntity);
+			ItemStack itemStack2 = itemEntity.getStack();
 			if (bl2) {
 				if (!itemStack2.isEmpty()) {
-					this.method_7342(Stats.field_15405.getOrCreateStat(itemStack2.getItem()), itemStack.getAmount());
+					this.incrementStat(Stats.field_15405.getOrCreateStat(itemStack2.getItem()), itemStack.getAmount());
 				}
 
-				this.method_7281(Stats.field_15406);
+				this.increaseStat(Stats.field_15406);
 			}
 
 			return itemEntity;

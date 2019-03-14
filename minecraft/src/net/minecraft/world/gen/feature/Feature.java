@@ -23,43 +23,47 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public abstract class Feature<FC extends FeatureConfig> {
-	public static final StructureFeature<PillagerOutpostFeatureConfig> field_16655 = register(
+	public static final StructureFeature<PillagerOutpostFeatureConfig> PILLAGER_OUTPOST = register(
 		"pillager_outpost", new PillagerOutpostFeature(PillagerOutpostFeatureConfig::deserialize)
 	);
-	public static final StructureFeature<MineshaftFeatureConfig> field_13547 = register("mineshaft", new MineshaftFeature(MineshaftFeatureConfig::deserialize));
-	public static final StructureFeature<DefaultFeatureConfig> field_13528 = register(
+	public static final StructureFeature<MineshaftFeatureConfig> MINESHAFT = register("mineshaft", new MineshaftFeature(MineshaftFeatureConfig::deserialize));
+	public static final StructureFeature<DefaultFeatureConfig> WOODLAND_MANSION = register(
 		"woodland_mansion", new WoodlandMansionFeature(DefaultFeatureConfig::deserialize)
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_13586 = register("jungle_temple", new JungleTempleFeature(DefaultFeatureConfig::deserialize));
-	public static final StructureFeature<DefaultFeatureConfig> field_13515 = register(
+	public static final StructureFeature<DefaultFeatureConfig> JUNGLE_TEMPLE = register(
+		"jungle_temple", new JungleTempleFeature(DefaultFeatureConfig::deserialize)
+	);
+	public static final StructureFeature<DefaultFeatureConfig> DESERT_PYRAMID = register(
 		"desert_pyramid", new DesertPyramidFeature(DefaultFeatureConfig::deserialize)
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_13527 = register("igloo", new IglooFeature(DefaultFeatureConfig::deserialize));
-	public static final StructureFeature<ShipwreckFeatureConfig> field_13589 = register("shipwreck", new ShipwreckFeature(ShipwreckFeatureConfig::deserialize));
-	public static final SwampHutFeature field_13520 = register("swamp_hut", new SwampHutFeature(DefaultFeatureConfig::deserialize));
-	public static final StructureFeature<DefaultFeatureConfig> field_13565 = register("stronghold", new StrongholdFeature(DefaultFeatureConfig::deserialize));
-	public static final StructureFeature<DefaultFeatureConfig> field_13588 = register(
+	public static final StructureFeature<DefaultFeatureConfig> IGLOO = register("igloo", new IglooFeature(DefaultFeatureConfig::deserialize));
+	public static final StructureFeature<ShipwreckFeatureConfig> SHIPWRECK = register("shipwreck", new ShipwreckFeature(ShipwreckFeatureConfig::deserialize));
+	public static final SwampHutFeature SWAMP_HUT = register("swamp_hut", new SwampHutFeature(DefaultFeatureConfig::deserialize));
+	public static final StructureFeature<DefaultFeatureConfig> STRONGHOLD = register("stronghold", new StrongholdFeature(DefaultFeatureConfig::deserialize));
+	public static final StructureFeature<DefaultFeatureConfig> OCEAN_MONUMENT = register(
 		"ocean_monument", new OceanMonumentFeature(DefaultFeatureConfig::deserialize)
 	);
-	public static final StructureFeature<OceanRuinFeatureConfig> field_13536 = register("ocean_ruin", new OceanRuinFeature(OceanRuinFeatureConfig::deserialize));
-	public static final StructureFeature<DefaultFeatureConfig> field_13569 = register(
+	public static final StructureFeature<OceanRuinFeatureConfig> OCEAN_RUIN = register("ocean_ruin", new OceanRuinFeature(OceanRuinFeatureConfig::deserialize));
+	public static final StructureFeature<DefaultFeatureConfig> NETHER_BRIDGE = register(
 		"nether_bridge", new NetherFortressFeature(DefaultFeatureConfig::deserialize)
 	);
-	public static final StructureFeature<DefaultFeatureConfig> field_13553 = register("end_city", new EndCityFeature(DefaultFeatureConfig::deserialize));
-	public static final StructureFeature<BuriedTreasureFeatureConfig> field_13538 = register(
+	public static final StructureFeature<DefaultFeatureConfig> END_CITY = register("end_city", new EndCityFeature(DefaultFeatureConfig::deserialize));
+	public static final StructureFeature<BuriedTreasureFeatureConfig> BURIED_TREASURE = register(
 		"buried_treasure", new BuriedTreasureFeature(BuriedTreasureFeatureConfig::deserialize)
 	);
-	public static final StructureFeature<VillageFeatureConfig> field_13587 = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
+	public static final StructureFeature<VillageFeatureConfig> VILLAGE = register("village", new VillageFeature(VillageFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13529 = register("fancy_tree", new LargeOakTreeFeature(DefaultFeatureConfig::deserialize, false));
 	public static final Feature<DefaultFeatureConfig> field_13566 = register("birch_tree", new BirchTreeFeature(DefaultFeatureConfig::deserialize, false, false));
 	public static final Feature<DefaultFeatureConfig> field_13578 = register(
 		"super_birch_tree", new BirchTreeFeature(DefaultFeatureConfig::deserialize, false, true)
 	);
 	public static final Feature<DefaultFeatureConfig> field_13537 = register(
-		"jungle_ground_bush", new JungleGroundBushFeature(DefaultFeatureConfig::deserialize, Blocks.field_10306.method_9564(), Blocks.field_10503.method_9564())
+		"jungle_ground_bush",
+		new JungleGroundBushFeature(DefaultFeatureConfig::deserialize, Blocks.field_10306.getDefaultState(), Blocks.field_10503.getDefaultState())
 	);
 	public static final Feature<DefaultFeatureConfig> field_13508 = register(
-		"jungle_tree", new JungleTreeFeature(DefaultFeatureConfig::deserialize, false, 4, Blocks.field_10306.method_9564(), Blocks.field_10335.method_9564(), true)
+		"jungle_tree",
+		new JungleTreeFeature(DefaultFeatureConfig::deserialize, false, 4, Blocks.field_10306.getDefaultState(), Blocks.field_10335.getDefaultState(), true)
 	);
 	public static final Feature<DefaultFeatureConfig> field_13581 = register("pine_tree", new PineTreeFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13532 = register("dark_oak_tree", new DarkOakTreeFeature(DefaultFeatureConfig::deserialize, false));
@@ -69,7 +73,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> field_13510 = register("normal_tree", new OakTreeFeature(DefaultFeatureConfig::deserialize, false));
 	public static final Feature<DefaultFeatureConfig> field_13558 = register(
 		"mega_jungle_tree",
-		new MegaJungleTreeFeature(DefaultFeatureConfig::deserialize, false, 10, 20, Blocks.field_10306.method_9564(), Blocks.field_10335.method_9564())
+		new MegaJungleTreeFeature(DefaultFeatureConfig::deserialize, false, 10, 20, Blocks.field_10306.getDefaultState(), Blocks.field_10335.getDefaultState())
 	);
 	public static final Feature<DefaultFeatureConfig> field_13543 = register(
 		"mega_pine_tree", new MegaPineTreeFeature(DefaultFeatureConfig::deserialize, false, false)
@@ -77,11 +81,11 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> field_13580 = register(
 		"mega_spruce_tree", new MegaPineTreeFeature(DefaultFeatureConfig::deserialize, false, true)
 	);
-	public static final FlowerFeature field_13541 = register("default_flower", new DefaultFlowerFeature(DefaultFeatureConfig::deserialize));
-	public static final FlowerFeature field_13570 = register("forest_flower", new ForestFlowerFeature(DefaultFeatureConfig::deserialize));
-	public static final FlowerFeature field_13549 = register("plain_flower", new PlainFlowerFeature(DefaultFeatureConfig::deserialize));
-	public static final FlowerFeature field_13533 = register("swamp_flower", new SwampFlowerFeature(DefaultFeatureConfig::deserialize));
-	public static final FlowerFeature field_13582 = register("general_forest_flower", new GeneralForestFlowerFeature(DefaultFeatureConfig::deserialize));
+	public static final FlowerFeature DEFAULT_FLOWER = register("default_flower", new DefaultFlowerFeature(DefaultFeatureConfig::deserialize));
+	public static final FlowerFeature FOREST_FLOWER = register("forest_flower", new ForestFlowerFeature(DefaultFeatureConfig::deserialize));
+	public static final FlowerFeature PLAIN_FLOWER = register("plain_flower", new PlainFlowerFeature(DefaultFeatureConfig::deserialize));
+	public static final FlowerFeature SWAMP_FLOWER = register("swamp_flower", new SwampFlowerFeature(DefaultFeatureConfig::deserialize));
+	public static final FlowerFeature GENERAL_FOREST_FLOWER = register("general_forest_flower", new GeneralForestFlowerFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13590 = register("jungle_grass", new JungleGrassFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13521 = register("taiga_grass", new TaigaGrassFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<GrassFeatureConfig> field_13511 = register("grass", new GrassFeature(GrassFeatureConfig::deserialize));
@@ -101,7 +105,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> field_13568 = register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13534 = register("melon", new MelonFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13524 = register(
-		"pumpkin", new PumpkinFeature(DefaultFeatureConfig::deserialize, Blocks.field_10261.method_9564())
+		"pumpkin", new PumpkinFeature(DefaultFeatureConfig::deserialize, Blocks.field_10261.getDefaultState())
 	);
 	public static final Feature<DefaultFeatureConfig> field_13583 = register("reed", new ReedFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13539 = register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig::deserialize));
@@ -151,27 +155,27 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DecoratedFeatureConfig> field_13561 = register("decorated_flower", new DecoratedFlowerFeature(DecoratedFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_17004 = register(
 		"sweet_berry_bush",
-		new PumpkinFeature(DefaultFeatureConfig::deserialize, Blocks.field_16999.method_9564().method_11657(SweetBerryBushBlock.field_17000, Integer.valueOf(3)))
+		new PumpkinFeature(DefaultFeatureConfig::deserialize, Blocks.field_16999.getDefaultState().with(SweetBerryBushBlock.AGE, Integer.valueOf(3)))
 	);
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig::deserialize));
 	public static final BiMap<String, StructureFeature<?>> STRUCTURES = SystemUtil.consume(HashBiMap.create(), hashBiMap -> {
-		hashBiMap.put("Pillager_Outpost".toLowerCase(Locale.ROOT), field_16655);
-		hashBiMap.put("Mineshaft".toLowerCase(Locale.ROOT), field_13547);
-		hashBiMap.put("Mansion".toLowerCase(Locale.ROOT), field_13528);
-		hashBiMap.put("Jungle_Pyramid".toLowerCase(Locale.ROOT), field_13586);
-		hashBiMap.put("Desert_Pyramid".toLowerCase(Locale.ROOT), field_13515);
-		hashBiMap.put("Igloo".toLowerCase(Locale.ROOT), field_13527);
-		hashBiMap.put("Shipwreck".toLowerCase(Locale.ROOT), field_13589);
-		hashBiMap.put("Swamp_Hut".toLowerCase(Locale.ROOT), field_13520);
-		hashBiMap.put("Stronghold".toLowerCase(Locale.ROOT), field_13565);
-		hashBiMap.put("Monument".toLowerCase(Locale.ROOT), field_13588);
-		hashBiMap.put("Ocean_Ruin".toLowerCase(Locale.ROOT), field_13536);
-		hashBiMap.put("Fortress".toLowerCase(Locale.ROOT), field_13569);
-		hashBiMap.put("EndCity".toLowerCase(Locale.ROOT), field_13553);
-		hashBiMap.put("Buried_Treasure".toLowerCase(Locale.ROOT), field_13538);
-		hashBiMap.put("Village".toLowerCase(Locale.ROOT), field_13587);
+		hashBiMap.put("Pillager_Outpost".toLowerCase(Locale.ROOT), PILLAGER_OUTPOST);
+		hashBiMap.put("Mineshaft".toLowerCase(Locale.ROOT), MINESHAFT);
+		hashBiMap.put("Mansion".toLowerCase(Locale.ROOT), WOODLAND_MANSION);
+		hashBiMap.put("Jungle_Pyramid".toLowerCase(Locale.ROOT), JUNGLE_TEMPLE);
+		hashBiMap.put("Desert_Pyramid".toLowerCase(Locale.ROOT), DESERT_PYRAMID);
+		hashBiMap.put("Igloo".toLowerCase(Locale.ROOT), IGLOO);
+		hashBiMap.put("Shipwreck".toLowerCase(Locale.ROOT), SHIPWRECK);
+		hashBiMap.put("Swamp_Hut".toLowerCase(Locale.ROOT), SWAMP_HUT);
+		hashBiMap.put("Stronghold".toLowerCase(Locale.ROOT), STRONGHOLD);
+		hashBiMap.put("Monument".toLowerCase(Locale.ROOT), OCEAN_MONUMENT);
+		hashBiMap.put("Ocean_Ruin".toLowerCase(Locale.ROOT), OCEAN_RUIN);
+		hashBiMap.put("Fortress".toLowerCase(Locale.ROOT), NETHER_BRIDGE);
+		hashBiMap.put("EndCity".toLowerCase(Locale.ROOT), END_CITY);
+		hashBiMap.put("Buried_Treasure".toLowerCase(Locale.ROOT), BURIED_TREASURE);
+		hashBiMap.put("Village".toLowerCase(Locale.ROOT), VILLAGE);
 	});
-	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(field_16655, field_13587);
+	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE);
 	private final Function<Dynamic<?>, ? extends FC> configDeserializer;
 	protected final boolean emitNeighborBlockUpdates;
 
@@ -189,19 +193,19 @@ public abstract class Feature<FC extends FeatureConfig> {
 		this.emitNeighborBlockUpdates = bl;
 	}
 
-	public FC method_13148(Dynamic<?> dynamic) {
+	public FC deserializeConfig(Dynamic<?> dynamic) {
 		return (FC)this.configDeserializer.apply(dynamic);
 	}
 
-	protected void method_13153(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
+	protected void setBlockState(ModifiableWorld modifiableWorld, BlockPos blockPos, BlockState blockState) {
 		if (this.emitNeighborBlockUpdates) {
-			modifiableWorld.method_8652(blockPos, blockState, 3);
+			modifiableWorld.setBlockState(blockPos, blockState, 3);
 		} else {
-			modifiableWorld.method_8652(blockPos, blockState, 2);
+			modifiableWorld.setBlockState(blockPos, blockState, 2);
 		}
 	}
 
-	public abstract boolean method_13151(
+	public abstract boolean generate(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, FC featureConfig
 	);
 

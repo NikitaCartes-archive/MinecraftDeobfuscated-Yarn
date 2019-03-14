@@ -22,6 +22,6 @@ public class SimpleRandomFeature extends Feature<SimpleRandomFeatureConfig> {
 	) {
 		int i = random.nextInt(simpleRandomFeatureConfig.features.size());
 		ConfiguredFeature<?> configuredFeature = (ConfiguredFeature<?>)simpleRandomFeatureConfig.features.get(i);
-		return configuredFeature.method_12862(iWorld, chunkGenerator, random, blockPos);
+		return configuredFeature.generate(iWorld, chunkGenerator, random, blockPos);
 	}
 }

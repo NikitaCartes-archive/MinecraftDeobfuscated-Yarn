@@ -11,16 +11,16 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityRenderer extends BipedEntityRenderer<ZombieVillagerEntity, ZombieVillagerEntityModel<ZombieVillagerEntity>> {
-	private static final Identifier field_4835 = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
+	private static final Identifier ZOMBIE_VILLAGER_SKIN = new Identifier("textures/entity/zombie_villager/zombie_villager.png");
 
 	public ZombieVillagerEntityRenderer(EntityRenderDispatcher entityRenderDispatcher, ReloadableResourceManager reloadableResourceManager) {
 		super(entityRenderDispatcher, new ZombieVillagerEntityModel<>(), 0.5F);
-		this.method_4046(new ArmorBipedFeatureRenderer<>(this, new ZombieVillagerEntityModel(0.5F, true), new ZombieVillagerEntityModel(1.0F, true)));
-		this.method_4046(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "zombie_villager"));
+		this.addFeature(new ArmorBipedFeatureRenderer<>(this, new ZombieVillagerEntityModel(0.5F, true), new ZombieVillagerEntityModel(1.0F, true)));
+		this.addFeature(new VillagerClothingFeatureRenderer<>(this, reloadableResourceManager, "zombie_villager"));
 	}
 
 	protected Identifier method_4175(ZombieVillagerEntity zombieVillagerEntity) {
-		return field_4835;
+		return ZOMBIE_VILLAGER_SKIN;
 	}
 
 	protected void method_4176(ZombieVillagerEntity zombieVillagerEntity, float f, float g, float h) {

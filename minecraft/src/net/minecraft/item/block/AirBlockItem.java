@@ -12,22 +12,22 @@ import net.minecraft.text.TextComponent;
 import net.minecraft.world.World;
 
 public class AirBlockItem extends Item {
-	private final Block field_7882;
+	private final Block block;
 
 	public AirBlockItem(Block block, Item.Settings settings) {
 		super(settings);
-		this.field_7882 = block;
+		this.block = block;
 	}
 
 	@Override
 	public String getTranslationKey() {
-		return this.field_7882.getTranslationKey();
+		return this.block.getTranslationKey();
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_7851(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
-		super.method_7851(itemStack, world, list, tooltipContext);
-		this.field_7882.buildTooltip(itemStack, world, list, tooltipContext);
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+		super.buildTooltip(itemStack, world, list, tooltipContext);
+		this.block.buildTooltip(itemStack, world, list, tooltipContext);
 	}
 }

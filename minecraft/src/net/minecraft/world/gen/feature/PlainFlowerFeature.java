@@ -14,36 +14,36 @@ public class PlainFlowerFeature extends FlowerFeature {
 	}
 
 	@Override
-	public BlockState method_13175(Random random, BlockPos blockPos) {
-		double d = Biome.field_9324.sample((double)blockPos.getX() / 200.0, (double)blockPos.getZ() / 200.0);
+	public BlockState getFlowerToPlace(Random random, BlockPos blockPos) {
+		double d = Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 200.0, (double)blockPos.getZ() / 200.0);
 		if (d < -0.8) {
 			int i = random.nextInt(4);
 			switch (i) {
 				case 0:
-					return Blocks.field_10048.method_9564();
+					return Blocks.field_10048.getDefaultState();
 				case 1:
-					return Blocks.field_10270.method_9564();
+					return Blocks.field_10270.getDefaultState();
 				case 2:
-					return Blocks.field_10315.method_9564();
+					return Blocks.field_10315.getDefaultState();
 				case 3:
 				default:
-					return Blocks.field_10156.method_9564();
+					return Blocks.field_10156.getDefaultState();
 			}
 		} else if (random.nextInt(3) > 0) {
 			int i = random.nextInt(4);
 			switch (i) {
 				case 0:
-					return Blocks.field_10449.method_9564();
+					return Blocks.field_10449.getDefaultState();
 				case 1:
-					return Blocks.field_10573.method_9564();
+					return Blocks.field_10573.getDefaultState();
 				case 2:
-					return Blocks.field_10554.method_9564();
+					return Blocks.field_10554.getDefaultState();
 				case 3:
 				default:
-					return Blocks.field_9995.method_9564();
+					return Blocks.field_9995.getDefaultState();
 			}
 		} else {
-			return Blocks.field_10182.method_9564();
+			return Blocks.field_10182.getDefaultState();
 		}
 	}
 }

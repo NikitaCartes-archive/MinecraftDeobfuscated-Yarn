@@ -9,7 +9,7 @@ public class WoodButtonBlock extends AbstractButtonBlock {
 	}
 
 	@Override
-	protected SoundEvent method_9712(boolean bl) {
+	protected SoundEvent getClickSound(boolean bl) {
 		return bl ? SoundEvents.field_14699 : SoundEvents.field_15105;
 	}
 }

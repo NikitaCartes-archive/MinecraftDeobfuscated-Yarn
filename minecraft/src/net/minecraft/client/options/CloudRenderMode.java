@@ -13,22 +13,22 @@ public enum CloudRenderMode {
 	field_18164(2, "options.clouds.fancy");
 
 	private static final CloudRenderMode[] field_18165 = (CloudRenderMode[])Arrays.stream(values())
-		.sorted(Comparator.comparingInt(CloudRenderMode::method_18496))
+		.sorted(Comparator.comparingInt(CloudRenderMode::getRenderModeId))
 		.toArray(CloudRenderMode[]::new);
-	private final int field_18166;
-	private final String field_18167;
+	private final int renderModeId;
+	private final String renderMode;
 
 	private CloudRenderMode(int j, String string2) {
-		this.field_18166 = j;
-		this.field_18167 = string2;
+		this.renderModeId = j;
+		this.renderMode = string2;
 	}
 
-	public int method_18496() {
-		return this.field_18166;
+	public int getRenderModeId() {
+		return this.renderModeId;
 	}
 
-	public String method_18498() {
-		return this.field_18167;
+	public String getRenderMode() {
+		return this.renderMode;
 	}
 
 	public static CloudRenderMode method_18497(int i) {

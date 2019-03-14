@@ -21,7 +21,7 @@ public class RecipeToast implements Toast {
 	}
 
 	@Override
-	public Toast.Visibility method_1986(ToastManager toastManager, long l) {
+	public Toast.Visibility draw(ToastManager toastManager, long l) {
 		if (this.field_2203) {
 			this.field_2204 = l;
 			this.field_2203 = false;
@@ -30,19 +30,19 @@ public class RecipeToast implements Toast {
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.field_2209;
 		} else {
-			toastManager.getGame().method_1531().method_4618(field_2207);
+			toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 			GlStateManager.color3f(1.0F, 1.0F, 1.0F);
 			toastManager.drawTexturedRect(0, 0, 0, 32, 160, 32);
-			toastManager.getGame().field_1772.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
-			toastManager.getGame().field_1772.draw(I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
+			toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
+			toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
 			GuiLighting.enableForItems();
 			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(l / (5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
 			ItemStack itemStack = recipe.getRecipeKindIcon();
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(0.6F, 0.6F, 1.0F);
-			toastManager.getGame().method_1480().renderGuiItem(null, itemStack, 3, 3);
+			toastManager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
 			GlStateManager.popMatrix();
-			toastManager.getGame().method_1480().renderGuiItem(null, recipe.getOutput(), 8, 8);
+			toastManager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
 			return l - this.field_2204 >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
 		}
 	}

@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class DamageTracker {
 	private final List<DamageRecord> recentDamage = Lists.<DamageRecord>newArrayList();
-	private final LivingEntity field_5877;
+	private final LivingEntity entity;
 	private int ageOnLastDamage;
 	private int ageOnLastAttacked;
 	private int ageOnLastUpdate;
@@ -24,71 +24,71 @@ public class DamageTracker {
 	private String fallDeathSuffix;
 
 	public DamageTracker(LivingEntity livingEntity) {
-		this.field_5877 = livingEntity;
+		this.entity = livingEntity;
 	}
 
 	public void setFallDeathSuffix() {
 		this.clearFallDeathSuffix();
-		if (this.field_5877.canClimb()) {
-			Block block = this.field_5877.field_6002.method_8320(new BlockPos(this.field_5877.x, this.field_5877.method_5829().minY, this.field_5877.z)).getBlock();
+		if (this.entity.canClimb()) {
+			Block block = this.entity.world.getBlockState(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY, this.entity.z)).getBlock();
 			if (block == Blocks.field_9983) {
 				this.fallDeathSuffix = "ladder";
 			} else if (block == Blocks.field_10597) {
 				this.fallDeathSuffix = "vines";
 			}
-		} else if (this.field_5877.isInsideWater()) {
+		} else if (this.entity.isInsideWater()) {
 			this.fallDeathSuffix = "water";
 		}
 	}
 
-	public void method_5547(DamageSource damageSource, float f, float g) {
+	public void onDamage(DamageSource damageSource, float f, float g) {
 		this.update();
 		this.setFallDeathSuffix();
-		DamageRecord damageRecord = new DamageRecord(damageSource, this.field_5877.age, f, g, this.fallDeathSuffix, this.field_5877.fallDistance);
+		DamageRecord damageRecord = new DamageRecord(damageSource, this.entity.age, f, g, this.fallDeathSuffix, this.entity.fallDistance);
 		this.recentDamage.add(damageRecord);
-		this.ageOnLastDamage = this.field_5877.age;
+		this.ageOnLastDamage = this.entity.age;
 		this.hasDamage = true;
-		if (damageRecord.isAttackerLiving() && !this.recentlyAttacked && this.field_5877.isValid()) {
+		if (damageRecord.isAttackerLiving() && !this.recentlyAttacked && this.entity.isValid()) {
 			this.recentlyAttacked = true;
-			this.ageOnLastAttacked = this.field_5877.age;
+			this.ageOnLastAttacked = this.entity.age;
 			this.ageOnLastUpdate = this.ageOnLastAttacked;
-			this.field_5877.method_6000();
+			this.entity.method_6000();
 		}
 	}
 
-	public TextComponent method_5548() {
+	public TextComponent getDeathMessage() {
 		if (this.recentDamage.isEmpty()) {
-			return new TranslatableTextComponent("death.attack.generic", this.field_5877.method_5476());
+			return new TranslatableTextComponent("death.attack.generic", this.entity.getDisplayName());
 		} else {
 			DamageRecord damageRecord = this.getBiggestFall();
 			DamageRecord damageRecord2 = (DamageRecord)this.recentDamage.get(this.recentDamage.size() - 1);
-			TextComponent textComponent = damageRecord2.method_5498();
-			Entity entity = damageRecord2.method_5499().method_5529();
+			TextComponent textComponent = damageRecord2.getAttackerName();
+			Entity entity = damageRecord2.getDamageSource().getAttacker();
 			TextComponent textComponent3;
-			if (damageRecord != null && damageRecord2.method_5499() == DamageSource.FALL) {
-				TextComponent textComponent2 = damageRecord.method_5498();
-				if (damageRecord.method_5499() == DamageSource.FALL || damageRecord.method_5499() == DamageSource.OUT_OF_WORLD) {
-					textComponent3 = new TranslatableTextComponent("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.field_5877.method_5476());
+			if (damageRecord != null && damageRecord2.getDamageSource() == DamageSource.FALL) {
+				TextComponent textComponent2 = damageRecord.getAttackerName();
+				if (damageRecord.getDamageSource() == DamageSource.FALL || damageRecord.getDamageSource() == DamageSource.OUT_OF_WORLD) {
+					textComponent3 = new TranslatableTextComponent("death.fell.accident." + this.getFallDeathSuffix(damageRecord), this.entity.getDisplayName());
 				} else if (textComponent2 != null && (textComponent == null || !textComponent2.equals(textComponent))) {
-					Entity entity2 = damageRecord.method_5499().method_5529();
-					ItemStack itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).method_6047() : ItemStack.EMPTY;
+					Entity entity2 = damageRecord.getDamageSource().getAttacker();
+					ItemStack itemStack = entity2 instanceof LivingEntity ? ((LivingEntity)entity2).getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack.isEmpty() && itemStack.hasDisplayName()) {
-						textComponent3 = new TranslatableTextComponent("death.fell.assist.item", this.field_5877.method_5476(), textComponent2, itemStack.method_7954());
+						textComponent3 = new TranslatableTextComponent("death.fell.assist.item", this.entity.getDisplayName(), textComponent2, itemStack.toTextComponent());
 					} else {
-						textComponent3 = new TranslatableTextComponent("death.fell.assist", this.field_5877.method_5476(), textComponent2);
+						textComponent3 = new TranslatableTextComponent("death.fell.assist", this.entity.getDisplayName(), textComponent2);
 					}
 				} else if (textComponent != null) {
-					ItemStack itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).method_6047() : ItemStack.EMPTY;
+					ItemStack itemStack2 = entity instanceof LivingEntity ? ((LivingEntity)entity).getMainHandStack() : ItemStack.EMPTY;
 					if (!itemStack2.isEmpty() && itemStack2.hasDisplayName()) {
-						textComponent3 = new TranslatableTextComponent("death.fell.finish.item", this.field_5877.method_5476(), textComponent, itemStack2.method_7954());
+						textComponent3 = new TranslatableTextComponent("death.fell.finish.item", this.entity.getDisplayName(), textComponent, itemStack2.toTextComponent());
 					} else {
-						textComponent3 = new TranslatableTextComponent("death.fell.finish", this.field_5877.method_5476(), textComponent);
+						textComponent3 = new TranslatableTextComponent("death.fell.finish", this.entity.getDisplayName(), textComponent);
 					}
 				} else {
-					textComponent3 = new TranslatableTextComponent("death.fell.killer", this.field_5877.method_5476());
+					textComponent3 = new TranslatableTextComponent("death.fell.killer", this.entity.getDisplayName());
 				}
 			} else {
-				textComponent3 = damageRecord2.method_5499().method_5506(this.field_5877);
+				textComponent3 = damageRecord2.getDamageSource().getDeathMessage(this.entity);
 			}
 
 			return textComponent3;
@@ -96,21 +96,21 @@ public class DamageTracker {
 	}
 
 	@Nullable
-	public LivingEntity method_5541() {
+	public LivingEntity getBiggestAttacker() {
 		LivingEntity livingEntity = null;
 		PlayerEntity playerEntity = null;
 		float f = 0.0F;
 		float g = 0.0F;
 
 		for (DamageRecord damageRecord : this.recentDamage) {
-			if (damageRecord.method_5499().method_5529() instanceof PlayerEntity && (playerEntity == null || damageRecord.getDamage() > g)) {
+			if (damageRecord.getDamageSource().getAttacker() instanceof PlayerEntity && (playerEntity == null || damageRecord.getDamage() > g)) {
 				g = damageRecord.getDamage();
-				playerEntity = (PlayerEntity)damageRecord.method_5499().method_5529();
+				playerEntity = (PlayerEntity)damageRecord.getDamageSource().getAttacker();
 			}
 
-			if (damageRecord.method_5499().method_5529() instanceof LivingEntity && (livingEntity == null || damageRecord.getDamage() > f)) {
+			if (damageRecord.getDamageSource().getAttacker() instanceof LivingEntity && (livingEntity == null || damageRecord.getDamage() > f)) {
 				f = damageRecord.getDamage();
-				livingEntity = (LivingEntity)damageRecord.method_5499().method_5529();
+				livingEntity = (LivingEntity)damageRecord.getDamageSource().getAttacker();
 			}
 		}
 
@@ -127,7 +127,7 @@ public class DamageTracker {
 		for (int i = 0; i < this.recentDamage.size(); i++) {
 			DamageRecord damageRecord3 = (DamageRecord)this.recentDamage.get(i);
 			DamageRecord damageRecord4 = i > 0 ? (DamageRecord)this.recentDamage.get(i - 1) : null;
-			if ((damageRecord3.method_5499() == DamageSource.FALL || damageRecord3.method_5499() == DamageSource.OUT_OF_WORLD)
+			if ((damageRecord3.getDamageSource() == DamageSource.FALL || damageRecord3.getDamageSource() == DamageSource.OUT_OF_WORLD)
 				&& damageRecord3.getFallDistance() > 0.0F
 				&& (damageRecord == null || damageRecord3.getFallDistance() > g)) {
 				if (i > 0) {
@@ -157,7 +157,7 @@ public class DamageTracker {
 	}
 
 	public int getTimeSinceLastAttack() {
-		return this.recentlyAttacked ? this.field_5877.age - this.ageOnLastAttacked : this.ageOnLastUpdate - this.ageOnLastAttacked;
+		return this.recentlyAttacked ? this.entity.age - this.ageOnLastAttacked : this.ageOnLastUpdate - this.ageOnLastAttacked;
 	}
 
 	private void clearFallDeathSuffix() {
@@ -166,20 +166,20 @@ public class DamageTracker {
 
 	public void update() {
 		int i = this.recentlyAttacked ? 300 : 100;
-		if (this.hasDamage && (!this.field_5877.isValid() || this.field_5877.age - this.ageOnLastDamage > i)) {
+		if (this.hasDamage && (!this.entity.isValid() || this.entity.age - this.ageOnLastDamage > i)) {
 			boolean bl = this.recentlyAttacked;
 			this.hasDamage = false;
 			this.recentlyAttacked = false;
-			this.ageOnLastUpdate = this.field_5877.age;
+			this.ageOnLastUpdate = this.entity.age;
 			if (bl) {
-				this.field_5877.method_6044();
+				this.entity.method_6044();
 			}
 
 			this.recentDamage.clear();
 		}
 	}
 
-	public LivingEntity method_5540() {
-		return this.field_5877;
+	public LivingEntity getEntity() {
+		return this.entity;
 	}
 }

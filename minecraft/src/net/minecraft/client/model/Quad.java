@@ -9,12 +9,12 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class Quad {
-	public Vertex[] field_3502;
+	public Vertex[] vertices;
 	public final int vertexCount;
 	private boolean flipNormals;
 
 	public Quad(Vertex[] vertexs) {
-		this.field_3502 = vertexs;
+		this.vertices = vertexs;
 		this.vertexCount = vertexs.length;
 	}
 
@@ -29,18 +29,18 @@ public class Quad {
 	}
 
 	public void flip() {
-		Vertex[] vertexs = new Vertex[this.field_3502.length];
+		Vertex[] vertexs = new Vertex[this.vertices.length];
 
-		for (int i = 0; i < this.field_3502.length; i++) {
-			vertexs[i] = this.field_3502[this.field_3502.length - i - 1];
+		for (int i = 0; i < this.vertices.length; i++) {
+			vertexs[i] = this.vertices[this.vertices.length - i - 1];
 		}
 
-		this.field_3502 = vertexs;
+		this.vertices = vertexs;
 	}
 
 	public void render(BufferBuilder bufferBuilder, float f) {
-		Vec3d vec3d = this.field_3502[1].pos.reverseSubtract(this.field_3502[0].pos);
-		Vec3d vec3d2 = this.field_3502[1].pos.reverseSubtract(this.field_3502[2].pos);
+		Vec3d vec3d = this.vertices[1].pos.reverseSubtract(this.vertices[0].pos);
+		Vec3d vec3d2 = this.vertices[1].pos.reverseSubtract(this.vertices[2].pos);
 		Vec3d vec3d3 = vec3d2.crossProduct(vec3d).normalize();
 		float g = (float)vec3d3.x;
 		float h = (float)vec3d3.y;
@@ -51,10 +51,10 @@ public class Quad {
 			i = -i;
 		}
 
-		bufferBuilder.method_1328(7, VertexFormats.field_1580);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_NORMAL_2);
 
 		for (int j = 0; j < 4; j++) {
-			Vertex vertex = this.field_3502[j];
+			Vertex vertex = this.vertices[j];
 			bufferBuilder.vertex(vertex.pos.x * (double)f, vertex.pos.y * (double)f, vertex.pos.z * (double)f)
 				.texture((double)vertex.u, (double)vertex.v)
 				.normal(g, h, i)

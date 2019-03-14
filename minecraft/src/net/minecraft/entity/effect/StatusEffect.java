@@ -41,7 +41,7 @@ public class StatusEffect {
 		this.color = i;
 	}
 
-	public void method_5572(LivingEntity livingEntity, int i) {
+	public void applyUpdateEffect(LivingEntity livingEntity, int i) {
 		if (this == StatusEffects.field_5924) {
 			if (livingEntity.getHealth() < livingEntity.getHealthMaximum()) {
 				livingEntity.heal(1.0F);
@@ -55,8 +55,8 @@ public class StatusEffect {
 		} else if (this == StatusEffects.field_5903 && livingEntity instanceof PlayerEntity) {
 			((PlayerEntity)livingEntity).addExhaustion(0.005F * (float)(i + 1));
 		} else if (this == StatusEffects.field_5922 && livingEntity instanceof PlayerEntity) {
-			if (!livingEntity.field_6002.isClient) {
-				((PlayerEntity)livingEntity).method_7344().add(i + 1, 1.0F);
+			if (!livingEntity.world.isClient) {
+				((PlayerEntity)livingEntity).getHungerManager().add(i + 1, 1.0F);
 			}
 		} else if ((this != StatusEffects.field_5915 || livingEntity.isUndead()) && (this != StatusEffects.field_5921 || !livingEntity.isUndead())) {
 			if (this == StatusEffects.field_5921 && !livingEntity.isUndead() || this == StatusEffects.field_5915 && livingEntity.isUndead()) {
@@ -67,17 +67,17 @@ public class StatusEffect {
 		}
 	}
 
-	public void method_5564(@Nullable Entity entity, @Nullable Entity entity2, LivingEntity livingEntity, int i, double d) {
+	public void applyInstantEffect(@Nullable Entity entity, @Nullable Entity entity2, LivingEntity livingEntity, int i, double d) {
 		if ((this != StatusEffects.field_5915 || livingEntity.isUndead()) && (this != StatusEffects.field_5921 || !livingEntity.isUndead())) {
 			if (this == StatusEffects.field_5921 && !livingEntity.isUndead() || this == StatusEffects.field_5915 && livingEntity.isUndead()) {
 				int j = (int)(d * (double)(6 << i) + 0.5);
 				if (entity == null) {
 					livingEntity.damage(DamageSource.MAGIC, (float)j);
 				} else {
-					livingEntity.damage(DamageSource.method_5536(entity, entity2), (float)j);
+					livingEntity.damage(DamageSource.magic(entity, entity2), (float)j);
 				}
 			} else {
-				this.method_5572(livingEntity, i);
+				this.applyUpdateEffect(livingEntity, i);
 			}
 		} else {
 			int j = (int)(d * (double)(4 << i) + 0.5);
@@ -106,7 +106,7 @@ public class StatusEffect {
 
 	protected String method_5559() {
 		if (this.translationKey == null) {
-			this.translationKey = SystemUtil.method_646("effect", Registry.STATUS_EFFECT.method_10221(this));
+			this.translationKey = SystemUtil.createTranslationKey("effect", Registry.STATUS_EFFECT.getId(this));
 		}
 
 		return this.translationKey;
@@ -144,7 +144,7 @@ public class StatusEffect {
 		for (Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributes.entrySet()) {
 			EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get((EntityAttribute)entry.getKey());
 			if (entityAttributeInstance != null) {
-				entityAttributeInstance.method_6202((EntityAttributeModifier)entry.getValue());
+				entityAttributeInstance.removeModifier((EntityAttributeModifier)entry.getValue());
 			}
 		}
 	}
@@ -154,8 +154,8 @@ public class StatusEffect {
 			EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get((EntityAttribute)entry.getKey());
 			if (entityAttributeInstance != null) {
 				EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
-				entityAttributeInstance.method_6202(entityAttributeModifier);
-				entityAttributeInstance.method_6197(
+				entityAttributeInstance.removeModifier(entityAttributeModifier);
+				entityAttributeInstance.addModifier(
 					new EntityAttributeModifier(
 						entityAttributeModifier.getId(), this.getTranslationKey() + " " + i, this.method_5563(i, entityAttributeModifier), entityAttributeModifier.getOperation()
 					)

@@ -2,8 +2,8 @@ package net.minecraft.client.gui.menu.settings;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.OptionButtonWidget;
 import net.minecraft.client.gui.widget.SoundSliderWidget;
 import net.minecraft.client.options.GameOption;
@@ -43,24 +43,24 @@ public class AudioSettingsScreen extends Screen {
 				this.screenWidth / 2 - 75, this.screenHeight / 6 - 12 + 24 * (++i >> 1), 150, 20, GameOption.SUBTITLES, GameOption.SUBTITLES.method_18495(this.settings)
 			) {
 				@Override
-				public void method_1826() {
-					GameOption.SUBTITLES.method_18491(AudioSettingsScreen.this.client.field_1690);
-					this.setText(GameOption.SUBTITLES.method_18495(AudioSettingsScreen.this.client.field_1690));
-					AudioSettingsScreen.this.client.field_1690.write();
+				public void onPressed() {
+					GameOption.SUBTITLES.method_18491(AudioSettingsScreen.this.client.options);
+					this.setText(GameOption.SUBTITLES.method_18495(AudioSettingsScreen.this.client.options));
+					AudioSettingsScreen.this.client.options.write();
 				}
 			}
 		);
-		this.addButton(new class_4185(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, I18n.translate("gui.done")) {
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, I18n.translate("gui.done")) {
 			@Override
-			public void method_1826() {
-				AudioSettingsScreen.this.client.method_1507(AudioSettingsScreen.this.parent);
+			public void onPressed() {
+				AudioSettingsScreen.this.client.openScreen(AudioSettingsScreen.this.parent);
 			}
 		});
 	}
 
 	@Override
 	public void onClosed() {
-		this.client.field_1690.write();
+		this.client.options.write();
 	}
 
 	@Override

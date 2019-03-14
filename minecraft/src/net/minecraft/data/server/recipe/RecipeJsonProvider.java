@@ -11,12 +11,12 @@ public interface RecipeJsonProvider {
 
 	default JsonObject toJson() {
 		JsonObject jsonObject = new JsonObject();
-		jsonObject.addProperty("type", Registry.RECIPE_SERIALIZER.method_10221(this.getSerializer()).toString());
+		jsonObject.addProperty("type", Registry.RECIPE_SERIALIZER.getId(this.getSerializer()).toString());
 		this.serialize(jsonObject);
 		return jsonObject;
 	}
 
-	Identifier method_10417();
+	Identifier getRecipeId();
 
 	RecipeSerializer<?> getSerializer();
 
@@ -24,5 +24,5 @@ public interface RecipeJsonProvider {
 	JsonObject toAdvancementJson();
 
 	@Nullable
-	Identifier method_10418();
+	Identifier getAdvancementId();
 }

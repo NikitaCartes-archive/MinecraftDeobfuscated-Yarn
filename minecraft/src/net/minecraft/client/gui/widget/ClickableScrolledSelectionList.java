@@ -85,7 +85,7 @@ public class ClickableScrolledSelectionList extends AbstractListWidget {
 		for (int n = 0; n < m; n++) {
 			int o = j + n * this.entryHeight + this.field_2174;
 			int p = this.entryHeight - 4;
-			if (o > this.y2 || o + p < this.y1) {
+			if (o > this.bottom || o + p < this.y) {
 				this.method_1952(n, i, o, f);
 			}
 
@@ -98,11 +98,11 @@ public class ClickableScrolledSelectionList extends AbstractListWidget {
 	}
 
 	public int method_2089() {
-		return this.y1;
+		return this.y;
 	}
 
 	public int method_2090() {
-		return this.y2;
+		return this.bottom;
 	}
 
 	public int method_2091() {

@@ -40,38 +40,38 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class CampfireBlock extends BlockWithEntity implements Waterloggable {
-	protected static final VoxelShape field_17351 = Block.method_9541(0.0, 0.0, 0.0, 16.0, 7.0, 16.0);
-	public static final BooleanProperty field_17352 = Properties.field_12548;
-	public static final BooleanProperty field_17353 = Properties.field_17394;
-	public static final BooleanProperty field_17354 = Properties.field_12508;
-	public static final DirectionProperty field_17564 = Properties.field_12481;
+	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 7.0, 16.0);
+	public static final BooleanProperty LIT = Properties.LIT;
+	public static final BooleanProperty SIGNAL_FIRE = Properties.SIGNAL_FIRE;
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+	public static final DirectionProperty FACING = Properties.FACING_HORIZONTAL;
 
 	public CampfireBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_17352, Boolean.valueOf(true))
-				.method_11657(field_17353, Boolean.valueOf(false))
-				.method_11657(field_17354, Boolean.valueOf(false))
-				.method_11657(field_17564, Direction.NORTH)
+		this.setDefaultState(
+			this.stateFactory
+				.getDefaultState()
+				.with(LIT, Boolean.valueOf(true))
+				.with(SIGNAL_FIRE, Boolean.valueOf(false))
+				.with(WATERLOGGED, Boolean.valueOf(false))
+				.with(FACING, Direction.NORTH)
 		);
 	}
 
 	@Override
-	public boolean method_9534(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if ((Boolean)blockState.method_11654(field_17352)) {
-			BlockEntity blockEntity = world.method_8321(blockPos);
+	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		if ((Boolean)blockState.get(LIT)) {
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CampfireBlockEntity) {
 				CampfireBlockEntity campfireBlockEntity = (CampfireBlockEntity)blockEntity;
-				ItemStack itemStack = playerEntity.method_5998(hand);
+				ItemStack itemStack = playerEntity.getStackInHand(hand);
 				Optional<CampfireCookingRecipe> optional = campfireBlockEntity.getRecipeFor(itemStack);
 				if (optional.isPresent()) {
 					if (!world.isClient
 						&& campfireBlockEntity.addItem(playerEntity.abilities.creativeMode ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)optional.get()).getCookTime())
 						)
 					 {
-						playerEntity.method_7281(Stats.field_17486);
+						playerEntity.increaseStat(Stats.field_17486);
 					}
 
 					return true;
@@ -83,69 +83,68 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public void method_9548(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
-		if (!entity.isFireImmune()
-			&& (Boolean)blockState.method_11654(field_17352)
-			&& entity instanceof LivingEntity
-			&& !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
+	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+		if (!entity.isFireImmune() && (Boolean)blockState.get(LIT) && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity)entity)) {
 			entity.damage(DamageSource.IN_FIRE, 1.0F);
 		}
 
-		super.method_9548(blockState, world, blockPos, entity);
+		super.onEntityCollision(blockState, world, blockPos, entity);
 	}
 
 	@Override
-	public void method_9536(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
-			BlockEntity blockEntity = world.method_8321(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CampfireBlockEntity) {
-				ItemScatterer.method_17349(world, blockPos, ((CampfireBlockEntity)blockEntity).method_17505());
+				ItemScatterer.spawn(world, blockPos, ((CampfireBlockEntity)blockEntity).getItemsBeingCooked());
 			}
 
-			super.method_9536(blockState, world, blockPos, blockState2, bl);
+			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
 		}
 	}
 
 	@Nullable
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		IWorld iWorld = itemPlacementContext.method_8045();
-		BlockPos blockPos = itemPlacementContext.method_8037();
-		boolean bl = iWorld.method_8316(blockPos).getFluid() == Fluids.WATER;
-		return this.method_9564()
-			.method_11657(field_17354, Boolean.valueOf(bl))
-			.method_11657(field_17353, Boolean.valueOf(this.method_17456(iWorld.method_8320(blockPos.down()))))
-			.method_11657(field_17352, Boolean.valueOf(!bl))
-			.method_11657(field_17564, itemPlacementContext.method_8042());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		IWorld iWorld = itemPlacementContext.getWorld();
+		BlockPos blockPos = itemPlacementContext.getBlockPos();
+		boolean bl = iWorld.getFluidState(blockPos).getFluid() == Fluids.WATER;
+		return this.getDefaultState()
+			.with(WATERLOGGED, Boolean.valueOf(bl))
+			.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(iWorld.getBlockState(blockPos.down()))))
+			.with(LIT, Boolean.valueOf(!bl))
+			.with(FACING, itemPlacementContext.getPlayerHorizontalFacing());
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		if ((Boolean)blockState.method_11654(field_17354)) {
-			iWorld.method_8405().method_8676(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if ((Boolean)blockState.get(WATERLOGGED)) {
+			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
 		}
 
 		return direction == Direction.DOWN
-			? blockState.method_11657(field_17353, Boolean.valueOf(this.method_17456(blockState2)))
-			: super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			? blockState.with(SIGNAL_FIRE, Boolean.valueOf(this.doesBlockCauseSignalFire(blockState2)))
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
-	private boolean method_17456(BlockState blockState) {
+	private boolean doesBlockCauseSignalFire(BlockState blockState) {
 		return blockState.getBlock() == Blocks.field_10359;
 	}
 
 	@Override
-	public int method_9593(BlockState blockState) {
-		return blockState.method_11654(field_17352) ? super.method_9593(blockState) : 0;
+	public int getLuminance(BlockState blockState) {
+		return blockState.get(LIT) ? super.getLuminance(blockState) : 0;
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_17351;
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		return SHAPE;
 	}
 
 	@Override
-	public BlockRenderType method_9604(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
@@ -156,10 +155,10 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_9496(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Boolean)blockState.method_11654(field_17352)) {
+	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Boolean)blockState.get(LIT)) {
 			if (random.nextInt(10) == 0) {
-				world.method_8486(
+				world.playSound(
 					(double)((float)blockPos.getX() + 0.5F),
 					(double)((float)blockPos.getY() + 0.5F),
 					(double)((float)blockPos.getZ() + 0.5F),
@@ -173,7 +172,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 			if (random.nextInt(5) == 0) {
 				for (int i = 0; i < random.nextInt(1) + 1; i++) {
-					world.method_8406(
+					world.addParticle(
 						ParticleTypes.field_11239,
 						(double)((float)blockPos.getX() + 0.5F),
 						(double)((float)blockPos.getY() + 0.5F),
@@ -188,36 +187,36 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public boolean method_10311(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-		if (!(Boolean)blockState.method_11654(Properties.field_12508) && fluidState.getFluid() == Fluids.WATER) {
-			boolean bl = (Boolean)blockState.method_11654(field_17352);
+	public boolean tryFillWithFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
+		if (!(Boolean)blockState.get(Properties.WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
+			boolean bl = (Boolean)blockState.get(LIT);
 			if (bl) {
 				if (iWorld.isClient()) {
 					for (int i = 0; i < 20; i++) {
-						method_17455(iWorld.getWorld(), blockPos, (Boolean)blockState.method_11654(field_17353), true);
+						spawnSmokeParticle(iWorld.getWorld(), blockPos, (Boolean)blockState.get(SIGNAL_FIRE), true);
 					}
 				} else {
-					iWorld.method_8396(null, blockPos, SoundEvents.field_15222, SoundCategory.field_15245, 1.0F, 1.0F);
+					iWorld.playSound(null, blockPos, SoundEvents.field_15222, SoundCategory.field_15245, 1.0F, 1.0F);
 				}
 
-				BlockEntity blockEntity = iWorld.method_8321(blockPos);
+				BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 				if (blockEntity instanceof CampfireBlockEntity) {
 					((CampfireBlockEntity)blockEntity).spawnItemsBeingCooked();
 				}
 			}
 
-			iWorld.method_8652(blockPos, blockState.method_11657(field_17354, Boolean.valueOf(true)).method_11657(field_17352, Boolean.valueOf(false)), 3);
-			iWorld.method_8405().method_8676(blockPos, fluidState.getFluid(), fluidState.getFluid().getTickRate(iWorld));
+			iWorld.setBlockState(blockPos, blockState.with(WATERLOGGED, Boolean.valueOf(true)).with(LIT, Boolean.valueOf(false)), 3);
+			iWorld.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), fluidState.getFluid().getTickRate(iWorld));
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public static void method_17455(World world, BlockPos blockPos, boolean bl, boolean bl2) {
+	public static void spawnSmokeParticle(World world, BlockPos blockPos, boolean bl, boolean bl2) {
 		Random random = world.getRandom();
 		DefaultParticleType defaultParticleType = bl ? ParticleTypes.field_17431 : ParticleTypes.field_17430;
-		world.method_17452(
+		world.addImportantParticle(
 			defaultParticleType,
 			true,
 			(double)blockPos.getX() + 0.5 + random.nextDouble() / 3.0 * (double)(random.nextBoolean() ? 1 : -1),
@@ -228,7 +227,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 			0.0
 		);
 		if (bl2) {
-			world.method_8406(
+			world.addParticle(
 				ParticleTypes.field_11251,
 				(double)blockPos.getX() + 0.25 + random.nextDouble() / 2.0 * (double)(random.nextBoolean() ? 1 : -1),
 				(double)blockPos.getY() + 0.4,
@@ -241,27 +240,27 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	}
 
 	@Override
-	public FluidState method_9545(BlockState blockState) {
-		return blockState.method_11654(field_17354) ? Fluids.WATER.method_15729(false) : super.method_9545(blockState);
+	public FluidState getFluidState(BlockState blockState) {
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
 	}
 
 	@Override
-	public BlockState method_9598(BlockState blockState, Rotation rotation) {
-		return blockState.method_11657(field_17564, rotation.method_10503(blockState.method_11654(field_17564)));
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState method_9569(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.method_10345(blockState.method_11654(field_17564)));
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_17352, field_17353, field_17354, field_17564);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(LIT, SIGNAL_FIRE, WATERLOGGED, FACING);
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new CampfireBlockEntity();
 	}
 }

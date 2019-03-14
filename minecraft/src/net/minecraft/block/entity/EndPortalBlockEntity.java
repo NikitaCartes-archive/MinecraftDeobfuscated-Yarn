@@ -14,7 +14,7 @@ public class EndPortalBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_11400(Direction direction) {
+	public boolean shouldDrawSide(Direction direction) {
 		return direction == Direction.UP;
 	}
 }

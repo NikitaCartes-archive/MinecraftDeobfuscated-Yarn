@@ -44,7 +44,7 @@ public class ResourcePackContainer implements AutoCloseable {
 
 			ResourcePackContainer var8;
 			try {
-				PackResourceMetadata packResourceMetadata = resourcePack.method_14407(PackResourceMetadata.field_14202);
+				PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
 				if (bl && packResourceMetadata == null) {
 					LOGGER.error(
 						"Broken/missing pack.mcmeta detected, fudging it into existance. Please check that your launcher has downloaded all assets for the game correctly!"

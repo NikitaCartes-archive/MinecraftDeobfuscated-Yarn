@@ -31,10 +31,10 @@ import net.minecraft.command.arguments.BlockPredicateArgumentType;
 import net.minecraft.command.arguments.DimensionArgumentType;
 import net.minecraft.command.arguments.EntityAnchorArgumentType;
 import net.minecraft.command.arguments.EntityArgumentType;
+import net.minecraft.command.arguments.IdentifierArgumentType;
 import net.minecraft.command.arguments.NbtPathArgumentType;
 import net.minecraft.command.arguments.NumberRangeArgumentType;
 import net.minecraft.command.arguments.ObjectiveArgumentType;
-import net.minecraft.command.arguments.ResourceLocationArgumentType;
 import net.minecraft.command.arguments.RotationArgumentType;
 import net.minecraft.command.arguments.ScoreHolderArgumentType;
 import net.minecraft.command.arguments.SwizzleArgumentType;
@@ -101,7 +101,7 @@ public class ExecuteCommand {
 							List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
 							for (Entity entity : EntityArgumentType.method_9307(commandContext, "targets")) {
-								list.add(commandContext.getSource().method_9227((ServerWorld)entity.field_6002).method_9208(entity.method_5812()).method_9216(entity.method_5802()));
+								list.add(commandContext.getSource().withWorld((ServerWorld)entity.world).withPosition(entity.getPosVector()).withRotation(entity.getRotationClient()));
 							}
 
 							return list;
@@ -116,7 +116,7 @@ public class ExecuteCommand {
 					ServerCommandManager.literal("positioned")
 						.then(
 							ServerCommandManager.argument("pos", Vec3ArgumentType.create())
-								.redirect(literalCommandNode, commandContext -> commandContext.getSource().method_9208(Vec3ArgumentType.getVec3Argument(commandContext, "pos")))
+								.redirect(literalCommandNode, commandContext -> commandContext.getSource().withPosition(Vec3ArgumentType.getVec3Argument(commandContext, "pos")))
 						)
 						.then(
 							ServerCommandManager.literal("as")
@@ -124,7 +124,7 @@ public class ExecuteCommand {
 									List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
 									for (Entity entity : EntityArgumentType.method_9307(commandContext, "targets")) {
-										list.add(commandContext.getSource().method_9208(entity.method_5812()));
+										list.add(commandContext.getSource().withPosition(entity.getPosVector()));
 									}
 
 									return list;
@@ -138,7 +138,7 @@ public class ExecuteCommand {
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
-											.method_9216(RotationArgumentType.getRotationArgument(commandContext, "rot").toAbsoluteRotation(commandContext.getSource()))
+											.withRotation(RotationArgumentType.getRotationArgument(commandContext, "rot").toAbsoluteRotation(commandContext.getSource()))
 								)
 						)
 						.then(
@@ -147,7 +147,7 @@ public class ExecuteCommand {
 									List<ServerCommandSource> list = Lists.<ServerCommandSource>newArrayList();
 
 									for (Entity entity : EntityArgumentType.method_9307(commandContext, "targets")) {
-										list.add(commandContext.getSource().method_9216(entity.method_5802()));
+										list.add(commandContext.getSource().withRotation(entity.getRotationClient()));
 									}
 
 									return list;
@@ -174,7 +174,7 @@ public class ExecuteCommand {
 						)
 						.then(
 							ServerCommandManager.argument("pos", Vec3ArgumentType.create())
-								.redirect(literalCommandNode, commandContext -> commandContext.getSource().method_9221(Vec3ArgumentType.getVec3Argument(commandContext, "pos")))
+								.redirect(literalCommandNode, commandContext -> commandContext.getSource().withLookingAt(Vec3ArgumentType.getVec3Argument(commandContext, "pos")))
 						)
 				)
 				.then(
@@ -184,7 +184,7 @@ public class ExecuteCommand {
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
-											.method_9208(commandContext.getSource().method_9222().floorAlongAxes(SwizzleArgumentType.getSwizzleArgument(commandContext, "axes")))
+											.withPosition(commandContext.getSource().getPosition().floorAlongAxes(SwizzleArgumentType.getSwizzleArgument(commandContext, "axes")))
 								)
 						)
 				)
@@ -205,7 +205,7 @@ public class ExecuteCommand {
 								.redirect(
 									literalCommandNode,
 									commandContext -> commandContext.getSource()
-											.method_9227(commandContext.getSource().getMinecraftServer().method_3847(DimensionArgumentType.getDimensionArgument(commandContext, "dimension")))
+											.withWorld(commandContext.getSource().getMinecraftServer().getWorld(DimensionArgumentType.getDimensionArgument(commandContext, "dimension")))
 								)
 						)
 				)
@@ -237,7 +237,7 @@ public class ExecuteCommand {
 		literalArgumentBuilder.then(
 			ServerCommandManager.literal("bossbar")
 				.then(
-					ServerCommandManager.argument("id", ResourceLocationArgumentType.create())
+					ServerCommandManager.argument("id", IdentifierArgumentType.create())
 						.suggests(BossBarCommand.suggestionProvider)
 						.then(
 							ServerCommandManager.literal("value")
@@ -361,7 +361,7 @@ public class ExecuteCommand {
 	private static ServerCommandSource method_13290(
 		ServerCommandSource serverCommandSource, Collection<String> collection, ScoreboardObjective scoreboardObjective, boolean bl
 	) {
-		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().method_3845();
+		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
 		return serverCommandSource.mergeConsumers((commandContext, bl2, i) -> {
 			for (String string : collection) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
@@ -409,7 +409,7 @@ public class ExecuteCommand {
 									ServerCommandManager.argument("block", BlockPredicateArgumentType.create()),
 									bl,
 									commandContext -> BlockPredicateArgumentType.getPredicateArgument(commandContext, "block")
-											.test(new CachedBlockPosition(commandContext.getSource().method_9225(), BlockPosArgumentType.method_9696(commandContext, "pos"), true))
+											.test(new CachedBlockPosition(commandContext.getSource().getWorld(), BlockPosArgumentType.getValidPosArgument(commandContext, "pos"), true))
 								)
 							)
 					)
@@ -558,7 +558,7 @@ public class ExecuteCommand {
 		return bl ? commandContext -> {
 			int i = arg.test(commandContext);
 			if (i > 0) {
-				commandContext.getSource().method_9226(new TranslatableTextComponent("commands.execute.conditional.pass_count", i), false);
+				commandContext.getSource().sendFeedback(new TranslatableTextComponent("commands.execute.conditional.pass_count", i), false);
 				return i;
 			} else {
 				throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -566,7 +566,7 @@ public class ExecuteCommand {
 		} : commandContext -> {
 			int i = arg.test(commandContext);
 			if (i == 0) {
-				commandContext.getSource().method_9226(new TranslatableTextComponent("commands.execute.conditional.pass"), false);
+				commandContext.getSource().sendFeedback(new TranslatableTextComponent("commands.execute.conditional.pass"), false);
 				return 1;
 			} else {
 				throw CONDITIONAL_FAIL_COUNT_EXCEPTION.create(i);
@@ -583,7 +583,7 @@ public class ExecuteCommand {
 		ScoreboardObjective scoreboardObjective = ObjectiveArgumentType.getObjectiveArgument(commandContext, "targetObjective");
 		String string2 = ScoreHolderArgumentType.getHolderArgument(commandContext, "source");
 		ScoreboardObjective scoreboardObjective2 = ObjectiveArgumentType.getObjectiveArgument(commandContext, "sourceObjective");
-		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().method_3845();
+		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
 		if (scoreboard.playerHasObjective(string, scoreboardObjective) && scoreboard.playerHasObjective(string2, scoreboardObjective2)) {
 			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
 			ScoreboardPlayerScore scoreboardPlayerScore2 = scoreboard.getPlayerScore(string2, scoreboardObjective2);
@@ -596,7 +596,7 @@ public class ExecuteCommand {
 	private static boolean method_13313(CommandContext<ServerCommandSource> commandContext, NumberRange.Integer integer) throws CommandSyntaxException {
 		String string = ScoreHolderArgumentType.getHolderArgument(commandContext, "target");
 		ScoreboardObjective scoreboardObjective = ObjectiveArgumentType.getObjectiveArgument(commandContext, "targetObjective");
-		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().method_3845();
+		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
 		return !scoreboard.playerHasObjective(string, scoreboardObjective) ? false : integer.test(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
 	}
 
@@ -609,7 +609,7 @@ public class ExecuteCommand {
 	) {
 		return argumentBuilder.fork(commandNode, commandContext -> method_13319(commandContext, bl, arg.test(commandContext))).executes(commandContext -> {
 			if (bl == arg.test(commandContext)) {
-				commandContext.getSource().method_9226(new TranslatableTextComponent("commands.execute.conditional.pass"), false);
+				commandContext.getSource().sendFeedback(new TranslatableTextComponent("commands.execute.conditional.pass"), false);
 				return 1;
 			} else {
 				throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -627,7 +627,7 @@ public class ExecuteCommand {
 	private static int method_13306(CommandContext<ServerCommandSource> commandContext, boolean bl) throws CommandSyntaxException {
 		OptionalInt optionalInt = method_13272(commandContext, bl);
 		if (optionalInt.isPresent()) {
-			commandContext.getSource().method_9226(new TranslatableTextComponent("commands.execute.conditional.pass_count", optionalInt.getAsInt()), false);
+			commandContext.getSource().sendFeedback(new TranslatableTextComponent("commands.execute.conditional.pass_count", optionalInt.getAsInt()), false);
 			return optionalInt.getAsInt();
 		} else {
 			throw CONDITIONAL_FAIL_EXCEPTION.create();
@@ -639,24 +639,24 @@ public class ExecuteCommand {
 		if (optionalInt.isPresent()) {
 			throw CONDITIONAL_FAIL_COUNT_EXCEPTION.create(optionalInt.getAsInt());
 		} else {
-			commandContext.getSource().method_9226(new TranslatableTextComponent("commands.execute.conditional.pass"), false);
+			commandContext.getSource().sendFeedback(new TranslatableTextComponent("commands.execute.conditional.pass"), false);
 			return 1;
 		}
 	}
 
 	private static OptionalInt method_13272(CommandContext<ServerCommandSource> commandContext, boolean bl) throws CommandSyntaxException {
 		return method_13261(
-			commandContext.getSource().method_9225(),
-			BlockPosArgumentType.method_9696(commandContext, "start"),
-			BlockPosArgumentType.method_9696(commandContext, "end"),
-			BlockPosArgumentType.method_9696(commandContext, "destination"),
+			commandContext.getSource().getWorld(),
+			BlockPosArgumentType.getValidPosArgument(commandContext, "start"),
+			BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
+			BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
 			bl
 		);
 	}
 
 	private static OptionalInt method_13261(ServerWorld serverWorld, BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, boolean bl) throws CommandSyntaxException {
 		MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(blockPos, blockPos2);
-		MutableIntBoundingBox mutableIntBoundingBox2 = new MutableIntBoundingBox(blockPos3, blockPos3.method_10081(mutableIntBoundingBox.method_14659()));
+		MutableIntBoundingBox mutableIntBoundingBox2 = new MutableIntBoundingBox(blockPos3, blockPos3.add(mutableIntBoundingBox.getSize()));
 		BlockPos blockPos4 = new BlockPos(
 			mutableIntBoundingBox2.minX - mutableIntBoundingBox.minX,
 			mutableIntBoundingBox2.minY - mutableIntBoundingBox.minY,
@@ -672,25 +672,25 @@ public class ExecuteCommand {
 				for (int l = mutableIntBoundingBox.minY; l <= mutableIntBoundingBox.maxY; l++) {
 					for (int m = mutableIntBoundingBox.minX; m <= mutableIntBoundingBox.maxX; m++) {
 						BlockPos blockPos5 = new BlockPos(m, l, k);
-						BlockPos blockPos6 = blockPos5.method_10081(blockPos4);
-						BlockState blockState = serverWorld.method_8320(blockPos5);
+						BlockPos blockPos6 = blockPos5.add(blockPos4);
+						BlockState blockState = serverWorld.getBlockState(blockPos5);
 						if (!bl || blockState.getBlock() != Blocks.field_10124) {
-							if (blockState != serverWorld.method_8320(blockPos6)) {
+							if (blockState != serverWorld.getBlockState(blockPos6)) {
 								return OptionalInt.empty();
 							}
 
-							BlockEntity blockEntity = serverWorld.method_8321(blockPos5);
-							BlockEntity blockEntity2 = serverWorld.method_8321(blockPos6);
+							BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos5);
+							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos6);
 							if (blockEntity != null) {
 								if (blockEntity2 == null) {
 									return OptionalInt.empty();
 								}
 
-								CompoundTag compoundTag = blockEntity.method_11007(new CompoundTag());
+								CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
 								compoundTag.remove("x");
 								compoundTag.remove("y");
 								compoundTag.remove("z");
-								CompoundTag compoundTag2 = blockEntity2.method_11007(new CompoundTag());
+								CompoundTag compoundTag2 = blockEntity2.toTag(new CompoundTag());
 								compoundTag2.remove("x");
 								compoundTag2.remove("y");
 								compoundTag2.remove("z");

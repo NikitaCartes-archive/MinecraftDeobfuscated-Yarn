@@ -35,12 +35,12 @@ public class HoverPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d method_6851() {
+	public Vec3d getTarget() {
 		return this.field_7042;
 	}
 
 	@Override
-	public PhaseType<HoverPhase> method_6849() {
+	public PhaseType<HoverPhase> getType() {
 		return PhaseType.HOVER;
 	}
 }

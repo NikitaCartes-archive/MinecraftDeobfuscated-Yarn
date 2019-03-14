@@ -14,7 +14,7 @@ public class MoveIntoWaterGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.owner.onGround && !this.owner.field_6002.method_8316(new BlockPos(this.owner)).method_15767(FluidTags.field_15517);
+		return this.owner.onGround && !this.owner.world.getFluidState(new BlockPos(this.owner)).matches(FluidTags.field_15517);
 	}
 
 	@Override
@@ -29,14 +29,14 @@ public class MoveIntoWaterGoal extends Goal {
 			MathHelper.floor(this.owner.y),
 			MathHelper.floor(this.owner.z + 2.0)
 		)) {
-			if (this.owner.field_6002.method_8316(blockPos2).method_15767(FluidTags.field_15517)) {
+			if (this.owner.world.getFluidState(blockPos2).matches(FluidTags.field_15517)) {
 				blockPos = blockPos2;
 				break;
 			}
 		}
 
 		if (blockPos != null) {
-			this.owner.method_5962().moveTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
+			this.owner.getMoveControl().moveTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 		}
 	}
 }

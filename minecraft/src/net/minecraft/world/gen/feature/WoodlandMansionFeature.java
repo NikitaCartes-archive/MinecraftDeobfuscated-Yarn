@@ -27,8 +27,8 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 	@Override
 	protected ChunkPos getStart(ChunkGenerator<?> chunkGenerator, Random random, int i, int j, int k, int l) {
-		int m = chunkGenerator.method_12109().getMansionDistance();
-		int n = chunkGenerator.method_12109().getMansionSeparation();
+		int m = chunkGenerator.getConfig().getMansionDistance();
+		int n = chunkGenerator.getConfig().getMansionSeparation();
 		int o = i + m * k;
 		int p = j + m * l;
 		int q = o < 0 ? o - m + 1 : o;
@@ -48,7 +48,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		ChunkPos chunkPos = this.getStart(chunkGenerator, random, i, j, 0, 0);
 		if (i == chunkPos.x && j == chunkPos.z) {
 			for (Biome biome : chunkGenerator.getBiomeSource().getBiomesInArea(i * 16 + 9, j * 16 + 9, 32)) {
-				if (!chunkGenerator.method_12097(biome, Feature.field_13528)) {
+				if (!chunkGenerator.hasStructure(biome, Feature.WOODLAND_MANSION)) {
 					return false;
 				}
 			}
@@ -80,7 +80,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
 			int k = 5;
 			int l = 5;
@@ -95,10 +95,10 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 			int m = (i << 4) + 7;
 			int n = (j << 4) + 7;
-			int o = chunkGenerator.method_18028(m, n, Heightmap.Type.WORLD_SURFACE_WG);
-			int p = chunkGenerator.method_18028(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
-			int q = chunkGenerator.method_18028(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
-			int r = chunkGenerator.method_18028(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+			int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
+			int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+			int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
+			int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
 			int s = Math.min(Math.min(o, p), Math.min(q, r));
 			if (s >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, s + 1, j * 16 + 8);
@@ -117,11 +117,11 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 			for (int j = mutableIntBoundingBox.minX; j <= mutableIntBoundingBox.maxX; j++) {
 				for (int k = mutableIntBoundingBox.minZ; k <= mutableIntBoundingBox.maxZ; k++) {
 					BlockPos blockPos = new BlockPos(j, i, k);
-					if (!iWorld.method_8623(blockPos) && this.boundingBox.method_14662(blockPos)) {
+					if (!iWorld.isAir(blockPos) && this.boundingBox.contains(blockPos)) {
 						boolean bl = false;
 
 						for (StructurePiece structurePiece : this.children) {
-							if (structurePiece.getBoundingBox().method_14662(blockPos)) {
+							if (structurePiece.getBoundingBox().contains(blockPos)) {
 								bl = true;
 								break;
 							}
@@ -130,11 +130,11 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 						if (bl) {
 							for (int l = i - 1; l > 1; l--) {
 								BlockPos blockPos2 = new BlockPos(j, l, k);
-								if (!iWorld.method_8623(blockPos2) && !iWorld.method_8320(blockPos2).method_11620().isLiquid()) {
+								if (!iWorld.isAir(blockPos2) && !iWorld.getBlockState(blockPos2).getMaterial().isLiquid()) {
 									break;
 								}
 
-								iWorld.method_8652(blockPos2, Blocks.field_10445.method_9564(), 2);
+								iWorld.setBlockState(blockPos2, Blocks.field_10445.getDefaultState(), 2);
 							}
 						}
 					}

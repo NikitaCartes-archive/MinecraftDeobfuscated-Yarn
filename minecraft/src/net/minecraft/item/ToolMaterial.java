@@ -13,5 +13,5 @@ public interface ToolMaterial {
 
 	int getEnchantability();
 
-	Ingredient method_8023();
+	Ingredient getRepairIngredient();
 }

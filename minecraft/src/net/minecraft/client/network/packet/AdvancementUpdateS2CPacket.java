@@ -30,7 +30,7 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		this.toEarn = Maps.<Identifier, SimpleAdvancement.Builder>newHashMap();
 
 		for (SimpleAdvancement simpleAdvancement : collection) {
-			this.toEarn.put(simpleAdvancement.method_688(), simpleAdvancement.createTask());
+			this.toEarn.put(simpleAdvancement.getId(), simpleAdvancement.createTask());
 		}
 
 		this.toRemove = set;
@@ -38,7 +38,7 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	public void method_11925(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11130(this);
+		clientPlayPacketListener.onAdvancements(this);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		int i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			Identifier identifier = packetByteBuf.method_10810();
+			Identifier identifier = packetByteBuf.readIdentifier();
 			SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.deserialize(packetByteBuf);
 			this.toEarn.put(identifier, builder);
 		}
@@ -58,14 +58,14 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			Identifier identifier = packetByteBuf.method_10810();
+			Identifier identifier = packetByteBuf.readIdentifier();
 			this.toRemove.add(identifier);
 		}
 
 		i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			Identifier identifier = packetByteBuf.method_10810();
+			Identifier identifier = packetByteBuf.readIdentifier();
 			this.toSetProgress.put(identifier, AdvancementProgress.fromPacket(packetByteBuf));
 		}
 	}
@@ -78,20 +78,20 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		for (Entry<Identifier, SimpleAdvancement.Builder> entry : this.toEarn.entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
 			SimpleAdvancement.Builder builder = (SimpleAdvancement.Builder)entry.getValue();
-			packetByteBuf.method_10812(identifier);
+			packetByteBuf.writeIdentifier(identifier);
 			builder.serialize(packetByteBuf);
 		}
 
 		packetByteBuf.writeVarInt(this.toRemove.size());
 
 		for (Identifier identifier2 : this.toRemove) {
-			packetByteBuf.method_10812(identifier2);
+			packetByteBuf.writeIdentifier(identifier2);
 		}
 
 		packetByteBuf.writeVarInt(this.toSetProgress.size());
 
 		for (Entry<Identifier, AdvancementProgress> entry : this.toSetProgress.entrySet()) {
-			packetByteBuf.method_10812((Identifier)entry.getKey());
+			packetByteBuf.writeIdentifier((Identifier)entry.getKey());
 			((AdvancementProgress)entry.getValue()).toPacket(packetByteBuf);
 		}
 	}

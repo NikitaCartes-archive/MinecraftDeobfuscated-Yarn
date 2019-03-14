@@ -15,12 +15,12 @@ import net.minecraft.util.NumberRange;
 import net.minecraft.util.math.BlockPos;
 
 public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Conditions> {
-	private static final Identifier field_9768 = new Identifier("used_ender_eye");
+	private static final Identifier id = new Identifier("used_ender_eye");
 	private final Map<PlayerAdvancementTracker, UsedEnderEyeCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, UsedEnderEyeCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
-		return field_9768;
+		return id;
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		handler.method_9159(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 	) {
 		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(playerAdvancementTracker);
 		if (handler != null) {
-			handler.method_9161(conditionsContainer);
+			handler.removeCondition(conditionsContainer);
 			if (handler.isEmpty()) {
 				this.handlers.remove(playerAdvancementTracker);
 			}
@@ -59,7 +59,7 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 		return new UsedEnderEyeCriterion.Conditions(float_);
 	}
 
-	public void method_9157(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
 		UsedEnderEyeCriterion.Handler handler = (UsedEnderEyeCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
 			double d = serverPlayerEntity.x - (double)blockPos.getX();
@@ -72,7 +72,7 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 		private final NumberRange.Float distance;
 
 		public Conditions(NumberRange.Float float_) {
-			super(UsedEnderEyeCriterion.field_9768);
+			super(UsedEnderEyeCriterion.id);
 			this.distance = float_;
 		}
 
@@ -82,22 +82,22 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 	}
 
 	static class Handler {
-		private final PlayerAdvancementTracker field_9771;
+		private final PlayerAdvancementTracker manager;
 		private final Set<Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions>>newHashSet();
 
 		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9771 = playerAdvancementTracker;
+			this.manager = playerAdvancementTracker;
 		}
 
 		public boolean isEmpty() {
 			return this.conditions.isEmpty();
 		}
 
-		public void method_9159(Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer) {
+		public void addCondition(Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer) {
 			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_9161(Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer) {
+		public void removeCondition(Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer) {
 			this.conditions.remove(conditionsContainer);
 		}
 
@@ -105,7 +105,7 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 			List<Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions>> list = null;
 
 			for (Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainer : this.conditions) {
-				if (conditionsContainer.method_797().matches(d)) {
+				if (conditionsContainer.getConditions().matches(d)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions>>newArrayList();
 					}
@@ -116,7 +116,7 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<UsedEnderEyeCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_9771);
+					conditionsContainerx.apply(this.manager);
 				}
 			}
 		}

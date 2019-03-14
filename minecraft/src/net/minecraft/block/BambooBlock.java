@@ -23,27 +23,21 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BambooBlock extends Block implements Fertilizable {
-	protected static final VoxelShape field_9912 = Block.method_9541(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
-	protected static final VoxelShape field_9915 = Block.method_9541(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
-	protected static final VoxelShape field_9913 = Block.method_9541(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
-	public static final IntegerProperty field_9914 = Properties.field_12521;
-	public static final EnumProperty<BambooLeaves> field_9917 = Properties.field_12516;
-	public static final IntegerProperty field_9916 = Properties.field_12549;
+	protected static final VoxelShape SMALL_LEAVES_SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 16.0, 11.0);
+	protected static final VoxelShape LARGE_LEAVES_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 16.0, 13.0);
+	protected static final VoxelShape NO_LEAVES_SHAPE = Block.createCuboidShape(6.5, 0.0, 6.5, 9.5, 16.0, 9.5);
+	public static final IntegerProperty AGE = Properties.AGE_1;
+	public static final EnumProperty<BambooLeaves> LEAVES = Properties.BAMBOO_LEAVES;
+	public static final IntegerProperty STAGE = Properties.SAPLING_STAGE;
 
 	public BambooBlock(Block.Settings settings) {
 		super(settings);
-		this.method_9590(
-			this.field_10647
-				.method_11664()
-				.method_11657(field_9914, Integer.valueOf(0))
-				.method_11657(field_9917, BambooLeaves.field_12469)
-				.method_11657(field_9916, Integer.valueOf(0))
-		);
+		this.setDefaultState(this.stateFactory.getDefaultState().with(AGE, Integer.valueOf(0)).with(LEAVES, BambooLeaves.field_12469).with(STAGE, Integer.valueOf(0)));
 	}
 
 	@Override
-	protected void method_9515(StateFactory.Builder<Block, BlockState> builder) {
-		builder.method_11667(field_9914, field_9917, field_9916);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(AGE, LEAVES, STAGE);
 	}
 
 	@Override
@@ -52,40 +46,40 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean method_9579(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+	public boolean isTranslucent(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return true;
 	}
 
 	@Override
-	public VoxelShape method_9530(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		VoxelShape voxelShape = blockState.method_11654(field_9917) == BambooLeaves.field_12468 ? field_9915 : field_9912;
-		Vec3d vec3d = blockState.method_11599(blockView, blockPos);
+	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		VoxelShape voxelShape = blockState.get(LEAVES) == BambooLeaves.field_12468 ? LARGE_LEAVES_SHAPE : SMALL_LEAVES_SHAPE;
+		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
 		return voxelShape.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Override
-	public VoxelShape method_9549(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		Vec3d vec3d = blockState.method_11599(blockView, blockPos);
-		return field_9913.offset(vec3d.x, vec3d.y, vec3d.z);
+	public VoxelShape getCollisionShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+		Vec3d vec3d = blockState.getOffsetPos(blockView, blockPos);
+		return NO_LEAVES_SHAPE.offset(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Nullable
 	@Override
-	public BlockState method_9605(ItemPlacementContext itemPlacementContext) {
-		FluidState fluidState = itemPlacementContext.method_8045().method_8316(itemPlacementContext.method_8037());
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		if (!fluidState.isEmpty()) {
 			return null;
 		} else {
-			BlockState blockState = itemPlacementContext.method_8045().method_8320(itemPlacementContext.method_8037().down());
-			if (blockState.method_11602(BlockTags.field_15497)) {
+			BlockState blockState = itemPlacementContext.getWorld().getBlockState(itemPlacementContext.getBlockPos().down());
+			if (blockState.matches(BlockTags.field_15497)) {
 				Block block = blockState.getBlock();
 				if (block == Blocks.field_10108) {
-					return this.method_9564().method_11657(field_9914, Integer.valueOf(0));
+					return this.getDefaultState().with(AGE, Integer.valueOf(0));
 				} else if (block == Blocks.field_10211) {
-					int i = blockState.method_11654(field_9914) > 0 ? 1 : 0;
-					return this.method_9564().method_11657(field_9914, Integer.valueOf(i));
+					int i = blockState.get(AGE) > 0 ? 1 : 0;
+					return this.getDefaultState().with(AGE, Integer.valueOf(i));
 				} else {
-					return Blocks.field_10108.method_9564();
+					return Blocks.field_10108.getDefaultState();
 				}
 			} else {
 				return null;
@@ -94,9 +88,9 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public void method_9588(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Integer)blockState.method_11654(field_9916) == 0) {
-			if (random.nextInt(3) == 0 && world.method_8623(blockPos.up()) && world.method_8624(blockPos.up(), 0) >= 9) {
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if ((Integer)blockState.get(STAGE) == 0) {
+			if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
 				int i = this.method_9386(world, blockPos) + 1;
 				if (i < 16) {
 					this.method_9385(blockState, world, blockPos, random, i);
@@ -106,39 +100,39 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public boolean method_9558(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.method_8320(blockPos.down()).method_11602(BlockTags.field_15497);
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return viewableWorld.getBlockState(blockPos.down()).matches(BlockTags.field_15497);
 	}
 
 	@Override
-	public BlockState method_9559(BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2) {
-		if (!blockState.method_11591(iWorld, blockPos)) {
-			return Blocks.field_10124.method_9564();
+	public BlockState getStateForNeighborUpdate(
+		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
+	) {
+		if (!blockState.canPlaceAt(iWorld, blockPos)) {
+			return Blocks.field_10124.getDefaultState();
 		} else {
-			if (direction == Direction.UP
-				&& blockState2.getBlock() == Blocks.field_10211
-				&& (Integer)blockState2.method_11654(field_9914) > (Integer)blockState.method_11654(field_9914)) {
-				iWorld.method_8652(blockPos, blockState.method_11572(field_9914), 2);
+			if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10211 && (Integer)blockState2.get(AGE) > (Integer)blockState.get(AGE)) {
+				iWorld.setBlockState(blockPos, blockState.method_11572(AGE), 2);
 			}
 
-			return super.method_9559(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
 	}
 
 	@Override
-	public boolean method_9651(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
+	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
 		int i = this.method_9387(blockView, blockPos);
 		int j = this.method_9386(blockView, blockPos);
-		return i + j + 1 < 16 && (Integer)blockView.method_8320(blockPos.up(i)).method_11654(field_9916) != 1;
+		return i + j + 1 < 16 && (Integer)blockView.getBlockState(blockPos.up(i)).get(STAGE) != 1;
 	}
 
 	@Override
-	public boolean method_9650(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public boolean canGrow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		return true;
 	}
 
 	@Override
-	public void method_9652(World world, Random random, BlockPos blockPos, BlockState blockState) {
+	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
 		int i = this.method_9387(world, blockPos);
 		int j = this.method_9386(world, blockPos);
 		int k = i + j + 1;
@@ -146,8 +140,8 @@ public class BambooBlock extends Block implements Fertilizable {
 
 		for (int m = 0; m < l; m++) {
 			BlockPos blockPos2 = blockPos.up(i);
-			BlockState blockState2 = world.method_8320(blockPos2);
-			if (k >= 16 || (Integer)blockState2.method_11654(field_9916) == 1 || !world.method_8623(blockPos2.up())) {
+			BlockState blockState2 = world.getBlockState(blockPos2);
+			if (k >= 16 || (Integer)blockState2.get(STAGE) == 1 || !world.isAir(blockPos2.up())) {
 				return;
 			}
 
@@ -158,8 +152,8 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	@Override
-	public float method_9594(BlockState blockState, PlayerEntity playerEntity, BlockView blockView, BlockPos blockPos) {
-		return playerEntity.method_6047().getItem() instanceof SwordItem ? 1.0F : super.method_9594(blockState, playerEntity, blockView, blockPos);
+	public float calcBlockBreakingDelta(BlockState blockState, PlayerEntity playerEntity, BlockView blockView, BlockPos blockPos) {
+		return playerEntity.getMainHandStack().getItem() instanceof SwordItem ? 1.0F : super.calcBlockBreakingDelta(blockState, playerEntity, blockView, blockPos);
 	}
 
 	@Override
@@ -168,35 +162,31 @@ public class BambooBlock extends Block implements Fertilizable {
 	}
 
 	protected void method_9385(BlockState blockState, World world, BlockPos blockPos, Random random, int i) {
-		BlockState blockState2 = world.method_8320(blockPos.down());
+		BlockState blockState2 = world.getBlockState(blockPos.down());
 		BlockPos blockPos2 = blockPos.down(2);
-		BlockState blockState3 = world.method_8320(blockPos2);
+		BlockState blockState3 = world.getBlockState(blockPos2);
 		BambooLeaves bambooLeaves = BambooLeaves.field_12469;
 		if (i >= 1) {
-			if (blockState2.getBlock() != Blocks.field_10211 || blockState2.method_11654(field_9917) == BambooLeaves.field_12469) {
+			if (blockState2.getBlock() != Blocks.field_10211 || blockState2.get(LEAVES) == BambooLeaves.field_12469) {
 				bambooLeaves = BambooLeaves.field_12466;
-			} else if (blockState2.getBlock() == Blocks.field_10211 && blockState2.method_11654(field_9917) != BambooLeaves.field_12469) {
+			} else if (blockState2.getBlock() == Blocks.field_10211 && blockState2.get(LEAVES) != BambooLeaves.field_12469) {
 				bambooLeaves = BambooLeaves.field_12468;
 				if (blockState3.getBlock() == Blocks.field_10211) {
-					world.method_8652(blockPos.down(), blockState2.method_11657(field_9917, BambooLeaves.field_12466), 3);
-					world.method_8652(blockPos2, blockState3.method_11657(field_9917, BambooLeaves.field_12469), 3);
+					world.setBlockState(blockPos.down(), blockState2.with(LEAVES, BambooLeaves.field_12466), 3);
+					world.setBlockState(blockPos2, blockState3.with(LEAVES, BambooLeaves.field_12469), 3);
 				}
 			}
 		}
 
-		int j = blockState.method_11654(field_9914) != 1 && blockState3.getBlock() != Blocks.field_10211 ? 0 : 1;
+		int j = blockState.get(AGE) != 1 && blockState3.getBlock() != Blocks.field_10211 ? 0 : 1;
 		int k = (i < 11 || !(random.nextFloat() < 0.25F)) && i != 15 ? 0 : 1;
-		world.method_8652(
-			blockPos.up(),
-			this.method_9564().method_11657(field_9914, Integer.valueOf(j)).method_11657(field_9917, bambooLeaves).method_11657(field_9916, Integer.valueOf(k)),
-			3
-		);
+		world.setBlockState(blockPos.up(), this.getDefaultState().with(AGE, Integer.valueOf(j)).with(LEAVES, bambooLeaves).with(STAGE, Integer.valueOf(k)), 3);
 	}
 
 	protected int method_9387(BlockView blockView, BlockPos blockPos) {
 		int i = 0;
 
-		while (i < 16 && blockView.method_8320(blockPos.up(i + 1)).getBlock() == Blocks.field_10211) {
+		while (i < 16 && blockView.getBlockState(blockPos.up(i + 1)).getBlock() == Blocks.field_10211) {
 			i++;
 		}
 
@@ -206,7 +196,7 @@ public class BambooBlock extends Block implements Fertilizable {
 	protected int method_9386(BlockView blockView, BlockPos blockPos) {
 		int i = 0;
 
-		while (i < 16 && blockView.method_8320(blockPos.down(i + 1)).getBlock() == Blocks.field_10211) {
+		while (i < 16 && blockView.getBlockState(blockPos.down(i + 1)).getBlock() == Blocks.field_10211) {
 			i++;
 		}
 

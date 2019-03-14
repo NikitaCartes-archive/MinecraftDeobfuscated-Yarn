@@ -18,7 +18,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_301;
+import net.minecraft.client.util.UntrackMemoryUtil;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.stb.STBIWriteCallback;
 import org.lwjgl.stb.STBImage;
@@ -451,7 +451,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public void method_4302() {
-		class_301.untrack(this.pointer);
+		UntrackMemoryUtil.untrack(this.pointer);
 	}
 
 	public static NativeImage fromBase64(String string) throws IOException {

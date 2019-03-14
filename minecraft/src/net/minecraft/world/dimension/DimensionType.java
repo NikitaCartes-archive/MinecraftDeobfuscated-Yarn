@@ -5,12 +5,12 @@ import com.mojang.datafixers.types.DynamicOps;
 import java.io.File;
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
-import net.minecraft.class_4213;
+import net.minecraft.util.DynamicSerializable;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-public class DimensionType implements class_4213 {
+public class DimensionType implements DynamicSerializable {
 	public static final DimensionType field_13072 = register("overworld", new DimensionType(1, "", "", OverworldDimension::new, true));
 	public static final DimensionType field_13076 = register("the_nether", new DimensionType(0, "_nether", "DIM-1", TheNetherDimension::new, false));
 	public static final DimensionType field_13078 = register("the_end", new DimensionType(2, "_end", "DIM1", TheEndDimension::new, false));
@@ -33,7 +33,7 @@ public class DimensionType implements class_4213 {
 	}
 
 	public static DimensionType method_19298(Dynamic<?> dynamic) {
-		return Registry.DIMENSION.method_10223(new Identifier(dynamic.asString("")));
+		return Registry.DIMENSION.get(new Identifier(dynamic.asString("")));
 	}
 
 	public static Iterable<DimensionType> getAll() {
@@ -57,7 +57,7 @@ public class DimensionType implements class_4213 {
 	}
 
 	public String toString() {
-		return method_12485(this).toString();
+		return getId(this).toString();
 	}
 
 	@Nullable
@@ -66,13 +66,13 @@ public class DimensionType implements class_4213 {
 	}
 
 	@Nullable
-	public static DimensionType method_12483(Identifier identifier) {
-		return Registry.DIMENSION.method_10223(identifier);
+	public static DimensionType byId(Identifier identifier) {
+		return Registry.DIMENSION.get(identifier);
 	}
 
 	@Nullable
-	public static Identifier method_12485(DimensionType dimensionType) {
-		return Registry.DIMENSION.method_10221(dimensionType);
+	public static Identifier getId(DimensionType dimensionType) {
+		return Registry.DIMENSION.getId(dimensionType);
 	}
 
 	public boolean hasSkyLight() {
@@ -80,7 +80,7 @@ public class DimensionType implements class_4213 {
 	}
 
 	@Override
-	public <T> T method_19508(DynamicOps<T> dynamicOps) {
-		return dynamicOps.createString(Registry.DIMENSION.method_10221(this).toString());
+	public <T> T serialize(DynamicOps<T> dynamicOps) {
+		return dynamicOps.createString(Registry.DIMENSION.getId(this).toString());
 	}
 }

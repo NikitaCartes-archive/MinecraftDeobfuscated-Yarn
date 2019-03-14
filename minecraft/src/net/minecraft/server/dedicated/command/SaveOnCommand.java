@@ -26,7 +26,7 @@ public class SaveOnCommand {
 				if (!bl) {
 					throw field_13704.create();
 				} else {
-					serverCommandSource.method_9226(new TranslatableTextComponent("commands.save.enabled"), true);
+					serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.save.enabled"), true);
 					return 1;
 				}
 			})

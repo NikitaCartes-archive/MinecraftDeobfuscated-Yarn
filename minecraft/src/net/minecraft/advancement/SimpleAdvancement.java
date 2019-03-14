@@ -30,9 +30,9 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class SimpleAdvancement {
 	private final SimpleAdvancement parent;
-	private final AdvancementDisplay field_1146;
-	private final AdvancementRewards field_1145;
-	private final Identifier field_1144;
+	private final AdvancementDisplay display;
+	private final AdvancementRewards rewards;
+	private final Identifier id;
 	private final Map<String, AdvancementCriterion> criteria;
 	private final String[][] requirements;
 	private final Set<SimpleAdvancement> children = Sets.<SimpleAdvancement>newLinkedHashSet();
@@ -46,11 +46,11 @@ public class SimpleAdvancement {
 		Map<String, AdvancementCriterion> map,
 		String[][] strings
 	) {
-		this.field_1144 = identifier;
-		this.field_1146 = advancementDisplay;
+		this.id = identifier;
+		this.display = advancementDisplay;
 		this.criteria = ImmutableMap.copyOf(map);
 		this.parent = simpleAdvancement;
-		this.field_1145 = advancementRewards;
+		this.rewards = advancementRewards;
 		this.requirements = strings;
 		if (simpleAdvancement != null) {
 			simpleAdvancement.addChild(this);
@@ -60,7 +60,7 @@ public class SimpleAdvancement {
 			this.textComponent = new StringTextComponent(identifier.toString());
 		} else {
 			TextComponent textComponent = advancementDisplay.getTitle();
-			TextFormat textFormat = advancementDisplay.method_815().getTitleFormat();
+			TextFormat textFormat = advancementDisplay.getFrame().getTitleFormat();
 			TextComponent textComponent2 = textComponent.copy().applyFormat(textFormat).append("\n").append(advancementDisplay.getDescription());
 			TextComponent textComponent3 = textComponent.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, textComponent2)));
 			this.textComponent = new StringTextComponent("[").append(textComponent3).append("]").applyFormat(textFormat);
@@ -68,9 +68,7 @@ public class SimpleAdvancement {
 	}
 
 	public SimpleAdvancement.Builder createTask() {
-		return new SimpleAdvancement.Builder(
-			this.parent == null ? null : this.parent.method_688(), this.field_1146, this.field_1145, this.criteria, this.requirements
-		);
+		return new SimpleAdvancement.Builder(this.parent == null ? null : this.parent.getId(), this.display, this.rewards, this.criteria, this.requirements);
 	}
 
 	@Nullable
@@ -79,23 +77,23 @@ public class SimpleAdvancement {
 	}
 
 	@Nullable
-	public AdvancementDisplay method_686() {
-		return this.field_1146;
+	public AdvancementDisplay getDisplay() {
+		return this.display;
 	}
 
-	public AdvancementRewards method_691() {
-		return this.field_1145;
+	public AdvancementRewards getRewards() {
+		return this.rewards;
 	}
 
 	public String toString() {
 		return "SimpleAdvancement{id="
-			+ this.method_688()
+			+ this.getId()
 			+ ", parent="
-			+ (this.parent == null ? "null" : this.parent.method_688())
+			+ (this.parent == null ? "null" : this.parent.getId())
 			+ ", display="
-			+ this.field_1146
+			+ this.display
 			+ ", rewards="
-			+ this.field_1145
+			+ this.rewards
 			+ ", criteria="
 			+ this.criteria
 			+ ", requirements="
@@ -120,8 +118,8 @@ public class SimpleAdvancement {
 		this.children.add(simpleAdvancement);
 	}
 
-	public Identifier method_688() {
-		return this.field_1144;
+	public Identifier getId() {
+		return this.id;
 	}
 
 	public boolean equals(Object object) {
@@ -131,12 +129,12 @@ public class SimpleAdvancement {
 			return false;
 		} else {
 			SimpleAdvancement simpleAdvancement = (SimpleAdvancement)object;
-			return this.field_1144.equals(simpleAdvancement.field_1144);
+			return this.id.equals(simpleAdvancement.id);
 		}
 	}
 
 	public int hashCode() {
-		return this.field_1144.hashCode();
+		return this.id.hashCode();
 	}
 
 	public String[][] getRequirements() {
@@ -148,10 +146,10 @@ public class SimpleAdvancement {
 	}
 
 	public static class Builder {
-		private Identifier field_1152;
+		private Identifier parentId;
 		private SimpleAdvancement parentObj;
-		private AdvancementDisplay field_1147;
-		private AdvancementRewards field_1153 = AdvancementRewards.NONE;
+		private AdvancementDisplay display;
+		private AdvancementRewards rewards = AdvancementRewards.NONE;
 		private Map<String, AdvancementCriterion> criteria = Maps.<String, AdvancementCriterion>newLinkedHashMap();
 		private String[][] requirements;
 		private CriteriaMerger merger = CriteriaMerger.AND;
@@ -163,9 +161,9 @@ public class SimpleAdvancement {
 			Map<String, AdvancementCriterion> map,
 			String[][] strings
 		) {
-			this.field_1152 = identifier;
-			this.field_1147 = advancementDisplay;
-			this.field_1153 = advancementRewards;
+			this.parentId = identifier;
+			this.display = advancementDisplay;
+			this.rewards = advancementRewards;
 			this.criteria = map;
 			this.requirements = strings;
 		}
@@ -182,12 +180,12 @@ public class SimpleAdvancement {
 			return this;
 		}
 
-		public SimpleAdvancement.Builder method_708(Identifier identifier) {
-			this.field_1152 = identifier;
+		public SimpleAdvancement.Builder parent(Identifier identifier) {
+			this.parentId = identifier;
 			return this;
 		}
 
-		public SimpleAdvancement.Builder method_697(
+		public SimpleAdvancement.Builder display(
 			ItemProvider itemProvider,
 			TextComponent textComponent,
 			TextComponent textComponent2,
@@ -197,30 +195,28 @@ public class SimpleAdvancement {
 			boolean bl2,
 			boolean bl3
 		) {
-			return this.method_693(
-				new AdvancementDisplay(new ItemStack(itemProvider.getItem()), textComponent, textComponent2, identifier, advancementFrame, bl, bl2, bl3)
-			);
+			return this.display(new AdvancementDisplay(new ItemStack(itemProvider.getItem()), textComponent, textComponent2, identifier, advancementFrame, bl, bl2, bl3));
 		}
 
-		public SimpleAdvancement.Builder method_693(AdvancementDisplay advancementDisplay) {
-			this.field_1147 = advancementDisplay;
+		public SimpleAdvancement.Builder display(AdvancementDisplay advancementDisplay) {
+			this.display = advancementDisplay;
 			return this;
 		}
 
-		public SimpleAdvancement.Builder method_703(AdvancementRewards.Builder builder) {
-			return this.method_706(builder.build());
+		public SimpleAdvancement.Builder rewards(AdvancementRewards.Builder builder) {
+			return this.rewards(builder.build());
 		}
 
-		public SimpleAdvancement.Builder method_706(AdvancementRewards advancementRewards) {
-			this.field_1153 = advancementRewards;
+		public SimpleAdvancement.Builder rewards(AdvancementRewards advancementRewards) {
+			this.rewards = advancementRewards;
 			return this;
 		}
 
-		public SimpleAdvancement.Builder method_709(String string, CriterionConditions criterionConditions) {
-			return this.method_705(string, new AdvancementCriterion(criterionConditions));
+		public SimpleAdvancement.Builder criterion(String string, CriterionConditions criterionConditions) {
+			return this.criterion(string, new AdvancementCriterion(criterionConditions));
 		}
 
-		public SimpleAdvancement.Builder method_705(String string, AdvancementCriterion advancementCriterion) {
+		public SimpleAdvancement.Builder criterion(String string, AdvancementCriterion advancementCriterion) {
 			if (this.criteria.containsKey(string)) {
 				throw new IllegalArgumentException("Duplicate criterion " + string);
 			} else {
@@ -235,18 +231,18 @@ public class SimpleAdvancement {
 		}
 
 		public boolean findParent(Function<Identifier, SimpleAdvancement> function) {
-			if (this.field_1152 == null) {
+			if (this.parentId == null) {
 				return true;
 			} else {
 				if (this.parentObj == null) {
-					this.parentObj = (SimpleAdvancement)function.apply(this.field_1152);
+					this.parentObj = (SimpleAdvancement)function.apply(this.parentId);
 				}
 
 				return this.parentObj != null;
 			}
 		}
 
-		public SimpleAdvancement method_695(Identifier identifier) {
+		public SimpleAdvancement build(Identifier identifier) {
 			if (!this.findParent(identifierx -> null)) {
 				throw new IllegalStateException("Tried to build incomplete advancement!");
 			} else {
@@ -254,12 +250,12 @@ public class SimpleAdvancement {
 					this.requirements = this.merger.createRequirements(this.criteria.keySet());
 				}
 
-				return new SimpleAdvancement(identifier, this.parentObj, this.field_1147, this.field_1153, this.criteria, this.requirements);
+				return new SimpleAdvancement(identifier, this.parentObj, this.display, this.rewards, this.criteria, this.requirements);
 			}
 		}
 
 		public SimpleAdvancement build(Consumer<SimpleAdvancement> consumer, String string) {
-			SimpleAdvancement simpleAdvancement = this.method_695(new Identifier(string));
+			SimpleAdvancement simpleAdvancement = this.build(new Identifier(string));
 			consumer.accept(simpleAdvancement);
 			return simpleAdvancement;
 		}
@@ -271,16 +267,16 @@ public class SimpleAdvancement {
 
 			JsonObject jsonObject = new JsonObject();
 			if (this.parentObj != null) {
-				jsonObject.addProperty("parent", this.parentObj.method_688().toString());
-			} else if (this.field_1152 != null) {
-				jsonObject.addProperty("parent", this.field_1152.toString());
+				jsonObject.addProperty("parent", this.parentObj.getId().toString());
+			} else if (this.parentId != null) {
+				jsonObject.addProperty("parent", this.parentId.toString());
 			}
 
-			if (this.field_1147 != null) {
-				jsonObject.add("display", this.field_1147.toJson());
+			if (this.display != null) {
+				jsonObject.add("display", this.display.toJson());
 			}
 
-			jsonObject.add("rewards", this.field_1153.toJson());
+			jsonObject.add("rewards", this.rewards.toJson());
 			JsonObject jsonObject2 = new JsonObject();
 
 			for (Entry<String, AdvancementCriterion> entry : this.criteria.entrySet()) {
@@ -305,18 +301,18 @@ public class SimpleAdvancement {
 		}
 
 		public void serialize(PacketByteBuf packetByteBuf) {
-			if (this.field_1152 == null) {
+			if (this.parentId == null) {
 				packetByteBuf.writeBoolean(false);
 			} else {
 				packetByteBuf.writeBoolean(true);
-				packetByteBuf.method_10812(this.field_1152);
+				packetByteBuf.writeIdentifier(this.parentId);
 			}
 
-			if (this.field_1147 == null) {
+			if (this.display == null) {
 				packetByteBuf.writeBoolean(false);
 			} else {
 				packetByteBuf.writeBoolean(true);
-				this.field_1147.toPacket(packetByteBuf);
+				this.display.toPacket(packetByteBuf);
 			}
 
 			AdvancementCriterion.serialize(this.criteria, packetByteBuf);
@@ -333,11 +329,11 @@ public class SimpleAdvancement {
 
 		public String toString() {
 			return "Task Advancement{parentId="
-				+ this.field_1152
+				+ this.parentId
 				+ ", display="
-				+ this.field_1147
+				+ this.display
 				+ ", rewards="
-				+ this.field_1153
+				+ this.rewards
 				+ ", criteria="
 				+ this.criteria
 				+ ", requirements="
@@ -412,7 +408,7 @@ public class SimpleAdvancement {
 		}
 
 		public static SimpleAdvancement.Builder deserialize(PacketByteBuf packetByteBuf) {
-			Identifier identifier = packetByteBuf.readBoolean() ? packetByteBuf.method_10810() : null;
+			Identifier identifier = packetByteBuf.readBoolean() ? packetByteBuf.readIdentifier() : null;
 			AdvancementDisplay advancementDisplay = packetByteBuf.readBoolean() ? AdvancementDisplay.fromPacket(packetByteBuf) : null;
 			Map<String, AdvancementCriterion> map = AdvancementCriterion.fromPacket(packetByteBuf);
 			String[][] strings = new String[packetByteBuf.readVarInt()][];

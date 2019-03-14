@@ -35,7 +35,7 @@ public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> 
 	}
 
 	public void method_12594(ClientLoginPacketListener clientLoginPacketListener) {
-		clientLoginPacketListener.method_12588(this);
+		clientLoginPacketListener.onLoginSuccess(this);
 	}
 
 	@Environment(EnvType.CLIENT)

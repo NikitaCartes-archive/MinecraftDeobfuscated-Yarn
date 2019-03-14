@@ -29,7 +29,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	private double field_7619;
 	private double field_7618;
 	private double field_7617;
-	private int field_7620;
+	private int useCount;
 	private boolean field_7621;
 
 	public EnderEyeEntity(EntityType<? extends EnderEyeEntity> entityType, World world) {
@@ -38,35 +38,35 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 	public EnderEyeEntity(World world, double d, double e, double f) {
 		this(EntityType.EYE_OF_ENDER, world);
-		this.field_7620 = 0;
+		this.useCount = 0;
 		this.setPosition(d, e, f);
 	}
 
 	public void method_16933(ItemStack itemStack) {
 		if (itemStack.getItem() != Items.field_8449 || itemStack.hasTag()) {
-			this.method_5841().set(field_17080, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
+			this.getDataTracker().set(field_17080, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
 		}
 	}
 
 	private ItemStack method_16935() {
-		return this.method_5841().get(field_17080);
+		return this.getDataTracker().get(field_17080);
 	}
 
 	@Override
-	public ItemStack method_7495() {
+	public ItemStack getItem() {
 		ItemStack itemStack = this.method_16935();
 		return itemStack.isEmpty() ? new ItemStack(Items.field_8449) : itemStack;
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.method_5841().startTracking(field_17080, ItemStack.EMPTY);
+		this.getDataTracker().startTracking(field_17080, ItemStack.EMPTY);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean shouldRenderAtDistance(double d) {
-		double e = this.method_5829().averageDimension() * 4.0;
+		double e = this.getBoundingBox().averageDimension() * 4.0;
 		if (Double.isNaN(e)) {
 			e = 4.0;
 		}
@@ -92,7 +92,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 			this.field_7617 = e;
 		}
 
-		this.field_7620 = 0;
+		this.useCount = 0;
 		this.field_7621 = this.random.nextInt(5) > 0;
 	}
 
@@ -115,11 +115,11 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 		this.prevRenderY = this.y;
 		this.prevRenderZ = this.z;
 		super.update();
-		Vec3d vec3d = this.method_18798();
+		Vec3d vec3d = this.getVelocity();
 		this.x = this.x + vec3d.x;
 		this.y = this.y + vec3d.y;
 		this.z = this.z + vec3d.z;
-		float f = MathHelper.sqrt(method_17996(vec3d));
+		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 		this.yaw = (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI);
 		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 
@@ -141,7 +141,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 		this.pitch = MathHelper.lerp(0.2F, this.prevPitch, this.pitch);
 		this.yaw = MathHelper.lerp(0.2F, this.prevYaw, this.yaw);
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			double d = this.field_7619 - this.x;
 			double e = this.field_7617 - this.z;
 			float g = (float)Math.sqrt(d * d + e * e);
@@ -155,18 +155,17 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 
 			int k = this.y < this.field_7618 ? 1 : -1;
 			vec3d = new Vec3d(Math.cos((double)h) * i, j + ((double)k - j) * 0.015F, Math.sin((double)h) * i);
-			this.method_18799(vec3d);
+			this.setVelocity(vec3d);
 		}
 
 		float l = 0.25F;
 		if (this.isInsideWater()) {
 			for (int m = 0; m < 4; m++) {
-				this.field_6002
-					.method_8406(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
+				this.world.addParticle(ParticleTypes.field_11247, this.x - vec3d.x * 0.25, this.y - vec3d.y * 0.25, this.z - vec3d.z * 0.25, vec3d.x, vec3d.y, vec3d.z);
 			}
 		} else {
-			this.field_6002
-				.method_8406(
+			this.world
+				.addParticle(
 					ParticleTypes.field_11214,
 					this.x - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3,
 					this.y - vec3d.y * 0.25 - 0.5,
@@ -177,32 +176,32 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 				);
 		}
 
-		if (!this.field_6002.isClient) {
+		if (!this.world.isClient) {
 			this.setPosition(this.x, this.y, this.z);
-			this.field_7620++;
-			if (this.field_7620 > 80 && !this.field_6002.isClient) {
-				this.method_5783(SoundEvents.field_15210, 1.0F, 1.0F);
+			this.useCount++;
+			if (this.useCount > 80 && !this.world.isClient) {
+				this.playSound(SoundEvents.field_15210, 1.0F, 1.0F);
 				this.invalidate();
 				if (this.field_7621) {
-					this.field_6002.spawnEntity(new ItemEntity(this.field_6002, this.x, this.y, this.z, this.method_7495()));
+					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.getItem()));
 				} else {
-					this.field_6002.method_8535(2003, new BlockPos(this), 0);
+					this.world.playEvent(2003, new BlockPos(this), 0);
 				}
 			}
 		}
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		ItemStack itemStack = this.method_16935();
 		if (!itemStack.isEmpty()) {
-			compoundTag.method_10566("Item", itemStack.method_7953(new CompoundTag()));
+			compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		ItemStack itemStack = ItemStack.method_7915(compoundTag.getCompound("Item"));
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
 		this.method_16933(itemStack);
 	}
 
@@ -223,7 +222,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public Packet<?> method_18002() {
+	public Packet<?> createSpawnPacket() {
 		return new EntitySpawnS2CPacket(this);
 	}
 }

@@ -14,76 +14,76 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.gen.Heightmap;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
-	private final T field_16597;
+	private final T owner;
 
 	public MoveToRaidCenterGoal(T raiderEntity) {
-		this.field_16597 = raiderEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+		this.owner = raiderEntity;
+		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.field_16597.getTarget() == null && !this.field_16597.hasPassengers() && this.field_16597.hasActiveRaid();
+		return this.owner.getTarget() == null && !this.owner.hasPassengers() && this.owner.hasActiveRaid();
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return this.field_16597.field_6002 instanceof ServerWorld && !((ServerWorld)this.field_16597.field_6002).method_19500(new BlockPos(this.field_16597));
+		return this.owner.world instanceof ServerWorld && !((ServerWorld)this.owner.world).method_19500(new BlockPos(this.owner));
 	}
 
 	@Override
 	public void tick() {
-		if (this.field_16597.hasActiveRaid()) {
-			Raid raid = this.field_16597.getRaid();
-			if (this.field_16597.isPatrolLeader()) {
-				this.field_16597.method_16216(raid.method_16495());
+		if (this.owner.hasActiveRaid()) {
+			Raid raid = this.owner.getRaid();
+			if (this.owner.isPatrolLeader()) {
+				this.owner.setRaidCenter(raid.getCenter());
 			} else {
-				RaiderEntity raiderEntity = raid.method_16496(this.field_16597.getWave());
+				RaiderEntity raiderEntity = raid.getLeader(this.owner.getWave());
 				if (raiderEntity != null && raiderEntity.hasPatrolTarget()) {
-					this.field_16597.method_16216(raiderEntity.method_16215());
+					this.owner.setRaidCenter(raiderEntity.getPatrolTarget());
 				}
 			}
 
-			this.method_16465(raid);
+			this.includeFreeRaiders(raid);
 		}
 
-		if (!this.field_16597.isNavigating() && this.field_16597.hasPatrolTarget()) {
-			Vec3d vec3d = new Vec3d(this.field_16597.method_16215());
-			Vec3d vec3d2 = new Vec3d(this.field_16597.x, this.field_16597.y, this.field_16597.z);
+		if (!this.owner.isNavigating() && this.owner.hasPatrolTarget()) {
+			Vec3d vec3d = new Vec3d(this.owner.getPatrolTarget());
+			Vec3d vec3d2 = new Vec3d(this.owner.x, this.owner.y, this.owner.z);
 			Vec3d vec3d3 = vec3d2.subtract(vec3d);
 			vec3d = vec3d3.multiply(0.4).add(vec3d);
 			Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
 			BlockPos blockPos = new BlockPos(vec3d4);
-			blockPos = this.field_16597.field_6002.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
-			if (!this.field_16597.method_5942().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
+			blockPos = this.owner.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
+			if (!this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
 				this.moveToAlternativePosition();
 			}
 		}
 	}
 
-	private void method_16465(Raid raid) {
+	private void includeFreeRaiders(Raid raid) {
 		if (raid.isActive()) {
 			Set<RaiderEntity> set = Sets.<RaiderEntity>newHashSet();
-			List<RaiderEntity> list = this.field_16597
-				.field_6002
-				.method_8390(
+			List<RaiderEntity> list = this.owner
+				.world
+				.getEntities(
 					RaiderEntity.class,
-					this.field_16597.method_5829().expand(16.0),
+					this.owner.getBoundingBox().expand(16.0),
 					raiderEntityx -> !raiderEntityx.hasActiveRaid() && RaidManager.isValidRaiderFor(raiderEntityx, raid)
 				);
 			set.addAll(list);
 
 			for (RaiderEntity raiderEntity : set) {
-				raid.method_16516(raid.getGroupsSpawned(), raiderEntity, null, true);
+				raid.addRaider(raid.getGroupsSpawned(), raiderEntity, null, true);
 			}
 		}
 	}
 
 	private void moveToAlternativePosition() {
-		Random random = this.field_16597.getRand();
-		BlockPos blockPos = this.field_16597
-			.field_6002
-			.method_8598(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.field_16597).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
-		this.field_16597.method_5942().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
+		Random random = this.owner.getRand();
+		BlockPos blockPos = this.owner
+			.world
+			.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(this.owner).add(-8 + random.nextInt(16), 0, -8 + random.nextInt(16)));
+		this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0);
 	}
 }

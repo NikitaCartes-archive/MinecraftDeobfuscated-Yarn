@@ -67,7 +67,7 @@ public class EntityPotionEffectS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public void method_11948(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11084(this);
+		clientPlayPacketListener.onEntityPotionEffect(this);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -12,11 +12,11 @@ import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
 public class FoliageColormapResourceSupplier extends SupplyingResourceReloadListener<int[]> {
-	private static final Identifier field_5303 = new Identifier("textures/colormap/foliage.png");
+	private static final Identifier FOLIAGE_COLORMAP_LOC = new Identifier("textures/colormap/foliage.png");
 
 	protected int[] method_18660(ResourceManager resourceManager, Profiler profiler) {
 		try {
-			return RawTextureDataLoader.method_16049(resourceManager, field_5303);
+			return RawTextureDataLoader.loadRawTextureData(resourceManager, FOLIAGE_COLORMAP_LOC);
 		} catch (IOException var4) {
 			throw new IllegalStateException("Failed to load foliage color texture", var4);
 		}

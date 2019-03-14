@@ -54,7 +54,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 
 			String string = stringReader.getString().substring(i, stringReader.getCursor());
 			return serverCommandSource -> {
-				GameProfile gameProfile = serverCommandSource.getMinecraftServer().method_3793().findByName(string);
+				GameProfile gameProfile = serverCommandSource.getMinecraftServer().getUserCache().findByName(string);
 				if (gameProfile == null) {
 					throw UNKNOWN_PLAYER_EXCEPTION.create();
 				} else {

@@ -3,15 +3,15 @@ package net.minecraft.util.math.noise;
 import java.util.Random;
 
 public class OctaveSimplexNoiseSampler implements NoiseSampler {
-	private final SimplexNoiseSampler[] field_15770;
+	private final SimplexNoiseSampler[] octaveSamplers;
 	private final int octaveCount;
 
 	public OctaveSimplexNoiseSampler(Random random, int i) {
 		this.octaveCount = i;
-		this.field_15770 = new SimplexNoiseSampler[i];
+		this.octaveSamplers = new SimplexNoiseSampler[i];
 
 		for (int j = 0; j < i; j++) {
-			this.field_15770[j] = new SimplexNoiseSampler(random);
+			this.octaveSamplers[j] = new SimplexNoiseSampler(random);
 		}
 	}
 
@@ -24,7 +24,8 @@ public class OctaveSimplexNoiseSampler implements NoiseSampler {
 		double g = 1.0;
 
 		for (int i = 0; i < this.octaveCount; i++) {
-			f += this.field_15770[i].method_15433(d * g + (bl ? this.field_15770[i].field_15763 : 0.0), e * g + (bl ? this.field_15770[i].field_15762 : 0.0)) / g;
+			f += this.octaveSamplers[i].method_15433(d * g + (bl ? this.octaveSamplers[i].field_15763 : 0.0), e * g + (bl ? this.octaveSamplers[i].field_15762 : 0.0))
+				/ g;
 			g /= 2.0;
 		}
 

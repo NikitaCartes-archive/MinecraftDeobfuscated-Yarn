@@ -44,7 +44,7 @@ public class BasicBakedModel implements BakedModel {
 	}
 
 	@Override
-	public List<BakedQuad> method_4707(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
+	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
 		return direction == null ? this.quads : (List)this.faceQuads.get(direction);
 	}
 
@@ -89,7 +89,7 @@ public class BasicBakedModel implements BakedModel {
 		private final ModelTransformation transformation;
 
 		public Builder(JsonUnbakedModel jsonUnbakedModel, ModelItemPropertyOverrideList modelItemPropertyOverrideList) {
-			this(jsonUnbakedModel.useAmbientOcclusion(), jsonUnbakedModel.hasDepthInGui(), jsonUnbakedModel.method_3443(), modelItemPropertyOverrideList);
+			this(jsonUnbakedModel.useAmbientOcclusion(), jsonUnbakedModel.hasDepthInGui(), jsonUnbakedModel.getTransformations(), modelItemPropertyOverrideList);
 		}
 
 		public Builder(BlockState blockState, BakedModel bakedModel, Sprite sprite, Random random, long l) {
@@ -99,14 +99,14 @@ public class BasicBakedModel implements BakedModel {
 			for (Direction direction : Direction.values()) {
 				random.setSeed(l);
 
-				for (BakedQuad bakedQuad : bakedModel.method_4707(blockState, direction, random)) {
-					this.method_4745(direction, new RetexturedBakedQuad(bakedQuad, sprite));
+				for (BakedQuad bakedQuad : bakedModel.getQuads(blockState, direction, random)) {
+					this.addQuad(direction, new RetexturedBakedQuad(bakedQuad, sprite));
 				}
 			}
 
 			random.setSeed(l);
 
-			for (BakedQuad bakedQuad2 : bakedModel.method_4707(blockState, null, random)) {
+			for (BakedQuad bakedQuad2 : bakedModel.getQuads(blockState, null, random)) {
 				this.addQuad(new RetexturedBakedQuad(bakedQuad2, sprite));
 			}
 		}
@@ -122,7 +122,7 @@ public class BasicBakedModel implements BakedModel {
 			this.transformation = modelTransformation;
 		}
 
-		public BasicBakedModel.Builder method_4745(Direction direction, BakedQuad bakedQuad) {
+		public BasicBakedModel.Builder addQuad(Direction direction, BakedQuad bakedQuad) {
 			((List)this.faceQuads.get(direction)).add(bakedQuad);
 			return this;
 		}

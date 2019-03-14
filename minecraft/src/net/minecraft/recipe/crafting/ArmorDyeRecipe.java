@@ -23,7 +23,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		List<ItemStack> list = Lists.<ItemStack>newArrayList();
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = craftingInventory.method_5438(i);
+			ItemStack itemStack2 = craftingInventory.getInvStack(i);
 			if (!itemStack2.isEmpty()) {
 				if (itemStack2.getItem() instanceof DyeableItem) {
 					if (!itemStack.isEmpty()) {
@@ -49,7 +49,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 		ItemStack itemStack = ItemStack.EMPTY;
 
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
-			ItemStack itemStack2 = craftingInventory.method_5438(i);
+			ItemStack itemStack2 = craftingInventory.getInvStack(i);
 			if (!itemStack2.isEmpty()) {
 				Item item = itemStack2.getItem();
 				if (item instanceof DyeableItem) {
@@ -78,7 +78,7 @@ public class ArmorDyeRecipe extends SpecialCraftingRecipe {
 	}
 
 	@Override
-	public RecipeSerializer<?> method_8119() {
-		return RecipeSerializer.field_9028;
+	public RecipeSerializer<?> getSerializer() {
+		return RecipeSerializer.ARMOR_DYE;
 	}
 }

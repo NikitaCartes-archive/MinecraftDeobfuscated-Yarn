@@ -23,7 +23,7 @@ public class LootFunctions {
 	public static final BiFunction<ItemStack, LootContext, ItemStack> NOOP = (itemStack, lootContext) -> itemStack;
 
 	public static <T extends LootFunction> void register(LootFunction.Factory<? extends T> factory) {
-		Identifier identifier = factory.method_518();
+		Identifier identifier = factory.getId();
 		Class<T> class_ = (Class<T>)factory.getFunctionClass();
 		if (byId.containsKey(identifier)) {
 			throw new IllegalArgumentException("Can't re-register item function name " + identifier);
@@ -35,7 +35,7 @@ public class LootFunctions {
 		}
 	}
 
-	public static LootFunction.Factory<?> method_593(Identifier identifier) {
+	public static LootFunction.Factory<?> get(Identifier identifier) {
 		LootFunction.Factory<?> factory = (LootFunction.Factory<?>)byId.get(identifier);
 		if (factory == null) {
 			throw new IllegalArgumentException("Unknown loot item function '" + identifier + "'");
@@ -104,7 +104,7 @@ public class LootFunctions {
 
 			LootFunction.Factory<?> factory;
 			try {
-				factory = LootFunctions.method_593(identifier);
+				factory = LootFunctions.get(identifier);
 			} catch (IllegalArgumentException var8) {
 				throw new JsonSyntaxException("Unknown function '" + identifier + "'");
 			}
@@ -115,7 +115,7 @@ public class LootFunctions {
 		public JsonElement method_597(LootFunction lootFunction, Type type, JsonSerializationContext jsonSerializationContext) {
 			LootFunction.Factory<LootFunction> factory = LootFunctions.getFactory(lootFunction);
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("function", factory.method_518().toString());
+			jsonObject.addProperty("function", factory.getId().toString());
 			factory.toJson(jsonObject, lootFunction, jsonSerializationContext);
 			return jsonObject;
 		}

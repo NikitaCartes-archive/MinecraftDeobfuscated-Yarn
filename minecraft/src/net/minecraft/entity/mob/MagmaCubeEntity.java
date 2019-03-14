@@ -30,23 +30,23 @@ public class MagmaCubeEntity extends SlimeEntity {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_5996(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
 	}
 
 	@Override
-	public boolean method_5979(IWorld iWorld, SpawnType spawnType) {
+	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		return iWorld.getDifficulty() != Difficulty.PEACEFUL;
 	}
 
 	@Override
 	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this) && !viewableWorld.method_8599(this.method_5829());
+		return viewableWorld.method_8606(this) && !viewableWorld.isInFluid(this.getBoundingBox());
 	}
 
 	@Override
 	protected void method_7161(int i, boolean bl) {
 		super.method_7161(i, bl);
-		this.method_5996(EntityAttributes.ARMOR).setBaseValue((double)(i * 3));
+		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue((double)(i * 3));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -61,13 +61,13 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected ParticleParameters method_7162() {
+	protected ParticleParameters getParticles() {
 		return ParticleTypes.field_11240;
 	}
 
 	@Override
-	protected Identifier method_5991() {
-		return this.method_7157() ? LootTables.field_844 : this.method_5864().method_16351();
+	protected Identifier getLootTableId() {
+		return this.isSmall() ? LootTables.EMPTY : this.getType().getLootTableId();
 	}
 
 	@Override
@@ -82,12 +82,12 @@ public class MagmaCubeEntity extends SlimeEntity {
 
 	@Override
 	protected void method_7156() {
-		this.field_7389 *= 0.9F;
+		this.sizeX *= 0.9F;
 	}
 
 	@Override
 	protected void jump() {
-		Vec3d vec3d = this.method_18798();
+		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x, (double)(0.42F + (float)this.getSize() * 0.1F), vec3d.z);
 		this.velocityDirty = true;
 	}
@@ -95,7 +95,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	@Override
 	protected void method_6010(Tag<Fluid> tag) {
 		if (tag == FluidTags.field_15518) {
-			Vec3d vec3d = this.method_18798();
+			Vec3d vec3d = this.getVelocity();
 			this.setVelocity(vec3d.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3d.z);
 			this.velocityDirty = true;
 		} else {
@@ -118,22 +118,22 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
-		return this.method_7157() ? SoundEvents.field_15005 : SoundEvents.field_14747;
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
+		return this.isSmall() ? SoundEvents.field_15005 : SoundEvents.field_14747;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
-		return this.method_7157() ? SoundEvents.field_14889 : SoundEvents.field_14662;
+	protected SoundEvent getDeathSound() {
+		return this.isSmall() ? SoundEvents.field_14889 : SoundEvents.field_14662;
 	}
 
 	@Override
-	protected SoundEvent method_7160() {
-		return this.method_7157() ? SoundEvents.field_14749 : SoundEvents.field_14949;
+	protected SoundEvent getSquishSound() {
+		return this.isSmall() ? SoundEvents.field_14749 : SoundEvents.field_14949;
 	}
 
 	@Override
-	protected SoundEvent method_7153() {
+	protected SoundEvent getJumpSound() {
 		return SoundEvents.field_14847;
 	}
 }

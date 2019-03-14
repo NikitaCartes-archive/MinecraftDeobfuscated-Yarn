@@ -1,6 +1,6 @@
 package net.minecraft.entity;
 
-import net.minecraft.entity.sortme.Projectile;
+import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.item.ItemStack;
 
 public interface CrossbowUser {
@@ -8,5 +8,5 @@ public interface CrossbowUser {
 
 	void method_18811(LivingEntity livingEntity, ItemStack itemStack, Projectile projectile, float f);
 
-	LivingEntity method_5968();
+	LivingEntity getTarget();
 }

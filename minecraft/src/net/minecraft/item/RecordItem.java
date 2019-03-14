@@ -23,29 +23,29 @@ import net.minecraft.world.World;
 public class RecordItem extends Item {
 	private static final Map<SoundEvent, RecordItem> SOUND_ITEM_MAP = Maps.<SoundEvent, RecordItem>newHashMap();
 	private final int field_8902;
-	private final SoundEvent field_8900;
+	private final SoundEvent sound;
 
 	protected RecordItem(int i, SoundEvent soundEvent, Item.Settings settings) {
 		super(settings);
 		this.field_8902 = i;
-		this.field_8900 = soundEvent;
-		SOUND_ITEM_MAP.put(this.field_8900, this);
+		this.sound = soundEvent;
+		SOUND_ITEM_MAP.put(this.sound, this);
 	}
 
 	@Override
-	public ActionResult method_7884(ItemUsageContext itemUsageContext) {
-		World world = itemUsageContext.method_8045();
-		BlockPos blockPos = itemUsageContext.method_8037();
-		BlockState blockState = world.method_8320(blockPos);
-		if (blockState.getBlock() == Blocks.field_10223 && !(Boolean)blockState.method_11654(JukeboxBlock.field_11180)) {
+	public ActionResult useOnBlock(ItemUsageContext itemUsageContext) {
+		World world = itemUsageContext.getWorld();
+		BlockPos blockPos = itemUsageContext.getBlockPos();
+		BlockState blockState = world.getBlockState(blockPos);
+		if (blockState.getBlock() == Blocks.field_10223 && !(Boolean)blockState.get(JukeboxBlock.HAS_RECORD)) {
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			if (!world.isClient) {
-				((JukeboxBlock)Blocks.field_10223).method_10276(world, blockPos, blockState, itemStack);
-				world.method_8444(null, 1010, blockPos, Item.getRawIdByItem(this));
+				((JukeboxBlock)Blocks.field_10223).setRecord(world, blockPos, blockState, itemStack);
+				world.playEvent(null, 1010, blockPos, Item.getRawIdByItem(this));
 				itemStack.subtractAmount(1);
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				if (playerEntity != null) {
-					playerEntity.method_7281(Stats.field_15375);
+					playerEntity.increaseStat(Stats.field_15375);
 				}
 			}
 
@@ -61,23 +61,23 @@ public class RecordItem extends Item {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_7851(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
-		list.add(this.method_8011().applyFormat(TextFormat.field_1080));
+	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
+		list.add(this.getDescription().applyFormat(TextFormat.field_1080));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent method_8011() {
+	public TextComponent getDescription() {
 		return new TranslatableTextComponent(this.getTranslationKey() + ".desc");
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static RecordItem method_8012(SoundEvent soundEvent) {
+	public static RecordItem bySound(SoundEvent soundEvent) {
 		return (RecordItem)SOUND_ITEM_MAP.get(soundEvent);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SoundEvent method_8009() {
-		return this.field_8900;
+	public SoundEvent getSound() {
+		return this.sound;
 	}
 }

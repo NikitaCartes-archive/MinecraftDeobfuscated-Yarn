@@ -7,39 +7,39 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 
 public class EnderChestInventory extends BasicInventory {
-	private EnderChestBlockEntity field_7864;
+	private EnderChestBlockEntity currentBlockEntity;
 
 	public EnderChestInventory() {
 		super(27);
 	}
 
-	public void method_7661(EnderChestBlockEntity enderChestBlockEntity) {
-		this.field_7864 = enderChestBlockEntity;
+	public void setCurrentBlockEntity(EnderChestBlockEntity enderChestBlockEntity) {
+		this.currentBlockEntity = enderChestBlockEntity;
 	}
 
-	public void method_7659(ListTag listTag) {
+	public void readTags(ListTag listTag) {
 		for (int i = 0; i < this.getInvSize(); i++) {
-			this.method_5447(i, ItemStack.EMPTY);
+			this.setInvStack(i, ItemStack.EMPTY);
 		}
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
 			int j = compoundTag.getByte("Slot") & 255;
 			if (j >= 0 && j < this.getInvSize()) {
-				this.method_5447(j, ItemStack.method_7915(compoundTag));
+				this.setInvStack(j, ItemStack.fromTag(compoundTag));
 			}
 		}
 	}
 
-	public ListTag method_7660() {
+	public ListTag getTags() {
 		ListTag listTag = new ListTag();
 
 		for (int i = 0; i < this.getInvSize(); i++) {
-			ItemStack itemStack = this.method_5438(i);
+			ItemStack itemStack = this.getInvStack(i);
 			if (!itemStack.isEmpty()) {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putByte("Slot", (byte)i);
-				itemStack.method_7953(compoundTag);
+				itemStack.toTag(compoundTag);
 				listTag.add(compoundTag);
 			}
 		}
@@ -48,26 +48,26 @@ public class EnderChestInventory extends BasicInventory {
 	}
 
 	@Override
-	public boolean method_5443(PlayerEntity playerEntity) {
-		return this.field_7864 != null && !this.field_7864.canPlayerUse(playerEntity) ? false : super.method_5443(playerEntity);
+	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
+		return this.currentBlockEntity != null && !this.currentBlockEntity.canPlayerUse(playerEntity) ? false : super.canPlayerUseInv(playerEntity);
 	}
 
 	@Override
-	public void method_5435(PlayerEntity playerEntity) {
-		if (this.field_7864 != null) {
-			this.field_7864.onOpen();
+	public void onInvOpen(PlayerEntity playerEntity) {
+		if (this.currentBlockEntity != null) {
+			this.currentBlockEntity.onOpen();
 		}
 
-		super.method_5435(playerEntity);
+		super.onInvOpen(playerEntity);
 	}
 
 	@Override
-	public void method_5432(PlayerEntity playerEntity) {
-		if (this.field_7864 != null) {
-			this.field_7864.onClose();
+	public void onInvClose(PlayerEntity playerEntity) {
+		if (this.currentBlockEntity != null) {
+			this.currentBlockEntity.onClose();
 		}
 
-		super.method_5432(playerEntity);
-		this.field_7864 = null;
+		super.onInvClose(playerEntity);
+		this.currentBlockEntity = null;
 	}
 }

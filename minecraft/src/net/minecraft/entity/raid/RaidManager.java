@@ -16,13 +16,13 @@ import net.minecraft.world.dimension.Dimension;
 
 public class RaidManager extends PersistentState {
 	private final Map<Integer, Raid> raids = Maps.<Integer, Raid>newHashMap();
-	private final ServerWorld field_16641;
+	private final ServerWorld world;
 	private int nextAvailableId;
 	private int currentTime;
 
 	public RaidManager(ServerWorld serverWorld) {
-		super(method_16533(serverWorld.field_9247));
-		this.field_16641 = serverWorld;
+		super(nameFor(serverWorld.dimension));
+		this.world = serverWorld;
 		this.nextAvailableId = 1;
 		this.markDirty();
 	}
@@ -51,30 +51,30 @@ public class RaidManager extends PersistentState {
 	}
 
 	public static boolean isValidRaiderFor(RaiderEntity raiderEntity, Raid raid) {
-		return raiderEntity != null && raid != null && raid.method_16831() != null
+		return raiderEntity != null && raid != null && raid.getWorld() != null
 			? raiderEntity.isValid()
 				&& raiderEntity.getDespawnCounter() <= 2400
-				&& raiderEntity.field_6002.method_8597().method_12460() == raid.method_16831().method_8597().method_12460()
+				&& raiderEntity.world.getDimension().getType() == raid.getWorld().getDimension().getType()
 			: false;
 	}
 
-	public static boolean method_16537(LivingEntity livingEntity, BlockPos blockPos, int i) {
+	public static boolean isLivingAroundVillage(LivingEntity livingEntity, BlockPos blockPos, int i) {
 		return blockPos.squaredDistanceTo(new BlockPos(livingEntity.x, livingEntity.y, livingEntity.z)) < (double)(i * i + 24);
 	}
 
 	@Nullable
-	public Raid method_16540(ServerPlayerEntity serverPlayerEntity) {
-		Raid raid = this.method_16532(serverPlayerEntity.getServerWorld(), new BlockPos(serverPlayerEntity));
+	public Raid startRaid(ServerPlayerEntity serverPlayerEntity) {
+		Raid raid = this.getOrCreateRaid(serverPlayerEntity.getServerWorld(), new BlockPos(serverPlayerEntity));
 		if (!raid.hasStarted() && !serverPlayerEntity.isSpectator()) {
 			if (!this.raids.containsKey(raid.getRaidId())) {
 				this.raids.put(raid.getRaidId(), raid);
 			}
 
 			raid.start(serverPlayerEntity);
-			serverPlayerEntity.field_13987.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
+			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
 		} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
 			raid.start(serverPlayerEntity);
-			serverPlayerEntity.field_13987.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
+			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
 		}
 
 		this.markDirty();
@@ -82,42 +82,42 @@ public class RaidManager extends PersistentState {
 	}
 
 	@Nullable
-	public Raid method_16532(ServerWorld serverWorld, BlockPos blockPos) {
-		Raid raid = serverWorld.method_19502(blockPos);
+	public Raid getOrCreateRaid(ServerWorld serverWorld, BlockPos blockPos) {
+		Raid raid = serverWorld.getRaidAt(blockPos);
 		return raid != null ? raid : new Raid(this.nextId(), serverWorld, blockPos);
 	}
 
 	@Override
-	public void method_77(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag compoundTag) {
 		this.nextAvailableId = compoundTag.getInt("NextAvailableID");
 		this.currentTime = compoundTag.getInt("Tick");
-		ListTag listTag = compoundTag.method_10554("Raids", 10);
+		ListTag listTag = compoundTag.getList("Raids", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag2 = listTag.getCompoundTag(i);
-			Raid raid = new Raid(this.field_16641, compoundTag2);
+			Raid raid = new Raid(this.world, compoundTag2);
 			this.raids.put(raid.getRaidId(), raid);
 		}
 	}
 
 	@Override
-	public CompoundTag method_75(CompoundTag compoundTag) {
+	public CompoundTag toTag(CompoundTag compoundTag) {
 		compoundTag.putInt("NextAvailableID", this.nextAvailableId);
 		compoundTag.putInt("Tick", this.currentTime);
 		ListTag listTag = new ListTag();
 
 		for (Raid raid : this.raids.values()) {
 			CompoundTag compoundTag2 = new CompoundTag();
-			raid.method_16502(compoundTag2);
+			raid.toTag(compoundTag2);
 			listTag.add(compoundTag2);
 		}
 
-		compoundTag.method_10566("Raids", listTag);
+		compoundTag.put("Raids", listTag);
 		return compoundTag;
 	}
 
-	public static String method_16533(Dimension dimension) {
-		return "raids" + dimension.method_12460().getSuffix();
+	public static String nameFor(Dimension dimension) {
+		return "raids" + dimension.getType().getSuffix();
 	}
 
 	private int nextId() {
@@ -125,12 +125,12 @@ public class RaidManager extends PersistentState {
 	}
 
 	@Nullable
-	public Raid method_19209(BlockPos blockPos) {
+	public Raid getRaidAt(BlockPos blockPos) {
 		Raid raid = null;
 		double d = 2.147483647E9;
 
 		for (Raid raid2 : this.raids.values()) {
-			double e = raid2.method_16495().squaredDistanceTo(blockPos);
+			double e = raid2.getCenter().squaredDistanceTo(blockPos);
 			if (raid2.isOnGoing() && e < d) {
 				raid = raid2;
 				d = e;

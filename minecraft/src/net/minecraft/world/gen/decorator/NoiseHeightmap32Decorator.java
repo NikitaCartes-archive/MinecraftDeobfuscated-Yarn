@@ -25,12 +25,12 @@ public class NoiseHeightmap32Decorator extends Decorator<NoiseHeightmapDecorator
 		NoiseHeightmapDecoratorConfig noiseHeightmapDecoratorConfig,
 		BlockPos blockPos
 	) {
-		double d = Biome.field_9324.sample((double)blockPos.getX() / 200.0, (double)blockPos.getZ() / 200.0);
+		double d = Biome.FOLIAGE_NOISE.sample((double)blockPos.getX() / 200.0, (double)blockPos.getZ() / 200.0);
 		int i = d < noiseHeightmapDecoratorConfig.noiseLevel ? noiseHeightmapDecoratorConfig.belowNoise : noiseHeightmapDecoratorConfig.aboveNoise;
 		return IntStream.range(0, i).mapToObj(ix -> {
 			int j = random.nextInt(16);
 			int k = random.nextInt(16);
-			int l = iWorld.method_8598(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k)).getY() + 32;
+			int l = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(j, 0, k)).getY() + 32;
 			if (l <= 0) {
 				return null;
 			} else {

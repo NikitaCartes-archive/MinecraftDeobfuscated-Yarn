@@ -18,21 +18,21 @@ import net.minecraft.util.registry.Registry;
 public class RecipeFinder {
 	public final Int2IntMap idToAmountMap = new Int2IntOpenHashMap();
 
-	public void method_7404(ItemStack itemStack) {
+	public void addNormalItem(ItemStack itemStack) {
 		if (!itemStack.isDamaged() && !itemStack.hasEnchantments() && !itemStack.hasDisplayName()) {
-			this.method_7400(itemStack);
+			this.addItem(itemStack);
 		}
 	}
 
-	public void method_7400(ItemStack itemStack) {
+	public void addItem(ItemStack itemStack) {
 		if (!itemStack.isEmpty()) {
-			int i = method_7408(itemStack);
+			int i = getItemId(itemStack);
 			int j = itemStack.getAmount();
 			this.addItem(i, j);
 		}
 	}
 
-	public static int method_7408(ItemStack itemStack) {
+	public static int getItemId(ItemStack itemStack) {
 		return Registry.ITEM.getRawId(itemStack.getItem());
 	}
 
@@ -54,23 +54,23 @@ public class RecipeFinder {
 		this.idToAmountMap.put(i, this.idToAmountMap.get(i) + j);
 	}
 
-	public boolean method_7402(Recipe<?> recipe, @Nullable IntList intList) {
-		return this.method_7406(recipe, intList, 1);
+	public boolean findRecipe(Recipe<?> recipe, @Nullable IntList intList) {
+		return this.findRecipe(recipe, intList, 1);
 	}
 
-	public boolean method_7406(Recipe<?> recipe, @Nullable IntList intList, int i) {
+	public boolean findRecipe(Recipe<?> recipe, @Nullable IntList intList, int i) {
 		return new RecipeFinder.MatchableRecipe(recipe).match(i, intList);
 	}
 
-	public int method_7407(Recipe<?> recipe, @Nullable IntList intList) {
-		return this.method_7403(recipe, Integer.MAX_VALUE, intList);
+	public int countRecipeCrafts(Recipe<?> recipe, @Nullable IntList intList) {
+		return this.countRecipeCrafts(recipe, Integer.MAX_VALUE, intList);
 	}
 
-	public int method_7403(Recipe<?> recipe, int i, @Nullable IntList intList) {
+	public int countRecipeCrafts(Recipe<?> recipe, int i, @Nullable IntList intList) {
 		return new RecipeFinder.MatchableRecipe(recipe).countCrafts(i, intList);
 	}
 
-	public static ItemStack method_7405(int i) {
+	public static ItemStack getStackFromId(int i) {
 		return i == 0 ? ItemStack.EMPTY : new ItemStack(Item.byRawId(i));
 	}
 
@@ -89,7 +89,7 @@ public class RecipeFinder {
 
 		public MatchableRecipe(Recipe<?> recipe) {
 			this.field_7555 = recipe;
-			this.field_7552.addAll(recipe.method_8117());
+			this.field_7552.addAll(recipe.getPreviewInputs());
 			this.field_7552.removeIf(Ingredient::isEmpty);
 			this.field_7556 = this.field_7552.size();
 			this.field_7551 = this.method_7422();
@@ -133,7 +133,7 @@ public class RecipeFinder {
 
 				this.field_7558.clear(0, this.field_7556 + this.field_7553 + this.field_7556);
 				int m = 0;
-				List<Ingredient> list = this.field_7555.method_8117();
+				List<Ingredient> list = this.field_7555.getPreviewInputs();
 
 				for (int n = 0; n < list.size(); n++) {
 					if (bl2 && ((Ingredient)list.get(n)).isEmpty()) {

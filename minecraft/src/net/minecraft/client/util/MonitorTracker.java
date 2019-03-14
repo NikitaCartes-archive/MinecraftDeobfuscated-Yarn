@@ -38,7 +38,7 @@ public class MonitorTracker {
 		return (Monitor)this.pointerToMonitorMap.get(l);
 	}
 
-	public Monitor method_1681(Window window) {
+	public Monitor getMonitor(Window window) {
 		long l = GLFW.glfwGetWindowMonitor(window.getHandle());
 		if (l != 0L) {
 			return this.getMonitor(l);
@@ -52,9 +52,9 @@ public class MonitorTracker {
 
 			for (Monitor monitor2 : this.pointerToMonitorMap.values()) {
 				int o = monitor2.getViewportX();
-				int p = o + monitor2.method_1617().getWidth();
+				int p = o + monitor2.getCurrentVideoMode().getWidth();
 				int q = monitor2.getViewportY();
-				int r = q + monitor2.method_1617().getHeight();
+				int r = q + monitor2.getCurrentVideoMode().getHeight();
 				int s = clamp(j, o, p);
 				int t = clamp(k, o, p);
 				int u = clamp(m, q, r);

@@ -78,7 +78,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 			GlStateManager.disableCull();
 			int y = 24;
 			double z = 0.025;
-			bufferBuilder.method_1328(5, VertexFormats.field_1576);
+			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 			for (int aa = 0; aa <= 24; aa++) {
 				float ab = 0.5F;
@@ -102,7 +102,7 @@ public abstract class MobEntityRenderer<T extends MobEntity, M extends EntityMod
 			}
 
 			tessellator.draw();
-			bufferBuilder.method_1328(5, VertexFormats.field_1576);
+			bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
 			for (int aa = 0; aa <= 24; aa++) {
 				float ab = 0.5F;

@@ -53,9 +53,9 @@ public class StonecutterContainer extends Container {
 	);
 	private final BlockContext context;
 	private final Property selectedRecipe = Property.create();
-	private final World field_17632;
+	private final World world;
 	private List<StonecuttingRecipe> availableRecipes = Lists.<StonecuttingRecipe>newArrayList();
-	private ItemStack field_17634 = ItemStack.EMPTY;
+	private ItemStack inputStack = ItemStack.EMPTY;
 	private long lastTakeTime;
 	final Slot inputSlot;
 	final Slot outputSlot;
@@ -77,44 +77,44 @@ public class StonecutterContainer extends Container {
 	public StonecutterContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.field_17625, i);
 		this.context = blockContext;
-		this.field_17632 = playerInventory.field_7546.field_6002;
-		this.inputSlot = this.method_7621(new Slot(this.inventory, 0, 20, 33));
-		this.outputSlot = this.method_7621(new Slot(this.inventory, 1, 143, 33) {
+		this.world = playerInventory.player.world;
+		this.inputSlot = this.addSlot(new Slot(this.inventory, 0, 20, 33));
+		this.outputSlot = this.addSlot(new Slot(this.inventory, 1, 143, 33) {
 			@Override
-			public boolean method_7680(ItemStack itemStack) {
+			public boolean canInsert(ItemStack itemStack) {
 				return false;
 			}
 
 			@Override
-			public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
-				ItemStack itemStack2 = StonecutterContainer.this.inputSlot.method_7671(1);
+			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+				ItemStack itemStack2 = StonecutterContainer.this.inputSlot.takeStack(1);
 				if (!itemStack2.isEmpty()) {
 					StonecutterContainer.this.populateResult();
 				}
 
-				itemStack.getItem().method_7843(itemStack, playerEntity.field_6002, playerEntity);
+				itemStack.getItem().onCrafted(itemStack, playerEntity.world, playerEntity);
 				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					long l = world.getTime();
 					if (StonecutterContainer.this.lastTakeTime != l) {
-						world.method_8396(null, blockPos, SoundEvents.field_17710, SoundCategory.field_15245, 1.0F, 1.0F);
+						world.playSound(null, blockPos, SoundEvents.field_17710, SoundCategory.field_15245, 1.0F, 1.0F);
 						StonecutterContainer.this.lastTakeTime = l;
 					}
 				}));
-				return super.method_7667(playerEntity, itemStack);
+				return super.onTakeItem(playerEntity, itemStack);
 			}
 		});
 
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 9; k++) {
-				this.method_7621(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
 			}
 		}
 
 		for (int j = 0; j < 9; j++) {
-			this.method_7621(new Slot(playerInventory, j, 8 + j * 18, 142));
+			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 
-		this.method_17362(this.selectedRecipe);
+		this.addProperty(this.selectedRecipe);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -139,7 +139,7 @@ public class StonecutterContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.context, playerEntity, Blocks.field_16335);
+		return canUse(this.context, playerEntity, Blocks.field_16335);
 	}
 
 	@Override
@@ -154,35 +154,35 @@ public class StonecutterContainer extends Container {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		ItemStack itemStack = this.inputSlot.method_7677();
-		if (itemStack.getItem() != this.field_17634.getItem()) {
-			this.field_17634 = itemStack.copy();
-			this.method_17855(inventory, itemStack);
+		ItemStack itemStack = this.inputSlot.getStack();
+		if (itemStack.getItem() != this.inputStack.getItem()) {
+			this.inputStack = itemStack.copy();
+			this.updateInput(inventory, itemStack);
 		}
 	}
 
-	private void method_17855(Inventory inventory, ItemStack itemStack) {
+	private void updateInput(Inventory inventory, ItemStack itemStack) {
 		this.availableRecipes.clear();
 		this.selectedRecipe.set(-1);
-		this.outputSlot.method_7673(ItemStack.EMPTY);
+		this.outputSlot.setStack(ItemStack.EMPTY);
 		if (!itemStack.isEmpty()) {
-			this.availableRecipes = this.field_17632.getRecipeManager().method_17877(RecipeType.field_17641, inventory, this.field_17632);
+			this.availableRecipes = this.world.getRecipeManager().method_17877(RecipeType.field_17641, inventory, this.world);
 		}
 	}
 
 	private void populateResult() {
 		if (!this.availableRecipes.isEmpty()) {
 			StonecuttingRecipe stonecuttingRecipe = (StonecuttingRecipe)this.availableRecipes.get(this.selectedRecipe.get());
-			this.outputSlot.method_7673(stonecuttingRecipe.craft(this.inventory));
+			this.outputSlot.setStack(stonecuttingRecipe.craft(this.inventory));
 		} else {
-			this.outputSlot.method_7673(ItemStack.EMPTY);
+			this.outputSlot.setStack(ItemStack.EMPTY);
 		}
 
 		this.sendContentUpdates();
 	}
 
 	@Override
-	public ContainerType<?> method_17358() {
+	public ContainerType<?> getType() {
 		return ContainerType.field_17625;
 	}
 
@@ -192,38 +192,38 @@ public class StonecutterContainer extends Container {
 	}
 
 	@Override
-	public ItemStack method_7601(PlayerEntity playerEntity, int i) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.method_7677();
+			ItemStack itemStack2 = slot.getStack();
 			Item item = itemStack2.getItem();
 			itemStack = itemStack2.copy();
 			if (i == 1) {
-				item.method_7843(itemStack2, playerEntity.field_6002, playerEntity);
-				if (!this.method_7616(itemStack2, 2, 38, true)) {
+				item.onCrafted(itemStack2, playerEntity.world, playerEntity);
+				if (!this.insertItem(itemStack2, 2, 38, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.method_7670(itemStack2, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 			} else if (i == 0) {
-				if (!this.method_7616(itemStack2, 2, 38, false)) {
+				if (!this.insertItem(itemStack2, 2, 38, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (field_17626.contains(item)) {
-				if (!this.method_7616(itemStack2, 0, 1, false)) {
+				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (i >= 2 && i < 29) {
-				if (!this.method_7616(itemStack2, 29, 38, false)) {
+				if (!this.insertItem(itemStack2, 29, 38, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (i >= 29 && i < 38 && !this.method_7616(itemStack2, 2, 29, false)) {
+			} else if (i >= 29 && i < 38 && !this.insertItem(itemStack2, 2, 29, false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.method_7673(ItemStack.EMPTY);
+				slot.setStack(ItemStack.EMPTY);
 			}
 
 			slot.markDirty();
@@ -231,7 +231,7 @@ public class StonecutterContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			slot.method_7667(playerEntity, itemStack2);
+			slot.onTakeItem(playerEntity, itemStack2);
 			this.sendContentUpdates();
 		}
 
@@ -241,7 +241,7 @@ public class StonecutterContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.inventory.method_5441(1);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, playerEntity.field_6002, this.inventory)));
+		this.inventory.removeInvStack(1);
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory)));
 	}
 }

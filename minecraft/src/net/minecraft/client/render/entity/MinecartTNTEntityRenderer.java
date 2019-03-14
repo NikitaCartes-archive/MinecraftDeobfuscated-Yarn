@@ -29,14 +29,14 @@ public class MinecartTNTEntityRenderer extends MinecartEntityRenderer<TNTMinecar
 
 		super.method_4064(tNTMinecartEntity, f, blockState);
 		if (i > -1 && i / 5 % 2 == 0) {
-			BlockRenderManager blockRenderManager = MinecraftClient.getInstance().method_1541();
+			BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 			GlStateManager.disableTexture();
 			GlStateManager.disableLighting();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.DST_ALPHA);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, (1.0F - ((float)i - f + 1.0F) / 100.0F) * 0.8F);
 			GlStateManager.pushMatrix();
-			blockRenderManager.renderDynamic(Blocks.field_10375.method_9564(), 1.0F);
+			blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), 1.0F);
 			GlStateManager.popMatrix();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableBlend();

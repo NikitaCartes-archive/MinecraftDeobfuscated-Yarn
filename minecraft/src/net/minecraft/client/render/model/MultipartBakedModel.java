@@ -40,7 +40,7 @@ public class MultipartBakedModel implements BakedModel {
 	}
 
 	@Override
-	public List<BakedQuad> method_4707(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
+	public List<BakedQuad> getQuads(@Nullable BlockState blockState, @Nullable Direction direction, Random random) {
 		if (blockState == null) {
 			return Collections.emptyList();
 		} else {
@@ -63,7 +63,7 @@ public class MultipartBakedModel implements BakedModel {
 
 			for (int j = 0; j < bitSet.length(); j++) {
 				if (bitSet.get(j)) {
-					list.addAll(((BakedModel)((Pair)this.components.get(j)).getRight()).method_4707(blockState, direction, new Random(l)));
+					list.addAll(((BakedModel)((Pair)this.components.get(j)).getRight()).getQuads(blockState, direction, new Random(l)));
 				}
 			}
 

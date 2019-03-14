@@ -43,7 +43,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		for (Entry<Heightmap.Type, Heightmap> entry : worldChunk.getHeightmaps()) {
 			if (((Heightmap.Type)entry.getKey()).method_16137()) {
-				this.field_16416.method_10566(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
+				this.field_16416.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
 			}
 		}
 
@@ -56,7 +56,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 			BlockEntity blockEntity = (BlockEntity)entryx.getValue();
 			int j = blockPos.getY() >> 4;
 			if (this.isFullChunk() || (i & 1 << j) != 0) {
-				CompoundTag compoundTag = blockEntity.method_16887();
+				CompoundTag compoundTag = blockEntity.toInitialChunkDataTag();
 				this.blockEntityList.add(compoundTag);
 			}
 		}
@@ -101,7 +101,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11528(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11128(this);
+		clientPlayPacketListener.onChunkData(this);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -117,14 +117,14 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public int method_11529(PacketByteBuf packetByteBuf, WorldChunk worldChunk, int i) {
 		int j = 0;
-		ChunkSection[] chunkSections = worldChunk.method_12006();
+		ChunkSection[] chunkSections = worldChunk.getSectionArray();
 		int k = 0;
 
 		for (int l = chunkSections.length; k < l; k++) {
 			ChunkSection chunkSection = chunkSections[k];
-			if (chunkSection != WorldChunk.field_12852 && (!this.isFullChunk() || !chunkSection.isEmpty()) && (i & 1 << k) != 0) {
+			if (chunkSection != WorldChunk.EMPTY_SECTION && (!this.isFullChunk() || !chunkSection.isEmpty()) && (i & 1 << k) != 0) {
 				j |= 1 << k;
-				chunkSection.method_12257(packetByteBuf);
+				chunkSection.toPacket(packetByteBuf);
 			}
 		}
 
@@ -141,12 +141,12 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	protected int method_11522(WorldChunk worldChunk, int i) {
 		int j = 0;
-		ChunkSection[] chunkSections = worldChunk.method_12006();
+		ChunkSection[] chunkSections = worldChunk.getSectionArray();
 		int k = 0;
 
 		for (int l = chunkSections.length; k < l; k++) {
 			ChunkSection chunkSection = chunkSections[k];
-			if (chunkSection != WorldChunk.field_12852 && (!this.isFullChunk() || !chunkSection.isEmpty()) && (i & 1 << k) != 0) {
+			if (chunkSection != WorldChunk.EMPTY_SECTION && (!this.isFullChunk() || !chunkSection.isEmpty()) && (i & 1 << k) != 0) {
 				j += chunkSection.getPacketSize();
 			}
 		}

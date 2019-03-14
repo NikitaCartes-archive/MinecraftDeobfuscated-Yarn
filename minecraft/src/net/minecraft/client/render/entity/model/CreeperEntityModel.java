@@ -8,7 +8,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CreeperEntityModel<T extends Entity> extends EntityModel<T> {
-	private final Cuboid field_3360;
+	private final Cuboid head;
 	private final Cuboid field_3362;
 	private final Cuboid field_3361;
 	private final Cuboid field_3359;
@@ -22,9 +22,9 @@ public class CreeperEntityModel<T extends Entity> extends EntityModel<T> {
 
 	public CreeperEntityModel(float f) {
 		int i = 6;
-		this.field_3360 = new Cuboid(this, 0, 0);
-		this.field_3360.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, f);
-		this.field_3360.setRotationPoint(0.0F, 6.0F, 0.0F);
+		this.head = new Cuboid(this, 0, 0);
+		this.head.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, f);
+		this.head.setRotationPoint(0.0F, 6.0F, 0.0F);
 		this.field_3362 = new Cuboid(this, 32, 0);
 		this.field_3362.addBox(-4.0F, -8.0F, -4.0F, 8, 8, 8, f + 0.5F);
 		this.field_3362.setRotationPoint(0.0F, 6.0F, 0.0F);
@@ -48,7 +48,7 @@ public class CreeperEntityModel<T extends Entity> extends EntityModel<T> {
 	@Override
 	public void render(T entity, float f, float g, float h, float i, float j, float k) {
 		this.setAngles(entity, f, g, h, i, j, k);
-		this.field_3360.render(k);
+		this.head.render(k);
 		this.field_3361.render(k);
 		this.field_3359.render(k);
 		this.field_3358.render(k);
@@ -58,8 +58,8 @@ public class CreeperEntityModel<T extends Entity> extends EntityModel<T> {
 
 	@Override
 	public void setAngles(T entity, float f, float g, float h, float i, float j, float k) {
-		this.field_3360.yaw = i * (float) (Math.PI / 180.0);
-		this.field_3360.pitch = j * (float) (Math.PI / 180.0);
+		this.head.yaw = i * (float) (Math.PI / 180.0);
+		this.head.pitch = j * (float) (Math.PI / 180.0);
 		this.field_3359.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
 		this.field_3358.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
 		this.field_3363.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;

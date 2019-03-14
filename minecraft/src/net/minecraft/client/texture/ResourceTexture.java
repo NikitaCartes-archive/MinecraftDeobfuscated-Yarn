@@ -16,22 +16,22 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ResourceTexture extends AbstractTexture {
 	private static final Logger LOGGER = LogManager.getLogger();
-	protected final Identifier field_5224;
+	protected final Identifier location;
 
 	public ResourceTexture(Identifier identifier) {
-		this.field_5224 = identifier;
+		this.location = identifier;
 	}
 
 	@Override
-	public void method_4625(ResourceManager resourceManager) throws IOException {
-		ResourceTexture.TextureData textureData = this.method_18153(resourceManager);
+	public void load(ResourceManager resourceManager) throws IOException {
+		ResourceTexture.TextureData textureData = this.loadTextureData(resourceManager);
 		Throwable var3 = null;
 
 		try {
 			boolean bl = false;
 			boolean bl2 = false;
 			textureData.checkException();
-			TextureResourceMetadata textureResourceMetadata = textureData.method_18155();
+			TextureResourceMetadata textureResourceMetadata = textureData.getMetadata();
 			if (textureResourceMetadata != null) {
 				bl = textureResourceMetadata.shouldBlur();
 				bl2 = textureResourceMetadata.shouldClamp();
@@ -58,29 +58,29 @@ public class ResourceTexture extends AbstractTexture {
 		}
 	}
 
-	protected ResourceTexture.TextureData method_18153(ResourceManager resourceManager) {
-		return ResourceTexture.TextureData.method_18156(resourceManager, this.field_5224);
+	protected ResourceTexture.TextureData loadTextureData(ResourceManager resourceManager) {
+		return ResourceTexture.TextureData.load(resourceManager, this.location);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class TextureData implements Closeable {
-		private final TextureResourceMetadata field_17895;
+		private final TextureResourceMetadata metadata;
 		private final NativeImage image;
 		private final IOException exception;
 
 		public TextureData(IOException iOException) {
 			this.exception = iOException;
-			this.field_17895 = null;
+			this.metadata = null;
 			this.image = null;
 		}
 
 		public TextureData(@Nullable TextureResourceMetadata textureResourceMetadata, NativeImage nativeImage) {
 			this.exception = null;
-			this.field_17895 = textureResourceMetadata;
+			this.metadata = textureResourceMetadata;
 			this.image = nativeImage;
 		}
 
-		public static ResourceTexture.TextureData method_18156(ResourceManager resourceManager, Identifier identifier) {
+		public static ResourceTexture.TextureData load(ResourceManager resourceManager, Identifier identifier) {
 			try {
 				Resource resource = resourceManager.getResource(identifier);
 				Throwable var3 = null;
@@ -91,7 +91,7 @@ public class ResourceTexture extends AbstractTexture {
 					TextureResourceMetadata textureResourceMetadata = null;
 
 					try {
-						textureResourceMetadata = resource.getMetadata(TextureResourceMetadata.field_5344);
+						textureResourceMetadata = resource.getMetadata(TextureResourceMetadata.READER);
 					} catch (RuntimeException var17) {
 						ResourceTexture.LOGGER.warn("Failed reading metadata of: {}", identifier, var17);
 					}
@@ -121,8 +121,8 @@ public class ResourceTexture extends AbstractTexture {
 		}
 
 		@Nullable
-		public TextureResourceMetadata method_18155() {
-			return this.field_17895;
+		public TextureResourceMetadata getMetadata() {
+			return this.metadata;
 		}
 
 		public NativeImage getImage() throws IOException {

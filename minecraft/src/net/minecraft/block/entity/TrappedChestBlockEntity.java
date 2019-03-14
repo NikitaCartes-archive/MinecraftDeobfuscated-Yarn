@@ -8,6 +8,6 @@ public class TrappedChestBlockEntity extends ChestBlockEntity {
 	@Override
 	protected void onInvOpenOrClose() {
 		super.onInvOpenOrClose();
-		this.world.method_8452(this.field_11867.down(), this.method_11010().getBlock());
+		this.world.updateNeighborsAlways(this.pos.down(), this.getCachedState().getBlock());
 	}
 }

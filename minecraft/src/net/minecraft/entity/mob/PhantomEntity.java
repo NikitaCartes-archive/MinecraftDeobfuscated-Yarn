@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4051;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
@@ -13,6 +12,7 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.BodyControl;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
@@ -40,84 +40,84 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
 
 public class PhantomEntity extends FlyingEntity implements Monster {
-	private static final TrackedData<Integer> field_7313 = DataTracker.registerData(PhantomEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> SIZE = DataTracker.registerData(PhantomEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private Vec3d field_7314 = Vec3d.ZERO;
 	private BlockPos field_7312 = BlockPos.ORIGIN;
-	private PhantomEntity.class_1594 field_7315 = PhantomEntity.class_1594.field_7318;
+	private PhantomEntity.PhantomMovementType movementType = PhantomEntity.PhantomMovementType.field_7318;
 
 	public PhantomEntity(EntityType<? extends PhantomEntity> entityType, World world) {
 		super(entityType, world);
 		this.experiencePoints = 5;
-		this.field_6207 = new PhantomEntity.PhantomMoveControl(this);
-		this.field_6206 = new PhantomEntity.PhantomLookControl(this);
+		this.moveControl = new PhantomEntity.PhantomMoveControl(this);
+		this.lookControl = new PhantomEntity.PhantomLookControl(this);
 	}
 
 	@Override
-	protected BodyControl method_5963() {
-		return new PhantomEntity.class_1597(this);
+	protected BodyControl createBodyControl() {
+		return new PhantomEntity.PhantomBodyControl(this);
 	}
 
 	@Override
 	protected void initGoals() {
-		this.field_6201.add(1, new PhantomEntity.class_1596());
-		this.field_6201.add(2, new PhantomEntity.class_1602());
-		this.field_6201.add(3, new PhantomEntity.class_1598());
-		this.field_6185.add(1, new PhantomEntity.class_1595());
+		this.goalSelector.add(1, new PhantomEntity.class_1596());
+		this.goalSelector.add(2, new PhantomEntity.class_1602());
+		this.goalSelector.add(3, new PhantomEntity.class_1598());
+		this.targetSelector.add(1, new PhantomEntity.class_1595());
 	}
 
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.method_6127().register(EntityAttributes.ATTACK_DAMAGE);
+		this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE);
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.field_6011.startTracking(field_7313, 0);
+		this.dataTracker.startTracking(SIZE, 0);
 	}
 
 	public void setPhantomSize(int i) {
-		this.field_6011.set(field_7313, MathHelper.clamp(i, 0, 64));
+		this.dataTracker.set(SIZE, MathHelper.clamp(i, 0, 64));
 	}
 
 	private void method_7097() {
 		this.refreshSize();
-		this.method_5996(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)(6 + this.getPhantomSize()));
+		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue((double)(6 + this.getPhantomSize()));
 	}
 
 	public int getPhantomSize() {
-		return this.field_6011.get(field_7313);
+		return this.dataTracker.get(SIZE);
 	}
 
 	@Override
-	protected float method_18394(EntityPose entityPose, EntitySize entitySize) {
+	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return entitySize.height * 0.35F;
 	}
 
 	@Override
-	public void method_5674(TrackedData<?> trackedData) {
-		if (field_7313.equals(trackedData)) {
+	public void onTrackedDataSet(TrackedData<?> trackedData) {
+		if (SIZE.equals(trackedData)) {
 			this.method_7097();
 		}
 
-		super.method_5674(trackedData);
+		super.onTrackedDataSet(trackedData);
 	}
 
 	@Override
 	public void update() {
 		super.update();
-		if (this.field_6002.isClient) {
+		if (this.world.isClient) {
 			float f = MathHelper.cos((float)(this.getEntityId() * 3 + this.age) * 0.13F + (float) Math.PI);
 			float g = MathHelper.cos((float)(this.getEntityId() * 3 + this.age + 1) * 0.13F + (float) Math.PI);
 			if (f > 0.0F && g <= 0.0F) {
-				this.field_6002
-					.method_8486(
+				this.world
+					.playSound(
 						this.x,
 						this.y,
 						this.z,
 						SoundEvents.field_14869,
-						this.method_5634(),
+						this.getSoundCategory(),
 						0.95F + this.random.nextFloat() * 0.05F,
 						0.95F + this.random.nextFloat() * 0.05F,
 						false
@@ -128,11 +128,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			float h = MathHelper.cos(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float j = MathHelper.sin(this.yaw * (float) (Math.PI / 180.0)) * (1.3F + 0.21F * (float)i);
 			float k = (0.3F + f * 0.45F) * ((float)i * 0.2F + 1.0F);
-			this.field_6002.method_8406(ParticleTypes.field_11219, this.x + (double)h, this.y + (double)k, this.z + (double)j, 0.0, 0.0, 0.0);
-			this.field_6002.method_8406(ParticleTypes.field_11219, this.x - (double)h, this.y + (double)k, this.z - (double)j, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11219, this.x + (double)h, this.y + (double)k, this.z + (double)j, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.field_11219, this.x - (double)h, this.y + (double)k, this.z - (double)j, 0.0, 0.0, 0.0);
 		}
 
-		if (!this.field_6002.isClient && this.field_6002.getDifficulty() == Difficulty.PEACEFUL) {
+		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
 			this.invalidate();
 		}
 	}
@@ -152,17 +152,17 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public EntityData method_5943(
+	public EntityData prepareEntityData(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.field_7312 = new BlockPos(this).up(5);
 		this.setPhantomSize(0);
-		return super.method_5943(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
-	public void method_5749(CompoundTag compoundTag) {
-		super.method_5749(compoundTag);
+	public void readCustomDataFromTag(CompoundTag compoundTag) {
+		super.readCustomDataFromTag(compoundTag);
 		if (compoundTag.containsKey("AX")) {
 			this.field_7312 = new BlockPos(compoundTag.getInt("AX"), compoundTag.getInt("AY"), compoundTag.getInt("AZ"));
 		}
@@ -171,8 +171,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public void method_5652(CompoundTag compoundTag) {
-		super.method_5652(compoundTag);
+	public void writeCustomDataToTag(CompoundTag compoundTag) {
+		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("AX", this.field_7312.getX());
 		compoundTag.putInt("AY", this.field_7312.getY());
 		compoundTag.putInt("AZ", this.field_7312.getZ());
@@ -186,27 +186,27 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public SoundCategory method_5634() {
+	public SoundCategory getSoundCategory() {
 		return SoundCategory.field_15251;
 	}
 
 	@Override
-	protected SoundEvent method_5994() {
+	protected SoundEvent getAmbientSound() {
 		return SoundEvents.field_14813;
 	}
 
 	@Override
-	protected SoundEvent method_6011(DamageSource damageSource) {
+	protected SoundEvent getHurtSound(DamageSource damageSource) {
 		return SoundEvents.field_15149;
 	}
 
 	@Override
-	protected SoundEvent method_6002() {
+	protected SoundEvent getDeathSound() {
 		return SoundEvents.field_14974;
 	}
 
 	@Override
-	public EntityGroup method_6046() {
+	public EntityGroup getGroup() {
 		return EntityGroup.UNDEAD;
 	}
 
@@ -216,16 +216,28 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	}
 
 	@Override
-	public boolean method_5973(EntityType<?> entityType) {
+	public boolean canTarget(EntityType<?> entityType) {
 		return true;
 	}
 
 	@Override
-	public EntitySize method_18377(EntityPose entityPose) {
+	public EntitySize getSize(EntityPose entityPose) {
 		int i = this.getPhantomSize();
-		EntitySize entitySize = super.method_18377(entityPose);
+		EntitySize entitySize = super.getSize(entityPose);
 		float f = (entitySize.width + 0.2F * (float)i) / entitySize.width;
 		return entitySize.scaled(f);
+	}
+
+	class PhantomBodyControl extends BodyControl {
+		public PhantomBodyControl(LivingEntity livingEntity) {
+			super(livingEntity);
+		}
+
+		@Override
+		public void method_6224() {
+			PhantomEntity.this.headYaw = PhantomEntity.this.field_6283;
+			PhantomEntity.this.field_6283 = PhantomEntity.this.yaw;
+		}
 	}
 
 	class PhantomLookControl extends LookControl {
@@ -279,18 +291,18 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			double p = (double)(this.field_7331 * MathHelper.cos(o * (float) (Math.PI / 180.0))) * Math.abs((double)f / i);
 			double q = (double)(this.field_7331 * MathHelper.sin(o * (float) (Math.PI / 180.0))) * Math.abs((double)h / i);
 			double r = (double)(this.field_7331 * MathHelper.sin(n * (float) (Math.PI / 180.0))) * Math.abs((double)g / i);
-			Vec3d vec3d = PhantomEntity.this.method_18798();
-			PhantomEntity.this.method_18799(vec3d.add(new Vec3d(p, r, q).subtract(vec3d).multiply(0.2)));
+			Vec3d vec3d = PhantomEntity.this.getVelocity();
+			PhantomEntity.this.setVelocity(vec3d.add(new Vec3d(p, r, q).subtract(vec3d).multiply(0.2)));
 		}
 	}
 
-	static enum class_1594 {
+	static enum PhantomMovementType {
 		field_7318,
 		field_7317;
 	}
 
 	class class_1595 extends Goal {
-		private final class_4051 field_18130 = new class_4051().method_18418(64.0);
+		private final TargetPredicate field_18130 = new TargetPredicate().setBaseMaxDistance(64.0);
 		private int field_7320 = 20;
 
 		private class_1595() {
@@ -303,13 +315,13 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				return false;
 			} else {
 				this.field_7320 = 60;
-				List<PlayerEntity> list = PhantomEntity.this.field_6002
-					.method_18464(this.field_18130, PhantomEntity.this, PhantomEntity.this.method_5829().expand(16.0, 64.0, 16.0));
+				List<PlayerEntity> list = PhantomEntity.this.world
+					.method_18464(this.field_18130, PhantomEntity.this, PhantomEntity.this.getBoundingBox().expand(16.0, 64.0, 16.0));
 				if (!list.isEmpty()) {
 					list.sort((playerEntityx, playerEntity2) -> playerEntityx.y > playerEntity2.y ? -1 : 1);
 
 					for (PlayerEntity playerEntity : list) {
-						if (PhantomEntity.this.method_18391(playerEntity, class_4051.field_18092)) {
+						if (PhantomEntity.this.method_18391(playerEntity, TargetPredicate.DEFAULT)) {
 							PhantomEntity.this.setTarget(playerEntity);
 							return true;
 						}
@@ -323,7 +335,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public boolean shouldContinue() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
-			return livingEntity != null ? PhantomEntity.this.method_18391(livingEntity, class_4051.field_18092) : false;
+			return livingEntity != null ? PhantomEntity.this.method_18391(livingEntity, TargetPredicate.DEFAULT) : false;
 		}
 	}
 
@@ -336,55 +348,43 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
-			return livingEntity != null ? PhantomEntity.this.method_18391(PhantomEntity.this.getTarget(), class_4051.field_18092) : false;
+			return livingEntity != null ? PhantomEntity.this.method_18391(PhantomEntity.this.getTarget(), TargetPredicate.DEFAULT) : false;
 		}
 
 		@Override
 		public void start() {
 			this.field_7322 = 10;
-			PhantomEntity.this.field_7315 = PhantomEntity.class_1594.field_7318;
+			PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
 			this.method_7102();
 		}
 
 		@Override
 		public void onRemove() {
-			PhantomEntity.this.field_7312 = PhantomEntity.this.field_6002
-				.method_8598(Heightmap.Type.MOTION_BLOCKING, PhantomEntity.this.field_7312)
+			PhantomEntity.this.field_7312 = PhantomEntity.this.world
+				.getTopPosition(Heightmap.Type.MOTION_BLOCKING, PhantomEntity.this.field_7312)
 				.up(10 + PhantomEntity.this.random.nextInt(20));
 		}
 
 		@Override
 		public void tick() {
-			if (PhantomEntity.this.field_7315 == PhantomEntity.class_1594.field_7318) {
+			if (PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.field_7318) {
 				this.field_7322--;
 				if (this.field_7322 <= 0) {
-					PhantomEntity.this.field_7315 = PhantomEntity.class_1594.field_7317;
+					PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7317;
 					this.method_7102();
 					this.field_7322 = (8 + PhantomEntity.this.random.nextInt(4)) * 20;
-					PhantomEntity.this.method_5783(SoundEvents.field_15238, 10.0F, 0.95F + PhantomEntity.this.random.nextFloat() * 0.1F);
+					PhantomEntity.this.playSound(SoundEvents.field_15238, 10.0F, 0.95F + PhantomEntity.this.random.nextFloat() * 0.1F);
 				}
 			}
 		}
 
 		private void method_7102() {
 			PhantomEntity.this.field_7312 = new BlockPos(PhantomEntity.this.getTarget()).up(20 + PhantomEntity.this.random.nextInt(20));
-			if (PhantomEntity.this.field_7312.getY() < PhantomEntity.this.field_6002.getSeaLevel()) {
+			if (PhantomEntity.this.field_7312.getY() < PhantomEntity.this.world.getSeaLevel()) {
 				PhantomEntity.this.field_7312 = new BlockPos(
-					PhantomEntity.this.field_7312.getX(), PhantomEntity.this.field_6002.getSeaLevel() + 1, PhantomEntity.this.field_7312.getZ()
+					PhantomEntity.this.field_7312.getX(), PhantomEntity.this.world.getSeaLevel() + 1, PhantomEntity.this.field_7312.getZ()
 				);
 			}
-		}
-	}
-
-	class class_1597 extends BodyControl {
-		public class_1597(LivingEntity livingEntity) {
-			super(livingEntity);
-		}
-
-		@Override
-		public void method_6224() {
-			PhantomEntity.this.headYaw = PhantomEntity.this.field_6283;
-			PhantomEntity.this.field_6283 = PhantomEntity.this.yaw;
 		}
 	}
 
@@ -399,7 +399,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return PhantomEntity.this.getTarget() == null || PhantomEntity.this.field_7315 == PhantomEntity.class_1594.field_7318;
+			return PhantomEntity.this.getTarget() == null || PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.field_7318;
 		}
 
 		@Override
@@ -433,12 +433,12 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 				this.method_7103();
 			}
 
-			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.field_6002.method_8623(new BlockPos(PhantomEntity.this).down(1))) {
+			if (PhantomEntity.this.field_7314.y < PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).down(1))) {
 				this.field_7326 = Math.max(1.0F, this.field_7326);
 				this.method_7103();
 			}
 
-			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.field_6002.method_8623(new BlockPos(PhantomEntity.this).up(1))) {
+			if (PhantomEntity.this.field_7314.y > PhantomEntity.this.y && !PhantomEntity.this.world.isAir(new BlockPos(PhantomEntity.this).up(1))) {
 				this.field_7326 = Math.min(-1.0F, this.field_7326);
 				this.method_7103();
 			}
@@ -461,7 +461,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	abstract class class_1601 extends Goal {
 		public class_1601() {
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
 		}
 
 		protected boolean method_7104() {
@@ -475,7 +475,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return PhantomEntity.this.getTarget() != null && PhantomEntity.this.field_7315 == PhantomEntity.class_1594.field_7317;
+			return PhantomEntity.this.getTarget() != null && PhantomEntity.this.movementType == PhantomEntity.PhantomMovementType.field_7317;
 		}
 
 		@Override
@@ -490,8 +490,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 					return false;
 				} else {
 					if (PhantomEntity.this.age % 20 == 0) {
-						List<CatEntity> list = PhantomEntity.this.field_6002
-							.method_8390(CatEntity.class, PhantomEntity.this.method_5829().expand(16.0), EntityPredicates.VALID_ENTITY);
+						List<CatEntity> list = PhantomEntity.this.world
+							.getEntities(CatEntity.class, PhantomEntity.this.getBoundingBox().expand(16.0), EntityPredicates.VALID_ENTITY);
 						if (!list.isEmpty()) {
 							for (CatEntity catEntity : list) {
 								catEntity.method_16089();
@@ -515,19 +515,19 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public void onRemove() {
 			PhantomEntity.this.setTarget(null);
-			PhantomEntity.this.field_7315 = PhantomEntity.class_1594.field_7318;
+			PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
 		}
 
 		@Override
 		public void tick() {
 			LivingEntity livingEntity = PhantomEntity.this.getTarget();
 			PhantomEntity.this.field_7314 = new Vec3d(livingEntity.x, livingEntity.y + (double)livingEntity.getHeight() * 0.5, livingEntity.z);
-			if (PhantomEntity.this.method_5829().expand(0.2F).intersects(livingEntity.method_5829())) {
+			if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
 				PhantomEntity.this.attack(livingEntity);
-				PhantomEntity.this.field_7315 = PhantomEntity.class_1594.field_7318;
-				PhantomEntity.this.field_6002.method_8535(1039, new BlockPos(PhantomEntity.this), 0);
+				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
+				PhantomEntity.this.world.playEvent(1039, new BlockPos(PhantomEntity.this), 0);
 			} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
-				PhantomEntity.this.field_7315 = PhantomEntity.class_1594.field_7318;
+				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
 			}
 		}
 	}

@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
@@ -18,7 +18,7 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.IWorld;
 
 @Environment(EnvType.CLIENT)
-public class StructureDebugRenderer implements DebugRenderer.DebugRenderer {
+public class StructureDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient field_4624;
 	private final Map<Integer, Map<String, MutableIntBoundingBox>> field_4626 = Maps.<Integer, Map<String, MutableIntBoundingBox>>newHashMap();
 	private final Map<Integer, Map<String, MutableIntBoundingBox>> field_4627 = Maps.<Integer, Map<String, MutableIntBoundingBox>>newHashMap();
@@ -30,12 +30,12 @@ public class StructureDebugRenderer implements DebugRenderer.DebugRenderer {
 
 	@Override
 	public void render(long l) {
-		class_4184 lv = this.field_4624.field_1773.method_19418();
-		IWorld iWorld = this.field_4624.field_1687;
-		int i = iWorld.method_8401().getDimension();
-		double d = lv.method_19326().x;
-		double e = lv.method_19326().y;
-		double f = lv.method_19326().z;
+		Camera camera = this.field_4624.gameRenderer.method_19418();
+		IWorld iWorld = this.field_4624.world;
+		int i = iWorld.getLevelProperties().getDimension();
+		double d = camera.getPos().x;
+		double e = camera.getPos().y;
+		double f = camera.getPos().z;
 		GlStateManager.pushMatrix();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
@@ -43,10 +43,10 @@ public class StructureDebugRenderer implements DebugRenderer.DebugRenderer {
 		);
 		GlStateManager.disableTexture();
 		GlStateManager.disableDepthTest();
-		BlockPos blockPos = new BlockPos(lv.method_19326().x, 0.0, lv.method_19326().z);
+		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(3, VertexFormats.field_1576);
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 		GlStateManager.lineWidth(1.0F);
 		if (this.field_4626.containsKey(i)) {
 			for (MutableIntBoundingBox mutableIntBoundingBox : ((Map)this.field_4626.get(i)).values()) {

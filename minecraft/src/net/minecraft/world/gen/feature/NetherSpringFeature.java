@@ -12,7 +12,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
-	private static final BlockState NETHERRACK = Blocks.field_10515.method_9564();
+	private static final BlockState NETHERRACK = Blocks.field_10515.getDefaultState();
 
 	public NetherSpringFeature(Function<Dynamic<?>, ? extends NetherSpringFeatureConfig> function) {
 		super(function);
@@ -25,56 +25,56 @@ public class NetherSpringFeature extends Feature<NetherSpringFeatureConfig> {
 		BlockPos blockPos,
 		NetherSpringFeatureConfig netherSpringFeatureConfig
 	) {
-		if (iWorld.method_8320(blockPos.up()) != NETHERRACK) {
+		if (iWorld.getBlockState(blockPos.up()) != NETHERRACK) {
 			return false;
-		} else if (!iWorld.method_8320(blockPos).isAir() && iWorld.method_8320(blockPos) != NETHERRACK) {
+		} else if (!iWorld.getBlockState(blockPos).isAir() && iWorld.getBlockState(blockPos) != NETHERRACK) {
 			return false;
 		} else {
 			int i = 0;
-			if (iWorld.method_8320(blockPos.west()) == NETHERRACK) {
+			if (iWorld.getBlockState(blockPos.west()) == NETHERRACK) {
 				i++;
 			}
 
-			if (iWorld.method_8320(blockPos.east()) == NETHERRACK) {
+			if (iWorld.getBlockState(blockPos.east()) == NETHERRACK) {
 				i++;
 			}
 
-			if (iWorld.method_8320(blockPos.north()) == NETHERRACK) {
+			if (iWorld.getBlockState(blockPos.north()) == NETHERRACK) {
 				i++;
 			}
 
-			if (iWorld.method_8320(blockPos.south()) == NETHERRACK) {
+			if (iWorld.getBlockState(blockPos.south()) == NETHERRACK) {
 				i++;
 			}
 
-			if (iWorld.method_8320(blockPos.down()) == NETHERRACK) {
+			if (iWorld.getBlockState(blockPos.down()) == NETHERRACK) {
 				i++;
 			}
 
 			int j = 0;
-			if (iWorld.method_8623(blockPos.west())) {
+			if (iWorld.isAir(blockPos.west())) {
 				j++;
 			}
 
-			if (iWorld.method_8623(blockPos.east())) {
+			if (iWorld.isAir(blockPos.east())) {
 				j++;
 			}
 
-			if (iWorld.method_8623(blockPos.north())) {
+			if (iWorld.isAir(blockPos.north())) {
 				j++;
 			}
 
-			if (iWorld.method_8623(blockPos.south())) {
+			if (iWorld.isAir(blockPos.south())) {
 				j++;
 			}
 
-			if (iWorld.method_8623(blockPos.down())) {
+			if (iWorld.isAir(blockPos.down())) {
 				j++;
 			}
 
 			if (!netherSpringFeatureConfig.insideRock && i == 4 && j == 1 || i == 5) {
-				iWorld.method_8652(blockPos, Blocks.field_10164.method_9564(), 2);
-				iWorld.method_8405().method_8676(blockPos, Fluids.LAVA, 0);
+				iWorld.setBlockState(blockPos, Blocks.field_10164.getDefaultState(), 2);
+				iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.LAVA, 0);
 			}
 
 			return true;

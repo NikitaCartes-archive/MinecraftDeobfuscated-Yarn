@@ -60,7 +60,7 @@ public enum ModelRotation implements ModelRotationContainer {
 		return this.quaternion;
 	}
 
-	public Direction method_4705(Direction direction) {
+	public Direction apply(Direction direction) {
 		Direction direction2 = direction;
 
 		for (int i = 0; i < this.xRotations; i++) {

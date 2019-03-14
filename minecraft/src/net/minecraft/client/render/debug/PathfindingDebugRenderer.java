@@ -6,9 +6,9 @@ import java.util.Locale;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
@@ -19,12 +19,12 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
+public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 	private final Map<Integer, Path> field_4616 = Maps.<Integer, Path>newHashMap();
 	private final Map<Integer, Float> field_4617 = Maps.<Integer, Float>newHashMap();
 	private final Map<Integer, Long> field_4615 = Maps.<Integer, Long>newHashMap();
-	private class_4184 field_4618;
+	private Camera field_4618;
 	private double field_4621;
 	private double field_4620;
 	private double field_4619;
@@ -43,10 +43,10 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 	public void render(long l) {
 		if (!this.field_4616.isEmpty()) {
 			long m = SystemUtil.getMeasuringTimeMs();
-			this.field_4618 = this.client.field_1773.method_19418();
-			this.field_4621 = this.field_4618.method_19326().x;
-			this.field_4620 = this.field_4618.method_19326().y;
-			this.field_4619 = this.field_4618.method_19326().z;
+			this.field_4618 = this.client.gameRenderer.method_19418();
+			this.field_4621 = this.field_4618.getPos().x;
+			this.field_4620 = this.field_4618.getPos().y;
+			this.field_4619 = this.field_4618.getPos().z;
 			GlStateManager.pushMatrix();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
@@ -153,7 +153,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 	public void method_3868(Path path) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(3, VertexFormats.field_1576);
+		bufferBuilder.begin(3, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i < path.getLength(); i++) {
 			PathNode pathNode = path.getNode(i);
@@ -174,9 +174,9 @@ public class PathfindingDebugRenderer implements DebugRenderer.DebugRenderer {
 
 	private float method_3867(PathNode pathNode) {
 		return (float)(
-			Math.abs((double)pathNode.x - this.field_4618.method_19326().x)
-				+ Math.abs((double)pathNode.y - this.field_4618.method_19326().y)
-				+ Math.abs((double)pathNode.z - this.field_4618.method_19326().z)
+			Math.abs((double)pathNode.x - this.field_4618.getPos().x)
+				+ Math.abs((double)pathNode.y - this.field_4618.getPos().y)
+				+ Math.abs((double)pathNode.z - this.field_4618.getPos().z)
 		);
 	}
 }

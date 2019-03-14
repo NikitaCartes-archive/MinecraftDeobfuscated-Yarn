@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4184;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.shape.VoxelShape;
 
 @Environment(EnvType.CLIENT)
-public class VoxelDebugRenderer implements DebugRenderer.DebugRenderer {
+public class VoxelDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient field_4540;
 	private double field_4541 = Double.MIN_VALUE;
 	private List<VoxelShape> field_4542 = Collections.emptyList();
@@ -24,19 +24,19 @@ public class VoxelDebugRenderer implements DebugRenderer.DebugRenderer {
 
 	@Override
 	public void render(long l) {
-		class_4184 lv = this.field_4540.field_1773.method_19418();
+		Camera camera = this.field_4540.gameRenderer.method_19418();
 		double d = (double)SystemUtil.getMeasuringTimeNano();
 		if (d - this.field_4541 > 1.0E8) {
 			this.field_4541 = d;
-			this.field_4542 = (List<VoxelShape>)lv.method_19331()
-				.field_6002
-				.method_8600(lv.method_19331(), lv.method_19331().method_5829().expand(6.0), Collections.emptySet())
+			this.field_4542 = (List<VoxelShape>)camera.getFocusedEntity()
+				.world
+				.getCollidingBoundingBoxesForEntity(camera.getFocusedEntity(), camera.getFocusedEntity().getBoundingBox().expand(6.0), Collections.emptySet())
 				.collect(Collectors.toList());
 		}
 
-		double e = lv.method_19326().x;
-		double f = lv.method_19326().y;
-		double g = lv.method_19326().z;
+		double e = camera.getPos().x;
+		double f = camera.getPos().y;
+		double g = camera.getPos().z;
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO

@@ -29,7 +29,7 @@ import net.minecraft.world.ViewableWorld;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntityRenderer<T extends Entity> {
-	private static final Identifier field_4675 = new Identifier("textures/misc/shadow.png");
+	private static final Identifier SHADOW_TEX = new Identifier("textures/misc/shadow.png");
 	protected final EntityRenderDispatcher renderManager;
 	protected float field_4673;
 	protected float field_4672 = 1.0F;
@@ -65,13 +65,13 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	protected int getOutlineColor(T entity) {
-		ScoreboardTeam scoreboardTeam = (ScoreboardTeam)entity.method_5781();
+		ScoreboardTeam scoreboardTeam = (ScoreboardTeam)entity.getScoreboardTeam();
 		return scoreboardTeam != null && scoreboardTeam.getColor().getColor() != null ? scoreboardTeam.getColor().getColor() : 16777215;
 	}
 
 	protected void method_3926(T entity, double d, double e, double f) {
 		if (this.method_3921(entity)) {
-			this.renderEntityLabel(entity, entity.method_5476().getFormattedText(), d, e, f, 64);
+			this.renderEntityLabel(entity, entity.getDisplayName().getFormattedText(), d, e, f, 64);
 		}
 	}
 
@@ -84,27 +84,27 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	@Nullable
-	protected abstract Identifier method_3931(T entity);
+	protected abstract Identifier getTexture(T entity);
 
 	protected boolean bindEntityTexture(T entity) {
-		Identifier identifier = this.method_3931(entity);
+		Identifier identifier = this.getTexture(entity);
 		if (identifier == null) {
 			return false;
 		} else {
-			this.method_3924(identifier);
+			this.bindTexture(identifier);
 			return true;
 		}
 	}
 
-	public void method_3924(Identifier identifier) {
-		this.renderManager.field_4685.method_4618(identifier);
+	public void bindTexture(Identifier identifier) {
+		this.renderManager.textureManager.bindTexture(identifier);
 	}
 
 	private void renderEntityOnFire(Entity entity, double d, double e, double f, float g) {
 		GlStateManager.disableLighting();
-		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().method_1549();
-		Sprite sprite = spriteAtlasTexture.method_4608(ModelLoader.field_5397);
-		Sprite sprite2 = spriteAtlasTexture.method_4608(ModelLoader.field_5370);
+		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
+		Sprite sprite = spriteAtlasTexture.getSprite(ModelLoader.field_5397);
+		Sprite sprite2 = spriteAtlasTexture.getSprite(ModelLoader.field_5370);
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e, (float)f);
 		float h = entity.getWidth() * 1.4F;
@@ -114,17 +114,17 @@ public abstract class EntityRenderer<T extends Entity> {
 		float i = 0.5F;
 		float j = 0.0F;
 		float k = entity.getHeight() / h;
-		float l = (float)(entity.y - entity.method_5829().minY);
+		float l = (float)(entity.y - entity.getBoundingBox().minY);
 		GlStateManager.rotatef(-this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(0.0F, 0.0F, -0.3F + (float)((int)k) * 0.02F);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float m = 0.0F;
 		int n = 0;
-		bufferBuilder.method_1328(7, VertexFormats.field_1585);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV);
 
 		while (k > 0.0F) {
 			Sprite sprite3 = n % 2 == 0 ? sprite : sprite2;
-			this.method_3924(SpriteAtlasTexture.field_5275);
+			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			float o = sprite3.getMinU();
 			float p = sprite3.getMinV();
 			float q = sprite3.getMaxU();
@@ -154,7 +154,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	private void renderShadow(Entity entity, double d, double e, double f, float g, float h) {
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		this.renderManager.field_4685.method_4618(field_4675);
+		this.renderManager.textureManager.bindTexture(SHADOW_TEX);
 		ViewableWorld viewableWorld = this.method_3935();
 		GlStateManager.depthMask(false);
 		float i = this.field_4673;
@@ -179,13 +179,13 @@ public abstract class EntityRenderer<T extends Entity> {
 		double u = f - l;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.method_1328(7, VertexFormats.field_1575);
+		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 
 		for (BlockPos blockPos : BlockPos.iterateBoxPositions(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
 			BlockPos blockPos2 = blockPos.down();
-			BlockState blockState = viewableWorld.method_8320(blockPos2);
-			if (blockState.getRenderType() != BlockRenderType.field_11455 && viewableWorld.method_8602(blockPos) > 3) {
-				this.method_3928(blockState, viewableWorld, blockPos2, d, e, f, blockPos, g, i, s, t, u);
+			BlockState blockState = viewableWorld.getBlockState(blockPos2);
+			if (blockState.getRenderType() != BlockRenderType.field_11455 && viewableWorld.getLightLevel(blockPos) > 3) {
+				this.projectShadow(blockState, viewableWorld, blockPos2, d, e, f, blockPos, g, i, s, t, u);
 			}
 		}
 
@@ -199,7 +199,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		return this.renderManager.world;
 	}
 
-	private void method_3928(
+	private void projectShadow(
 		BlockState blockState,
 		ViewableWorld viewableWorld,
 		BlockPos blockPos,
@@ -214,11 +214,11 @@ public abstract class EntityRenderer<T extends Entity> {
 		double k
 	) {
 		if (blockState.method_11604(viewableWorld, blockPos)) {
-			VoxelShape voxelShape = blockState.method_17770(this.method_3935(), blockPos2.down());
+			VoxelShape voxelShape = blockState.getOutlineShape(this.method_3935(), blockPos2.down());
 			if (!voxelShape.isEmpty()) {
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.method_3935().method_8610(blockPos2);
+				double l = ((double)g - (e - ((double)blockPos2.getY() + j)) / 2.0) * 0.5 * (double)this.method_3935().getBrightness(blockPos2);
 				if (!(l < 0.0)) {
 					if (l > 1.0) {
 						l = 1.0;
@@ -249,7 +249,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		bufferBuilder.setOffset(d, e, f);
-		bufferBuilder.method_1328(7, VertexFormats.field_1588);
+		bufferBuilder.begin(7, VertexFormats.POSITION_NORMAL);
 		bufferBuilder.vertex(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).next();
 		bufferBuilder.vertex(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).next();
 		bufferBuilder.vertex(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).normal(0.0F, 0.0F, -1.0F).next();
@@ -300,7 +300,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	protected void renderEntityLabel(T entity, String string, double d, double e, double f, int i) {
-		double g = entity.method_5707(this.renderManager.field_4686.method_19326());
+		double g = entity.squaredDistanceTo(this.renderManager.field_4686.getPos());
 		if (!(g > (double)(i * i))) {
 			boolean bl = entity.isSneaking();
 			float h = this.renderManager.field_4679;

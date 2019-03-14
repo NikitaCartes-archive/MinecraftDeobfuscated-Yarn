@@ -6,20 +6,20 @@ import javax.annotation.Nullable;
 import net.minecraft.util.Identifier;
 
 public class DefaultedRegistry<T> extends SimpleRegistry<T> {
-	private final Identifier field_11014;
+	private final Identifier defaultId;
 	private T defaultValue;
 
 	public DefaultedRegistry(String string) {
-		this.field_11014 = new Identifier(string);
+		this.defaultId = new Identifier(string);
 	}
 
 	@Override
-	public <V extends T> V method_10273(int i, Identifier identifier, V object) {
-		if (this.field_11014.equals(identifier)) {
+	public <V extends T> V set(int i, Identifier identifier, V object) {
+		if (this.defaultId.equals(identifier)) {
 			this.defaultValue = (T)object;
 		}
 
-		return super.method_10273(i, identifier, object);
+		return super.set(i, identifier, object);
 	}
 
 	@Override
@@ -30,15 +30,15 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 
 	@Nonnull
 	@Override
-	public Identifier method_10221(T object) {
-		Identifier identifier = super.method_10221(object);
-		return identifier == null ? this.field_11014 : identifier;
+	public Identifier getId(T object) {
+		Identifier identifier = super.getId(object);
+		return identifier == null ? this.defaultId : identifier;
 	}
 
 	@Nonnull
 	@Override
-	public T method_10223(@Nullable Identifier identifier) {
-		T object = super.method_10223(identifier);
+	public T get(@Nullable Identifier identifier) {
+		T object = super.get(identifier);
 		return object == null ? this.defaultValue : object;
 	}
 
@@ -56,7 +56,7 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 		return object == null ? this.defaultValue : object;
 	}
 
-	public Identifier method_10137() {
-		return this.field_11014;
+	public Identifier getDefaultId() {
+		return this.defaultId;
 	}
 }

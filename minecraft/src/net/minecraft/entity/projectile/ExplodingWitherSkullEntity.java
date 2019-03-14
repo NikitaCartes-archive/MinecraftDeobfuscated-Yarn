@@ -23,7 +23,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
 public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
-	private static final TrackedData<Boolean> field_7654 = DataTracker.registerData(ExplodingWitherSkullEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(ExplodingWitherSkullEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
 	public ExplodingWitherSkullEntity(EntityType<? extends ExplodingWitherSkullEntity> entityType, World world) {
 		super(entityType, world);
@@ -49,19 +49,21 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	public float method_5774(Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f) {
-		return this.method_7503() && WitherEntity.method_6883(blockState) ? Math.min(0.8F, f) : f;
+	public float getEffectiveExplosionResistance(
+		Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f
+	) {
+		return this.method_7503() && WitherEntity.canDestroy(blockState) ? Math.min(0.8F, f) : f;
 	}
 
 	@Override
-	protected void method_7469(HitResult hitResult) {
-		if (!this.field_6002.isClient) {
+	protected void onCollision(HitResult hitResult) {
+		if (!this.world.isClient) {
 			if (hitResult.getType() == HitResult.Type.ENTITY) {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (this.owner != null) {
-					if (entity.damage(DamageSource.method_5511(this.owner), 8.0F)) {
+					if (entity.damage(DamageSource.mob(this.owner), 8.0F)) {
 						if (entity.isValid()) {
-							this.method_5723(this.owner, entity);
+							this.dealDamage(this.owner, entity);
 						} else {
 							this.owner.heal(5.0F);
 						}
@@ -72,9 +74,9 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 
 				if (entity instanceof LivingEntity) {
 					int i = 0;
-					if (this.field_6002.getDifficulty() == Difficulty.NORMAL) {
+					if (this.world.getDifficulty() == Difficulty.NORMAL) {
 						i = 10;
-					} else if (this.field_6002.getDifficulty() == Difficulty.HARD) {
+					} else if (this.world.getDifficulty() == Difficulty.HARD) {
 						i = 40;
 					}
 
@@ -84,8 +86,8 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 				}
 			}
 
-			Explosion.class_4179 lv = this.field_6002.getGameRules().getBoolean("mobGriefing") ? Explosion.class_4179.field_18687 : Explosion.class_4179.field_18685;
-			this.field_6002.createExplosion(this, this.x, this.y, this.z, 1.0F, false, lv);
+			Explosion.class_4179 lv = this.world.getGameRules().getBoolean("mobGriefing") ? Explosion.class_4179.field_18687 : Explosion.class_4179.field_18685;
+			this.world.createExplosion(this, this.x, this.y, this.z, 1.0F, false, lv);
 			this.invalidate();
 		}
 	}
@@ -102,15 +104,15 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 
 	@Override
 	protected void initDataTracker() {
-		this.field_6011.startTracking(field_7654, false);
+		this.dataTracker.startTracking(CHARGED, false);
 	}
 
 	public boolean method_7503() {
-		return this.field_6011.get(field_7654);
+		return this.dataTracker.get(CHARGED);
 	}
 
 	public void setCharged(boolean bl) {
-		this.field_6011.set(field_7654, bl);
+		this.dataTracker.set(CHARGED, bl);
 	}
 
 	@Override

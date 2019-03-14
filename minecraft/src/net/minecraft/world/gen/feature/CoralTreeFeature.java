@@ -17,16 +17,16 @@ public class CoralTreeFeature extends CoralFeature {
 	}
 
 	@Override
-	protected boolean method_12863(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
+	protected boolean spawnCoral(IWorld iWorld, Random random, BlockPos blockPos, BlockState blockState) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 		int i = random.nextInt(3) + 1;
 
 		for (int j = 0; j < i; j++) {
-			if (!this.method_12864(iWorld, random, mutable, blockState)) {
+			if (!this.spawnCoralPiece(iWorld, random, mutable, blockState)) {
 				return true;
 			}
 
-			mutable.method_10098(Direction.UP);
+			mutable.setOffset(Direction.UP);
 		}
 
 		BlockPos blockPos2 = mutable.toImmutable();
@@ -35,16 +35,16 @@ public class CoralTreeFeature extends CoralFeature {
 		Collections.shuffle(list, random);
 
 		for (Direction direction : list.subList(0, k)) {
-			mutable.method_10101(blockPos2);
-			mutable.method_10098(direction);
+			mutable.set(blockPos2);
+			mutable.setOffset(direction);
 			int l = random.nextInt(5) + 2;
 			int m = 0;
 
-			for (int n = 0; n < l && this.method_12864(iWorld, random, mutable, blockState); n++) {
+			for (int n = 0; n < l && this.spawnCoralPiece(iWorld, random, mutable, blockState); n++) {
 				m++;
-				mutable.method_10098(Direction.UP);
+				mutable.setOffset(Direction.UP);
 				if (n == 0 || m >= 2 && random.nextFloat() < 0.25F) {
-					mutable.method_10098(direction);
+					mutable.setOffset(direction);
 					m = 0;
 				}
 			}

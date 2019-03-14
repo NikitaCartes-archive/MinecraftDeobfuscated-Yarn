@@ -23,7 +23,7 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 	}
 
 	public RandomFeatureEntry(Feature<FC> feature, Dynamic<?> dynamic, float f) {
-		this(feature, feature.method_13148(dynamic), Float.valueOf(f));
+		this(feature, feature.deserializeConfig(dynamic), Float.valueOf(f));
 	}
 
 	public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
@@ -32,7 +32,7 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 			dynamicOps.createMap(
 				ImmutableMap.of(
 					dynamicOps.createString("name"),
-					dynamicOps.createString(Registry.FEATURE.method_10221(this.feature).toString()),
+					dynamicOps.createString(Registry.FEATURE.getId(this.feature).toString()),
 					dynamicOps.createString("config"),
 					this.config.serialize(dynamicOps).getValue(),
 					dynamicOps.createString("chance"),
@@ -42,12 +42,12 @@ public class RandomFeatureEntry<FC extends FeatureConfig> {
 		);
 	}
 
-	public boolean method_14271(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
-		return this.feature.method_13151(iWorld, chunkGenerator, random, blockPos, this.config);
+	public boolean generate(IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos) {
+		return this.feature.generate(iWorld, chunkGenerator, random, blockPos, this.config);
 	}
 
 	public static <T> RandomFeatureEntry<?> deserialize(Dynamic<T> dynamic) {
-		Feature<? extends FeatureConfig> feature = (Feature<? extends FeatureConfig>)Registry.FEATURE.method_10223(new Identifier(dynamic.get("name").asString("")));
+		Feature<? extends FeatureConfig> feature = (Feature<? extends FeatureConfig>)Registry.FEATURE.get(new Identifier(dynamic.get("name").asString("")));
 		return new RandomFeatureEntry<>(feature, dynamic.get("config").orElseEmptyMap(), dynamic.get("chance").asFloat(0.0F));
 	}
 }

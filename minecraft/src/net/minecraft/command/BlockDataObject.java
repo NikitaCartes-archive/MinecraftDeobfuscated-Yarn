@@ -24,8 +24,8 @@ public class BlockDataObject implements DataCommandObject {
 	public static final Function<String, DataCommand.class_3167> field_13786 = string -> new DataCommand.class_3167() {
 			@Override
 			public DataCommandObject method_13924(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
-				BlockPos blockPos = BlockPosArgumentType.method_9696(commandContext, string + "Pos");
-				BlockEntity blockEntity = ((ServerCommandSource)commandContext.getSource()).method_9225().method_8321(blockPos);
+				BlockPos blockPos = BlockPosArgumentType.getValidPosArgument(commandContext, string + "Pos");
+				BlockEntity blockEntity = ((ServerCommandSource)commandContext.getSource()).getWorld().getBlockEntity(blockPos);
 				if (blockEntity == null) {
 					throw BlockDataObject.field_13785.create();
 				} else {
@@ -57,15 +57,15 @@ public class BlockDataObject implements DataCommandObject {
 		compoundTag.putInt("x", this.field_13783.getX());
 		compoundTag.putInt("y", this.field_13783.getY());
 		compoundTag.putInt("z", this.field_13783.getZ());
-		this.field_13784.method_11014(compoundTag);
+		this.field_13784.fromTag(compoundTag);
 		this.field_13784.markDirty();
-		BlockState blockState = this.field_13784.getWorld().method_8320(this.field_13783);
-		this.field_13784.getWorld().method_8413(this.field_13783, blockState, blockState, 3);
+		BlockState blockState = this.field_13784.getWorld().getBlockState(this.field_13783);
+		this.field_13784.getWorld().updateListeners(this.field_13783, blockState, blockState, 3);
 	}
 
 	@Override
 	public CompoundTag method_13881() {
-		return this.field_13784.method_11007(new CompoundTag());
+		return this.field_13784.toTag(new CompoundTag());
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class BlockDataObject implements DataCommandObject {
 	@Override
 	public TextComponent method_13882(Tag tag) {
 		return new TranslatableTextComponent(
-			"commands.data.block.query", this.field_13783.getX(), this.field_13783.getY(), this.field_13783.getZ(), tag.method_10715()
+			"commands.data.block.query", this.field_13783.getX(), this.field_13783.getY(), this.field_13783.getZ(), tag.toTextComponent()
 		);
 	}
 

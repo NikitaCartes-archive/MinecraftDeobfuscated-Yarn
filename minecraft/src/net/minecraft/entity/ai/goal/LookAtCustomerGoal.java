@@ -4,17 +4,17 @@ import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 
 public class LookAtCustomerGoal extends LookAtEntityGoal {
-	private final AbstractTraderEntity field_6495;
+	private final AbstractTraderEntity trader;
 
 	public LookAtCustomerGoal(AbstractTraderEntity abstractTraderEntity) {
 		super(abstractTraderEntity, PlayerEntity.class, 8.0F);
-		this.field_6495 = abstractTraderEntity;
+		this.trader = abstractTraderEntity;
 	}
 
 	@Override
 	public boolean canStart() {
-		if (this.field_6495.hasCustomer()) {
-			this.target = this.field_6495.getCurrentCustomer();
+		if (this.trader.hasCustomer()) {
+			this.target = this.trader.getCurrentCustomer();
 			return true;
 		} else {
 			return false;

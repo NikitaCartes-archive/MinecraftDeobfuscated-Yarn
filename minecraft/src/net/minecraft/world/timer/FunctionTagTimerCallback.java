@@ -8,15 +8,15 @@ import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 
 public class FunctionTagTimerCallback implements TimerCallback<MinecraftServer> {
-	private final Identifier field_1303;
+	private final Identifier name;
 
 	public FunctionTagTimerCallback(Identifier identifier) {
-		this.field_1303 = identifier;
+		this.name = identifier;
 	}
 
 	public void method_962(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {
-		CommandFunctionManager commandFunctionManager = minecraftServer.method_3740();
-		Tag<CommandFunction> tag = commandFunctionManager.method_12901().getOrCreate(this.field_1303);
+		CommandFunctionManager commandFunctionManager = minecraftServer.getCommandFunctionManager();
+		Tag<CommandFunction> tag = commandFunctionManager.getTags().getOrCreate(this.name);
 
 		for (CommandFunction commandFunction : tag.values()) {
 			commandFunctionManager.execute(commandFunction, commandFunctionManager.getFunctionCommandSource());
@@ -29,7 +29,7 @@ public class FunctionTagTimerCallback implements TimerCallback<MinecraftServer> 
 		}
 
 		public void method_964(CompoundTag compoundTag, FunctionTagTimerCallback functionTagTimerCallback) {
-			compoundTag.putString("Name", functionTagTimerCallback.field_1303.toString());
+			compoundTag.putString("Name", functionTagTimerCallback.name.toString());
 		}
 
 		public FunctionTagTimerCallback method_965(CompoundTag compoundTag) {

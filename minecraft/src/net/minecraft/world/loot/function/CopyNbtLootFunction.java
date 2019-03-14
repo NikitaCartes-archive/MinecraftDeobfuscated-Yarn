@@ -31,14 +31,14 @@ import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
 public class CopyNbtLootFunction extends ConditionalLootFunction {
-	private final CopyNbtLootFunction.Source field_17013;
+	private final CopyNbtLootFunction.Source source;
 	private final List<CopyNbtLootFunction.class_3839> field_17014;
-	private static final Function<Entity, Tag> ENTITY_TAG_GETTER = NbtPredicate::method_9076;
-	private static final Function<BlockEntity, Tag> BLOCK_ENTITY_TAG_GETTER = blockEntity -> blockEntity.method_11007(new CompoundTag());
+	private static final Function<Entity, Tag> ENTITY_TAG_GETTER = NbtPredicate::entityToTag;
+	private static final Function<BlockEntity, Tag> BLOCK_ENTITY_TAG_GETTER = blockEntity -> blockEntity.toTag(new CompoundTag());
 
 	private CopyNbtLootFunction(LootCondition[] lootConditions, CopyNbtLootFunction.Source source, List<CopyNbtLootFunction.class_3839> list) {
 		super(lootConditions);
-		this.field_17013 = source;
+		this.source = source;
 		this.field_17014 = ImmutableList.copyOf(list);
 	}
 
@@ -52,14 +52,14 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return ImmutableSet.of(this.field_17013.field_17029);
+		return ImmutableSet.of(this.source.parameter);
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		Tag tag = (Tag)this.field_17013.getter.apply(lootContext);
+		Tag tag = (Tag)this.source.getter.apply(lootContext);
 		if (tag != null) {
-			this.field_17014.forEach(arg -> arg.method_16860(itemStack::method_7948, tag));
+			this.field_17014.forEach(arg -> arg.method_16860(itemStack::getOrCreateTag, tag));
 		}
 
 		return itemStack;
@@ -76,7 +76,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		public void method_16870(JsonObject jsonObject, CopyNbtLootFunction copyNbtLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, copyNbtLootFunction, jsonSerializationContext);
-			jsonObject.addProperty("source", copyNbtLootFunction.field_17013.name);
+			jsonObject.addProperty("source", copyNbtLootFunction.source.name);
 			JsonArray jsonArray = new JsonArray();
 			copyNbtLootFunction.field_17014.stream().map(CopyNbtLootFunction.class_3839::method_16858).forEach(jsonArray::add);
 			jsonObject.add("ops", jsonArray);
@@ -98,13 +98,13 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	public static enum MergeStrategy {
 		REPLACE("replace") {
 			@Override
-			public void method_16864(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
+			public void merge(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
 				arg.method_9368(tag, Iterables.getLast(list)::copy);
 			}
 		},
 		APPEND("append") {
 			@Override
-			public void method_16864(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
+			public void merge(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
 				List<Tag> list2 = arg.method_9367(tag, ListTag::new);
 				list2.forEach(tagx -> {
 					if (tagx instanceof ListTag) {
@@ -115,7 +115,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		},
 		MERGE("merge") {
 			@Override
-			public void method_16864(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
+			public void merge(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
 				List<Tag> list2 = arg.method_9367(tag, CompoundTag::new);
 				list2.forEach(tagx -> {
 					if (tagx instanceof CompoundTag) {
@@ -131,7 +131,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		private final String name;
 
-		public abstract void method_16864(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException;
+		public abstract void merge(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException;
 
 		private MergeStrategy(String string2) {
 			this.name = string2;
@@ -155,14 +155,14 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		field_17027("block_entity", LootContextParameters.field_1228, CopyNbtLootFunction.BLOCK_ENTITY_TAG_GETTER);
 
 		public final String name;
-		public final LootContextParameter<?> field_17029;
+		public final LootContextParameter<?> parameter;
 		public final Function<LootContext, Tag> getter;
 
 		private <T> Source(String string2, LootContextParameter<T> lootContextParameter, Function<? super T, Tag> function) {
 			this.name = string2;
-			this.field_17029 = lootContextParameter;
+			this.parameter = lootContextParameter;
 			this.getter = lootContext -> {
-				T object = lootContext.method_296(lootContextParameter);
+				T object = lootContext.get(lootContextParameter);
 				return object != null ? (Tag)function.apply(object) : null;
 			};
 		}
@@ -201,7 +201,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public LootFunction build() {
-			return new CopyNbtLootFunction(this.method_526(), this.field_17017, this.field_17018);
+			return new CopyNbtLootFunction(this.getConditions(), this.field_17017, this.field_17018);
 		}
 	}
 
@@ -224,7 +224,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			try {
 				List<Tag> list = this.field_17020.method_9366(tag);
 				if (!list.isEmpty()) {
-					this.field_17023.method_16864((Tag)supplier.get(), this.field_17022, list);
+					this.field_17023.merge((Tag)supplier.get(), this.field_17022, list);
 				}
 			} catch (CommandSyntaxException var4) {
 			}

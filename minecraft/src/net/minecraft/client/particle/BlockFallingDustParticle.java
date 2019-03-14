@@ -3,7 +3,6 @@ package net.minecraft.client.particle;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4002;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.FallingBlock;
@@ -16,11 +15,11 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class BlockFallingDustParticle extends SpriteBillboardParticle {
 	private final float field_3809;
-	private final class_4002 field_17808;
+	private final SpriteProvider field_17808;
 
-	private BlockFallingDustParticle(World world, double d, double e, double f, float g, float h, float i, class_4002 arg) {
+	private BlockFallingDustParticle(World world, double d, double e, double f, float g, float h, float i, SpriteProvider spriteProvider) {
 		super(world, d, e, f);
-		this.field_17808 = arg;
+		this.field_17808 = spriteProvider;
 		this.colorRed = g;
 		this.colorGreen = h;
 		this.colorBlue = i;
@@ -28,13 +27,13 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 		this.scale *= 0.67499995F;
 		int k = (int)(32.0 / (Math.random() * 0.8 + 0.2));
 		this.maxAge = (int)Math.max((float)k * 0.9F, 1.0F);
-		this.method_18142(arg);
+		this.method_18142(spriteProvider);
 		this.field_3809 = ((float)Math.random() - 0.5F) * 0.1F;
 		this.angle = (float)Math.random() * (float) (Math.PI * 2);
 	}
 
 	@Override
-	public ParticleTextureSheet method_18122() {
+	public ParticleTextureSheet getTextureSheet() {
 		return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
 	}
 
@@ -66,10 +65,10 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<BlockStateParticleParameters> {
-		private final class_4002 field_17809;
+		private final SpriteProvider field_17809;
 
-		public Factory(class_4002 arg) {
-			this.field_17809 = arg;
+		public Factory(SpriteProvider spriteProvider) {
+			this.field_17809 = spriteProvider;
 		}
 
 		@Nullable
@@ -80,9 +79,9 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 			if (!blockState.isAir() && blockState.getRenderType() == BlockRenderType.field_11455) {
 				return null;
 			} else {
-				int j = MinecraftClient.getInstance().method_1505().method_1691(blockState, world, new BlockPos(d, e, f));
+				int j = MinecraftClient.getInstance().getBlockColorMap().method_1691(blockState, world, new BlockPos(d, e, f));
 				if (blockState.getBlock() instanceof FallingBlock) {
-					j = ((FallingBlock)blockState.getBlock()).method_10130(blockState);
+					j = ((FallingBlock)blockState.getBlock()).getColor(blockState);
 				}
 
 				float k = (float)(j >> 16 & 0xFF) / 255.0F;

@@ -18,20 +18,20 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 	public boolean method_13239(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		if (!iWorld.method_8623(blockPos)) {
+		if (!iWorld.isAir(blockPos)) {
 			return false;
-		} else if (iWorld.method_8320(blockPos.up()).getBlock() != Blocks.field_10515) {
+		} else if (iWorld.getBlockState(blockPos.up()).getBlock() != Blocks.field_10515) {
 			return false;
 		} else {
-			iWorld.method_8652(blockPos, Blocks.field_10171.method_9564(), 2);
+			iWorld.setBlockState(blockPos, Blocks.field_10171.getDefaultState(), 2);
 
 			for (int i = 0; i < 1500; i++) {
 				BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), -random.nextInt(12), random.nextInt(8) - random.nextInt(8));
-				if (iWorld.method_8320(blockPos2).isAir()) {
+				if (iWorld.getBlockState(blockPos2).isAir()) {
 					int j = 0;
 
 					for (Direction direction : Direction.values()) {
-						if (iWorld.method_8320(blockPos2.method_10093(direction)).getBlock() == Blocks.field_10171) {
+						if (iWorld.getBlockState(blockPos2.offset(direction)).getBlock() == Blocks.field_10171) {
 							j++;
 						}
 
@@ -41,7 +41,7 @@ public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 					}
 
 					if (j == 1) {
-						iWorld.method_8652(blockPos2, Blocks.field_10171.method_9564(), 2);
+						iWorld.setBlockState(blockPos2, Blocks.field_10171.getDefaultState(), 2);
 					}
 				}
 			}

@@ -13,9 +13,9 @@ public final class BeachBiome extends Biome {
 	public BeachBiome() {
 		super(
 			new Biome.Settings()
-				.method_8737(SurfaceBuilder.DEFAULT, SurfaceBuilder.field_15694)
+				.configureSurfaceBuilder(SurfaceBuilder.DEFAULT, SurfaceBuilder.SAND_CONFIG)
 				.precipitation(Biome.Precipitation.RAIN)
-				.method_8738(Biome.Category.BEACH)
+				.category(Biome.Category.BEACH)
 				.depth(0.0F)
 				.scale(0.025F)
 				.temperature(0.8F)
@@ -24,9 +24,9 @@ public final class BeachBiome extends Biome {
 				.waterFogColor(329011)
 				.parent(null)
 		);
-		this.method_8710(Feature.field_13547, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
-		this.method_8710(Feature.field_13538, new BuriedTreasureFeatureConfig(0.01F));
-		this.method_8710(Feature.field_13589, new ShipwreckFeatureConfig(true));
+		this.addStructureFeature(Feature.MINESHAFT, new MineshaftFeatureConfig(0.004, MineshaftFeature.Type.NORMAL));
+		this.addStructureFeature(Feature.BURIED_TREASURE, new BuriedTreasureFeatureConfig(0.01F));
+		this.addStructureFeature(Feature.SHIPWRECK, new ShipwreckFeatureConfig(true));
 		DefaultBiomeFeatures.addLandCarvers(this);
 		DefaultBiomeFeatures.addDefaultStructures(this);
 		DefaultBiomeFeatures.addDefaultLakes(this);

@@ -16,12 +16,12 @@ public class NetherBedDamageSource extends DamageSource {
 	}
 
 	@Override
-	public TextComponent method_5506(LivingEntity livingEntity) {
+	public TextComponent getDeathMessage(LivingEntity livingEntity) {
 		TextComponent textComponent = TextFormatter.bracketed(new TranslatableTextComponent("death.attack.netherBed.link"))
 			.modifyStyle(
 				style -> style.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "https://bugs.mojang.com/browse/MCPE-28723"))
 						.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent("MCPE-28723")))
 			);
-		return new TranslatableTextComponent("death.attack.netherBed.message", livingEntity.method_5476(), textComponent);
+		return new TranslatableTextComponent("death.attack.netherBed.message", livingEntity.getDisplayName(), textComponent);
 	}
 }

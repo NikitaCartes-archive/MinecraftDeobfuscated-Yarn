@@ -2,16 +2,15 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4186;
-import net.minecraft.class_4188;
+import net.minecraft.client.gui.widget.SliderButtonWidget;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class RealmsSliderButton extends class_4186<class_4188> {
+public abstract class RealmsSliderButton extends RealmsAbstractButton<SliderButtonWidget> {
 	protected static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
 	private final int field_18804;
-	private final class_4188 proxy;
+	private final SliderButtonWidget proxy;
 	private final double minValue;
 	private final double maxValue;
 
@@ -19,7 +18,7 @@ public abstract class RealmsSliderButton extends class_4186<class_4188> {
 		this.field_18804 = i;
 		this.minValue = d;
 		this.maxValue = e;
-		this.proxy = new class_4188(this, j, k, l, 20, this.toPct((double)m));
+		this.proxy = new SliderButtonWidget(this, j, k, l, 20, this.toPct((double)m));
 		this.getProxy().setText(this.getMessage());
 	}
 
@@ -49,16 +48,16 @@ public abstract class RealmsSliderButton extends class_4186<class_4188> {
 	public void onRelease(double d, double e) {
 	}
 
-	public class_4188 getProxy() {
+	public SliderButtonWidget getProxy() {
 		return this.proxy;
 	}
 
 	public double getValue() {
-		return this.proxy.method_19363();
+		return this.proxy.getValue();
 	}
 
 	public void setValue(double d) {
-		this.proxy.method_19361(d);
+		this.proxy.setValue(d);
 	}
 
 	public int method_19462() {
@@ -74,11 +73,11 @@ public abstract class RealmsSliderButton extends class_4186<class_4188> {
 	}
 
 	public int getHeight() {
-		return this.proxy.method_19365();
+		return this.proxy.getHeight();
 	}
 
 	public int method_19463() {
-		return this.proxy.method_19362();
+		return this.proxy.getY();
 	}
 
 	public abstract void applyValue();

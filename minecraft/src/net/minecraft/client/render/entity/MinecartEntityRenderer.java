@@ -16,7 +16,7 @@ import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends EntityRenderer<T> {
-	private static final Identifier field_4746 = new Identifier("textures/entity/minecart.png");
+	private static final Identifier SKIN = new Identifier("textures/entity/minecart.png");
 	protected final EntityModel<T> field_4747 = new MinecartEntityModel<>();
 
 	public MinecartEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
@@ -80,10 +80,10 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(abstractMinecartEntity));
 		}
 
-		BlockState blockState = abstractMinecartEntity.method_7519();
+		BlockState blockState = abstractMinecartEntity.getContainedBlock();
 		if (blockState.getRenderType() != BlockRenderType.field_11455) {
 			GlStateManager.pushMatrix();
-			this.method_3924(SpriteAtlasTexture.field_5275);
+			this.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			float u = 0.75F;
 			GlStateManager.scalef(0.75F, 0.75F, 0.75F);
 			GlStateManager.translatef(-0.5F, (float)(t - 8) / 16.0F, 0.5F);
@@ -105,12 +105,12 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 	}
 
 	protected Identifier method_4065(T abstractMinecartEntity) {
-		return field_4746;
+		return SKIN;
 	}
 
 	protected void method_4064(T abstractMinecartEntity, float f, BlockState blockState) {
 		GlStateManager.pushMatrix();
-		MinecraftClient.getInstance().method_1541().renderDynamic(blockState, abstractMinecartEntity.method_5718());
+		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, abstractMinecartEntity.method_5718());
 		GlStateManager.popMatrix();
 	}
 }

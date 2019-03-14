@@ -58,9 +58,9 @@ import org.apache.logging.log4j.Logger;
 public abstract class Biome {
 	public static final Logger LOGGER = LogManager.getLogger();
 	public static final Set<Biome> BIOMES = Sets.<Biome>newHashSet();
-	public static final IdList<Biome> field_9328 = new IdList<>();
-	protected static final OctaveSimplexNoiseSampler field_9335 = new OctaveSimplexNoiseSampler(new Random(1234L), 1);
-	public static final OctaveSimplexNoiseSampler field_9324 = new OctaveSimplexNoiseSampler(new Random(2345L), 1);
+	public static final IdList<Biome> PARENT_BIOME_ID_MAP = new IdList<>();
+	protected static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler(new Random(1234L), 1);
+	public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler(new Random(2345L), 1);
 	@Nullable
 	protected String translationKey;
 	protected final float depth;
@@ -71,7 +71,7 @@ public abstract class Biome {
 	protected final int waterFogColor;
 	@Nullable
 	protected final String parent;
-	protected final ConfiguredSurfaceBuilder<?> field_9336;
+	protected final ConfiguredSurfaceBuilder<?> surfaceBuilder;
 	protected final Biome.Category category;
 	protected final Biome.Precipitation precipitation;
 	protected final Map<GenerationStep.Carver, List<ConfiguredCarver<?>>> carvers = Maps.<GenerationStep.Carver, List<ConfiguredCarver<?>>>newHashMap();
@@ -82,14 +82,14 @@ public abstract class Biome {
 
 	@Nullable
 	public static Biome getParentBiome(Biome biome) {
-		return field_9328.get(Registry.BIOME.getRawId(biome));
+		return PARENT_BIOME_ID_MAP.get(Registry.BIOME.getRawId(biome));
 	}
 
-	public static <C extends CarverConfig> ConfiguredCarver<C> method_8714(Carver<C> carver, C carverConfig) {
+	public static <C extends CarverConfig> ConfiguredCarver<C> configureCarver(Carver<C> carver, C carverConfig) {
 		return new ConfiguredCarver<>(carver, carverConfig);
 	}
 
-	public static <F extends FeatureConfig, D extends DecoratorConfig> ConfiguredFeature<?> method_8699(
+	public static <F extends FeatureConfig, D extends DecoratorConfig> ConfiguredFeature<?> configureFeature(
 		Feature<F> feature, F featureConfig, Decorator<D> decorator, D decoratorConfig
 	) {
 		Feature<DecoratedFeatureConfig> feature2 = feature instanceof FlowerFeature ? Feature.field_13561 : Feature.field_13572;
@@ -97,18 +97,18 @@ public abstract class Biome {
 	}
 
 	protected Biome(Biome.Settings settings) {
-		if (settings.field_9353 != null
+		if (settings.surfaceBuilder != null
 			&& settings.precipitation != null
-			&& settings.field_9345 != null
+			&& settings.category != null
 			&& settings.depth != null
 			&& settings.scale != null
 			&& settings.temperature != null
 			&& settings.downfall != null
 			&& settings.waterColor != null
 			&& settings.waterFogColor != null) {
-			this.field_9336 = settings.field_9353;
+			this.surfaceBuilder = settings.surfaceBuilder;
 			this.precipitation = settings.precipitation;
-			this.category = settings.field_9345;
+			this.category = settings.category;
 			this.depth = settings.depth;
 			this.scale = settings.scale;
 			this.temperature = settings.temperature;
@@ -160,35 +160,35 @@ public abstract class Biome {
 		return 0.1F;
 	}
 
-	public float method_8707(BlockPos blockPos) {
+	public float getTemperature(BlockPos blockPos) {
 		if (blockPos.getY() > 64) {
-			float f = (float)(field_9335.sample((double)((float)blockPos.getX() / 8.0F), (double)((float)blockPos.getZ() / 8.0F)) * 4.0);
+			float f = (float)(TEMPERATURE_NOISE.sample((double)((float)blockPos.getX() / 8.0F), (double)((float)blockPos.getZ() / 8.0F)) * 4.0);
 			return this.getTemperature() - (f + (float)blockPos.getY() - 64.0F) * 0.05F / 30.0F;
 		} else {
 			return this.getTemperature();
 		}
 	}
 
-	public boolean method_8705(ViewableWorld viewableWorld, BlockPos blockPos) {
-		return this.method_8685(viewableWorld, blockPos, true);
+	public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos) {
+		return this.canSetSnow(viewableWorld, blockPos, true);
 	}
 
-	public boolean method_8685(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
-		if (this.method_8707(blockPos) >= 0.15F) {
+	public boolean canSetSnow(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl) {
+		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.method_8314(LightType.BLOCK, blockPos) < 10) {
-				BlockState blockState = viewableWorld.method_8320(blockPos);
-				FluidState fluidState = viewableWorld.method_8316(blockPos);
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
+				BlockState blockState = viewableWorld.getBlockState(blockPos);
+				FluidState fluidState = viewableWorld.getFluidState(blockPos);
 				if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
 					if (!bl) {
 						return true;
 					}
 
-					boolean bl2 = viewableWorld.method_8585(blockPos.west())
-						&& viewableWorld.method_8585(blockPos.east())
-						&& viewableWorld.method_8585(blockPos.north())
-						&& viewableWorld.method_8585(blockPos.south());
+					boolean bl2 = viewableWorld.isWaterAt(blockPos.west())
+						&& viewableWorld.isWaterAt(blockPos.east())
+						&& viewableWorld.isWaterAt(blockPos.north())
+						&& viewableWorld.isWaterAt(blockPos.south());
 					if (!bl2) {
 						return true;
 					}
@@ -199,13 +199,13 @@ public abstract class Biome {
 		}
 	}
 
-	public boolean method_8696(ViewableWorld viewableWorld, BlockPos blockPos) {
-		if (this.method_8707(blockPos) >= 0.15F) {
+	public boolean canSetIce(ViewableWorld viewableWorld, BlockPos blockPos) {
+		if (this.getTemperature(blockPos) >= 0.15F) {
 			return false;
 		} else {
-			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.method_8314(LightType.BLOCK, blockPos) < 10) {
-				BlockState blockState = viewableWorld.method_8320(blockPos);
-				if (blockState.isAir() && Blocks.field_10477.method_9564().method_11591(viewableWorld, blockPos)) {
+			if (blockPos.getY() >= 0 && blockPos.getY() < 256 && viewableWorld.getLightLevel(LightType.BLOCK, blockPos) < 10) {
+				BlockState blockState = viewableWorld.getBlockState(blockPos);
+				if (blockState.isAir() && Blocks.field_10477.getDefaultState().canPlaceAt(viewableWorld, blockPos)) {
 					return true;
 				}
 			}
@@ -214,32 +214,32 @@ public abstract class Biome {
 		}
 	}
 
-	public void method_8719(GenerationStep.Feature feature, ConfiguredFeature<?> configuredFeature) {
-		if (configuredFeature.field_13376 == Feature.field_13561) {
+	public void addFeature(GenerationStep.Feature feature, ConfiguredFeature<?> configuredFeature) {
+		if (configuredFeature.feature == Feature.field_13561) {
 			this.flowerFeatures.add(configuredFeature);
 		}
 
 		((List)this.features.get(feature)).add(configuredFeature);
 	}
 
-	public <C extends CarverConfig> void method_8691(GenerationStep.Carver carver, ConfiguredCarver<C> configuredCarver) {
+	public <C extends CarverConfig> void addCarver(GenerationStep.Carver carver, ConfiguredCarver<C> configuredCarver) {
 		((List)this.carvers.computeIfAbsent(carver, carverx -> Lists.newArrayList())).add(configuredCarver);
 	}
 
-	public List<ConfiguredCarver<?>> method_8717(GenerationStep.Carver carver) {
+	public List<ConfiguredCarver<?>> getCarversForStep(GenerationStep.Carver carver) {
 		return (List<ConfiguredCarver<?>>)this.carvers.computeIfAbsent(carver, carverx -> Lists.newArrayList());
 	}
 
-	public <C extends FeatureConfig> void method_8710(StructureFeature<C> structureFeature, C featureConfig) {
+	public <C extends FeatureConfig> void addStructureFeature(StructureFeature<C> structureFeature, C featureConfig) {
 		this.structureFeatures.put(structureFeature, featureConfig);
 	}
 
-	public <C extends FeatureConfig> boolean method_8684(StructureFeature<C> structureFeature) {
+	public <C extends FeatureConfig> boolean hasStructureFeature(StructureFeature<C> structureFeature) {
 		return this.structureFeatures.containsKey(structureFeature);
 	}
 
 	@Nullable
-	public <C extends FeatureConfig> C method_8706(StructureFeature<C> structureFeature) {
+	public <C extends FeatureConfig> C getStructureFeatureConfig(StructureFeature<C> structureFeature) {
 		return (C)this.structureFeatures.get(structureFeature);
 	}
 
@@ -247,11 +247,11 @@ public abstract class Biome {
 		return this.flowerFeatures;
 	}
 
-	public List<ConfiguredFeature<?>> method_8721(GenerationStep.Feature feature) {
+	public List<ConfiguredFeature<?>> getFeaturesForStep(GenerationStep.Feature feature) {
 		return (List<ConfiguredFeature<?>>)this.features.get(feature);
 	}
 
-	public void method_8702(
+	public void generateFeatureStep(
 		GenerationStep.Feature feature,
 		ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator,
 		IWorld iWorld,
@@ -263,28 +263,28 @@ public abstract class Biome {
 
 		for (ConfiguredFeature<?> configuredFeature : (List)this.features.get(feature)) {
 			chunkRandom.setFeatureSeed(l, i, feature.ordinal());
-			configuredFeature.method_12862(iWorld, chunkGenerator, chunkRandom, blockPos);
+			configuredFeature.generate(iWorld, chunkGenerator, chunkRandom, blockPos);
 			i++;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_8711(BlockPos blockPos) {
-		double d = (double)MathHelper.clamp(this.method_8707(blockPos), 0.0F, 1.0F);
+	public int getGrassColorAt(BlockPos blockPos) {
+		double d = (double)MathHelper.clamp(this.getTemperature(blockPos), 0.0F, 1.0F);
 		double e = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
 		return GrassColorHandler.getColor(d, e);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_8698(BlockPos blockPos) {
-		double d = (double)MathHelper.clamp(this.method_8707(blockPos), 0.0F, 1.0F);
+	public int getFoliageColorAt(BlockPos blockPos) {
+		double d = (double)MathHelper.clamp(this.getTemperature(blockPos), 0.0F, 1.0F);
 		double e = (double)MathHelper.clamp(this.getRainfall(), 0.0F, 1.0F);
 		return FoliageColorHandler.getColor(d, e);
 	}
 
-	public void method_8703(Random random, Chunk chunk, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m) {
-		this.field_9336.initSeed(m);
-		this.field_9336.generate(random, chunk, this, i, j, k, d, blockState, blockState2, l, m);
+	public void buildSurface(Random random, Chunk chunk, int i, int j, int k, double d, BlockState blockState, BlockState blockState2, int l, long m) {
+		this.surfaceBuilder.initSeed(m);
+		this.surfaceBuilder.generate(random, chunk, this, i, j, k, d, blockState, blockState2, l, m);
 	}
 
 	public Biome.TemperatureGroup getTemperatureGroup() {
@@ -306,13 +306,13 @@ public abstract class Biome {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent method_8693() {
+	public TextComponent getTextComponent() {
 		return new TranslatableTextComponent(this.getTranslationKey());
 	}
 
 	public String getTranslationKey() {
 		if (this.translationKey == null) {
-			this.translationKey = SystemUtil.method_646("biome", Registry.BIOME.method_10221(this));
+			this.translationKey = SystemUtil.createTranslationKey("biome", Registry.BIOME.getId(this));
 		}
 
 		return this.translationKey;
@@ -338,12 +338,12 @@ public abstract class Biome {
 		return this.category;
 	}
 
-	public ConfiguredSurfaceBuilder<?> method_8692() {
-		return this.field_9336;
+	public ConfiguredSurfaceBuilder<?> getSurfaceBuilder() {
+		return this.surfaceBuilder;
 	}
 
-	public SurfaceConfig method_8722() {
-		return this.field_9336.method_15197();
+	public SurfaceConfig getSurfaceConfig() {
+		return this.surfaceBuilder.getConfig();
 	}
 
 	@Nullable
@@ -403,11 +403,11 @@ public abstract class Biome {
 
 	public static class Settings {
 		@Nullable
-		private ConfiguredSurfaceBuilder<?> field_9353;
+		private ConfiguredSurfaceBuilder<?> surfaceBuilder;
 		@Nullable
 		private Biome.Precipitation precipitation;
 		@Nullable
-		private Biome.Category field_9345;
+		private Biome.Category category;
 		@Nullable
 		private Float depth;
 		@Nullable
@@ -423,13 +423,13 @@ public abstract class Biome {
 		@Nullable
 		private String parent;
 
-		public <SC extends SurfaceConfig> Biome.Settings method_8737(SurfaceBuilder<SC> surfaceBuilder, SC surfaceConfig) {
-			this.field_9353 = new ConfiguredSurfaceBuilder<>(surfaceBuilder, surfaceConfig);
+		public <SC extends SurfaceConfig> Biome.Settings configureSurfaceBuilder(SurfaceBuilder<SC> surfaceBuilder, SC surfaceConfig) {
+			this.surfaceBuilder = new ConfiguredSurfaceBuilder<>(surfaceBuilder, surfaceConfig);
 			return this;
 		}
 
-		public Biome.Settings method_8731(ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder) {
-			this.field_9353 = configuredSurfaceBuilder;
+		public Biome.Settings surfaceBuilder(ConfiguredSurfaceBuilder<?> configuredSurfaceBuilder) {
+			this.surfaceBuilder = configuredSurfaceBuilder;
 			return this;
 		}
 
@@ -438,8 +438,8 @@ public abstract class Biome {
 			return this;
 		}
 
-		public Biome.Settings method_8738(Biome.Category category) {
-			this.field_9345 = category;
+		public Biome.Settings category(Biome.Category category) {
+			this.category = category;
 			return this;
 		}
 
@@ -480,11 +480,11 @@ public abstract class Biome {
 
 		public String toString() {
 			return "BiomeBuilder{\nsurfaceBuilder="
-				+ this.field_9353
+				+ this.surfaceBuilder
 				+ ",\nprecipitation="
 				+ this.precipitation
 				+ ",\nbiomeCategory="
-				+ this.field_9345
+				+ this.category
 				+ ",\ndepth="
 				+ this.depth
 				+ ",\nscale="
@@ -518,7 +518,7 @@ public abstract class Biome {
 		}
 
 		public String toString() {
-			return EntityType.method_5890(this.type) + "*(" + this.minGroupSize + "-" + this.maxGroupSize + "):" + this.weight;
+			return EntityType.getId(this.type) + "*(" + this.minGroupSize + "-" + this.maxGroupSize + "):" + this.weight;
 		}
 	}
 

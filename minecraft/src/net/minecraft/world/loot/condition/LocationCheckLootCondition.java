@@ -17,8 +17,8 @@ public class LocationCheckLootCondition implements LootCondition {
 	}
 
 	public boolean method_881(LootContext lootContext) {
-		BlockPos blockPos = lootContext.method_296(LootContextParameters.field_1232);
-		return blockPos != null && this.location.method_9020(lootContext.method_299(), (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ());
+		BlockPos blockPos = lootContext.get(LootContextParameters.field_1232);
+		return blockPos != null && this.location.test(lootContext.getWorld(), (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ());
 	}
 
 	public static LootCondition.Builder method_884(LocationPredicate.Builder builder) {

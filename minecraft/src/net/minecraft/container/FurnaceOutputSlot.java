@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 
 public class FurnaceOutputSlot extends Slot {
 	private final PlayerEntity player;
-	private int amountCrafted;
+	private int amount;
 
 	public FurnaceOutputSlot(PlayerEntity playerEntity, Inventory inventory, int i, int j, int k) {
 		super(inventory, i, j, k);
@@ -15,39 +15,39 @@ public class FurnaceOutputSlot extends Slot {
 	}
 
 	@Override
-	public boolean method_7680(ItemStack itemStack) {
+	public boolean canInsert(ItemStack itemStack) {
 		return false;
 	}
 
 	@Override
-	public ItemStack method_7671(int i) {
+	public ItemStack takeStack(int i) {
 		if (this.hasStack()) {
-			this.amountCrafted = this.amountCrafted + Math.min(i, this.method_7677().getAmount());
+			this.amount = this.amount + Math.min(i, this.getStack().getAmount());
 		}
 
-		return super.method_7671(i);
+		return super.takeStack(i);
 	}
 
 	@Override
-	public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
-		this.method_7669(itemStack);
-		super.method_7667(playerEntity, itemStack);
+	public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+		this.onCrafted(itemStack);
+		super.onTakeItem(playerEntity, itemStack);
 		return itemStack;
 	}
 
 	@Override
-	protected void method_7678(ItemStack itemStack, int i) {
-		this.amountCrafted += i;
-		this.method_7669(itemStack);
+	protected void onCrafted(ItemStack itemStack, int i) {
+		this.amount += i;
+		this.onCrafted(itemStack);
 	}
 
 	@Override
-	protected void method_7669(ItemStack itemStack) {
-		itemStack.method_7982(this.player.field_6002, this.player, this.amountCrafted);
-		if (!this.player.field_6002.isClient && this.inventory instanceof AbstractFurnaceBlockEntity) {
+	protected void onCrafted(ItemStack itemStack) {
+		itemStack.onCrafted(this.player.world, this.player, this.amount);
+		if (!this.player.world.isClient && this.inventory instanceof AbstractFurnaceBlockEntity) {
 			((AbstractFurnaceBlockEntity)this.inventory).dropExperience(this.player);
 		}
 
-		this.amountCrafted = 0;
+		this.amount = 0;
 	}
 }

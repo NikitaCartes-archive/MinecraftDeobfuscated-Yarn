@@ -37,26 +37,26 @@ public class GrindstoneContainer extends Container {
 	public GrindstoneContainer(int i, PlayerInventory playerInventory, BlockContext blockContext) {
 		super(ContainerType.GRINDSTONE, i);
 		this.context = blockContext;
-		this.method_7621(new Slot(this.craftingInventory, 0, 49, 19) {
+		this.addSlot(new Slot(this.craftingInventory, 0, 49, 19) {
 			@Override
-			public boolean method_7680(ItemStack itemStack) {
+			public boolean canInsert(ItemStack itemStack) {
 				return itemStack.hasDurability() || itemStack.getItem() == Items.field_8598 || itemStack.hasEnchantments();
 			}
 		});
-		this.method_7621(new Slot(this.craftingInventory, 1, 49, 40) {
+		this.addSlot(new Slot(this.craftingInventory, 1, 49, 40) {
 			@Override
-			public boolean method_7680(ItemStack itemStack) {
+			public boolean canInsert(ItemStack itemStack) {
 				return itemStack.hasDurability() || itemStack.getItem() == Items.field_8598 || itemStack.hasEnchantments();
 			}
 		});
-		this.method_7621(new Slot(this.resultInventory, 2, 129, 34) {
+		this.addSlot(new Slot(this.resultInventory, 2, 129, 34) {
 			@Override
-			public boolean method_7680(ItemStack itemStack) {
+			public boolean canInsert(ItemStack itemStack) {
 				return false;
 			}
 
 			@Override
-			public ItemStack method_7667(PlayerEntity playerEntity, ItemStack itemStack) {
+			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 					int i = this.method_17416(world);
 
@@ -66,17 +66,17 @@ public class GrindstoneContainer extends Container {
 						world.spawnEntity(new ExperienceOrbEntity(world, (double)blockPos.getX(), (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, j));
 					}
 
-					world.method_8535(1042, blockPos, 0);
+					world.playEvent(1042, blockPos, 0);
 				}));
-				GrindstoneContainer.this.craftingInventory.method_5447(0, ItemStack.EMPTY);
-				GrindstoneContainer.this.craftingInventory.method_5447(1, ItemStack.EMPTY);
+				GrindstoneContainer.this.craftingInventory.setInvStack(0, ItemStack.EMPTY);
+				GrindstoneContainer.this.craftingInventory.setInvStack(1, ItemStack.EMPTY);
 				return itemStack;
 			}
 
 			private int method_17416(World world) {
 				int i = 0;
-				i += this.method_16696(GrindstoneContainer.this.craftingInventory.method_5438(0));
-				i += this.method_16696(GrindstoneContainer.this.craftingInventory.method_5438(1));
+				i += this.method_16696(GrindstoneContainer.this.craftingInventory.getInvStack(0));
+				i += this.method_16696(GrindstoneContainer.this.craftingInventory.getInvStack(1));
 				if (i > 0) {
 					int j = (int)Math.ceil((double)i / 2.0);
 					return j + world.random.nextInt(j);
@@ -103,12 +103,12 @@ public class GrindstoneContainer extends Container {
 
 		for (int j = 0; j < 3; j++) {
 			for (int k = 0; k < 9; k++) {
-				this.method_7621(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
+				this.addSlot(new Slot(playerInventory, k + j * 9 + 9, 8 + k * 18, 84 + j * 18));
 			}
 		}
 
 		for (int j = 0; j < 9; j++) {
-			this.method_7621(new Slot(playerInventory, j, 8 + j * 18, 142));
+			this.addSlot(new Slot(playerInventory, j, 8 + j * 18, 142));
 		}
 	}
 
@@ -121,13 +121,13 @@ public class GrindstoneContainer extends Container {
 	}
 
 	private void method_16695() {
-		ItemStack itemStack = this.craftingInventory.method_5438(0);
-		ItemStack itemStack2 = this.craftingInventory.method_5438(1);
+		ItemStack itemStack = this.craftingInventory.getInvStack(0);
+		ItemStack itemStack2 = this.craftingInventory.getInvStack(1);
 		boolean bl = !itemStack.isEmpty() || !itemStack2.isEmpty();
 		boolean bl2 = !itemStack.isEmpty() && !itemStack2.isEmpty();
 		if (bl) {
 			if (itemStack.getAmount() > 1 || itemStack2.getAmount() > 1) {
-				this.resultInventory.method_5447(0, ItemStack.EMPTY);
+				this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 				this.sendContentUpdates();
 				return;
 			}
@@ -137,7 +137,7 @@ public class GrindstoneContainer extends Container {
 			ItemStack itemStack3;
 			if (bl2) {
 				if (itemStack.getItem() != itemStack2.getItem()) {
-					this.resultInventory.method_5447(0, ItemStack.EMPTY);
+					this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 					this.sendContentUpdates();
 					return;
 				}
@@ -150,7 +150,7 @@ public class GrindstoneContainer extends Container {
 				itemStack3 = itemStack;
 				if (!itemStack.hasDurability()) {
 					if (!ItemStack.areEqual(itemStack, itemStack2)) {
-						this.resultInventory.method_5447(0, ItemStack.EMPTY);
+						this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 						this.sendContentUpdates();
 						return;
 					}
@@ -163,9 +163,9 @@ public class GrindstoneContainer extends Container {
 				itemStack3 = bl3 ? itemStack : itemStack2;
 			}
 
-			this.resultInventory.method_5447(0, this.method_16693(itemStack3, m, i));
+			this.resultInventory.setInvStack(0, this.method_16693(itemStack3, m, i));
 		} else {
-			this.resultInventory.method_5447(0, ItemStack.EMPTY);
+			this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 		}
 
 		this.sendContentUpdates();
@@ -193,47 +193,47 @@ public class GrindstoneContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.method_7607(playerEntity, world, this.craftingInventory)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, world, this.craftingInventory)));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return method_17695(this.context, playerEntity, Blocks.field_16337);
+		return canUse(this.context, playerEntity, Blocks.field_16337);
 	}
 
 	@Override
-	public ItemStack method_7601(PlayerEntity playerEntity, int i) {
+	public ItemStack transferSlot(PlayerEntity playerEntity, int i) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		Slot slot = (Slot)this.slotList.get(i);
 		if (slot != null && slot.hasStack()) {
-			ItemStack itemStack2 = slot.method_7677();
+			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			ItemStack itemStack3 = this.craftingInventory.method_5438(0);
-			ItemStack itemStack4 = this.craftingInventory.method_5438(1);
+			ItemStack itemStack3 = this.craftingInventory.getInvStack(0);
+			ItemStack itemStack4 = this.craftingInventory.getInvStack(1);
 			if (i == 2) {
-				if (!this.method_7616(itemStack2, 3, 39, true)) {
+				if (!this.insertItem(itemStack2, 3, 39, true)) {
 					return ItemStack.EMPTY;
 				}
 
-				slot.method_7670(itemStack2, itemStack);
+				slot.onStackChanged(itemStack2, itemStack);
 			} else if (i != 0 && i != 1) {
 				if (!itemStack3.isEmpty() && !itemStack4.isEmpty()) {
 					if (i >= 3 && i < 30) {
-						if (!this.method_7616(itemStack2, 30, 39, false)) {
+						if (!this.insertItem(itemStack2, 30, 39, false)) {
 							return ItemStack.EMPTY;
 						}
-					} else if (i >= 30 && i < 39 && !this.method_7616(itemStack2, 3, 30, false)) {
+					} else if (i >= 30 && i < 39 && !this.insertItem(itemStack2, 3, 30, false)) {
 						return ItemStack.EMPTY;
 					}
-				} else if (!this.method_7616(itemStack2, 0, 2, false)) {
+				} else if (!this.insertItem(itemStack2, 0, 2, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (!this.method_7616(itemStack2, 3, 39, false)) {
+			} else if (!this.insertItem(itemStack2, 3, 39, false)) {
 				return ItemStack.EMPTY;
 			}
 
 			if (itemStack2.isEmpty()) {
-				slot.method_7673(ItemStack.EMPTY);
+				slot.setStack(ItemStack.EMPTY);
 			} else {
 				slot.markDirty();
 			}
@@ -242,7 +242,7 @@ public class GrindstoneContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			slot.method_7667(playerEntity, itemStack2);
+			slot.onTakeItem(playerEntity, itemStack2);
 		}
 
 		return itemStack;

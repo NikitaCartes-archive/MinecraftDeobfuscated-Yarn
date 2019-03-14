@@ -12,23 +12,23 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Identifier;
 
 public class CommandFunction {
-	private final CommandFunction.Element[] field_9805;
-	private final Identifier field_9806;
+	private final CommandFunction.Element[] elements;
+	private final Identifier id;
 
 	public CommandFunction(Identifier identifier, CommandFunction.Element[] elements) {
-		this.field_9806 = identifier;
-		this.field_9805 = elements;
+		this.id = identifier;
+		this.elements = elements;
 	}
 
-	public Identifier method_9194() {
-		return this.field_9806;
+	public Identifier getId() {
+		return this.id;
 	}
 
-	public CommandFunction.Element[] method_9193() {
-		return this.field_9805;
+	public CommandFunction.Element[] getElements() {
+		return this.elements;
 	}
 
-	public static CommandFunction method_9195(Identifier identifier, CommandFunctionManager commandFunctionManager, List<String> list) {
+	public static CommandFunction create(Identifier identifier, CommandFunctionManager commandFunctionManager, List<String> list) {
 		List<CommandFunction.Element> list2 = Lists.<CommandFunction.Element>newArrayListWithCapacity(list.size());
 
 		for (int i = 0; i < list.size(); i++) {
@@ -83,7 +83,7 @@ public class CommandFunction {
 		}
 
 		@Override
-		public void method_9198(
+		public void execute(
 			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
 		) throws CommandSyntaxException {
 			commandFunctionManager.getDispatcher()
@@ -96,7 +96,7 @@ public class CommandFunction {
 	}
 
 	public interface Element {
-		void method_9198(
+		void execute(
 			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
 		) throws CommandSyntaxException;
 	}
@@ -109,11 +109,11 @@ public class CommandFunction {
 		}
 
 		@Override
-		public void method_9198(
+		public void execute(
 			CommandFunctionManager commandFunctionManager, ServerCommandSource serverCommandSource, ArrayDeque<CommandFunctionManager.Entry> arrayDeque, int i
 		) {
-			this.function.method_9196(commandFunctionManager).ifPresent(commandFunction -> {
-				CommandFunction.Element[] elements = commandFunction.method_9193();
+			this.function.get(commandFunctionManager).ifPresent(commandFunction -> {
+				CommandFunction.Element[] elements = commandFunction.getElements();
 				int j = i - arrayDeque.size();
 				int k = Math.min(elements.length, j);
 
@@ -124,31 +124,31 @@ public class CommandFunction {
 		}
 
 		public String toString() {
-			return "function " + this.function.method_9197();
+			return "function " + this.function.getId();
 		}
 	}
 
 	public static class LazyContainer {
 		public static final CommandFunction.LazyContainer EMPTY = new CommandFunction.LazyContainer((Identifier)null);
 		@Nullable
-		private final Identifier field_9807;
+		private final Identifier id;
 		private boolean initialized;
 		private Optional<CommandFunction> function = Optional.empty();
 
 		public LazyContainer(@Nullable Identifier identifier) {
-			this.field_9807 = identifier;
+			this.id = identifier;
 		}
 
 		public LazyContainer(CommandFunction commandFunction) {
 			this.initialized = true;
-			this.field_9807 = null;
+			this.id = null;
 			this.function = Optional.of(commandFunction);
 		}
 
-		public Optional<CommandFunction> method_9196(CommandFunctionManager commandFunctionManager) {
+		public Optional<CommandFunction> get(CommandFunctionManager commandFunctionManager) {
 			if (!this.initialized) {
-				if (this.field_9807 != null) {
-					this.function = commandFunctionManager.getFunction(this.field_9807);
+				if (this.id != null) {
+					this.function = commandFunctionManager.getFunction(this.id);
 				}
 
 				this.initialized = true;
@@ -158,8 +158,8 @@ public class CommandFunction {
 		}
 
 		@Nullable
-		public Identifier method_9197() {
-			return (Identifier)this.function.map(commandFunction -> commandFunction.field_9806).orElse(this.field_9807);
+		public Identifier getId() {
+			return (Identifier)this.function.map(commandFunction -> commandFunction.id).orElse(this.id);
 		}
 	}
 }

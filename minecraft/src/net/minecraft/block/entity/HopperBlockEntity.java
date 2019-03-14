@@ -34,7 +34,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 
 public class HopperBlockEntity extends LootableContainerBlockEntity implements Hopper, Tickable {
-	private DefaultedList<ItemStack> field_12024 = DefaultedList.create(5, ItemStack.EMPTY);
+	private DefaultedList<ItemStack> inventory = DefaultedList.create(5, ItemStack.EMPTY);
 	private int transferCooldown = -1;
 	private long lastTickTime;
 
@@ -43,21 +43,21 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	public void method_11014(CompoundTag compoundTag) {
-		super.method_11014(compoundTag);
-		this.field_12024 = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
-		if (!this.method_11283(compoundTag)) {
-			Inventories.method_5429(compoundTag, this.field_12024);
+	public void fromTag(CompoundTag compoundTag) {
+		super.fromTag(compoundTag);
+		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
+		if (!this.deserializeLootTable(compoundTag)) {
+			Inventories.fromTag(compoundTag, this.inventory);
 		}
 
 		this.transferCooldown = compoundTag.getInt("TransferCooldown");
 	}
 
 	@Override
-	public CompoundTag method_11007(CompoundTag compoundTag) {
-		super.method_11007(compoundTag);
-		if (!this.method_11286(compoundTag)) {
-			Inventories.method_5426(compoundTag, this.field_12024);
+	public CompoundTag toTag(CompoundTag compoundTag) {
+		super.toTag(compoundTag);
+		if (!this.serializeLootTable(compoundTag)) {
+			Inventories.toTag(compoundTag, this.inventory);
 		}
 
 		compoundTag.putInt("TransferCooldown", this.transferCooldown);
@@ -66,26 +66,26 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	@Override
 	public int getInvSize() {
-		return this.field_12024.size();
+		return this.inventory.size();
 	}
 
 	@Override
-	public ItemStack method_5434(int i, int j) {
+	public ItemStack takeInvStack(int i, int j) {
 		this.checkLootInteraction(null);
-		return Inventories.method_5430(this.method_11282(), i, j);
+		return Inventories.splitStack(this.getInvStackList(), i, j);
 	}
 
 	@Override
-	public void method_5447(int i, ItemStack itemStack) {
+	public void setInvStack(int i, ItemStack itemStack) {
 		this.checkLootInteraction(null);
-		this.method_11282().set(i, itemStack);
+		this.getInvStackList().set(i, itemStack);
 		if (itemStack.getAmount() > this.getInvMaxStackAmount()) {
 			itemStack.setAmount(this.getInvMaxStackAmount());
 		}
 	}
 
 	@Override
-	protected TextComponent method_17823() {
+	protected TextComponent getContainerName() {
 		return new TranslatableTextComponent("container.hopper");
 	}
 
@@ -103,7 +103,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	private boolean insertAndExtract(Supplier<Boolean> supplier) {
 		if (this.world != null && !this.world.isClient) {
-			if (!this.needsCooldown() && (Boolean)this.method_11010().method_11654(HopperBlock.field_11126)) {
+			if (!this.needsCooldown() && (Boolean)this.getCachedState().get(HopperBlock.ENABLED)) {
 				boolean bl = false;
 				if (!this.isEmpty()) {
 					bl = this.insert();
@@ -127,7 +127,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	private boolean isEmpty() {
-		for (ItemStack itemStack : this.field_12024) {
+		for (ItemStack itemStack : this.inventory) {
 			if (!itemStack.isEmpty()) {
 				return false;
 			}
@@ -142,7 +142,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	private boolean isFull() {
-		for (ItemStack itemStack : this.field_12024) {
+		for (ItemStack itemStack : this.inventory) {
 			if (itemStack.isEmpty() || itemStack.getAmount() != itemStack.getMaxAmount()) {
 				return false;
 			}
@@ -156,20 +156,20 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		if (inventory == null) {
 			return false;
 		} else {
-			Direction direction = ((Direction)this.method_11010().method_11654(HopperBlock.field_11129)).getOpposite();
-			if (this.method_11258(inventory, direction)) {
+			Direction direction = ((Direction)this.getCachedState().get(HopperBlock.FACING)).getOpposite();
+			if (this.isInventoryFull(inventory, direction)) {
 				return false;
 			} else {
 				for (int i = 0; i < this.getInvSize(); i++) {
-					if (!this.method_5438(i).isEmpty()) {
-						ItemStack itemStack = this.method_5438(i).copy();
-						ItemStack itemStack2 = method_11260(this, inventory, this.method_5434(i, 1), direction);
+					if (!this.getInvStack(i).isEmpty()) {
+						ItemStack itemStack = this.getInvStack(i).copy();
+						ItemStack itemStack2 = transfer(this, inventory, this.takeInvStack(i, 1), direction);
 						if (itemStack2.isEmpty()) {
 							inventory.markDirty();
 							return true;
 						}
 
-						this.method_5447(i, itemStack);
+						this.setInvStack(i, itemStack);
 					}
 				}
 
@@ -178,26 +178,28 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 	}
 
-	private static IntStream method_17767(Inventory inventory, Direction direction) {
-		return inventory instanceof SidedInventory ? IntStream.of(((SidedInventory)inventory).method_5494(direction)) : IntStream.range(0, inventory.getInvSize());
+	private static IntStream getAvailableSlots(Inventory inventory, Direction direction) {
+		return inventory instanceof SidedInventory
+			? IntStream.of(((SidedInventory)inventory).getInvAvailableSlots(direction))
+			: IntStream.range(0, inventory.getInvSize());
 	}
 
-	private boolean method_11258(Inventory inventory, Direction direction) {
-		return method_17767(inventory, direction).allMatch(i -> {
-			ItemStack itemStack = inventory.method_5438(i);
+	private boolean isInventoryFull(Inventory inventory, Direction direction) {
+		return getAvailableSlots(inventory, direction).allMatch(i -> {
+			ItemStack itemStack = inventory.getInvStack(i);
 			return itemStack.getAmount() >= itemStack.getMaxAmount();
 		});
 	}
 
-	private static boolean method_11257(Inventory inventory, Direction direction) {
-		return method_17767(inventory, direction).allMatch(i -> inventory.method_5438(i).isEmpty());
+	private static boolean isInventoryEmpty(Inventory inventory, Direction direction) {
+		return getAvailableSlots(inventory, direction).allMatch(i -> inventory.getInvStack(i).isEmpty());
 	}
 
 	public static boolean extract(Hopper hopper) {
 		Inventory inventory = getInputInventory(hopper);
 		if (inventory != null) {
 			Direction direction = Direction.DOWN;
-			return method_11257(inventory, direction) ? false : method_17767(inventory, direction).anyMatch(i -> method_11261(hopper, inventory, i, direction));
+			return isInventoryEmpty(inventory, direction) ? false : getAvailableSlots(inventory, direction).anyMatch(i -> extract(hopper, inventory, i, direction));
 		} else {
 			for (ItemEntity itemEntity : getInputItemEntities(hopper)) {
 				if (extract(hopper, itemEntity)) {
@@ -209,17 +211,17 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 	}
 
-	private static boolean method_11261(Hopper hopper, Inventory inventory, int i, Direction direction) {
-		ItemStack itemStack = inventory.method_5438(i);
-		if (!itemStack.isEmpty() && method_11252(inventory, itemStack, i, direction)) {
+	private static boolean extract(Hopper hopper, Inventory inventory, int i, Direction direction) {
+		ItemStack itemStack = inventory.getInvStack(i);
+		if (!itemStack.isEmpty() && canExtract(inventory, itemStack, i, direction)) {
 			ItemStack itemStack2 = itemStack.copy();
-			ItemStack itemStack3 = method_11260(inventory, hopper, inventory.method_5434(i, 1), null);
+			ItemStack itemStack3 = transfer(inventory, hopper, inventory.takeInvStack(i, 1), null);
 			if (itemStack3.isEmpty()) {
 				inventory.markDirty();
 				return true;
 			}
 
-			inventory.method_5447(i, itemStack2);
+			inventory.setInvStack(i, itemStack2);
 		}
 
 		return false;
@@ -227,54 +229,54 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	public static boolean extract(Inventory inventory, ItemEntity itemEntity) {
 		boolean bl = false;
-		ItemStack itemStack = itemEntity.method_6983().copy();
-		ItemStack itemStack2 = method_11260(null, inventory, itemStack, null);
+		ItemStack itemStack = itemEntity.getStack().copy();
+		ItemStack itemStack2 = transfer(null, inventory, itemStack, null);
 		if (itemStack2.isEmpty()) {
 			bl = true;
 			itemEntity.invalidate();
 		} else {
-			itemEntity.method_6979(itemStack2);
+			itemEntity.setStack(itemStack2);
 		}
 
 		return bl;
 	}
 
-	public static ItemStack method_11260(@Nullable Inventory inventory, Inventory inventory2, ItemStack itemStack, @Nullable Direction direction) {
+	public static ItemStack transfer(@Nullable Inventory inventory, Inventory inventory2, ItemStack itemStack, @Nullable Direction direction) {
 		if (inventory2 instanceof SidedInventory && direction != null) {
 			SidedInventory sidedInventory = (SidedInventory)inventory2;
-			int[] is = sidedInventory.method_5494(direction);
+			int[] is = sidedInventory.getInvAvailableSlots(direction);
 
 			for (int i = 0; i < is.length && !itemStack.isEmpty(); i++) {
-				itemStack = method_11253(inventory, inventory2, itemStack, is[i], direction);
+				itemStack = transfer(inventory, inventory2, itemStack, is[i], direction);
 			}
 		} else {
 			int j = inventory2.getInvSize();
 
 			for (int k = 0; k < j && !itemStack.isEmpty(); k++) {
-				itemStack = method_11253(inventory, inventory2, itemStack, k, direction);
+				itemStack = transfer(inventory, inventory2, itemStack, k, direction);
 			}
 		}
 
 		return itemStack;
 	}
 
-	private static boolean method_11244(Inventory inventory, ItemStack itemStack, int i, @Nullable Direction direction) {
-		return !inventory.method_5437(i, itemStack)
+	private static boolean canInsert(Inventory inventory, ItemStack itemStack, int i, @Nullable Direction direction) {
+		return !inventory.isValidInvStack(i, itemStack)
 			? false
-			: !(inventory instanceof SidedInventory) || ((SidedInventory)inventory).method_5492(i, itemStack, direction);
+			: !(inventory instanceof SidedInventory) || ((SidedInventory)inventory).canInsertInvStack(i, itemStack, direction);
 	}
 
-	private static boolean method_11252(Inventory inventory, ItemStack itemStack, int i, Direction direction) {
-		return !(inventory instanceof SidedInventory) || ((SidedInventory)inventory).method_5493(i, itemStack, direction);
+	private static boolean canExtract(Inventory inventory, ItemStack itemStack, int i, Direction direction) {
+		return !(inventory instanceof SidedInventory) || ((SidedInventory)inventory).canExtractInvStack(i, itemStack, direction);
 	}
 
-	private static ItemStack method_11253(@Nullable Inventory inventory, Inventory inventory2, ItemStack itemStack, int i, @Nullable Direction direction) {
-		ItemStack itemStack2 = inventory2.method_5438(i);
-		if (method_11244(inventory2, itemStack, i, direction)) {
+	private static ItemStack transfer(@Nullable Inventory inventory, Inventory inventory2, ItemStack itemStack, int i, @Nullable Direction direction) {
+		ItemStack itemStack2 = inventory2.getInvStack(i);
+		if (canInsert(inventory2, itemStack, i, direction)) {
 			boolean bl = false;
 			boolean bl2 = inventory2.isInvEmpty();
 			if (itemStack2.isEmpty()) {
-				inventory2.method_5447(i, itemStack);
+				inventory2.setInvStack(i, itemStack);
 				itemStack = ItemStack.EMPTY;
 				bl = true;
 			} else if (canMergeItems(itemStack2, itemStack)) {
@@ -310,8 +312,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	@Nullable
 	private Inventory getOutputInventory() {
-		Direction direction = this.method_11010().method_11654(HopperBlock.field_11129);
-		return method_11250(this.getWorld(), this.field_11867.method_10093(direction));
+		Direction direction = this.getCachedState().get(HopperBlock.FACING);
+		return getInventoryAt(this.getWorld(), this.pos.offset(direction));
 	}
 
 	@Nullable
@@ -320,12 +322,12 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	public static List<ItemEntity> getInputItemEntities(Hopper hopper) {
-		return (List<ItemEntity>)hopper.method_11262()
+		return (List<ItemEntity>)hopper.getInputAreaShape()
 			.getBoundingBoxList()
 			.stream()
 			.flatMap(
 				boundingBox -> hopper.getWorld()
-						.method_8390(
+						.getEntities(
 							ItemEntity.class, boundingBox.offset(hopper.getHopperX() - 0.5, hopper.getHopperY() - 0.5, hopper.getHopperZ() - 0.5), EntityPredicates.VALID_ENTITY
 						)
 						.stream()
@@ -334,7 +336,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Nullable
-	public static Inventory method_11250(World world, BlockPos blockPos) {
+	public static Inventory getInventoryAt(World world, BlockPos blockPos) {
 		return getInventoryAt(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 	}
 
@@ -342,12 +344,12 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public static Inventory getInventoryAt(World world, double d, double e, double f) {
 		Inventory inventory = null;
 		BlockPos blockPos = new BlockPos(d, e, f);
-		BlockState blockState = world.method_8320(blockPos);
+		BlockState blockState = world.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		if (block instanceof InventoryProvider) {
-			inventory = ((InventoryProvider)block).method_17680(blockState, world, blockPos);
+			inventory = ((InventoryProvider)block).getInventory(blockState, world, blockPos);
 		} else if (block.hasBlockEntity()) {
-			BlockEntity blockEntity = world.method_8321(blockPos);
+			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof Inventory) {
 				inventory = (Inventory)blockEntity;
 				if (inventory instanceof ChestBlockEntity && block instanceof ChestBlock) {
@@ -357,7 +359,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		}
 
 		if (inventory == null) {
-			List<Entity> list = world.method_8333(
+			List<Entity> list = world.getEntities(
 				(Entity)null, new BoundingBox(d - 0.5, e - 0.5, f - 0.5, d + 0.5, e + 0.5, f + 0.5), EntityPredicates.VALID_INVENTORIES
 			);
 			if (!list.isEmpty()) {
@@ -380,17 +382,17 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	@Override
 	public double getHopperX() {
-		return (double)this.field_11867.getX() + 0.5;
+		return (double)this.pos.getX() + 0.5;
 	}
 
 	@Override
 	public double getHopperY() {
-		return (double)this.field_11867.getY() + 0.5;
+		return (double)this.pos.getY() + 0.5;
 	}
 
 	@Override
 	public double getHopperZ() {
-		return (double)this.field_11867.getZ() + 0.5;
+		return (double)this.pos.getZ() + 0.5;
 	}
 
 	private void setCooldown(int i) {
@@ -406,21 +408,21 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	protected DefaultedList<ItemStack> method_11282() {
-		return this.field_12024;
+	protected DefaultedList<ItemStack> getInvStackList() {
+		return this.inventory;
 	}
 
 	@Override
-	protected void method_11281(DefaultedList<ItemStack> defaultedList) {
-		this.field_12024 = defaultedList;
+	protected void setInvStackList(DefaultedList<ItemStack> defaultedList) {
+		this.inventory = defaultedList;
 	}
 
 	public void onEntityCollided(Entity entity) {
 		if (entity instanceof ItemEntity) {
-			BlockPos blockPos = this.method_11016();
-			if (VoxelShapes.method_1074(
-				VoxelShapes.method_1078(entity.method_5829().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
-				this.method_11262(),
+			BlockPos blockPos = this.getPos();
+			if (VoxelShapes.compareShapes(
+				VoxelShapes.cube(entity.getBoundingBox().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
+				this.getInputAreaShape(),
 				BooleanBiFunction.AND
 			)) {
 				this.insertAndExtract(() -> extract(this, (ItemEntity)entity));

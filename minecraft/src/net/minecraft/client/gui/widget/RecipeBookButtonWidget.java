@@ -3,13 +3,12 @@ package net.minecraft.client.gui.widget;
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4185;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class RecipeBookButtonWidget extends class_4185 {
-	private final Identifier field_2127;
+public abstract class RecipeBookButtonWidget extends ButtonWidget {
+	private final Identifier texture;
 	private final int u;
 	private final int v;
 	private final int hoverVOffset;
@@ -19,7 +18,7 @@ public abstract class RecipeBookButtonWidget extends class_4185 {
 		this.u = m;
 		this.v = n;
 		this.hoverVOffset = o;
-		this.field_2127 = identifier;
+		this.texture = identifier;
 	}
 
 	public void setPos(int i, int j) {
@@ -30,7 +29,7 @@ public abstract class RecipeBookButtonWidget extends class_4185 {
 	@Override
 	public void drawButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.method_1531().method_4618(this.field_2127);
+		minecraftClient.getTextureManager().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();
 		int k = this.v;
 		if (this.isHovered()) {

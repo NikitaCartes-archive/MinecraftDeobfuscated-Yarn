@@ -15,19 +15,19 @@ public class MobSpawnerBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockEntity method_10123(BlockView blockView) {
+	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new MobSpawnerBlockEntity();
 	}
 
 	@Override
-	public void method_9565(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
-		super.method_9565(blockState, world, blockPos, itemStack);
+	public void onStacksDropped(BlockState blockState, World world, BlockPos blockPos, ItemStack itemStack) {
+		super.onStacksDropped(blockState, world, blockPos, itemStack);
 		int i = 15 + world.random.nextInt(15) + world.random.nextInt(15);
-		this.method_9583(world, blockPos, i);
+		this.dropExperience(world, blockPos, i);
 	}
 
 	@Override
-	public BlockRenderType method_9604(BlockState blockState) {
+	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
 
@@ -38,7 +38,7 @@ public class MobSpawnerBlock extends BlockWithEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack method_9574(BlockView blockView, BlockPos blockPos, BlockState blockState) {
+	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		return ItemStack.EMPTY;
 	}
 }

@@ -24,19 +24,19 @@ public class DifficultyCommand {
 		}
 
 		commandDispatcher.register(literalArgumentBuilder.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).executes(commandContext -> {
-			Difficulty difficultyx = commandContext.getSource().method_9225().getDifficulty();
-			commandContext.getSource().method_9226(new TranslatableTextComponent("commands.difficulty.query", difficultyx.method_5463()), false);
+			Difficulty difficultyx = commandContext.getSource().getWorld().getDifficulty();
+			commandContext.getSource().sendFeedback(new TranslatableTextComponent("commands.difficulty.query", difficultyx.toTextComponent()), false);
 			return difficultyx.getId();
 		}));
 	}
 
 	public static int method_13173(ServerCommandSource serverCommandSource, Difficulty difficulty) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
-		if (minecraftServer.method_3847(DimensionType.field_13072).getDifficulty() == difficulty) {
+		if (minecraftServer.getWorld(DimensionType.field_13072).getDifficulty() == difficulty) {
 			throw FAILURE_EXCEPTION.create(difficulty.getTranslationKey());
 		} else {
 			minecraftServer.setDifficulty(difficulty, true);
-			serverCommandSource.method_9226(new TranslatableTextComponent("commands.difficulty.success", difficulty.method_5463()), true);
+			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.difficulty.success", difficulty.toTextComponent()), true);
 			return 0;
 		}
 	}

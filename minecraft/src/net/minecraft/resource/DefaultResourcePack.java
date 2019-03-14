@@ -86,7 +86,7 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public InputStream method_14405(ResourceType resourceType, Identifier identifier) throws IOException {
+	public InputStream open(ResourceType resourceType, Identifier identifier) throws IOException {
 		InputStream inputStream = this.findInputStream(resourceType, identifier);
 		if (inputStream != null) {
 			return inputStream;
@@ -96,7 +96,7 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public Collection<Identifier> method_14408(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
+	public Collection<Identifier> findResources(ResourceType resourceType, String string, int i, Predicate<String> predicate) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		if (RESOURCE_PATH != null) {
 			try {
@@ -195,7 +195,7 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public boolean method_14411(ResourceType resourceType, Identifier identifier) {
+	public boolean contains(ResourceType resourceType, Identifier identifier) {
 		InputStream inputStream = this.findInputStream(resourceType, identifier);
 		boolean bl = inputStream != null;
 		IOUtils.closeQuietly(inputStream);
@@ -203,20 +203,20 @@ public class DefaultResourcePack implements ResourcePack {
 	}
 
 	@Override
-	public Set<String> method_14406(ResourceType resourceType) {
+	public Set<String> getNamespaces(ResourceType resourceType) {
 		return this.namespaces;
 	}
 
 	@Nullable
 	@Override
-	public <T> T method_14407(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
+	public <T> T parseMetadata(ResourceMetadataReader<T> resourceMetadataReader) throws IOException {
 		try {
 			InputStream inputStream = this.openRoot("pack.mcmeta");
 			Throwable var3 = null;
 
 			Object var4;
 			try {
-				var4 = AbstractFilenameResourcePack.method_14392(resourceMetadataReader, inputStream);
+				var4 = AbstractFilenameResourcePack.parseMetadata(resourceMetadataReader, inputStream);
 			} catch (Throwable var14) {
 				var3 = var14;
 				throw var14;

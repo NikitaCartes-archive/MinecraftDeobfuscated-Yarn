@@ -51,7 +51,7 @@ public class NetherCaveCarver extends CaveCarver {
 	}
 
 	@Override
-	protected boolean method_16581(
+	protected boolean carveAtPoint(
 		Chunk chunk,
 		BitSet bitSet,
 		Random random,
@@ -74,15 +74,15 @@ public class NetherCaveCarver extends CaveCarver {
 		} else {
 			bitSet.set(q);
 			mutable.set(l, o, m);
-			if (this.canAlwaysCarveBlock(chunk.method_8320(mutable))) {
+			if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
 				BlockState blockState;
 				if (o <= 31) {
-					blockState = field_13296.getBlockState();
+					blockState = LAVA.getBlockState();
 				} else {
 					blockState = CAVE_AIR;
 				}
 
-				chunk.method_12010(mutable, blockState, false);
+				chunk.setBlockState(mutable, blockState, false);
 				return true;
 			} else {
 				return false;

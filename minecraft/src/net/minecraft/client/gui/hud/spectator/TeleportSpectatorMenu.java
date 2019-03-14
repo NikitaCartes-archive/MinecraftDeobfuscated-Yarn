@@ -23,7 +23,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	private final List<SpectatorMenuCommand> elements = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public TeleportSpectatorMenu() {
-		this(field_3267.<ScoreboardEntry>sortedCopy(MinecraftClient.getInstance().method_1562().getScoreboardEntries()));
+		this(field_3267.<ScoreboardEntry>sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntries()));
 	}
 
 	public TeleportSpectatorMenu(Collection<ScoreboardEntry> collection) {
@@ -40,23 +40,23 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public TextComponent method_2781() {
+	public TextComponent getPrompt() {
 		return new TranslatableTextComponent("spectatorMenu.teleport.prompt");
 	}
 
 	@Override
 	public void use(SpectatorMenu spectatorMenu) {
-		spectatorMenu.method_2778(this);
+		spectatorMenu.selectElement(this);
 	}
 
 	@Override
-	public TextComponent method_16892() {
+	public TextComponent getName() {
 		return new TranslatableTextComponent("spectatorMenu.teleport");
 	}
 
 	@Override
 	public void renderIcon(float f, int i) {
-		MinecraftClient.getInstance().method_1531().method_4618(SpectatorHud.field_2199);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 		DrawableHelper.drawTexturedRect(0, 0, 0.0F, 0.0F, 16, 16, 256.0F, 256.0F);
 	}
 

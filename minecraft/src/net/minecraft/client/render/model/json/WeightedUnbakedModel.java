@@ -52,14 +52,14 @@ public class WeightedUnbakedModel implements UnbakedModel {
 
 	@Override
 	public Collection<Identifier> getModelDependencies() {
-		return (Collection<Identifier>)this.getVariants().stream().map(ModelVariant::method_3510).collect(Collectors.toSet());
+		return (Collection<Identifier>)this.getVariants().stream().map(ModelVariant::getLocation).collect(Collectors.toSet());
 	}
 
 	@Override
 	public Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<String> set) {
 		return (Collection<Identifier>)this.getVariants()
 			.stream()
-			.map(ModelVariant::method_3510)
+			.map(ModelVariant::getLocation)
 			.distinct()
 			.flatMap(identifier -> ((UnbakedModel)function.apply(identifier)).getTextureDependencies(function, set).stream())
 			.collect(Collectors.toSet());
@@ -74,7 +74,7 @@ public class WeightedUnbakedModel implements UnbakedModel {
 			WeightedBakedModel.Builder builder = new WeightedBakedModel.Builder();
 
 			for (ModelVariant modelVariant : this.getVariants()) {
-				BakedModel bakedModel = modelLoader.method_15878(modelVariant.method_3510(), modelVariant);
+				BakedModel bakedModel = modelLoader.bake(modelVariant.getLocation(), modelVariant);
 				builder.add(bakedModel, modelVariant.getWeight());
 			}
 

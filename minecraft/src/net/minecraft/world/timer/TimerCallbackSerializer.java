@@ -19,7 +19,7 @@ public class TimerCallbackSerializer<C> {
 	private final Map<Class<?>, TimerCallback.Serializer<C, ?>> serializersByClass = Maps.<Class<?>, TimerCallback.Serializer<C, ?>>newHashMap();
 
 	public TimerCallbackSerializer<C> registerSerializer(TimerCallback.Serializer<C, ?> serializer) {
-		this.serializersByType.put(serializer.method_977(), serializer);
+		this.serializersByType.put(serializer.getId(), serializer);
 		this.serializersByClass.put(serializer.getCallbackClass(), serializer);
 		return this;
 	}
@@ -28,16 +28,16 @@ public class TimerCallbackSerializer<C> {
 		return (TimerCallback.Serializer<C, T>)this.serializersByClass.get(class_);
 	}
 
-	public <T extends TimerCallback<C>> CompoundTag method_973(T timerCallback) {
+	public <T extends TimerCallback<C>> CompoundTag serialize(T timerCallback) {
 		TimerCallback.Serializer<C, T> serializer = this.getSerializer(timerCallback.getClass());
 		CompoundTag compoundTag = new CompoundTag();
-		serializer.method_975(compoundTag, timerCallback);
-		compoundTag.putString("Type", serializer.method_977().toString());
+		serializer.serialize(compoundTag, timerCallback);
+		compoundTag.putString("Type", serializer.getId().toString());
 		return compoundTag;
 	}
 
 	@Nullable
-	public TimerCallback<C> method_972(CompoundTag compoundTag) {
+	public TimerCallback<C> deserialize(CompoundTag compoundTag) {
 		Identifier identifier = Identifier.create(compoundTag.getString("Type"));
 		TimerCallback.Serializer<C, ?> serializer = (TimerCallback.Serializer<C, ?>)this.serializersByType.get(identifier);
 		if (serializer == null) {
@@ -45,7 +45,7 @@ public class TimerCallbackSerializer<C> {
 			return null;
 		} else {
 			try {
-				return serializer.method_976(compoundTag);
+				return serializer.deserialize(compoundTag);
 			} catch (Exception var5) {
 				LOGGER.error("Failed to deserialize timer callback: " + compoundTag, (Throwable)var5);
 				return null;

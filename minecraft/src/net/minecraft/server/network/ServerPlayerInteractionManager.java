@@ -44,7 +44,7 @@ public class ServerPlayerInteractionManager {
 		this.gameMode = gameMode;
 		gameMode.setAbilitites(this.player.abilities);
 		this.player.method_7355();
-		this.player.server.method_3760().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Type.UPDATE_GAMEMODE, this.player));
+		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Type.UPDATE_GAMEMODE, this.player));
 		this.world.updatePlayersSleeping();
 	}
 
@@ -72,14 +72,14 @@ public class ServerPlayerInteractionManager {
 		this.field_14000++;
 		if (this.field_14001) {
 			int i = this.field_14000 - this.field_14010;
-			BlockState blockState = this.world.method_8320(this.field_14004);
+			BlockState blockState = this.world.getBlockState(this.field_14004);
 			if (blockState.isAir()) {
 				this.field_14001 = false;
 			} else {
-				float f = blockState.method_11589(this.player, this.player.field_6002, this.field_14004) * (float)(i + 1);
+				float f = blockState.calcBlockBreakingDelta(this.player, this.player.world, this.field_14004) * (float)(i + 1);
 				int j = (int)(f * 10.0F);
 				if (j != this.field_14009) {
-					this.world.method_8517(this.player.getEntityId(), this.field_14004, j);
+					this.world.setBlockBreakingProgress(this.player.getEntityId(), this.field_14004, j);
 					this.field_14009 = j;
 				}
 
@@ -89,17 +89,17 @@ public class ServerPlayerInteractionManager {
 				}
 			}
 		} else if (this.field_14003) {
-			BlockState blockState2 = this.world.method_8320(this.field_14006);
+			BlockState blockState2 = this.world.getBlockState(this.field_14006);
 			if (blockState2.isAir()) {
-				this.world.method_8517(this.player.getEntityId(), this.field_14006, -1);
+				this.world.setBlockBreakingProgress(this.player.getEntityId(), this.field_14006, -1);
 				this.field_14009 = -1;
 				this.field_14003 = false;
 			} else {
 				int k = this.field_14000 - this.field_14002;
-				float fx = blockState2.method_11589(this.player, this.player.field_6002, this.field_14004) * (float)(k + 1);
+				float fx = blockState2.calcBlockBreakingDelta(this.player, this.player.world, this.field_14004) * (float)(k + 1);
 				int jx = (int)(fx * 10.0F);
 				if (jx != this.field_14009) {
-					this.world.method_8517(this.player.getEntityId(), this.field_14006, jx);
+					this.world.setBlockBreakingProgress(this.player.getEntityId(), this.field_14006, jx);
 					this.field_14009 = jx;
 				}
 			}
@@ -118,13 +118,13 @@ public class ServerPlayerInteractionManager {
 				}
 
 				if (!this.player.canModifyWorld()) {
-					ItemStack itemStack = this.player.method_6047();
+					ItemStack itemStack = this.player.getMainHandStack();
 					if (itemStack.isEmpty()) {
 						return;
 					}
 
 					CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.world, blockPos, false);
-					if (!itemStack.method_7940(this.world.method_8514(), cachedBlockPosition)) {
+					if (!itemStack.getCustomCanHarvest(this.world.getTagManager(), cachedBlockPosition)) {
 						return;
 					}
 				}
@@ -133,10 +133,10 @@ public class ServerPlayerInteractionManager {
 			this.world.method_8506(null, blockPos, direction);
 			this.field_14002 = this.field_14000;
 			float f = 1.0F;
-			BlockState blockState = this.world.method_8320(blockPos);
+			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir()) {
-				blockState.method_11636(this.world, blockPos, this.player);
-				f = blockState.method_11589(this.player, this.player.field_6002, blockPos);
+				blockState.onBlockBreakStart(this.world, blockPos, this.player);
+				f = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos);
 			}
 
 			if (!blockState.isAir() && f >= 1.0F) {
@@ -145,8 +145,8 @@ public class ServerPlayerInteractionManager {
 				this.field_14003 = true;
 				this.field_14006 = blockPos;
 				int i = (int)(f * 10.0F);
-				this.world.method_8517(this.player.getEntityId(), blockPos, i);
-				this.player.field_13987.sendPacket(new BlockUpdateS2CPacket(this.world, blockPos));
+				this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, i);
+				this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.world, blockPos));
 				this.field_14009 = i;
 			}
 		}
@@ -155,12 +155,12 @@ public class ServerPlayerInteractionManager {
 	public void method_14258(BlockPos blockPos) {
 		if (blockPos.equals(this.field_14006)) {
 			int i = this.field_14000 - this.field_14002;
-			BlockState blockState = this.world.method_8320(blockPos);
+			BlockState blockState = this.world.getBlockState(blockPos);
 			if (!blockState.isAir()) {
-				float f = blockState.method_11589(this.player, this.player.field_6002, blockPos) * (float)(i + 1);
+				float f = blockState.calcBlockBreakingDelta(this.player, this.player.world, blockPos) * (float)(i + 1);
 				if (f >= 0.7F) {
 					this.field_14003 = false;
-					this.world.method_8517(this.player.getEntityId(), blockPos, -1);
+					this.world.setBlockBreakingProgress(this.player.getEntityId(), blockPos, -1);
 					this.tryBreakBlock(blockPos);
 				} else if (!this.field_14001) {
 					this.field_14003 = false;
@@ -174,29 +174,29 @@ public class ServerPlayerInteractionManager {
 
 	public void method_14269() {
 		this.field_14003 = false;
-		this.world.method_8517(this.player.getEntityId(), this.field_14006, -1);
+		this.world.setBlockBreakingProgress(this.player.getEntityId(), this.field_14006, -1);
 	}
 
 	private boolean destroyBlock(BlockPos blockPos) {
-		BlockState blockState = this.world.method_8320(blockPos);
-		blockState.getBlock().method_9576(this.world, blockPos, blockState, this.player);
-		boolean bl = this.world.method_8650(blockPos);
+		BlockState blockState = this.world.getBlockState(blockPos);
+		blockState.getBlock().onBreak(this.world, blockPos, blockState, this.player);
+		boolean bl = this.world.clearBlockState(blockPos);
 		if (bl) {
-			blockState.getBlock().method_9585(this.world, blockPos, blockState);
+			blockState.getBlock().onBroken(this.world, blockPos, blockState);
 		}
 
 		return bl;
 	}
 
 	public boolean tryBreakBlock(BlockPos blockPos) {
-		BlockState blockState = this.world.method_8320(blockPos);
-		if (!this.player.method_6047().getItem().method_7885(blockState, this.world, blockPos, this.player)) {
+		BlockState blockState = this.world.getBlockState(blockPos);
+		if (!this.player.getMainHandStack().getItem().beforeBlockBreak(blockState, this.world, blockPos, this.player)) {
 			return false;
 		} else {
-			BlockEntity blockEntity = this.world.method_8321(blockPos);
+			BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 			Block block = blockState.getBlock();
 			if ((block instanceof CommandBlock || block instanceof StructureBlock || block instanceof JigsawBlock) && !this.player.isCreativeLevelTwoOp()) {
-				this.world.method_8413(blockPos, blockState, blockState, 3);
+				this.world.updateListeners(blockPos, blockState, blockState, 3);
 				return false;
 			} else {
 				if (this.gameMode.shouldLimitWorldModification()) {
@@ -205,13 +205,13 @@ public class ServerPlayerInteractionManager {
 					}
 
 					if (!this.player.canModifyWorld()) {
-						ItemStack itemStack = this.player.method_6047();
+						ItemStack itemStack = this.player.getMainHandStack();
 						if (itemStack.isEmpty()) {
 							return false;
 						}
 
 						CachedBlockPosition cachedBlockPosition = new CachedBlockPosition(this.world, blockPos, false);
-						if (!itemStack.method_7940(this.world.method_8514(), cachedBlockPosition)) {
+						if (!itemStack.getCustomCanHarvest(this.world.getTagManager(), cachedBlockPosition)) {
 							return false;
 						}
 					}
@@ -219,12 +219,12 @@ public class ServerPlayerInteractionManager {
 
 				boolean bl = this.destroyBlock(blockPos);
 				if (!this.isCreative()) {
-					ItemStack itemStack2 = this.player.method_6047();
-					boolean bl2 = this.player.method_7305(blockState);
-					itemStack2.method_7952(this.world, blockState, blockPos, this.player);
+					ItemStack itemStack2 = this.player.getMainHandStack();
+					boolean bl2 = this.player.isUsingEffectiveTool(blockState);
+					itemStack2.onBlockBroken(this.world, blockState, blockPos, this.player);
 					if (bl && bl2) {
 						ItemStack itemStack3 = itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2.copy();
-						blockState.getBlock().method_9556(this.world, this.player, blockPos, blockState, blockEntity, itemStack3);
+						blockState.getBlock().afterBreak(this.world, this.player, blockPos, blockState, blockEntity, itemStack3);
 					}
 				}
 
@@ -236,19 +236,19 @@ public class ServerPlayerInteractionManager {
 	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
 		if (this.gameMode == GameMode.field_9219) {
 			return ActionResult.PASS;
-		} else if (playerEntity.method_7357().isCooldown(itemStack.getItem())) {
+		} else if (playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
 			return ActionResult.PASS;
 		} else {
 			int i = itemStack.getAmount();
 			int j = itemStack.getDamage();
-			TypedActionResult<ItemStack> typedActionResult = itemStack.method_7913(world, playerEntity, hand);
+			TypedActionResult<ItemStack> typedActionResult = itemStack.use(world, playerEntity, hand);
 			ItemStack itemStack2 = typedActionResult.getValue();
 			if (itemStack2 == itemStack && itemStack2.getAmount() == i && itemStack2.getMaxUseTime() <= 0 && itemStack2.getDamage() == j) {
 				return typedActionResult.getResult();
 			} else if (typedActionResult.getResult() == ActionResult.field_5814 && itemStack2.getMaxUseTime() > 0 && !playerEntity.isUsingItem()) {
 				return typedActionResult.getResult();
 			} else {
-				playerEntity.method_6122(hand, itemStack2);
+				playerEntity.setStackInHand(hand, itemStack2);
 				if (this.isCreative()) {
 					itemStack2.setAmount(i);
 					if (itemStack2.hasDurability()) {
@@ -257,11 +257,11 @@ public class ServerPlayerInteractionManager {
 				}
 
 				if (itemStack2.isEmpty()) {
-					playerEntity.method_6122(hand, ItemStack.EMPTY);
+					playerEntity.setStackInHand(hand, ItemStack.EMPTY);
 				}
 
 				if (!playerEntity.isUsingItem()) {
-					((ServerPlayerEntity)playerEntity).method_14204(playerEntity.field_7498);
+					((ServerPlayerEntity)playerEntity).method_14204(playerEntity.playerContainer);
 				}
 
 				return typedActionResult.getResult();
@@ -270,10 +270,10 @@ public class ServerPlayerInteractionManager {
 	}
 
 	public ActionResult interactBlock(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand, BlockHitResult blockHitResult) {
-		BlockPos blockPos = blockHitResult.method_17777();
-		BlockState blockState = world.method_8320(blockPos);
+		BlockPos blockPos = blockHitResult.getBlockPos();
+		BlockState blockState = world.getBlockState(blockPos);
 		if (this.gameMode == GameMode.field_9219) {
-			NameableContainerProvider nameableContainerProvider = blockState.method_17526(world, blockPos);
+			NameableContainerProvider nameableContainerProvider = blockState.createContainerProvider(world, blockPos);
 			if (nameableContainerProvider != null) {
 				playerEntity.openContainer(nameableContainerProvider);
 				return ActionResult.field_5812;
@@ -281,19 +281,19 @@ public class ServerPlayerInteractionManager {
 				return ActionResult.PASS;
 			}
 		} else {
-			boolean bl = !playerEntity.method_6047().isEmpty() || !playerEntity.method_6079().isEmpty();
+			boolean bl = !playerEntity.getMainHandStack().isEmpty() || !playerEntity.getOffHandStack().isEmpty();
 			boolean bl2 = playerEntity.isSneaking() && bl;
-			if (!bl2 && blockState.method_11629(world, playerEntity, hand, blockHitResult)) {
+			if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
 				return ActionResult.field_5812;
-			} else if (!itemStack.isEmpty() && !playerEntity.method_7357().isCooldown(itemStack.getItem())) {
-				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, playerEntity.method_5998(hand), blockHitResult);
+			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
+				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, playerEntity.getStackInHand(hand), blockHitResult);
 				if (this.isCreative()) {
 					int i = itemStack.getAmount();
-					ActionResult actionResult = itemStack.method_7981(itemUsageContext);
+					ActionResult actionResult = itemStack.useOnBlock(itemUsageContext);
 					itemStack.setAmount(i);
 					return actionResult;
 				} else {
-					return itemStack.method_7981(itemUsageContext);
+					return itemStack.useOnBlock(itemUsageContext);
 				}
 			} else {
 				return ActionResult.PASS;

@@ -42,8 +42,8 @@ public class IglooFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
 		}
 
 		@Override
-		public void method_16655(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			DefaultFeatureConfig defaultFeatureConfig = chunkGenerator.method_12105(biome, Feature.field_13527);
+		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
+			DefaultFeatureConfig defaultFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.IGLOO);
 			int k = i * 16;
 			int l = j * 16;
 			BlockPos blockPos = new BlockPos(k, 90, l);

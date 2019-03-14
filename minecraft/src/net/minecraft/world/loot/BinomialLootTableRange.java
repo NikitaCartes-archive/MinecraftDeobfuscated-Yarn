@@ -39,8 +39,8 @@ public final class BinomialLootTableRange implements LootTableRange {
 	}
 
 	@Override
-	public Identifier method_365() {
-		return field_969;
+	public Identifier getType() {
+		return BINOMIAL;
 	}
 
 	public static class Serializer implements JsonDeserializer<BinomialLootTableRange>, JsonSerializer<BinomialLootTableRange> {

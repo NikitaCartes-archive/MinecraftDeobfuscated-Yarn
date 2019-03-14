@@ -4,25 +4,25 @@ import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 
 public interface DyeableItem {
-	default boolean method_7801(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.method_7941("display");
+	default boolean hasColor(ItemStack itemStack) {
+		CompoundTag compoundTag = itemStack.getSubCompoundTag("display");
 		return compoundTag != null && compoundTag.containsKey("color", 99);
 	}
 
-	default int method_7800(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.method_7941("display");
+	default int getColor(ItemStack itemStack) {
+		CompoundTag compoundTag = itemStack.getSubCompoundTag("display");
 		return compoundTag != null && compoundTag.containsKey("color", 99) ? compoundTag.getInt("color") : 10511680;
 	}
 
-	default void method_7798(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.method_7941("display");
+	default void removeColor(ItemStack itemStack) {
+		CompoundTag compoundTag = itemStack.getSubCompoundTag("display");
 		if (compoundTag != null && compoundTag.containsKey("color")) {
 			compoundTag.remove("color");
 		}
 	}
 
-	default void method_7799(ItemStack itemStack, int i) {
-		itemStack.method_7911("display").putInt("color", i);
+	default void setColor(ItemStack itemStack, int i) {
+		itemStack.getOrCreateSubCompoundTag("display").putInt("color", i);
 	}
 
 	static ItemStack method_19261(ItemStack itemStack, List<DyeItem> list) {
@@ -36,8 +36,8 @@ public interface DyeableItem {
 			dyeableItem = (DyeableItem)item;
 			itemStack2 = itemStack.copy();
 			itemStack2.setAmount(1);
-			if (dyeableItem.method_7801(itemStack)) {
-				int k = dyeableItem.method_7800(itemStack2);
+			if (dyeableItem.hasColor(itemStack)) {
+				int k = dyeableItem.getColor(itemStack2);
 				float f = (float)(k >> 16 & 0xFF) / 255.0F;
 				float g = (float)(k >> 8 & 0xFF) / 255.0F;
 				float h = (float)(k & 0xFF) / 255.0F;
@@ -74,7 +74,7 @@ public interface DyeableItem {
 			p = (int)((float)p * h / q);
 			int var26 = (k << 8) + o;
 			var26 = (var26 << 8) + p;
-			dyeableItem.method_7799(itemStack2, var26);
+			dyeableItem.setColor(itemStack2, var26);
 			return itemStack2;
 		}
 	}

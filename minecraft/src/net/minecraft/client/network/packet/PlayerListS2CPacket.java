@@ -30,7 +30,10 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.field_12369
 				.add(
 					new PlayerListS2CPacket.class_2705(
-						serverPlayerEntity.getGameProfile(), serverPlayerEntity.field_13967, serverPlayerEntity.field_13974.getGameMode(), serverPlayerEntity.method_14206()
+						serverPlayerEntity.getGameProfile(),
+						serverPlayerEntity.field_13967,
+						serverPlayerEntity.interactionManager.getGameMode(),
+						serverPlayerEntity.method_14206()
 					)
 				);
 		}
@@ -43,7 +46,10 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.field_12369
 				.add(
 					new PlayerListS2CPacket.class_2705(
-						serverPlayerEntity.getGameProfile(), serverPlayerEntity.field_13967, serverPlayerEntity.field_13974.getGameMode(), serverPlayerEntity.method_14206()
+						serverPlayerEntity.getGameProfile(),
+						serverPlayerEntity.field_13967,
+						serverPlayerEntity.interactionManager.getGameMode(),
+						serverPlayerEntity.method_14206()
 					)
 				);
 		}
@@ -78,7 +84,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 					gameMode = GameMode.byId(packetByteBuf.readVarInt());
 					k = packetByteBuf.readVarInt();
 					if (packetByteBuf.readBoolean()) {
-						textComponent = packetByteBuf.method_10808();
+						textComponent = packetByteBuf.readTextComponent();
 					}
 					break;
 				case UPDATE_GAMEMODE:
@@ -92,7 +98,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				case UPDATE_DISPLAY_NAME:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 					if (packetByteBuf.readBoolean()) {
-						textComponent = packetByteBuf.method_10808();
+						textComponent = packetByteBuf.readTextComponent();
 					}
 					break;
 				case REMOVE:
@@ -132,7 +138,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeBoolean(false);
 					} else {
 						packetByteBuf.writeBoolean(true);
-						packetByteBuf.method_10805(lv.method_11724());
+						packetByteBuf.writeTextComponent(lv.method_11724());
 					}
 					break;
 				case UPDATE_GAMEMODE:
@@ -149,7 +155,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						packetByteBuf.writeBoolean(false);
 					} else {
 						packetByteBuf.writeBoolean(true);
-						packetByteBuf.method_10805(lv.method_11724());
+						packetByteBuf.writeTextComponent(lv.method_11724());
 					}
 					break;
 				case REMOVE:
@@ -159,7 +165,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public void method_11721(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.method_11113(this);
+		clientPlayPacketListener.onPlayerList(this);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -18,8 +18,8 @@ public class PlayerListGui extends JList<String> {
 		if (this.tick++ % 20 == 0) {
 			Vector<String> vector = new Vector();
 
-			for (int i = 0; i < this.server.method_3760().getPlayerList().size(); i++) {
-				vector.add(((ServerPlayerEntity)this.server.method_3760().getPlayerList().get(i)).getGameProfile().getName());
+			for (int i = 0; i < this.server.getPlayerManager().getPlayerList().size(); i++) {
+				vector.add(((ServerPlayerEntity)this.server.getPlayerManager().getPlayerList().get(i)).getGameProfile().getName());
 			}
 
 			this.setListData(vector);

@@ -17,7 +17,7 @@ public class BlockMatchRuleTest extends AbstractRuleTest {
 	}
 
 	public <T> BlockMatchRuleTest(Dynamic<T> dynamic) {
-		this(Registry.BLOCK.method_10223(new Identifier(dynamic.get("block").asString(""))));
+		this(Registry.BLOCK.get(new Identifier(dynamic.get("block").asString(""))));
 	}
 
 	@Override
@@ -26,15 +26,14 @@ public class BlockMatchRuleTest extends AbstractRuleTest {
 	}
 
 	@Override
-	protected RuleTest method_16766() {
+	protected RuleTest getRuleTest() {
 		return RuleTest.field_16981;
 	}
 
 	@Override
 	protected <T> Dynamic<T> method_16769(DynamicOps<T> dynamicOps) {
 		return new Dynamic<>(
-			dynamicOps,
-			dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("block"), dynamicOps.createString(Registry.BLOCK.method_10221(this.block).toString())))
+			dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("block"), dynamicOps.createString(Registry.BLOCK.getId(this.block).toString())))
 		);
 	}
 }
