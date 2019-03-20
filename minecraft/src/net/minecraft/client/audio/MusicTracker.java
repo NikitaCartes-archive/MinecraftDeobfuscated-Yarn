@@ -14,26 +14,22 @@ public class MusicTracker {
 	private final MinecraftClient client;
 	private SoundInstance current;
 	private int timeUntilNextSong = 100;
-	private boolean field_5573;
 
 	public MusicTracker(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
 	}
 
-	public void method_18669() {
+	public void tick() {
 		MusicTracker.MusicType musicType = this.client.getMusicType();
 		if (this.current != null) {
 			if (!musicType.getSound().getId().equals(this.current.getId())) {
-				this.client.getSoundLoader().stop(this.current);
+				this.client.getSoundManager().stop(this.current);
 				this.timeUntilNextSong = MathHelper.nextInt(this.random, 0, musicType.getMinDelay() / 2);
-				this.field_5573 = false;
 			}
 
-			if (!this.field_5573 && !this.client.getSoundLoader().isPlaying(this.current)) {
+			if (!this.client.getSoundManager().isPlaying(this.current)) {
 				this.current = null;
 				this.timeUntilNextSong = Math.min(MathHelper.nextInt(this.random, musicType.getMinDelay(), musicType.getMaxDelay()), this.timeUntilNextSong);
-			} else if (this.client.getSoundLoader().isPlaying(this.current)) {
-				this.field_5573 = false;
 			}
 		}
 
@@ -45,17 +41,15 @@ public class MusicTracker {
 
 	public void play(MusicTracker.MusicType musicType) {
 		this.current = PositionedSoundInstance.music(musicType.getSound());
-		this.client.getSoundLoader().play(this.current);
+		this.client.getSoundManager().play(this.current);
 		this.timeUntilNextSong = Integer.MAX_VALUE;
-		this.field_5573 = true;
 	}
 
 	public void stop() {
 		if (this.current != null) {
-			this.client.getSoundLoader().stop(this.current);
+			this.client.getSoundManager().stop(this.current);
 			this.current = null;
 			this.timeUntilNextSong = 0;
-			this.field_5573 = false;
 		}
 	}
 

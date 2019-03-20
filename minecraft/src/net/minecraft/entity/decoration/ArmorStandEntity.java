@@ -562,8 +562,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		Rotation rotation = this.dataTracker.get(TRACKER_HEAD_ROTATION);
 		if (!this.headRotation.equals(rotation)) {
 			this.setHeadRotation(rotation);

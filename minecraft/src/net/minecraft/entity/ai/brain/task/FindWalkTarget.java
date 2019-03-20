@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -25,7 +25,7 @@ public class FindWalkTarget extends Task<MobEntityWithAi> {
 	}
 
 	protected void method_18996(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
-		Optional<Vec3d> optional = Optional.ofNullable(AiUtil.method_6378(mobEntityWithAi, 10, 7));
+		Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, 10, 7));
 		mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, this.field_18375, 0)));
 	}
 }

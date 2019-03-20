@@ -18,11 +18,13 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 	}
 
 	public static PositionedSoundInstance master(SoundEvent soundEvent, float f, float g) {
-		return new PositionedSoundInstance(soundEvent, SoundCategory.field_15250, g, f, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F);
+		return new PositionedSoundInstance(soundEvent.getId(), SoundCategory.field_15250, g, f, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F, true);
 	}
 
 	public static PositionedSoundInstance music(SoundEvent soundEvent) {
-		return new PositionedSoundInstance(soundEvent, SoundCategory.field_15253, 1.0F, 1.0F, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F);
+		return new PositionedSoundInstance(
+			soundEvent.getId(), SoundCategory.field_15253, 1.0F, 1.0F, false, 0, SoundInstance.AttenuationType.NONE, 0.0F, 0.0F, 0.0F, true
+		);
 	}
 
 	public static PositionedSoundInstance record(SoundEvent soundEvent, float f, float g, float h) {
@@ -45,7 +47,7 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		float j,
 		float k
 	) {
-		this(soundEvent.getId(), soundCategory, f, g, bl, i, attenuationType, h, j, k);
+		this(soundEvent.getId(), soundCategory, f, g, bl, i, attenuationType, h, j, k, false);
 	}
 
 	public PositionedSoundInstance(
@@ -58,7 +60,8 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		SoundInstance.AttenuationType attenuationType,
 		float h,
 		float j,
-		float k
+		float k,
+		boolean bl2
 	) {
 		super(identifier, soundCategory);
 		this.volume = f;
@@ -69,5 +72,6 @@ public class PositionedSoundInstance extends AbstractSoundInstance {
 		this.repeat = bl;
 		this.repeatDelay = i;
 		this.attenuationType = attenuationType;
+		this.field_18936 = bl2;
 	}
 }

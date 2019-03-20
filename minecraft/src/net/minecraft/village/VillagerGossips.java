@@ -62,7 +62,7 @@ public class VillagerGossips {
 	public void shareGossipFrom(VillagerGossips villagerGossips, Random random, int i) {
 		Collection<VillagerGossips.GossipEntry> collection = villagerGossips.pickGossips(random, i);
 		collection.forEach(gossipEntry -> {
-			int ixx = gossipEntry.value - gossipEntry.type.field_18434;
+			int ixx = gossipEntry.value - gossipEntry.type.value;
 			if (ixx > 2) {
 				this.getReputationFor(gossipEntry.target).associatedGossip.mergeInt(gossipEntry.type, ixx, VillagerGossips::max);
 			}
@@ -101,7 +101,7 @@ public class VillagerGossips {
 
 	private int mergeReputation(VillageGossipType villageGossipType, int i, int j) {
 		int k = i + j;
-		return k > villageGossipType.field_18432 ? Math.max(villageGossipType.field_18432, i) : k;
+		return k > villageGossipType.maxReputation ? Math.max(villageGossipType.maxReputation, i) : k;
 	}
 
 	static class GossipEntry {
@@ -116,7 +116,7 @@ public class VillagerGossips {
 		}
 
 		public int getValue() {
-			return this.value * this.type.value;
+			return this.value * this.type.multiplier;
 		}
 
 		public String toString() {
@@ -160,7 +160,7 @@ public class VillagerGossips {
 				.object2IntEntrySet()
 				.stream()
 				.filter(entry -> predicate.test(entry.getKey()))
-				.mapToInt(entry -> entry.getIntValue() * ((VillageGossipType)entry.getKey()).value)
+				.mapToInt(entry -> entry.getIntValue() * ((VillageGossipType)entry.getKey()).multiplier)
 				.sum();
 		}
 

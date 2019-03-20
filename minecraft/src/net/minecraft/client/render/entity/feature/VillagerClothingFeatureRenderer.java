@@ -7,8 +7,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3884;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.entity.model.ModelWithHat;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.Resource;
@@ -25,7 +25,7 @@ import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 
 @Environment(EnvType.CLIENT)
-public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDataContainer, M extends EntityModel<T> & class_3884>
+public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDataContainer, M extends EntityModel<T> & ModelWithHat>
 	extends FeatureRenderer<T, M>
 	implements SynchronousResourceReloadListener {
 	private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = SystemUtil.consume(new Int2ObjectOpenHashMap<>(), int2ObjectOpenHashMap -> {

@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.minecraft.class_1394;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -10,6 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.ZombieRaiseArmsGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -56,7 +56,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	@Override
 	protected void method_7208() {
 		this.goalSelector.add(2, new ZombieRaiseArmsGoal(this, 1.0, false));
-		this.goalSelector.add(7, new class_1394(this, 1.0));
+		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
 		this.targetSelector.add(1, new ZombiePigmanEntity.class_1592(this));
 		this.targetSelector.add(2, new ZombiePigmanEntity.class_1591(this));
 	}

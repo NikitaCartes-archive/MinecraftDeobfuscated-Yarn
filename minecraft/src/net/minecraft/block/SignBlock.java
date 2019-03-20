@@ -70,7 +70,7 @@ public abstract class SignBlock extends BlockWithEntity implements Waterloggable
 			if (blockEntity instanceof SignBlockEntity) {
 				SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
 				ItemStack itemStack = playerEntity.getStackInHand(hand);
-				if (itemStack.getItem() instanceof DyeItem) {
+				if (itemStack.getItem() instanceof DyeItem && playerEntity.abilities.creativeMode) {
 					boolean bl = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
 					if (bl && !playerEntity.isCreative()) {
 						itemStack.subtractAmount(1);

@@ -167,7 +167,7 @@ public class EntityType<T extends Entity> {
 		"creeper", EntityType.Builder.<CreeperEntity>create(CreeperEntity::new, EntityCategory.field_6302).setSize(0.6F, 1.7F)
 	);
 	public static final EntityType<DonkeyEntity> DONKEY = register(
-		"donkey", EntityType.Builder.<DonkeyEntity>create(DonkeyEntity::new, EntityCategory.field_6294).setSize(1.3964844F, 1.6F)
+		"donkey", EntityType.Builder.<DonkeyEntity>create(DonkeyEntity::new, EntityCategory.field_6294).setSize(1.3964844F, 1.5F)
 	);
 	public static final EntityType<DolphinEntity> DOLPHIN = register(
 		"dolphin", EntityType.Builder.<DolphinEntity>create(DolphinEntity::new, EntityCategory.field_6300).setSize(0.9F, 0.6F)
@@ -212,13 +212,13 @@ public class EntityType<T extends Entity> {
 		"firework_rocket", EntityType.Builder.<FireworkEntity>create(FireworkEntity::new, EntityCategory.field_17715).setSize(0.25F, 0.25F)
 	);
 	public static final EntityType<FoxEntity> field_17943 = register(
-		"fox", EntityType.Builder.<FoxEntity>create(FoxEntity::new, EntityCategory.field_6294).setSize(0.5F, 0.7F)
+		"fox", EntityType.Builder.<FoxEntity>create(FoxEntity::new, EntityCategory.field_6294).setSize(0.6F, 0.7F)
 	);
 	public static final EntityType<GhastEntity> GHAST = register(
 		"ghast", EntityType.Builder.<GhastEntity>create(GhastEntity::new, EntityCategory.field_6302).setSize(4.0F, 4.0F)
 	);
 	public static final EntityType<GiantEntity> GIANT = register(
-		"giant", EntityType.Builder.<GiantEntity>create(GiantEntity::new, EntityCategory.field_6302).setSize(3.6F, 11.7F)
+		"giant", EntityType.Builder.<GiantEntity>create(GiantEntity::new, EntityCategory.field_6302).setSize(3.6F, 12.0F)
 	);
 	public static final EntityType<GuardianEntity> GUARDIAN = register(
 		"guardian", EntityType.Builder.<GuardianEntity>create(GuardianEntity::new, EntityCategory.field_6302).setSize(0.85F, 0.85F)
@@ -303,7 +303,7 @@ public class EntityType<T extends Entity> {
 		"zombie_pigman", EntityType.Builder.<ZombiePigmanEntity>create(ZombiePigmanEntity::new, EntityCategory.field_6302).setSize(0.6F, 1.95F)
 	);
 	public static final EntityType<PolarBearEntity> POLAR_BEAR = register(
-		"polar_bear", EntityType.Builder.<PolarBearEntity>create(PolarBearEntity::new, EntityCategory.field_6294).setSize(1.3F, 1.4F)
+		"polar_bear", EntityType.Builder.<PolarBearEntity>create(PolarBearEntity::new, EntityCategory.field_6294).setSize(1.4F, 1.4F)
 	);
 	public static final EntityType<PrimedTntEntity> TNT = register(
 		"tnt", EntityType.Builder.<PrimedTntEntity>create(PrimedTntEntity::new, EntityCategory.field_17715).setSize(0.98F, 0.98F)

@@ -190,7 +190,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 													r = BlockPos.asLong(j + 16, k + o, m + p);
 											}
 
-											chunkLightProvider.scheduleNewLevelUpdate(q, r, chunkLightProvider.getBaseLevel(q, r, 0), true);
+											chunkLightProvider.update(q, r, chunkLightProvider.getUpdatedLevel(q, r, 0), true);
 										}
 									}
 								}
@@ -208,7 +208,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l)) - 1,
 										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l)) + t
 									);
-									chunkLightProvider.scheduleNewLevelUpdate(u, n, chunkLightProvider.getBaseLevel(u, n, 0), true);
+									chunkLightProvider.update(u, n, chunkLightProvider.getUpdatedLevel(u, n, 0), true);
 								}
 							}
 						} else {
@@ -219,7 +219,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l)) + 16 - 1,
 										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l)) + k
 									);
-									chunkLightProvider.scheduleNewLevelUpdate(Long.MAX_VALUE, v, 0, true);
+									chunkLightProvider.update(Long.MAX_VALUE, v, 0, true);
 								}
 							}
 						}
@@ -241,7 +241,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 									ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l)) + 16 - 1,
 									ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l)) + j
 								);
-								chunkLightProvider.scheduleNewLevelUpdate(Long.MAX_VALUE, w, 15, false);
+								chunkLightProvider.update(Long.MAX_VALUE, w, 15, false);
 							}
 						}
 					}

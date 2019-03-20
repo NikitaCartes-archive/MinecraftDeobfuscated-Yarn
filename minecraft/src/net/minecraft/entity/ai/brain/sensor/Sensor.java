@@ -7,13 +7,13 @@ import net.minecraft.server.world.ServerWorld;
 
 public abstract class Sensor<E extends LivingEntity> {
 	private final int senseInterval = 10;
-	protected long field_18463 = 0L;
+	protected long field_18463;
 
 	public boolean canSense(ServerWorld serverWorld, E livingEntity) {
-		return serverWorld.getTime() - this.field_18463 >= 10L && this.getOutputMemoryModules().stream().anyMatch(livingEntity.getBrain()::hasMemoryModule);
+		return serverWorld.getTime() - this.field_18463 >= 10L;
 	}
 
 	public abstract void sense(ServerWorld serverWorld, E livingEntity);
 
-	protected abstract Set<MemoryModuleType<?>> getOutputMemoryModules();
+	public abstract Set<MemoryModuleType<?>> getOutputMemoryModules();
 }

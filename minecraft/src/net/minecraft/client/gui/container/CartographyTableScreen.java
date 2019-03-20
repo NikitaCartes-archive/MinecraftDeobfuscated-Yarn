@@ -24,8 +24,8 @@ public class CartographyTableScreen extends ContainerScreen<CartographyTableCont
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
-		super.draw(i, j, f);
+	public void render(int i, int j, float f) {
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 

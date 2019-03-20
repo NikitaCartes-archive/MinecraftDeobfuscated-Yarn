@@ -54,9 +54,9 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public void updateLogic() {
+	public void baseTick() {
 		int i = this.getBreath();
-		super.updateLogic();
+		super.baseTick();
 		this.method_6673(i);
 	}
 

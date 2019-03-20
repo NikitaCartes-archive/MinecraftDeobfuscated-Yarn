@@ -8,36 +8,36 @@ import net.minecraft.realms.RealmsScrolledSelectionList;
 
 @Environment(EnvType.CLIENT)
 public class ScrolledSelectionList extends AbstractListWidget {
-	private final RealmsScrolledSelectionList field_2344;
+	private final RealmsScrolledSelectionList realmsScrolledSelectionList;
 
 	public ScrolledSelectionList(RealmsScrolledSelectionList realmsScrolledSelectionList, int i, int j, int k, int l, int m) {
 		super(MinecraftClient.getInstance(), i, j, k, l, m);
-		this.field_2344 = realmsScrolledSelectionList;
+		this.realmsScrolledSelectionList = realmsScrolledSelectionList;
 	}
 
 	@Override
-	protected int getEntryCount() {
-		return this.field_2344.getItemCount();
+	public int getEntryCount() {
+		return this.realmsScrolledSelectionList.getItemCount();
 	}
 
 	@Override
-	protected boolean selectEntry(int i, int j, double d, double e) {
-		return this.field_2344.selectItem(i, j, d, e);
+	public boolean selectEntry(int i, int j, double d, double e) {
+		return this.realmsScrolledSelectionList.selectItem(i, j, d, e);
 	}
 
 	@Override
-	protected boolean isSelectedEntry(int i) {
-		return this.field_2344.isSelectedItem(i);
+	public boolean isSelectedEntry(int i) {
+		return this.realmsScrolledSelectionList.isSelectedItem(i);
 	}
 
 	@Override
-	protected void drawBackground() {
-		this.field_2344.renderBackground();
+	public void drawBackground() {
+		this.realmsScrolledSelectionList.renderBackground();
 	}
 
 	@Override
-	protected void drawEntry(int i, int j, int k, int l, int m, int n, float f) {
-		this.field_2344.renderItem(i, j, k, l, m, n);
+	public void drawEntry(int i, int j, int k, int l, int m, int n, float f) {
+		this.realmsScrolledSelectionList.renderItem(i, j, k, l, m, n);
 	}
 
 	public int getWidth() {
@@ -45,32 +45,32 @@ public class ScrolledSelectionList extends AbstractListWidget {
 	}
 
 	@Override
-	protected int getMaxScrollPosition() {
-		return this.field_2344.getMaxPosition();
+	public int getMaxScrollPosition() {
+		return this.realmsScrolledSelectionList.getMaxPosition();
 	}
 
 	@Override
-	protected int getScrollbarPosition() {
-		return this.field_2344.getScrollbarPosition();
+	public int getScrollbarPosition() {
+		return this.realmsScrolledSelectionList.getScrollbarPosition();
 	}
 
 	@Override
 	public boolean mouseScrolled(double d, double e, double f) {
-		return this.field_2344.mouseScrolled(d, e, f) ? true : super.mouseScrolled(d, e, f);
+		return this.realmsScrolledSelectionList.mouseScrolled(d, e, f) ? true : super.mouseScrolled(d, e, f);
 	}
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		return this.field_2344.mouseClicked(d, e, i) ? true : super.mouseClicked(d, e, i);
+		return this.realmsScrolledSelectionList.mouseClicked(d, e, i) ? true : super.mouseClicked(d, e, i);
 	}
 
 	@Override
 	public boolean mouseReleased(double d, double e, int i) {
-		return this.field_2344.mouseReleased(d, e, i);
+		return this.realmsScrolledSelectionList.mouseReleased(d, e, i);
 	}
 
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		return this.field_2344.mouseDragged(d, e, i, f, g);
+		return this.realmsScrolledSelectionList.mouseDragged(d, e, i, f, g);
 	}
 }

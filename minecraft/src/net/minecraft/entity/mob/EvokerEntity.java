@@ -86,8 +86,8 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 	}
 
 	@Override

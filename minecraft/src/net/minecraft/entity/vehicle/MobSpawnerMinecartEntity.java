@@ -65,8 +65,8 @@ public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		this.logic.update();
 	}
 

@@ -25,7 +25,7 @@ public class HurtBySensor extends Sensor<LivingEntity> {
 	}
 
 	@Override
-	protected Set<MemoryModuleType<?>> getOutputMemoryModules() {
+	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.of(MemoryModuleType.field_18451, MemoryModuleType.field_18452);
 	}
 }

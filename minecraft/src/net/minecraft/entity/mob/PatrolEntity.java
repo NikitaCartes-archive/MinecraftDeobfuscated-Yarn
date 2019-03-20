@@ -156,8 +156,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			boolean bl = this.field_16481.isPatrolLeader();
 			EntityNavigation entityNavigation = this.field_16481.getNavigation();
 			if (entityNavigation.isIdle()) {
-				double d = this.field_16481.squaredDistanceTo(this.field_16481.getPatrolTarget());
-				if (bl && !(d >= 100.0)) {
+				if (bl && this.field_16481.getPatrolTarget().method_19769(this.field_16481.getPos(), 10.0)) {
 					this.field_16481.setRandomRaidCenter();
 				} else {
 					Vec3d vec3d = new Vec3d(this.field_16481.getPatrolTarget());

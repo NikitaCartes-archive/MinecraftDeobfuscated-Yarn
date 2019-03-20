@@ -44,7 +44,7 @@ public class ScoreboardHud extends DrawableHelper {
 	public TextComponent method_1918(ScoreboardEntry scoreboardEntry) {
 		return scoreboardEntry.getDisplayName() != null
 			? scoreboardEntry.getDisplayName()
-			: ScoreboardTeam.method_1142(scoreboardEntry.getScoreboardTeam(), new StringTextComponent(scoreboardEntry.getProfile().getName()));
+			: ScoreboardTeam.modifyText(scoreboardEntry.getScoreboardTeam(), new StringTextComponent(scoreboardEntry.getProfile().getName()));
 	}
 
 	public void method_1921(boolean bl) {

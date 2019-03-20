@@ -35,14 +35,13 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Bootstrap;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_4071;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.client.audio.MusicTracker;
-import net.minecraft.client.audio.SoundLoader;
+import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.font.FontManager;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gl.GlDebug;
@@ -52,6 +51,7 @@ import net.minecraft.client.gui.ContainerScreenRegistry;
 import net.minecraft.client.gui.FocusedInputListener;
 import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.MainMenuScreen;
+import net.minecraft.client.gui.Overlay;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.SplashScreen;
 import net.minecraft.client.gui.WorldGenerationProgressScreen;
@@ -249,7 +249,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	@Nullable
 	public Screen currentScreen;
 	@Nullable
-	public class_4071 field_18175;
+	public Overlay overlay;
 	public GameRenderer gameRenderer;
 	public DebugRenderer debugRenderer;
 	protected int attackCooldown;
@@ -289,7 +289,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	private ItemColorMap itemColorMap;
 	private GlFramebuffer framebuffer;
 	private SpriteAtlasTexture spriteAtlas;
-	private SoundLoader soundLoader;
+	private SoundManager soundManager;
 	private MusicTracker musicTracker;
 	private FontManager fontManager;
 	private SplashTextResourceSupplier splashTextLoader;
@@ -462,9 +462,9 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		this.onResolutionChanged();
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(this.assetDirectory, "skins"), this.sessionService);
 		this.levelStorage = new LevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
-		this.soundLoader = new SoundLoader(this.options);
-		this.resourceManager.registerListener(this.soundLoader);
-		this.splashTextLoader = new SplashTextResourceSupplier();
+		this.soundManager = new SoundManager(this.resourceManager, this.options);
+		this.resourceManager.registerListener(this.soundManager);
+		this.splashTextLoader = new SplashTextResourceSupplier(this.session);
 		this.resourceManager.registerListener(this.splashTextLoader);
 		this.musicTracker = new MusicTracker(this);
 		this.fontManager = new FontManager(this.textureManager, this.forcesUnicodeFont());
@@ -659,7 +659,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			return this.field_18174;
 		} else {
 			CompletableFuture<Void> completableFuture = new CompletableFuture();
-			if (this.field_18175 instanceof SplashScreen) {
+			if (this.overlay instanceof SplashScreen) {
 				this.field_18174 = completableFuture;
 				return completableFuture;
 			} else {
@@ -739,13 +739,13 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	@Nullable
 	@Override
 	public InputListener getFocused() {
-		return this.field_18175 == null ? this.currentScreen : null;
+		return this.overlay == null ? this.currentScreen : null;
 	}
 
 	@Nullable
 	@Override
 	public InputListener method_19355(double d, double e) {
-		return this.field_18175 == null
+		return this.overlay == null
 				&& this.currentScreen != null
 				&& d >= 0.0
 				&& d < (double)this.currentScreen.screenWidth
@@ -778,13 +778,13 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			screen.initialize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
 			this.skipGameRender = false;
 		} else {
-			this.soundLoader.resume();
+			this.soundManager.playAll();
 			this.mouse.lockCursor();
 		}
 	}
 
-	public void method_18502(@Nullable class_4071 arg) {
-		this.field_18175 = arg;
+	public void method_18502(@Nullable Overlay overlay) {
+		this.overlay = overlay;
 	}
 
 	public void stop() {
@@ -821,7 +821,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			this.fontManager.close();
 			this.gameRenderer.close();
 			this.worldRenderer.close();
-			this.soundLoader.deinitialize();
+			this.soundManager.close();
 			this.resourcePackContainerManager.close();
 			this.particleManager.method_18829();
 			this.field_18173.close();
@@ -841,7 +841,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			this.scheduleStop();
 		}
 
-		if (this.field_18174 != null && !(this.field_18175 instanceof SplashScreen)) {
+		if (this.field_18174 != null && !(this.overlay instanceof SplashScreen)) {
 			CompletableFuture<Void> completableFuture = this.field_18174;
 			this.field_18174 = null;
 			this.reloadResources().thenRun(() -> completableFuture.complete(null));
@@ -872,7 +872,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		GLX.pollEvents();
 		long n = SystemUtil.getMeasuringTimeNano() - m;
 		this.profiler.swap("sound");
-		this.soundLoader.updateListenerPosition(this.gameRenderer.method_19418());
+		this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
 		this.profiler.pop();
 		this.profiler.push("render");
 		GlStateManager.pushMatrix();
@@ -908,7 +908,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		this.window.setPhase("Post render");
 		++this.fpsCounter;
 		boolean bl2 = this.isIntegratedServerRunning()
-			&& (this.currentScreen != null && this.currentScreen.isPauseScreen() || this.field_18175 != null && this.field_18175.method_18640())
+			&& (this.currentScreen != null && this.currentScreen.isPauseScreen() || this.overlay != null && this.overlay.method_18640())
 			&& !this.server.isRemote();
 		if (this.isPaused != bl2) {
 			if (this.isPaused) {
@@ -986,7 +986,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	private int getFramerateLimit() {
-		return this.world != null || this.currentScreen == null && this.field_18175 == null ? this.window.getFramerateLimit() : 60;
+		return this.world != null || this.currentScreen == null && this.overlay == null ? this.window.getFramerateLimit() : 60;
 	}
 
 	private boolean isFramerateLimited() {
@@ -1148,7 +1148,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		if (this.currentScreen == null) {
 			this.openScreen(new PauseMenuScreen());
 			if (this.isIntegratedServerRunning() && !this.server.isRemote()) {
-				this.soundLoader.pause();
+				this.soundManager.pauseAll();
 			}
 		}
 	}
@@ -1300,14 +1300,14 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		}
 
 		if (this.currentScreen != null) {
-			Screen.method_2217(() -> this.currentScreen.update(), "Ticking screen", this.currentScreen.getClass().getCanonicalName());
+			Screen.wrapScreenError(() -> this.currentScreen.update(), "Ticking screen", this.currentScreen.getClass().getCanonicalName());
 		}
 
 		if (!this.options.debugEnabled) {
 			this.inGameHud.resetDebugHudChunk();
 		}
 
-		if (this.field_18175 == null && (this.currentScreen == null || this.currentScreen.field_2558)) {
+		if (this.overlay == null && (this.currentScreen == null || this.currentScreen.passEvents)) {
 			this.profiler.swap("GLFW events");
 			GLX.pollEvents();
 			this.handleInputEvents();
@@ -1340,8 +1340,8 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		}
 
 		if (!this.isPaused) {
-			this.musicTracker.method_18669();
-			this.soundLoader.update();
+			this.musicTracker.tick();
+			this.soundManager.tick();
 		}
 
 		if (this.world != null) {
@@ -1446,7 +1446,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 				this.openScreen(new ChatScreen());
 			}
 
-			if (this.currentScreen == null && this.field_18175 == null && this.options.keyCommand.wasPressed()) {
+			if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
 				this.openScreen(new ChatScreen("/"));
 			}
 		}
@@ -1614,7 +1614,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 
 	private void method_18098(Screen screen) {
 		this.musicTracker.stop();
-		this.soundLoader.stopAll();
+		this.soundManager.stopAll();
 		this.cameraEntity = null;
 		this.clientConnection = null;
 		this.openScreen(screen);
@@ -1967,8 +1967,8 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		return this.isPaused;
 	}
 
-	public SoundLoader getSoundLoader() {
-		return this.soundLoader;
+	public SoundManager getSoundManager() {
+		return this.soundManager;
 	}
 
 	public MusicTracker.MusicType getMusicType() {
@@ -2014,7 +2014,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	@Override
-	protected Thread thread() {
+	protected Thread getThread() {
 		return this.thread;
 	}
 
@@ -2134,12 +2134,12 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	@Nullable
-	public class_4071 method_18506() {
-		return this.field_18175;
+	public Overlay method_18506() {
+		return this.overlay;
 	}
 
 	@Override
-	public boolean method_19356(double d, double e) {
+	public boolean isMouseOver(double d, double e) {
 		return true;
 	}
 }

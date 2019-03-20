@@ -60,7 +60,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 			double d = 64.0;
 			PlayerEntity playerEntity = this.dragon.world.method_18461(field_18121, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			if (playerEntity != null) {
-				d = playerEntity.squaredDistanceToCenter(blockPos) / 512.0;
+				d = blockPos.method_19770(playerEntity.getPos(), true) / 512.0;
 			}
 
 			if (playerEntity != null && (this.dragon.getRand().nextInt(MathHelper.abs((int)d) + 2) == 0 || this.dragon.getRand().nextInt(i + 2) == 0)) {

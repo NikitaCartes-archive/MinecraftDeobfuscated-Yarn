@@ -1,6 +1,8 @@
 package net.minecraft.util.math;
 
 import java.util.stream.Stream;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.chunk.ChunkPos;
 
@@ -110,6 +112,17 @@ public class ChunkSectionPos extends Vec3i {
 
 	public static long method_18693(long l) {
 		return l & -1048576L;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public BlockPos method_19767() {
+		return new BlockPos(fromChunkCoord(this.getChunkX()), fromChunkCoord(this.getChunkY()), fromChunkCoord(this.getChunkZ()));
+	}
+
+	@Environment(EnvType.CLIENT)
+	public BlockPos method_19768() {
+		int i = 8;
+		return this.method_19767().add(8, 8, 8);
 	}
 
 	public ChunkPos toChunkPos() {

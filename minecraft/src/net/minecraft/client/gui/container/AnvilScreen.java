@@ -112,13 +112,13 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
-		this.nameField.draw(i, j, f);
+		this.nameField.render(i, j, f);
 	}
 
 	@Override

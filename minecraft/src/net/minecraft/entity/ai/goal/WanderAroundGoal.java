@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.util.math.Vec3d;
 
@@ -56,7 +56,7 @@ public class WanderAroundGoal extends Goal {
 
 	@Nullable
 	protected Vec3d getWanderTarget() {
-		return AiUtil.method_6375(this.owner, 10, 7);
+		return PathfindingUtil.findTarget(this.owner, 10, 7);
 	}
 
 	@Override

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4071;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
@@ -18,7 +17,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class SplashScreen extends class_4071 {
+public class SplashScreen extends Overlay {
 	private static final Identifier LOGO = new Identifier("textures/gui/title/mojang.png");
 	private final MinecraftClient client;
 	private final ResourceReloadMonitor reloadMonitor;
@@ -40,7 +39,7 @@ public class SplashScreen extends class_4071 {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		int k = this.client.window.getScaledWidth();
 		int l = this.client.window.getScaledHeight();
 		long m = SystemUtil.getMeasuringTimeMs();
@@ -53,7 +52,7 @@ public class SplashScreen extends class_4071 {
 		float o;
 		if (g >= 1.0F) {
 			if (this.client.currentScreen != null) {
-				this.client.currentScreen.draw(0, 0, f);
+				this.client.currentScreen.render(0, 0, f);
 			}
 
 			int n = MathHelper.ceil((1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F)) * 255.0F);
@@ -61,7 +60,7 @@ public class SplashScreen extends class_4071 {
 			o = 1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F);
 		} else if (this.field_18219) {
 			if (this.client.currentScreen != null && h < 1.0F) {
-				this.client.currentScreen.draw(i, j, f);
+				this.client.currentScreen.render(i, j, f);
 			}
 
 			int n = MathHelper.ceil(MathHelper.clamp((double)h, 0.15, 1.0) * 255.0);

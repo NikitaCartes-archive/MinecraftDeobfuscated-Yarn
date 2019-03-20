@@ -6,8 +6,8 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
-import net.minecraft.class_4209;
 import net.minecraft.entity.EntityCategory;
+import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
@@ -175,7 +175,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 					StructureStart structureStart = (StructureStart)entry.getValue();
 					if (structureStart != StructureStart.DEFAULT && structureStart.getBoundingBox().intersectsXZ(l, m, l + 15, m + 15)) {
 						chunk.addStructureReference((String)entry.getKey(), p);
-						class_4209.method_19474(iWorld, structureStart);
+						DebugRendererInfoManager.sendStructureStart(iWorld, structureStart);
 					}
 				}
 			}

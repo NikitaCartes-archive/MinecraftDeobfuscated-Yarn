@@ -20,7 +20,7 @@ public class DemoScreen extends Screen {
 		this.addButton(new ButtonWidget(this.screenWidth / 2 - 116, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.buy")) {
 			@Override
 			public void onPressed() {
-				this.enabled = false;
+				this.active = false;
 				SystemUtil.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
 			}
 		});
@@ -44,7 +44,7 @@ public class DemoScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		int k = (this.screenWidth - 248) / 2 + 10;
 		int l = (this.screenHeight - 166) / 2 + 8;
@@ -68,6 +68,6 @@ public class DemoScreen extends Screen {
 		this.fontRenderer.draw(I18n.translate("demo.help.jump", gameOptions.keyJump.getLocalizedName()), (float)k, (float)(l + 24), 5197647);
 		this.fontRenderer.draw(I18n.translate("demo.help.inventory", gameOptions.keyInventory.getLocalizedName()), (float)k, (float)(l + 36), 5197647);
 		this.fontRenderer.drawStringBounded(I18n.translate("demo.help.fullWrapped"), k, l + 68, 218, 2039583);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

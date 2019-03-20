@@ -146,8 +146,8 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		boolean bl = this.method_5611();
 		float f = this.getRadius();
 		if (this.world.isClient) {

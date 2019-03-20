@@ -11,11 +11,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
-import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
-import net.minecraft.entity.mob.IllagerEntity;
-import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.IWorld;
@@ -59,8 +56,6 @@ public class TraderLlamaEntity extends LlamaEntity {
 		super.initGoals();
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 2.0));
 		this.targetSelector.add(1, new TraderLlamaEntity.DefendTraderGoal(this));
-		this.targetSelector.add(2, new FollowTargetGoal(this, ZombieEntity.class, true));
-		this.targetSelector.add(2, new FollowTargetGoal(this, IllagerEntity.class, true));
 	}
 
 	public void setDespawnDelay(int i) {
@@ -76,8 +71,8 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.despawnDelay > 0 && --this.despawnDelay == 0 && this.getHoldingEntity() instanceof WanderingTraderEntity) {
 			WanderingTraderEntity wanderingTraderEntity = (WanderingTraderEntity)this.getHoldingEntity();
 			int i = wanderingTraderEntity.getDespawnDelay();

@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 public abstract class AbstractSoundInstance implements SoundInstance {
 	protected Sound sound;
 	@Nullable
-	private WeightedSoundSet accessor;
+	private WeightedSoundSet soundSet;
 	protected final SoundCategory category;
 	protected final Identifier id;
 	protected float volume = 1.0F;
@@ -22,7 +22,8 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected boolean repeat;
 	protected int repeatDelay;
 	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.LINEAR;
-	protected boolean field_5445;
+	protected boolean field_18935;
+	protected boolean field_18936;
 
 	protected AbstractSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory) {
 		this(soundEvent.getId(), soundCategory);
@@ -39,15 +40,15 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	}
 
 	@Override
-	public WeightedSoundSet getAccess(SoundLoader soundLoader) {
-		this.accessor = soundLoader.get(this.id);
-		if (this.accessor == null) {
-			this.sound = SoundLoader.SOUND_MISSING;
+	public WeightedSoundSet getSoundSet(SoundManager soundManager) {
+		this.soundSet = soundManager.get(this.id);
+		if (this.soundSet == null) {
+			this.sound = SoundManager.SOUND_MISSING;
 		} else {
-			this.sound = this.accessor.method_4887();
+			this.sound = this.soundSet.method_4887();
 		}
 
-		return this.accessor;
+		return this.soundSet;
 	}
 
 	@Override
@@ -102,6 +103,6 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 
 	@Override
 	public boolean method_4787() {
-		return this.field_5445;
+		return this.field_18936;
 	}
 }

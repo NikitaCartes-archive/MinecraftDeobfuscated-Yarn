@@ -13,11 +13,9 @@ import net.minecraft.server.world.ServerWorld;
 
 public class GoTowardsLookTarget extends Task<LivingEntity> {
 	private final float field_18378;
-	private final float field_18379;
 
-	public GoTowardsLookTarget(float f, float g) {
+	public GoTowardsLookTarget(float f) {
 		this.field_18378 = f;
-		this.field_18379 = g;
 	}
 
 	@Override
@@ -30,6 +28,7 @@ public class GoTowardsLookTarget extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		Brain<?> brain = livingEntity.getBrain();
-		brain.putMemory(MemoryModuleType.field_18445, new WalkTarget((LookTarget)brain.getMemory(MemoryModuleType.field_18446).get(), this.field_18378, 0));
+		LookTarget lookTarget = (LookTarget)brain.getMemory(MemoryModuleType.field_18446).get();
+		brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(lookTarget, this.field_18378, 0));
 	}
 }

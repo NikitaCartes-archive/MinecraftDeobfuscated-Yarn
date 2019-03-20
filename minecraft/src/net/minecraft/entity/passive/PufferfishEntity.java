@@ -90,7 +90,7 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (this.isValid() && !this.world.isClient) {
 			if (this.field_6833 > 0) {
 				if (this.method_6594() == 0) {
@@ -115,7 +115,7 @@ public class PufferfishEntity extends FishEntity {
 			}
 		}
 
-		super.update();
+		super.tick();
 	}
 
 	@Override

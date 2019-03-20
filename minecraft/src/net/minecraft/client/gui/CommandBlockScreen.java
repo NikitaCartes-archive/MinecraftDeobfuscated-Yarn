@@ -60,11 +60,11 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 				}
 			}
 		);
-		this.doneButton.enabled = false;
-		this.toggleTrackingOutputButton.enabled = false;
-		this.modeButton.enabled = false;
-		this.conditionalModeButton.enabled = false;
-		this.redstoneTriggerButton.enabled = false;
+		this.doneButton.active = false;
+		this.toggleTrackingOutputButton.active = false;
+		this.modeButton.active = false;
+		this.conditionalModeButton.active = false;
+		this.redstoneTriggerButton.active = false;
 	}
 
 	public void method_2457() {
@@ -78,11 +78,11 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 		this.updateMode();
 		this.updateConditionalMode();
 		this.updateActivationMode();
-		this.doneButton.enabled = true;
-		this.toggleTrackingOutputButton.enabled = true;
-		this.modeButton.enabled = true;
-		this.conditionalModeButton.enabled = true;
-		this.redstoneTriggerButton.enabled = true;
+		this.doneButton.active = true;
+		this.toggleTrackingOutputButton.active = true;
+		this.modeButton.active = true;
+		this.conditionalModeButton.active = true;
+		this.redstoneTriggerButton.active = true;
 	}
 
 	@Override
@@ -92,11 +92,11 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 		this.updateMode();
 		this.updateConditionalMode();
 		this.updateActivationMode();
-		this.doneButton.enabled = true;
-		this.toggleTrackingOutputButton.enabled = true;
-		this.modeButton.enabled = true;
-		this.conditionalModeButton.enabled = true;
-		this.redstoneTriggerButton.enabled = true;
+		this.doneButton.active = true;
+		this.toggleTrackingOutputButton.active = true;
+		this.modeButton.active = true;
+		this.conditionalModeButton.active = true;
+		this.redstoneTriggerButton.active = true;
 	}
 
 	@Override
@@ -118,13 +118,13 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	private void updateMode() {
 		switch(this.mode) {
 			case field_11922:
-				this.modeButton.setText(I18n.translate("advMode.mode.sequence"));
+				this.modeButton.setMessage(I18n.translate("advMode.mode.sequence"));
 				break;
 			case field_11923:
-				this.modeButton.setText(I18n.translate("advMode.mode.auto"));
+				this.modeButton.setMessage(I18n.translate("advMode.mode.auto"));
 				break;
 			case field_11924:
-				this.modeButton.setText(I18n.translate("advMode.mode.redstone"));
+				this.modeButton.setMessage(I18n.translate("advMode.mode.redstone"));
 		}
 	}
 
@@ -143,17 +143,17 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 
 	private void updateConditionalMode() {
 		if (this.conditional) {
-			this.conditionalModeButton.setText(I18n.translate("advMode.mode.conditional"));
+			this.conditionalModeButton.setMessage(I18n.translate("advMode.mode.conditional"));
 		} else {
-			this.conditionalModeButton.setText(I18n.translate("advMode.mode.unconditional"));
+			this.conditionalModeButton.setMessage(I18n.translate("advMode.mode.unconditional"));
 		}
 	}
 
 	private void updateActivationMode() {
 		if (this.autoActivate) {
-			this.redstoneTriggerButton.setText(I18n.translate("advMode.mode.autoexec.bat"));
+			this.redstoneTriggerButton.setMessage(I18n.translate("advMode.mode.autoexec.bat"));
 		} else {
-			this.redstoneTriggerButton.setText(I18n.translate("advMode.mode.redstoneTriggered"));
+			this.redstoneTriggerButton.setMessage(I18n.translate("advMode.mode.redstoneTriggered"));
 		}
 	}
 }

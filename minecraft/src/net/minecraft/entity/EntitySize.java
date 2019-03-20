@@ -12,7 +12,11 @@ public class EntitySize {
 	}
 
 	public EntitySize scaled(float f) {
-		return !this.constant && f != 1.0F ? resizeable(this.width * f, this.height * f) : this;
+		return this.method_19539(f, f);
+	}
+
+	public EntitySize method_19539(float f, float g) {
+		return !this.constant && (f != 1.0F || g != 1.0F) ? resizeable(this.width * f, this.height * g) : this;
 	}
 
 	public static EntitySize resizeable(float f, float g) {

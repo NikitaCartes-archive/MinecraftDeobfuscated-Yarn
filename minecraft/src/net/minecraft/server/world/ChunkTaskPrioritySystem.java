@@ -37,7 +37,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 	public static ChunkTaskPrioritySystem.RunnableMessage<Runnable> createRunnableMessage(Runnable runnable, long l, IntSupplier intSupplier) {
 		return new ChunkTaskPrioritySystem.RunnableMessage(actor -> () -> {
 				runnable.run();
-				actor.method_16901(Void.INSTANCE);
+				actor.send(Void.INSTANCE);
 			}, l, intSupplier);
 	}
 
@@ -56,7 +56,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 						0,
 						() -> {
 							this.getQueue(actor);
-							actor2.method_16901(
+							actor2.send(
 								Actor.createConsumerActor(
 									"chunk priority sorter around " + actor.getName(),
 									runnableMessage -> this.method_17282(actor, runnableMessage.function, runnableMessage.pos, runnableMessage.lastLevelUpdatedToProvider, bl)
@@ -73,7 +73,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 			.createAndSendFutureActor(
 				actor2 -> new Mailbox.PrioritizedMessage(
 						0,
-						() -> actor2.method_16901(
+						() -> actor2.send(
 								Actor.createConsumerActor(
 									"chunk priority sorter around " + actor.getName(),
 									sorterMessage -> this.method_17615(actor, sorterMessage.pos, sorterMessage.runnable, sorterMessage.field_17451)
@@ -86,7 +86,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 
 	@Override
 	public void updateLevel(ChunkPos chunkPos, IntSupplier intSupplier, int i, IntConsumer intConsumer) {
-		this.sorter.method_16901(new Mailbox.PrioritizedMessage(0, () -> {
+		this.sorter.send(new Mailbox.PrioritizedMessage(0, () -> {
 			int j = intSupplier.getAsInt();
 			this.queues.values().forEach(levelIndexedQueue -> levelIndexedQueue.updateLevel(j, chunkPos, i));
 			intConsumer.accept(i);
@@ -94,7 +94,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 	}
 
 	private <T> void method_17615(Actor<T> actor, long l, Runnable runnable, boolean bl) {
-		this.sorter.method_16901(new Mailbox.PrioritizedMessage(1, () -> {
+		this.sorter.send(new Mailbox.PrioritizedMessage(1, () -> {
 			LevelIndexedQueue<Function<Actor<Void>, T>> levelIndexedQueue = this.getQueue(actor);
 			levelIndexedQueue.method_17609(l, bl);
 			if (this.actors.remove(actor)) {
@@ -106,7 +106,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 	}
 
 	private <T> void method_17282(Actor<T> actor, Function<Actor<Void>, T> function, long l, IntSupplier intSupplier, boolean bl) {
-		this.sorter.method_16901(new Mailbox.PrioritizedMessage(2, () -> {
+		this.sorter.send(new Mailbox.PrioritizedMessage(2, () -> {
 			LevelIndexedQueue<Function<Actor<Void>, T>> levelIndexedQueue = this.getQueue(actor);
 			int i = intSupplier.getAsInt();
 			levelIndexedQueue.method_17274(Optional.of(function), l, i);
@@ -121,7 +121,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 	}
 
 	private <T> void method_17630(LevelIndexedQueue<Function<Actor<Void>, T>> levelIndexedQueue, Actor<T> actor) {
-		this.sorter.method_16901(new Mailbox.PrioritizedMessage(3, () -> {
+		this.sorter.send(new Mailbox.PrioritizedMessage(3, () -> {
 			Stream<Either<Function<Actor<Void>, T>, Runnable>> stream = levelIndexedQueue.getNext();
 			if (stream == null) {
 				this.actors.add(actor);

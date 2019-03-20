@@ -18,6 +18,7 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<GlobalPos> field_18438 = register("home", Optional.of(GlobalPos::method_19444));
 	public static final MemoryModuleType<GlobalPos> field_18439 = register("job_site", Optional.of(GlobalPos::method_19444));
 	public static final MemoryModuleType<GlobalPos> field_18440 = register("meeting_point", Optional.of(GlobalPos::method_19444));
+	public static final MemoryModuleType<List<GlobalPos>> field_18873 = register("secondary_job_site", Optional.empty());
 	public static final MemoryModuleType<List<LivingEntity>> field_18441 = register("mobs", Optional.empty());
 	public static final MemoryModuleType<List<LivingEntity>> field_18442 = register("visible_mobs", Optional.empty());
 	public static final MemoryModuleType<List<PlayerEntity>> field_18443 = register("nearest_players", Optional.empty());
@@ -31,20 +32,19 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<DamageSource> field_18451 = register("hurt_by", Optional.empty());
 	public static final MemoryModuleType<LivingEntity> field_18452 = register("hurt_by_entity", Optional.empty());
 	public static final MemoryModuleType<LivingEntity> field_18453 = register("nearest_hostile", Optional.empty());
+	public static final MemoryModuleType<VillagerEntity.GolemSpawnCondition> field_18874 = register("golem_spawn_conditions", Optional.empty());
 	private final Optional<Function<Dynamic<?>, U>> factory;
-	private final Identifier id;
 
-	private MemoryModuleType(String string, Optional<Function<Dynamic<?>, U>> optional) {
-		this.id = new Identifier(string);
+	private MemoryModuleType(Optional<Function<Dynamic<?>, U>> optional) {
 		this.factory = optional;
 	}
 
 	public Identifier getId() {
-		return this.id;
+		return Registry.MEMORY_MODULE_TYPE.getId(this);
 	}
 
 	public String toString() {
-		return this.id.toString();
+		return this.getId().toString();
 	}
 
 	public Optional<Function<Dynamic<?>, U>> getFactory() {
@@ -52,6 +52,6 @@ public class MemoryModuleType<U> {
 	}
 
 	private static <U> MemoryModuleType<U> register(String string, Optional<Function<Dynamic<?>, U>> optional) {
-		return Registry.register(Registry.MEMORY_MODULE_TYPE, new Identifier(string), new MemoryModuleType<>(string, optional));
+		return Registry.register(Registry.MEMORY_MODULE_TYPE, new Identifier(string), new MemoryModuleType<>(optional));
 	}
 }

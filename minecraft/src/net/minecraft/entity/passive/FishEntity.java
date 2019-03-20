@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import net.minecraft.class_1378;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityPose;
@@ -12,6 +11,7 @@ import net.minecraft.entity.WaterCreatureEntity;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
+import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -219,7 +219,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 		}
 	}
 
-	static class SwimToRandomPlaceGoal extends class_1378 {
+	static class SwimToRandomPlaceGoal extends SwimAroundGoal {
 		private final FishEntity field_6732;
 
 		public SwimToRandomPlaceGoal(FishEntity fishEntity) {

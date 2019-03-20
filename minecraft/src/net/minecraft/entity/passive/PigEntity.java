@@ -1,7 +1,6 @@
 package net.minecraft.entity.passive;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -14,6 +13,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -53,7 +53,7 @@ public class PigEntity extends AnimalEntity {
 		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.field_8184), false));
 		this.goalSelector.add(4, new TemptGoal(this, 1.2, false, BREEDING_INGREDIENT));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
-		this.goalSelector.add(6, new class_1394(this, 1.0));
+		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 	}

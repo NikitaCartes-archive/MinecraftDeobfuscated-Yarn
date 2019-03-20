@@ -1,6 +1,8 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.nbt.IntArrayTag;
 
 public class MutableIntBoundingBox {
@@ -142,6 +144,11 @@ public class MutableIntBoundingBox {
 
 	public int getBlockCountZ() {
 		return this.maxZ - this.minZ + 1;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Vec3i method_19635() {
+		return new BlockPos(this.minX + (this.maxX - this.minX + 1) / 2, this.minY + (this.maxY - this.minY + 1) / 2, this.minZ + (this.maxZ - this.minZ + 1) / 2);
 	}
 
 	public String toString() {

@@ -74,14 +74,14 @@ public class PauseMenuScreen extends Screen {
 				}
 			}
 		);
-		buttonWidget.enabled = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
+		buttonWidget.active = this.client.isIntegratedServerRunning() && !this.client.getServer().isRemote();
 		ButtonWidget buttonWidget2 = this.addButton(
 			new ButtonWidget(this.screenWidth / 2 - 102, this.screenHeight / 4 + 120 + -16, 204, 20, I18n.translate("menu.returnToMenu")) {
 				@Override
 				public void onPressed() {
 					boolean bl = PauseMenuScreen.this.client.isInSingleplayer();
 					boolean bl2 = PauseMenuScreen.this.client.isConnectedToRealms();
-					this.enabled = false;
+					this.active = false;
 					PauseMenuScreen.this.client.world.disconnect();
 					if (bl) {
 						PauseMenuScreen.this.client.method_18096(new CloseWorldScreen(I18n.translate("menu.savingLevel")));
@@ -101,7 +101,7 @@ public class PauseMenuScreen extends Screen {
 			}
 		);
 		if (!this.client.isInSingleplayer()) {
-			buttonWidget2.setText(I18n.translate("menu.disconnect"));
+			buttonWidget2.setMessage(I18n.translate("menu.disconnect"));
 		}
 	}
 
@@ -111,9 +111,9 @@ public class PauseMenuScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("menu.game"), this.screenWidth / 2, 40, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

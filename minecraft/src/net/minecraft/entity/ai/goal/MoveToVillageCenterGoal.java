@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.server.world.ServerWorld;
@@ -38,7 +38,7 @@ public class MoveToVillageCenterGoal extends Goal {
 			if (!serverWorld.method_19497(blockPos, 4)) {
 				return false;
 			} else {
-				Vec3d vec3d = AiUtil.method_19108(this.owner, 15, 7, blockPosx -> (double)(-serverWorld.method_19498(ChunkSectionPos.from(blockPosx))));
+				Vec3d vec3d = PathfindingUtil.findTargetStraight(this.owner, 15, 7, blockPosx -> (double)(-serverWorld.method_19498(ChunkSectionPos.from(blockPosx))));
 				this.villageCenter = vec3d == null ? null : new BlockPos(vec3d);
 				return this.villageCenter != null;
 			}
@@ -54,7 +54,7 @@ public class MoveToVillageCenterGoal extends Goal {
 	public void tick() {
 		if (this.villageCenter != null) {
 			EntityNavigation entityNavigation = this.owner.getNavigation();
-			if (entityNavigation.isIdle() && this.owner.squaredDistanceTo(this.villageCenter) >= 100.0) {
+			if (entityNavigation.isIdle() && !this.villageCenter.method_19769(this.owner.getPos(), 10.0)) {
 				Vec3d vec3d = new Vec3d(this.villageCenter);
 				Vec3d vec3d2 = new Vec3d(this.owner.x, this.owner.y, this.owner.z);
 				Vec3d vec3d3 = vec3d2.subtract(vec3d);

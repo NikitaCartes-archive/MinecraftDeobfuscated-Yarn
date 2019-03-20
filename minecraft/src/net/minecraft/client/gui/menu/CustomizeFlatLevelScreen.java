@@ -110,7 +110,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	public void method_2145() {
-		this.widgetButtonRemoveLayer.enabled = this.method_2147();
+		this.widgetButtonRemoveLayer.active = this.method_2147();
 		this.field_2424.method_19372();
 	}
 
@@ -119,14 +119,14 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2424.draw(i, j, f);
+		this.field_2424.render(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.titleText, this.screenWidth / 2, 8, 16777215);
 		int k = this.screenWidth / 2 - 92 - 16;
 		this.drawString(this.fontRenderer, this.tileText, k, 32, 16777215);
 		this.drawString(this.fontRenderer, this.heightText, k + 2 + 213 - this.fontRenderer.getStringWidth(this.heightText), 32, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -152,7 +152,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 		}
 
 		@Override
-		protected void method_19351(int i) {
+		protected void moveSelection(int i) {
 			CustomizeFlatLevelScreen.this.widgetButtonAddLayer = MathHelper.clamp(CustomizeFlatLevelScreen.this.widgetButtonAddLayer + i, 0, this.getEntryCount() - 1);
 			if (CustomizeFlatLevelScreen.this.widgetButtonAddLayer > -1 && CustomizeFlatLevelScreen.this.widgetButtonAddLayer < this.getEntryCount()) {
 				this.method_19349((EntryListWidget.Entry)this.getInputListeners().get(CustomizeFlatLevelScreen.this.widgetButtonAddLayer));
@@ -162,17 +162,17 @@ public class CustomizeFlatLevelScreen extends Screen {
 		}
 
 		@Override
-		protected boolean method_19352() {
+		protected boolean isFocused() {
 			return CustomizeFlatLevelScreen.this.getFocused() == this;
 		}
 
 		@Override
-		public boolean hasFocus() {
+		public boolean isPartOfFocusCycle() {
 			return true;
 		}
 
 		@Override
-		public void setHasFocus(boolean bl) {
+		public void onFocusChanged(boolean bl) {
 			if (bl && CustomizeFlatLevelScreen.this.widgetButtonAddLayer < 0) {
 				CustomizeFlatLevelScreen.this.widgetButtonAddLayer = 0;
 				CustomizeFlatLevelScreen.this.method_2145();

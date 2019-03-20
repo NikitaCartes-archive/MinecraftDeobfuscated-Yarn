@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -26,6 +25,7 @@ import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TrackAttackerGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.WolfBegGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -82,7 +82,7 @@ public class WolfEntity extends TameableEntity {
 		this.goalSelector.add(5, new MeleeAttackGoal(this, 1.0, true));
 		this.goalSelector.add(6, new FollowOwnerGoal(this, 1.0, 10.0F, 2.0F));
 		this.goalSelector.add(7, new AnimalMateGoal(this, 1.0));
-		this.goalSelector.add(8, new class_1394(this, 1.0));
+		this.goalSelector.add(8, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(9, new WolfBegGoal(this, 8.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(10, new LookAroundGoal(this));
@@ -193,8 +193,8 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.isValid()) {
 			this.field_6949 = this.field_6952;
 			if (this.method_6710()) {

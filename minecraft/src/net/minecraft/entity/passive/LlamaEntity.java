@@ -3,7 +3,6 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,6 +24,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -112,7 +112,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		this.goalSelector.add(3, new EscapeDangerGoal(this, 1.2));
 		this.goalSelector.add(4, new AnimalMateGoal(this, 1.0));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.0));
-		this.goalSelector.add(6, new class_1394(this, 0.7));
+		this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.7));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new LlamaEntity.class_1504(this));
@@ -468,16 +468,6 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
 		this.method_6792(livingEntity);
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasArmsRaised() {
-		return false;
-	}
-
-	@Override
-	public void setArmsRaised(boolean bl) {
 	}
 
 	static class class_1502 extends FollowTargetGoal<WolfEntity> {

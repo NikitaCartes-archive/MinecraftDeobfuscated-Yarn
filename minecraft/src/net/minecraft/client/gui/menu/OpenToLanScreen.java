@@ -72,15 +72,15 @@ public class OpenToLanScreen extends Screen {
 	}
 
 	private void updateButtonText() {
-		this.buttonGameMode.setText(I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + this.gameMode));
-		this.buttonAllowCommands.setText(I18n.translate("selectWorld.allowCommands") + ' ' + I18n.translate(this.allowCommands ? "options.on" : "options.off"));
+		this.buttonGameMode.setMessage(I18n.translate("selectWorld.gameMode") + ": " + I18n.translate("selectWorld.gameMode." + this.gameMode));
+		this.buttonAllowCommands.setMessage(I18n.translate("selectWorld.allowCommands") + ' ' + I18n.translate(this.allowCommands ? "options.on" : "options.off"));
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("lanServer.title"), this.screenWidth / 2, 50, 16777215);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("lanServer.otherPlayers"), this.screenWidth / 2, 82, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

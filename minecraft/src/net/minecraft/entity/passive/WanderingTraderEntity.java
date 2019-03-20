@@ -2,18 +2,19 @@ package net.minecraft.entity.passive;
 
 import java.util.EnumSet;
 import javax.annotation.Nullable;
-import net.minecraft.class_1358;
-import net.minecraft.class_1394;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
+import net.minecraft.entity.ai.goal.GoToEntityGoal;
+import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.HoldInHandsGoal;
 import net.minecraft.entity.ai.goal.LookAtCustomerGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.StopFollowingCustomerGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.EvokerEntity;
 import net.minecraft.entity.mob.IllusionerEntity;
@@ -81,8 +82,9 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 0.5));
 		this.goalSelector.add(1, new LookAtCustomerGoal(this));
 		this.goalSelector.add(2, new WanderingTraderEntity.WanderToTargetGoal(this, 2.0, 0.35));
-		this.goalSelector.add(8, new class_1394(this, 0.35));
-		this.goalSelector.add(9, new class_1358(this, PlayerEntity.class, 3.0F, 1.0F));
+		this.goalSelector.add(4, new GoToWalkTargetGoal(this, 1.0));
+		this.goalSelector.add(8, new WanderAroundFarGoal(this, 0.35));
+		this.goalSelector.add(9, new GoToEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
 	}
 
@@ -214,8 +216,8 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.despawnDelay > 0 && !this.hasCustomer() && --this.despawnDelay == 0) {
 			this.invalidate();
 		}
@@ -272,7 +274,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		}
 
 		private boolean isTooFarFrom(BlockPos blockPos, double d) {
-			return this.field_17759.squaredDistanceTo(blockPos) > d * d;
+			return !blockPos.method_19769(this.field_17759.getPos(), d);
 		}
 	}
 }

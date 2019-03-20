@@ -77,7 +77,7 @@ public class AddServerScreen extends Screen {
 								% ServerEntry.ResourcePackState.values().length]
 						);
 					AddServerScreen.this.resourcePackOptionButton
-						.setText(I18n.translate("addServer.resourcePack") + ": " + AddServerScreen.this.serverEntry.getResourcePack().getComponent().getFormattedText());
+						.setMessage(I18n.translate("addServer.resourcePack") + ": " + AddServerScreen.this.serverEntry.getResourcePack().getComponent().getFormattedText());
 				}
 			}
 		);
@@ -122,19 +122,19 @@ public class AddServerScreen extends Screen {
 
 	@Override
 	public void close() {
-		this.buttonAdd.enabled = !this.addressField.getText().isEmpty()
+		this.buttonAdd.active = !this.addressField.getText().isEmpty()
 			&& this.addressField.getText().split(":").length > 0
 			&& !this.serverNameField.getText().isEmpty();
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("addServer.title"), this.screenWidth / 2, 17, 16777215);
 		this.drawString(this.fontRenderer, I18n.translate("addServer.enterName"), this.screenWidth / 2 - 100, 53, 10526880);
 		this.drawString(this.fontRenderer, I18n.translate("addServer.enterIp"), this.screenWidth / 2 - 100, 94, 10526880);
-		this.serverNameField.draw(i, j, f);
-		this.addressField.draw(i, j, f);
-		super.draw(i, j, f);
+		this.serverNameField.render(i, j, f);
+		this.addressField.render(i, j, f);
+		super.render(i, j, f);
 	}
 }

@@ -2,14 +2,12 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import java.util.Objects;
 import java.util.Set;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
@@ -33,23 +31,18 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_19509(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		MinecraftServer minecraftServer = serverWorld.getServer();
 		Brain<?> brain = villagerEntity.getBrain();
 		brain.getMemory(this.field_18382).ifPresent(globalPos -> {
-			boolean bl;
-			if (!Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType())) {
-				bl = true;
+			if (this.method_19597(serverWorld, villagerEntity, globalPos)) {
+				brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), this.field_18383, this.field_18384));
 			} else {
-				int i = globalPos.getPos().method_19455(new BlockPos(villagerEntity));
-				bl = i >= this.field_18385;
-			}
-
-			if (bl) {
 				villagerEntity.releaseTicketFor(this.field_18382);
 				brain.forget(this.field_18382);
-			} else {
-				brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), this.field_18383, this.field_18384));
 			}
 		});
+	}
+
+	private boolean method_19597(ServerWorld serverWorld, VillagerEntity villagerEntity, GlobalPos globalPos) {
+		return globalPos.getDimension() == serverWorld.getDimension().getType() && globalPos.getPos().method_19455(new BlockPos(villagerEntity)) < this.field_18385;
 	}
 }

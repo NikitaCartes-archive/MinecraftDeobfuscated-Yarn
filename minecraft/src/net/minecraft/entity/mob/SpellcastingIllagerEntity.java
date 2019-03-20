@@ -5,6 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -74,8 +75,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.world.isClient && this.method_7137()) {
 			SpellcastingIllagerEntity.class_1618 lv = this.method_7140();
 			double d = lv.field_7374[0];
@@ -104,7 +105,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 
 		@Override
 		public boolean canStart() {
-			if (SpellcastingIllagerEntity.this.getTarget() == null) {
+			LivingEntity livingEntity = SpellcastingIllagerEntity.this.getTarget();
+			if (livingEntity == null || !livingEntity.isValid()) {
 				return false;
 			} else if (SpellcastingIllagerEntity.this.method_7137()) {
 				return false;
@@ -115,7 +117,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return SpellcastingIllagerEntity.this.getTarget() != null && this.spellCooldown > 0;
+			LivingEntity livingEntity = SpellcastingIllagerEntity.this.getTarget();
+			return livingEntity != null && livingEntity.isValid() && this.spellCooldown > 0;
 		}
 
 		@Override

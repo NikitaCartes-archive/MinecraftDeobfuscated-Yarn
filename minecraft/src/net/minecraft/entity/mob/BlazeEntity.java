@@ -3,15 +3,15 @@ package net.minecraft.entity.mob;
 import java.util.EnumSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1370;
-import net.minecraft.class_1394;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -47,8 +47,8 @@ public class BlazeEntity extends HostileEntity {
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(4, new BlazeEntity.ShootFireballGoal(this));
-		this.goalSelector.add(5, new class_1370(this, 1.0));
-		this.goalSelector.add(7, new class_1394(this, 1.0, 0.0F));
+		this.goalSelector.add(5, new GoToWalkTargetGoal(this, 1.0));
+		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0, 0.0F));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new AvoidGoal(this).method_6318());

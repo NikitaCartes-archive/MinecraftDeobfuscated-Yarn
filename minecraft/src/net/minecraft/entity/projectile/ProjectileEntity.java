@@ -9,7 +9,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1675;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
@@ -22,6 +21,7 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -158,8 +158,8 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		boolean bl = this.isNoClip();
 		Vec3d vec3d = this.getVelocity();
 		if (this.prevPitch == 0.0F && this.prevYaw == 0.0F) {
@@ -468,7 +468,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 
 	@Nullable
 	protected EntityHitResult method_7434(Vec3d vec3d, Vec3d vec3d2) {
-		return class_1675.method_18077(
+		return ProjectileUtil.method_18077(
 			this.world,
 			this,
 			vec3d,

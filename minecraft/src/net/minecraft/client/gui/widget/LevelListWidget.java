@@ -81,7 +81,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 	}
 
 	@Override
-	protected boolean method_19352() {
+	protected boolean isFocused() {
 		return this.parent.getFocused() == this;
 	}
 
@@ -91,7 +91,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 	}
 
 	@Override
-	protected void method_19351(int i) {
+	protected void moveSelection(int i) {
 		this.field_3236 = MathHelper.clamp(this.field_3236 + i, 0, this.getEntryCount() - 1);
 		if (this.method_2753() != null) {
 			this.method_19349(this.method_2753());
@@ -101,7 +101,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 	}
 
 	@Override
-	public boolean hasFocus() {
+	public boolean isPartOfFocusCycle() {
 		return true;
 	}
 
@@ -120,7 +120,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 	}
 
 	@Override
-	public void setHasFocus(boolean bl) {
+	public void onFocusChanged(boolean bl) {
 		if (bl && this.method_2753() == null && this.getEntryCount() > 0) {
 			this.field_3236 = 0;
 			this.parent.method_2746(this.method_2753());

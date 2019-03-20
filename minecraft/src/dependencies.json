@@ -13,16 +13,6 @@
 		"url": "https://libraries.minecraft.net/com/mojang/brigadier/1.0.17/brigadier-1.0.17.jar"
 	},
 	{
-		"sha1sum": "c73b5636faf089d9f00e8732a829577de25237ee",
-		"name": "codecjorbis-20101023.jar",
-		"url": "https://libraries.minecraft.net/com/paulscode/codecjorbis/20101023/codecjorbis-20101023.jar"
-	},
-	{
-		"sha1sum": "12f031cfe88fef5c1dd36c563c0a3a69bd7261da",
-		"name": "codecwav-20101023.jar",
-		"url": "https://libraries.minecraft.net/com/paulscode/codecwav/20101023/codecwav-20101023.jar"
-	},
-	{
 		"sha1sum": "4b95f4897fa13f2cd904aee711aeafc0c5295cd8",
 		"name": "commons-codec-1.10.jar",
 		"url": "https://libraries.minecraft.net/commons-codec/commons-codec/1.10/commons-codec-1.10.jar"
@@ -113,11 +103,6 @@
 		"url": "https://libraries.minecraft.net/net/java/jutils/jutils/1.0.0/jutils-1.0.0.jar"
 	},
 	{
-		"sha1sum": "5c5e304366f75f9eaa2e8cca546a1fb6109348b3",
-		"name": "libraryjavasound-20101123.jar",
-		"url": "https://libraries.minecraft.net/com/paulscode/libraryjavasound/20101123/libraryjavasound-20101123.jar"
-	},
-	{
 		"sha1sum": "e801d13612e22cad62a3f4f3fe7fdbe6334a8e72",
 		"name": "log4j-api-2.8.1.jar",
 		"url": "https://libraries.minecraft.net/org/apache/logging/log4j/log4j-api/2.8.1/log4j-api-2.8.1.jar"
@@ -178,14 +163,9 @@
 		"url": "https://libraries.minecraft.net/net/java/dev/jna/platform/3.4.0/platform-3.4.0.jar"
 	},
 	{
-		"sha1sum": "4b5fabbdf723522e998c7498219d1e5a547428a9",
-		"name": "realms-1.14.1.jar",
-		"url": "https://libraries.minecraft.net/com/mojang/realms/1.14.1/realms-1.14.1.jar"
-	},
-	{
-		"sha1sum": "419c05fe9be71f792b2d76cfc9b67f1ed0fec7f6",
-		"name": "soundsystem-20120107.jar",
-		"url": "https://libraries.minecraft.net/com/paulscode/soundsystem/20120107/soundsystem-20120107.jar"
+		"sha1sum": "f581915be14fc38f6784a4f98209f2de5a9cc4d3",
+		"name": "realms-1.14.2.jar",
+		"url": "https://libraries.minecraft.net/com/mojang/realms/1.14.2/realms-1.14.2.jar"
 	},
 	{
 		"sha1sum": "172fe3ccf0e7143cbbfba006554412c8e6fc81f2",

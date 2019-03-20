@@ -57,7 +57,7 @@ public class UpdateWorldScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("optimizeWorld.title", this.updater.getLevelName()), this.screenWidth / 2, 20, 16777215);
 		int k = this.screenWidth / 2 - 150;
@@ -85,6 +85,6 @@ public class UpdateWorldScreen extends Screen {
 			);
 		}
 
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

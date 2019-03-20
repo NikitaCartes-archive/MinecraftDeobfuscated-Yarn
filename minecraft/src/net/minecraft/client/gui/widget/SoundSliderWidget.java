@@ -18,8 +18,8 @@ public class SoundSliderWidget extends SliderWidget {
 
 	@Override
 	protected void updateText() {
-		String string = (float)this.progress == (float)this.getTextureId(false) ? I18n.translate("options.off") : (int)((float)this.progress * 100.0F) + "%";
-		this.setText(I18n.translate("soundCategory." + this.category.getName()) + ": " + string);
+		String string = (float)this.progress == (float)this.getYImage(false) ? I18n.translate("options.off") : (int)((float)this.progress * 100.0F) + "%";
+		this.setMessage(I18n.translate("soundCategory." + this.category.getName()) + ": " + string);
 	}
 
 	@Override

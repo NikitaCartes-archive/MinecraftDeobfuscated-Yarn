@@ -186,7 +186,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (this.method_7507() > 0) {
 			this.method_7509(this.method_7507() - 1);
 		}

@@ -31,7 +31,7 @@ public class OutOfMemoryScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, "Out of memory!", this.screenWidth / 2, this.screenHeight / 4 - 60 + 20, 16777215);
 		this.drawString(this.fontRenderer, "Minecraft has run out of memory.", this.screenWidth / 2 - 140, this.screenHeight / 4 - 60 + 60 + 0, 10526880);
@@ -58,6 +58,6 @@ public class OutOfMemoryScreen extends Screen {
 		this.drawString(
 			this.fontRenderer, "Please restart the game if you see this message again.", this.screenWidth / 2 - 140, this.screenHeight / 4 - 60 + 60 + 81, 10526880
 		);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

@@ -11,6 +11,7 @@ public class SensorType<U extends Sensor<?>> {
 	public static final SensorType<InteractableDoorsSensor> field_18468 = register("interactable_doors", InteractableDoorsSensor::new);
 	public static final SensorType<HurtBySensor> field_18469 = register("hurt_by", HurtBySensor::new);
 	public static final SensorType<VillagerHostilesSensor> field_18470 = register("villager_hostiles", VillagerHostilesSensor::new);
+	public static final SensorType<SecondaryPointsOfInterestSensor> field_18875 = register("secondary_pois", SecondaryPointsOfInterestSensor::new);
 	private final Supplier<U> factory;
 	private final Identifier id;
 

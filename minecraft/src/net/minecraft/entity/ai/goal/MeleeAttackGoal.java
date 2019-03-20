@@ -5,6 +5,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 
@@ -53,7 +54,7 @@ public class MeleeAttackGoal extends Goal {
 			return false;
 		} else if (!this.field_6502) {
 			return !this.entity.getNavigation().isIdle();
-		} else if (!this.entity.method_18407(new BlockPos(livingEntity))) {
+		} else if (!this.entity.isInWalkTargetRange(new BlockPos(livingEntity))) {
 			return false;
 		} else {
 			return !(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator() && !((PlayerEntity)livingEntity).isCreative();
@@ -63,16 +64,18 @@ public class MeleeAttackGoal extends Goal {
 	@Override
 	public void start() {
 		this.entity.getNavigation().startMovingAlong(this.field_6509, this.field_6500);
+		this.entity.method_19540(true);
 		this.field_6501 = 0;
 	}
 
 	@Override
 	public void onRemove() {
 		LivingEntity livingEntity = this.entity.getTarget();
-		if (livingEntity instanceof PlayerEntity && (((PlayerEntity)livingEntity).isSpectator() || ((PlayerEntity)livingEntity).isCreative())) {
+		if (!EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
 			this.entity.setTarget(null);
 		}
 
+		this.entity.method_19540(false);
 		this.entity.getNavigation().stop();
 	}
 

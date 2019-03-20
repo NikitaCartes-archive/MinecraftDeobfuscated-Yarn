@@ -13,13 +13,13 @@ public class AmbientSoundLoops {
 	public static class MusicLoop extends MovingSoundInstance {
 		private final ClientPlayerEntity player;
 
-		public MusicLoop(ClientPlayerEntity clientPlayerEntity, SoundEvent soundEvent) {
+		protected MusicLoop(ClientPlayerEntity clientPlayerEntity, SoundEvent soundEvent) {
 			super(soundEvent, SoundCategory.field_15256);
 			this.player = clientPlayerEntity;
 			this.repeat = false;
 			this.repeatDelay = 0;
 			this.volume = 1.0F;
-			this.field_5445 = true;
+			this.field_18935 = true;
 		}
 
 		@Override
@@ -45,7 +45,7 @@ public class AmbientSoundLoops {
 			this.repeat = true;
 			this.repeatDelay = 0;
 			this.volume = 1.0F;
-			this.field_5445 = true;
+			this.field_18935 = true;
 		}
 
 		@Override

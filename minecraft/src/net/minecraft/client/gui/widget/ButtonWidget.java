@@ -18,12 +18,12 @@ public abstract class ButtonWidget extends AbstractButtonWidget {
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		if (!this.enabled || !this.visible) {
+		if (!this.active || !this.visible) {
 			return false;
 		} else if (i != 257 && i != 32 && i != 335) {
 			return false;
 		} else {
-			this.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
+			this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 			this.onPressed();
 			return true;
 		}
@@ -31,11 +31,11 @@ public abstract class ButtonWidget extends AbstractButtonWidget {
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		if (this.enabled && this.visible) {
+		if (this.active && this.visible) {
 			if (i == 0) {
-				boolean bl = this.isSelected(d, e);
+				boolean bl = this.clicked(d, e);
 				if (bl) {
-					this.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
+					this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 					this.onPressed();
 					return true;
 				}

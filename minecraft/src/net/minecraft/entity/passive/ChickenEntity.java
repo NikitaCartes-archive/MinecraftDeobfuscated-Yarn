@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
@@ -14,6 +13,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -51,7 +51,7 @@ public class ChickenEntity extends AnimalEntity {
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
 		this.goalSelector.add(3, new TemptGoal(this, 1.0, false, BREEDING_INGREDIENT));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.1));
-		this.goalSelector.add(5, new class_1394(this, 1.0));
+		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(7, new LookAroundGoal(this));
 	}

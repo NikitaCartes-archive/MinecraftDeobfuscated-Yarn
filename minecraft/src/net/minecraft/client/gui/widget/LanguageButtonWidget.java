@@ -12,9 +12,9 @@ public abstract class LanguageButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void drawButton(int i, int j, float f) {
-		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGET_TEX);
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.opacity);
+	public void renderButton(int i, int j, float f) {
+		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGETS_LOCATION);
+		GlStateManager.color4f(1.0F, 1.0F, 1.0F, this.alpha);
 		int k = 106;
 		if (this.isHovered()) {
 			k += this.height;

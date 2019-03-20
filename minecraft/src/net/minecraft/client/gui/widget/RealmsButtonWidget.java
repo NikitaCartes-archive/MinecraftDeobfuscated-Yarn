@@ -21,12 +21,12 @@ public class RealmsButtonWidget extends ButtonWidget implements RealmsButton<net
 
 	@Override
 	public boolean isEnabled() {
-		return this.enabled;
+		return this.active;
 	}
 
 	@Override
 	public void setEnabled(boolean bl) {
-		this.enabled = bl;
+		this.active = bl;
 	}
 
 	@Override
@@ -40,8 +40,8 @@ public class RealmsButtonWidget extends ButtonWidget implements RealmsButton<net
 	}
 
 	@Override
-	public void setText(String string) {
-		super.setText(string);
+	public void setMessage(String string) {
+		super.setMessage(string);
 	}
 
 	@Override
@@ -59,26 +59,26 @@ public class RealmsButtonWidget extends ButtonWidget implements RealmsButton<net
 	}
 
 	@Override
-	public void onReleased(double d, double e) {
+	public void onRelease(double d, double e) {
 		this.realmsButton.onRelease(d, e);
 	}
 
 	@Override
-	public void drawBackground(MinecraftClient minecraftClient, int i, int j) {
+	public void renderBg(MinecraftClient minecraftClient, int i, int j) {
 		this.realmsButton.renderBg(i, j);
 	}
 
-	public net.minecraft.realms.RealmsButton method_2064() {
+	public net.minecraft.realms.RealmsButton getButton() {
 		return this.realmsButton;
 	}
 
 	@Override
-	public int getTextureId(boolean bl) {
+	public int getYImage(boolean bl) {
 		return this.realmsButton.getYImage(bl);
 	}
 
 	public int getTexId(boolean bl) {
-		return super.getTextureId(bl);
+		return super.getYImage(bl);
 	}
 
 	public int getY() {

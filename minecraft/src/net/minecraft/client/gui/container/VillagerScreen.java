@@ -63,8 +63,8 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 				VillagerScreen.this.syncRecipeIndex();
 			}
 		});
-		this.buttonPageNext.enabled = false;
-		this.buttonPagePrevious.enabled = false;
+		this.buttonPageNext.active = false;
+		this.buttonPagePrevious.active = false;
 	}
 
 	@Override
@@ -91,8 +91,8 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 	public void update() {
 		super.update();
 		TraderRecipeList traderRecipeList = this.container.getRecipes();
-		this.buttonPageNext.enabled = this.recipeIndex < traderRecipeList.size() - 1;
-		this.buttonPagePrevious.enabled = this.recipeIndex > 0;
+		this.buttonPageNext.active = this.recipeIndex < traderRecipeList.size() - 1;
+		this.buttonPagePrevious.active = this.recipeIndex > 0;
 	}
 
 	@Override
@@ -132,18 +132,19 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 				float f = (float)(100 / (VillagerData.getUpperLevelExperience(k) - m));
 				int o = MathHelper.floor(f * (float)(l - m));
 				this.drawTexturedRect(i + 37, j + 16, 0, 191, o + 1, 5);
-				if (this.container.method_19256() > 0) {
-					int p = Math.min(MathHelper.floor((float)traderRecipe.getRewardedExp() * f), 100 - o);
-					this.drawTexturedRect(i + 37 + o + 1, j + 16 + 1, 2, 182, p, 3);
+				int p = this.container.method_19256();
+				if (p > 0) {
+					int q = Math.min(MathHelper.floor((float)p * f), 100 - o);
+					this.drawTexturedRect(i + 37 + o + 1, j + 16 + 1, 2, 182, q, 3);
 				}
 			}
 		}
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		TraderRecipeList traderRecipeList = this.container.getRecipes();
 		if (!traderRecipeList.isEmpty()) {
 			int k = (this.screenWidth - this.width) / 2;
@@ -151,7 +152,7 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 			int m = this.recipeIndex;
 			TraderRecipe traderRecipe = (TraderRecipe)traderRecipeList.get(m);
 			ItemStack itemStack = traderRecipe.getFirstBuyItem();
-			ItemStack itemStack2 = traderRecipe.method_19272();
+			ItemStack itemStack2 = traderRecipe.getDiscountedFirstBuyItem();
 			ItemStack itemStack3 = traderRecipe.getSecondBuyItem();
 			ItemStack itemStack4 = traderRecipe.getModifiableSellItem();
 			GlStateManager.pushMatrix();
@@ -216,12 +217,12 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 		}
 
 		@Override
-		public void drawButton(int i, int j, float f) {
+		public void renderButton(int i, int j, float f) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(VillagerScreen.TEXTURE);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int k = 0;
 			int l = 176;
-			if (!this.enabled) {
+			if (!this.active) {
 				l += this.width * 2;
 			} else if (this.isHovered()) {
 				l += this.width;

@@ -27,10 +27,10 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 
 	public void draw() {
 		if (!this.enabled && this.client.options.showSubtitles) {
-			this.client.getSoundLoader().registerListener(this);
+			this.client.getSoundManager().registerListener(this);
 			this.enabled = true;
 		} else if (this.enabled && !this.client.options.showSubtitles) {
-			this.client.getSoundLoader().unregisterListener(this);
+			this.client.getSoundManager().unregisterListener(this);
 			this.enabled = false;
 		}
 

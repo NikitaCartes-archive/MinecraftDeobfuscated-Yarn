@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -22,11 +21,11 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.client.gameRenderer.method_19418();
+		Camera camera = this.client.gameRenderer.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;
-		BlockPos blockPos = this.client.player.getPos();
+		BlockPos blockPos = this.client.player.getBlockPos();
 		ViewableWorld viewableWorld = this.client.player.world;
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
@@ -40,7 +39,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 			FluidState fluidState = viewableWorld.getFluidState(blockPos2);
 			if (fluidState.matches(FluidTags.field_15517)) {
 				double g = (double)((float)blockPos2.getY() + fluidState.getHeight(viewableWorld, blockPos2));
-				WorldRenderer.drawBox(
+				DebugRenderer.method_19695(
 					new BoundingBox(
 							(double)((float)blockPos2.getX() + 0.01F),
 							(double)((float)blockPos2.getY() + 0.01F),

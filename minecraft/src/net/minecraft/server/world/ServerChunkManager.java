@@ -405,7 +405,7 @@ public class ServerChunkManager extends ChunkManager {
 		}
 
 		@Override
-		protected Thread thread() {
+		protected Thread getThread() {
 			return ServerChunkManager.this.serverThread;
 		}
 

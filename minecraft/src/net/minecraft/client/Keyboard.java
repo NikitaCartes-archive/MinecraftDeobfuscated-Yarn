@@ -326,7 +326,7 @@ public class Keyboard {
 
 			if (inputListener != null) {
 				boolean[] bls = new boolean[]{false};
-				Screen.method_2217(() -> {
+				Screen.wrapScreenError(() -> {
 					if (k != 1 && (k != 2 || !this.repeatEvents)) {
 						if (k == 0) {
 							bls[0] = inputListener.keyReleased(i, j, m);
@@ -340,7 +340,7 @@ public class Keyboard {
 				}
 			}
 
-			if (this.client.currentScreen == null || this.client.currentScreen.field_2558) {
+			if (this.client.currentScreen == null || this.client.currentScreen.passEvents) {
 				InputUtil.KeyCode keyCode = InputUtil.getKeyCode(i, j);
 				if (k == 0) {
 					KeyBinding.setKeyPressed(keyCode, false);
@@ -399,10 +399,10 @@ public class Keyboard {
 			InputListener inputListener = this.client.currentScreen;
 			if (inputListener != null && this.client.method_18506() == null) {
 				if (Character.charCount(i) == 1) {
-					Screen.method_2217(() -> inputListener.charTyped((char)i, j), "charTyped event handler", inputListener.getClass().getCanonicalName());
+					Screen.wrapScreenError(() -> inputListener.charTyped((char)i, j), "charTyped event handler", inputListener.getClass().getCanonicalName());
 				} else {
 					for(char c : Character.toChars(i)) {
-						Screen.method_2217(() -> inputListener.charTyped(c, j), "charTyped event handler", inputListener.getClass().getCanonicalName());
+						Screen.wrapScreenError(() -> inputListener.charTyped(c, j), "charTyped event handler", inputListener.getClass().getCanonicalName());
 					}
 				}
 			}

@@ -62,8 +62,8 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
-		super.draw(i, j, f);
+	public void render(int i, int j, float f) {
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
@@ -155,7 +155,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 				double f = d - (double)(j + n % 4 * 14);
 				double g = e - (double)(k + n / 4 * 14);
 				if (f >= 0.0 && g >= 0.0 && f < 14.0 && g < 14.0 && this.container.onButtonClick(this.client.player, m)) {
-					MinecraftClient.getInstance().getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_14920, 1.0F));
+					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_14920, 1.0F));
 					this.client.interactionManager.clickButton(this.container.syncId, m);
 					return true;
 				}

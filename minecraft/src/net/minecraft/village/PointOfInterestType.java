@@ -12,8 +12,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -75,11 +73,6 @@ public class PointOfInterestType {
 		this.ticketCount = i;
 		this.sound = soundEvent;
 		this.completedCondition = pointOfInterestType -> pointOfInterestType == this;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public String register() {
-		return this.id;
 	}
 
 	public int getTicketCount() {

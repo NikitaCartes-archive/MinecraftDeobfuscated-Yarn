@@ -1,6 +1,5 @@
 package net.minecraft.entity.mob;
 
-import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
@@ -14,6 +13,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,7 +39,7 @@ public class EndermiteEntity extends HostileEntity {
 	protected void initGoals() {
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0, false));
-		this.goalSelector.add(3, new class_1394(this, 1.0));
+		this.goalSelector.add(3, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new AvoidGoal(this).method_6318());
@@ -99,9 +99,9 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.field_6283 = this.yaw;
-		super.update();
+		super.tick();
 	}
 
 	@Override

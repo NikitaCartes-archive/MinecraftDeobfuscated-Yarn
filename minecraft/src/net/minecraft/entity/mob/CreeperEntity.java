@@ -3,7 +3,6 @@ package net.minecraft.entity.mob;
 import java.util.Collection;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -16,6 +15,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -56,7 +56,7 @@ public class CreeperEntity extends HostileEntity {
 		this.goalSelector.add(3, new FleeEntityGoal(this, OcelotEntity.class, 6.0F, 1.0, 1.2));
 		this.goalSelector.add(3, new FleeEntityGoal(this, CatEntity.class, 6.0F, 1.0, 1.2));
 		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
-		this.goalSelector.add(5, new class_1394(this, 0.8));
+		this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new FollowTargetGoal(this, PlayerEntity.class, true));
@@ -121,7 +121,7 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (this.isValid()) {
 			this.field_7229 = this.field_7227;
 			if (this.getIgnited()) {
@@ -144,7 +144,7 @@ public class CreeperEntity extends HostileEntity {
 			}
 		}
 
-		super.update();
+		super.tick();
 	}
 
 	@Override

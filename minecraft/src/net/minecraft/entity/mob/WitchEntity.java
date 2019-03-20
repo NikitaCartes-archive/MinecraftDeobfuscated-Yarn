@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
@@ -18,6 +17,7 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.RaidGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -65,7 +65,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 		this.field_17284 = new DisableableFollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, null);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 60, 10.0F));
-		this.goalSelector.add(2, new class_1394(this, 1.0));
+		this.goalSelector.add(2, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(3, new LookAroundGoal(this));
 		this.targetSelector.add(1, new AvoidGoal(this, RaiderEntity.class));
@@ -243,16 +243,6 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 	@Override
 	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
 		return 1.62F;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasArmsRaised() {
-		return false;
-	}
-
-	@Override
-	public void setArmsRaised(boolean bl) {
 	}
 
 	@Override

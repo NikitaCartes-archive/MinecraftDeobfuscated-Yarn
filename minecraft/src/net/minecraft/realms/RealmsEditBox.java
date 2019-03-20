@@ -66,7 +66,7 @@ public class RealmsEditBox extends RealmsGuiEventListener {
 	}
 
 	public void render(int i, int j, float f) {
-		this.editBox.draw(i, j, f);
+		this.editBox.render(i, j, f);
 	}
 
 	public void setMaxLength(int i) {

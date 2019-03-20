@@ -305,7 +305,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 	}
 
 	private void loadLevelInternal() {
-		this.client.getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+		this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
 		if (this.client.getLevelStorage().levelExists(this.levelSummary.getName())) {
 			this.client.startIntegratedServer(this.levelSummary.getName(), this.levelSummary.getDisplayName(), null);
 		}

@@ -54,14 +54,14 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		if (this.recipeBookGui.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBookGui.draw(i, j, f);
+			this.recipeBookGui.render(i, j, f);
 		} else {
-			this.recipeBookGui.draw(i, j, f);
-			super.draw(i, j, f);
+			this.recipeBookGui.render(i, j, f);
+			super.render(i, j, f);
 			this.recipeBookGui.drawGhostSlots(this.left, this.top, true, f);
 		}
 

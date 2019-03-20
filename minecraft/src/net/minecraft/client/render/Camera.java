@@ -46,6 +46,7 @@ public class Camera {
 		if (bl) {
 			if (bl2) {
 				this.addRotation(180.0F, 0.0F);
+				this.addRotation(0.0F, -this.pitch * 2.0F);
 			}
 
 			this.moveBy(-this.method_19318(4.0), 0.0, 0.0);

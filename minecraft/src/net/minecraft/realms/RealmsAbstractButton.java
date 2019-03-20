@@ -25,7 +25,7 @@ public abstract class RealmsAbstractButton<P extends AbstractButtonWidget & net.
 	}
 
 	public void render(int i, int j, float f) {
-		this.getProxy().draw(i, j, f);
+		this.getProxy().render(i, j, f);
 	}
 
 	public void blit(int i, int j, int k, int l, int m, int n) {

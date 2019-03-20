@@ -34,8 +34,8 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		this.field_6211 = this.field_6225;
 		double d = this.x - this.prevX;
 		double e = this.z - this.prevZ;

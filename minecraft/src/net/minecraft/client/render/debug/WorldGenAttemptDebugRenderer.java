@@ -38,7 +38,7 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.field_4634.gameRenderer.method_19418();
+		Camera camera = this.field_4634.gameRenderer.getCamera();
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;
 		double f = camera.getPos().z;

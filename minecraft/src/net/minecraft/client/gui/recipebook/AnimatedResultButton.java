@@ -56,7 +56,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 	}
 
 	@Override
-	public void drawButton(int i, int j, float f) {
+	public void renderButton(int i, int j, float f) {
 		if (!Screen.isControlPressed()) {
 			this.time += f;
 		}
@@ -140,11 +140,11 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (i == 0 || i == 1) {
-			boolean bl = this.isSelected(d, e);
+			boolean bl = this.clicked(d, e);
 			if (bl) {
-				this.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
+				this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 				if (i == 0) {
-					this.method_19347(d, e);
+					this.onClick(d, e);
 				}
 
 				return true;

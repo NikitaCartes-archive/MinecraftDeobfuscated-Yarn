@@ -17,12 +17,12 @@ public class GameOptionSliderWidget extends SliderWidget {
 	}
 
 	@Override
-	public void drawButton(int i, int j, float f) {
+	public void renderButton(int i, int j, float f) {
 		if (this.option == GameOption.FULLSCREEN_RESOLUTION) {
 			this.updateText();
 		}
 
-		super.drawButton(i, j, f);
+		super.renderButton(i, j, f);
 	}
 
 	@Override
@@ -33,6 +33,6 @@ public class GameOptionSliderWidget extends SliderWidget {
 
 	@Override
 	protected void updateText() {
-		this.setText(this.option.method_18619(this.gameOptions));
+		this.setMessage(this.option.method_18619(this.gameOptions));
 	}
 }

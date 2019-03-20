@@ -44,7 +44,7 @@ public class DisconnectedScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, this.screenHeight / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
 		int k = this.screenHeight / 2 - this.reasonHeight / 2;
@@ -55,6 +55,6 @@ public class DisconnectedScreen extends Screen {
 			}
 		}
 
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

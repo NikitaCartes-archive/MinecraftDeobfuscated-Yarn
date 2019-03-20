@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1370;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityPose;
@@ -17,6 +16,7 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -65,16 +65,16 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	protected void initGoals() {
-		class_1370 lv = new class_1370(this, 1.0);
+		GoToWalkTargetGoal goToWalkTargetGoal = new GoToWalkTargetGoal(this, 1.0);
 		this.field_7289 = new WanderAroundGoal(this, 1.0, 80);
 		this.goalSelector.add(4, new GuardianEntity.FireBeamGoal(this));
-		this.goalSelector.add(5, lv);
+		this.goalSelector.add(5, goToWalkTargetGoal);
 		this.goalSelector.add(7, this.field_7289);
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, GuardianEntity.class, 12.0F, 0.01F));
 		this.goalSelector.add(9, new LookAroundGoal(this));
 		this.field_7289.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
-		lv.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		goToWalkTargetGoal.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
 		this.targetSelector.add(1, new FollowTargetGoal(this, LivingEntity.class, 10, true, false, new GuardianEntity.GuardianTargetPredicate(this)));
 	}
 

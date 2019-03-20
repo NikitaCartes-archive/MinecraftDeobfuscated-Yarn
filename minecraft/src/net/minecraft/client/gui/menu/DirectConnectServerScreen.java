@@ -73,15 +73,15 @@ public class DirectConnectServerScreen extends Screen {
 	}
 
 	private void onAddressFieldChanged() {
-		this.selectServerButton.enabled = !this.addressField.getText().isEmpty() && this.addressField.getText().split(":").length > 0;
+		this.selectServerButton.active = !this.addressField.getText().isEmpty() && this.addressField.getText().split(":").length > 0;
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("selectServer.direct"), this.screenWidth / 2, 20, 16777215);
 		this.drawString(this.fontRenderer, I18n.translate("addServer.enterIp"), this.screenWidth / 2 - 100, 100, 10526880);
-		this.addressField.draw(i, j, f);
-		super.draw(i, j, f);
+		this.addressField.render(i, j, f);
+		super.render(i, j, f);
 	}
 }

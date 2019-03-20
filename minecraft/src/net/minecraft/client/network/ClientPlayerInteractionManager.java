@@ -227,7 +227,7 @@ public class ClientPlayerInteractionManager {
 				if (this.field_3713 % 4.0F == 0.0F) {
 					BlockSoundGroup blockSoundGroup = blockState.getSoundGroup();
 					this.client
-						.getSoundLoader()
+						.getSoundManager()
 						.play(
 							new PositionedSoundInstance(
 								blockSoundGroup.getHitSound(), SoundCategory.field_15254, (blockSoundGroup.getVolume() + 1.0F) / 8.0F, blockSoundGroup.getPitch() * 0.5F, blockPos

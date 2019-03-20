@@ -17,7 +17,7 @@ public class DummySensor extends Sensor<LivingEntity> {
 	}
 
 	@Override
-	protected Set<MemoryModuleType<?>> getOutputMemoryModules() {
+	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.of();
 	}
 }

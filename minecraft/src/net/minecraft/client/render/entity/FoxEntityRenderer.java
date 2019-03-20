@@ -31,7 +31,7 @@ public class FoxEntityRenderer extends MobEntityRenderer<FoxEntity, FoxModel<Fox
 
 	@Nullable
 	protected Identifier method_18333(FoxEntity foxEntity) {
-		if (foxEntity.getType() == FoxEntity.Type.field_17996) {
+		if (foxEntity.getFoxType() == FoxEntity.Type.field_17996) {
 			return foxEntity.isSleeping() ? TEXTURE_SLEEP : TEXTURE;
 		} else {
 			return foxEntity.isSleeping() ? TEXTURE_SNOW_SLEEP : TEXTURE_SNOW;

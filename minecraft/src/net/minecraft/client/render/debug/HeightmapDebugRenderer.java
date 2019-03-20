@@ -23,7 +23,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.client.gameRenderer.method_19418();
+		Camera camera = this.client.gameRenderer.getCamera();
 		IWorld iWorld = this.client.world;
 		double d = camera.getPos().x;
 		double e = camera.getPos().y;

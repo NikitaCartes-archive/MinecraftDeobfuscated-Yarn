@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Optional;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -25,6 +25,10 @@ public class WanderAroundTask extends Task<MobEntity> {
 	private BlockPos field_18370;
 	private float field_18371;
 
+	public WanderAroundTask(int i) {
+		super(i);
+	}
+
 	@Override
 	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
 		return ImmutableSet.of(
@@ -33,14 +37,18 @@ public class WanderAroundTask extends Task<MobEntity> {
 	}
 
 	protected boolean method_18978(ServerWorld serverWorld, MobEntity mobEntity) {
-		Brain<?> brain = mobEntity.getBrain();
-		WalkTarget walkTarget = (WalkTarget)brain.getMemory(MemoryModuleType.field_18445).get();
-		if (!this.method_18980(mobEntity, walkTarget) && this.method_18977(mobEntity, walkTarget)) {
-			this.field_18370 = walkTarget.getLookTarget().getBlockPos();
-			return true;
-		} else {
-			brain.forget(MemoryModuleType.field_18445);
+		if (serverWorld.random.nextInt(100) < 15) {
 			return false;
+		} else {
+			Brain<?> brain = mobEntity.getBrain();
+			WalkTarget walkTarget = (WalkTarget)brain.getMemory(MemoryModuleType.field_18445).get();
+			if (!this.method_18980(mobEntity, walkTarget) && this.method_18977(mobEntity, walkTarget)) {
+				this.field_18370 = walkTarget.getLookTarget().getBlockPos();
+				return true;
+			} else {
+				brain.forget(MemoryModuleType.field_18445);
+				return false;
+			}
 		}
 	}
 
@@ -91,7 +99,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 				return true;
 			}
 
-			Vec3d vec3d = AiUtil.method_6373((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
+			Vec3d vec3d = PathfindingUtil.method_6373((MobEntityWithAi)mobEntity, 10, 7, new Vec3d(blockPos));
 			if (vec3d != null) {
 				this.field_18369 = mobEntity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z);
 				return this.field_18369 != null;

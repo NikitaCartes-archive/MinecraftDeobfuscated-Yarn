@@ -100,8 +100,8 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.isRoosting()) {
 			this.setVelocity(Vec3d.ZERO);
 			this.y = (double)MathHelper.floor(this.y) + 1.0 - (double)this.getHeight();
@@ -134,9 +134,7 @@ public class BatEntity extends AmbientEntity {
 				this.field_6729 = null;
 			}
 
-			if (this.field_6729 == null
-				|| this.random.nextInt(30) == 0
-				|| this.field_6729.squaredDistanceTo((double)((int)this.x), (double)((int)this.y), (double)((int)this.z)) < 4.0) {
+			if (this.field_6729 == null || this.random.nextInt(30) == 0 || this.field_6729.method_19769(this.getPos(), 2.0)) {
 				this.field_6729 = new BlockPos(
 					(int)this.x + this.random.nextInt(7) - this.random.nextInt(7),
 					(int)this.y + this.random.nextInt(6) - 2,

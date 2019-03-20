@@ -94,7 +94,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (this.block.isAir()) {
 			this.invalidate();
 		} else {

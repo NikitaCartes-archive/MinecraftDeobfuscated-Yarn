@@ -647,7 +647,7 @@ public class GameOptions {
 	}
 
 	public void setSoundVolume(SoundCategory soundCategory, float f) {
-		this.client.getSoundLoader().updateSoundVolume(soundCategory, f);
+		this.client.getSoundManager().updateSoundVolume(soundCategory, f);
 		this.soundVolumeLevels.put(soundCategory, f);
 	}
 

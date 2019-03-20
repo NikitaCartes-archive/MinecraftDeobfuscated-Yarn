@@ -2,13 +2,12 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3884;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEntityModel<T> implements class_3884 {
+public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEntityModel<T> implements ModelWithHat {
 	private Cuboid hat;
 
 	public ZombieVillagerEntityModel() {
@@ -67,7 +66,7 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 		this.armLeft.roll = 0.0F;
 		this.armRight.yaw = -(0.1F - l * 0.6F);
 		this.armLeft.yaw = 0.1F - l * 0.6F;
-		float n = (float) -Math.PI / (zombieEntity.hasArmsRaised() ? 1.5F : 2.25F);
+		float n = (float) -Math.PI / (zombieEntity.method_6510() ? 1.5F : 2.25F);
 		this.armRight.pitch = n;
 		this.armLeft.pitch = n;
 		this.armRight.pitch += l * 1.2F - m * 0.4F;

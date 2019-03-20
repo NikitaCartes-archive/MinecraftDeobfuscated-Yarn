@@ -45,8 +45,8 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
 			this.invalidate();
 		}

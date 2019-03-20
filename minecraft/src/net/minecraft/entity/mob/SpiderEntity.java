@@ -2,7 +2,6 @@ package net.minecraft.entity.mob;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -19,6 +18,7 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SpiderNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -53,7 +53,7 @@ public class SpiderEntity extends HostileEntity {
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(3, new PounceAtTargetGoal(this, 0.4F));
 		this.goalSelector.add(4, new SpiderEntity.class_1629(this));
-		this.goalSelector.add(5, new class_1394(this, 0.8));
+		this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new AvoidGoal(this));
@@ -78,8 +78,8 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (!this.world.isClient) {
 			this.setCanClimb(this.horizontalCollision);
 		}

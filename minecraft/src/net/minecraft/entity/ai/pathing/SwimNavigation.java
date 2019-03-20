@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.pathing;
 
-import net.minecraft.class_4209;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.DolphinEntity;
+import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -54,7 +54,7 @@ public class SwimNavigation extends EntityNavigation {
 				}
 			}
 
-			class_4209.method_19470(this.world, this.entity, this.currentPath, this.field_6683);
+			DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
 			if (!this.isIdle()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				this.entity.getMoveControl().moveTo(vec3d.x, vec3d.y, vec3d.z, this.speed);

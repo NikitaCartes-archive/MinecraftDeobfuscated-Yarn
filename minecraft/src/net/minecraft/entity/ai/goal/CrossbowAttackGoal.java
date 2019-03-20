@@ -1,9 +1,9 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.class_1675;
 import net.minecraft.entity.CrossbowUser;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.item.CrossbowItem;
@@ -42,6 +42,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 	@Override
 	public void onRemove() {
 		super.onRemove();
+		this.entity.method_19540(false);
 		this.field_6592 = 0;
 		if (this.entity.isUsingItem()) {
 			this.entity.method_6021();
@@ -77,7 +78,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 			this.entity.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 			if (this.stage == CrossbowAttackGoal.Stage.field_16534) {
 				if (!bl3) {
-					this.entity.setCurrentHand(class_1675.method_18812(this.entity, Items.field_8399));
+					this.entity.setCurrentHand(ProjectileUtil.method_18812(this.entity, Items.field_8399));
 					this.stage = CrossbowAttackGoal.Stage.field_16530;
 					this.entity.setCharging(true);
 				}
@@ -101,7 +102,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.field_16533 && bl) {
 				this.entity.attack(livingEntity, 1.0F);
-				ItemStack itemStack2 = this.entity.getStackInHand(class_1675.method_18812(this.entity, Items.field_8399));
+				ItemStack itemStack2 = this.entity.getStackInHand(ProjectileUtil.method_18812(this.entity, Items.field_8399));
 				CrossbowItem.setCharged(itemStack2, false);
 				this.stage = CrossbowAttackGoal.Stage.field_16534;
 			}

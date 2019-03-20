@@ -20,9 +20,9 @@ public class BrewingStandScreen extends ContainerScreen<BrewingStandContainer> {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 

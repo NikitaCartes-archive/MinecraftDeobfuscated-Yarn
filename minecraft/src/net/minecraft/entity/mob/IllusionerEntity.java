@@ -3,13 +3,13 @@ package net.minecraft.entity.mob;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1675;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.AvoidGoal;
@@ -202,8 +202,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ItemStack itemStack = this.method_18808(this.getStackInHand(class_1675.method_18812(this, Items.field_8102)));
-		ProjectileEntity projectileEntity = class_1675.method_18813(this, itemStack, f);
+		ItemStack itemStack = this.method_18808(this.getStackInHand(ProjectileUtil.method_18812(this, Items.field_8102)));
+		ProjectileEntity projectileEntity = ProjectileUtil.method_18813(this, itemStack, f);
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
 		double g = livingEntity.z - this.z;
@@ -215,22 +215,11 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean hasArmsRaised() {
-		return this.method_6991(1);
-	}
-
-	@Override
-	public void setArmsRaised(boolean bl) {
-		this.method_6992(1, bl);
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
 	public IllagerEntity.State method_6990() {
 		if (this.method_7137()) {
 			return IllagerEntity.State.field_7212;
 		} else {
-			return this.hasArmsRaised() ? IllagerEntity.State.field_7208 : IllagerEntity.State.field_7207;
+			return this.method_6510() ? IllagerEntity.State.field_7208 : IllagerEntity.State.field_7207;
 		}
 	}
 

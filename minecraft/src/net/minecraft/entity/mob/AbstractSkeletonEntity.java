@@ -3,10 +3,6 @@ package net.minecraft.entity.mob;
 import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
-import net.minecraft.class_1675;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
@@ -16,6 +12,7 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.AvoidGoal;
@@ -27,10 +24,8 @@ import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -49,19 +44,18 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public abstract class AbstractSkeletonEntity extends HostileEntity implements RangedAttacker {
-	private static final TrackedData<Boolean> AIMING = DataTracker.registerData(AbstractSkeletonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private final BowAttackGoal<AbstractSkeletonEntity> field_7220 = new BowAttackGoal<>(this, 1.0, 20, 15.0F);
 	private final MeleeAttackGoal field_7221 = new MeleeAttackGoal(this, 1.2, false) {
 		@Override
 		public void onRemove() {
 			super.onRemove();
-			AbstractSkeletonEntity.this.setArmsRaised(false);
+			AbstractSkeletonEntity.this.method_19540(false);
 		}
 
 		@Override
 		public void start() {
 			super.start();
-			AbstractSkeletonEntity.this.setArmsRaised(true);
+			AbstractSkeletonEntity.this.method_19540(true);
 		}
 	};
 
@@ -75,7 +69,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.goalSelector.add(2, new AvoidSunlightGoal(this));
 		this.goalSelector.add(3, new EscapeSunlightGoal(this, 1.0));
 		this.goalSelector.add(3, new FleeEntityGoal(this, WolfEntity.class, 6.0F, 1.0, 1.2));
-		this.goalSelector.add(5, new class_1394(this, 1.0));
+		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new AvoidGoal(this));
@@ -88,12 +82,6 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	protected void initAttributes() {
 		super.initAttributes();
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.25);
-	}
-
-	@Override
-	protected void initDataTracker() {
-		super.initDataTracker();
-		this.dataTracker.startTracking(AIMING, false);
 	}
 
 	@Override
@@ -175,7 +163,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		if (this.world != null && !this.world.isClient) {
 			this.goalSelector.remove(this.field_7221);
 			this.goalSelector.remove(this.field_7220);
-			ItemStack itemStack = this.getStackInHand(class_1675.method_18812(this, Items.field_8102));
+			ItemStack itemStack = this.getStackInHand(ProjectileUtil.method_18812(this, Items.field_8102));
 			if (itemStack.getItem() == Items.field_8102) {
 				int i = 20;
 				if (this.world.getDifficulty() != Difficulty.HARD) {
@@ -192,7 +180,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ItemStack itemStack = this.method_18808(this.getStackInHand(class_1675.method_18812(this, Items.field_8102)));
+		ItemStack itemStack = this.method_18808(this.getStackInHand(ProjectileUtil.method_18812(this, Items.field_8102)));
 		ProjectileEntity projectileEntity = this.method_6996(itemStack, f);
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
@@ -204,7 +192,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	protected ProjectileEntity method_6996(ItemStack itemStack, float f) {
-		return class_1675.method_18813(this, itemStack, f);
+		return ProjectileUtil.method_18813(this, itemStack, f);
 	}
 
 	@Override
@@ -229,16 +217,5 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	@Override
 	public double getHeightOffset() {
 		return -0.6;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasArmsRaised() {
-		return this.dataTracker.get(AIMING);
-	}
-
-	@Override
-	public void setArmsRaised(boolean bl) {
-		this.dataTracker.set(AIMING, bl);
 	}
 }

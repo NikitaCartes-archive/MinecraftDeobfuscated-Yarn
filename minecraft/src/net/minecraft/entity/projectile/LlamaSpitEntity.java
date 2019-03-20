@@ -3,11 +3,11 @@ package net.minecraft.entity.projectile;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1675;
 import net.minecraft.block.Material;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -52,14 +52,14 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.field_7623 != null) {
 			this.method_7479();
 		}
 
 		Vec3d vec3d = this.getVelocity();
-		HitResult hitResult = class_1675.method_18074(
+		HitResult hitResult = ProjectileUtil.method_18074(
 			this,
 			this.getBoundingBox().method_18804(vec3d).expand(1.0),
 			entity -> !entity.isSpectator() && entity != this.owner,

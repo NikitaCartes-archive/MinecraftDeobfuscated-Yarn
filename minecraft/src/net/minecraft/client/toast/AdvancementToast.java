@@ -54,7 +54,7 @@ public class AdvancementToast implements Toast {
 			if (!this.field_2206 && l > 0L) {
 				this.field_2206 = true;
 				if (advancementDisplay.getFrame() == AdvancementFrame.CHALLENGE) {
-					toastManager.getGame().getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_15195, 1.0F, 1.0F));
+					toastManager.getGame().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15195, 1.0F, 1.0F));
 				}
 			}
 

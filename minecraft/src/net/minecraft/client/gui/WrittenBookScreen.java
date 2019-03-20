@@ -10,7 +10,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.audio.SoundLoader;
+import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.gui.widget.BookPageButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -107,7 +107,7 @@ public class WrittenBookScreen extends Screen {
 			}
 
 			@Override
-			public void playPressedSound(SoundLoader soundLoader) {
+			public void playDownSound(SoundManager soundManager) {
 				WrittenBookScreen.this.playPageTurnSound();
 			}
 		});
@@ -118,7 +118,7 @@ public class WrittenBookScreen extends Screen {
 			}
 
 			@Override
-			public void playPressedSound(SoundLoader soundLoader) {
+			public void playDownSound(SoundManager soundManager) {
 				WrittenBookScreen.this.playPageTurnSound();
 			}
 		});
@@ -169,7 +169,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(BOOK_TEXTURE);
 		int k = (this.screenWidth - 192) / 2;
@@ -196,7 +196,7 @@ public class WrittenBookScreen extends Screen {
 			this.drawTextComponentHover(textComponent3, i, j);
 		}
 
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	private int getStringWidth(String string) {
@@ -286,7 +286,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	protected void playPageTurnSound() {
-		MinecraftClient.getInstance().getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
+		MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
 	}
 
 	@Environment(EnvType.CLIENT)

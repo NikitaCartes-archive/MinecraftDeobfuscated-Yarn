@@ -63,7 +63,7 @@ public class Realms {
 	}
 
 	public static void execute(Runnable runnable) {
-		MinecraftClient.getInstance().executeFuture(runnable);
+		MinecraftClient.getInstance().execute(runnable);
 	}
 
 	public static void setScreen(RealmsScreen realmsScreen) {
