@@ -5,9 +5,6 @@ import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.UUID;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +24,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
 import net.minecraft.entity.ai.goal.StepAndDestroyBlockGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.ZombieRaiseArmsGoal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
@@ -68,7 +66,6 @@ public class ZombieEntity extends HostileEntity {
 	);
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> field_7427 = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Boolean> ARMS_RAISED = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> field_7425 = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private final BreakDoorGoal field_7433 = new BreakDoorGoal(this);
 	private boolean field_7432;
@@ -94,7 +91,7 @@ public class ZombieEntity extends HostileEntity {
 	protected void method_7208() {
 		this.goalSelector.add(2, new ZombieRaiseArmsGoal(this, 1.0, false));
 		this.goalSelector.add(6, new MoveThroughVillageGoal(this, 1.0, true, 4, this::canBreakDoors));
-		this.goalSelector.add(7, new class_1394(this, 1.0));
+		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
 		this.targetSelector.add(1, new AvoidGoal(this).method_6318(ZombiePigmanEntity.class));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
@@ -117,21 +114,11 @@ public class ZombieEntity extends HostileEntity {
 		super.initDataTracker();
 		this.getDataTracker().startTracking(BABY, false);
 		this.getDataTracker().startTracking(field_7427, 0);
-		this.getDataTracker().startTracking(ARMS_RAISED, false);
 		this.getDataTracker().startTracking(field_7425, false);
 	}
 
 	public boolean isDrowning() {
 		return this.getDataTracker().get(field_7425);
-	}
-
-	public void setArmsRaised(boolean bl) {
-		this.getDataTracker().set(ARMS_RAISED, bl);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public boolean hasArmsRaised() {
-		return this.getDataTracker().get(ARMS_RAISED);
 	}
 
 	public boolean canBreakDoors() {
@@ -198,7 +185,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (!this.world.isClient && this.isValid()) {
 			if (this.isDrowning()) {
 				this.field_7424--;
@@ -217,7 +204,7 @@ public class ZombieEntity extends HostileEntity {
 			}
 		}
 
-		super.update();
+		super.tick();
 	}
 
 	@Override
@@ -434,6 +421,7 @@ public class ZombieEntity extends HostileEntity {
 			);
 			zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
 			zombieVillagerEntity.setOfferData(villagerEntity.getRecipes().toTag());
+			zombieVillagerEntity.method_19622(villagerEntity.getExperience());
 			zombieVillagerEntity.setChild(villagerEntity.isChild());
 			zombieVillagerEntity.setAiDisabled(villagerEntity.isAiDisabled());
 			if (villagerEntity.hasCustomName()) {
@@ -568,7 +556,7 @@ public class ZombieEntity extends HostileEntity {
 
 		@Override
 		public double getDesiredSquaredDistanceToTarget() {
-			return 1.3;
+			return 1.14;
 		}
 	}
 

@@ -30,7 +30,7 @@ public abstract class RealmsButton extends RealmsAbstractButton<RealmsButtonWidg
 	}
 
 	public void setMessage(String string) {
-		this.proxy.setText(string);
+		this.proxy.setMessage(string);
 	}
 
 	public int getWidth() {

@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1378;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -18,7 +17,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.WaterCreatureEntity;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.DolphinLookControl;
 import net.minecraft.entity.ai.control.MoveControl;
@@ -32,6 +31,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveIntoWaterGoal;
+import net.minecraft.entity.ai.goal.SwimAroundGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -153,7 +153,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		this.goalSelector.add(0, new MoveIntoWaterGoal(this));
 		this.goalSelector.add(1, new DolphinEntity.class_1435(this));
 		this.goalSelector.add(2, new DolphinEntity.class_1436(this, 4.0));
-		this.goalSelector.add(4, new class_1378(this, 1.0, 10));
+		this.goalSelector.add(4, new SwimAroundGoal(this, 1.0, 10));
 		this.goalSelector.add(4, new LookAroundGoal(this));
 		this.goalSelector.add(5, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(5, new DolphinJumpGoal(this, 10));
@@ -239,8 +239,8 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (!this.isAiDisabled()) {
 			if (this.isTouchingWater()) {
 				this.method_6489(2400);
@@ -363,7 +363,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	protected boolean method_6484() {
 		BlockPos blockPos = this.getNavigation().getTargetPos();
-		return blockPos != null ? this.squaredDistanceTo(blockPos) < 144.0 : false;
+		return blockPos != null ? blockPos.method_19769(this.getPos(), 12.0) : false;
 	}
 
 	@Override
@@ -456,7 +456,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		@Override
 		public boolean shouldContinue() {
 			BlockPos blockPos = this.field_6752.method_6494();
-			return this.field_6752.squaredDistanceTo(new BlockPos((double)blockPos.getX(), this.field_6752.y, (double)blockPos.getZ())) > 16.0
+			return !new BlockPos((double)blockPos.getX(), this.field_6752.y, (double)blockPos.getZ()).method_19769(this.field_6752.getPos(), 4.0)
 				&& !this.field_6753
 				&& this.field_6752.getBreath() >= 100;
 		}
@@ -487,7 +487,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		@Override
 		public void onRemove() {
 			BlockPos blockPos = this.field_6752.method_6494();
-			if (this.field_6752.squaredDistanceTo(new BlockPos((double)blockPos.getX(), this.field_6752.y, (double)blockPos.getZ())) <= 16.0 || this.field_6753) {
+			if (new BlockPos((double)blockPos.getX(), this.field_6752.y, (double)blockPos.getZ()).method_19769(this.field_6752.getPos(), 4.0) || this.field_6753) {
 				this.field_6752.method_6486(false);
 			}
 		}
@@ -497,18 +497,18 @@ public class DolphinEntity extends WaterCreatureEntity {
 			BlockPos blockPos = this.field_6752.method_6494();
 			World world = this.field_6752.world;
 			if (this.field_6752.method_6484() || this.field_6752.getNavigation().isIdle()) {
-				Vec3d vec3d = AiUtil.method_6377(
+				Vec3d vec3d = PathfindingUtil.method_6377(
 					this.field_6752, 16, 1, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 8)
 				);
 				if (vec3d == null) {
-					vec3d = AiUtil.method_6373(this.field_6752, 8, 4, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = PathfindingUtil.method_6373(this.field_6752, 8, 4, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d != null) {
 					BlockPos blockPos2 = new BlockPos(vec3d);
 					if (!world.getFluidState(blockPos2).matches(FluidTags.field_15517)
 						|| !world.getBlockState(blockPos2).canPlaceAtSide(world, blockPos2, BlockPlacementEnvironment.field_48)) {
-						vec3d = AiUtil.method_6373(this.field_6752, 8, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+						vec3d = PathfindingUtil.method_6373(this.field_6752, 8, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 					}
 				}
 

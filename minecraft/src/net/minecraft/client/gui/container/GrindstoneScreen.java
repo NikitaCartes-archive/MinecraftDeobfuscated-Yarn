@@ -24,10 +24,10 @@ public class GrindstoneScreen extends ContainerScreen<GrindstoneContainer> {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawBackground(f, i, j);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 

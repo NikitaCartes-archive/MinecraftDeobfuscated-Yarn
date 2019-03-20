@@ -38,7 +38,7 @@ public class WorldGenerationProgressScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		int k = this.screenWidth / 2;
 		int l = this.screenHeight / 2;

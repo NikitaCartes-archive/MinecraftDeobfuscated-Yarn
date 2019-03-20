@@ -43,11 +43,11 @@ public class SpiderNavigation extends MobNavigation {
 			super.tick();
 		} else {
 			if (this.field_6687 != null) {
-				double d = (double)(this.entity.getWidth() * this.entity.getWidth());
-				if (!(this.entity.squaredDistanceToCenter(this.field_6687) < d)
+				if (!this.field_6687.method_19769(this.entity.getPos(), (double)this.entity.getWidth())
 					&& (
 						!(this.entity.y > (double)this.field_6687.getY())
-							|| !(this.entity.squaredDistanceToCenter(new BlockPos(this.field_6687.getX(), MathHelper.floor(this.entity.y), this.field_6687.getZ())) < d)
+							|| !new BlockPos(this.field_6687.getX(), MathHelper.floor(this.entity.y), this.field_6687.getZ())
+								.method_19769(this.entity.getPos(), (double)this.entity.getWidth())
 					)) {
 					this.entity.getMoveControl().moveTo((double)this.field_6687.getX(), (double)this.field_6687.getY(), (double)this.field_6687.getZ(), this.speed);
 				} else {

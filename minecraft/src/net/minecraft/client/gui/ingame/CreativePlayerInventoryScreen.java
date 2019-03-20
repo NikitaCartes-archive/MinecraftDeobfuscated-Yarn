@@ -65,7 +65,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	public CreativePlayerInventoryScreen(PlayerEntity playerEntity) {
 		super(new CreativePlayerInventoryScreen.CreativeContainer(playerEntity), playerEntity.inventory, new StringTextComponent(""));
 		playerEntity.container = this.container;
-		this.field_2558 = true;
+		this.passEvents = true;
 		this.height = 136;
 		this.width = 195;
 	}
@@ -563,9 +563,9 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 
 		for (ItemGroup itemGroup : ItemGroup.GROUPS) {
 			if (this.method_2471(itemGroup, i, j)) {
@@ -650,7 +650,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 		this.client.getTextureManager().bindTexture(new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
 		this.drawTexturedRect(this.left, this.top, 0, 0, this.width, this.height);
-		this.searchBox.draw(i, j, f);
+		this.searchBox.render(i, j, f);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		int k = this.left + 175;
 		int l = this.top + 18;

@@ -41,8 +41,8 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
-		super.draw(i, j, f);
+	public void render(int i, int j, float f) {
+		super.render(i, j, f);
 		if (this.offsetGuiForEffects) {
 			this.drawPotionEffects();
 		}

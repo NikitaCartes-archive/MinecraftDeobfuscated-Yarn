@@ -30,7 +30,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.field_4624.gameRenderer.method_19418();
+		Camera camera = this.field_4624.gameRenderer.getCamera();
 		IWorld iWorld = this.field_4624.world;
 		int i = iWorld.getLevelProperties().getDimension();
 		double d = camera.getPos().x;
@@ -50,7 +50,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 		GlStateManager.lineWidth(1.0F);
 		if (this.field_4626.containsKey(i)) {
 			for (MutableIntBoundingBox mutableIntBoundingBox : ((Map)this.field_4626.get(i)).values()) {
-				if (blockPos.distanceTo(mutableIntBoundingBox.minX, mutableIntBoundingBox.minY, mutableIntBoundingBox.minZ) < 500.0) {
+				if (blockPos.method_19771(mutableIntBoundingBox.method_19635(), 500.0)) {
 					WorldRenderer.buildBoxOutline(
 						bufferBuilder,
 						(double)mutableIntBoundingBox.minX - d,
@@ -73,7 +73,7 @@ public class StructureDebugRenderer implements DebugRenderer.Renderer {
 				String string = (String)entry.getKey();
 				MutableIntBoundingBox mutableIntBoundingBox2 = (MutableIntBoundingBox)entry.getValue();
 				Boolean boolean_ = (Boolean)((Map)this.field_4625.get(i)).get(string);
-				if (blockPos.distanceTo(mutableIntBoundingBox2.minX, mutableIntBoundingBox2.minY, mutableIntBoundingBox2.minZ) < 500.0) {
+				if (blockPos.method_19771(mutableIntBoundingBox2.method_19635(), 500.0)) {
 					if (boolean_) {
 						WorldRenderer.buildBoxOutline(
 							bufferBuilder,

@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
@@ -12,6 +13,8 @@ import net.minecraft.sortme.SpawnHelper;
 import net.minecraft.sortme.SpawnRestriction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.level.LevelProperties;
 
@@ -65,18 +68,25 @@ public class WanderingTraderManager {
 		} else if (this.random.nextInt(10) != 0) {
 			return false;
 		} else {
-			BlockPos blockPos = playerEntity.getPos();
-			BlockPos blockPos2 = this.method_18017(blockPos, 48);
-			if (blockPos2 != null) {
-				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713.spawn(this.world, null, null, null, blockPos2, SpawnType.field_16467, false, false);
+			BlockPos blockPos = playerEntity.getBlockPos();
+			int i = 48;
+			PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
+			Optional<BlockPos> optional = pointOfInterestStorage.getPosition(
+				PointOfInterestType.field_18518.getCompletedCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY
+			);
+			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
+			BlockPos blockPos3 = this.method_18017(blockPos2, 48);
+			if (blockPos3 != null) {
+				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713.spawn(this.world, null, null, null, blockPos3, SpawnType.field_16467, false, false);
 				if (wanderingTraderEntity != null) {
-					for (int i = 0; i < 2; i++) {
+					for (int j = 0; j < 2; j++) {
 						this.method_18016(wanderingTraderEntity, 8);
 					}
 
 					this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());
 					wanderingTraderEntity.setDespawnDelay(48000);
-					wanderingTraderEntity.setWanderTarget(new BlockPos(playerEntity.x, playerEntity.y, playerEntity.z));
+					wanderingTraderEntity.setWanderTarget(blockPos2);
+					wanderingTraderEntity.setWalkTarget(blockPos2, 16);
 					return true;
 				}
 			}

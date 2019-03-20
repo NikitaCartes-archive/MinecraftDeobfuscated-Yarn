@@ -332,7 +332,7 @@ public abstract class GameOption {
 		this.key = string;
 	}
 
-	public abstract AbstractButtonWidget method_18520(GameOptions gameOptions, int i, int j, int k);
+	public abstract AbstractButtonWidget createOptionButton(GameOptions gameOptions, int i, int j, int k);
 
 	public String method_18518() {
 		return I18n.translate(this.key) + ": ";

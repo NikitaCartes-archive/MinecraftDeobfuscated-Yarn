@@ -14,7 +14,7 @@ public abstract class RealmsScrolledSelectionList extends RealmsGuiEventListener
 	}
 
 	public void render(int i, int j, float f) {
-		this.proxy.draw(i, j, f);
+		this.proxy.render(i, j, f);
 	}
 
 	public int width() {

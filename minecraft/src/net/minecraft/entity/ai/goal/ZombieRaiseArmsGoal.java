@@ -20,7 +20,7 @@ public class ZombieRaiseArmsGoal extends MeleeAttackGoal {
 	@Override
 	public void onRemove() {
 		super.onRemove();
-		this.zombie.setArmsRaised(false);
+		this.zombie.method_19540(false);
 	}
 
 	@Override
@@ -28,9 +28,9 @@ public class ZombieRaiseArmsGoal extends MeleeAttackGoal {
 		super.tick();
 		this.field_6627++;
 		if (this.field_6627 >= 5 && this.field_6505 < 10) {
-			this.zombie.setArmsRaised(true);
+			this.zombie.method_19540(true);
 		} else {
-			this.zombie.setArmsRaised(false);
+			this.zombie.method_19540(false);
 		}
 	}
 }

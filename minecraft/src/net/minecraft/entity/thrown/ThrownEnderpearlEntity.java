@@ -113,12 +113,12 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		LivingEntity livingEntity = this.getOwner();
 		if (livingEntity != null && livingEntity instanceof PlayerEntity && !livingEntity.isValid()) {
 			this.invalidate();
 		} else {
-			super.update();
+			super.tick();
 		}
 	}
 

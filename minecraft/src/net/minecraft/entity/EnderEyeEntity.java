@@ -110,11 +110,11 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevRenderX = this.x;
 		this.prevRenderY = this.y;
 		this.prevRenderZ = this.z;
-		super.update();
+		super.tick();
 		Vec3d vec3d = this.getVelocity();
 		this.x = this.x + vec3d.x;
 		this.y = this.y + vec3d.y;

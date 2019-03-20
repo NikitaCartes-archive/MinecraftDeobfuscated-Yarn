@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -27,6 +26,7 @@ import net.minecraft.entity.ai.goal.HorseBondWithPlayerGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.ClampedEntityAttribute;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -103,7 +103,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 		this.goalSelector.add(1, new HorseBondWithPlayerGoal(this, 1.2));
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0, HorseBaseEntity.class));
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.0));
-		this.goalSelector.add(6, new class_1394(this, 0.7));
+		this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.7));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.method_6764();
@@ -559,8 +559,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.field_6973 > 0 && ++this.field_6973 > 30) {
 			this.field_6973 = 0;
 			this.setHorseFlag(64, false);

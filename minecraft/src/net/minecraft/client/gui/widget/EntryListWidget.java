@@ -36,7 +36,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	@Override
-	protected void method_1952(int i, int j, int k, float f) {
+	protected void updateItemPosition(int i, int j, int k, float f) {
 		this.getEntry(i).method_1904(f);
 	}
 
@@ -134,7 +134,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		}
 
 		public int getY() {
-			return this.parent.y + 4 - this.parent.getScrollY() + this.field_2143 * this.parent.entryHeight + this.parent.field_2174;
+			return this.parent.y + 4 - this.parent.getScrollY() + this.field_2143 * this.parent.entryHeight + this.parent.headerHeight;
 		}
 
 		protected int getX() {
@@ -147,7 +147,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		public abstract void draw(int i, int j, int k, int l, boolean bl, float f);
 
 		@Override
-		public boolean method_19356(double d, double e) {
+		public boolean isMouseOver(double d, double e) {
 			return this.parent.getSelectedEntry(d, e) == this.field_2143;
 		}
 	}

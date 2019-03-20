@@ -41,10 +41,7 @@ public class FindInteractTargetTask extends Task<LivingEntity> {
 
 	@Override
 	public boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		return this.field_18366.test(livingEntity)
-			&& ((List)livingEntity.getBrain().getMemory(MemoryModuleType.field_18442).get())
-				.stream()
-				.anyMatch(livingEntityx -> this.field_18363.equals(livingEntityx.getType()) && this.field_18365.test(livingEntityx));
+		return this.field_18366.test(livingEntity) && this.method_18959(livingEntity).stream().anyMatch(this::method_18962);
 	}
 
 	@Override
@@ -54,14 +51,21 @@ public class FindInteractTargetTask extends Task<LivingEntity> {
 		brain.getMemory(MemoryModuleType.field_18442)
 			.ifPresent(
 				list -> list.stream()
-						.filter(livingEntityxx -> this.field_18363.equals(livingEntityxx.getType()))
 						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= (double)this.field_18364)
-						.filter(this.field_18365)
+						.filter(this::method_18962)
 						.findFirst()
 						.ifPresent(livingEntityxx -> {
 							brain.putMemory(MemoryModuleType.field_18447, livingEntityxx);
 							brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(livingEntityxx));
 						})
 			);
+	}
+
+	private boolean method_18962(LivingEntity livingEntity) {
+		return this.field_18363.equals(livingEntity.getType()) && this.field_18365.test(livingEntity);
+	}
+
+	private List<LivingEntity> method_18959(LivingEntity livingEntity) {
+		return (List<LivingEntity>)livingEntity.getBrain().getMemory(MemoryModuleType.field_18442).get();
 	}
 }

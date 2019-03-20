@@ -21,6 +21,7 @@ import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 import org.apache.commons.io.IOUtils;
@@ -82,7 +83,7 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 						}
 					}
 				}
-			} catch (IllegalArgumentException | JsonParseException var21) {
+			} catch (IllegalArgumentException | InvalidIdentifierException | JsonParseException var21) {
 				LOGGER.error("Parsing error loading custom advancement {}: {}", identifier2, var21.getMessage());
 				this.errored = true;
 			} catch (IOException var22) {

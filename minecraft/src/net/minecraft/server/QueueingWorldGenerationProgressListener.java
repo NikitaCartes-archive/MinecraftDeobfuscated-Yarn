@@ -20,16 +20,16 @@ public class QueueingWorldGenerationProgressListener implements WorldGenerationP
 
 	@Override
 	public void start(ChunkPos chunkPos) {
-		this.queue.method_16901(() -> this.progressListener.start(chunkPos));
+		this.queue.send(() -> this.progressListener.start(chunkPos));
 	}
 
 	@Override
 	public void setChunkStatus(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
-		this.queue.method_16901(() -> this.progressListener.setChunkStatus(chunkPos, chunkStatus));
+		this.queue.send(() -> this.progressListener.setChunkStatus(chunkPos, chunkStatus));
 	}
 
 	@Override
 	public void stop() {
-		this.queue.method_16901(this.progressListener::stop);
+		this.queue.send(this.progressListener::stop);
 	}
 }

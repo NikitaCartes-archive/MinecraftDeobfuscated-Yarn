@@ -23,7 +23,7 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.client.gameRenderer.method_19418();
+		Camera camera = this.client.gameRenderer.getCamera();
 		World world = this.client.world;
 		GlStateManager.pushMatrix();
 		GlStateManager.enableBlend();

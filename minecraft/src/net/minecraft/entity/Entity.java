@@ -336,15 +336,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	public void update() {
+	public void tick() {
 		if (!this.world.isClient) {
 			this.setEntityFlag(6, this.isGlowing());
 		}
 
-		this.updateLogic();
+		this.baseTick();
 	}
 
-	public void updateLogic() {
+	public void baseTick() {
 		this.world.getProfiler().push("entityBaseTick");
 		if (this.hasVehicle() && this.getRiddenEntity().invalid) {
 			this.stopRiding();
@@ -1127,26 +1127,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return g * g + h * h + i * i;
 	}
 
-	public double squaredDistanceTo(BlockPos blockPos) {
-		return blockPos.squaredDistanceTo(this.x, this.y, this.z);
-	}
-
-	public double squaredDistanceToCenter(BlockPos blockPos) {
-		return blockPos.squaredDistanceToCenter(this.x, this.y, this.z);
-	}
-
-	public double distanceTo(double d, double e, double f) {
-		double g = this.x - d;
-		double h = this.y - e;
-		double i = this.z - f;
-		return (double)MathHelper.sqrt(g * g + h * h + i * i);
-	}
-
 	public double squaredDistanceTo(Entity entity) {
-		double d = this.x - entity.x;
-		double e = this.y - entity.y;
-		double f = this.z - entity.z;
-		return d * d + e * e + f * f;
+		return this.squaredDistanceTo(entity.getPos());
 	}
 
 	public double squaredDistanceTo(Vec3d vec3d) {
@@ -1555,7 +1537,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public void updateRiding() {
 		this.setVelocity(Vec3d.ZERO);
-		this.update();
+		this.tick();
 		if (this.hasVehicle()) {
 			this.getRiddenEntity().method_5865(this);
 		}
@@ -2178,7 +2160,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	@Override
 	public TextComponent getDisplayName() {
-		return ScoreboardTeam.method_1142(this.getScoreboardTeam(), this.getName())
+		return ScoreboardTeam.modifyText(this.getScoreboardTeam(), this.getName())
 			.modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
 	}
 
@@ -2310,7 +2292,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public void appendCommandFeedback(TextComponent textComponent) {
 	}
 
-	public BlockPos getPos() {
+	public BlockPos getBlockPos() {
 		return new BlockPos(this);
 	}
 
@@ -2618,6 +2600,10 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public EntitySize getSize(EntityPose entityPose) {
 		return this.type.getDefaultSize();
+	}
+
+	public Vec3d getPos() {
+		return new Vec3d(this.x, this.y, this.z);
 	}
 
 	public Vec3d getVelocity() {

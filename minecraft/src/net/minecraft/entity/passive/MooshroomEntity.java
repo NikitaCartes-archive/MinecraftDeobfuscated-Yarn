@@ -42,7 +42,7 @@ public class MooshroomEntity extends CowEntity {
 	public void onStruckByLightning(LightningEntity lightningEntity) {
 		UUID uUID = lightningEntity.getUuid();
 		if (!uUID.equals(this.lightningId)) {
-			this.setType(this.getType() == MooshroomEntity.Type.field_18109 ? MooshroomEntity.Type.field_18110 : MooshroomEntity.Type.field_18109);
+			this.setType(this.getMooshroomType() == MooshroomEntity.Type.field_18109 ? MooshroomEntity.Type.field_18110 : MooshroomEntity.Type.field_18109);
 			this.lightningId = uUID;
 			this.playSound(SoundEvents.field_18266, 2.0F, 1.0F);
 		}
@@ -102,7 +102,9 @@ public class MooshroomEntity extends CowEntity {
 
 				for (int i = 0; i < 5; i++) {
 					this.world
-						.spawnEntity(new ItemEntity(this.world, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getType().mushroomState.getBlock())));
+						.spawnEntity(
+							new ItemEntity(this.world, this.x, this.y + (double)this.getHeight(), this.z, new ItemStack(this.getMooshroomType().mushroomState.getBlock()))
+						);
 				}
 
 				itemStack.applyDamage(1, playerEntity);
@@ -111,7 +113,7 @@ public class MooshroomEntity extends CowEntity {
 
 			return true;
 		} else {
-			if (this.getType() == MooshroomEntity.Type.field_18110 && itemStack.getItem().matches(ItemTags.field_15543)) {
+			if (this.getMooshroomType() == MooshroomEntity.Type.field_18110 && itemStack.getItem().matches(ItemTags.field_15543)) {
 				if (this.stewEffect != null) {
 					for (int j = 0; j < 2; j++) {
 						this.world
@@ -157,7 +159,7 @@ public class MooshroomEntity extends CowEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		compoundTag.putString("Type", this.getType().name);
+		compoundTag.putString("Type", this.getMooshroomType().name);
 		if (this.stewEffect != null) {
 			compoundTag.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
 			compoundTag.putInt("EffectDuration", this.stewEffectDuration);
@@ -186,7 +188,7 @@ public class MooshroomEntity extends CowEntity {
 		this.dataTracker.set(TYPE, type.name);
 	}
 
-	public MooshroomEntity.Type getType() {
+	public MooshroomEntity.Type getMooshroomType() {
 		return MooshroomEntity.Type.fromName(this.dataTracker.get(TYPE));
 	}
 
@@ -197,8 +199,8 @@ public class MooshroomEntity extends CowEntity {
 	}
 
 	private MooshroomEntity.Type chooseBabyType(MooshroomEntity mooshroomEntity) {
-		MooshroomEntity.Type type = this.getType();
-		MooshroomEntity.Type type2 = mooshroomEntity.getType();
+		MooshroomEntity.Type type = this.getMooshroomType();
+		MooshroomEntity.Type type2 = mooshroomEntity.getMooshroomType();
 		MooshroomEntity.Type type3;
 		if (type == type2 && this.random.nextInt(1024) == 0) {
 			type3 = type == MooshroomEntity.Type.field_18110 ? MooshroomEntity.Type.field_18109 : MooshroomEntity.Type.field_18110;

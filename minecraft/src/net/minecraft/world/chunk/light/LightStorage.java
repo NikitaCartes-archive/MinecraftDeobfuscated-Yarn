@@ -8,7 +8,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import javax.annotation.Nullable;
-import net.minecraft.class_4079;
+import net.minecraft.util.SectionRelativeLevelPropagator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -17,7 +17,7 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.WorldNibbleStorage;
 
-public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends class_4079 {
+public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends SectionRelativeLevelPropagator {
 	protected static final ChunkNibbleArray EMPTY = new ChunkNibbleArray();
 	private static final Direction[] DIRECTIONS = Direction.values();
 	private final LightType lightType;
@@ -251,8 +251,8 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 												r = BlockPos.asLong(i + 16, j + o, k + p);
 										}
 
-										chunkLightProvider.scheduleNewLevelUpdate(q, r, chunkLightProvider.getBaseLevel(q, r, chunkLightProvider.getLevel(q)), false);
-										chunkLightProvider.scheduleNewLevelUpdate(r, q, chunkLightProvider.getBaseLevel(r, q, chunkLightProvider.getLevel(r)), false);
+										chunkLightProvider.update(q, r, chunkLightProvider.getUpdatedLevel(q, r, chunkLightProvider.getLevel(q)), false);
+										chunkLightProvider.update(r, q, chunkLightProvider.getUpdatedLevel(r, q, chunkLightProvider.getLevel(r)), false);
 									}
 								}
 							}
@@ -290,18 +290,18 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends clas
 		boolean bl2 = this.field_15808.contains(l);
 		if (!bl2 && !bl) {
 			this.field_15804.add(l);
-			this.scheduleNewLevelUpdate(Long.MAX_VALUE, l, 0, true);
+			this.update(Long.MAX_VALUE, l, 0, true);
 		}
 
 		if (bl2 && bl) {
 			this.field_15797.add(l);
-			this.scheduleNewLevelUpdate(Long.MAX_VALUE, l, 2, false);
+			this.update(Long.MAX_VALUE, l, 2, false);
 		}
 	}
 
 	protected void updateAll() {
 		if (this.hasLevelUpdates()) {
-			this.updateLevels(Integer.MAX_VALUE);
+			this.updateAllRecursively(Integer.MAX_VALUE);
 		}
 	}
 

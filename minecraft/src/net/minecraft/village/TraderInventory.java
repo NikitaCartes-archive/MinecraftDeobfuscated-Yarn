@@ -115,7 +115,7 @@ public class TraderInventory implements Inventory {
 				if (traderRecipe != null && !traderRecipe.isDisabled()) {
 					this.traderRecipe = traderRecipe;
 					this.setInvStack(2, traderRecipe.getSellItem());
-					this.field_18668 = traderRecipe.getSellItem().getAmount();
+					this.field_18668 = traderRecipe.getRewardedExp();
 				} else {
 					this.setInvStack(2, ItemStack.EMPTY);
 					this.field_18668 = 0;

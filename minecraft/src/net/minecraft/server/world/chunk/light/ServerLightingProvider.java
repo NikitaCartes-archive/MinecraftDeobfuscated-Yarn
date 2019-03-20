@@ -106,7 +106,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	}
 
 	private void method_17307(int i, int j, IntSupplier intSupplier, ServerLightingProvider.class_3901 arg, Runnable runnable) {
-		this.field_17259.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(() -> {
+		this.field_17259.send(ChunkTaskPrioritySystem.createRunnableMessage(() -> {
 			this.field_17256.add(Pair.of(arg, runnable));
 			if (this.field_17256.size() >= this.field_17260) {
 				this.method_14277();
@@ -143,7 +143,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 	public void tick() {
 		if ((!this.field_17256.isEmpty() || super.hasUpdates()) && this.field_18812.compareAndSet(false, true)) {
-			this.field_17255.method_16901(() -> {
+			this.field_17255.send(() -> {
 				this.method_14277();
 				this.field_18812.set(false);
 			});

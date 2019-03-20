@@ -38,7 +38,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 		EntityType.LLAMA,
 		EntityType.TURTLE,
 		EntityType.CAT,
-		EntityType.PANDA
+		EntityType.PANDA,
+		EntityType.field_17943
 	};
 	private static final Item[] field_11295 = new Item[]{Items.field_8429, Items.field_8846, Items.field_8323, Items.field_8209};
 	private static final Item[] field_11297 = new Item[]{Items.field_8666, Items.field_8478, Items.field_8108, Items.field_8714};

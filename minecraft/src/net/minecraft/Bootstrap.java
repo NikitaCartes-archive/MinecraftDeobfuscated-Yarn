@@ -4,8 +4,6 @@ import java.io.PrintStream;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.FireBlock;
@@ -91,7 +89,6 @@ public class Bootstrap {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public static void println(String string) {
 		SYSOUT.println(string);
 	}

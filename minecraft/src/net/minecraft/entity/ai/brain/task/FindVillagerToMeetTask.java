@@ -24,7 +24,7 @@ public class FindVillagerToMeetTask extends Task<LivingEntity> {
 		return serverWorld.getRandom().nextInt(100) == 0
 			&& optional.isPresent()
 			&& Objects.equals(serverWorld.getDimension().getType(), ((GlobalPos)optional.get()).getDimension())
-			&& livingEntity.squaredDistanceTo(((GlobalPos)optional.get()).getPos()) <= 16.0
+			&& ((GlobalPos)optional.get()).getPos().method_19769(livingEntity.getPos(), 4.0)
 			&& ((List)brain.getMemory(MemoryModuleType.field_18442).get()).stream().anyMatch(livingEntityx -> EntityType.VILLAGER.equals(livingEntityx.getType()));
 	}
 

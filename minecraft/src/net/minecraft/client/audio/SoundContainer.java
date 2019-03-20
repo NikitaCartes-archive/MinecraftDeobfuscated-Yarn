@@ -9,5 +9,5 @@ public interface SoundContainer<T> {
 
 	T getSound();
 
-	void method_18188(SoundManager soundManager);
+	void addTo(SoundSystem soundSystem);
 }

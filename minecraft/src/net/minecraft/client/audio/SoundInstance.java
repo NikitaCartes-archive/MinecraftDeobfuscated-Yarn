@@ -11,7 +11,7 @@ public interface SoundInstance {
 	Identifier getId();
 
 	@Nullable
-	WeightedSoundSet getAccess(SoundLoader soundLoader);
+	WeightedSoundSet getSoundSet(SoundManager soundManager);
 
 	Sound getSound();
 
@@ -41,17 +41,7 @@ public interface SoundInstance {
 
 	@Environment(EnvType.CLIENT)
 	public static enum AttenuationType {
-		NONE(0),
-		LINEAR(2);
-
-		private final int TYPE;
-
-		private AttenuationType(int j) {
-			this.TYPE = j;
-		}
-
-		public int getType() {
-			return this.TYPE;
-		}
+		NONE,
+		LINEAR;
 	}
 }

@@ -78,6 +78,7 @@ public class HorseEntity extends HorseBaseEntity {
 
 	private void method_18445(ItemStack itemStack) {
 		this.setEquippedStack(EquipmentSlot.CHEST, itemStack);
+		this.setEquipmentDropChance(EquipmentSlot.CHEST, 0.0F);
 	}
 
 	@Override
@@ -182,8 +183,8 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.world.isClient && this.dataTracker.isDirty()) {
 			this.dataTracker.clearDirty();
 			this.clearTextureInfo();

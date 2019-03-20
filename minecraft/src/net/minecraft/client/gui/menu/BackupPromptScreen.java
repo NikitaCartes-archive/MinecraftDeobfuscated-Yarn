@@ -55,7 +55,7 @@ public class BackupPromptScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 70, 16777215);
 		int k = 90;
@@ -65,7 +65,7 @@ public class BackupPromptScreen extends Screen {
 			k += 9;
 		}
 
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Override

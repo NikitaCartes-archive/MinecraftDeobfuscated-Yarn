@@ -3,13 +3,14 @@ package net.minecraft.village;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import java.io.File;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import net.minecraft.class_4079;
 import net.minecraft.block.BlockState;
+import net.minecraft.util.SectionRelativeLevelPropagator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkPos;
@@ -17,7 +18,7 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
 
 public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointOfInterestSet> {
-	private final PointOfInterestStorage.LevelProcessor levelProcessor = new PointOfInterestStorage.LevelProcessor();
+	private final PointOfInterestStorage.PathfindingFavorProvider levelProcessor = new PointOfInterestStorage.PathfindingFavorProvider();
 
 	public PointOfInterestStorage(File file) {
 		super(file, PointOfInterestSet::new, PointOfInterestSet::new);
@@ -67,12 +68,9 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 
 	public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
 		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
+			.sorted(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().squaredDistanceTo(blockPos)))
 			.filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos()))
-			.reduce(
-				(pointOfInterest, pointOfInterest2) -> pointOfInterest.getPos().squaredDistanceTo(blockPos) < pointOfInterest2.getPos().squaredDistanceTo(blockPos)
-						? pointOfInterest
-						: pointOfInterest2
-			)
+			.findFirst()
 			.map(pointOfInterest -> {
 				pointOfInterest.reserveTicket();
 				return pointOfInterest.getPos();
@@ -88,11 +86,12 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<PointOfInterestType> getType(BlockPos blockPos) {
-		return this.getOrCreate(ChunkSectionPos.from(blockPos).asLong()).getType(blockPos);
+		PointOfInterestSet pointOfInterestSet = this.getOrCreate(ChunkSectionPos.from(blockPos).asLong());
+		return pointOfInterestSet.getType(blockPos);
 	}
 
 	public int getLevel(ChunkSectionPos chunkSectionPos) {
-		this.levelProcessor.updateLevels();
+		this.levelProcessor.method_19134();
 		return this.levelProcessor.getLevel(chunkSectionPos.asLong());
 	}
 
@@ -103,18 +102,18 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	@Override
 	public void tick(BooleanSupplier booleanSupplier) {
 		super.tick(booleanSupplier);
-		this.levelProcessor.updateLevels();
+		this.levelProcessor.method_19134();
 	}
 
 	@Override
 	protected void onUpdate(long l) {
 		super.onUpdate(l);
-		this.levelProcessor.scheduleNewLevelUpdate(l, this.levelProcessor.method_18749(l), false);
+		this.levelProcessor.method_18750(l, this.levelProcessor.method_18749(l), false);
 	}
 
 	@Override
 	protected void onLoad(long l) {
-		this.levelProcessor.scheduleNewLevelUpdate(l, this.levelProcessor.method_18749(l), false);
+		this.levelProcessor.method_18750(l, this.levelProcessor.method_18749(l), false);
 	}
 
 	public void method_19510(ChunkPos chunkPos, ChunkSection chunkSection) {
@@ -135,38 +134,6 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		}
 	}
 
-	final class LevelProcessor extends class_4079 {
-		private final Long2ByteMap levels = new Long2ByteOpenHashMap();
-
-		protected LevelProcessor() {
-			super(5, 16, 256);
-			this.levels.defaultReturnValue((byte)5);
-		}
-
-		@Override
-		protected int method_18749(long l) {
-			return PointOfInterestStorage.this.method_19133(l) ? 0 : 5;
-		}
-
-		@Override
-		protected int getLevel(long l) {
-			return this.levels.get(l);
-		}
-
-		@Override
-		protected void setLevel(long l, int i) {
-			if (i > 4) {
-				this.levels.remove(l);
-			} else {
-				this.levels.put(l, (byte)i);
-			}
-		}
-
-		public void updateLevels() {
-			super.updateLevels(Integer.MAX_VALUE);
-		}
-	}
-
 	public static enum OccupationStatus {
 		HAS_SPACE(PointOfInterest::hasSpace),
 		IS_OCCUPIED(PointOfInterest::isOccupied),
@@ -180,6 +147,38 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 
 		public Predicate<? super PointOfInterest> getPredicate() {
 			return this.predicate;
+		}
+	}
+
+	final class PathfindingFavorProvider extends SectionRelativeLevelPropagator {
+		private final Long2ByteMap pathfindingFavors = new Long2ByteOpenHashMap();
+
+		protected PathfindingFavorProvider() {
+			super(5, 16, 256);
+			this.pathfindingFavors.defaultReturnValue((byte)5);
+		}
+
+		@Override
+		protected int method_18749(long l) {
+			return PointOfInterestStorage.this.method_19133(l) ? 0 : 5;
+		}
+
+		@Override
+		protected int getLevel(long l) {
+			return this.pathfindingFavors.get(l);
+		}
+
+		@Override
+		protected void setLevel(long l, int i) {
+			if (i > 4) {
+				this.pathfindingFavors.remove(l);
+			} else {
+				this.pathfindingFavors.put(l, (byte)i);
+			}
+		}
+
+		public void method_19134() {
+			super.updateAllRecursively(Integer.MAX_VALUE);
 		}
 	}
 }

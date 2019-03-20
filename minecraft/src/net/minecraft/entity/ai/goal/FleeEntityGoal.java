@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.Path;
@@ -63,7 +63,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 		if (this.field_6390 == null) {
 			return false;
 		} else {
-			Vec3d vec3d = AiUtil.method_6379(this.field_6391, 16, 7, new Vec3d(this.field_6390.x, this.field_6390.y, this.field_6390.z));
+			Vec3d vec3d = PathfindingUtil.method_6379(this.field_6391, 16, 7, new Vec3d(this.field_6390.x, this.field_6390.y, this.field_6390.z));
 			if (vec3d == null) {
 				return false;
 			} else if (this.field_6390.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.field_6390.squaredDistanceTo(this.field_6391)) {

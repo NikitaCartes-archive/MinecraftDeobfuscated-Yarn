@@ -7,7 +7,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -22,6 +21,7 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -79,7 +79,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	protected void initGoals() {
 		this.goalSelector.add(0, new WitherEntity.class_1529());
 		this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 40, 20.0F));
-		this.goalSelector.add(5, new class_1394(this, 1.0));
+		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(7, new LookAroundGoal(this));
 		this.targetSelector.add(1, new AvoidGoal(this));
@@ -547,16 +547,6 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	@Override
 	public boolean canUsePortals() {
 		return false;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasArmsRaised() {
-		return false;
-	}
-
-	@Override
-	public void setArmsRaised(boolean bl) {
 	}
 
 	@Override

@@ -16,6 +16,7 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	private final float field_18362;
 
 	public FollowCustomerTask(float f) {
+		super(Integer.MAX_VALUE);
 		this.field_18362 = f;
 	}
 
@@ -46,11 +47,6 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 
 	protected void method_18958(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		this.method_18953(villagerEntity);
-	}
-
-	@Override
-	protected boolean isTimeLimitExceeded(long l) {
-		return false;
 	}
 
 	@Override

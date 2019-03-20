@@ -18,7 +18,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 		super(entityRenderDispatcher, new EvilVillagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
 		this.addFeature(new HeldItemFeatureRenderer<IllusionerEntity, EvilVillagerEntityModel<IllusionerEntity>>(this) {
 			public void method_17149(IllusionerEntity illusionerEntity, float f, float g, float h, float i, float j, float k, float l) {
-				if (illusionerEntity.method_7137() || illusionerEntity.hasArmsRaised()) {
+				if (illusionerEntity.method_7137() || illusionerEntity.method_6510()) {
 					super.method_17162(illusionerEntity, f, g, h, i, j, k, l);
 				}
 			}

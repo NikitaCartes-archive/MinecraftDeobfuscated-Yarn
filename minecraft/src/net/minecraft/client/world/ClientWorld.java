@@ -109,9 +109,9 @@ public class ClientWorld extends World {
 
 		for (int i = 0; i < this.globalEntities.size(); i++) {
 			Entity entity = (Entity)this.globalEntities.get(i);
-			this.method_18472(entityx -> {
+			this.tickEntity(entityx -> {
 				entityx.age++;
-				entityx.update();
+				entityx.tick();
 			}, entity);
 			if (entity.invalid) {
 				this.globalEntities.remove(i--);
@@ -127,7 +127,7 @@ public class ClientWorld extends World {
 			if (!entity2.hasVehicle()) {
 				profiler.push("tick");
 				if (!entity2.invalid) {
-					this.method_18472(this::method_18646, entity2);
+					this.tickEntity(this::method_18646, entity2);
 				}
 
 				profiler.pop();
@@ -156,7 +156,7 @@ public class ClientWorld extends World {
 			if (entity.field_6016) {
 				entity.age++;
 				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
-				entity.update();
+				entity.tick();
 				this.getProfiler().pop();
 			}
 
@@ -456,7 +456,7 @@ public class ClientWorld extends World {
 	@Override
 	public void playSoundFromEntity(@Nullable PlayerEntity playerEntity, Entity entity, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g) {
 		if (playerEntity == this.client.player) {
-			this.client.getSoundLoader().play(new EntityTrackingSoundInstance(soundEvent, soundCategory, entity));
+			this.client.getSoundManager().play(new EntityTrackingSoundInstance(soundEvent, soundCategory, entity));
 		}
 	}
 
@@ -466,13 +466,13 @@ public class ClientWorld extends World {
 
 	@Override
 	public void playSound(double d, double e, double f, SoundEvent soundEvent, SoundCategory soundCategory, float g, float h, boolean bl) {
-		double i = this.client.gameRenderer.method_19418().getPos().squaredDistanceTo(d, e, f);
+		double i = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(d, e, f);
 		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(soundEvent, soundCategory, g, h, (float)d, (float)e, (float)f);
 		if (bl && i > 100.0) {
 			double j = Math.sqrt(i) / 40.0;
-			this.client.getSoundLoader().play(positionedSoundInstance, (int)(j * 20.0));
+			this.client.getSoundManager().play(positionedSoundInstance, (int)(j * 20.0));
 		} else {
-			this.client.getSoundLoader().play(positionedSoundInstance);
+			this.client.getSoundManager().play(positionedSoundInstance);
 		}
 	}
 

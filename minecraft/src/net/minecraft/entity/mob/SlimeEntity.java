@@ -112,14 +112,14 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL && this.getSize() > 0) {
 			this.invalid = true;
 		}
 
 		this.sizeY = this.sizeY + (this.sizeX - this.sizeY) * 0.5F;
 		this.sizeZ = this.sizeY;
-		super.update();
+		super.tick();
 		if (this.onGround && !this.onGroundLastTick) {
 			int i = this.getSize();
 

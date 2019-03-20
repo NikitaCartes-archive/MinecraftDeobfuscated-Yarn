@@ -2,20 +2,20 @@ package net.minecraft.entity.passive;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1369;
-import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.GoToEntityTargetGoal;
 import net.minecraft.entity.ai.goal.IronGolemLookGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
 import net.minecraft.entity.ai.goal.TrackIronGolemTargetGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -50,10 +50,10 @@ public class IronGolemEntity extends GolemEntity {
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0, true));
-		this.goalSelector.add(2, new class_1369(this, 0.9, 32.0F));
+		this.goalSelector.add(2, new GoToEntityTargetGoal(this, 0.9, 32.0F));
 		this.goalSelector.add(3, new MoveThroughVillageGoal(this, 0.6, false, 4, () -> false));
 		this.goalSelector.add(5, new IronGolemLookGoal(this));
-		this.goalSelector.add(6, new class_1394(this, 0.6));
+		this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.6));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new TrackIronGolemTargetGoal(this));

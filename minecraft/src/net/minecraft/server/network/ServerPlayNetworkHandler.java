@@ -268,7 +268,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void disconnect(TextComponent textComponent) {
 		this.client.sendPacket(new DisconnectS2CPacket(textComponent), future -> this.client.disconnect(textComponent));
 		this.client.disableAutoRead();
-		this.server.executeFuture(this.client::handleDisconnection).join();
+		this.server.method_19537(this.client::handleDisconnection);
 	}
 
 	@Override

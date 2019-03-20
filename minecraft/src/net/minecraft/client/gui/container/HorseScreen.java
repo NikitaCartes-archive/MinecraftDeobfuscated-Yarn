@@ -22,7 +22,7 @@ public class HorseScreen extends ContainerScreen<HorseContainer> {
 	public HorseScreen(HorseContainer horseContainer, PlayerInventory playerInventory, HorseBaseEntity horseBaseEntity) {
 		super(horseContainer, playerInventory, horseBaseEntity.getDisplayName());
 		this.entity = horseBaseEntity;
-		this.field_2558 = false;
+		this.passEvents = false;
 	}
 
 	@Override
@@ -61,11 +61,11 @@ public class HorseScreen extends ContainerScreen<HorseContainer> {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.mouseX = (float)i;
 		this.mouseY = (float)j;
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 }

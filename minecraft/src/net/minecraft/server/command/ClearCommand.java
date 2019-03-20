@@ -60,6 +60,8 @@ public class ClearCommand {
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			j += serverPlayerEntity.inventory.method_7369(predicate, i);
+			serverPlayerEntity.container.sendContentUpdates();
+			serverPlayerEntity.method_14241();
 		}
 
 		if (j == 0) {

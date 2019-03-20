@@ -67,7 +67,7 @@ public class Mouse {
 			}
 
 			boolean[] bls = new boolean[]{false};
-			if (this.client.field_18175 == null) {
+			if (this.client.overlay == null) {
 				if (this.client.currentScreen == null) {
 					if (!this.isCursorLocked && bl) {
 						this.lockCursor();
@@ -76,18 +76,18 @@ public class Mouse {
 					double d = this.x * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 					double e = this.y * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
 					if (bl) {
-						Screen.method_2217(
+						Screen.wrapScreenError(
 							() -> bls[0] = this.client.currentScreen.mouseClicked(d, e, m), "mouseClicked event handler", this.client.currentScreen.getClass().getCanonicalName()
 						);
 					} else {
-						Screen.method_2217(
+						Screen.wrapScreenError(
 							() -> bls[0] = this.client.currentScreen.mouseReleased(d, e, m), "mouseReleased event handler", this.client.currentScreen.getClass().getCanonicalName()
 						);
 					}
 				}
 			}
 
-			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.field_2558) && this.client.field_18175 == null) {
+			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.passEvents) && this.client.overlay == null) {
 				if (m == 0) {
 					this.field_1791 = bl;
 				} else if (m == 2) {
@@ -111,7 +111,7 @@ public class Mouse {
 	private void onMouseScroll(long l, double d, double e) {
 		if (l == MinecraftClient.getInstance().window.getHandle()) {
 			double f = e * this.client.options.mouseWheelSensitivity;
-			if (this.client.field_18175 == null) {
+			if (this.client.overlay == null) {
 				if (this.client.currentScreen != null) {
 					double g = this.x * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 					double h = this.y * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
@@ -156,14 +156,14 @@ public class Mouse {
 			}
 
 			InputListener inputListener = this.client.currentScreen;
-			if (inputListener != null && this.client.field_18175 == null) {
+			if (inputListener != null && this.client.overlay == null) {
 				double f = d * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 				double g = e * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
-				Screen.method_2217(() -> inputListener.mouseMoved(f, g), "mouseMoved event handler", inputListener.getClass().getCanonicalName());
+				Screen.wrapScreenError(() -> inputListener.mouseMoved(f, g), "mouseMoved event handler", inputListener.getClass().getCanonicalName());
 				if (this.activeButton != -1 && this.glfwTime > 0.0) {
 					double h = (d - this.x) * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 					double i = (e - this.y) * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
-					Screen.method_2217(
+					Screen.wrapScreenError(
 						() -> inputListener.mouseDragged(f, g, this.activeButton, h, i), "mouseDragged event handler", inputListener.getClass().getCanonicalName()
 					);
 				}

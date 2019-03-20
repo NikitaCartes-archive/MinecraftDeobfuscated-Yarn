@@ -85,8 +85,8 @@ public class ArrowEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.world.isClient) {
 			if (this.inGround) {
 				if (this.field_7576 % 5 == 0) {

@@ -39,7 +39,7 @@ public class ServerListWidget extends EntryListWidget<ServerListWidget.Entry> {
 	}
 
 	@Override
-	protected void method_19351(int i) {
+	protected void moveSelection(int i) {
 		this.multiplayerScreen.method_19414(i);
 		if (this.getInputListeners().get(this.getIndex()) instanceof LocalScanProgressListEntry) {
 			this.multiplayerScreen.method_19414(i > 0 ? 1 : -1);
@@ -81,19 +81,19 @@ public class ServerListWidget extends EntryListWidget<ServerListWidget.Entry> {
 	}
 
 	@Override
-	public boolean hasFocus() {
+	public boolean isPartOfFocusCycle() {
 		return true;
 	}
 
 	@Override
-	protected boolean method_19352() {
+	protected boolean isFocused() {
 		return this.multiplayerScreen.getFocused() == this;
 	}
 
 	@Override
-	public void setHasFocus(boolean bl) {
+	public void onFocusChanged(boolean bl) {
 		if (bl && this.getIndex() < 0 && this.getEntryCount() > 0) {
-			this.method_19351(1);
+			this.moveSelection(1);
 		}
 	}
 

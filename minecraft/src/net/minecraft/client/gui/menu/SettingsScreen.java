@@ -44,7 +44,7 @@ public class SettingsScreen extends Screen {
 		for (GameOption gameOption : field_2504) {
 			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
 			int k = this.screenHeight / 6 - 12 + 24 * (i >> 1);
-			this.addButton(gameOption.method_18520(this.client.options, j, k, 150));
+			this.addButton(gameOption.createOptionButton(this.client.options, j, k, 150));
 			i++;
 		}
 
@@ -57,7 +57,7 @@ public class SettingsScreen extends Screen {
 				public void onPressed() {
 					SettingsScreen.this.field_18745 = Difficulty.getDifficulty(SettingsScreen.this.field_18745.getId() + 1);
 					SettingsScreen.this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(SettingsScreen.this.field_18745));
-					SettingsScreen.this.difficultyButton.setText(SettingsScreen.this.method_2189(SettingsScreen.this.field_18745));
+					SettingsScreen.this.difficultyButton.setMessage(SettingsScreen.this.method_2189(SettingsScreen.this.field_18745));
 				}
 			};
 			this.addButton(this.difficultyButton);
@@ -79,10 +79,10 @@ public class SettingsScreen extends Screen {
 				};
 				this.addButton(this.lockDifficultyButton);
 				this.lockDifficultyButton.setLocked(this.client.world.getLevelProperties().isDifficultyLocked());
-				this.lockDifficultyButton.enabled = !this.lockDifficultyButton.isLocked();
-				this.difficultyButton.enabled = !this.lockDifficultyButton.isLocked();
+				this.lockDifficultyButton.active = !this.lockDifficultyButton.isLocked();
+				this.difficultyButton.active = !this.lockDifficultyButton.isLocked();
 			} else {
-				this.difficultyButton.enabled = false;
+				this.difficultyButton.active = false;
 			}
 		} else {
 			this.addButton(
@@ -98,7 +98,7 @@ public class SettingsScreen extends Screen {
 					public void onPressed() {
 						GameOption.REALMS_NOTIFICATIONS.method_18491(SettingsScreen.this.settings);
 						SettingsScreen.this.settings.write();
-						this.setText(GameOption.REALMS_NOTIFICATIONS.method_18495(SettingsScreen.this.settings));
+						this.setMessage(GameOption.REALMS_NOTIFICATIONS.method_18495(SettingsScreen.this.settings));
 					}
 				}
 			);
@@ -173,8 +173,8 @@ public class SettingsScreen extends Screen {
 		if (i == 109 && bl && this.client.world != null) {
 			this.client.getNetworkHandler().sendPacket(new UpdateDifficultyLockC2SPacket(true));
 			this.lockDifficultyButton.setLocked(true);
-			this.lockDifficultyButton.enabled = false;
-			this.difficultyButton.enabled = false;
+			this.lockDifficultyButton.active = false;
+			this.difficultyButton.active = false;
 		}
 	}
 
@@ -184,9 +184,9 @@ public class SettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 15, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

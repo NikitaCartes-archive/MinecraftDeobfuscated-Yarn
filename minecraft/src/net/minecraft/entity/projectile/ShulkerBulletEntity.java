@@ -6,11 +6,11 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1675;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -154,7 +154,7 @@ public class ShulkerBulletEntity extends Entity {
 		double f = (double)blockPos.getY() + d;
 		double g = (double)blockPos.getZ() + 0.5;
 		Direction direction = null;
-		if (blockPos.squaredDistanceToCenter(this.x, this.y, this.z) >= 4.0) {
+		if (!blockPos.method_19769(this.getPos(), 2.0)) {
 			BlockPos blockPos2 = new BlockPos(this);
 			List<Direction> list = Lists.<Direction>newArrayList();
 			if (axis != Direction.Axis.X) {
@@ -215,11 +215,11 @@ public class ShulkerBulletEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
 			this.invalidate();
 		} else {
-			super.update();
+			super.tick();
 			if (!this.world.isClient) {
 				if (this.field_7626 == null && this.field_7632 != null) {
 					for (LivingEntity livingEntity : this.world
@@ -257,7 +257,7 @@ public class ShulkerBulletEntity extends Entity {
 					this.setVelocity(vec3d.add((this.field_7635 - vec3d.x) * 0.2, (this.field_7633 - vec3d.y) * 0.2, (this.field_7625 - vec3d.z) * 0.2));
 				}
 
-				HitResult hitResult = class_1675.method_18076(this, true, false, this.field_7630, RayTraceContext.ShapeType.field_17558);
+				HitResult hitResult = ProjectileUtil.method_18076(this, true, false, this.field_7630, RayTraceContext.ShapeType.field_17558);
 				if (hitResult.getType() != HitResult.Type.NONE) {
 					this.method_7488(hitResult);
 				}
@@ -265,7 +265,7 @@ public class ShulkerBulletEntity extends Entity {
 
 			Vec3d vec3d = this.getVelocity();
 			this.setPosition(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z);
-			class_1675.method_7484(this, 0.5F);
+			ProjectileUtil.method_7484(this, 0.5F);
 			if (this.world.isClient) {
 				this.world.addParticle(ParticleTypes.field_11207, this.x - vec3d.x, this.y - vec3d.y + 0.15, this.z - vec3d.z, 0.0, 0.0, 0.0);
 			} else if (this.field_7626 != null && !this.field_7626.invalid) {

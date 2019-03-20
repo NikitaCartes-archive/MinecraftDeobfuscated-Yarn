@@ -4,12 +4,12 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1675;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
@@ -99,11 +99,11 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevRenderX = this.x;
 		this.prevRenderY = this.y;
 		this.prevRenderZ = this.z;
-		super.update();
+		super.tick();
 		if (this.shake > 0) {
 			this.shake--;
 		}
@@ -130,7 +130,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 			}
 		}
 
-		HitResult hitResult = class_1675.method_18074(
+		HitResult hitResult = ProjectileUtil.method_18074(
 			this, boundingBox, entity -> !entity.isSpectator() && entity.doesCollide() && entity != this.field_7637, RayTraceContext.ShapeType.field_17559, true
 		);
 		if (this.field_7637 != null && this.field_7638-- <= 0) {

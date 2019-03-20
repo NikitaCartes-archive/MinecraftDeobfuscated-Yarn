@@ -9,7 +9,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1675;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -31,6 +30,7 @@ import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.client.util.math.Matrix4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.CreeperEntity;
@@ -307,7 +307,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				net.minecraft.util.math.Vec3d vec3d3 = vec3d.add(vec3d2.x * d, vec3d2.y * d, vec3d2.z * d);
 				float g = 1.0F;
 				BoundingBox boundingBox = entity.getBoundingBox().method_18804(vec3d2.multiply(d)).expand(1.0, 1.0, 1.0);
-				EntityHitResult entityHitResult = class_1675.method_18075(entity, vec3d, vec3d3, boundingBox, entityx -> !entityx.isSpectator() && entityx.doesCollide(), e);
+				EntityHitResult entityHitResult = ProjectileUtil.method_18075(
+					entity, vec3d, vec3d3, boundingBox, entityx -> !entityx.isSpectator() && entityx.doesCollide(), e
+				);
 				if (entityHitResult != null) {
 					Entity entity2 = entityHitResult.getEntity();
 					net.minecraft.util.math.Vec3d vec3d4 = entityHitResult.getPos();
@@ -557,22 +559,22 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 				this.client.window.method_4493(MinecraftClient.IS_SYSTEM_MAC);
 			}
 
-			if (this.client.field_18175 != null) {
+			if (this.client.overlay != null) {
 				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.field_18175.draw(i, j, this.client.getLastFrameDuration());
+					this.client.overlay.render(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var14) {
 					CrashReport crashReport = CrashReport.create(var14, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
-					crashReportSection.add("Overlay name", (ICrashCallable<String>)(() -> this.client.field_18175.getClass().getCanonicalName()));
+					crashReportSection.add("Overlay name", (ICrashCallable<String>)(() -> this.client.overlay.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
 			} else if (this.client.currentScreen != null) {
 				GlStateManager.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 
 				try {
-					this.client.currentScreen.draw(i, j, this.client.getLastFrameDuration());
+					this.client.currentScreen.render(i, j, this.client.getLastFrameDuration());
 				} catch (Throwable var13) {
 					CrashReport crashReport = CrashReport.create(var13, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
@@ -1217,7 +1219,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		return this.viewDistance;
 	}
 
-	public Camera method_19418() {
+	public Camera getCamera() {
 		return this.camera;
 	}
 }

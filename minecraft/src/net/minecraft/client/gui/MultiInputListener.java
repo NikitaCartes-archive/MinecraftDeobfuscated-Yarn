@@ -20,7 +20,7 @@ public interface MultiInputListener extends FocusedInputListener {
 	@Override
 	default InputListener method_19355(double d, double e) {
 		for (InputListener inputListener : this.getInputListeners()) {
-			if (inputListener.method_19356(d, e)) {
+			if (inputListener.isMouseOver(d, e)) {
 				return inputListener;
 			}
 		}
@@ -84,7 +84,7 @@ public interface MultiInputListener extends FocusedInputListener {
 
 		for (int k = 0; k < j; k++) {
 			InputListener inputListener = (InputListener)list.get((i + k) % j);
-			if (inputListener.hasFocus()) {
+			if (inputListener.isPartOfFocusCycle()) {
 				return inputListener;
 			}
 		}
@@ -99,7 +99,7 @@ public interface MultiInputListener extends FocusedInputListener {
 
 		for (int k = 0; k < j; k++) {
 			InputListener inputListener = (InputListener)list.get(MathHelper.floorMod(i - k, j));
-			if (inputListener.hasFocus()) {
+			if (inputListener.isPartOfFocusCycle()) {
 				return inputListener;
 			}
 		}
@@ -111,11 +111,11 @@ public interface MultiInputListener extends FocusedInputListener {
 		InputListener inputListener2 = i == -1 ? null : (InputListener)this.getInputListeners().get(i);
 		if (inputListener2 != inputListener) {
 			if (inputListener2 != null) {
-				inputListener2.setHasFocus(false);
+				inputListener2.onFocusChanged(false);
 			}
 
 			if (inputListener != null) {
-				inputListener.setHasFocus(true);
+				inputListener.onFocusChanged(true);
 			}
 
 			this.setFocused(inputListener);

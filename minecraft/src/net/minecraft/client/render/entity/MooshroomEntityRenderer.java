@@ -23,6 +23,6 @@ public class MooshroomEntityRenderer extends MobEntityRenderer<MooshroomEntity, 
 	}
 
 	protected Identifier method_4066(MooshroomEntity mooshroomEntity) {
-		return (Identifier)SKIN.get(mooshroomEntity.getType());
+		return (Identifier)SKIN.get(mooshroomEntity.getMooshroomType());
 	}
 }

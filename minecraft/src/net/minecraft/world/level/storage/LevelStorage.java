@@ -29,6 +29,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.sortme.WorldNameProvider;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TagHelper;
@@ -184,18 +185,13 @@ public class LevelStorage {
 
 	@Environment(EnvType.CLIENT)
 	public boolean isLevelNameValid(String string) {
-		File file = new File(this.savesDirectory.toFile(), string);
-		if (file.exists()) {
+		try {
+			Path path = this.savesDirectory.resolve(string);
+			Files.createDirectory(path);
+			Files.deleteIfExists(path);
+			return true;
+		} catch (IOException var3) {
 			return false;
-		} else {
-			try {
-				file.mkdir();
-				file.delete();
-				return true;
-			} catch (Throwable var4) {
-				LOGGER.warn("Couldn't make new level", var4);
-				return false;
-			}
 		}
 	}
 
@@ -249,6 +245,11 @@ public class LevelStorage {
 		return Files.isDirectory(this.savesDirectory.resolve(string), new LinkOption[0]);
 	}
 
+	@Environment(EnvType.CLIENT)
+	public Path method_19636() {
+		return this.savesDirectory;
+	}
+
 	public File resolveFile(String string, String string2) {
 		return this.savesDirectory.resolve(string).resolve(string2).toFile();
 	}
@@ -267,22 +268,17 @@ public class LevelStorage {
 	public long backupLevel(String string) throws IOException {
 		final Path path = this.resolvePath(string);
 		String string2 = LocalDateTime.now().format(TIME_FORMATTER) + "_" + string;
-		int i = 0;
 		Path path2 = this.getBackupsDirectory();
 
 		try {
 			Files.createDirectories(Files.exists(path2, new LinkOption[0]) ? path2.toRealPath() : path2);
-		} catch (IOException var19) {
-			throw new RuntimeException(var19);
+		} catch (IOException var18) {
+			throw new RuntimeException(var18);
 		}
 
-		Path path3;
-		do {
-			path3 = path2.resolve(string2 + (i++ > 0 ? "_" + i : "") + ".zip");
-		} while (Files.exists(path3, new LinkOption[0]));
-
-		final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(path3.toFile())));
-		Throwable var8 = null;
+		Path path3 = path2.resolve(WorldNameProvider.transformWorldName(path2, string2));
+		final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(path3)));
+		Throwable var7 = null;
 
 		try {
 			final Path path4 = Paths.get(string);
@@ -296,16 +292,16 @@ public class LevelStorage {
 					return FileVisitResult.CONTINUE;
 				}
 			});
-		} catch (Throwable var18) {
-			var8 = var18;
-			throw var18;
+		} catch (Throwable var17) {
+			var7 = var17;
+			throw var17;
 		} finally {
 			if (zipOutputStream != null) {
-				if (var8 != null) {
+				if (var7 != null) {
 					try {
 						zipOutputStream.close();
-					} catch (Throwable var17) {
-						var8.addSuppressed(var17);
+					} catch (Throwable var16) {
+						var7.addSuppressed(var16);
 					}
 				} else {
 					zipOutputStream.close();

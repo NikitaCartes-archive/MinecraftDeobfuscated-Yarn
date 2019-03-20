@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -28,7 +28,7 @@ public class GoToIfNearbyTask extends Task<MobEntityWithAi> {
 		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getMemory(this.target);
 		return optional.isPresent()
 			&& Objects.equals(serverWorld.getDimension().getType(), ((GlobalPos)optional.get()).getDimension())
-			&& mobEntityWithAi.squaredDistanceTo(((GlobalPos)optional.get()).getPos()) <= (double)this.maxDistanceSquared;
+			&& ((GlobalPos)optional.get()).getPos().method_19769(mobEntityWithAi.getPos(), (double)this.maxDistanceSquared);
 	}
 
 	@Override
@@ -38,9 +38,9 @@ public class GoToIfNearbyTask extends Task<MobEntityWithAi> {
 
 	protected void method_18994(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		if (l > this.nextUpdateTime) {
-			Optional<Vec3d> optional = Optional.ofNullable(AiUtil.method_6378(mobEntityWithAi, 8, 6));
-			mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, 0.3F, 1)));
-			this.nextUpdateTime = l + 80L;
+			Optional<Vec3d> optional = Optional.ofNullable(PathfindingUtil.findTargetStraight(mobEntityWithAi, 8, 6));
+			mobEntityWithAi.getBrain().setMemory(MemoryModuleType.field_18445, optional.map(vec3d -> new WalkTarget(vec3d, 0.4F, 1)));
+			this.nextUpdateTime = l + 180L;
 		}
 	}
 }

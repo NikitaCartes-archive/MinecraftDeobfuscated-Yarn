@@ -27,10 +27,10 @@ public abstract class ThreadTaskQueue<R extends Runnable> implements Actor<R>, E
 	protected abstract boolean canRun(R runnable);
 
 	public boolean isOnThread() {
-		return Thread.currentThread() == this.thread();
+		return Thread.currentThread() == this.getThread();
 	}
 
-	protected abstract Thread thread();
+	protected abstract Thread getThread();
 
 	protected boolean isOffThread() {
 		return !this.isOnThread();
@@ -46,21 +46,24 @@ public abstract class ThreadTaskQueue<R extends Runnable> implements Actor<R>, E
 		return this.isOffThread() ? CompletableFuture.supplyAsync(supplier, this) : CompletableFuture.completedFuture(supplier.get());
 	}
 
-	public CompletableFuture<Object> executeFuture(Runnable runnable) {
-		if (this.isOffThread()) {
-			return CompletableFuture.supplyAsync(() -> {
-				runnable.run();
-				return null;
-			}, this);
+	private CompletableFuture<Object> executeFuture(Runnable runnable) {
+		return CompletableFuture.supplyAsync(() -> {
+			runnable.run();
+			return null;
+		}, this);
+	}
+
+	public void method_19537(Runnable runnable) {
+		if (!this.isOnThread()) {
+			this.executeFuture(runnable).join();
 		} else {
 			runnable.run();
-			return CompletableFuture.completedFuture(null);
 		}
 	}
 
 	public void method_18858(R runnable) {
 		this.taskQueue.add(runnable);
-		LockSupport.unpark(this.thread());
+		LockSupport.unpark(this.getThread());
 	}
 
 	public void execute(Runnable runnable) {

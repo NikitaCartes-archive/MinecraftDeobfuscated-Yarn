@@ -50,7 +50,7 @@ public class PointOfInterestSet implements DynamicSerializable {
 		PointOfInterest pointOfInterest = this.pointsOfInterestByPos.get(s);
 		if (pointOfInterest != null) {
 			if (!pointOfInterestType.equals(pointOfInterest.getType())) {
-				throw new IllegalStateException("POI already registered at " + blockPos);
+				throw new IllegalStateException("POI data mismatch: already registered at " + blockPos);
 			}
 		} else {
 			PointOfInterest pointOfInterest2 = new PointOfInterest(blockPos, pointOfInterestType, this.updateListener);
@@ -64,7 +64,7 @@ public class PointOfInterestSet implements DynamicSerializable {
 	public void remove(BlockPos blockPos) {
 		PointOfInterest pointOfInterest = this.pointsOfInterestByPos.remove(ChunkSectionPos.packToShort(blockPos));
 		if (pointOfInterest == null) {
-			throw new IllegalStateException("POI never registered at " + blockPos);
+			LOGGER.error("POI data mismatch: never registered at " + blockPos);
 		} else {
 			((Set)this.pointsOfInterestByType.get(pointOfInterest.getType())).remove(pointOfInterest);
 			LOGGER.debug(String.format("Removed POI of type %s @ %s", pointOfInterest.getType(), pointOfInterest.getPos()));

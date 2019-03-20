@@ -70,7 +70,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		int k = this.left;
 		int l = this.top;
 		this.drawBackground(f, i, j);
@@ -78,7 +78,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 		GuiLighting.disable();
 		GlStateManager.disableLighting();
 		GlStateManager.disableDepthTest();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		GuiLighting.enableForItems();
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)k, (float)l, 0.0F);

@@ -84,7 +84,7 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 	}
 
 	@Override
-	public void method_16901(T object) {
+	public void send(T object) {
 		this.taskList.add(object);
 		this.execute();
 	}

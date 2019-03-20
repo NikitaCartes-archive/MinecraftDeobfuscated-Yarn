@@ -47,6 +47,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	private int conversionTimer;
 	private UUID converter;
 	private CompoundTag offerData;
+	private int field_18877;
 
 	public ZombieVillagerEntity(EntityType<? extends ZombieVillagerEntity> entityType, World world) {
 		super(entityType, world);
@@ -72,6 +73,8 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		if (this.converter != null) {
 			compoundTag.putUuid("ConversionPlayer", this.converter);
 		}
+
+		compoundTag.putInt("Xp", this.field_18877);
 	}
 
 	@Override
@@ -88,10 +91,16 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 		if (compoundTag.containsKey("ConversionTime", 99) && compoundTag.getInt("ConversionTime") > -1) {
 			this.setConverting(compoundTag.hasUuid("ConversionPlayer") ? compoundTag.getUuid("ConversionPlayer") : null, compoundTag.getInt("ConversionTime"));
 		}
+
+		if (compoundTag.containsKey("Xp", 3)) {
+			this.field_18877 = compoundTag.getInt("Xp");
+		} else {
+			this.field_18877 = VillagerData.getLowerLevelExperience(this.getVillagerData().getLevel());
+		}
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (!this.world.isClient && this.isValid() && this.isConverting()) {
 			int i = this.method_7194();
 			this.conversionTimer -= i;
@@ -100,7 +109,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			}
 		}
 
-		super.update();
+		super.tick();
 	}
 
 	@Override
@@ -174,6 +183,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 			villagerEntity.setRecipes(new TraderRecipeList(this.offerData));
 		}
 
+		villagerEntity.method_19625(this.field_18877);
 		villagerEntity.prepareEntityData(serverWorld, serverWorld.getLocalDifficulty(new BlockPos(villagerEntity)), SpawnType.field_16468, null, null);
 		if (this.isChild()) {
 			villagerEntity.setBreedingAge(-24000);
@@ -282,5 +292,9 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	@Override
 	public VillagerData getVillagerData() {
 		return this.dataTracker.get(VILLAGER_DATA);
+	}
+
+	public void method_19622(int i) {
+		this.field_18877 = i;
 	}
 }

@@ -43,7 +43,7 @@ public class DedicatedServerWatchdog implements Runnable {
 				Error error = new Error();
 
 				for (ThreadInfo threadInfo : threadInfos) {
-					if (threadInfo.getThreadId() == this.server.thread().getId()) {
+					if (threadInfo.getThreadId() == this.server.getThread().getId()) {
 						error.setStackTrace(threadInfo.getStackTrace());
 					}
 

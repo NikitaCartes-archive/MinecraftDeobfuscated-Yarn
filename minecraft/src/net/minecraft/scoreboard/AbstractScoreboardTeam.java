@@ -18,7 +18,7 @@ public abstract class AbstractScoreboardTeam {
 
 	public abstract String getName();
 
-	public abstract TextComponent method_1198(TextComponent textComponent);
+	public abstract TextComponent modifyText(TextComponent textComponent);
 
 	@Environment(EnvType.CLIENT)
 	public abstract boolean shouldShowFriendlyInvisibles();

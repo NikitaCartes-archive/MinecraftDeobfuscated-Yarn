@@ -62,11 +62,11 @@ public class DeathScreen extends Screen {
 			}
 		);
 		if (!this.client.world.getLevelProperties().isHardcore() && this.client.getSession() == null) {
-			buttonWidget.enabled = false;
+			buttonWidget.active = false;
 		}
 
 		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-			abstractButtonWidget.enabled = false;
+			abstractButtonWidget.active = false;
 		}
 	}
 
@@ -93,7 +93,7 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		boolean bl = this.client.world.getLevelProperties().isHardcore();
 		this.drawGradientRect(0, 0, this.screenWidth, this.screenHeight, 1615855616, -1602211792);
 		GlStateManager.pushMatrix();
@@ -114,7 +114,7 @@ public class DeathScreen extends Screen {
 			}
 		}
 
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Nullable
@@ -167,7 +167,7 @@ public class DeathScreen extends Screen {
 		this.ticksSinceDeath++;
 		if (this.ticksSinceDeath == 20) {
 			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-				abstractButtonWidget.enabled = true;
+				abstractButtonWidget.active = true;
 			}
 		}
 	}

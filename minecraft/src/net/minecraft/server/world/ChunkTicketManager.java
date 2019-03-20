@@ -24,11 +24,11 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import javax.annotation.Nullable;
-import net.minecraft.class_4079;
 import net.minecraft.entity.player.ChunkTicketType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Actor;
 import net.minecraft.util.MailboxProcessor;
+import net.minecraft.util.SectionRelativeLevelPropagator;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -70,7 +70,7 @@ public abstract class ChunkTicketManager {
 		int k = this.method_18742();
 
 		for (Entry<ObjectSet<ServerPlayerEntity>> entry : this.field_18251.long2ObjectEntrySet()) {
-			this.field_18253.scheduleNewLevelUpdate(entry.getLongKey(), k, k < j);
+			this.field_18253.method_18750(entry.getLongKey(), k, k < j);
 		}
 	}
 
@@ -131,7 +131,7 @@ public abstract class ChunkTicketManager {
 
 						CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = chunkHolder.method_14003();
 						completableFuture.thenAccept(
-							either -> this.field_17460.execute(() -> this.playerTicketThrottlerSorter.method_16901(ChunkTaskPrioritySystem.createPrioritySorterMessage(() -> {
+							either -> this.field_17460.execute(() -> this.playerTicketThrottlerSorter.send(ChunkTaskPrioritySystem.createPrioritySorterMessage(() -> {
 									}, l, false)))
 						);
 					}
@@ -211,7 +211,7 @@ public abstract class ChunkTicketManager {
 		this.field_17453.computeIfAbsent(l, lx -> new ObjectOpenHashSet()).add(serverPlayerEntity);
 		this.field_17454.scheduleNewLevelUpdate(l, 0, true);
 		this.field_17455.scheduleNewLevelUpdate(l, 0, true);
-		this.field_18253.scheduleNewLevelUpdate(chunkSectionPos.asLong(), this.method_18742(), true);
+		this.field_18253.method_18750(chunkSectionPos.asLong(), this.method_18742(), true);
 	}
 
 	public void method_14051(ChunkSectionPos chunkSectionPos, ServerPlayerEntity serverPlayerEntity) {
@@ -221,7 +221,7 @@ public abstract class ChunkTicketManager {
 			objectSet.remove(serverPlayerEntity);
 			if (objectSet.isEmpty()) {
 				this.field_18251.remove(chunkSectionPos.asLong());
-				this.field_18253.scheduleNewLevelUpdate(chunkSectionPos.asLong(), Integer.MAX_VALUE, false);
+				this.field_18253.method_18750(chunkSectionPos.asLong(), Integer.MAX_VALUE, false);
 			}
 
 			ObjectSet<ServerPlayerEntity> objectSet2 = this.field_17453.get(l);
@@ -247,7 +247,7 @@ public abstract class ChunkTicketManager {
 		return this.field_18253.getLevel(chunkSectionPos.asLong()) <= 16;
 	}
 
-	class class_3205 extends ChunkLevelIndexedProcessor {
+	class class_3205 extends ChunkPosLevelPropagator {
 		protected final Long2ByteMap currentLevels = new Long2ByteOpenHashMap();
 		protected final int field_17461;
 
@@ -278,7 +278,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		@Override
-		protected int getBaseLevel(long l) {
+		protected int method_14028(long l) {
 			return this.method_14056(l) ? 0 : Integer.MAX_VALUE;
 		}
 
@@ -288,7 +288,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		public void updateLevels() {
-			this.updateLevels(Integer.MAX_VALUE);
+			this.updateAllRecursively(Integer.MAX_VALUE);
 		}
 	}
 
@@ -322,14 +322,13 @@ public abstract class ChunkTicketManager {
 			if (bl != bl2) {
 				ChunkTicket<?> chunkTicket = new ChunkTicket<>(ChunkTicketType.PLAYER, ChunkTicketManager.field_17452, new ChunkPos(l), ChunkTicketManager.this.location);
 				if (bl2) {
-					ChunkTicketManager.this.playerTicketThrottler
-						.method_16901(ChunkTaskPrioritySystem.createRunnableMessage(() -> ChunkTicketManager.this.field_17460.execute(() -> {
-								ChunkTicketManager.this.addTicket(l, chunkTicket);
-								ChunkTicketManager.this.chunkPositions.add(l);
-							}), l, () -> i));
+					ChunkTicketManager.this.playerTicketThrottler.send(ChunkTaskPrioritySystem.createRunnableMessage(() -> ChunkTicketManager.this.field_17460.execute(() -> {
+							ChunkTicketManager.this.addTicket(l, chunkTicket);
+							ChunkTicketManager.this.chunkPositions.add(l);
+						}), l, () -> i));
 				} else {
 					ChunkTicketManager.this.playerTicketThrottlerSorter
-						.method_16901(
+						.send(
 							ChunkTaskPrioritySystem.createPrioritySorterMessage(
 								() -> ChunkTicketManager.this.field_17460.execute(() -> ChunkTicketManager.this.removeTicket(l, chunkTicket)), l, true
 							)
@@ -364,13 +363,13 @@ public abstract class ChunkTicketManager {
 		}
 	}
 
-	class class_4077 extends ChunkLevelIndexedProcessor {
+	class class_4077 extends ChunkPosLevelPropagator {
 		public class_4077() {
 			super(ThreadedAnvilChunkStorage.field_18239 + 2, 16, 256);
 		}
 
 		@Override
-		protected int getBaseLevel(long l) {
+		protected int method_14028(long l) {
 			ObjectSortedSet<ChunkTicket<?>> objectSortedSet = ChunkTicketManager.this.positionToTicketSet.get(l);
 			if (objectSortedSet == null) {
 				return Integer.MAX_VALUE;
@@ -405,11 +404,11 @@ public abstract class ChunkTicketManager {
 		}
 
 		public int method_18746(int i) {
-			return this.updateLevels(i);
+			return this.updateAllRecursively(i);
 		}
 	}
 
-	class class_4078 extends class_4079 {
+	class class_4078 extends SectionRelativeLevelPropagator {
 		protected final Long2ByteMap field_18256 = new Long2ByteOpenHashMap();
 
 		protected class_4078() {
@@ -442,7 +441,7 @@ public abstract class ChunkTicketManager {
 		}
 
 		public void method_18747() {
-			this.updateLevels(Integer.MAX_VALUE);
+			this.updateAllRecursively(Integer.MAX_VALUE);
 		}
 	}
 }

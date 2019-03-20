@@ -19,6 +19,6 @@ public class ZombieEntityModel<T extends ZombieEntity> extends AbstractZombieMod
 	}
 
 	public boolean method_17793(T zombieEntity) {
-		return zombieEntity.hasArmsRaised();
+		return zombieEntity.method_6510();
 	}
 }

@@ -27,7 +27,7 @@ public class LabelWidget extends DrawableHelper implements Drawable, InputListen
 	private int field_2118;
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		if (this.field_2117) {
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
@@ -62,7 +62,7 @@ public class LabelWidget extends DrawableHelper implements Drawable, InputListen
 	}
 
 	@Override
-	public boolean method_19356(double d, double e) {
+	public boolean isMouseOver(double d, double e) {
 		return this.field_2117
 			&& d >= (double)this.field_2111
 			&& d < (double)(this.field_2111 + this.field_2114)

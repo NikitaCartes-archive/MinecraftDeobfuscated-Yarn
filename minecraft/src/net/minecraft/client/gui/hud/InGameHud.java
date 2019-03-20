@@ -355,7 +355,7 @@ public class InGameHud extends DrawableHelper {
 				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
 					GlStateManager.pushMatrix();
 					GlStateManager.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), this.zOffset);
-					Camera camera = this.client.gameRenderer.method_19418();
+					Camera camera = this.client.gameRenderer.getCamera();
 					GlStateManager.rotatef(camera.getPitch(), -1.0F, 0.0F, 0.0F);
 					GlStateManager.rotatef(camera.getYaw(), 0.0F, 1.0F, 0.0F);
 					GlStateManager.scalef(-1.0F, -1.0F, -1.0F);
@@ -644,7 +644,7 @@ public class InGameHud extends DrawableHelper {
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
 			ScoreboardTeam scoreboardTeam = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-			String string2 = ScoreboardTeam.method_1142(scoreboardTeam, new StringTextComponent(scoreboardPlayerScore.getPlayerName())).getFormattedText()
+			String string2 = ScoreboardTeam.modifyText(scoreboardTeam, new StringTextComponent(scoreboardPlayerScore.getPlayerName())).getFormattedText()
 				+ ": "
 				+ TextFormat.field_1061
 				+ scoreboardPlayerScore.getScore();
@@ -662,7 +662,7 @@ public class InGameHud extends DrawableHelper {
 		for (ScoreboardPlayerScore scoreboardPlayerScore2 : collection) {
 			o++;
 			ScoreboardTeam scoreboardTeam2 = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
-			String string3 = ScoreboardTeam.method_1142(scoreboardTeam2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
+			String string3 = ScoreboardTeam.modifyText(scoreboardTeam2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
 			String string4 = TextFormat.field_1061 + "" + scoreboardPlayerScore2.getScore();
 			int s = l - o * 9;
 			int t = this.scaledWidth - 3 + 2;

@@ -68,8 +68,8 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.hasOtherFishInGroup() && this.world.random.nextInt(200) == 1) {
 			List<FishEntity> list = this.world.method_18467(this.getClass(), this.getBoundingBox().expand(8.0, 8.0, 8.0));
 			if (list.size() <= 1) {

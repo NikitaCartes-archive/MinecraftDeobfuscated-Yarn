@@ -59,7 +59,7 @@ public class ClientCommandSource implements CommandSource {
 
 	@Override
 	public Collection<Identifier> getSoundIds() {
-		return this.client.getSoundLoader().getKeys();
+		return this.client.getSoundManager().getKeys();
 	}
 
 	@Override

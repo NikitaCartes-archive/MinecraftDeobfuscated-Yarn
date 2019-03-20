@@ -2,11 +2,11 @@ package net.minecraft.entity.projectile;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1675;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -78,15 +78,15 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (this.world.isClient || (this.owner == null || !this.owner.invalid) && this.world.isBlockLoaded(new BlockPos(this))) {
-			super.update();
+			super.tick();
 			if (this.method_7468()) {
 				this.setOnFireFor(1);
 			}
 
 			this.field_7602++;
-			HitResult hitResult = class_1675.method_18076(this, true, this.field_7602 >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
+			HitResult hitResult = ProjectileUtil.method_18076(this, true, this.field_7602 >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
 			if (hitResult.getType() != HitResult.Type.NONE) {
 				this.onCollision(hitResult);
 			}
@@ -95,7 +95,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.x = this.x + vec3d.x;
 			this.y = this.y + vec3d.y;
 			this.z = this.z + vec3d.z;
-			class_1675.method_7484(this, 0.2F);
+			ProjectileUtil.method_7484(this, 0.2F);
 			float f = this.method_7466();
 			if (this.isInsideWater()) {
 				for (int i = 0; i < 4; i++) {

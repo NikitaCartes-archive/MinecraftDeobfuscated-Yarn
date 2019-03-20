@@ -81,7 +81,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		int k = (this.screenWidth - 252) / 2;
 		int l = (this.screenHeight - 140) / 2;
 		this.drawBackground();

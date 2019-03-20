@@ -41,7 +41,7 @@ public class SkinSettingsScreen extends Screen {
 				public void onPressed() {
 					GameOption.MAIN_HAND.method_18500(SkinSettingsScreen.this.client.options, 1);
 					SkinSettingsScreen.this.client.options.write();
-					this.setText(GameOption.MAIN_HAND.method_18501(SkinSettingsScreen.this.client.options));
+					this.setMessage(GameOption.MAIN_HAND.method_18501(SkinSettingsScreen.this.client.options));
 					SkinSettingsScreen.this.client.options.onPlayerModelPartChange();
 				}
 			}
@@ -64,10 +64,10 @@ public class SkinSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 20, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	private String method_2248(PlayerModelPart playerModelPart) {
@@ -93,7 +93,7 @@ public class SkinSettingsScreen extends Screen {
 		@Override
 		public void onPressed() {
 			SkinSettingsScreen.this.client.options.togglePlayerModelPart(this.field_2579);
-			this.setText(SkinSettingsScreen.this.method_2248(this.field_2579));
+			this.setMessage(SkinSettingsScreen.this.method_2248(this.field_2579));
 		}
 	}
 }

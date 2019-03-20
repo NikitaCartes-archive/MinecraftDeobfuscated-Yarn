@@ -1,14 +1,25 @@
 package net.minecraft.client.render.debug;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import java.util.Optional;
+import java.util.function.Predicate;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_860;
-import net.minecraft.class_871;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ProjectileUtil;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BoundingBox;
+import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public class DebugRenderer {
@@ -22,11 +33,10 @@ public class DebugRenderer {
 	public final StructureDebugRenderer structureDebugRenderer;
 	public final DebugRenderer.Renderer skyLightDebugRenderer;
 	public final DebugRenderer.Renderer worldGenAttemptDebugRenderer;
-	public final DebugRenderer.Renderer field_4517;
-	public final DebugRenderer.Renderer field_4533;
+	public final DebugRenderer.Renderer blockOutlineDebugRenderer;
+	public final DebugRenderer.Renderer chunkLoadingDebugRenderer;
 	public final PointOfInterestDebugRenderer pointsOfInterestDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
-	public final BrainDebugRenderer brainDebugRenderer;
 	private boolean showChunkBorder;
 	private boolean showPathfinding;
 	private boolean showWater;
@@ -52,11 +62,10 @@ public class DebugRenderer {
 		this.structureDebugRenderer = new StructureDebugRenderer(minecraftClient);
 		this.skyLightDebugRenderer = new SkyLightDebugRenderer(minecraftClient);
 		this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer(minecraftClient);
-		this.field_4517 = new class_871(minecraftClient);
-		this.field_4533 = new class_860(minecraftClient);
+		this.blockOutlineDebugRenderer = new BlockOutlineDebugRenderer(minecraftClient);
+		this.chunkLoadingDebugRenderer = new ChunkLoadingDebugRenderer(minecraftClient);
 		this.pointsOfInterestDebugRenderer = new PointOfInterestDebugRenderer(minecraftClient);
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
-		this.brainDebugRenderer = new BrainDebugRenderer(minecraftClient);
 	}
 
 	public boolean shouldRender() {
@@ -120,20 +129,61 @@ public class DebugRenderer {
 		}
 
 		if (this.field_4518) {
-			this.field_4517.render(l);
-		}
-
-		if (this.field_18775) {
-			this.pointsOfInterestDebugRenderer.render(l);
+			this.blockOutlineDebugRenderer.render(l);
 		}
 
 		if (this.field_18776) {
 			this.goalSelectorDebugRenderer.render(l);
 		}
+	}
 
-		if (this.field_18776) {
-			this.brainDebugRenderer.render(l);
+	public static Optional<Entity> method_19694(@Nullable Entity entity, int i) {
+		if (entity == null) {
+			return Optional.empty();
+		} else {
+			Vec3d vec3d = entity.getCameraPosVec(1.0F);
+			Vec3d vec3d2 = entity.getRotationVec(1.0F).multiply((double)i);
+			Vec3d vec3d3 = vec3d.add(vec3d2);
+			BoundingBox boundingBox = entity.getBoundingBox().method_18804(vec3d2).expand(1.0);
+			int j = i * i;
+			Predicate<Entity> predicate = entityx -> !entityx.isSpectator() && entityx.doesCollide();
+			EntityHitResult entityHitResult = ProjectileUtil.method_18075(entity, vec3d, vec3d3, boundingBox, predicate, (double)j);
+			if (entityHitResult == null) {
+				return Optional.empty();
+			} else {
+				return vec3d.squaredDistanceTo(entityHitResult.getPos()) > (double)j ? Optional.empty() : Optional.of(entityHitResult.getEntity());
+			}
 		}
+	}
+
+	public static void method_19697(BlockPos blockPos, BlockPos blockPos2, float f, float g, float h, float i) {
+		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+		if (camera.isReady()) {
+			Vec3d vec3d = camera.getPos().method_19637();
+			BoundingBox boundingBox = new BoundingBox(blockPos, blockPos2).offset(vec3d);
+			method_19695(boundingBox, f, g, h, i);
+		}
+	}
+
+	public static void method_19696(BlockPos blockPos, float f, float g, float h, float i, float j) {
+		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
+		if (camera.isReady()) {
+			Vec3d vec3d = camera.getPos().method_19637();
+			BoundingBox boundingBox = new BoundingBox(blockPos).offset(vec3d).expand((double)f);
+			method_19695(boundingBox, g, h, i, j);
+		}
+	}
+
+	public static void method_19695(BoundingBox boundingBox, float f, float g, float h, float i) {
+		method_19692(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ, f, g, h, i);
+	}
+
+	public static void method_19692(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
+		Tessellator tessellator = Tessellator.getInstance();
+		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
+		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
+		WorldRenderer.buildBox(bufferBuilder, d, e, f, g, h, i, j, k, l, m);
+		tessellator.draw();
 	}
 
 	public static void method_3711(String string, int i, int j, int k, int l) {
@@ -150,8 +200,8 @@ public class DebugRenderer {
 
 	public static void method_3712(String string, double d, double e, double f, int i, float g, boolean bl, float h, boolean bl2) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		Camera camera = minecraftClient.gameRenderer.method_19418();
-		if (camera.isReady() && minecraftClient.getEntityRenderManager() != null && minecraftClient.getEntityRenderManager().settings != null) {
+		Camera camera = minecraftClient.gameRenderer.getCamera();
+		if (camera.isReady() && minecraftClient.getEntityRenderManager().settings != null) {
 			TextRenderer textRenderer = minecraftClient.textRenderer;
 			double j = camera.getPos().x;
 			double k = camera.getPos().y;
@@ -163,7 +213,6 @@ public class DebugRenderer {
 			EntityRenderDispatcher entityRenderDispatcher = minecraftClient.getEntityRenderManager();
 			GlStateManager.rotatef(-entityRenderDispatcher.field_4679, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(-entityRenderDispatcher.field_4677, 1.0F, 0.0F, 0.0F);
-			GlStateManager.disableLighting();
 			GlStateManager.enableTexture();
 			if (bl2) {
 				GlStateManager.disableDepthTest();
@@ -176,10 +225,9 @@ public class DebugRenderer {
 			float m = bl ? (float)(-textRenderer.getStringWidth(string)) / 2.0F : 0.0F;
 			m -= h / g;
 			textRenderer.draw(string, m, 0.0F, i);
-			GlStateManager.enableLighting();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GlStateManager.popMatrix();
 			GlStateManager.enableDepthTest();
+			GlStateManager.popMatrix();
 		}
 	}
 

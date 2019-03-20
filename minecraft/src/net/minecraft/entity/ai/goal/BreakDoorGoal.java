@@ -39,8 +39,7 @@ public class BreakDoorGoal extends DoorInteractGoal {
 
 	@Override
 	public boolean shouldContinue() {
-		double d = this.owner.squaredDistanceTo(this.doorPos);
-		return this.breakProgress <= this.method_16462() && !this.method_6256() && d < 4.0;
+		return this.breakProgress <= this.method_16462() && !this.method_6256() && this.doorPos.method_19769(this.owner.getPos(), 2.0);
 	}
 
 	@Override

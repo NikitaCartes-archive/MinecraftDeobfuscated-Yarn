@@ -5,7 +5,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
-import net.minecraft.class_1675;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -102,11 +101,11 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevRenderX = this.x;
 		this.prevRenderY = this.y;
 		this.prevRenderZ = this.z;
-		super.update();
+		super.tick();
 		if (this.method_7476()) {
 			if (this.field_7616 == null) {
 				this.dataTracker.get(field_7611).ifPresent(i -> {
@@ -143,7 +142,7 @@ public class FireworkEntity extends Entity implements FlyingItemEntity, Projecti
 		}
 
 		Vec3d vec3d = this.getVelocity();
-		HitResult hitResult = class_1675.method_18074(
+		HitResult hitResult = ProjectileUtil.method_18074(
 			this,
 			this.getBoundingBox().method_18804(vec3d).expand(1.0),
 			entity -> !entity.isSpectator() && entity.isValid() && entity.doesCollide(),

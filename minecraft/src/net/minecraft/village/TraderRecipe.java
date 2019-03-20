@@ -14,8 +14,8 @@ public class TraderRecipe {
 	private int uses;
 	private final int maxUses;
 	private boolean rewardExp = true;
-	private int field_18676;
-	private int field_18677;
+	private int tax;
+	private int demandBonus;
 	private float priceMultiplier;
 	private int rewardedExp = 1;
 
@@ -66,11 +66,11 @@ public class TraderRecipe {
 		return this.firstBuyItem;
 	}
 
-	public ItemStack method_19272() {
+	public ItemStack getDiscountedFirstBuyItem() {
 		int i = this.firstBuyItem.getAmount();
 		ItemStack itemStack = this.firstBuyItem.copy();
-		int j = MathHelper.floor((float)(i * this.field_18677) * this.priceMultiplier);
-		itemStack.setAmount(MathHelper.clamp(i + j + this.field_18676, 1, 64));
+		int j = Math.max(0, MathHelper.floor((float)(i * this.demandBonus) * this.priceMultiplier));
+		itemStack.setAmount(MathHelper.clamp(i + j + this.tax, 1, 64));
 		return itemStack;
 	}
 
@@ -82,8 +82,8 @@ public class TraderRecipe {
 		return this.sellItem;
 	}
 
-	public void method_19274() {
-		this.field_18677 = this.field_18677 + this.uses - (this.maxUses - this.uses);
+	public void updatePriceOnDemand() {
+		this.demandBonus = this.demandBonus + this.uses - (this.maxUses - this.uses);
 	}
 
 	public ItemStack getSellItem() {
@@ -106,20 +106,20 @@ public class TraderRecipe {
 		this.uses++;
 	}
 
-	public void increasedMaxUses(int i) {
-		this.field_18676 += i;
+	public void increaseTax(int i) {
+		this.tax += i;
 	}
 
-	public void method_19276() {
-		this.field_18676 = 0;
+	public void clearTax() {
+		this.tax = 0;
 	}
 
-	public int method_19277() {
-		return this.field_18676;
+	public int getTax() {
+		return this.tax;
 	}
 
-	public void method_19273(int i) {
-		this.field_18676 = i;
+	public void setTax(int i) {
+		this.tax = i;
 	}
 
 	public float getPriceMultiplier() {
@@ -142,7 +142,7 @@ public class TraderRecipe {
 		return this.rewardExp;
 	}
 
-	public CompoundTag serialize() {
+	public CompoundTag toTag() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.put("buy", this.firstBuyItem.toTag(new CompoundTag()));
 		compoundTag.put("sell", this.sellItem.toTag(new CompoundTag()));
@@ -156,8 +156,8 @@ public class TraderRecipe {
 	}
 
 	public boolean matchesBuyItems(ItemStack itemStack, ItemStack itemStack2) {
-		return this.acceptsBuy(itemStack, this.method_19272())
-			&& itemStack.getAmount() >= this.method_19272().getAmount()
+		return this.acceptsBuy(itemStack, this.getDiscountedFirstBuyItem())
+			&& itemStack.getAmount() >= this.getDiscountedFirstBuyItem().getAmount()
 			&& this.acceptsBuy(itemStack2, this.secondBuyItem)
 			&& itemStack2.getAmount() >= this.secondBuyItem.getAmount();
 	}
@@ -180,7 +180,7 @@ public class TraderRecipe {
 		if (!this.matchesBuyItems(itemStack, itemStack2)) {
 			return false;
 		} else {
-			itemStack.subtractAmount(this.method_19272().getAmount());
+			itemStack.subtractAmount(this.getDiscountedFirstBuyItem().getAmount());
 			if (!this.getSecondBuyItem().isEmpty()) {
 				itemStack2.subtractAmount(this.getSecondBuyItem().getAmount());
 			}

@@ -113,6 +113,7 @@ public class ChunkHolder {
 	}
 
 	@Nullable
+	@Environment(EnvType.CLIENT)
 	public Chunk getChunk() {
 		for (int i = CHUNK_STATUSES.size() - 1; i >= 0; i--) {
 			ChunkStatus chunkStatus = (ChunkStatus)CHUNK_STATUSES.get(i);

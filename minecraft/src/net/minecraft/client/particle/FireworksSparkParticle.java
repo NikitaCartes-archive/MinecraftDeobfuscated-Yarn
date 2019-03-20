@@ -272,7 +272,7 @@ public class FireworksSparkParticle {
 
 		private boolean method_3029() {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			return minecraftClient.gameRenderer.method_19418().getPos().squaredDistanceTo(this.posX, this.posY, this.posZ) >= 256.0;
+			return minecraftClient.gameRenderer.getCamera().getPos().squaredDistanceTo(this.posX, this.posY, this.posZ) >= 256.0;
 		}
 
 		private void method_3030(double d, double e, double f, double g, double h, double i, int[] is, int[] js, boolean bl, boolean bl2) {

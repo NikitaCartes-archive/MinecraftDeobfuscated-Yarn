@@ -52,9 +52,9 @@ public class Sound implements SoundContainer<Sound> {
 	}
 
 	@Override
-	public void method_18188(SoundManager soundManager) {
+	public void addTo(SoundSystem soundSystem) {
 		if (this.field_5465) {
-			soundManager.method_4851(this);
+			soundSystem.addStreamedSound(this);
 		}
 	}
 

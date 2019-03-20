@@ -10,7 +10,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AvoidGoal;
@@ -432,7 +432,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		@Override
 		public void tick() {
 			if (this.field_7246.y < (double)(this.field_7247 - 1) && (this.field_7246.getNavigation().isIdle() || this.field_7246.method_7016())) {
-				Vec3d vec3d = AiUtil.method_6373(this.field_7246, 4, 8, new Vec3d(this.field_7246.x, (double)(this.field_7247 - 1), this.field_7246.z));
+				Vec3d vec3d = PathfindingUtil.method_6373(this.field_7246, 4, 8, new Vec3d(this.field_7246.x, (double)(this.field_7247 - 1), this.field_7246.z));
 				if (vec3d == null) {
 					this.field_7248 = true;
 					return;
@@ -470,7 +470,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		@Override
 		public void start() {
 			super.start();
-			this.field_7249.setArmsRaised(true);
+			this.field_7249.method_19540(true);
 			this.field_7249.setCurrentHand(Hand.MAIN);
 		}
 
@@ -478,7 +478,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		public void onRemove() {
 			super.onRemove();
 			this.field_7249.method_6021();
-			this.field_7249.setArmsRaised(false);
+			this.field_7249.method_19540(false);
 		}
 	}
 }

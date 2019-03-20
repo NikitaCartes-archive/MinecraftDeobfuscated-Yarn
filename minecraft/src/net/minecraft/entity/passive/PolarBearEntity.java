@@ -7,6 +7,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
+import net.minecraft.entity.EntityPose;
+import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
@@ -129,9 +131,13 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.world.isClient) {
+			if (this.field_6837 != this.field_6838) {
+				this.refreshSize();
+			}
+
 			this.field_6838 = this.field_6837;
 			if (this.method_6600()) {
 				this.field_6837 = MathHelper.clamp(this.field_6837 + 1.0F, 0.0F, 6.0F);
@@ -142,6 +148,17 @@ public class PolarBearEntity extends AnimalEntity {
 
 		if (this.field_6839 > 0) {
 			this.field_6839--;
+		}
+	}
+
+	@Override
+	public EntitySize getSize(EntityPose entityPose) {
+		if (this.field_6837 > 0.0F) {
+			float f = this.field_6837 / 6.0F;
+			float g = 1.0F + f;
+			return super.getSize(entityPose).method_19539(1.0F, g);
+		} else {
+			return super.getSize(entityPose);
 		}
 	}
 

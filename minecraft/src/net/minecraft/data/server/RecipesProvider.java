@@ -3182,10 +3182,14 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_sand", this.method_10426(Blocks.field_10534))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10624, 6)
-			.input('#', Ingredient.ofItems(Blocks.field_10344, Blocks.field_10117, Blocks.field_10518))
+			.input('#', Ingredient.ofItems(Blocks.field_10344, Blocks.field_10117))
 			.pattern("###")
 			.criterion("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.criterion("has_chiseled_red_sandstone", this.method_10426(Blocks.field_10117))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.field_18891, 6)
+			.input('#', Blocks.field_10518)
+			.pattern("###")
 			.criterion("has_cut_red_sandstone", this.method_10426(Blocks.field_10518))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10420, 4)
@@ -3253,10 +3257,14 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_sand", this.method_10426(Blocks.field_10102))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10007, 6)
-			.input('#', Ingredient.ofItems(Blocks.field_9979, Blocks.field_10292, Blocks.field_10361))
+			.input('#', Ingredient.ofItems(Blocks.field_9979, Blocks.field_10292))
 			.pattern("###")
 			.criterion("has_sandstone", this.method_10426(Blocks.field_9979))
 			.criterion("has_chiseled_sandstone", this.method_10426(Blocks.field_10292))
+			.offerTo(consumer);
+		ShapedRecipeJsonFactory.create(Blocks.field_18890, 6)
+			.input('#', Blocks.field_10361)
+			.pattern("###")
 			.criterion("has_cut_sandstone", this.method_10426(Blocks.field_10361))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10142, 4)
@@ -4535,6 +4543,12 @@ public class RecipesProvider implements DataProvider {
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10007, 2)
 			.create("has_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer, "sandstone_slab_from_sandstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9979), Blocks.field_18890, 2)
+			.create("has_sandstone", this.method_10426(Blocks.field_9979))
+			.offerTo(consumer, "cut_sandstone_slab_from_sandstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10361), Blocks.field_18890, 2)
+			.create("has_cut_sandstone", this.method_10426(Blocks.field_9979))
+			.offerTo(consumer, "cut_sandstone_slab_from_cut_sandstone_stonecutting");
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_9979), Blocks.field_10142)
 			.create("has_sandstone", this.method_10426(Blocks.field_9979))
 			.offerTo(consumer, "sandstone_stairs_from_sandstone_stonecutting");
@@ -4550,6 +4564,12 @@ public class RecipesProvider implements DataProvider {
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10624, 2)
 			.create("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer, "red_sandstone_slab_from_red_sandstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10344), Blocks.field_18891, 2)
+			.create("has_red_sandstone", this.method_10426(Blocks.field_10344))
+			.offerTo(consumer, "cut_red_sandstone_slab_from_red_sandstone_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10518), Blocks.field_18891, 2)
+			.create("has_cut_red_sandstone", this.method_10426(Blocks.field_10344))
+			.offerTo(consumer, "cut_red_sandstone_slab_from_cut_red_sandstone_stonecutting");
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10344), Blocks.field_10420)
 			.create("has_red_sandstone", this.method_10426(Blocks.field_10344))
 			.offerTo(consumer, "red_sandstone_stairs_from_red_sandstone_stonecutting");

@@ -53,7 +53,7 @@ public class TridentEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (this.field_7576 > 4) {
 			this.dealtDamage = true;
 		}
@@ -85,7 +85,7 @@ public class TridentEntity extends ProjectileEntity {
 			}
 		}
 
-		super.update();
+		super.tick();
 	}
 
 	private boolean method_7493() {
@@ -130,7 +130,7 @@ public class TridentEntity extends ProjectileEntity {
 		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
 		float g = 1.0F;
 		if (this.world instanceof ServerWorld && this.world.isThundering() && EnchantmentHelper.hasChanneling(this.tridentStack)) {
-			BlockPos blockPos = entity.getPos();
+			BlockPos blockPos = entity.getBlockPos();
 			if (this.world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = new LightningEntity(
 					this.world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, false

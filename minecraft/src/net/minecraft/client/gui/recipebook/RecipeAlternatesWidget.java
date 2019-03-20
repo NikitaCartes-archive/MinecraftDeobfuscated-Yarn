@@ -114,12 +114,12 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 	}
 
 	@Override
-	public boolean method_19356(double d, double e) {
+	public boolean isMouseOver(double d, double e) {
 		return false;
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		if (this.visible) {
 			this.time += f;
 			GuiLighting.enableForItems();
@@ -140,7 +140,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 			GuiLighting.disable();
 
 			for (RecipeAlternatesWidget.AlternateButtonWidget alternateButtonWidget : this.alternateButtons) {
-				alternateButtonWidget.draw(i, j, f);
+				alternateButtonWidget.render(i, j, f);
 			}
 
 			GlStateManager.popMatrix();
@@ -214,7 +214,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 		}
 
 		@Override
-		public void drawButton(int i, int j, float f) {
+		public void renderButton(int i, int j, float f) {
 			GuiLighting.enableForItems();
 			GlStateManager.enableAlphaTest();
 			RecipeAlternatesWidget.this.client.getTextureManager().bindTexture(RecipeAlternatesWidget.BG_TEX);

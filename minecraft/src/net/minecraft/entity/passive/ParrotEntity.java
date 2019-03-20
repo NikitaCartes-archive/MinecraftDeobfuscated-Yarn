@@ -11,8 +11,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1351;
-import net.minecraft.class_1395;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,6 +24,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.ParrotMoveControl;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
+import net.minecraft.entity.ai.goal.FlyAroundGoal;
+import net.minecraft.entity.ai.goal.FlyToOwnerGoal;
 import net.minecraft.entity.ai.goal.FollowMobGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ParrotClimbOntoPlayerGoal;
@@ -133,8 +133,8 @@ public class ParrotEntity extends ParrotBaseEntity implements Bird {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(2, this.sitGoal);
-		this.goalSelector.add(2, new class_1351(this, 1.0, 5.0F, 1.0F));
-		this.goalSelector.add(2, new class_1395(this, 1.0));
+		this.goalSelector.add(2, new FlyToOwnerGoal(this, 1.0, 5.0F, 1.0F));
+		this.goalSelector.add(2, new FlyAroundGoal(this, 1.0));
 		this.goalSelector.add(3, new ParrotClimbOntoPlayerGoal(this));
 		this.goalSelector.add(3, new FollowMobGoal(this, 1.0, 3.0F, 7.0F));
 	}
@@ -166,7 +166,7 @@ public class ParrotEntity extends ParrotBaseEntity implements Bird {
 	public void updateMovement() {
 		method_6587(this.world, this);
 		if (this.field_6820 == null
-			|| this.field_6820.squaredDistanceTo(this.x, this.y, this.z) > 12.0
+			|| !this.field_6820.method_19769(this.getPos(), 3.46)
 			|| this.world.getBlockState(this.field_6820).getBlock() != Blocks.field_10223) {
 			this.field_6823 = false;
 			this.field_6820 = null;

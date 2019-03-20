@@ -169,7 +169,7 @@ public class Explosion {
 		for (int w = 0; w < list.size(); w++) {
 			Entity entity = (Entity)list.get(w);
 			if (!entity.isImmuneToExplosion()) {
-				double x = entity.distanceTo(this.x, this.y, this.z) / (double)r;
+				double x = (double)(MathHelper.sqrt(entity.squaredDistanceTo(new Vec3d(this.x, this.y, this.z))) / r);
 				if (x <= 1.0) {
 					double y = entity.x - this.x;
 					double z = entity.y + (double)entity.getStandingEyeHeight() - this.y;

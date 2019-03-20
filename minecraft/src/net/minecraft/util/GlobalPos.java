@@ -56,4 +56,8 @@ public final class GlobalPos implements DynamicSerializable {
 			ImmutableMap.of(dynamicOps.createString("dimension"), this.dimension.serialize(dynamicOps), dynamicOps.createString("pos"), this.pos.serialize(dynamicOps))
 		);
 	}
+
+	public String toString() {
+		return this.dimension.toString() + " " + this.pos;
+	}
 }

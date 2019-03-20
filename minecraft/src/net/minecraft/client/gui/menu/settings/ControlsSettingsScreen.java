@@ -55,7 +55,7 @@ public class ControlsSettingsScreen extends Screen {
 		for (GameOption gameOption : SETTINGS) {
 			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
 			int k = 18 + 24 * (i >> 1);
-			this.addButton(gameOption.method_18520(this.client.options, j, k, 150));
+			this.addButton(gameOption.createOptionButton(this.client.options, j, k, 150));
 			i++;
 		}
 	}
@@ -104,9 +104,9 @@ public class ControlsSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.keyBindingListWidget.draw(i, j, f);
+		this.keyBindingListWidget.render(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 8, 16777215);
 		boolean bl = false;
 
@@ -117,7 +117,7 @@ public class ControlsSettingsScreen extends Screen {
 			}
 		}
 
-		this.resetButton.enabled = bl;
-		super.draw(i, j, f);
+		this.resetButton.active = bl;
+		super.render(i, j, f);
 	}
 }

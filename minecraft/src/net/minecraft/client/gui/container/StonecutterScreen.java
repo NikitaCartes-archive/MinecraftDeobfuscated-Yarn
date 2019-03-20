@@ -30,8 +30,8 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
-		super.draw(i, j, f);
+	public void render(int i, int j, float f) {
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
@@ -103,7 +103,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 				double f = d - (double)(j + n % 4 * 16);
 				double g = e - (double)(k + n / 4 * 18);
 				if (f >= 0.0 && g >= 0.0 && f < 16.0 && g < 18.0 && this.container.onButtonClick(this.client.player, m)) {
-					MinecraftClient.getInstance().getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_17711, 1.0F));
+					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_17711, 1.0F));
 					this.client.interactionManager.clickButton(this.container.syncId, m);
 					return true;
 				}

@@ -33,11 +33,11 @@ public class AccessibilityScreen extends Screen {
 		for (GameOption gameOption : field_18730) {
 			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
 			int k = this.screenHeight / 6 + 24 * (i >> 1);
-			AbstractButtonWidget abstractButtonWidget = gameOption.method_18520(this.client.options, j, k, 150);
+			AbstractButtonWidget abstractButtonWidget = gameOption.createOptionButton(this.client.options, j, k, 150);
 			this.addButton(abstractButtonWidget);
 			if (gameOption == GameOption.NARRATOR) {
 				this.field_18734 = abstractButtonWidget;
-				abstractButtonWidget.enabled = NarratorManager.INSTANCE.isActive();
+				abstractButtonWidget.active = NarratorManager.INSTANCE.isActive();
 			}
 
 			i++;
@@ -57,13 +57,13 @@ public class AccessibilityScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.field_18733, this.screenWidth / 2, 20, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	public void method_19366() {
-		this.field_18734.setText(GameOption.NARRATOR.method_18501(this.field_18732));
+		this.field_18734.setMessage(GameOption.NARRATOR.method_18501(this.field_18732));
 	}
 }

@@ -63,11 +63,11 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (this.getStack().isEmpty()) {
 			this.invalidate();
 		} else {
-			super.update();
+			super.tick();
 			if (this.pickupDelay > 0 && this.pickupDelay != 32767) {
 				this.pickupDelay--;
 			}

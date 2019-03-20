@@ -64,8 +64,8 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.field_6163 > 0) {
 			this.field_6163--;
 		}

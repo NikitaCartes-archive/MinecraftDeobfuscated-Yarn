@@ -244,7 +244,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			if (blockState.getBlock() == Blocks.field_10471
 				&& !worldChunk.getBlockState(blockPos5).method_11603(worldChunk, blockPos5)
 				&& !worldChunk.getBlockState(blockPos6).method_11603(worldChunk, blockPos6)) {
-				double e = blockPos4.squaredDistanceToCenter(0.0, 0.0, 0.0);
+				double e = blockPos4.squaredDistanceToCenter(0.0, 0.0, 0.0, true);
 				if (blockPos3 == null || e < d) {
 					blockPos3 = blockPos4;
 					d = e;

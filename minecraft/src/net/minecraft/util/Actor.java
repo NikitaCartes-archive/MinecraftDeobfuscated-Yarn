@@ -7,7 +7,7 @@ import java.util.function.Function;
 public interface Actor<Msg> extends AutoCloseable {
 	String getName();
 
-	void method_16901(Msg object);
+	void send(Msg object);
 
 	default void close() {
 	}
@@ -15,7 +15,7 @@ public interface Actor<Msg> extends AutoCloseable {
 	default <Source> CompletableFuture<Source> createAndSendFutureActor(Function<? super Actor<Source>, ? extends Msg> function) {
 		CompletableFuture<Source> completableFuture = new CompletableFuture();
 		Msg object = (Msg)function.apply(createConsumerActor("ask future procesor handle", completableFuture::complete));
-		this.method_16901(object);
+		this.send(object);
 		return completableFuture;
 	}
 
@@ -27,7 +27,7 @@ public interface Actor<Msg> extends AutoCloseable {
 			}
 
 			@Override
-			public void method_16901(Msg object) {
+			public void send(Msg object) {
 				consumer.accept(object);
 			}
 

@@ -96,7 +96,7 @@ public abstract class TrackTargetGoal extends Goal {
 			return false;
 		} else if (!targetPredicate.test(this.entity, livingEntity)) {
 			return false;
-		} else if (!this.entity.method_18407(new BlockPos(livingEntity))) {
+		} else if (!this.entity.isInWalkTargetRange(new BlockPos(livingEntity))) {
 			return false;
 		} else {
 			if (this.checkCanNavigate) {

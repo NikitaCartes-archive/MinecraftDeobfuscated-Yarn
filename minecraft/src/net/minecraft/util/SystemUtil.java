@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
@@ -44,7 +45,9 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.Bootstrap;
 import net.minecraft.state.property.Property;
+import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.math.MathHelper;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
@@ -94,7 +97,18 @@ public class SystemUtil {
 				};
 				forkJoinWorkerThread.setName("Server-Worker-" + field_18034.getAndIncrement());
 				return forkJoinWorkerThread;
-			}, (thread, throwable) -> LOGGER.error(String.format("Caught exception in thread %s", thread), throwable), true);
+			}, (thread, throwable) -> {
+				if (throwable instanceof CompletionException) {
+					throwable = throwable.getCause();
+				}
+
+				if (throwable instanceof CrashException) {
+					Bootstrap.println(((CrashException)throwable).getReport().asString());
+					System.exit(-1);
+				}
+
+				LOGGER.error(String.format("Caught exception in thread %s", thread), throwable);
+			}, true);
 		}
 
 		return executorService;

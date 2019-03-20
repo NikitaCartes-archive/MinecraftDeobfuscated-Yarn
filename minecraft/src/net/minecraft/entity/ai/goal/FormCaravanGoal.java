@@ -2,6 +2,8 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.List;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.LlamaEntity;
 import net.minecraft.util.math.Vec3d;
 
@@ -19,11 +21,15 @@ public class FormCaravanGoal extends Goal {
 	@Override
 	public boolean canStart() {
 		if (!this.owner.isLeashed() && !this.owner.isFollowing()) {
-			List<LlamaEntity> list = this.owner.world.method_18467(this.owner.getClass(), this.owner.getBoundingBox().expand(9.0, 4.0, 9.0));
+			List<Entity> list = this.owner.world.getEntities(this.owner, this.owner.getBoundingBox().expand(9.0, 4.0, 9.0), entityx -> {
+				EntityType<?> entityType = entityx.getType();
+				return entityType == EntityType.LLAMA || entityType == EntityType.field_17714;
+			});
 			LlamaEntity llamaEntity = null;
 			double d = Double.MAX_VALUE;
 
-			for (LlamaEntity llamaEntity2 : list) {
+			for (Entity entity : list) {
+				LlamaEntity llamaEntity2 = (LlamaEntity)entity;
 				if (llamaEntity2.isFollowing() && !llamaEntity2.method_6793()) {
 					double e = this.owner.squaredDistanceTo(llamaEntity2);
 					if (!(e > d)) {
@@ -34,12 +40,13 @@ public class FormCaravanGoal extends Goal {
 			}
 
 			if (llamaEntity == null) {
-				for (LlamaEntity llamaEntity2x : list) {
-					if (llamaEntity2x.isLeashed() && !llamaEntity2x.method_6793()) {
-						double e = this.owner.squaredDistanceTo(llamaEntity2x);
+				for (Entity entityx : list) {
+					LlamaEntity llamaEntity2 = (LlamaEntity)entityx;
+					if (llamaEntity2.isLeashed() && !llamaEntity2.method_6793()) {
+						double e = this.owner.squaredDistanceTo(llamaEntity2);
 						if (!(e > d)) {
 							d = e;
-							llamaEntity = llamaEntity2x;
+							llamaEntity = llamaEntity2;
 						}
 					}
 				}

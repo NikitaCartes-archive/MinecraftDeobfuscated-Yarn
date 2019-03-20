@@ -95,16 +95,16 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 		});
 		if (this.field_2642.getInputListeners().isEmpty()) {
-			buttonWidget.enabled = false;
+			buttonWidget.active = false;
 		}
 
 		if (this.field_2646.getInputListeners().isEmpty()) {
-			buttonWidget2.enabled = false;
+			buttonWidget2.active = false;
 		}
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		if (this.field_2645) {
 			this.drawBackground();
 			this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.downloadingStats"), this.screenWidth / 2, this.screenHeight / 2, 16777215);
@@ -116,9 +116,9 @@ public class StatsScreen extends Screen implements StatsListener {
 				16777215
 			);
 		} else {
-			this.method_19399().draw(i, j, f);
+			this.method_19399().render(i, j, f);
 			this.drawStringCentered(this.fontRenderer, this.field_2649, this.screenWidth / 2, 20, 16777215);
-			super.draw(i, j, f);
+			super.render(i, j, f);
 		}
 	}
 
@@ -224,7 +224,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	class class_4198 extends EntryListWidget<StatsScreen.class_4197> {
 		public class_4198(MinecraftClient minecraftClient) {
 			super(minecraftClient, StatsScreen.this.screenWidth, StatsScreen.this.screenHeight, 32, StatsScreen.this.screenHeight - 64, 10);
-			this.method_1943(false);
+			this.setRenderSelection(false);
 
 			for (Stat<Identifier> stat : Stats.field_15419) {
 				this.addEntry(StatsScreen.this.new class_4197(stat));
@@ -293,8 +293,8 @@ public class StatsScreen extends Screen implements StatsListener {
 			this.field_18754 = Lists.<StatType<Block>>newArrayList();
 			this.field_18754.add(Stats.field_15427);
 			this.field_18755 = Lists.<StatType<Item>>newArrayList(Stats.field_15383, Stats.field_15370, Stats.field_15372, Stats.field_15392, Stats.field_15405);
-			this.method_1943(false);
-			this.method_1927(true, 20);
+			this.setRenderSelection(false);
+			this.setRenderHeader(true, 20);
 			Set<Item> set = Sets.newIdentityHashSet();
 
 			for (Item item : Registry.ITEM) {
@@ -334,7 +334,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void method_1940(int i, int j, Tessellator tessellator) {
+		protected void renderHeader(int i, int j, Tessellator tessellator) {
 			if (!this.client.mouse.method_1608()) {
 				this.field_18756 = -1;
 			}
@@ -371,7 +371,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void method_1929(int i, int j) {
+		protected void clickedHeader(int i, int j) {
 			this.field_18756 = -1;
 
 			for (int k = 0; k < this.field_18753.length; k++) {
@@ -384,7 +384,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			if (this.field_18756 >= 0) {
 				this.method_19408(this.method_19410(this.field_18756));
-				this.client.getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
 			}
 		}
 
@@ -403,7 +403,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void method_1942(int i, int j) {
+		protected void renderDecorations(int i, int j) {
 			if (j >= this.y && j <= this.bottom) {
 				int k = this.getSelectedEntry((double)i, (double)j);
 				int l = (this.width - this.getEntryWidth()) / 2;
@@ -523,7 +523,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	class class_4202 extends EntryListWidget<StatsScreen.class_4201> {
 		public class_4202(MinecraftClient minecraftClient) {
 			super(minecraftClient, StatsScreen.this.screenWidth, StatsScreen.this.screenHeight, 32, StatsScreen.this.screenHeight - 64, 9 * 4);
-			this.method_1943(false);
+			this.setRenderSelection(false);
 
 			for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
 				if (StatsScreen.this.statHandler.getStat(Stats.field_15403.getOrCreateStat(entityType)) > 0

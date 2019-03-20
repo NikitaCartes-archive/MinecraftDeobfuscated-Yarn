@@ -13,36 +13,36 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SimpleScrolledSelectionList extends AbstractListWidget {
-	private final RealmsSimpleScrolledSelectionList field_2343;
+	private final RealmsSimpleScrolledSelectionList realmsSimpleScrolledSelectionList;
 
 	public SimpleScrolledSelectionList(RealmsSimpleScrolledSelectionList realmsSimpleScrolledSelectionList, int i, int j, int k, int l, int m) {
 		super(MinecraftClient.getInstance(), i, j, k, l, m);
-		this.field_2343 = realmsSimpleScrolledSelectionList;
+		this.realmsSimpleScrolledSelectionList = realmsSimpleScrolledSelectionList;
 	}
 
 	@Override
-	protected int getEntryCount() {
-		return this.field_2343.getItemCount();
+	public int getEntryCount() {
+		return this.realmsSimpleScrolledSelectionList.getItemCount();
 	}
 
 	@Override
-	protected boolean selectEntry(int i, int j, double d, double e) {
-		return this.field_2343.selectItem(i, j, d, e);
+	public boolean selectEntry(int i, int j, double d, double e) {
+		return this.realmsSimpleScrolledSelectionList.selectItem(i, j, d, e);
 	}
 
 	@Override
-	protected boolean isSelectedEntry(int i) {
-		return this.field_2343.isSelectedItem(i);
+	public boolean isSelectedEntry(int i) {
+		return this.realmsSimpleScrolledSelectionList.isSelectedItem(i);
 	}
 
 	@Override
-	protected void drawBackground() {
-		this.field_2343.renderBackground();
+	public void drawBackground() {
+		this.realmsSimpleScrolledSelectionList.renderBackground();
 	}
 
 	@Override
-	protected void drawEntry(int i, int j, int k, int l, int m, int n, float f) {
-		this.field_2343.renderItem(i, j, k, l, m, n);
+	public void drawEntry(int i, int j, int k, int l, int m, int n, float f) {
+		this.realmsSimpleScrolledSelectionList.renderItem(i, j, k, l, m, n);
 	}
 
 	public int getWidth() {
@@ -50,17 +50,17 @@ public class SimpleScrolledSelectionList extends AbstractListWidget {
 	}
 
 	@Override
-	protected int getMaxScrollPosition() {
-		return this.field_2343.getMaxPosition();
+	public int getMaxScrollPosition() {
+		return this.realmsSimpleScrolledSelectionList.getMaxPosition();
 	}
 
 	@Override
-	protected int getScrollbarPosition() {
-		return this.field_2343.getScrollbarPosition();
+	public int getScrollbarPosition() {
+		return this.realmsSimpleScrolledSelectionList.getScrollbarPosition();
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		if (this.visible) {
 			this.drawBackground();
 			int k = this.getScrollbarPosition();
@@ -72,8 +72,8 @@ public class SimpleScrolledSelectionList extends AbstractListWidget {
 			BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 			int m = this.x + this.width / 2 - this.getEntryWidth() / 2 + 2;
 			int n = this.y + 4 - (int)this.scrollY;
-			if (this.field_2170) {
-				this.method_1940(m, n, tessellator);
+			if (this.renderHeader) {
+				this.renderHeader(m, n, tessellator);
 			}
 
 			this.drawEntries(m, n, i, j, f);
@@ -116,7 +116,7 @@ public class SimpleScrolledSelectionList extends AbstractListWidget {
 				tessellator.draw();
 			}
 
-			this.method_1942(i, j);
+			this.renderDecorations(i, j);
 			GlStateManager.enableTexture();
 			GlStateManager.shadeModel(7424);
 			GlStateManager.enableAlphaTest();
@@ -126,21 +126,21 @@ public class SimpleScrolledSelectionList extends AbstractListWidget {
 
 	@Override
 	public boolean mouseScrolled(double d, double e, double f) {
-		return this.field_2343.mouseScrolled(d, e, f) ? true : super.mouseScrolled(d, e, f);
+		return this.realmsSimpleScrolledSelectionList.mouseScrolled(d, e, f) ? true : super.mouseScrolled(d, e, f);
 	}
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		return this.field_2343.mouseClicked(d, e, i) ? true : super.mouseClicked(d, e, i);
+		return this.realmsSimpleScrolledSelectionList.mouseClicked(d, e, i) ? true : super.mouseClicked(d, e, i);
 	}
 
 	@Override
 	public boolean mouseReleased(double d, double e, int i) {
-		return this.field_2343.mouseReleased(d, e, i);
+		return this.realmsSimpleScrolledSelectionList.mouseReleased(d, e, i);
 	}
 
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		return this.field_2343.mouseDragged(d, e, i, f, g);
+		return this.realmsSimpleScrolledSelectionList.mouseDragged(d, e, i, f, g);
 	}
 }

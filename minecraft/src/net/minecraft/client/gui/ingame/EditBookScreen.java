@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.audio.SoundLoader;
+import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.WrittenBookScreen;
@@ -126,7 +126,7 @@ public class EditBookScreen extends Screen {
 			}
 
 			@Override
-			public void playPressedSound(SoundLoader soundLoader) {
+			public void playDownSound(SoundManager soundManager) {
 				EditBookScreen.this.playPageTurnSound();
 			}
 		});
@@ -137,7 +137,7 @@ public class EditBookScreen extends Screen {
 			}
 
 			@Override
-			public void playPressedSound(SoundLoader soundLoader) {
+			public void playDownSound(SoundManager soundManager) {
 				EditBookScreen.this.playPageTurnSound();
 			}
 		});
@@ -145,7 +145,7 @@ public class EditBookScreen extends Screen {
 	}
 
 	protected void playPageTurnSound() {
-		MinecraftClient.getInstance().getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
+		MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
 	}
 
 	private String stripFromatting(String string) {
@@ -199,7 +199,7 @@ public class EditBookScreen extends Screen {
 		this.buttonSign.visible = !this.signing;
 		this.buttonCancel.visible = this.signing;
 		this.buttonFinalize.visible = this.signing;
-		this.buttonFinalize.enabled = !this.title.trim().isEmpty();
+		this.buttonFinalize.active = !this.title.trim().isEmpty();
 	}
 
 	private void removeEmptyPages() {
@@ -498,7 +498,7 @@ public class EditBookScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
 		int k = (this.screenWidth - 192) / 2;
@@ -545,7 +545,7 @@ public class EditBookScreen extends Screen {
 			}
 		}
 
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	private int getStringWidth(String string) {

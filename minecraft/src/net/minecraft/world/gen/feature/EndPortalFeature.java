@@ -24,17 +24,17 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(
 			new BlockPos(blockPos.getX() - 4, blockPos.getY() - 1, blockPos.getZ() - 4), new BlockPos(blockPos.getX() + 4, blockPos.getY() + 32, blockPos.getZ() + 4)
 		)) {
-			double d = blockPos2.distanceTo(blockPos.getX(), blockPos2.getY(), blockPos.getZ());
-			if (d <= 3.5) {
+			boolean bl = blockPos2.method_19771(blockPos, 2.5);
+			if (bl || blockPos2.method_19771(blockPos, 3.5)) {
 				if (blockPos2.getY() < blockPos.getY()) {
-					if (d <= 2.5) {
+					if (bl) {
 						this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
 					} else if (blockPos2.getY() < blockPos.getY()) {
 						this.setBlockState(iWorld, blockPos2, Blocks.field_10471.getDefaultState());
 					}
 				} else if (blockPos2.getY() > blockPos.getY()) {
 					this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
-				} else if (d > 2.5) {
+				} else if (!bl) {
 					this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
 				} else if (this.open) {
 					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10027.getDefaultState());

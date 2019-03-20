@@ -11,7 +11,6 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.util.SystemUtil;
@@ -42,8 +41,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(long l) {
 		if (!this.field_4616.isEmpty()) {
-			long m = SystemUtil.getMeasuringTimeMs();
-			this.field_4618 = this.client.gameRenderer.method_19418();
+			this.field_4618 = this.client.gameRenderer.getCamera();
 			this.field_4621 = this.field_4618.getPos().x;
 			this.field_4620 = this.field_4618.getPos().y;
 			this.field_4619 = this.field_4618.getPos().z;
@@ -55,98 +53,102 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 			GlStateManager.color4f(0.0F, 1.0F, 0.0F, 0.75F);
 			GlStateManager.disableTexture();
 			GlStateManager.lineWidth(6.0F);
-
-			for (Integer integer : this.field_4616.keySet()) {
-				Path path = (Path)this.field_4616.get(integer);
-				float f = (Float)this.field_4617.get(integer);
-				this.method_3868(path);
-				PathNode pathNode = path.method_48();
-				if (!(this.method_3867(pathNode) > 40.0F)) {
-					WorldRenderer.drawBox(
-						new BoundingBox(
-								(double)((float)pathNode.x + 0.25F),
-								(double)((float)pathNode.y + 0.25F),
-								(double)pathNode.z + 0.25,
-								(double)((float)pathNode.x + 0.75F),
-								(double)((float)pathNode.y + 0.75F),
-								(double)((float)pathNode.z + 0.75F)
-							)
-							.offset(-this.field_4621, -this.field_4620, -this.field_4619),
-						0.0F,
-						1.0F,
-						0.0F,
-						0.5F
-					);
-
-					for (int i = 0; i < path.getLength(); i++) {
-						PathNode pathNode2 = path.getNode(i);
-						if (!(this.method_3867(pathNode2) > 40.0F)) {
-							float g = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
-							float h = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
-							WorldRenderer.drawBox(
-								new BoundingBox(
-										(double)((float)pathNode2.x + 0.5F - f),
-										(double)((float)pathNode2.y + 0.01F * (float)i),
-										(double)((float)pathNode2.z + 0.5F - f),
-										(double)((float)pathNode2.x + 0.5F + f),
-										(double)((float)pathNode2.y + 0.25F + 0.01F * (float)i),
-										(double)((float)pathNode2.z + 0.5F + f)
-									)
-									.offset(-this.field_4621, -this.field_4620, -this.field_4619),
-								g,
-								0.0F,
-								h,
-								0.5F
-							);
-						}
-					}
-				}
-			}
-
-			for (Integer integerx : this.field_4616.keySet()) {
-				Path path = (Path)this.field_4616.get(integerx);
-
-				for (PathNode pathNode2 : path.method_37()) {
-					if (!(this.method_3867(pathNode2) > 40.0F)) {
-						DebugRenderer.method_3714(String.format("%s", pathNode2.type), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
-						DebugRenderer.method_3714(
-							String.format(Locale.ROOT, "%.2f", pathNode2.field_43), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536
-						);
-					}
-				}
-
-				for (PathNode pathNode2x : path.method_43()) {
-					if (!(this.method_3867(pathNode2x) > 40.0F)) {
-						DebugRenderer.method_3714(
-							String.format("%s", pathNode2x.type), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.75, (double)pathNode2x.z + 0.5, -16776961
-						);
-						DebugRenderer.method_3714(
-							String.format(Locale.ROOT, "%.2f", pathNode2x.field_43), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.25, (double)pathNode2x.z + 0.5, -16776961
-						);
-					}
-				}
-
-				for (int j = 0; j < path.getLength(); j++) {
-					PathNode pathNode = path.getNode(j);
-					if (!(this.method_3867(pathNode) > 40.0F)) {
-						DebugRenderer.method_3714(String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
-						DebugRenderer.method_3714(
-							String.format(Locale.ROOT, "%.2f", pathNode.field_43), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1
-						);
-					}
-				}
-			}
-
-			for (Integer integer2 : (Integer[])this.field_4615.keySet().toArray(new Integer[0])) {
-				if (m - (Long)this.field_4615.get(integer2) > 20000L) {
-					this.field_4616.remove(integer2);
-					this.field_4615.remove(integer2);
-				}
-			}
-
+			this.method_19698();
 			GlStateManager.enableTexture();
 			GlStateManager.disableBlend();
 			GlStateManager.popMatrix();
+		}
+	}
+
+	private void method_19698() {
+		long l = SystemUtil.getMeasuringTimeMs();
+
+		for (Integer integer : this.field_4616.keySet()) {
+			Path path = (Path)this.field_4616.get(integer);
+			float f = (Float)this.field_4617.get(integer);
+			this.method_3868(path);
+			PathNode pathNode = path.method_48();
+			if (!(this.method_3867(pathNode) > 40.0F)) {
+				DebugRenderer.method_19695(
+					new BoundingBox(
+							(double)((float)pathNode.x + 0.25F),
+							(double)((float)pathNode.y + 0.25F),
+							(double)pathNode.z + 0.25,
+							(double)((float)pathNode.x + 0.75F),
+							(double)((float)pathNode.y + 0.75F),
+							(double)((float)pathNode.z + 0.75F)
+						)
+						.offset(-this.field_4621, -this.field_4620, -this.field_4619),
+					0.0F,
+					1.0F,
+					0.0F,
+					0.5F
+				);
+
+				for (int i = 0; i < path.getLength(); i++) {
+					PathNode pathNode2 = path.getNode(i);
+					if (!(this.method_3867(pathNode2) > 40.0F)) {
+						float g = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
+						float h = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
+						DebugRenderer.method_19695(
+							new BoundingBox(
+									(double)((float)pathNode2.x + 0.5F - f),
+									(double)((float)pathNode2.y + 0.01F * (float)i),
+									(double)((float)pathNode2.z + 0.5F - f),
+									(double)((float)pathNode2.x + 0.5F + f),
+									(double)((float)pathNode2.y + 0.25F + 0.01F * (float)i),
+									(double)((float)pathNode2.z + 0.5F + f)
+								)
+								.offset(-this.field_4621, -this.field_4620, -this.field_4619),
+							g,
+							0.0F,
+							h,
+							0.5F
+						);
+					}
+				}
+			}
+		}
+
+		for (Integer integerx : this.field_4616.keySet()) {
+			Path path = (Path)this.field_4616.get(integerx);
+
+			for (PathNode pathNode2 : path.method_37()) {
+				if (!(this.method_3867(pathNode2) > 40.0F)) {
+					DebugRenderer.method_3714(String.format("%s", pathNode2.type), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.75, (double)pathNode2.z + 0.5, -65536);
+					DebugRenderer.method_3714(
+						String.format(Locale.ROOT, "%.2f", pathNode2.field_43), (double)pathNode2.x + 0.5, (double)pathNode2.y + 0.25, (double)pathNode2.z + 0.5, -65536
+					);
+				}
+			}
+
+			for (PathNode pathNode2x : path.method_43()) {
+				if (!(this.method_3867(pathNode2x) > 40.0F)) {
+					DebugRenderer.method_3714(
+						String.format("%s", pathNode2x.type), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.75, (double)pathNode2x.z + 0.5, -16776961
+					);
+					DebugRenderer.method_3714(
+						String.format(Locale.ROOT, "%.2f", pathNode2x.field_43), (double)pathNode2x.x + 0.5, (double)pathNode2x.y + 0.25, (double)pathNode2x.z + 0.5, -16776961
+					);
+				}
+			}
+
+			for (int j = 0; j < path.getLength(); j++) {
+				PathNode pathNode = path.getNode(j);
+				if (!(this.method_3867(pathNode) > 40.0F)) {
+					DebugRenderer.method_3714(String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1);
+					DebugRenderer.method_3714(
+						String.format(Locale.ROOT, "%.2f", pathNode.field_43), (double)pathNode.x + 0.5, (double)pathNode.y + 0.25, (double)pathNode.z + 0.5, -1
+					);
+				}
+			}
+		}
+
+		for (Integer integer2 : (Integer[])this.field_4615.keySet().toArray(new Integer[0])) {
+			if (l - (Long)this.field_4615.get(integer2) > 20000L) {
+				this.field_4616.remove(integer2);
+				this.field_4615.remove(integer2);
+			}
 		}
 	}
 

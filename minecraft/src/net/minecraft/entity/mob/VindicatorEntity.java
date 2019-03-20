@@ -51,6 +51,7 @@ public class VindicatorEntity extends IllagerEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new VindicatorEntity.VindicatorBreakDoorGoal(this));
 		this.goalSelector.add(2, new VindicatorEntity.class_3762(this));
+		this.goalSelector.add(3, new RaiderEntity.class_4223(this, 10.0F));
 		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
 		this.targetSelector.add(1, new AvoidGoal(this, RaiderEntity.class).method_6318());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
@@ -71,15 +72,6 @@ public class VindicatorEntity extends IllagerEntity {
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(5.0);
 	}
 
-	@Environment(EnvType.CLIENT)
-	public boolean method_7169() {
-		return this.method_6991(1);
-	}
-
-	public void method_7171(boolean bl) {
-		this.method_6992(1, bl);
-	}
-
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
@@ -91,7 +83,7 @@ public class VindicatorEntity extends IllagerEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public IllagerEntity.State method_6990() {
-		return this.method_7169() ? IllagerEntity.State.field_7211 : IllagerEntity.State.field_7207;
+		return this.method_6510() ? IllagerEntity.State.field_7211 : IllagerEntity.State.field_7207;
 	}
 
 	@Override
@@ -117,12 +109,6 @@ public class VindicatorEntity extends IllagerEntity {
 	@Override
 	protected void initEquipment(LocalDifficulty localDifficulty) {
 		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8475));
-	}
-
-	@Override
-	protected void mobTick() {
-		super.mobTick();
-		this.method_7171(this.getTarget() != null);
 	}
 
 	@Override

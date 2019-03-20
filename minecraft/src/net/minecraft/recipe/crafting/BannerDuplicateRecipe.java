@@ -34,8 +34,12 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 					return false;
 				}
 
-				boolean bl = BannerBlockEntity.getPatternCount(itemStack3) > 0;
-				if (bl) {
+				int j = BannerBlockEntity.getPatternCount(itemStack3);
+				if (j > 6) {
+					return false;
+				}
+
+				if (j > 0) {
 					if (itemStack != null) {
 						return false;
 					}
@@ -57,10 +61,13 @@ public class BannerDuplicateRecipe extends SpecialCraftingRecipe {
 	public ItemStack method_17702(CraftingInventory craftingInventory) {
 		for (int i = 0; i < craftingInventory.getInvSize(); i++) {
 			ItemStack itemStack = craftingInventory.getInvStack(i);
-			if (!itemStack.isEmpty() && BannerBlockEntity.getPatternCount(itemStack) > 0) {
-				ItemStack itemStack2 = itemStack.copy();
-				itemStack2.setAmount(1);
-				return itemStack2;
+			if (!itemStack.isEmpty()) {
+				int j = BannerBlockEntity.getPatternCount(itemStack);
+				if (j > 0 && j <= 6) {
+					ItemStack itemStack2 = itemStack.copy();
+					itemStack2.setAmount(1);
+					return itemStack2;
+				}
 			}
 		}
 

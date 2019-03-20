@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -32,6 +31,7 @@ import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -252,7 +252,7 @@ public class PandaEntity extends AnimalEntity {
 		this.goalSelector.add(10, new LookAroundGoal(this));
 		this.goalSelector.add(12, new PandaEntity.class_1448(this));
 		this.goalSelector.add(13, new FollowParentGoal(this, 1.25));
-		this.goalSelector.add(14, new class_1394(this, 1.0));
+		this.goalSelector.add(14, new WanderAroundFarGoal(this, 1.0));
 		this.targetSelector.add(1, new PandaEntity.class_1444(this).method_6318(new Class[0]));
 	}
 
@@ -283,7 +283,8 @@ public class PandaEntity extends AnimalEntity {
 		return this.getProductGene() == PandaEntity.Gene.field_6793;
 	}
 
-	public boolean isAggressive() {
+	@Override
+	public boolean method_6510() {
 		return this.getProductGene() == PandaEntity.Gene.field_6789;
 	}
 
@@ -295,7 +296,7 @@ public class PandaEntity extends AnimalEntity {
 	@Override
 	public boolean attack(Entity entity) {
 		this.playSound(SoundEvents.field_14552, 1.0F, 1.0F);
-		if (!this.isAggressive()) {
+		if (!this.method_6510()) {
 			this.field_6770 = true;
 		}
 
@@ -303,8 +304,8 @@ public class PandaEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.isWorried()) {
 			if (this.world.isThundering() && !this.isInsideWater()) {
 				this.method_6513(true);
@@ -636,7 +637,7 @@ public class PandaEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	protected SoundEvent getAmbientSound() {
-		if (this.isAggressive()) {
+		if (this.method_6510()) {
 			return SoundEvents.field_14801;
 		} else {
 			return this.isWorried() ? SoundEvents.field_14715 : SoundEvents.field_14604;
@@ -893,7 +894,7 @@ public class PandaEntity extends AnimalEntity {
 
 		@Override
 		protected void method_6319(MobEntity mobEntity, LivingEntity livingEntity) {
-			if (mobEntity instanceof PandaEntity && ((PandaEntity)mobEntity).isAggressive()) {
+			if (mobEntity instanceof PandaEntity && ((PandaEntity)mobEntity).method_6510()) {
 				mobEntity.setTarget(livingEntity);
 			}
 		}

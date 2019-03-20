@@ -21,8 +21,7 @@ public class TakeoffPhase extends AbstractPhase {
 	public void method_6855() {
 		if (!this.field_7056 && this.field_7054 != null) {
 			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-			double d = this.dragon.squaredDistanceToCenter(blockPos);
-			if (d > 100.0) {
+			if (!blockPos.method_19769(this.dragon.getPos(), 100.0)) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 			}
 		} else {

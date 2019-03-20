@@ -21,6 +21,12 @@ public class MinecartSoundInstance extends MovingSoundInstance {
 		this.attenuationType = SoundInstance.AttenuationType.NONE;
 		this.repeat = true;
 		this.repeatDelay = 0;
+		this.volume = 0.0F;
+	}
+
+	@Override
+	public boolean method_4785() {
+		return true;
 	}
 
 	@Override

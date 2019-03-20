@@ -116,7 +116,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		.put(EntityPose.field_18077, EntitySize.resizeable(0.6F, 0.6F))
 		.put(EntityPose.field_18079, EntitySize.resizeable(0.6F, 0.6F))
 		.put(EntityPose.field_18080, EntitySize.resizeable(0.6F, 0.6F))
-		.put(EntityPose.field_18081, EntitySize.resizeable(0.6F, 1.65F))
+		.put(EntityPose.field_18081, EntitySize.resizeable(0.6F, 1.5F))
 		.put(EntityPose.field_18082, EntitySize.constant(0.2F, 0.2F))
 		.build();
 	private static final TrackedData<Float> ABSORPTION_AMOUNT = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -192,7 +192,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.noClip = this.isSpectator();
 		if (this.isSpectator()) {
 			this.onGround = false;
@@ -220,7 +220,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.updateBubbleColumn();
 		this.updateInWater();
-		super.update();
+		super.tick();
 		if (!this.world.isClient && this.container != null && !this.container.canUse(this)) {
 			this.closeGui();
 			this.container = this.playerContainer;
@@ -1805,7 +1805,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public TextComponent getDisplayName() {
-		TextComponent textComponent = ScoreboardTeam.method_1142(this.getScoreboardTeam(), this.getName());
+		TextComponent textComponent = ScoreboardTeam.modifyText(this.getScoreboardTeam(), this.getName());
 		return this.method_7299(textComponent);
 	}
 
@@ -1835,7 +1835,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			case field_18077:
 				return 0.4F;
 			case field_18081:
-				return 1.54F;
+				return 1.27F;
 			default:
 				return 1.62F;
 		}

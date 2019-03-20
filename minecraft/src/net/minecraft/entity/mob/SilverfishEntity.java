@@ -105,9 +105,9 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.field_6283 = this.yaw;
-		super.update();
+		super.tick();
 	}
 
 	@Override

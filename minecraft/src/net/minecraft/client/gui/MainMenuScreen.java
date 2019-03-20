@@ -214,7 +214,7 @@ public class MainMenuScreen extends Screen {
 		LevelStorage levelStorage = this.client.getLevelStorage();
 		LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
 		if (levelProperties == null) {
-			this.buttonResetDemo.enabled = false;
+			this.buttonResetDemo.active = false;
 		}
 	}
 
@@ -241,7 +241,7 @@ public class MainMenuScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		if (this.backgroundFadeStart == 0L && this.doBackgroundFade) {
 			this.backgroundFadeStart = SystemUtil.getMeasuringTimeMs();
 		}
@@ -303,12 +303,12 @@ public class MainMenuScreen extends Screen {
 			}
 
 			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-				abstractButtonWidget.setOpacity(h);
+				abstractButtonWidget.setAlpha(h);
 			}
 
-			super.draw(i, j, f);
+			super.render(i, j, f);
 			if (this.areRealmsNotificationsEnabled() && h >= 1.0F) {
-				this.realmsNotificationGui.draw(i, j, f);
+				this.realmsNotificationGui.render(i, j, f);
 			}
 		}
 	}

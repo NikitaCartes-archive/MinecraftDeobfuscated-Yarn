@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.SoundLoader;
+import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.MathHelper;
@@ -25,18 +25,18 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 	}
 
 	@Override
-	protected int getTextureId(boolean bl) {
+	protected int getYImage(boolean bl) {
 		return 0;
 	}
 
 	@Override
-	protected String getNarrationString() {
-		return I18n.translate("gui.narrate.slider", this.getText());
+	protected String getNarrationMessage() {
+		return I18n.translate("gui.narrate.slider", this.getMessage());
 	}
 
 	@Override
-	protected void drawBackground(MinecraftClient minecraftClient, int i, int j) {
-		minecraftClient.getTextureManager().bindTexture(WIDGET_TEX);
+	protected void renderBg(MinecraftClient minecraftClient, int i, int j) {
+		minecraftClient.getTextureManager().bindTexture(WIDGETS_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawTexturedRect(this.x + (int)(this.progress * (double)(this.width - 8)), this.y, 0, 66, 4, 20);
 		this.drawTexturedRect(this.x + (int)(this.progress * (double)(this.width - 8)) + 4, this.y, 196, 66, 4, 20);
@@ -45,9 +45,9 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (i == 0) {
-			boolean bl = this.isSelected(d, e);
+			boolean bl = this.clicked(d, e);
 			if (bl) {
-				this.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
+				this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 				this.changeProgress(d);
 				return true;
 			}
@@ -92,18 +92,18 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 	}
 
 	@Override
-	protected void onDragged(double d, double e, double f, double g) {
+	protected void onDrag(double d, double e, double f, double g) {
 		this.changeProgress(d);
-		super.onDragged(d, e, f, g);
+		super.onDrag(d, e, f, g);
 	}
 
 	@Override
-	public void playPressedSound(SoundLoader soundLoader) {
+	public void playDownSound(SoundManager soundManager) {
 	}
 
 	@Override
-	public void onReleased(double d, double e) {
-		super.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
+	public void onRelease(double d, double e) {
+		super.playDownSound(MinecraftClient.getInstance().getSoundManager());
 	}
 
 	protected abstract void updateText();

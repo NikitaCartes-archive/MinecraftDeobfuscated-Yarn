@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1675;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -15,6 +14,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -131,8 +131,8 @@ public class FishHookEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.owner == null) {
 			this.invalidate();
 		} else if (this.world.isClient || !this.method_6959()) {
@@ -257,7 +257,7 @@ public class FishHookEntity extends Entity {
 	}
 
 	private void method_6958() {
-		HitResult hitResult = class_1675.method_18074(
+		HitResult hitResult = ProjectileUtil.method_18074(
 			this,
 			this.getBoundingBox().method_18804(this.getVelocity()).expand(1.0),
 			entity -> !entity.isSpectator() && (entity.doesCollide() || entity instanceof ItemEntity) && (entity != this.owner || this.field_7166 >= 5),

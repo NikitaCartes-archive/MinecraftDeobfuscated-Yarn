@@ -44,7 +44,7 @@ public class NoticeScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 70, 16777215);
 		int k = 90;
@@ -54,7 +54,7 @@ public class NoticeScreen extends Screen {
 			k += 9;
 		}
 
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class NoticeScreen extends Screen {
 		super.update();
 		if (--this.field_2347 == 0) {
 			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-				abstractButtonWidget.enabled = true;
+				abstractButtonWidget.active = true;
 			}
 		}
 	}

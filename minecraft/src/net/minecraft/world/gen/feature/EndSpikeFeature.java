@@ -65,8 +65,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		for (BlockPos blockPos : BlockPos.iterateBoxPositions(
 			new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i)
 		)) {
-			if (blockPos.squaredDistanceTo((double)spike.getCenterX(), (double)blockPos.getY(), (double)spike.getCenterZ()) <= (double)(i * i + 1)
-				&& blockPos.getY() < spike.getHeight()) {
+			if (blockPos.method_19771(new BlockPos(spike.getCenterX(), blockPos.getY(), spike.getCenterZ()), (double)i) && blockPos.getY() < spike.getHeight()) {
 				this.setBlockState(iWorld, blockPos, Blocks.field_10540.getDefaultState());
 			} else if (blockPos.getY() > 65) {
 				this.setBlockState(iWorld, blockPos, Blocks.field_10124.getDefaultState());

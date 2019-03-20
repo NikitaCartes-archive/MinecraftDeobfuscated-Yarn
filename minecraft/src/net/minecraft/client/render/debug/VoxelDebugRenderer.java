@@ -24,7 +24,7 @@ public class VoxelDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(long l) {
-		Camera camera = this.field_4540.gameRenderer.method_19418();
+		Camera camera = this.field_4540.gameRenderer.getCamera();
 		double d = (double)SystemUtil.getMeasuringTimeNano();
 		if (d - this.field_4541 > 1.0E8) {
 			this.field_4541 = d;

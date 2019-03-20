@@ -230,7 +230,7 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.lastLocation = this.location;
 		this.location = this.checkLocation();
 		if (this.location != BoatEntity.Location.field_7717 && this.location != BoatEntity.Location.field_7716) {
@@ -254,7 +254,7 @@ public class BoatEntity extends Entity {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;
-		super.update();
+		super.tick();
 		this.method_7555();
 		if (this.method_5787()) {
 			if (this.getPassengerList().isEmpty() || !(this.getPassengerList().get(0) instanceof PlayerEntity)) {

@@ -15,7 +15,10 @@ public class CustomPayloadS2CPacket implements Packet<ClientPlayPacketListener> 
 	public static final Identifier DEBUG_CAVES = new Identifier("debug/caves");
 	public static final Identifier DEBUG_STRUCTURES = new Identifier("debug/structures");
 	public static final Identifier DEBUG_WORLDGEN_ATTEMPT = new Identifier("debug/worldgen_attempt");
-	public static final Identifier DEBUG_POI = new Identifier("debug/poi");
+	public static final Identifier field_18957 = new Identifier("debug/poi_ticket_count");
+	public static final Identifier field_18958 = new Identifier("debug/poi_added");
+	public static final Identifier field_18959 = new Identifier("debug/poi_removed");
+	public static final Identifier field_18960 = new Identifier("debug/village_sections");
 	public static final Identifier DEBUG_GOAL_SELECTOR = new Identifier("debug/goal_selector");
 	public static final Identifier DEBUG_BRAIN = new Identifier("debug/brain");
 	private Identifier channel;

@@ -45,7 +45,7 @@ public class AudioSettingsScreen extends Screen {
 				@Override
 				public void onPressed() {
 					GameOption.SUBTITLES.method_18491(AudioSettingsScreen.this.client.options);
-					this.setText(GameOption.SUBTITLES.method_18495(AudioSettingsScreen.this.client.options));
+					this.setMessage(GameOption.SUBTITLES.method_18495(AudioSettingsScreen.this.client.options));
 					AudioSettingsScreen.this.client.options.write();
 				}
 			}
@@ -64,9 +64,9 @@ public class AudioSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 15, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

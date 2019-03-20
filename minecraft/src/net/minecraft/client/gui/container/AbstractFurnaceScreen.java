@@ -56,14 +56,14 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		if (this.recipeBook.isOpen() && this.narrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBook.draw(i, j, f);
+			this.recipeBook.render(i, j, f);
 		} else {
-			this.recipeBook.draw(i, j, f);
-			super.draw(i, j, f);
+			this.recipeBook.render(i, j, f);
+			super.render(i, j, f);
 			this.recipeBook.drawGhostSlots(this.left, this.top, true, f);
 		}
 

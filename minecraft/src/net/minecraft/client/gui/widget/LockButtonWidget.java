@@ -22,11 +22,11 @@ public abstract class LockButtonWidget extends ButtonWidget {
 	}
 
 	@Override
-	public void drawButton(int i, int j, float f) {
-		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGET_TEX);
+	public void renderButton(int i, int j, float f) {
+		MinecraftClient.getInstance().getTextureManager().bindTexture(ButtonWidget.WIDGETS_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		LockButtonWidget.IconLocation iconLocation;
-		if (!this.enabled) {
+		if (!this.active) {
 			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_DISABLED : LockButtonWidget.IconLocation.UNLOCKED_DISABLED;
 		} else if (this.isHovered()) {
 			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED_HOVERED : LockButtonWidget.IconLocation.UNLOCKED_HOVERED;

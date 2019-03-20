@@ -8,21 +8,21 @@ import net.minecraft.realms.RealmsSliderButton;
 
 @Environment(EnvType.CLIENT)
 public class SliderButtonWidget extends SliderWidget implements RealmsButton<RealmsSliderButton> {
-	private final RealmsSliderButton field_18729;
+	private final RealmsSliderButton button;
 
 	public SliderButtonWidget(RealmsSliderButton realmsSliderButton, int i, int j, int k, int l, double d) {
 		super(i, j, k, l, d);
-		this.field_18729 = realmsSliderButton;
+		this.button = realmsSliderButton;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return this.enabled;
+		return this.active;
 	}
 
 	@Override
 	public void setEnabled(boolean bl) {
-		this.enabled = bl;
+		this.active = bl;
 	}
 
 	@Override
@@ -36,8 +36,8 @@ public class SliderButtonWidget extends SliderWidget implements RealmsButton<Rea
 	}
 
 	@Override
-	public void setText(String string) {
-		super.setText(string);
+	public void setMessage(String string) {
+		super.setMessage(string);
 	}
 
 	@Override
@@ -50,23 +50,23 @@ public class SliderButtonWidget extends SliderWidget implements RealmsButton<Rea
 	}
 
 	@Override
-	public void method_19347(double d, double e) {
-		this.field_18729.onClick(d, e);
+	public void onClick(double d, double e) {
+		this.button.onClick(d, e);
 	}
 
 	@Override
-	public void onReleased(double d, double e) {
-		this.field_18729.onRelease(d, e);
+	public void onRelease(double d, double e) {
+		this.button.onRelease(d, e);
 	}
 
 	@Override
-	protected void updateText() {
-		this.field_18729.updateMessage();
+	public void updateText() {
+		this.button.updateMessage();
 	}
 
 	@Override
-	protected void onProgressChanged() {
-		this.field_18729.applyValue();
+	public void onProgressChanged() {
+		this.button.applyValue();
 	}
 
 	public double getValue() {
@@ -78,17 +78,21 @@ public class SliderButtonWidget extends SliderWidget implements RealmsButton<Rea
 	}
 
 	@Override
-	public void drawBackground(MinecraftClient minecraftClient, int i, int j) {
-		super.drawBackground(minecraftClient, i, j);
+	public void renderBg(MinecraftClient minecraftClient, int i, int j) {
+		super.renderBg(minecraftClient, i, j);
 	}
 
-	public RealmsSliderButton method_19364() {
-		return this.field_18729;
+	public RealmsSliderButton getButton() {
+		return this.button;
 	}
 
 	@Override
-	public int getTextureId(boolean bl) {
-		return this.field_18729.getYImage(bl);
+	public int getYImage(boolean bl) {
+		return this.button.getYImage(bl);
+	}
+
+	public int getSuperYImage(boolean bl) {
+		return super.getYImage(bl);
 	}
 
 	public int getHeight() {

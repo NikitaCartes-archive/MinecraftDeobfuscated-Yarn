@@ -15,14 +15,14 @@ public class HopperScreen extends ContainerScreen<HopperContainer> {
 
 	public HopperScreen(HopperContainer hopperContainer, PlayerInventory playerInventory, TextComponent textComponent) {
 		super(hopperContainer, playerInventory, textComponent);
-		this.field_2558 = false;
+		this.passEvents = false;
 		this.height = 133;
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 

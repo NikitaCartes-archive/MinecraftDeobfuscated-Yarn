@@ -58,9 +58,9 @@ public class VexEntity extends HostileEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.noClip = true;
-		super.update();
+		super.tick();
 		this.noClip = false;
 		this.setUnaffectedByGravity(true);
 		if (this.alive && --this.lifeTicks <= 0) {

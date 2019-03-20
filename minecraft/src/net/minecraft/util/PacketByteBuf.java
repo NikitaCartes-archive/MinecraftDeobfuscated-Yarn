@@ -288,6 +288,11 @@ public class PacketByteBuf extends ByteBuf {
 		}
 	}
 
+	@Environment(EnvType.CLIENT)
+	public String method_19772() {
+		return this.readString(32767);
+	}
+
 	public String readString(int i) {
 		int j = this.readVarInt();
 		if (j > i * 4) {

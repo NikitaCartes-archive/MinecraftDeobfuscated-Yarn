@@ -9,11 +9,13 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToRaidCenterGoal;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.entity.mob.PatrolEntity;
 import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -254,13 +256,84 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		@Override
 		public void tick() {
-			if (this.field_16603.squaredDistanceTo(this.field_16603.getNavigation().getTargetPos()) < 2.0) {
+			if (this.field_16603.getNavigation().getTargetPos().method_19769(this.field_16603.getPos(), 1.414)) {
 				List<ItemEntity> list = this.field_16603
 					.world
 					.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
 				if (!list.isEmpty()) {
 					this.field_16603.pickupItem((ItemEntity)list.get(0));
 				}
+			}
+		}
+	}
+
+	public class class_4223 extends Goal {
+		private final RaiderEntity field_18883;
+		private final float field_18884;
+		public final TargetPredicate field_18881 = new TargetPredicate()
+			.setBaseMaxDistance(8.0)
+			.ignoreEntityTargetRules()
+			.includeInvulnerable()
+			.includeTeammates()
+			.includeHidden()
+			.ignoreDistanceScalingFactor();
+
+		public class_4223(IllagerEntity illagerEntity, float f) {
+			this.field_18883 = illagerEntity;
+			this.field_18884 = f * f;
+			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		}
+
+		@Override
+		public boolean canStart() {
+			return this.field_18883.isRaidCenterSet()
+				&& this.field_18883.getTarget() != null
+				&& !this.field_18883.method_6510()
+				&& !(this.field_18883.getAttacker() instanceof PlayerEntity);
+		}
+
+		@Override
+		public void start() {
+			super.start();
+			this.field_18883.getNavigation().stop();
+
+			for (RaiderEntity raiderEntity : this.field_18883
+				.world
+				.method_18466(RaiderEntity.class, this.field_18881, this.field_18883, this.field_18883.getBoundingBox().expand(8.0, 8.0, 8.0))) {
+				raiderEntity.setTarget(this.field_18883.getTarget());
+			}
+		}
+
+		@Override
+		public void onRemove() {
+			super.onRemove();
+			LivingEntity livingEntity = this.field_18883.getTarget();
+			if (livingEntity != null) {
+				for (RaiderEntity raiderEntity : this.field_18883
+					.world
+					.method_18466(RaiderEntity.class, this.field_18881, this.field_18883, this.field_18883.getBoundingBox().expand(8.0, 8.0, 8.0))) {
+					raiderEntity.setTarget(livingEntity);
+					raiderEntity.method_19540(true);
+				}
+
+				this.field_18883.method_19540(true);
+			}
+		}
+
+		@Override
+		public void tick() {
+			LivingEntity livingEntity = this.field_18883.getTarget();
+			if (livingEntity != null) {
+				if (this.field_18883.squaredDistanceTo(livingEntity) > (double)this.field_18884) {
+					this.field_18883.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
+					if (this.field_18883.random.nextInt(50) == 0) {
+						this.field_18883.playAmbientSound();
+					}
+				} else {
+					this.field_18883.method_19540(true);
+				}
+
+				super.tick();
 			}
 		}
 	}

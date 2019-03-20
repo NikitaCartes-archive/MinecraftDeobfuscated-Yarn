@@ -42,7 +42,7 @@ public class LanguageSettingsScreen extends Screen {
 				public void onPressed() {
 					GameOption.FORCE_UNICODE_FONT.method_18491(LanguageSettingsScreen.this.settings);
 					LanguageSettingsScreen.this.settings.write();
-					this.setText(GameOption.FORCE_UNICODE_FONT.method_18495(LanguageSettingsScreen.this.settings));
+					this.setMessage(GameOption.FORCE_UNICODE_FONT.method_18495(LanguageSettingsScreen.this.settings));
 					LanguageSettingsScreen.this.method_2181();
 				}
 			}
@@ -60,8 +60,8 @@ public class LanguageSettingsScreen extends Screen {
 							LanguageSettingsScreen.this.settings.language = languageSelectionEntry.languageDefinition.getCode();
 							LanguageSettingsScreen.this.client.reloadResources();
 							LanguageSettingsScreen.this.fontRenderer.setRightToLeft(LanguageSettingsScreen.this.languageManager.isRightToLeft());
-							LanguageSettingsScreen.this.doneButton.setText(I18n.translate("gui.done"));
-							LanguageSettingsScreen.this.forceUnicodeButton.setText(GameOption.FORCE_UNICODE_FONT.method_18495(LanguageSettingsScreen.this.settings));
+							LanguageSettingsScreen.this.doneButton.setMessage(I18n.translate("gui.done"));
+							LanguageSettingsScreen.this.forceUnicodeButton.setMessage(GameOption.FORCE_UNICODE_FONT.method_18495(LanguageSettingsScreen.this.settings));
 							LanguageSettingsScreen.this.settings.write();
 						}
 					}
@@ -78,11 +78,11 @@ public class LanguageSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
-		this.languageSelectionList.draw(i, j, f);
+	public void render(int i, int j, float f) {
+		this.languageSelectionList.render(i, j, f);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("options.language"), this.screenWidth / 2, 16, 16777215);
 		this.drawStringCentered(this.fontRenderer, "(" + I18n.translate("options.languageWarning") + ")", this.screenWidth / 2, this.screenHeight - 56, 8421504);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -138,7 +138,7 @@ public class LanguageSettingsScreen extends Screen {
 			}
 
 			if (LanguageSettingsScreen.this.selectedIndex >= 0) {
-				this.method_19350(LanguageSettingsScreen.this.selectedIndex);
+				this.centerScrollOn(LanguageSettingsScreen.this.selectedIndex);
 			}
 		}
 
@@ -148,12 +148,12 @@ public class LanguageSettingsScreen extends Screen {
 		}
 
 		@Override
-		public boolean hasFocus() {
+		public boolean isPartOfFocusCycle() {
 			return true;
 		}
 
 		@Override
-		protected void method_19351(int i) {
+		protected void moveSelection(int i) {
 			LanguageSettingsScreen.this.selectedIndex = MathHelper.clamp(LanguageSettingsScreen.this.selectedIndex + i, 0, this.getEntryCount() - 1);
 			if (LanguageSettingsScreen.this.selectedIndex >= 0) {
 				this.method_19349((EntryListWidget.Entry)this.getInputListeners().get(LanguageSettingsScreen.this.selectedIndex));
@@ -166,14 +166,14 @@ public class LanguageSettingsScreen extends Screen {
 		}
 
 		@Override
-		public void setHasFocus(boolean bl) {
+		public void onFocusChanged(boolean bl) {
 			if (bl && LanguageSettingsScreen.this.selectedIndex < 0 && this.getEntryCount() > 0) {
 				LanguageSettingsScreen.this.selectedIndex = 0;
 			}
 		}
 
 		@Override
-		protected boolean method_19352() {
+		protected boolean isFocused() {
 			return LanguageSettingsScreen.this.getFocused() == this;
 		}
 	}

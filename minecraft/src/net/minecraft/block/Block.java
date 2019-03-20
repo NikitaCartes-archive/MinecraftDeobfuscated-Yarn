@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4209;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
@@ -29,6 +28,7 @@ import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.block.BlockItem;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
@@ -450,7 +450,7 @@ public class Block implements ItemProvider {
 
 	@Deprecated
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		class_4209.method_19472(world, blockPos);
+		DebugRendererInfoManager.sendBlockUpdate(world, blockPos);
 	}
 
 	public int getTickRate(ViewableWorld viewableWorld) {

@@ -28,11 +28,11 @@ public class SevereErrorScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawGradientRect(0, 0, this.screenWidth, this.screenHeight, -12574688, -11530224);
 		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 90, 16777215);
 		this.drawStringCentered(this.fontRenderer, this.message, this.screenWidth / 2, 110, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Override

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
@@ -47,7 +47,7 @@ public class MoveThroughVillageGoal extends Goal {
 		} else {
 			ServerWorld serverWorld = (ServerWorld)this.field_6525.world;
 			BlockPos blockPos = new BlockPos(this.field_6525);
-			Vec3d vec3d = AiUtil.method_19108(
+			Vec3d vec3d = PathfindingUtil.findTargetStraight(
 				this.field_6525,
 				15,
 				7,
@@ -76,7 +76,7 @@ public class MoveThroughVillageGoal extends Goal {
 					this.field_6523 = mobNavigation.findPathTo(this.field_18412);
 					mobNavigation.setCanPathThroughDoors(bl);
 					if (this.field_6523 == null) {
-						Vec3d vec3d2 = AiUtil.method_6373(
+						Vec3d vec3d2 = PathfindingUtil.method_6373(
 							this.field_6525, 10, 7, new Vec3d((double)this.field_18412.getX(), (double)this.field_18412.getY(), (double)this.field_18412.getZ())
 						);
 						if (vec3d2 == null) {
@@ -108,12 +108,9 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		if (this.field_6525.getNavigation().isIdle()) {
-			return false;
-		} else {
-			float f = this.field_6525.getWidth() + (float)this.field_18414;
-			return this.field_6525.squaredDistanceTo(this.field_18412) > (double)(f * f);
-		}
+		return this.field_6525.getNavigation().isIdle()
+			? false
+			: !this.field_18412.method_19769(this.field_6525.getPos(), (double)(this.field_6525.getWidth() + (float)this.field_18414));
 	}
 
 	@Override
@@ -123,7 +120,7 @@ public class MoveThroughVillageGoal extends Goal {
 
 	@Override
 	public void onRemove() {
-		if (this.field_6525.getNavigation().isIdle() || this.field_6525.squaredDistanceTo(this.field_18412) < (double)(this.field_18414 * this.field_18414)) {
+		if (this.field_6525.getNavigation().isIdle() || this.field_18412.method_19769(this.field_6525.getPos(), (double)this.field_18414)) {
 			this.field_18413.add(this.field_18412);
 		}
 	}

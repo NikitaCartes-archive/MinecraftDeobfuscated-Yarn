@@ -118,7 +118,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 						CustomizeBuffetLevelScreen.this.field_2439 = 0;
 					}
 
-					this.setText(
+					this.setMessage(
 						I18n.translate("createWorld.customize.buffet.generatortype")
 							+ " "
 							+ I18n.translate(
@@ -147,17 +147,17 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	}
 
 	public void method_2151() {
-		this.field_2438.enabled = !this.field_2440.isEmpty();
+		this.field_2438.active = !this.field_2440.isEmpty();
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawTextureBackground(0);
-		this.field_2441.draw(i, j, f);
+		this.field_2441.render(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.field_2442, this.screenWidth / 2, 8, 16777215);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.screenWidth / 2, 30, 10526880);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.screenWidth / 2, 68, 10526880);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -183,24 +183,24 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		}
 
 		@Override
-		public boolean hasFocus() {
+		public boolean isPartOfFocusCycle() {
 			return true;
 		}
 
 		@Override
-		protected boolean method_19352() {
+		protected boolean isFocused() {
 			return CustomizeBuffetLevelScreen.this.getFocused() == this;
 		}
 
 		@Override
-		public void setHasFocus(boolean bl) {
+		public void onFocusChanged(boolean bl) {
 			if (bl && CustomizeBuffetLevelScreen.this.field_2440.isEmpty() && this.getEntryCount() > 0) {
 				CustomizeBuffetLevelScreen.this.field_2440.add(CustomizeBuffetLevelScreen.this.field_2435[0]);
 			}
 		}
 
 		@Override
-		protected void method_19351(int i) {
+		protected void moveSelection(int i) {
 			if (CustomizeBuffetLevelScreen.this.field_2440.size() == 1) {
 				CustomizeBuffetLevelScreen.this.field_2440
 					.set(

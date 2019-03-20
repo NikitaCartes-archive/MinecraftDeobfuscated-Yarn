@@ -17,7 +17,7 @@ public class ContainerScreen54 extends ContainerScreen<GenericContainer> impleme
 
 	public ContainerScreen54(GenericContainer genericContainer, PlayerInventory playerInventory, TextComponent textComponent) {
 		super(genericContainer, playerInventory, textComponent);
-		this.field_2558 = false;
+		this.passEvents = false;
 		int i = 222;
 		int j = 114;
 		this.rows = genericContainer.getRows();
@@ -25,9 +25,9 @@ public class ContainerScreen54 extends ContainerScreen<GenericContainer> impleme
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 

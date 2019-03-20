@@ -29,7 +29,7 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 
 	public PlayerInventoryScreen(PlayerEntity playerEntity) {
 		super(playerEntity.playerContainer, playerEntity.inventory, new TranslatableTextComponent("container.crafting"));
-		this.field_2558 = true;
+		this.passEvents = true;
 	}
 
 	@Override
@@ -75,15 +75,15 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.offsetGuiForEffects = !this.recipeBook.isOpen();
 		if (this.recipeBook.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
-			this.recipeBook.draw(i, j, f);
+			this.recipeBook.render(i, j, f);
 		} else {
-			this.recipeBook.draw(i, j, f);
-			super.draw(i, j, f);
+			this.recipeBook.render(i, j, f);
+			super.render(i, j, f);
 			this.recipeBook.drawGhostSlots(this.left, this.top, false, f);
 		}
 

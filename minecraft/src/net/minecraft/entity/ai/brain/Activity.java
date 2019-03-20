@@ -7,6 +7,7 @@ public class Activity {
 	public static final Activity field_18594 = register("core");
 	public static final Activity field_18595 = register("idle");
 	public static final Activity field_18596 = register("work");
+	public static final Activity field_18885 = register("play");
 	public static final Activity field_18597 = register("rest");
 	public static final Activity field_18598 = register("meet");
 	public static final Activity field_18599 = register("panic");
@@ -16,7 +17,15 @@ public class Activity {
 		this.id = string;
 	}
 
+	public String getId() {
+		return this.id;
+	}
+
 	private static Activity register(String string) {
 		return Registry.ACTIVITY.add(new Identifier(string), new Activity(string));
+	}
+
+	public String toString() {
+		return this.getId();
 	}
 }

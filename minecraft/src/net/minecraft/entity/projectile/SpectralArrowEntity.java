@@ -26,8 +26,8 @@ public class SpectralArrowEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.world.isClient && !this.inGround) {
 			this.world.addParticle(ParticleTypes.field_11213, this.x, this.y, this.z, 0.0, 0.0, 0.0);
 		}

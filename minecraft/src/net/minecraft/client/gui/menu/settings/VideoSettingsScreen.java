@@ -89,10 +89,10 @@ public class VideoSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2639.draw(i, j, f);
+		this.field_2639.render(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 5, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

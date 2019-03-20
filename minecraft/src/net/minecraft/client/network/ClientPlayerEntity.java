@@ -7,8 +7,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1104;
-import net.minecraft.class_1116;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
@@ -16,6 +14,7 @@ import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.audio.AmbientSoundLoops;
+import net.minecraft.client.audio.AmbientSoundManager;
 import net.minecraft.client.audio.ElytraSoundInstance;
 import net.minecraft.client.audio.MinecartSoundInstance;
 import net.minecraft.client.audio.PositionedSoundInstance;
@@ -66,6 +65,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.TextComponent;
+import net.minecraft.util.ClientPlayerTickable;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -81,7 +81,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public final ClientPlayNetworkHandler networkHandler;
 	private final StatHandler stats;
 	private final ClientRecipeBook recipeBook;
-	private final List<class_1104> field_3933 = Lists.<class_1104>newArrayList();
+	private final List<ClientPlayerTickable> tickables = Lists.<ClientPlayerTickable>newArrayList();
 	private int clientPermissionLevel = 0;
 	private double field_3926;
 	private double field_3940;
@@ -127,7 +127,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.recipeBook = clientRecipeBook;
 		this.client = minecraftClient;
 		this.dimension = DimensionType.field_13072;
-		this.field_3933.add(new class_1116(this, minecraftClient.getSoundLoader()));
+		this.tickables.add(new AmbientSoundManager(this, minecraftClient.getSoundManager()));
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			return false;
 		} else {
 			if (entity instanceof AbstractMinecartEntity) {
-				this.client.getSoundLoader().play(new MinecartSoundInstance(this, (AbstractMinecartEntity)entity));
+				this.client.getSoundManager().play(new MinecartSoundInstance(this, (AbstractMinecartEntity)entity));
 			}
 
 			if (entity instanceof BoatEntity) {
@@ -175,9 +175,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		if (this.world.isBlockLoaded(new BlockPos(this.x, 0.0, this.z))) {
-			super.update();
+			super.tick();
 			if (this.hasVehicle()) {
 				this.networkHandler.sendPacket(new PlayerMoveServerMessage.LookOnly(this.yaw, this.pitch, this.onGround));
 				this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.movementInputSideways, this.movementInputForward, this.input.jumping, this.input.sneaking));
@@ -189,8 +189,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 				this.method_3136();
 			}
 
-			for (class_1104 lv : this.field_3933) {
-				lv.method_4756();
+			for (ClientPlayerTickable clientPlayerTickable : this.tickables) {
+				clientPlayerTickable.tick();
 			}
 		}
 	}
@@ -526,7 +526,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (ENTITY_FLAGS.equals(trackedData) && this.isFallFlying() && !this.field_3939) {
-			this.client.getSoundLoader().play(new ElytraSoundInstance(this));
+			this.client.getSoundManager().play(new ElytraSoundInstance(this));
 		}
 	}
 
@@ -779,7 +779,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			}
 
 			if (this.field_3929 == 0.0F) {
-				this.client.getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_14669, this.random.nextFloat() * 0.4F + 0.8F));
+				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_14669, this.random.nextFloat() * 0.4F + 0.8F));
 			}
 
 			this.field_3929 += 0.0125F;
@@ -977,7 +977,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		} else {
 			if (!bl && bl2) {
 				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14756, SoundCategory.field_15256, 1.0F, 1.0F, false);
-				this.client.getSoundLoader().play(new AmbientSoundLoops.Underwater(this));
+				this.client.getSoundManager().play(new AmbientSoundLoops.Underwater(this));
 			}
 
 			if (bl && !bl2) {

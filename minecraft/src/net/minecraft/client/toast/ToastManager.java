@@ -95,7 +95,7 @@ public class ToastManager extends DrawableHelper {
 			long l = SystemUtil.getMeasuringTimeMs();
 			if (this.field_2243 == -1L) {
 				this.field_2243 = l;
-				this.field_2244.play(ToastManager.this.client.getSoundLoader());
+				this.field_2244.play(ToastManager.this.client.getSoundManager());
 			}
 
 			if (this.field_2244 == Toast.Visibility.field_2210 && l - this.field_2243 <= 600L) {
@@ -109,7 +109,7 @@ public class ToastManager extends DrawableHelper {
 			if (visibility != this.field_2244) {
 				this.field_2243 = l - (long)((int)((1.0F - this.method_2003(l)) * 600.0F));
 				this.field_2244 = visibility;
-				this.field_2244.play(ToastManager.this.client.getSoundLoader());
+				this.field_2244.play(ToastManager.this.client.getSoundManager());
 			}
 
 			return this.field_2244 == Toast.Visibility.field_2209 && l - this.field_2243 > 600L;

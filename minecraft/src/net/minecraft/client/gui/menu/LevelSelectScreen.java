@@ -100,10 +100,10 @@ public class LevelSelectScreen extends Screen {
 				LevelSelectScreen.this.client.openScreen(LevelSelectScreen.this.parent);
 			}
 		});
-		this.selectButton.enabled = false;
-		this.deleteButton.enabled = false;
-		this.editButton.enabled = false;
-		this.recreateButton.enabled = false;
+		this.selectButton.active = false;
+		this.deleteButton.active = false;
+		this.editButton.active = false;
+		this.recreateButton.active = false;
 		this.focusOn(this.searchBox);
 	}
 
@@ -118,12 +118,12 @@ public class LevelSelectScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.field_3222 = null;
-		this.levelList.draw(i, j, f);
-		this.searchBox.draw(i, j, f);
+		this.levelList.render(i, j, f);
+		this.searchBox.render(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 8, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		if (this.field_3222 != null) {
 			this.drawTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.field_3222)), i, j);
 		}
@@ -135,10 +135,10 @@ public class LevelSelectScreen extends Screen {
 
 	public void method_2746(@Nullable LevelSelectEntryWidget levelSelectEntryWidget) {
 		boolean bl = levelSelectEntryWidget != null;
-		this.selectButton.enabled = bl;
-		this.deleteButton.enabled = bl;
-		this.editButton.enabled = bl;
-		this.recreateButton.enabled = bl;
+		this.selectButton.active = bl;
+		this.deleteButton.active = bl;
+		this.editButton.active = bl;
+		this.recreateButton.active = bl;
 	}
 
 	@Override

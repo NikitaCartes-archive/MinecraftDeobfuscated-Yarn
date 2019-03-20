@@ -48,8 +48,8 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.fuel > 0) {
 			this.fuel--;
 		}

@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.class_1675;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.item.BowItem;
@@ -48,13 +48,13 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 	@Override
 	public void start() {
 		super.start();
-		this.field_6576.setArmsRaised(true);
+		this.field_6576.method_19540(true);
 	}
 
 	@Override
 	public void onRemove() {
 		super.onRemove();
-		this.field_6576.setArmsRaised(false);
+		this.field_6576.method_19540(false);
 		this.field_6572 = 0;
 		this.field_6574 = -1;
 		this.field_6576.method_6021();
@@ -122,7 +122,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 					}
 				}
 			} else if (--this.field_6574 <= 0 && this.field_6572 >= -60) {
-				this.field_6576.setCurrentHand(class_1675.method_18812(this.field_6576, Items.field_8102));
+				this.field_6576.setCurrentHand(ProjectileUtil.method_18812(this.field_6576, Items.field_8102));
 			}
 		}
 	}

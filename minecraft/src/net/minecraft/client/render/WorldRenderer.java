@@ -226,6 +226,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				GlProgramManager.init();
 			}
 
+			if (this.entityOutlineShader != null) {
+				this.entityOutlineShader.close();
+			}
+
 			Identifier identifier = new Identifier("shaders/post/entity_outline.json");
 
 			try {
@@ -981,6 +985,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 		GlStateManager.depthMask(true);
 		GlStateManager.enableTexture();
+		GlStateManager.disableBlend();
 		GlStateManager.enableAlphaTest();
 	}
 
@@ -989,7 +994,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			this.renderEndSky();
 		} else if (this.client.world.dimension.hasVisibleSky()) {
 			GlStateManager.disableTexture();
-			net.minecraft.util.math.Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.method_19418().getBlockPos(), f);
+			net.minecraft.util.math.Vec3d vec3d = this.world.getSkyColor(this.client.gameRenderer.getCamera().getBlockPos(), f);
 			float g = (float)vec3d.x;
 			float h = (float)vec3d.y;
 			float i = (float)vec3d.z;
@@ -1751,18 +1756,6 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		bufferBuilder.vertex(g, e, f).color(j, k, l, 0.0F).next();
 	}
 
-	public static void drawBox(BoundingBox boundingBox, float f, float g, float h, float i) {
-		drawBox(boundingBox.minX, boundingBox.minY, boundingBox.minZ, boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ, f, g, h, i);
-	}
-
-	public static void drawBox(double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
-		buildBox(bufferBuilder, d, e, f, g, h, i, j, k, l, m);
-		tessellator.draw();
-	}
-
 	public static void buildBox(BufferBuilder bufferBuilder, double d, double e, double f, double g, double h, double i, float j, float k, float l, float m) {
 		bufferBuilder.vertex(d, e, f).color(j, k, l, m).next();
 		bufferBuilder.vertex(d, e, f).color(j, k, l, m).next();
@@ -1841,7 +1834,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	public void method_8562(@Nullable SoundEvent soundEvent, BlockPos blockPos) {
 		SoundInstance soundInstance = (SoundInstance)this.field_4119.get(blockPos);
 		if (soundInstance != null) {
-			this.client.getSoundLoader().stop(soundInstance);
+			this.client.getSoundManager().stop(soundInstance);
 			this.field_4119.remove(blockPos);
 		}
 
@@ -1853,7 +1846,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 			SoundInstance var5 = PositionedSoundInstance.record(soundEvent, (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ());
 			this.field_4119.put(blockPos, var5);
-			this.client.getSoundLoader().play(var5);
+			this.client.getSoundManager().play(var5);
 		}
 
 		this.method_3247(this.world, blockPos, soundEvent != null);
@@ -1893,7 +1886,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 
 	@Nullable
 	private Particle spawnParticle(ParticleParameters particleParameters, boolean bl, boolean bl2, double d, double e, double f, double g, double h, double i) {
-		Camera camera = this.client.gameRenderer.method_19418();
+		Camera camera = this.client.gameRenderer.getCamera();
 		if (this.client != null && camera.isReady() && this.client.particleManager != null) {
 			ParticlesOption particlesOption = this.getRandomParticleSpawnChance(bl2);
 			if (bl) {
@@ -1929,7 +1922,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 			case 1023:
 			case 1028:
 			case 1038:
-				Camera camera = this.client.gameRenderer.method_19418();
+				Camera camera = this.client.gameRenderer.getCamera();
 				if (camera.isReady()) {
 					double d = (double)blockPos.getX() - camera.getPos().x;
 					double e = (double)blockPos.getY() - camera.getPos().y;
@@ -2053,7 +2046,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.world.playSound(blockPos, SoundEvents.field_14833, SoundCategory.field_15245, 0.3F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1032:
-				this.client.getSoundLoader().play(PositionedSoundInstance.master(SoundEvents.field_14716, random.nextFloat() * 0.4F + 0.8F));
+				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_14716, random.nextFloat() * 0.4F + 0.8F));
 				break;
 			case 1033:
 				this.world.playSound(blockPos, SoundEvents.field_14817, SoundCategory.field_15245, 1.0F, 1.0F, false);

@@ -28,7 +28,7 @@ public class NearestPlayersSensor extends Sensor<LivingEntity> {
 	}
 
 	@Override
-	protected Set<MemoryModuleType<?>> getOutputMemoryModules() {
+	public Set<MemoryModuleType<?>> getOutputMemoryModules() {
 		return ImmutableSet.of(MemoryModuleType.field_18443, MemoryModuleType.field_18444);
 	}
 }

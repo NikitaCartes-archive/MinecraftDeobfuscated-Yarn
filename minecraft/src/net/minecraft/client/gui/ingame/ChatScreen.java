@@ -327,7 +327,7 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	protected void method_2237(String string, boolean bl) {
+	protected void insertText(String string, boolean bl) {
 		if (bl) {
 			this.chatField.setText(string);
 		} else {
@@ -357,9 +357,9 @@ public class ChatScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		drawRect(2, this.screenHeight - 14, this.screenWidth - 2, this.screenHeight - 2, this.client.options.method_19344(Integer.MIN_VALUE));
-		this.chatField.draw(i, j, f);
+		this.chatField.render(i, j, f);
 		if (this.suggestionsWindow != null) {
 			this.suggestionsWindow.draw(i, j);
 		} else {
@@ -383,7 +383,7 @@ public class ChatScreen extends Screen {
 			this.drawTextComponentHover(textComponent, i, j);
 		}
 
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Override

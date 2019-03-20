@@ -2,13 +2,12 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_3884;
 import net.minecraft.client.model.Cuboid;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class VillagerEntityModel<T extends Entity> extends EntityModel<T> implements ModelWithHead, class_3884 {
+public class VillagerEntityModel<T extends Entity> extends EntityModel<T> implements ModelWithHead, ModelWithHat {
 	protected final Cuboid head;
 	protected Cuboid field_17141;
 	protected final Cuboid field_17142;

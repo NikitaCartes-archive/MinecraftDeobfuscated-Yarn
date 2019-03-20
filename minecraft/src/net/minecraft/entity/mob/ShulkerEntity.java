@@ -184,8 +184,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		BlockPos blockPos = (BlockPos)this.dataTracker.get(ATTACHED_BLOCK).orElse(null);
 		if (blockPos == null && !this.world.isClient) {
 			blockPos = new BlockPos(this);

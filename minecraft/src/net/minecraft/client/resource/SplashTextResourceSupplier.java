@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
@@ -18,6 +19,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SupplyingResourceReloadListener;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Session;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
@@ -25,6 +27,11 @@ public class SplashTextResourceSupplier extends SupplyingResourceReloadListener<
 	private static final Identifier RESOURCE_ID = new Identifier("texts/splashes.txt");
 	private static final Random RANDOM = new Random();
 	private final List<String> splashTexts = Lists.<String>newArrayList();
+	private final Session field_18934;
+
+	public SplashTextResourceSupplier(Session session) {
+		this.field_18934 = session;
+	}
 
 	protected List<String> method_18176(ResourceManager resourceManager, Profiler profiler) {
 		try {
@@ -91,8 +98,12 @@ public class SplashTextResourceSupplier extends SupplyingResourceReloadListener<
 			return "Happy new year!";
 		} else if (calendar.get(2) + 1 == 10 && calendar.get(5) == 31) {
 			return "OOoooOOOoooo! Spooky!";
+		} else if (this.splashTexts.isEmpty()) {
+			return "missingno";
 		} else {
-			return this.splashTexts.isEmpty() ? "missingno" : (String)this.splashTexts.get(RANDOM.nextInt(this.splashTexts.size()));
+			return this.field_18934 != null && RANDOM.nextInt(this.splashTexts.size()) == 42
+				? this.field_18934.getUsername().toUpperCase(Locale.ROOT) + " IS YOU"
+				: (String)this.splashTexts.get(RANDOM.nextInt(this.splashTexts.size()));
 		}
 	}
 }

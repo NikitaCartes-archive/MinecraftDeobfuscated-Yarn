@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +15,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 
@@ -33,16 +35,27 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 		List<BlockPos> list2 = (List<BlockPos>)Arrays.stream(path.getNodes())
 			.map(pathNode -> new BlockPos(pathNode.x, pathNode.y, pathNode.z))
 			.collect(Collectors.toList());
-		Set<BlockPos> set = (Set<BlockPos>)list.stream()
+		Set<BlockPos> set = this.method_19567(serverWorld, list, list2);
+		int i = path.getCurrentNodeIndex() - 1;
+		this.method_19568(serverWorld, list2, set, i);
+	}
+
+	private Set<BlockPos> method_19567(ServerWorld serverWorld, List<GlobalPos> list, List<BlockPos> list2) {
+		return (Set<BlockPos>)list.stream()
 			.filter(globalPos -> globalPos.getDimension() == serverWorld.getDimension().getType())
 			.map(GlobalPos::getPos)
 			.filter(list2::contains)
 			.collect(Collectors.toSet());
-		int i = path.getCurrentNodeIndex() - 1;
+	}
+
+	private void method_19568(ServerWorld serverWorld, List<BlockPos> list, Set<BlockPos> set, int i) {
 		set.forEach(blockPos -> {
-			int j = list2.indexOf(blockPos);
+			int j = list.indexOf(blockPos);
 			BlockState blockState = serverWorld.getBlockState(blockPos);
-			((DoorBlock)blockState.getBlock()).setOpen(serverWorld, blockPos, j >= i);
+			Block block = blockState.getBlock();
+			if (BlockTags.field_15494.contains(block) && block instanceof DoorBlock) {
+				((DoorBlock)block).setOpen(serverWorld, blockPos, j >= i);
+			}
 		});
 	}
 }

@@ -1,9 +1,11 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -12,14 +14,14 @@ import net.minecraft.entity.ai.brain.EntityPosWrapper;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.TraderRecipe;
 
-public class InteractTask extends Task<LivingEntity> {
+public class InteractTask extends Task<VillagerEntity> {
+	@Nullable
 	private ItemStack field_18392;
-	private final ArrayList<ItemStack> field_18393 = new ArrayList();
+	private final List<ItemStack> field_18393 = Lists.<ItemStack>newArrayList();
 	private int field_18394;
 	private int field_18395;
 	private int field_18396;
@@ -28,51 +30,37 @@ public class InteractTask extends Task<LivingEntity> {
 		super(i, j);
 	}
 
-	@Override
-	public boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		Brain<?> brain = livingEntity.getBrain();
+	public boolean method_19599(ServerWorld serverWorld, VillagerEntity villagerEntity) {
+		Brain<?> brain = villagerEntity.getBrain();
 		if (!brain.getMemory(MemoryModuleType.field_18447).isPresent()) {
 			return false;
 		} else {
-			LivingEntity livingEntity2 = (LivingEntity)brain.getMemory(MemoryModuleType.field_18447).get();
-			return livingEntity.getType() == EntityType.VILLAGER
-				&& livingEntity2.getType() == EntityType.PLAYER
+			LivingEntity livingEntity = (LivingEntity)brain.getMemory(MemoryModuleType.field_18447).get();
+			return livingEntity.getType() == EntityType.PLAYER
+				&& villagerEntity.isValid()
 				&& livingEntity.isValid()
-				&& livingEntity2.isValid()
-				&& !livingEntity.isChild()
-				&& livingEntity.squaredDistanceTo(livingEntity2) <= 17.0;
+				&& !villagerEntity.isChild()
+				&& villagerEntity.squaredDistanceTo(livingEntity) <= 17.0;
 		}
 	}
 
-	@Override
-	public boolean shouldKeepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		return this.shouldRun(serverWorld, livingEntity) && this.field_18396 > 0 && livingEntity.getBrain().getMemory(MemoryModuleType.field_18447).isPresent();
+	public boolean method_19600(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		return this.method_19599(serverWorld, villagerEntity)
+			&& this.field_18396 > 0
+			&& villagerEntity.getBrain().getMemory(MemoryModuleType.field_18447).isPresent();
 	}
 
-	@Override
-	public void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		super.run(serverWorld, livingEntity, l);
-		Brain<?> brain = livingEntity.getBrain();
-		PlayerEntity playerEntity = (PlayerEntity)brain.getMemory(MemoryModuleType.field_18447).get();
-		if (brain.hasMemoryModule(MemoryModuleType.field_18446)) {
-			brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(playerEntity));
-		}
-
+	public void method_19602(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		super.run(serverWorld, villagerEntity, l);
+		this.method_19603(villagerEntity);
 		this.field_18394 = 0;
 		this.field_18395 = 0;
 		this.field_18396 = 40;
 	}
 
-	@Override
-	public void keepRunning(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		Brain<?> brain = livingEntity.getBrain();
-		PlayerEntity playerEntity = (PlayerEntity)brain.getMemory(MemoryModuleType.field_18447).get();
-		VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
-		if (brain.hasMemoryModule(MemoryModuleType.field_18446)) {
-			brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(playerEntity));
-		}
-
-		this.method_19027(playerEntity, villagerEntity);
+	public void method_19604(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		LivingEntity livingEntity = this.method_19603(villagerEntity);
+		this.method_19027(livingEntity, villagerEntity);
 		if (!this.field_18393.isEmpty()) {
 			this.method_19026(villagerEntity);
 		} else {
@@ -83,11 +71,10 @@ public class InteractTask extends Task<LivingEntity> {
 		this.field_18396--;
 	}
 
-	@Override
-	public void method_18926(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		super.method_18926(serverWorld, livingEntity, l);
-		livingEntity.getBrain().forget(MemoryModuleType.field_18447);
-		livingEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+	public void method_19605(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		super.stopInternal(serverWorld, villagerEntity, l);
+		villagerEntity.getBrain().forget(MemoryModuleType.field_18447);
+		villagerEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
 		this.field_18392 = null;
 	}
 
@@ -96,35 +83,46 @@ public class InteractTask extends Task<LivingEntity> {
 		return ImmutableSet.of(Pair.of(MemoryModuleType.field_18447, MemoryModuleState.field_18456));
 	}
 
-	private void method_19027(PlayerEntity playerEntity, VillagerEntity villagerEntity) {
+	private void method_19027(LivingEntity livingEntity, VillagerEntity villagerEntity) {
 		boolean bl = false;
-		ItemStack itemStack = playerEntity.getMainHandStack();
-		if (this.field_18392 == null || this.method_19028(itemStack)) {
+		ItemStack itemStack = livingEntity.getMainHandStack();
+		if (this.field_18392 == null || !ItemStack.areEqualIgnoreTags(this.field_18392, itemStack)) {
 			this.field_18392 = itemStack;
 			bl = true;
 			this.field_18393.clear();
 		}
 
 		if (bl && !this.field_18392.isEmpty()) {
-			for (TraderRecipe traderRecipe : villagerEntity.getRecipes()) {
-				if (!traderRecipe.isDisabled()
-					&& (
-						ItemStack.areEqualIgnoreTags(this.field_18392, traderRecipe.getSecondBuyItem())
-							|| ItemStack.areEqualIgnoreTags(this.field_18392, traderRecipe.method_19272())
-					)) {
-					this.field_18393.add(traderRecipe.getModifiableSellItem());
-				}
-			}
-
+			this.method_19601(villagerEntity);
 			if (!this.field_18393.isEmpty()) {
 				this.field_18396 = 900;
-				villagerEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, (ItemStack)this.field_18393.get(0));
+				this.method_19598(villagerEntity);
 			}
 		}
 	}
 
-	private boolean method_19028(ItemStack itemStack) {
-		return !ItemStack.areEqualIgnoreTags(this.field_18392, itemStack);
+	private void method_19598(VillagerEntity villagerEntity) {
+		villagerEntity.setEquippedStack(EquipmentSlot.HAND_MAIN, (ItemStack)this.field_18393.get(0));
+	}
+
+	private void method_19601(VillagerEntity villagerEntity) {
+		for (TraderRecipe traderRecipe : villagerEntity.getRecipes()) {
+			if (!traderRecipe.isDisabled() && this.method_19028(traderRecipe)) {
+				this.field_18393.add(traderRecipe.getModifiableSellItem());
+			}
+		}
+	}
+
+	private boolean method_19028(TraderRecipe traderRecipe) {
+		return ItemStack.areEqualIgnoreTags(this.field_18392, traderRecipe.getDiscountedFirstBuyItem())
+			|| ItemStack.areEqualIgnoreTags(this.field_18392, traderRecipe.getSecondBuyItem());
+	}
+
+	private LivingEntity method_19603(VillagerEntity villagerEntity) {
+		Brain<?> brain = villagerEntity.getBrain();
+		LivingEntity livingEntity = (LivingEntity)brain.getMemory(MemoryModuleType.field_18447).get();
+		brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(livingEntity));
+		return livingEntity;
 	}
 
 	private void method_19026(VillagerEntity villagerEntity) {

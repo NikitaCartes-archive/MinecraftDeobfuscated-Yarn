@@ -45,9 +45,9 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 				}
 			}
 
-			return SoundLoader.SOUND_MISSING;
+			return SoundManager.SOUND_MISSING;
 		} else {
-			return SoundLoader.SOUND_MISSING;
+			return SoundManager.SOUND_MISSING;
 		}
 	}
 
@@ -61,9 +61,9 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 	}
 
 	@Override
-	public void method_18188(SoundManager soundManager) {
+	public void addTo(SoundSystem soundSystem) {
 		for (SoundContainer<Sound> soundContainer : this.sounds) {
-			soundContainer.method_18188(soundManager);
+			soundContainer.addTo(soundSystem);
 		}
 	}
 }

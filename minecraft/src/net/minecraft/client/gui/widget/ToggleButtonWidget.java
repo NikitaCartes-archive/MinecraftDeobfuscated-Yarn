@@ -42,7 +42,7 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 	}
 
 	@Override
-	public void drawButton(int i, int j, float f) {
+	public void renderButton(int i, int j, float f) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.getTextureManager().bindTexture(this.texture);
 		GlStateManager.disableDepthTest();
@@ -62,11 +62,11 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		if (this.enabled && this.visible) {
+		if (this.active && this.visible) {
 			if (i == 0) {
-				boolean bl = this.isSelected(d, e);
+				boolean bl = this.clicked(d, e);
 				if (bl) {
-					this.playPressedSound(MinecraftClient.getInstance().getSoundLoader());
+					this.playDownSound(MinecraftClient.getInstance().getSoundManager());
 					return true;
 				}
 			}

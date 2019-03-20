@@ -18,10 +18,8 @@ public class PanicTask extends Task<LivingEntity> {
 
 	@Override
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		Brain<?> brain = livingEntity.getBrain();
-		boolean bl = brain.hasMemoryModule(MemoryModuleType.field_18451) && brain.getMemory(MemoryModuleType.field_18451).isPresent();
-		boolean bl2 = brain.hasMemoryModule(MemoryModuleType.field_18453) && brain.getMemory(MemoryModuleType.field_18453).isPresent();
-		if (bl || bl2) {
+		if (method_19575(livingEntity) || method_19574(livingEntity)) {
+			Brain<?> brain = livingEntity.getBrain();
 			if (!brain.hasActivity(Activity.field_18599)) {
 				brain.forget(MemoryModuleType.field_18449);
 				brain.forget(MemoryModuleType.field_18445);
@@ -32,5 +30,13 @@ public class PanicTask extends Task<LivingEntity> {
 
 			brain.method_18880(Activity.field_18599);
 		}
+	}
+
+	public static boolean method_19574(LivingEntity livingEntity) {
+		return livingEntity.getBrain().hasMemoryModule(MemoryModuleType.field_18453);
+	}
+
+	public static boolean method_19575(LivingEntity livingEntity) {
+		return livingEntity.getBrain().hasMemoryModule(MemoryModuleType.field_18451);
 	}
 }

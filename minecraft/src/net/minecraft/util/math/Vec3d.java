@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-public class Vec3d {
+public class Vec3d implements Position {
 	public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
 	public final double x;
 	public final double y;
@@ -76,6 +76,11 @@ public class Vec3d {
 
 	public Vec3d multiply(double d) {
 		return this.multiply(d, d, d);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Vec3d method_19637() {
+		return this.multiply(-1.0);
 	}
 
 	public Vec3d multiply(Vec3d vec3d) {
@@ -163,5 +168,20 @@ public class Vec3d {
 
 	public double getComponentAlongAxis(Direction.Axis axis) {
 		return axis.choose(this.x, this.y, this.z);
+	}
+
+	@Override
+	public final double getX() {
+		return this.x;
+	}
+
+	@Override
+	public final double getY() {
+		return this.y;
+	}
+
+	@Override
+	public final double getZ() {
+		return this.z;
 	}
 }

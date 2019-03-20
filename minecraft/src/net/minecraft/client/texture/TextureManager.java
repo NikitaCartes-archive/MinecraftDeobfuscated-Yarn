@@ -129,7 +129,7 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 	public CompletableFuture<Void> apply(
 		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
 	) {
-		return CompletableFuture.allOf(MainMenuScreen.method_18105(this, executor), this.method_18168(AbstractButtonWidget.WIDGET_TEX, executor))
+		return CompletableFuture.allOf(MainMenuScreen.method_18105(this, executor), this.method_18168(AbstractButtonWidget.WIDGETS_LOCATION, executor))
 			.thenCompose(helper::waitForAll)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();

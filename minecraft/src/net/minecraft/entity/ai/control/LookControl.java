@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 
 public class LookControl {
 	protected final MobEntity entity;
@@ -16,6 +17,10 @@ public class LookControl {
 
 	public LookControl(MobEntity mobEntity) {
 		this.entity = mobEntity;
+	}
+
+	public void method_19615(Vec3d vec3d) {
+		this.lookAt(vec3d.x, vec3d.y, vec3d.z, (float)this.entity.method_5986(), (float)this.entity.method_5978());
 	}
 
 	public void lookAt(Entity entity, float f, float g) {

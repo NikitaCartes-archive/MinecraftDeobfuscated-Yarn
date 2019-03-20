@@ -117,13 +117,13 @@ public class ResourcePackSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawTextureBackground(0);
-		this.availableList.draw(i, j, f);
-		this.selectedList.draw(i, j, f);
+		this.availableList.render(i, j, f);
+		this.selectedList.render(i, j, f);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("resourcePack.title"), this.screenWidth / 2, 16, 16777215);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("resourcePack.folderInfo"), this.screenWidth / 2 - 77, this.screenHeight - 26, 8421504);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	public void method_2660() {

@@ -95,14 +95,14 @@ public class NewLevelPresetsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.field_2521.draw(i, j, f);
+		this.field_2521.render(i, j, f);
 		this.drawStringCentered(this.fontRenderer, this.field_2522, this.screenWidth / 2, 8, 16777215);
 		this.drawString(this.fontRenderer, this.field_2520, 50, 30, 10526880);
 		this.drawString(this.fontRenderer, this.field_2524, 50, 70, 10526880);
-		this.field_2523.draw(i, j, f);
-		super.draw(i, j, f);
+		this.field_2523.render(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Override
@@ -112,7 +112,7 @@ public class NewLevelPresetsScreen extends Screen {
 	}
 
 	public void method_2191() {
-		this.field_2525.enabled = this.method_2197();
+		this.field_2525.active = this.method_2197();
 	}
 
 	private boolean method_2197() {
@@ -248,7 +248,7 @@ public class NewLevelPresetsScreen extends Screen {
 		}
 
 		@Override
-		protected void method_19351(int i) {
+		protected void moveSelection(int i) {
 			NewLevelPresetsScreen.this.field_18746 = MathHelper.clamp(NewLevelPresetsScreen.this.field_18746 + i, 0, this.getEntryCount() - 1);
 			if (NewLevelPresetsScreen.this.field_18746 > -1 && NewLevelPresetsScreen.this.field_18746 < NewLevelPresetsScreen.field_2518.size()) {
 				this.method_19349((EntryListWidget.Entry)this.getInputListeners().get(NewLevelPresetsScreen.this.field_18746));
@@ -258,17 +258,17 @@ public class NewLevelPresetsScreen extends Screen {
 		}
 
 		@Override
-		protected boolean method_19352() {
+		protected boolean isFocused() {
 			return NewLevelPresetsScreen.this.getFocused() == this;
 		}
 
 		@Override
-		public boolean hasFocus() {
+		public boolean isPartOfFocusCycle() {
 			return true;
 		}
 
 		@Override
-		public void setHasFocus(boolean bl) {
+		public void onFocusChanged(boolean bl) {
 			if (bl && NewLevelPresetsScreen.this.field_18746 < 0) {
 				NewLevelPresetsScreen.this.field_18746 = 0;
 				NewLevelPresetsScreen.this.method_2191();

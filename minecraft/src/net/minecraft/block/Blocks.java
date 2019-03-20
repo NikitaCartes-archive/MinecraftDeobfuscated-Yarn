@@ -1217,6 +1217,9 @@ public class Blocks {
 		"smooth_stone_slab", new SlabBlock(Block.Settings.of(Material.STONE, MaterialColor.STONE).strength(2.0F, 6.0F))
 	);
 	public static final Block field_10007 = register("sandstone_slab", new SlabBlock(Block.Settings.of(Material.STONE, MaterialColor.SAND).strength(2.0F, 6.0F)));
+	public static final Block field_18890 = register(
+		"cut_sandstone_slab", new SlabBlock(Block.Settings.of(Material.STONE, MaterialColor.SAND).strength(2.0F, 6.0F))
+	);
 	public static final Block field_10298 = register(
 		"petrified_oak_slab", new SlabBlock(Block.Settings.of(Material.STONE, MaterialColor.WOOD).strength(2.0F, 6.0F))
 	);
@@ -1233,6 +1236,9 @@ public class Blocks {
 	public static final Block field_10237 = register("quartz_slab", new SlabBlock(Block.Settings.of(Material.STONE, MaterialColor.QUARTZ).strength(2.0F, 6.0F)));
 	public static final Block field_10624 = register(
 		"red_sandstone_slab", new SlabBlock(Block.Settings.of(Material.STONE, MaterialColor.ORANGE).strength(2.0F, 6.0F))
+	);
+	public static final Block field_18891 = register(
+		"cut_red_sandstone_slab", new SlabBlock(Block.Settings.of(Material.STONE, MaterialColor.ORANGE).strength(2.0F, 6.0F))
 	);
 	public static final Block field_10175 = register("purpur_slab", new SlabBlock(Block.Settings.of(Material.STONE, MaterialColor.MAGENTA).strength(2.0F, 6.0F)));
 	public static final Block field_10360 = register("smooth_stone", new Block(Block.Settings.of(Material.STONE, MaterialColor.STONE).strength(2.0F, 6.0F)));

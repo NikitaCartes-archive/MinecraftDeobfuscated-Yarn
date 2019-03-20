@@ -3,7 +3,6 @@ package net.minecraft.entity.passive;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,6 +24,7 @@ import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -79,7 +79,7 @@ public class RabbitEntity extends AnimalEntity {
 		this.goalSelector.add(4, new RabbitEntity.RabbitFleeGoal(this, WolfEntity.class, 10.0F, 2.2, 2.2));
 		this.goalSelector.add(4, new RabbitEntity.RabbitFleeGoal(this, HostileEntity.class, 4.0F, 2.2, 2.2));
 		this.goalSelector.add(5, new RabbitEntity.class_1470(this));
-		this.goalSelector.add(6, new class_1394(this, 0.6));
+		this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.6));
 		this.goalSelector.add(11, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
 	}
 

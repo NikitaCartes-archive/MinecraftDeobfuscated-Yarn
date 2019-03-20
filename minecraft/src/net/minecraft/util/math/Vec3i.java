@@ -67,33 +67,28 @@ public class Vec3i implements Comparable<Vec3i> {
 		);
 	}
 
-	public double distanceTo(int i, int j, int k) {
-		double d = (double)(this.getX() - i);
-		double e = (double)(this.getY() - j);
-		double f = (double)(this.getZ() - k);
-		return Math.sqrt(d * d + e * e + f * f);
+	public boolean method_19771(Vec3i vec3i, double d) {
+		return this.squaredDistanceToCenter((double)vec3i.x, (double)vec3i.y, (double)vec3i.z, false) < d * d;
 	}
 
-	public double distanceTo(Vec3i vec3i) {
-		return this.distanceTo(vec3i.getX(), vec3i.getY(), vec3i.getZ());
-	}
-
-	public double squaredDistanceTo(double d, double e, double f) {
-		double g = (double)this.getX() - d;
-		double h = (double)this.getY() - e;
-		double i = (double)this.getZ() - f;
-		return g * g + h * h + i * i;
-	}
-
-	public double squaredDistanceToCenter(double d, double e, double f) {
-		double g = (double)this.getX() + 0.5 - d;
-		double h = (double)this.getY() + 0.5 - e;
-		double i = (double)this.getZ() + 0.5 - f;
-		return g * g + h * h + i * i;
+	public boolean method_19769(Position position, double d) {
+		return this.squaredDistanceToCenter(position.getX(), position.getY(), position.getZ(), true) < d * d;
 	}
 
 	public double squaredDistanceTo(Vec3i vec3i) {
-		return this.squaredDistanceTo((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ());
+		return this.squaredDistanceToCenter((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ(), true);
+	}
+
+	public double method_19770(Position position, boolean bl) {
+		return this.squaredDistanceToCenter(position.getX(), position.getY(), position.getZ(), bl);
+	}
+
+	public double squaredDistanceToCenter(double d, double e, double f, boolean bl) {
+		double g = bl ? 0.5 : 0.0;
+		double h = (double)this.getX() + g - d;
+		double i = (double)this.getY() + g - e;
+		double j = (double)this.getZ() + g - f;
+		return h * h + i * i + j * j;
 	}
 
 	public int method_19455(Vec3i vec3i) {

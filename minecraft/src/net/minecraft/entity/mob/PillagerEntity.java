@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1675;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.util.math.Quaternion;
@@ -21,6 +20,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.AvoidGoal;
@@ -38,6 +38,7 @@ import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
@@ -69,6 +70,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
+		this.goalSelector.add(2, new RaiderEntity.class_4223(this, 10.0F));
 		this.goalSelector.add(3, new CrossbowAttackGoal<>(this, 1.0, 8.0F));
 		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
 		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 15.0F, 1.0F));
@@ -105,11 +107,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	}
 
 	@Override
-	public void setArmsRaised(boolean bl) {
-		this.method_6992(1, bl);
-	}
-
-	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
 		ListTag listTag = new ListTag();
@@ -127,12 +124,12 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	@Environment(EnvType.CLIENT)
 	@Override
 	public IllagerEntity.State method_6990() {
-		if (this.hasArmsRaised()) {
-			return IllagerEntity.State.field_7211;
-		} else if (this.isCharging()) {
+		if (this.isCharging()) {
 			return IllagerEntity.State.field_7210;
+		} else if (this.method_18809(Items.field_8399)) {
+			return IllagerEntity.State.field_7213;
 		} else {
-			return this.method_18809(Items.field_8399) ? IllagerEntity.State.field_7213 : IllagerEntity.State.field_7207;
+			return this.method_6510() ? IllagerEntity.State.field_7211 : IllagerEntity.State.field_7207;
 		}
 	}
 
@@ -222,7 +219,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ItemStack itemStack = this.getStackInHand(class_1675.method_18812(this, Items.field_8399));
+		ItemStack itemStack = this.getStackInHand(ProjectileUtil.method_18812(this, Items.field_8399));
 		if (this.method_18809(Items.field_8399)) {
 			CrossbowItem.shootAllProjectiles(this.world, this, itemStack, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		}
@@ -256,12 +253,6 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 		Vector3f vector3f2 = new Vector3f(vec3d2);
 		vector3f2.method_19262(quaternion2);
 		return vector3f2;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasArmsRaised() {
-		return this.method_6991(1);
 	}
 
 	public BasicInventory getInventory() {

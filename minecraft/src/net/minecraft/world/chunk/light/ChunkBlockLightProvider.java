@@ -25,7 +25,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	}
 
 	@Override
-	protected int getBaseLevel(long l, long m, int i) {
+	protected int getUpdatedLevel(long l, long m, int i) {
 		if (m == Long.MAX_VALUE) {
 			return 15;
 		} else if (l == Long.MAX_VALUE) {
@@ -36,14 +36,14 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	}
 
 	@Override
-	protected void processLevel(long l, int i, boolean bl) {
+	protected void updateNeighborsRecursively(long l, int i, boolean bl) {
 		long m = ChunkSectionPos.toChunkLong(l);
 
 		for (Direction direction : DIRECTIONS_BLOCKLIGHT) {
 			long n = BlockPos.offset(l, direction);
 			long o = ChunkSectionPos.toChunkLong(n);
 			if (m == o || this.lightStorage.hasChunk(o)) {
-				this.scheduleUpdateRecursively(l, n, i, bl);
+				this.updateRecursively(l, n, i, bl);
 			}
 		}
 	}
@@ -52,7 +52,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	protected int getMergedLevel(long l, long m, int i) {
 		int j = i;
 		if (Long.MAX_VALUE != m) {
-			int k = this.getBaseLevel(Long.MAX_VALUE, l, 0);
+			int k = this.getUpdatedLevel(Long.MAX_VALUE, l, 0);
 			if (i > k) {
 				j = k;
 			}
@@ -77,7 +77,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 				}
 
 				if (chunkNibbleArray2 != null) {
-					int q = this.getBaseLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
+					int q = this.getUpdatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
 					if (j > q) {
 						j = q;
 					}
@@ -95,6 +95,6 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	@Override
 	public void method_15514(BlockPos blockPos, int i) {
 		this.lightStorage.updateAll();
-		this.scheduleNewLevelUpdate(Long.MAX_VALUE, blockPos.asLong(), 15 - i, true);
+		this.update(Long.MAX_VALUE, blockPos.asLong(), 15 - i, true);
 	}
 }

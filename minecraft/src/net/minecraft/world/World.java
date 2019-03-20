@@ -617,7 +617,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		profiler.pop();
 	}
 
-	public void method_18472(Consumer<Entity> consumer, Entity entity) {
+	public void tickEntity(Consumer<Entity> consumer, Entity entity) {
 		try {
 			consumer.accept(entity);
 		} catch (Throwable var6) {

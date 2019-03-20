@@ -293,7 +293,7 @@ public class ChunkRenderer {
 	}
 
 	protected double getDistanceToPlayerSquared() {
-		Camera camera = MinecraftClient.getInstance().gameRenderer.method_19418();
+		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		double d = this.boundingBox.minX + 8.0 - camera.getPos().x;
 		double e = this.boundingBox.minY + 8.0 - camera.getPos().y;
 		double f = this.boundingBox.minZ + 8.0 - camera.getPos().z;

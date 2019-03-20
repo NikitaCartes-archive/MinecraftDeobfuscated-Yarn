@@ -41,7 +41,7 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 
 		for (int i = 0; i < this.size(); i++) {
 			TraderRecipe traderRecipe = (TraderRecipe)this.get(i);
-			packetByteBuf.writeItemStack(traderRecipe.method_19272());
+			packetByteBuf.writeItemStack(traderRecipe.getDiscountedFirstBuyItem());
 			packetByteBuf.writeItemStack(traderRecipe.getModifiableSellItem());
 			ItemStack itemStack = traderRecipe.getSecondBuyItem();
 			packetByteBuf.writeBoolean(!itemStack.isEmpty());
@@ -53,7 +53,7 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 			packetByteBuf.writeInt(traderRecipe.getUses());
 			packetByteBuf.writeInt(traderRecipe.getMaxUses());
 			packetByteBuf.writeInt(traderRecipe.getRewardedExp());
-			packetByteBuf.writeInt(traderRecipe.method_19277());
+			packetByteBuf.writeInt(traderRecipe.getTax());
 			packetByteBuf.writeFloat(traderRecipe.getPriceMultiplier());
 		}
 	}
@@ -81,7 +81,7 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 				traderRecipe.clearUses();
 			}
 
-			traderRecipe.method_19273(n);
+			traderRecipe.setTax(n);
 			traderRecipeList.add(traderRecipe);
 		}
 
@@ -94,7 +94,7 @@ public class TraderRecipeList extends ArrayList<TraderRecipe> {
 
 		for (int i = 0; i < this.size(); i++) {
 			TraderRecipe traderRecipe = (TraderRecipe)this.get(i);
-			listTag.add(traderRecipe.serialize());
+			listTag.add(traderRecipe.toTag());
 		}
 
 		compoundTag.put("Recipes", listTag);

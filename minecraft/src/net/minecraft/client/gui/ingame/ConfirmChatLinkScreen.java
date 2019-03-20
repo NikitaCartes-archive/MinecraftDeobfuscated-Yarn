@@ -55,8 +55,8 @@ public class ConfirmChatLinkScreen extends YesNoScreen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
-		super.draw(i, j, f);
+	public void render(int i, int j, float f) {
+		super.render(i, j, f);
 		if (this.drawWarning) {
 			this.drawStringCentered(this.fontRenderer, this.warning, this.screenWidth / 2, 110, 16764108);
 		}

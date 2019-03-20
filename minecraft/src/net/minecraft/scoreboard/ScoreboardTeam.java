@@ -88,7 +88,7 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 	}
 
 	@Override
-	public TextComponent method_1198(TextComponent textComponent) {
+	public TextComponent modifyText(TextComponent textComponent) {
 		TextComponent textComponent2 = new StringTextComponent("").append(this.prefix).append(textComponent).append(this.suffix);
 		TextFormat textFormat = this.getColor();
 		if (textFormat != TextFormat.field_1070) {
@@ -98,8 +98,8 @@ public class ScoreboardTeam extends AbstractScoreboardTeam {
 		return textComponent2;
 	}
 
-	public static TextComponent method_1142(@Nullable AbstractScoreboardTeam abstractScoreboardTeam, TextComponent textComponent) {
-		return abstractScoreboardTeam == null ? textComponent.copy() : abstractScoreboardTeam.method_1198(textComponent);
+	public static TextComponent modifyText(@Nullable AbstractScoreboardTeam abstractScoreboardTeam, TextComponent textComponent) {
+		return abstractScoreboardTeam == null ? textComponent.copy() : abstractScoreboardTeam.modifyText(textComponent);
 	}
 
 	@Override

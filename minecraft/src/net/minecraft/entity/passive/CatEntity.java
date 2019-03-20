@@ -6,7 +6,6 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -30,6 +29,7 @@ import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SitGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -115,7 +115,7 @@ public class CatEntity extends TameableEntity {
 		this.goalSelector.add(8, new PounceAtTargetGoal(this, 0.3F));
 		this.goalSelector.add(9, new AttackGoal(this));
 		this.goalSelector.add(10, new AnimalMateGoal(this, 0.8));
-		this.goalSelector.add(11, new class_1394(this, 0.8, 1.0000001E-5F));
+		this.goalSelector.add(11, new WanderAroundFarGoal(this, 0.8, 1.0000001E-5F));
 		this.goalSelector.add(12, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
 		this.targetSelector.add(1, new FollowTargetIfTamedGoal(this, RabbitEntity.class, false, null));
 		this.targetSelector.add(1, new FollowTargetIfTamedGoal(this, TurtleEntity.class, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
@@ -126,6 +126,10 @@ public class CatEntity extends TameableEntity {
 	}
 
 	public void getOcelotType(int i) {
+		if (i < 0 || i >= 11) {
+			i = this.random.nextInt(10);
+		}
+
 		this.dataTracker.set(CAT_TYPE, i);
 	}
 
@@ -257,8 +261,8 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.field_6810 != null && this.field_6810.method_6313() && !this.isTamed() && this.age % 100 == 0) {
 			this.playSound(SoundEvents.field_16438, 1.0F, 1.0F);
 		}

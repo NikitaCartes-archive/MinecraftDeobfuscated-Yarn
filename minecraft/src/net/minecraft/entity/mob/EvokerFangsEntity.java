@@ -74,8 +74,8 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.world.isClient) {
 			if (this.field_7608) {
 				this.field_7607--;

@@ -13,12 +13,12 @@ public abstract class ResourcePackListWidget extends EntryListWidget<ResourcePac
 	public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j) {
 		super(minecraftClient, i, j, 32, j - 55 + 4, 36);
 		this.field_3166 = minecraftClient;
-		this.field_2173 = false;
-		this.method_1927(true, (int)(9.0F * 1.5F));
+		this.centerListVertically = false;
+		this.setRenderHeader(true, (int)(9.0F * 1.5F));
 	}
 
 	@Override
-	protected void method_1940(int i, int j, Tessellator tessellator) {
+	protected void renderHeader(int i, int j, Tessellator tessellator) {
 		String string = TextFormat.field_1073 + "" + TextFormat.field_1067 + this.getTitle();
 		this.field_3166
 			.textRenderer

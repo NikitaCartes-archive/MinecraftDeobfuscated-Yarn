@@ -90,7 +90,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.prevX = this.x;
 		this.prevY = this.y;
 		this.prevZ = this.z;

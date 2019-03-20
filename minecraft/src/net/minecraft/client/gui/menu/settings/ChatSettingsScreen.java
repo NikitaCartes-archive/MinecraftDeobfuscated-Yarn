@@ -45,11 +45,11 @@ public class ChatSettingsScreen extends Screen {
 		for (GameOption gameOption : SETTINGS) {
 			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
 			int k = this.screenHeight / 6 + 24 * (i >> 1);
-			AbstractButtonWidget abstractButtonWidget = gameOption.method_18520(this.client.options, j, k, 150);
+			AbstractButtonWidget abstractButtonWidget = gameOption.createOptionButton(this.client.options, j, k, 150);
 			this.addButton(abstractButtonWidget);
 			if (gameOption == GameOption.NARRATOR) {
 				this.field_2355 = abstractButtonWidget;
-				abstractButtonWidget.enabled = NarratorManager.INSTANCE.isActive();
+				abstractButtonWidget.active = NarratorManager.INSTANCE.isActive();
 			}
 
 			i++;
@@ -69,13 +69,13 @@ public class ChatSettingsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.field_2353, this.screenWidth / 2, 20, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	public void method_2096() {
-		this.field_2355.setText(GameOption.NARRATOR.method_18501(this.settings));
+		this.field_2355.setMessage(GameOption.NARRATOR.method_18501(this.settings));
 	}
 }

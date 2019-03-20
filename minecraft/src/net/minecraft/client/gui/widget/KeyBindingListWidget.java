@@ -107,11 +107,11 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 				.draw(this.bindingName, (float)(n + 90 - KeyBindingListWidget.this.field_2733), (float)(m + j / 2 - 9 / 2), 16777215);
 			this.resetButton.x = n + 190;
 			this.resetButton.y = m;
-			this.resetButton.enabled = !this.binding.isDefault();
-			this.resetButton.draw(k, l, f);
+			this.resetButton.active = !this.binding.isDefault();
+			this.resetButton.render(k, l, f);
 			this.editButton.x = n + 105;
 			this.editButton.y = m;
-			this.editButton.setText(this.binding.getLocalizedName());
+			this.editButton.setMessage(this.binding.getLocalizedName());
 			boolean bl3 = false;
 			if (!this.binding.isNotBound()) {
 				for (KeyBinding keyBinding : KeyBindingListWidget.this.client.options.keysAll) {
@@ -123,12 +123,12 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 			}
 
 			if (bl2) {
-				this.editButton.setText(TextFormat.field_1068 + "> " + TextFormat.field_1054 + this.editButton.getText() + TextFormat.field_1068 + " <");
+				this.editButton.setMessage(TextFormat.field_1068 + "> " + TextFormat.field_1054 + this.editButton.getMessage() + TextFormat.field_1068 + " <");
 			} else if (bl3) {
-				this.editButton.setText(TextFormat.field_1061 + this.editButton.getText());
+				this.editButton.setMessage(TextFormat.field_1061 + this.editButton.getMessage());
 			}
 
-			this.editButton.draw(k, l, f);
+			this.editButton.render(k, l, f);
 		}
 
 		@Override

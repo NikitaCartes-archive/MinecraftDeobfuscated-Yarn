@@ -363,7 +363,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		if (this.isVisible()) {
 			if (this.hasBorder()) {
 				drawRect(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
@@ -490,17 +490,17 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 	}
 
 	@Override
-	public void setHasFocus(boolean bl) {
+	public void onFocusChanged(boolean bl) {
 		this.setFocused(bl);
 	}
 
 	@Override
-	public boolean hasFocus() {
+	public boolean isPartOfFocusCycle() {
 		return this.visible && this.editable;
 	}
 
 	@Override
-	public boolean method_19356(double d, double e) {
+	public boolean isMouseOver(double d, double e) {
 		return this.visible && d >= (double)this.x && d < (double)(this.x + this.width) && e >= (double)this.y && e < (double)(this.y + this.height);
 	}
 

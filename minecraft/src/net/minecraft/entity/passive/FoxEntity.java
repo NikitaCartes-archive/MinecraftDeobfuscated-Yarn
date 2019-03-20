@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1394;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -47,6 +46,7 @@ import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.MoveToVillageCenterGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -152,7 +152,7 @@ public class FoxEntity extends AnimalEntity {
 		this.goalSelector.add(8, new FoxEntity.GoToVillageGoal(32, 200));
 		this.goalSelector.add(9, new FoxEntity.EatSweetBerriesGoal(1.2F, 12, 2));
 		this.goalSelector.add(9, new PounceAtTargetGoal(this, 0.4F));
-		this.goalSelector.add(10, new class_1394(this, 1.0));
+		this.goalSelector.add(10, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(10, new FoxEntity.PickupItemGoal());
 		this.goalSelector.add(11, new LookAtEntityGoal(this, PlayerEntity.class, 24.0F));
 		this.goalSelector.add(12, new FoxEntity.SitDownAndLookAroundGoal());
@@ -275,7 +275,7 @@ public class FoxEntity extends AnimalEntity {
 
 	public FoxEntity method_18260(PassiveEntity passiveEntity) {
 		FoxEntity foxEntity = EntityType.field_17943.create(this.world);
-		foxEntity.setType(this.random.nextBoolean() ? this.getType() : ((FoxEntity)passiveEntity).getType());
+		foxEntity.setType(this.random.nextBoolean() ? this.getFoxType() : ((FoxEntity)passiveEntity).getFoxType());
 		return foxEntity;
 	}
 
@@ -310,7 +310,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	private void addTypeSpecificGoals() {
-		if (this.getType() == FoxEntity.Type.field_17996) {
+		if (this.getFoxType() == FoxEntity.Type.field_17996) {
 			this.targetSelector.add(4, this.followChickenAndRabbitGoal);
 			this.targetSelector.add(4, this.followBabyTurtleGoal);
 			this.targetSelector.add(6, this.followFishGoal);
@@ -335,7 +335,7 @@ public class FoxEntity extends AnimalEntity {
 		return this.isChild() ? entitySize.height : 0.4F;
 	}
 
-	public FoxEntity.Type getType() {
+	public FoxEntity.Type getFoxType() {
 		return FoxEntity.Type.fromId(this.dataTracker.get(TYPE));
 	}
 
@@ -372,7 +372,7 @@ public class FoxEntity extends AnimalEntity {
 
 		compoundTag.put("TrustedUUIDs", listTag);
 		compoundTag.putBoolean("Sleeping", this.isSleeping());
-		compoundTag.putString("Type", this.getType().getKey());
+		compoundTag.putString("Type", this.getFoxType().getKey());
 		compoundTag.putBoolean("Sitting", this.isSitting());
 		compoundTag.putBoolean("Crouching", this.isCrouching());
 	}
@@ -485,8 +485,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.method_6034()) {
 			boolean bl = this.isInsideWater();
 			if (bl || this.getTarget() != null || this.world.isThundering()) {
@@ -870,7 +870,7 @@ public class FoxEntity extends AnimalEntity {
 
 		@Override
 		public double getDesiredSquaredDistanceToTarget() {
-			return 4.0;
+			return 2.0;
 		}
 
 		@Override

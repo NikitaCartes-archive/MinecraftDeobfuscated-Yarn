@@ -206,7 +206,7 @@ public class StructureBlockScreen extends Screen {
 		this.inputName = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 40, 300, 20) {
 			@Override
 			public boolean charTyped(char c, int i) {
-				return !StructureBlockScreen.this.method_16016(this.getText(), c, this.getCursor()) ? false : super.charTyped(c, i);
+				return !StructureBlockScreen.this.isValidCharacterForName(this.getText(), c, this.getCursor()) ? false : super.charTyped(c, i);
 			}
 		};
 		this.inputName.setMaxLength(64);
@@ -298,27 +298,27 @@ public class StructureBlockScreen extends Screen {
 	private void updateIgnoreEntitiesButton() {
 		boolean bl = !this.structureBlock.shouldIgnoreEntities();
 		if (bl) {
-			this.buttonEntities.setText(I18n.translate("options.on"));
+			this.buttonEntities.setMessage(I18n.translate("options.on"));
 		} else {
-			this.buttonEntities.setText(I18n.translate("options.off"));
+			this.buttonEntities.setMessage(I18n.translate("options.off"));
 		}
 	}
 
 	private void updateShowAirButton() {
 		boolean bl = this.structureBlock.shouldShowAir();
 		if (bl) {
-			this.buttonShowAir.setText(I18n.translate("options.on"));
+			this.buttonShowAir.setMessage(I18n.translate("options.on"));
 		} else {
-			this.buttonShowAir.setText(I18n.translate("options.off"));
+			this.buttonShowAir.setMessage(I18n.translate("options.off"));
 		}
 	}
 
 	private void updateShowBoundingBoxButton() {
 		boolean bl = this.structureBlock.shouldShowBoundingBox();
 		if (bl) {
-			this.buttonShowBoundingBox.setText(I18n.translate("options.on"));
+			this.buttonShowBoundingBox.setMessage(I18n.translate("options.on"));
 		} else {
-			this.buttonShowBoundingBox.setText(I18n.translate("options.off"));
+			this.buttonShowBoundingBox.setMessage(I18n.translate("options.off"));
 		}
 	}
 
@@ -326,33 +326,33 @@ public class StructureBlockScreen extends Screen {
 		Mirror mirror = this.structureBlock.getMirror();
 		switch (mirror) {
 			case NONE:
-				this.buttonMirror.setText("|");
+				this.buttonMirror.setMessage("|");
 				break;
 			case LEFT_RIGHT:
-				this.buttonMirror.setText("< >");
+				this.buttonMirror.setMessage("< >");
 				break;
 			case FRONT_BACK:
-				this.buttonMirror.setText("^ v");
+				this.buttonMirror.setMessage("^ v");
 		}
 	}
 
 	private void updateRotationButton() {
-		this.buttonRotate0.enabled = true;
-		this.buttonRotate90.enabled = true;
-		this.buttonRotate180.enabled = true;
-		this.buttonRotate270.enabled = true;
+		this.buttonRotate0.active = true;
+		this.buttonRotate90.active = true;
+		this.buttonRotate180.active = true;
+		this.buttonRotate270.active = true;
 		switch (this.structureBlock.getRotation()) {
 			case ROT_0:
-				this.buttonRotate0.enabled = false;
+				this.buttonRotate0.active = false;
 				break;
 			case ROT_180:
-				this.buttonRotate180.enabled = false;
+				this.buttonRotate180.active = false;
 				break;
 			case ROT_270:
-				this.buttonRotate270.enabled = false;
+				this.buttonRotate270.active = false;
 				break;
 			case ROT_90:
-				this.buttonRotate90.enabled = false;
+				this.buttonRotate90.active = false;
 		}
 	}
 
@@ -416,7 +416,7 @@ public class StructureBlockScreen extends Screen {
 				this.inputMetadata.setVisible(true);
 		}
 
-		this.buttonMode.setText(I18n.translate("structure_block.mode." + this.structureBlock.getMode().asString()));
+		this.buttonMode.setMessage(I18n.translate("structure_block.mode." + this.structureBlock.getMode().asString()));
 	}
 
 	private boolean method_2516(StructureBlockBlockEntity.Action action) {
@@ -491,20 +491,20 @@ public class StructureBlockScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		StructureBlockMode structureBlockMode = this.structureBlock.getMode();
 		this.drawStringCentered(this.fontRenderer, I18n.translate(Blocks.field_10465.getTranslationKey()), this.screenWidth / 2, 10, 16777215);
 		if (structureBlockMode != StructureBlockMode.field_12696) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.structure_name"), this.screenWidth / 2 - 153, 30, 10526880);
-			this.inputName.draw(i, j, f);
+			this.inputName.render(i, j, f);
 		}
 
 		if (structureBlockMode == StructureBlockMode.field_12697 || structureBlockMode == StructureBlockMode.field_12695) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.position"), this.screenWidth / 2 - 153, 70, 10526880);
-			this.inputPosX.draw(i, j, f);
-			this.inputPosY.draw(i, j, f);
-			this.inputPosZ.draw(i, j, f);
+			this.inputPosX.render(i, j, f);
+			this.inputPosY.render(i, j, f);
+			this.inputPosZ.render(i, j, f);
 			String string = I18n.translate("structure_block.include_entities");
 			int k = this.fontRenderer.getStringWidth(string);
 			this.drawString(this.fontRenderer, string, this.screenWidth / 2 + 154 - k, 150, 10526880);
@@ -512,9 +512,9 @@ public class StructureBlockScreen extends Screen {
 
 		if (structureBlockMode == StructureBlockMode.field_12695) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.size"), this.screenWidth / 2 - 153, 110, 10526880);
-			this.inputSizeX.draw(i, j, f);
-			this.inputSizeY.draw(i, j, f);
-			this.inputSizeZ.draw(i, j, f);
+			this.inputSizeX.render(i, j, f);
+			this.inputSizeY.render(i, j, f);
+			this.inputSizeZ.render(i, j, f);
 			String string = I18n.translate("structure_block.detect_size");
 			int k = this.fontRenderer.getStringWidth(string);
 			this.drawString(this.fontRenderer, string, this.screenWidth / 2 + 154 - k, 110, 10526880);
@@ -525,8 +525,8 @@ public class StructureBlockScreen extends Screen {
 
 		if (structureBlockMode == StructureBlockMode.field_12697) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.integrity"), this.screenWidth / 2 - 153, 110, 10526880);
-			this.inputIntegrity.draw(i, j, f);
-			this.inputSeed.draw(i, j, f);
+			this.inputIntegrity.render(i, j, f);
+			this.inputSeed.render(i, j, f);
 			String string = I18n.translate("structure_block.show_boundingbox");
 			int k = this.fontRenderer.getStringWidth(string);
 			this.drawString(this.fontRenderer, string, this.screenWidth / 2 + 154 - k, 70, 10526880);
@@ -534,12 +534,12 @@ public class StructureBlockScreen extends Screen {
 
 		if (structureBlockMode == StructureBlockMode.field_12696) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.custom_data"), this.screenWidth / 2 - 153, 110, 10526880);
-			this.inputMetadata.draw(i, j, f);
+			this.inputMetadata.render(i, j, f);
 		}
 
 		String string = "structure_block.mode_info." + structureBlockMode.asString();
 		this.drawString(this.fontRenderer, I18n.translate(string), this.screenWidth / 2 - 153, 174, 10526880);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 
 	@Override

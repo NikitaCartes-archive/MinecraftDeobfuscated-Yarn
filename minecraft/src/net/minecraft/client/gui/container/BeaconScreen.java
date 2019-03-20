@@ -63,7 +63,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		this.addButton(this.doneButton);
 		this.addButton(new BeaconScreen.WidgetButtonIconCancel(this.left + 190, this.top + 107));
 		this.canConsumeGem = true;
-		this.doneButton.enabled = false;
+		this.doneButton.active = false;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 					);
 					this.addButton(widgetButtonIconEffect);
 					if (j >= i) {
-						widgetButtonIconEffect.enabled = false;
+						widgetButtonIconEffect.active = false;
 					} else if (statusEffect == this.primaryEffect) {
 						widgetButtonIconEffect.setDisabled(true);
 					}
@@ -102,7 +102,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 				);
 				this.addButton(widgetButtonIconEffect);
 				if (3 >= i) {
-					widgetButtonIconEffect.enabled = false;
+					widgetButtonIconEffect.active = false;
 				} else if (statusEffect == this.secondaryEffect) {
 					widgetButtonIconEffect.setDisabled(true);
 				}
@@ -114,14 +114,14 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 				);
 				this.addButton(widgetButtonIconEffect2);
 				if (3 >= i) {
-					widgetButtonIconEffect2.enabled = false;
+					widgetButtonIconEffect2.active = false;
 				} else if (this.primaryEffect == this.secondaryEffect) {
 					widgetButtonIconEffect2.setDisabled(true);
 				}
 			}
 		}
 
-		this.doneButton.enabled = this.container.hasPayment() && this.primaryEffect != null;
+		this.doneButton.active = this.container.hasPayment() && this.primaryEffect != null;
 	}
 
 	@Override
@@ -132,7 +132,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 
 		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
 			if (abstractButtonWidget.isHovered()) {
-				abstractButtonWidget.onHover(i - this.left, j - this.top);
+				abstractButtonWidget.renderToolTip(i - this.left, j - this.top);
 				break;
 			}
 		}
@@ -156,9 +156,9 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
@@ -171,12 +171,12 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void drawButton(int i, int j, float f) {
+		public void renderButton(int i, int j, float f) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconScreen.BG_TEX);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int k = 219;
 			int l = 0;
-			if (!this.enabled) {
+			if (!this.active) {
 				l += this.width * 2;
 			} else if (this.disabled) {
 				l += this.width * 1;
@@ -212,7 +212,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void onHover(int i, int j) {
+		public void renderToolTip(int i, int j) {
 			BeaconScreen.this.drawTooltip(I18n.translate("gui.cancel"), i, j);
 		}
 	}
@@ -233,7 +233,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void onHover(int i, int j) {
+		public void renderToolTip(int i, int j) {
 			BeaconScreen.this.drawTooltip(I18n.translate("gui.done"), i, j);
 		}
 	}
@@ -268,7 +268,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void onHover(int i, int j) {
+		public void renderToolTip(int i, int j) {
 			String string = I18n.translate(this.effect.getTranslationKey());
 			if (!this.primary && this.effect != StatusEffects.field_5924) {
 				string = string + " II";

@@ -15,7 +15,7 @@ import net.minecraft.client.options.GameOptions;
 public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWidget.class_354> {
 	public VideoSettingsListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m, GameOption... gameOptions) {
 		super(minecraftClient, i, j, k, l, m);
-		this.field_2173 = false;
+		this.centerListVertically = false;
 		this.addEntry(new VideoSettingsListWidget.class_354(minecraftClient.options, i, GameOption.FULLSCREEN_RESOLUTION));
 
 		for (int n = 0; n < gameOptions.length; n += 2) {
@@ -49,18 +49,20 @@ public class VideoSettingsListWidget extends EntryListWidget<VideoSettingsListWi
 		}
 
 		public class_354(GameOptions gameOptions, int i, GameOption gameOption) {
-			this(ImmutableList.of(gameOption.method_18520(gameOptions, i / 2 - 155, 0, 310)));
+			this(ImmutableList.of(gameOption.createOptionButton(gameOptions, i / 2 - 155, 0, 310)));
 		}
 
 		public class_354(GameOptions gameOptions, int i, GameOption gameOption, GameOption gameOption2) {
-			this(ImmutableList.of(gameOption.method_18520(gameOptions, i / 2 - 155, 0, 150), gameOption2.method_18520(gameOptions, i / 2 - 155 + 160, 0, 150)));
+			this(
+				ImmutableList.of(gameOption.createOptionButton(gameOptions, i / 2 - 155, 0, 150), gameOption2.createOptionButton(gameOptions, i / 2 - 155 + 160, 0, 150))
+			);
 		}
 
 		@Override
 		public void draw(int i, int j, int k, int l, boolean bl, float f) {
 			this.field_18214.forEach(abstractButtonWidget -> {
 				abstractButtonWidget.y = this.getY();
-				abstractButtonWidget.draw(k, l, f);
+				abstractButtonWidget.render(k, l, f);
 			});
 		}
 

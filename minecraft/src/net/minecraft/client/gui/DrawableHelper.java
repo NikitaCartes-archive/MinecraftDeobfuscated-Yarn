@@ -106,6 +106,10 @@ public abstract class DrawableHelper {
 		textRenderer.drawWithShadow(string, (float)(i - textRenderer.getStringWidth(string) / 2), (float)j, k);
 	}
 
+	public void drawRightAlignedString(TextRenderer textRenderer, String string, int i, int j, int k) {
+		textRenderer.drawWithShadow(string, (float)(i - textRenderer.getStringWidth(string)), (float)j, k);
+	}
+
 	public void drawString(TextRenderer textRenderer, String string, int i, int j, int k) {
 		textRenderer.drawWithShadow(string, (float)i, (float)j, k);
 	}

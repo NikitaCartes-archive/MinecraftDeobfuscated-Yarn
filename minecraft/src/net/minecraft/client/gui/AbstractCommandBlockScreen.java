@@ -104,10 +104,10 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	protected void updateTrackedOutput() {
 		if (this.getCommandExecutor().isTrackingOutput()) {
-			this.toggleTrackingOutputButton.setText("O");
+			this.toggleTrackingOutputButton.setMessage("O");
 			this.previousOutputTextField.setText(this.getCommandExecutor().getLastOutput().getString());
 		} else {
-			this.toggleTrackingOutputButton.setText("X");
+			this.toggleTrackingOutputButton.setMessage("X");
 			this.previousOutputTextField.setText("-");
 		}
 	}
@@ -271,19 +271,19 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("advMode.setCommand"), this.screenWidth / 2, 20, 16777215);
 		this.drawString(this.fontRenderer, I18n.translate("advMode.command"), this.screenWidth / 2 - 150, 40, 10526880);
-		this.consoleCommandTextField.draw(i, j, f);
+		this.consoleCommandTextField.render(i, j, f);
 		int k = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
 			k += 5 * 9 + 1 + this.method_2364() - 135;
 			this.drawString(this.fontRenderer, I18n.translate("advMode.previousOutput"), this.screenWidth / 2 - 150, k + 4, 10526880);
-			this.previousOutputTextField.draw(i, j, f);
+			this.previousOutputTextField.render(i, j, f);
 		}
 
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		if (this.field_2759 != null) {
 			this.field_2759.method_2373(i, j);
 		} else {

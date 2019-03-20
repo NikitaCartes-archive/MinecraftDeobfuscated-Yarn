@@ -1347,7 +1347,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	}
 
 	@Override
-	public Thread thread() {
+	public Thread getThread() {
 		return this.serverThread;
 	}
 

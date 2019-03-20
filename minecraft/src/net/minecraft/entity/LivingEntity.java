@@ -15,7 +15,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1280;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -268,9 +267,9 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public void updateLogic() {
+	public void baseTick() {
 		this.field_6229 = this.field_6251;
-		super.updateLogic();
+		super.baseTick();
 		this.world.getProfiler().push("livingEntityBaseTick");
 		boolean bl = this instanceof PlayerEntity;
 		if (this.isValid()) {
@@ -1275,7 +1274,7 @@ public abstract class LivingEntity extends Entity {
 	protected float method_6132(DamageSource damageSource, float f) {
 		if (!damageSource.doesBypassArmor()) {
 			this.method_6105(f);
-			f = class_1280.method_5496(f, (float)this.method_6096(), (float)this.getAttributeInstance(EntityAttributes.ARMOR_TOUGHNESS).getValue());
+			f = DamageUtil.method_5496(f, (float)this.method_6096(), (float)this.getAttributeInstance(EntityAttributes.ARMOR_TOUGHNESS).getValue());
 		}
 
 		return f;
@@ -1306,7 +1305,7 @@ public abstract class LivingEntity extends Entity {
 			} else {
 				int i = EnchantmentHelper.getProtectionAmount(this.getItemsArmor(), damageSource);
 				if (i > 0) {
-					f = class_1280.method_5497(f, (float)i);
+					f = DamageUtil.method_5497(f, (float)i);
 				}
 
 				return f;
@@ -1864,8 +1863,8 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		this.method_6076();
 		this.method_6072();
 		if (!this.world.isClient) {
@@ -2003,6 +2002,10 @@ public abstract class LivingEntity extends Entity {
 			this.field_6239++;
 		} else {
 			this.field_6239 = 0;
+		}
+
+		if (this.isSleeping()) {
+			this.pitch = 0.0F;
 		}
 	}
 

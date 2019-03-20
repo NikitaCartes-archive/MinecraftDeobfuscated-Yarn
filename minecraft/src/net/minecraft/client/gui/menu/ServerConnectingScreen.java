@@ -143,9 +143,9 @@ public class ServerConnectingScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, this.status.getFormattedText(), this.screenWidth / 2, this.screenHeight / 2 - 50, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

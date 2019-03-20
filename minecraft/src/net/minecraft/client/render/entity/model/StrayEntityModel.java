@@ -3,8 +3,8 @@ package net.minecraft.client.render.entity.model;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Cuboid;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.AbsoluteHand;
@@ -12,7 +12,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class StrayEntityModel<T extends LivingEntity & RangedAttacker> extends BipedEntityModel<T> {
+public class StrayEntityModel<T extends MobEntity & RangedAttacker> extends BipedEntityModel<T> {
 	public StrayEntityModel() {
 		this(0.0F, false);
 	}
@@ -37,27 +37,25 @@ public class StrayEntityModel<T extends LivingEntity & RangedAttacker> extends B
 		}
 	}
 
-	@Override
-	public void method_17086(T livingEntity, float f, float g, float h) {
+	public void method_19689(T mobEntity, float f, float g, float h) {
 		this.armPoseRight = BipedEntityModel.ArmPose.field_3409;
 		this.armPoseLeft = BipedEntityModel.ArmPose.field_3409;
-		ItemStack itemStack = livingEntity.getStackInHand(Hand.MAIN);
-		if (itemStack.getItem() == Items.field_8102 && livingEntity.hasArmsRaised()) {
-			if (livingEntity.getMainHand() == AbsoluteHand.field_6183) {
+		ItemStack itemStack = mobEntity.getStackInHand(Hand.MAIN);
+		if (itemStack.getItem() == Items.field_8102 && mobEntity.method_6510()) {
+			if (mobEntity.getMainHand() == AbsoluteHand.field_6183) {
 				this.armPoseRight = BipedEntityModel.ArmPose.field_3403;
 			} else {
 				this.armPoseLeft = BipedEntityModel.ArmPose.field_3403;
 			}
 		}
 
-		super.method_17086(livingEntity, f, g, h);
+		super.method_17086(mobEntity, f, g, h);
 	}
 
-	@Override
-	public void method_17087(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		super.method_17087(livingEntity, f, g, h, i, j, k);
-		ItemStack itemStack = livingEntity.getMainHandStack();
-		if (livingEntity.hasArmsRaised() && (itemStack.isEmpty() || itemStack.getItem() != Items.field_8102)) {
+	public void method_19690(T mobEntity, float f, float g, float h, float i, float j, float k) {
+		super.method_17087(mobEntity, f, g, h, i, j, k);
+		ItemStack itemStack = mobEntity.getMainHandStack();
+		if (mobEntity.method_6510() && (itemStack.isEmpty() || itemStack.getItem() != Items.field_8102)) {
 			float l = MathHelper.sin(this.swingProgress * (float) Math.PI);
 			float m = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
 			this.armRight.roll = 0.0F;

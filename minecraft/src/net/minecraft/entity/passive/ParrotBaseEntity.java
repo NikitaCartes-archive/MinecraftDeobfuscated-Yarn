@@ -25,9 +25,9 @@ public abstract class ParrotBaseEntity extends TameableEntity {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.field_6864++;
-		super.update();
+		super.tick();
 	}
 
 	public boolean method_6626() {

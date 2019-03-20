@@ -3,7 +3,7 @@ package net.minecraft.client.toast;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.audio.SoundLoader;
+import net.minecraft.client.audio.SoundManager;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -30,8 +30,8 @@ public interface Toast {
 			this.sound = soundEvent;
 		}
 
-		public void play(SoundLoader soundLoader) {
-			soundLoader.play(PositionedSoundInstance.master(this.sound, 1.0F, 1.0F));
+		public void play(SoundManager soundManager) {
+			soundManager.play(PositionedSoundInstance.master(this.sound, 1.0F, 1.0F));
 		}
 	}
 }

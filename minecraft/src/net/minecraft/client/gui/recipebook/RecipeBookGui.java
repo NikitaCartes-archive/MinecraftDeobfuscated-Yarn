@@ -220,7 +220,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		if (this.isOpen()) {
 			GuiLighting.enableForItems();
 			GlStateManager.disableLighting();
@@ -231,14 +231,14 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			int k = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int l = (this.parentHeight - 166) / 2;
 			this.drawTexturedRect(k, l, 1, 1, 147, 166);
-			this.searchField.draw(i, j, f);
+			this.searchField.render(i, j, f);
 			GuiLighting.disable();
 
 			for (GroupButtonWidget groupButtonWidget : this.tabButtons) {
-				groupButtonWidget.draw(i, j, f);
+				groupButtonWidget.render(i, j, f);
 			}
 
-			this.toggleCraftableButton.draw(i, j, f);
+			this.toggleCraftableButton.render(i, j, f);
 			this.recipesArea.draw(k, l, i, j, f);
 			GlStateManager.popMatrix();
 		}
@@ -390,7 +390,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 	}
 
 	@Override
-	public boolean method_19356(double d, double e) {
+	public boolean isMouseOver(double d, double e) {
 		return false;
 	}
 

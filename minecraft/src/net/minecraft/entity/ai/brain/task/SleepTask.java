@@ -26,7 +26,7 @@ public class SleepTask extends Task<LivingEntity> {
 			return false;
 		} else {
 			BlockState blockState = serverWorld.getBlockState(globalPos.getPos());
-			return livingEntity.squaredDistanceTo(globalPos.getPos()) <= 3.0
+			return globalPos.getPos().method_19769(livingEntity.getPos(), 2.0)
 				&& blockState.getBlock().matches(BlockTags.field_16443)
 				&& !(Boolean)blockState.get(BedBlock.OCCUPIED);
 		}
@@ -46,7 +46,7 @@ public class SleepTask extends Task<LivingEntity> {
 			BlockPos blockPos = ((GlobalPos)optional.get()).getPos();
 			return livingEntity.getBrain().hasActivity(Activity.field_18597)
 				&& livingEntity.y > (double)blockPos.getY() + 0.4
-				&& livingEntity.squaredDistanceTo(blockPos) <= 1.3;
+				&& blockPos.method_19769(livingEntity.getPos(), 1.14);
 		}
 	}
 
@@ -63,7 +63,7 @@ public class SleepTask extends Task<LivingEntity> {
 	}
 
 	@Override
-	protected void method_18926(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
+	protected void stopInternal(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		if (livingEntity.isSleeping()) {
 			livingEntity.wakeUp();
 			this.field_18848 = l + 40L;

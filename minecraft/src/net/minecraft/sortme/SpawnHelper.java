@@ -21,6 +21,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
@@ -70,12 +71,9 @@ public final class SpawnHelper {
 								float f = (float)n + 0.5F;
 								float g = (float)o + 0.5F;
 								PlayerEntity playerEntity = world.method_18457((double)f, (double)g, -1.0);
-								if (playerEntity == null) {
-									break label119;
-								}
-
-								double d = playerEntity.squaredDistanceTo((double)f, (double)k, (double)g);
-								if (d <= 576.0 || blockPos.squaredDistanceTo((double)f, (double)k, (double)g) < 576.0) {
+								if (playerEntity == null
+									|| playerEntity.squaredDistanceTo((double)f, (double)k, (double)g) <= 576.0
+									|| blockPos.method_19769(new Vec3d((double)f, (double)k, (double)g), 24.0)) {
 									break label119;
 								}
 
@@ -117,13 +115,16 @@ public final class SpawnHelper {
 									}
 
 									mobEntity = (MobEntity)entity;
-								} catch (Exception var31) {
-									LOGGER.warn("Failed to create mob", (Throwable)var31);
+								} catch (Exception var29) {
+									LOGGER.warn("Failed to create mob", (Throwable)var29);
 									return;
 								}
 
 								mobEntity.setPositionAndAngles((double)f, (double)k, (double)g, world.random.nextFloat() * 360.0F, 0.0F);
-								if (d > 16384.0 && mobEntity.canImmediatelyDespawn(d) || !mobEntity.canSpawn(world, SpawnType.field_16459) || !mobEntity.method_5957(world)) {
+								if (playerEntity.squaredDistanceTo((double)f, (double)k, (double)g) > 16384.0
+										&& mobEntity.canImmediatelyDespawn(playerEntity.squaredDistanceTo((double)f, (double)k, (double)g))
+									|| !mobEntity.canSpawn(world, SpawnType.field_16459)
+									|| !mobEntity.method_5957(world)) {
 									break label119;
 								}
 

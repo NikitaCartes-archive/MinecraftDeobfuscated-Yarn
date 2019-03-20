@@ -42,14 +42,14 @@ public interface InputListener {
 		return false;
 	}
 
-	default void setHasFocus(boolean bl) {
+	default void onFocusChanged(boolean bl) {
 	}
 
-	default boolean hasFocus() {
+	default boolean isPartOfFocusCycle() {
 		return false;
 	}
 
-	default boolean method_19356(double d, double e) {
+	default boolean isMouseOver(double d, double e) {
 		return false;
 	}
 }

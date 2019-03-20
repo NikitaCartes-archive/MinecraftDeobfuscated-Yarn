@@ -51,7 +51,7 @@ public class MultiplayerScreen extends Screen {
 		super.onInitialized();
 		this.client.keyboard.enableRepeatEvents(true);
 		if (this.field_3048) {
-			this.serverListWidget.method_1953(this.screenWidth, this.screenHeight, 32, this.screenHeight - 64);
+			this.serverListWidget.updateSize(this.screenWidth, this.screenHeight, 32, this.screenHeight - 64);
 		} else {
 			this.field_3048 = true;
 			this.field_3040 = new ServerList(this.client);
@@ -243,12 +243,12 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.field_3042 = null;
 		this.drawBackground();
-		this.serverListWidget.draw(i, j, f);
+		this.serverListWidget.render(i, j, f);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.title"), this.screenWidth / 2, 20, 16777215);
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		if (this.field_3042 != null) {
 			this.drawTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.field_3042)), i, j);
 		}
@@ -273,14 +273,14 @@ public class MultiplayerScreen extends Screen {
 	public void setIndex(int i) {
 		this.serverListWidget.setIndex(i);
 		EntryListWidget.Entry<?> entry = i < 0 ? null : (EntryListWidget.Entry)this.serverListWidget.getInputListeners().get(i);
-		this.buttonSelect.enabled = false;
-		this.buttonEdit.enabled = false;
-		this.buttonDelete.enabled = false;
+		this.buttonSelect.active = false;
+		this.buttonEdit.active = false;
+		this.buttonDelete.active = false;
 		if (entry != null && !(entry instanceof LocalScanProgressListEntry)) {
-			this.buttonSelect.enabled = true;
+			this.buttonSelect.active = true;
 			if (entry instanceof RemoteServerListEntry) {
-				this.buttonEdit.enabled = true;
-				this.buttonDelete.enabled = true;
+				this.buttonEdit.active = true;
+				this.buttonDelete.active = true;
 			}
 		}
 	}

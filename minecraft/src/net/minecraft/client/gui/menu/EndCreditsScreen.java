@@ -45,8 +45,8 @@ public class EndCreditsScreen extends Screen {
 
 	@Override
 	public void update() {
-		this.client.getMusicTracker().method_18669();
-		this.client.getSoundLoader().update();
+		this.client.getMusicTracker().tick();
+		this.client.getSoundManager().tick();
 		float f = (float)(this.field_2629 + this.screenHeight + this.screenHeight + 24) / this.field_2635;
 		if (this.field_2628 > f) {
 			this.method_2257();
@@ -154,7 +154,7 @@ public class EndCreditsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.method_2258(i, j, f);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
@@ -209,6 +209,6 @@ public class EndCreditsScreen extends Screen {
 		bufferBuilder.vertex(0.0, 0.0, (double)this.zOffset).texture(0.0, 0.0).color(1.0F, 1.0F, 1.0F, 1.0F).next();
 		tessellator.draw();
 		GlStateManager.disableBlend();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }

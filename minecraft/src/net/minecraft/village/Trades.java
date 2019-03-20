@@ -51,27 +51,29 @@ public class Trades {
 					ImmutableMap.of(
 						1,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8861, 20, 4, 2),
-							new Trades.class_4161(Items.field_8567, 26, 4, 2),
-							new Trades.class_4161(Items.field_8179, 22, 4, 2),
-							new Trades.class_4161(Items.field_8186, 15, 4, 2),
-							new Trades.class_4165(Items.field_8229, 1, 6, 1)
+							new Trades.class_4161(Items.field_8861, 20, 8, 2),
+							new Trades.class_4161(Items.field_8567, 26, 8, 2),
+							new Trades.class_4161(Items.field_8179, 22, 8, 2),
+							new Trades.class_4161(Items.field_8186, 15, 8, 2),
+							new Trades.class_4165(Items.field_8229, 1, 6, 8, 1)
 						},
 						2,
 						new Trades.Factory[]{
-							new Trades.class_4161(Blocks.field_10261, 6, 4, 10), new Trades.class_4165(Items.field_8741, 1, 4, 5), new Trades.class_4165(Items.field_8279, 1, 4, 5)
+							new Trades.class_4161(Blocks.field_10261, 6, 6, 10),
+							new Trades.class_4165(Items.field_8741, 1, 4, 5),
+							new Trades.class_4165(Items.field_8279, 1, 4, 8, 5)
 						},
 						3,
-						new Trades.Factory[]{new Trades.class_4165(Items.field_8423, 3, 18, 10), new Trades.class_4161(Blocks.field_10545, 4, 4, 20)},
+						new Trades.Factory[]{new Trades.class_4165(Items.field_8423, 3, 18, 10), new Trades.class_4161(Blocks.field_10545, 4, 6, 20)},
 						4,
 						new Trades.Factory[]{
-							new Trades.class_4165(Blocks.field_10183, 1, 1, 15),
-							new Trades.class_4166(StatusEffects.field_5904, 8, 15),
-							new Trades.class_4166(StatusEffects.field_5913, 8, 15),
-							new Trades.class_4166(StatusEffects.field_5911, 7, 15),
-							new Trades.class_4166(StatusEffects.field_5919, 6, 15),
-							new Trades.class_4166(StatusEffects.field_5899, 14, 15),
-							new Trades.class_4166(StatusEffects.field_5922, 8, 15)
+							new Trades.class_4165(Blocks.field_10183, 1, 1, 6, 15),
+							new Trades.class_4166(StatusEffects.field_5904, 160, 15),
+							new Trades.class_4166(StatusEffects.field_5913, 160, 15),
+							new Trades.class_4166(StatusEffects.field_5911, 140, 15),
+							new Trades.class_4166(StatusEffects.field_5919, 120, 15),
+							new Trades.class_4166(StatusEffects.field_5899, 280, 15),
+							new Trades.class_4166(StatusEffects.field_5922, 160, 15)
 						},
 						5,
 						new Trades.Factory[]{new Trades.class_4165(Items.field_8071, 3, 3, 30), new Trades.class_4165(Items.field_8597, 4, 3, 30)}
@@ -84,27 +86,27 @@ public class Trades {
 					ImmutableMap.of(
 						1,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8276, 20, 4, 2),
-							new Trades.class_4161(Items.field_8713, 10, 4, 2),
-							new Trades.class_4164(Items.field_8429, 6, Items.field_8373, 6, 4, 1),
-							new Trades.class_4165(Items.field_8666, 3, 1, 1)
+							new Trades.class_4161(Items.field_8276, 20, 8, 2),
+							new Trades.class_4161(Items.field_8713, 10, 8, 2),
+							new Trades.class_4164(Items.field_8429, 6, Items.field_8373, 6, 8, 1),
+							new Trades.class_4165(Items.field_8666, 3, 1, 8, 1)
 						},
 						2,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8429, 15, 4, 10),
-							new Trades.class_4164(Items.field_8209, 6, Items.field_8509, 6, 4, 5),
+							new Trades.class_4161(Items.field_8429, 15, 8, 10),
+							new Trades.class_4164(Items.field_8209, 6, Items.field_8509, 6, 8, 5),
 							new Trades.class_4165(Items.CAMPFIRE, 2, 1, 5)
 						},
 						3,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8209, 13, 4, 20), new Trades.class_4163(Items.field_8378, 3, 1, 10, 0.2F)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8209, 13, 8, 20), new Trades.class_4163(Items.field_8378, 3, 2, 10, 0.2F)},
 						4,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8846, 6, 4, 30)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8846, 6, 6, 30)},
 						5,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8323, 4, 4, 30),
+							new Trades.class_4161(Items.field_8323, 4, 6, 30),
 							new Trades.class_4162(
 								1,
-								1,
+								6,
 								30,
 								ImmutableMap.<VillagerType, Item>builder()
 									.put(VillagerType.PLAINS, Items.field_8533)
@@ -126,100 +128,100 @@ public class Trades {
 					ImmutableMap.of(
 						1,
 						new Trades.Factory[]{
-							new Trades.class_4161(Blocks.field_10446, 18, 4, 2),
-							new Trades.class_4161(Blocks.field_10113, 18, 4, 2),
-							new Trades.class_4161(Blocks.field_10146, 18, 4, 2),
-							new Trades.class_4161(Blocks.field_10423, 18, 4, 2),
+							new Trades.class_4161(Blocks.field_10446, 18, 8, 2),
+							new Trades.class_4161(Blocks.field_10113, 18, 8, 2),
+							new Trades.class_4161(Blocks.field_10146, 18, 8, 2),
+							new Trades.class_4161(Blocks.field_10423, 18, 8, 2),
 							new Trades.class_4165(Items.field_8868, 2, 1, 1)
 						},
 						2,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8446, 12, 4, 10),
-							new Trades.class_4161(Items.field_8298, 12, 4, 10),
-							new Trades.class_4161(Items.field_8226, 12, 4, 10),
-							new Trades.class_4161(Items.field_8273, 12, 4, 10),
-							new Trades.class_4161(Items.field_8131, 12, 4, 10),
-							new Trades.class_4165(Blocks.field_10446, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10095, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10215, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10294, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10490, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10028, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10459, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10423, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10222, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10619, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10259, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10514, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10113, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10170, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10314, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10146, 1, 1, 5),
-							new Trades.class_4165(Blocks.field_10466, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_9977, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10482, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10290, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10512, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10040, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10393, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10591, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10209, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10433, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10510, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10043, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10473, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10338, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10536, 1, 4, 5),
-							new Trades.class_4165(Blocks.field_10106, 1, 4, 5)
+							new Trades.class_4161(Items.field_8446, 12, 8, 10),
+							new Trades.class_4161(Items.field_8298, 12, 8, 10),
+							new Trades.class_4161(Items.field_8226, 12, 8, 10),
+							new Trades.class_4161(Items.field_8273, 12, 8, 10),
+							new Trades.class_4161(Items.field_8131, 12, 8, 10),
+							new Trades.class_4165(Blocks.field_10446, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10095, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10215, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10294, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10490, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10028, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10459, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10423, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10222, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10619, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10259, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10514, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10113, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10170, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10314, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10146, 1, 1, 8, 5),
+							new Trades.class_4165(Blocks.field_10466, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_9977, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10482, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10290, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10512, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10040, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10393, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10591, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10209, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10433, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10510, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10043, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10473, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10338, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10536, 1, 4, 8, 5),
+							new Trades.class_4165(Blocks.field_10106, 1, 4, 8, 5)
 						},
 						3,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8192, 12, 4, 20),
-							new Trades.class_4161(Items.field_8851, 12, 4, 20),
-							new Trades.class_4161(Items.field_8492, 12, 4, 20),
-							new Trades.class_4161(Items.field_8264, 12, 4, 20),
-							new Trades.class_4161(Items.field_8330, 12, 4, 20),
-							new Trades.class_4165(Blocks.field_10120, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10356, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10069, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10461, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10527, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10288, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10109, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10141, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10561, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10621, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10326, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10180, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10230, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10410, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10610, 3, 1, 10),
-							new Trades.class_4165(Blocks.field_10019, 3, 1, 10)
+							new Trades.class_4161(Items.field_8192, 12, 8, 20),
+							new Trades.class_4161(Items.field_8851, 12, 8, 20),
+							new Trades.class_4161(Items.field_8492, 12, 8, 20),
+							new Trades.class_4161(Items.field_8264, 12, 8, 20),
+							new Trades.class_4161(Items.field_8330, 12, 8, 20),
+							new Trades.class_4165(Blocks.field_10120, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10356, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10069, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10461, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10527, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10288, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10109, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10141, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10561, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10621, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10326, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10180, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10230, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10410, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10610, 3, 1, 6, 10),
+							new Trades.class_4165(Blocks.field_10019, 3, 1, 6, 10)
 						},
 						4,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8099, 12, 4, 30),
-							new Trades.class_4161(Items.field_8296, 12, 4, 30),
-							new Trades.class_4161(Items.field_8345, 12, 4, 30),
-							new Trades.class_4161(Items.field_8408, 12, 4, 30),
-							new Trades.class_4161(Items.field_8669, 12, 4, 30),
-							new Trades.class_4161(Items.field_8632, 12, 4, 30),
-							new Trades.class_4165(Items.field_8539, 3, 1, 15),
-							new Trades.class_4165(Items.field_8128, 3, 1, 15),
-							new Trades.class_4165(Items.field_8379, 3, 1, 15),
-							new Trades.class_4165(Items.field_8586, 3, 1, 15),
-							new Trades.class_4165(Items.field_8329, 3, 1, 15),
-							new Trades.class_4165(Items.field_8295, 3, 1, 15),
-							new Trades.class_4165(Items.field_8778, 3, 1, 15),
-							new Trades.class_4165(Items.field_8617, 3, 1, 15),
-							new Trades.class_4165(Items.field_8572, 3, 1, 15),
-							new Trades.class_4165(Items.field_8405, 3, 1, 15),
-							new Trades.class_4165(Items.field_8671, 3, 1, 15),
-							new Trades.class_4165(Items.field_8629, 3, 1, 15),
-							new Trades.class_4165(Items.field_8124, 3, 1, 15),
-							new Trades.class_4165(Items.field_8049, 3, 1, 15),
-							new Trades.class_4165(Items.field_8824, 3, 1, 15),
-							new Trades.class_4165(Items.field_8855, 3, 1, 15)
+							new Trades.class_4161(Items.field_8099, 12, 8, 30),
+							new Trades.class_4161(Items.field_8296, 12, 8, 30),
+							new Trades.class_4161(Items.field_8345, 12, 8, 30),
+							new Trades.class_4161(Items.field_8408, 12, 8, 30),
+							new Trades.class_4161(Items.field_8669, 12, 8, 30),
+							new Trades.class_4161(Items.field_8632, 12, 8, 30),
+							new Trades.class_4165(Items.field_8539, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8128, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8379, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8586, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8329, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8295, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8778, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8617, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8572, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8405, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8671, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8629, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8124, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8049, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8824, 3, 1, 6, 15),
+							new Trades.class_4165(Items.field_8855, 3, 1, 6, 15)
 						},
 						5,
 						new Trades.Factory[]{new Trades.class_4165(Items.field_8892, 2, 3, 30)}
@@ -232,21 +234,21 @@ public class Trades {
 					ImmutableMap.of(
 						1,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8600, 32, 4, 2),
+							new Trades.class_4161(Items.field_8600, 32, 8, 2),
 							new Trades.class_4165(Items.field_8107, 1, 16, 1),
-							new Trades.class_4164(Blocks.field_10255, 10, Items.field_8145, 10, 4, 1)
+							new Trades.class_4164(Blocks.field_10255, 10, Items.field_8145, 10, 6, 1)
 						},
 						2,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8145, 26, 4, 10), new Trades.class_4165(Items.field_8102, 2, 1, 5)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8145, 26, 6, 10), new Trades.class_4165(Items.field_8102, 2, 1, 5)},
 						3,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8276, 14, 4, 20), new Trades.class_4165(Items.field_8399, 3, 1, 10)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8276, 14, 8, 20), new Trades.class_4165(Items.field_8399, 3, 1, 10)},
 						4,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8153, 24, 4, 30), new Trades.class_4163(Items.field_8102, 2, 1, 15)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8153, 24, 8, 30), new Trades.class_4163(Items.field_8102, 2, 2, 15)},
 						5,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.TRIPWIRE_HOOK, 8, 4, 30),
-							new Trades.class_4163(Items.field_8399, 3, 1, 15),
-							new Trades.class_4167(Items.field_8107, 5, Items.field_8087, 5, 2, 4, 30)
+							new Trades.class_4161(Items.TRIPWIRE_HOOK, 8, 6, 30),
+							new Trades.class_4163(Items.field_8399, 3, 2, 15),
+							new Trades.class_4167(Items.field_8107, 5, Items.field_8087, 5, 2, 6, 30)
 						}
 					)
 				)
@@ -258,21 +260,21 @@ public class Trades {
 						.put(
 							1,
 							new Trades.Factory[]{
-								new Trades.class_4161(Items.field_8407, 24, 4, 2), new Trades.EnchantBookFactory(1), new Trades.class_4165(Blocks.field_10504, 6, 3, 1)
+								new Trades.class_4161(Items.field_8407, 24, 8, 2), new Trades.EnchantBookFactory(1), new Trades.class_4165(Blocks.field_10504, 6, 3, 6, 1)
 							}
 						)
 						.put(
 							2,
-							new Trades.Factory[]{new Trades.class_4161(Items.field_8529, 4, 4, 10), new Trades.EnchantBookFactory(5), new Trades.class_4165(Items.LANTERN, 1, 1, 5)}
+							new Trades.Factory[]{new Trades.class_4161(Items.field_8529, 4, 6, 10), new Trades.EnchantBookFactory(5), new Trades.class_4165(Items.LANTERN, 1, 1, 5)}
 						)
 						.put(
 							3,
-							new Trades.Factory[]{new Trades.class_4161(Items.field_8794, 5, 4, 20), new Trades.EnchantBookFactory(10), new Trades.class_4165(Items.GLASS, 1, 4, 10)}
+							new Trades.Factory[]{new Trades.class_4161(Items.field_8794, 5, 6, 20), new Trades.EnchantBookFactory(10), new Trades.class_4165(Items.GLASS, 1, 4, 10)}
 						)
 						.put(
 							4,
 							new Trades.Factory[]{
-								new Trades.class_4161(Items.field_8674, 2, 4, 30),
+								new Trades.class_4161(Items.field_8674, 2, 6, 30),
 								new Trades.EnchantBookFactory(15),
 								new Trades.class_4165(Items.field_8557, 5, 1, 15),
 								new Trades.class_4165(Items.field_8251, 4, 1, 15)
@@ -287,11 +289,11 @@ public class Trades {
 				copyToFastUtilMap(
 					ImmutableMap.of(
 						1,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8407, 24, 4, 2), new Trades.class_4165(Items.field_8895, 7, 1, 1)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8407, 24, 8, 2), new Trades.class_4165(Items.field_8895, 7, 1, 1)},
 						2,
-						new Trades.Factory[]{new Trades.class_4161(Items.GLASS_PANE, 10, 4, 10), new Trades.SellMapFactory(13, "Monument", MapIcon.Type.field_98, 4, 5)},
+						new Trades.Factory[]{new Trades.class_4161(Items.GLASS_PANE, 10, 8, 10), new Trades.SellMapFactory(13, "Monument", MapIcon.Type.field_98, 6, 5)},
 						3,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8251, 1, 4, 20), new Trades.SellMapFactory(14, "Mansion", MapIcon.Type.field_88, 4, 10)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8251, 1, 6, 20), new Trades.SellMapFactory(14, "Mansion", MapIcon.Type.field_88, 6, 10)},
 						4,
 						new Trades.Factory[]{
 							new Trades.class_4165(Items.field_8143, 7, 1, 15),
@@ -322,17 +324,17 @@ public class Trades {
 				copyToFastUtilMap(
 					ImmutableMap.of(
 						1,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8511, 32, 4, 2), new Trades.class_4165(Items.field_8725, 1, 2, 1)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8511, 32, 8, 2), new Trades.class_4165(Items.field_8725, 1, 2, 1)},
 						2,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8695, 3, 4, 10), new Trades.class_4165(Items.field_8759, 1, 1, 5)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8695, 3, 6, 10), new Trades.class_4165(Items.field_8759, 1, 1, 5)},
 						3,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8073, 2, 4, 20), new Trades.class_4165(Blocks.field_10171, 4, 1, 10)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8073, 2, 6, 20), new Trades.class_4165(Blocks.field_10171, 4, 1, 6, 10)},
 						4,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8161, 4, 4, 30), new Trades.class_4161(Items.field_8469, 9, 4, 30), new Trades.class_4165(Items.field_8634, 5, 1, 15)
+							new Trades.class_4161(Items.field_8161, 4, 6, 30), new Trades.class_4161(Items.field_8469, 9, 6, 30), new Trades.class_4165(Items.field_8634, 5, 1, 15)
 						},
 						5,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8790, 22, 4, 30), new Trades.class_4165(Items.field_8287, 3, 1, 30)}
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8790, 22, 6, 30), new Trades.class_4165(Items.field_8287, 3, 1, 30)}
 					)
 				)
 			);
@@ -342,31 +344,31 @@ public class Trades {
 					ImmutableMap.of(
 						1,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8713, 15, 4, 2),
-							new Trades.class_4165(new ItemStack(Items.field_8396), 7, 1, 4, 1, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8660), 4, 1, 4, 1, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8743), 5, 1, 4, 1, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8523), 9, 1, 4, 1, 0.2F)
+							new Trades.class_4161(Items.field_8713, 15, 8, 2),
+							new Trades.class_4165(new ItemStack(Items.field_8396), 7, 1, 6, 1, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8660), 4, 1, 6, 1, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8743), 5, 1, 6, 1, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8523), 9, 1, 6, 1, 0.2F)
 						},
 						2,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8620, 4, 4, 10),
-							new Trades.class_4165(new ItemStack(Items.BELL), 36, 1, 4, 5, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8313), 1, 1, 4, 5, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8218), 3, 1, 4, 5, 0.2F)
+							new Trades.class_4161(Items.field_8620, 4, 6, 10),
+							new Trades.class_4165(new ItemStack(Items.BELL), 36, 1, 6, 5, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8313), 1, 1, 6, 5, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8218), 3, 1, 6, 5, 0.2F)
 						},
 						3,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8187, 1, 4, 20),
-							new Trades.class_4161(Items.field_8477, 1, 4, 20),
-							new Trades.class_4165(new ItemStack(Items.field_8283), 1, 1, 4, 10, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8873), 4, 1, 4, 10, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8255), 5, 1, 4, 10, 0.2F)
+							new Trades.class_4161(Items.field_8187, 1, 6, 20),
+							new Trades.class_4161(Items.field_8477, 1, 6, 20),
+							new Trades.class_4165(new ItemStack(Items.field_8283), 1, 1, 6, 10, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8873), 4, 1, 6, 10, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8255), 5, 1, 6, 10, 0.2F)
 						},
 						4,
-						new Trades.Factory[]{new Trades.class_4163(Items.field_8348, 14, 1, 15, 0.2F), new Trades.class_4163(Items.field_8285, 8, 1, 15, 0.2F)},
+						new Trades.Factory[]{new Trades.class_4163(Items.field_8348, 14, 2, 15, 0.2F), new Trades.class_4163(Items.field_8285, 8, 2, 15, 0.2F)},
 						5,
-						new Trades.Factory[]{new Trades.class_4163(Items.field_8805, 8, 1, 30, 0.2F), new Trades.class_4163(Items.field_8058, 16, 1, 30, 0.2F)}
+						new Trades.Factory[]{new Trades.class_4163(Items.field_8805, 8, 2, 30, 0.2F), new Trades.class_4163(Items.field_8058, 16, 2, 30, 0.2F)}
 					)
 				)
 			);
@@ -376,18 +378,18 @@ public class Trades {
 					ImmutableMap.of(
 						1,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8713, 15, 4, 2),
-							new Trades.class_4165(new ItemStack(Items.field_8475), 3, 1, 4, 1, 0.2F),
-							new Trades.class_4163(Items.field_8371, 2, 1, 1)
+							new Trades.class_4161(Items.field_8713, 15, 8, 2),
+							new Trades.class_4165(new ItemStack(Items.field_8475), 3, 1, 6, 1, 0.2F),
+							new Trades.class_4163(Items.field_8371, 2, 2, 1)
 						},
 						2,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8620, 4, 4, 10), new Trades.class_4165(new ItemStack(Items.BELL), 36, 1, 4, 5, 0.2F)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8620, 4, 6, 10), new Trades.class_4165(new ItemStack(Items.BELL), 36, 1, 6, 5, 0.2F)},
 						3,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8145, 24, 4, 20)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8145, 24, 6, 20)},
 						4,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8477, 1, 4, 30), new Trades.class_4163(Items.field_8556, 12, 1, 15, 0.2F)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8477, 1, 6, 30), new Trades.class_4163(Items.field_8556, 12, 2, 15, 0.2F)},
 						5,
-						new Trades.Factory[]{new Trades.class_4163(Items.field_8802, 8, 1, 30, 0.2F)}
+						new Trades.Factory[]{new Trades.class_4163(Items.field_8802, 8, 2, 30, 0.2F)}
 					)
 				)
 			);
@@ -397,30 +399,30 @@ public class Trades {
 					ImmutableMap.of(
 						1,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8713, 15, 4, 2),
-							new Trades.class_4165(new ItemStack(Items.field_8062), 1, 1, 4, 1, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8776), 1, 1, 4, 1, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8387), 1, 1, 4, 1, 0.2F),
-							new Trades.class_4165(new ItemStack(Items.field_8431), 1, 1, 4, 1, 0.2F)
+							new Trades.class_4161(Items.field_8713, 15, 8, 2),
+							new Trades.class_4165(new ItemStack(Items.field_8062), 1, 1, 6, 1, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8776), 1, 1, 6, 1, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8387), 1, 1, 6, 1, 0.2F),
+							new Trades.class_4165(new ItemStack(Items.field_8431), 1, 1, 6, 1, 0.2F)
 						},
 						2,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8620, 4, 4, 10), new Trades.class_4165(new ItemStack(Items.BELL), 36, 1, 4, 5, 0.2F)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8620, 4, 6, 10), new Trades.class_4165(new ItemStack(Items.BELL), 36, 1, 6, 5, 0.2F)},
 						3,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8145, 30, 4, 20),
-							new Trades.class_4163(Items.field_8475, 1, 1, 10, 0.2F),
-							new Trades.class_4163(Items.field_8699, 2, 1, 10, 0.2F),
-							new Trades.class_4163(Items.field_8403, 3, 1, 10, 0.2F),
-							new Trades.class_4163(Items.field_8527, 9, 1, 10, 0.2F)
+							new Trades.class_4161(Items.field_8145, 30, 6, 20),
+							new Trades.class_4163(Items.field_8475, 1, 2, 10, 0.2F),
+							new Trades.class_4163(Items.field_8699, 2, 2, 10, 0.2F),
+							new Trades.class_4163(Items.field_8403, 3, 2, 10, 0.2F),
+							new Trades.class_4163(Items.field_8527, 9, 2, 10, 0.2F)
 						},
 						4,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8477, 1, 4, 30),
-							new Trades.class_4163(Items.field_8556, 12, 1, 15, 0.2F),
-							new Trades.class_4163(Items.field_8250, 5, 1, 15, 0.2F)
+							new Trades.class_4161(Items.field_8477, 1, 6, 30),
+							new Trades.class_4163(Items.field_8556, 12, 2, 15, 0.2F),
+							new Trades.class_4163(Items.field_8250, 5, 2, 15, 0.2F)
 						},
 						5,
-						new Trades.Factory[]{new Trades.class_4163(Items.field_8377, 13, 1, 30, 0.2F)}
+						new Trades.Factory[]{new Trades.class_4163(Items.field_8377, 13, 2, 30, 0.2F)}
 					)
 				)
 			);
@@ -430,21 +432,23 @@ public class Trades {
 					ImmutableMap.of(
 						1,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8726, 14, 4, 2),
-							new Trades.class_4161(Items.field_8389, 7, 4, 2),
-							new Trades.class_4161(Items.field_8504, 4, 4, 2),
+							new Trades.class_4161(Items.field_8726, 14, 8, 2),
+							new Trades.class_4161(Items.field_8389, 7, 8, 2),
+							new Trades.class_4161(Items.field_8504, 4, 8, 2),
 							new Trades.class_4165(Items.field_8308, 1, 1, 1)
 						},
 						2,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8713, 15, 4, 2), new Trades.class_4165(Items.field_8261, 1, 5, 5), new Trades.class_4165(Items.field_8544, 1, 8, 5)
+							new Trades.class_4161(Items.field_8713, 15, 8, 2),
+							new Trades.class_4165(Items.field_8261, 1, 5, 8, 5),
+							new Trades.class_4165(Items.field_8544, 1, 8, 8, 5)
 						},
 						3,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8748, 7, 4, 20), new Trades.class_4161(Items.field_8046, 10, 4, 20)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8748, 7, 8, 20), new Trades.class_4161(Items.field_8046, 10, 8, 20)},
 						4,
-						new Trades.Factory[]{new Trades.class_4161(Items.DRIED_KELP_BLOCK, 10, 4, 30)},
+						new Trades.Factory[]{new Trades.class_4161(Items.DRIED_KELP_BLOCK, 10, 6, 30)},
 						5,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_16998, 10, 4, 30)}
+						new Trades.Factory[]{new Trades.class_4161(Items.field_16998, 10, 6, 30)}
 					)
 				)
 			);
@@ -454,18 +458,18 @@ public class Trades {
 					ImmutableMap.of(
 						1,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8745, 6, 4, 2), new Trades.class_4160(Items.field_8570, 3), new Trades.class_4160(Items.field_8577, 7)
+							new Trades.class_4161(Items.field_8745, 6, 8, 2), new Trades.class_4160(Items.field_8570, 3), new Trades.class_4160(Items.field_8577, 7)
 						},
 						2,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8145, 26, 4, 10), new Trades.class_4160(Items.field_8267, 5, 4, 5), new Trades.class_4160(Items.field_8370, 4, 4, 5)
+							new Trades.class_4161(Items.field_8145, 26, 6, 10), new Trades.class_4160(Items.field_8267, 5, 6, 5), new Trades.class_4160(Items.field_8370, 4, 6, 5)
 						},
 						3,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8245, 9, 4, 20), new Trades.class_4160(Items.field_8577, 7)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8245, 9, 6, 20), new Trades.class_4160(Items.field_8577, 7)},
 						4,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8161, 4, 4, 30), new Trades.class_4160(Items.field_18138, 6, 4, 15)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8161, 4, 6, 30), new Trades.class_4160(Items.field_18138, 6, 6, 15)},
 						5,
-						new Trades.Factory[]{new Trades.class_4165(new ItemStack(Items.field_8175), 6, 1, 4, 30, 0.2F), new Trades.class_4160(Items.field_8267, 5, 4, 30)}
+						new Trades.Factory[]{new Trades.class_4165(new ItemStack(Items.field_8175), 6, 1, 6, 30, 0.2F), new Trades.class_4160(Items.field_8267, 5, 6, 30)}
 					)
 				)
 			);
@@ -474,40 +478,56 @@ public class Trades {
 				copyToFastUtilMap(
 					ImmutableMap.of(
 						1,
-						new Trades.Factory[]{new Trades.class_4161(Items.field_8696, 10, 4, 2), new Trades.class_4165(Items.field_8621, 1, 10, 1)},
+						new Trades.Factory[]{new Trades.class_4161(Items.field_8696, 10, 8, 2), new Trades.class_4165(Items.field_8621, 1, 10, 8, 1)},
 						2,
-						new Trades.Factory[]{new Trades.class_4161(Blocks.field_10340, 20, 4, 10), new Trades.class_4165(Blocks.field_10552, 1, 4, 5)},
+						new Trades.Factory[]{new Trades.class_4161(Blocks.field_10340, 20, 8, 10), new Trades.class_4165(Blocks.field_10552, 1, 4, 8, 5)},
 						3,
 						new Trades.Factory[]{
-							new Trades.class_4161(Blocks.field_10474, 16, 4, 20),
-							new Trades.class_4161(Blocks.field_10115, 16, 4, 20),
-							new Trades.class_4161(Blocks.field_10508, 16, 4, 20),
-							new Trades.class_4165(Blocks.field_10093, 1, 4, 10),
-							new Trades.class_4165(Blocks.field_10346, 1, 4, 10),
-							new Trades.class_4165(Blocks.field_10289, 1, 4, 10)
+							new Trades.class_4161(Blocks.field_10474, 16, 8, 20),
+							new Trades.class_4161(Blocks.field_10115, 16, 8, 20),
+							new Trades.class_4161(Blocks.field_10508, 16, 8, 20),
+							new Trades.class_4165(Blocks.field_10093, 1, 4, 8, 10),
+							new Trades.class_4165(Blocks.field_10346, 1, 4, 8, 10),
+							new Trades.class_4165(Blocks.field_10289, 1, 4, 8, 10)
 						},
 						4,
 						new Trades.Factory[]{
-							new Trades.class_4161(Items.field_8155, 12, 4, 30),
-							new Trades.class_4165(Blocks.field_10184, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10611, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10409, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10325, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10349, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10590, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10626, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10328, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10444, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10015, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10014, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10526, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10235, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10570, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10143, 1, 1, 15),
-							new Trades.class_4165(Blocks.field_10123, 1, 1, 15)
+							new Trades.class_4161(Items.field_8155, 12, 6, 30),
+							new Trades.class_4165(Blocks.field_10184, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10611, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10409, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10325, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10349, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10590, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10626, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10328, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10444, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10015, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10014, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10526, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10235, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10570, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10143, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10123, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10280, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10595, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10550, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10345, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10220, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10052, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10501, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10383, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10567, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10538, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10046, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10475, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10078, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10426, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10096, 1, 1, 6, 15),
+							new Trades.class_4165(Blocks.field_10004, 1, 1, 6, 15)
 						},
 						5,
-						new Trades.Factory[]{new Trades.class_4165(Blocks.field_10437, 1, 1, 30)}
+						new Trades.Factory[]{new Trades.class_4165(Blocks.field_10437, 1, 1, 6, 30), new Trades.class_4165(Blocks.field_10153, 1, 1, 6, 30)}
 					)
 				)
 			);
@@ -613,7 +633,7 @@ public class Trades {
 				j = 64;
 			}
 
-			return new TraderRecipe(new ItemStack(Items.field_8687, j), new ItemStack(Items.field_8529), itemStack, 4, this.field_18557, 0.2F);
+			return new TraderRecipe(new ItemStack(Items.field_8687, j), new ItemStack(Items.field_8529), itemStack, 6, this.field_18557, 0.2F);
 		}
 	}
 
@@ -663,7 +683,7 @@ public class Trades {
 		private final int field_18547;
 
 		public class_4160(Item item, int i) {
-			this(item, i, 4, 1);
+			this(item, i, 6, 1);
 		}
 
 		public class_4160(Item item, int i, int j, int k) {
@@ -825,12 +845,12 @@ public class Trades {
 		private final int field_18575;
 		private final float field_18576;
 
-		public class_4165(Block block, int i, int j, int k) {
-			this(new ItemStack(block), i, j, 4, k);
+		public class_4165(Block block, int i, int j, int k, int l) {
+			this(new ItemStack(block), i, j, k, l);
 		}
 
 		public class_4165(Item item, int i, int j, int k) {
-			this(new ItemStack(item), i, j, 4, k);
+			this(new ItemStack(item), i, j, 6, k);
 		}
 
 		public class_4165(Item item, int i, int j, int k, int l) {
@@ -880,7 +900,7 @@ public class Trades {
 		public TraderRecipe create(Entity entity, Random random) {
 			ItemStack itemStack = new ItemStack(Items.field_8766, 1);
 			SuspiciousStewItem.addEffectToStew(itemStack, this.field_18577, this.field_18578);
-			return new TraderRecipe(new ItemStack(Items.field_8687, 1), itemStack, 4, this.field_18579, this.field_18580);
+			return new TraderRecipe(new ItemStack(Items.field_8687, 1), itemStack, 6, this.field_18579, this.field_18580);
 		}
 	}
 

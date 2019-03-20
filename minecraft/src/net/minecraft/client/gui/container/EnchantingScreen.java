@@ -177,10 +177,10 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		f = this.client.getTickDelta();
 		this.drawBackground();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 		boolean bl = this.client.player.abilities.creativeMode;
 		int k = this.container.method_7638();

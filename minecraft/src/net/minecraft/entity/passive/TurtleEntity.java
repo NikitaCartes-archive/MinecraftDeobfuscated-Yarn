@@ -19,7 +19,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.AiUtil;
+import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -312,7 +312,7 @@ public class TurtleEntity extends AnimalEntity {
 			this.updateVelocity(0.1F, vec3d);
 			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
-			if (this.getTarget() == null && (!this.method_6684() || !(this.squaredDistanceTo(this.getHomePos()) < 400.0))) {
+			if (this.getTarget() == null && (!this.method_6684() || !this.getHomePos().method_19769(this.getPos(), 20.0))) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.005, 0.0));
 			}
 		} else {
@@ -376,7 +376,7 @@ public class TurtleEntity extends AnimalEntity {
 		private void method_6700() {
 			if (this.turtle.isInsideWater()) {
 				this.turtle.setVelocity(this.turtle.getVelocity().add(0.0, 0.005, 0.0));
-				if (this.turtle.squaredDistanceTo(this.turtle.getHomePos()) > 256.0) {
+				if (!this.turtle.getHomePos().method_19769(this.turtle.getPos(), 16.0)) {
 					this.turtle.setMovementSpeed(Math.max(this.turtle.getMovementSpeed() / 2.0F, 0.08F));
 				}
 
@@ -455,7 +455,7 @@ public class TurtleEntity extends AnimalEntity {
 			} else if (this.field_6930.getHasEgg()) {
 				return true;
 			} else {
-				return this.field_6930.getRand().nextInt(700) != 0 ? false : this.field_6930.squaredDistanceTo(this.field_6930.getHomePos()) >= 4096.0;
+				return this.field_6930.getRand().nextInt(700) != 0 ? false : !this.field_6930.getHomePos().method_19769(this.field_6930.getPos(), 64.0);
 			}
 		}
 
@@ -473,27 +473,27 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			return this.field_6930.squaredDistanceTo(this.field_6930.getHomePos()) >= 49.0 && !this.field_6929 && this.field_6928 <= 600;
+			return !this.field_6930.getHomePos().method_19769(this.field_6930.getPos(), 7.0) && !this.field_6929 && this.field_6928 <= 600;
 		}
 
 		@Override
 		public void tick() {
 			BlockPos blockPos = this.field_6930.getHomePos();
-			boolean bl = this.field_6930.squaredDistanceTo(blockPos) <= 256.0;
+			boolean bl = blockPos.method_19769(this.field_6930.getPos(), 16.0);
 			if (bl) {
 				this.field_6928++;
 			}
 
 			if (this.field_6930.getNavigation().isIdle()) {
-				Vec3d vec3d = AiUtil.method_6377(
+				Vec3d vec3d = PathfindingUtil.method_6377(
 					this.field_6930, 16, 3, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 10)
 				);
 				if (vec3d == null) {
-					vec3d = AiUtil.method_6373(this.field_6930, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = PathfindingUtil.method_6373(this.field_6930, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d != null && !bl && this.field_6930.world.getBlockState(new BlockPos(vec3d)).getBlock() != Blocks.field_10382) {
-					vec3d = AiUtil.method_6373(this.field_6930, 16, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = PathfindingUtil.method_6373(this.field_6930, 16, 5, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d == null) {
@@ -551,12 +551,12 @@ public class TurtleEntity extends AnimalEntity {
 
 		@Override
 		public boolean canStart() {
-			return this.field_6932.getHasEgg() && this.field_6932.squaredDistanceTo(this.field_6932.getHomePos()) < 81.0 ? super.canStart() : false;
+			return this.field_6932.getHasEgg() && this.field_6932.getHomePos().method_19769(this.field_6932.getPos(), 9.0) ? super.canStart() : false;
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			return super.shouldContinue() && this.field_6932.getHasEgg() && this.field_6932.squaredDistanceTo(this.field_6932.getHomePos()) < 81.0;
+			return super.shouldContinue() && this.field_6932.getHasEgg() && this.field_6932.getHomePos().method_19769(this.field_6932.getPos(), 9.0);
 		}
 
 		@Override
@@ -721,11 +721,11 @@ public class TurtleEntity extends AnimalEntity {
 		public void tick() {
 			if (this.field_6942.getNavigation().isIdle()) {
 				BlockPos blockPos = this.field_6942.getTravelPos();
-				Vec3d vec3d = AiUtil.method_6377(
+				Vec3d vec3d = PathfindingUtil.method_6377(
 					this.field_6942, 16, 3, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()), (float) (Math.PI / 10)
 				);
 				if (vec3d == null) {
-					vec3d = AiUtil.method_6373(this.field_6942, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+					vec3d = PathfindingUtil.method_6373(this.field_6942, 8, 7, new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 				}
 
 				if (vec3d != null) {

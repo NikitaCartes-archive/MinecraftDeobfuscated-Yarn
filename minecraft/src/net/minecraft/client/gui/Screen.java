@@ -47,6 +47,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class Screen extends ScreenComponent implements Drawable, YesNoCallback {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<String> PROTOCOLS = Sets.<String>newHashSet("http", "https");
+	protected static final int CONFIRM_URL_BUTTON_ID = 31102009;
 	protected final List<InputListener> listeners = Lists.<InputListener>newArrayList();
 	public MinecraftClient client;
 	public ItemRenderer itemRenderer;
@@ -54,18 +55,18 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 	public int screenHeight;
 	protected final List<AbstractButtonWidget> buttons = Lists.<AbstractButtonWidget>newArrayList();
 	protected final List<LabelWidget> labelWidgets = Lists.<LabelWidget>newArrayList();
-	public boolean field_2558;
+	public boolean passEvents;
 	public TextRenderer fontRenderer;
 	private URI uri;
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		for (int k = 0; k < this.buttons.size(); k++) {
-			((AbstractButtonWidget)this.buttons.get(k)).draw(i, j, f);
+			((AbstractButtonWidget)this.buttons.get(k)).render(i, j, f);
 		}
 
 		for (int k = 0; k < this.labelWidgets.size(); k++) {
-			((LabelWidget)this.labelWidgets.get(k)).draw(i, j, f);
+			((LabelWidget)this.labelWidgets.get(k)).render(i, j, f);
 		}
 	}
 
@@ -234,7 +235,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 		}
 	}
 
-	protected void method_2237(String string, boolean bl) {
+	protected void insertText(String string, boolean bl) {
 	}
 
 	public boolean handleTextComponentClick(TextComponent textComponent) {
@@ -244,7 +245,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 			ClickEvent clickEvent = textComponent.getStyle().getClickEvent();
 			if (isShiftPressed()) {
 				if (textComponent.getStyle().getInsertion() != null) {
-					this.method_2237(textComponent.getStyle().getInsertion(), false);
+					this.insertText(textComponent.getStyle().getInsertion(), false);
 				}
 			} else if (clickEvent != null) {
 				if (clickEvent.getAction() == ClickEvent.Action.OPEN_URL) {
@@ -276,7 +277,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 					URI uRIx = new File(clickEvent.getValue()).toURI();
 					this.openUri(uRIx);
 				} else if (clickEvent.getAction() == ClickEvent.Action.SUGGEST_COMMAND) {
-					this.method_2237(clickEvent.getValue(), true);
+					this.insertText(clickEvent.getValue(), true);
 				} else if (clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
 					this.sendMessage(clickEvent.getValue(), false);
 				} else {
@@ -311,6 +312,11 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 		this.buttons.clear();
 		this.listeners.clear();
 		this.onInitialized();
+	}
+
+	public void setSize(int i, int j) {
+		this.screenWidth = i;
+		this.screenHeight = j;
 	}
 
 	@Override
@@ -417,7 +423,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 		this.initialize(minecraftClient, i, j);
 	}
 
-	public static void method_2217(Runnable runnable, String string, String string2) {
+	public static void wrapScreenError(Runnable runnable, String string, String string2) {
 		try {
 			runnable.run();
 		} catch (Throwable var6) {
@@ -428,7 +434,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 		}
 	}
 
-	protected boolean method_16016(String string, char c, int i) {
+	protected boolean isValidCharacterForName(String string, char c, int i) {
 		int j = string.indexOf(58);
 		int k = string.indexOf(47);
 		if (c == ':') {
@@ -439,7 +445,7 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 	}
 
 	@Override
-	public boolean method_19356(double d, double e) {
+	public boolean isMouseOver(double d, double e) {
 		return true;
 	}
 }

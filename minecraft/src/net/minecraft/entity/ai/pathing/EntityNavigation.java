@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.pathing;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_4209;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -9,6 +8,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -173,7 +173,7 @@ public abstract class EntityNavigation {
 				}
 			}
 
-			class_4209.method_19470(this.world, this.entity, this.currentPath, this.field_6683);
+			DebugRendererInfoManager.sendPathfindingData(this.world, this.entity, this.currentPath, this.field_6683);
 			if (!this.isIdle()) {
 				Vec3d vec3d = this.currentPath.getNodePosition(this.entity);
 				BlockPos blockPos = new BlockPos(vec3d);
@@ -303,11 +303,8 @@ public abstract class EntityNavigation {
 	public void method_18053(BlockPos blockPos) {
 		if (this.currentPath != null && !this.currentPath.isFinished() && this.currentPath.getLength() != 0) {
 			PathNode pathNode = this.currentPath.getEnd();
-			double d = blockPos.squaredDistanceTo(
-				((double)pathNode.x + this.entity.x) / 2.0, ((double)pathNode.y + this.entity.y) / 2.0, ((double)pathNode.z + this.entity.z) / 2.0
-			);
-			int i = (this.currentPath.getLength() - this.currentPath.getCurrentNodeIndex()) * (this.currentPath.getLength() - this.currentPath.getCurrentNodeIndex());
-			if (d < (double)i) {
+			Vec3d vec3d = new Vec3d(((double)pathNode.x + this.entity.x) / 2.0, ((double)pathNode.y + this.entity.y) / 2.0, ((double)pathNode.z + this.entity.z) / 2.0);
+			if (blockPos.method_19769(vec3d, (double)(this.currentPath.getLength() - this.currentPath.getCurrentNodeIndex()))) {
 				this.recalculatePath();
 			}
 		}

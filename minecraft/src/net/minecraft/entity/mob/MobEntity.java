@@ -7,7 +7,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_4209;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.packet.EntityAttachS2CPacket;
@@ -52,6 +51,7 @@ import net.minecraft.nbt.FloatTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.AbsoluteHand;
@@ -94,8 +94,8 @@ public abstract class MobEntity extends LivingEntity {
 	private int field_18279;
 	@Nullable
 	private CompoundTag leashTag;
-	private BlockPos field_18074 = BlockPos.ORIGIN;
-	private float field_18075 = -1.0F;
+	private BlockPos walkTarget = BlockPos.ORIGIN;
+	private float walkTargetRange = -1.0F;
 
 	protected MobEntity(EntityType<? extends MobEntity> entityType, World world) {
 		super(entityType, world);
@@ -206,8 +206,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public void updateLogic() {
-		super.updateLogic();
+	public void baseTick() {
+		super.baseTick();
 		this.world.getProfiler().push("mobBaseTick");
 		if (this.isValid() && this.random.nextInt(1000) < this.ambientSoundChance++) {
 			this.resetSoundDelay();
@@ -284,8 +284,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (!this.world.isClient) {
 			this.method_5995();
 			if (this.age % 5 == 0) {
@@ -615,7 +615,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	protected void method_18409() {
-		class_4209.method_19469(this.world, this, this.goalSelector);
+		DebugRendererInfoManager.method_19469(this.world, this, this.goalSelector);
 	}
 
 	protected void mobTick() {
@@ -626,7 +626,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public int method_5986() {
-		return 75;
+		return 10;
 	}
 
 	public void method_5951(Entity entity, float f, float g) {
@@ -958,29 +958,29 @@ public abstract class MobEntity extends LivingEntity {
 		return false;
 	}
 
-	public boolean method_18411() {
-		return this.method_18407(new BlockPos(this));
+	public boolean isInWalkTargetRange() {
+		return this.isInWalkTargetRange(new BlockPos(this));
 	}
 
-	public boolean method_18407(BlockPos blockPos) {
-		return this.field_18075 == -1.0F ? true : this.field_18074.squaredDistanceTo(blockPos) < (double)(this.field_18075 * this.field_18075);
+	public boolean isInWalkTargetRange(BlockPos blockPos) {
+		return this.walkTargetRange == -1.0F ? true : this.walkTarget.squaredDistanceTo(blockPos) < (double)(this.walkTargetRange * this.walkTargetRange);
 	}
 
-	public void method_18408(BlockPos blockPos, int i) {
-		this.field_18074 = blockPos;
-		this.field_18075 = (float)i;
+	public void setWalkTarget(BlockPos blockPos, int i) {
+		this.walkTarget = blockPos;
+		this.walkTargetRange = (float)i;
 	}
 
-	public BlockPos method_18412() {
-		return this.field_18074;
+	public BlockPos getWalkTarget() {
+		return this.walkTarget;
 	}
 
-	public float method_18413() {
-		return this.field_18075;
+	public float getWalkTargetRange() {
+		return this.walkTargetRange;
 	}
 
-	public boolean method_18410() {
-		return this.field_18075 != -1.0F;
+	public boolean hasWalkTargetRange() {
+		return this.walkTargetRange != -1.0F;
 	}
 
 	protected void method_5995() {
@@ -1137,12 +1137,21 @@ public abstract class MobEntity extends LivingEntity {
 		this.dataTracker.set(MOB_FLAGS, bl ? (byte)(b | 2) : (byte)(b & -3));
 	}
 
+	public void method_19540(boolean bl) {
+		byte b = this.dataTracker.get(MOB_FLAGS);
+		this.dataTracker.set(MOB_FLAGS, bl ? (byte)(b | 4) : (byte)(b & -5));
+	}
+
 	public boolean isAiDisabled() {
 		return (this.dataTracker.get(MOB_FLAGS) & 1) != 0;
 	}
 
 	public boolean isLeftHanded() {
 		return (this.dataTracker.get(MOB_FLAGS) & 2) != 0;
+	}
+
+	public boolean method_6510() {
+		return (this.dataTracker.get(MOB_FLAGS) & 4) != 0;
 	}
 
 	@Override

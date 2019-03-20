@@ -156,9 +156,9 @@ import net.minecraft.client.options.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.recipe.book.RecipeResultCollection;
-import net.minecraft.client.render.debug.BrainDebugRenderer;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
+import net.minecraft.client.render.debug.PointOfInterestDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.search.SearchManager;
@@ -485,7 +485,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			entity.setUuid(entitySpawnS2CPacket.getUuid());
 			this.world.method_2942(i, entity);
 			if (entity instanceof AbstractMinecartEntity) {
-				this.client.getSoundLoader().play(new RidingMinecartSoundInstance((AbstractMinecartEntity)entity));
+				this.client.getSoundManager().play(new RidingMinecartSoundInstance((AbstractMinecartEntity)entity));
 			}
 		}
 	}
@@ -645,7 +645,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(entitiesDestroyS2CPacket, this, this.client);
 
 		for (int i = 0; i < entitiesDestroyS2CPacket.getEntityIds().length; i++) {
-			this.world.method_2945(entitiesDestroyS2CPacket.getEntityIds()[i]);
+			int j = entitiesDestroyS2CPacket.getEntityIds()[i];
+			this.world.method_2945(j);
 		}
 	}
 
@@ -952,19 +953,30 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 	}
 
+	private static ItemStack method_19691(PlayerEntity playerEntity) {
+		for (Hand hand : Hand.values()) {
+			ItemStack itemStack = playerEntity.getStackInHand(hand);
+			if (itemStack.getItem() == Items.field_8288) {
+				return itemStack;
+			}
+		}
+
+		return new ItemStack(Items.field_8288);
+	}
+
 	@Override
 	public void onEntityStatus(EntityStatusS2CPacket entityStatusS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityStatusS2CPacket, this, this.client);
 		Entity entity = entityStatusS2CPacket.getEntity(this.world);
 		if (entity != null) {
 			if (entityStatusS2CPacket.getStatus() == 21) {
-				this.client.getSoundLoader().play(new GuardianAttackSoundInstance((GuardianEntity)entity));
+				this.client.getSoundManager().play(new GuardianAttackSoundInstance((GuardianEntity)entity));
 			} else if (entityStatusS2CPacket.getStatus() == 35) {
 				int i = 40;
 				this.client.particleManager.addEmitter(entity, ParticleTypes.field_11220, 30);
 				this.world.playSound(entity.x, entity.y, entity.z, SoundEvents.field_14931, entity.getSoundCategory(), 1.0F, 1.0F, false);
 				if (entity == this.client.player) {
-					this.client.gameRenderer.showFloatingItem(new ItemStack(Items.field_8288));
+					this.client.gameRenderer.showFloatingItem(method_19691(this.client.player));
 				}
 			} else {
 				entity.method_5711(entityStatusS2CPacket.getStatus());
@@ -1359,7 +1371,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onStopSound(StopSoundS2CPacket stopSoundS2CPacket) {
 		NetworkThreadUtils.forceMainThread(stopSoundS2CPacket, this, this.client);
-		this.client.getSoundLoader().stopSounds(stopSoundS2CPacket.getSoundId(), stopSoundS2CPacket.getCategory());
+		this.client.getSoundManager().stopSounds(stopSoundS2CPacket.getSoundId(), stopSoundS2CPacket.getCategory());
 	}
 
 	@Override
@@ -1663,7 +1675,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPlaySoundId(PlaySoundIdS2CPacket playSoundIdS2CPacket) {
 		NetworkThreadUtils.forceMainThread(playSoundIdS2CPacket, this, this.client);
 		this.client
-			.getSoundLoader()
+			.getSoundManager()
 			.play(
 				new PositionedSoundInstance(
 					playSoundIdS2CPacket.getSoundId(),
@@ -1675,7 +1687,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					SoundInstance.AttenuationType.LINEAR,
 					(float)playSoundIdS2CPacket.getX(),
 					(float)playSoundIdS2CPacket.getY(),
-					(float)playSoundIdS2CPacket.getZ()
+					(float)playSoundIdS2CPacket.getZ(),
+					false
 				)
 			);
 	}
@@ -1860,65 +1873,84 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						packetByteBuf.readFloat(),
 						packetByteBuf.readFloat()
 					);
-			} else if (CustomPayloadS2CPacket.DEBUG_POI.equals(identifier)) {
-				BlockPos blockPos2 = packetByteBuf.readBlockPos();
-				Identifier identifier2 = packetByteBuf.readIdentifier();
-				boolean bl = packetByteBuf.readBoolean();
-				if (bl) {
-					this.client.debugRenderer.pointsOfInterestDebugRenderer.addPointOfInterest(blockPos2, identifier2);
-				} else {
-					this.client.debugRenderer.pointsOfInterestDebugRenderer.removePointOfInterest(blockPos2, identifier2);
-				}
+			} else if (CustomPayloadS2CPacket.field_18960.equals(identifier)) {
+				int i = packetByteBuf.readInt();
 
-				int o = packetByteBuf.readInt();
-
-				for (int k = 0; k < o; k++) {
+				for (int j = 0; j < i; j++) {
 					this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19433(packetByteBuf.method_19456());
 				}
 
-				int k = packetByteBuf.readInt();
+				int j = packetByteBuf.readInt();
 
-				for (int n = 0; n < k; n++) {
+				for (int m = 0; m < j; m++) {
 					this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19435(packetByteBuf.method_19456());
 				}
+			} else if (CustomPayloadS2CPacket.field_18958.equals(identifier)) {
+				BlockPos blockPos2 = packetByteBuf.readBlockPos();
+				String string = packetByteBuf.method_19772();
+				int m = packetByteBuf.readInt();
+				PointOfInterestDebugRenderer.class_4233 lv = new PointOfInterestDebugRenderer.class_4233(blockPos2, string, m);
+				this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19701(lv);
+			} else if (CustomPayloadS2CPacket.field_18959.equals(identifier)) {
+				BlockPos blockPos2 = packetByteBuf.readBlockPos();
+				this.client.debugRenderer.pointsOfInterestDebugRenderer.removePointOfInterest(blockPos2);
+			} else if (CustomPayloadS2CPacket.field_18957.equals(identifier)) {
+				BlockPos blockPos2 = packetByteBuf.readBlockPos();
+				int j = packetByteBuf.readInt();
+				this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19702(blockPos2, j);
 			} else if (CustomPayloadS2CPacket.DEBUG_GOAL_SELECTOR.equals(identifier)) {
 				int i = packetByteBuf.readInt();
 				BlockPos blockPos3 = packetByteBuf.readBlockPos();
-				String string = packetByteBuf.readString(255);
+				String string2 = packetByteBuf.readString(255);
 				int o = packetByteBuf.readInt();
-				List<GoalSelectorDebugRenderer.GoalSelector> list3 = Lists.<GoalSelectorDebugRenderer.GoalSelector>newArrayList();
+				List<GoalSelectorDebugRenderer.class_4206> list3 = Lists.<GoalSelectorDebugRenderer.class_4206>newArrayList();
 
 				for (int n = 0; n < o; n++) {
 					int p = packetByteBuf.readInt();
-					boolean bl2 = packetByteBuf.readBoolean();
-					String string2 = packetByteBuf.readString(255);
-					list3.add(new GoalSelectorDebugRenderer.GoalSelector(blockPos3, p, string2, bl2));
+					boolean bl = packetByteBuf.readBoolean();
+					String string3 = packetByteBuf.readString(255);
+					list3.add(new GoalSelectorDebugRenderer.class_4206(blockPos3, p, string3, bl));
 				}
 
-				this.client.debugRenderer.goalSelectorDebugRenderer.setGoalSelectorList(i, string, blockPos3, list3);
+				this.client.debugRenderer.goalSelectorDebugRenderer.setGoalSelectorList(i, string2, blockPos3, list3);
 			} else if (CustomPayloadS2CPacket.DEBUG_BRAIN.equals(identifier)) {
 				double d = packetByteBuf.readDouble();
 				double e = packetByteBuf.readDouble();
 				double g = packetByteBuf.readDouble();
 				Position position = new PositionImpl(d, e, g);
-				String string3 = packetByteBuf.readString(255);
-				String string2 = packetByteBuf.readString(255);
-				BrainDebugRenderer.class_4204 lv = new BrainDebugRenderer.class_4204(string3, string2, position);
+				UUID uUID = packetByteBuf.readUuid();
 				int q = packetByteBuf.readInt();
-
-				for (int r = 0; r < q; r++) {
-					String string4 = packetByteBuf.readString(255);
-					lv.field_18773.add(string4);
-				}
-
+				String string4 = packetByteBuf.method_19772();
+				PointOfInterestDebugRenderer.class_4232 lv2 = new PointOfInterestDebugRenderer.class_4232(uUID, q, string4, position);
 				int r = packetByteBuf.readInt();
 
 				for (int s = 0; s < r; s++) {
-					String string5 = packetByteBuf.readString(255);
-					lv.field_18774.add(string5);
+					String string5 = packetByteBuf.method_19772();
+					lv2.field_18927.add(string5);
 				}
 
-				this.client.debugRenderer.brainDebugRenderer.method_19423(lv);
+				int s = packetByteBuf.readInt();
+
+				for (int t = 0; t < s; t++) {
+					String string6 = packetByteBuf.method_19772();
+					lv2.field_18928.add(string6);
+				}
+
+				int t = packetByteBuf.readInt();
+
+				for (int u = 0; u < t; u++) {
+					String string7 = packetByteBuf.method_19772();
+					lv2.field_18929.add(string7);
+				}
+
+				int u = packetByteBuf.readInt();
+
+				for (int v = 0; v < u; v++) {
+					BlockPos blockPos4 = packetByteBuf.readBlockPos();
+					lv2.field_18930.add(blockPos4);
+				}
+
+				this.client.debugRenderer.pointsOfInterestDebugRenderer.addPointOfInterest(lv2);
 			} else {
 				LOGGER.warn("Unknown custom packed identifier: {}", identifier);
 			}

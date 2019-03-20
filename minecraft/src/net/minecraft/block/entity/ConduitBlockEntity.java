@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 
 public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	private static final Block[] ACTIVATING_BLOCKS = new Block[]{Blocks.field_10135, Blocks.field_10006, Blocks.field_10174, Blocks.field_10297};
@@ -159,7 +160,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		List<PlayerEntity> list = this.world.method_18467(PlayerEntity.class, boundingBox);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
-				if (this.pos.distanceTo(new BlockPos(playerEntity)) <= (double)j && playerEntity.isInsideWaterOrRain()) {
+				if (this.pos.method_19771(new BlockPos(playerEntity), (double)j) && playerEntity.isInsideWaterOrRain()) {
 					playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5927, 260, 0, true, true));
 				}
 			}
@@ -169,6 +170,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 	private void attackHostileEntity() {
 		LivingEntity livingEntity = this.targetEntity;
 		int i = this.activatingBlocks.size();
+		Vec3i vec3i = new BlockPos(this.targetEntity);
 		if (i < 42) {
 			this.targetEntity = null;
 		} else if (this.targetEntity == null && this.targetUuid != null) {
@@ -180,7 +182,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			if (!list.isEmpty()) {
 				this.targetEntity = (LivingEntity)list.get(this.world.random.nextInt(list.size()));
 			}
-		} else if (!this.targetEntity.isValid() || this.pos.distanceTo(new BlockPos(this.targetEntity)) > 8.0) {
+		} else if (!this.targetEntity.isValid() || !this.pos.method_19771(vec3i, 8.0)) {
 			this.targetEntity = null;
 		}
 

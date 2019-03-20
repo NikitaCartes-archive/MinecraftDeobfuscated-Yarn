@@ -14,6 +14,9 @@ public class Schedule {
 	public static final Schedule SIMPLE = register("simple").withActivity(5000, Activity.field_18596).withActivity(11000, Activity.field_18597).build();
 	public static final Schedule VILLAGER_BABY = register("villager_baby")
 		.withActivity(10, Activity.field_18595)
+		.withActivity(3000, Activity.field_18885)
+		.withActivity(8000, Activity.field_18595)
+		.withActivity(11000, Activity.field_18885)
 		.withActivity(13000, Activity.field_18597)
 		.build();
 	public static final Schedule VILLAGER_DEFAULT = register("villager_default")

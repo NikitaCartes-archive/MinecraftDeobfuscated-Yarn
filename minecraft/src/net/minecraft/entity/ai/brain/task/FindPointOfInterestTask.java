@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -19,11 +20,13 @@ import net.minecraft.village.PointOfInterestType;
 public class FindPointOfInterestTask extends Task<LivingEntity> {
 	private final Predicate<PointOfInterestType> pointOfInterestType;
 	private final MemoryModuleType<GlobalPos> memoryType;
+	private final boolean field_18854;
 	private long lastRunTime;
 
-	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType) {
+	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
 		this.pointOfInterestType = pointOfInterestType.getCompletedCondition();
 		this.memoryType = memoryModuleType;
+		this.field_18854 = bl;
 	}
 
 	@Override
@@ -33,7 +36,7 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		return serverWorld.getTime() - this.lastRunTime >= 10L;
+		return this.field_18854 && livingEntity.isChild() ? false : serverWorld.getTime() - this.lastRunTime >= 10L;
 	}
 
 	@Override
@@ -54,7 +57,9 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 			Path path = mobEntityWithAi.getNavigation().findPathTo(mutable.toImmutable());
 			return path != null && path.method_19315();
 		};
-		pointOfInterestStorage.getNearestPosition(this.pointOfInterestType, predicate, new BlockPos(livingEntity), 48)
-			.ifPresent(blockPos -> livingEntity.getBrain().putMemory(this.memoryType, GlobalPos.create(serverWorld.getDimension().getType(), blockPos)));
+		pointOfInterestStorage.getNearestPosition(this.pointOfInterestType, predicate, new BlockPos(livingEntity), 48).ifPresent(blockPos -> {
+			livingEntity.getBrain().putMemory(this.memoryType, GlobalPos.create(serverWorld.getDimension().getType(), blockPos));
+			DebugRendererInfoManager.method_19778(serverWorld, blockPos);
+		});
 	}
 }

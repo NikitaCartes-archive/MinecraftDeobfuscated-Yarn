@@ -256,13 +256,13 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public void stop(boolean bl) {
-		this.executeFuture(() -> {
+		this.method_19537(() -> {
 			for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(this.getPlayerManager().getPlayerList())) {
 				if (!serverPlayerEntity.getUuid().equals(this.field_5521)) {
 					this.getPlayerManager().method_14611(serverPlayerEntity);
 				}
 			}
-		}).join();
+		});
 		super.stop(bl);
 		if (this.lanPinger != null) {
 			this.lanPinger.interrupt();

@@ -1,6 +1,8 @@
 package net.minecraft.village;
 
 import com.google.common.collect.ImmutableSet;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.Identifier;
@@ -13,7 +15,7 @@ public class VillagerProfession {
 	public static final VillagerProfession field_17054 = register("cartographer", PointOfInterestType.field_18505);
 	public static final VillagerProfession field_17055 = register("cleric", PointOfInterestType.field_18506);
 	public static final VillagerProfession field_17056 = register(
-		"farmer", PointOfInterestType.field_18507, ImmutableSet.of(Items.field_8861, Items.field_8317, Items.field_8309)
+		"farmer", PointOfInterestType.field_18507, ImmutableSet.of(Items.field_8861, Items.field_8317, Items.field_8309), ImmutableSet.of(Blocks.field_10362)
 	);
 	public static final VillagerProfession field_17057 = register("fisherman", PointOfInterestType.field_18508);
 	public static final VillagerProfession field_17058 = register("fletcher", PointOfInterestType.field_18509);
@@ -27,11 +29,13 @@ public class VillagerProfession {
 	private final String id;
 	private final PointOfInterestType workStation;
 	private final ImmutableSet<Item> gatherableItems;
+	private final ImmutableSet<Block> field_18880;
 
-	private VillagerProfession(String string, PointOfInterestType pointOfInterestType, ImmutableSet<Item> immutableSet) {
+	private VillagerProfession(String string, PointOfInterestType pointOfInterestType, ImmutableSet<Item> immutableSet, ImmutableSet<Block> immutableSet2) {
 		this.id = string;
 		this.workStation = pointOfInterestType;
 		this.gatherableItems = immutableSet;
+		this.field_18880 = immutableSet2;
 	}
 
 	public PointOfInterestType getWorkStation() {
@@ -42,15 +46,21 @@ public class VillagerProfession {
 		return this.gatherableItems;
 	}
 
+	public ImmutableSet<Block> method_19630() {
+		return this.field_18880;
+	}
+
 	public String toString() {
 		return this.id;
 	}
 
 	static VillagerProfession register(String string, PointOfInterestType pointOfInterestType) {
-		return register(string, pointOfInterestType, ImmutableSet.of());
+		return register(string, pointOfInterestType, ImmutableSet.of(), ImmutableSet.of());
 	}
 
-	static VillagerProfession register(String string, PointOfInterestType pointOfInterestType, ImmutableSet<Item> immutableSet) {
-		return Registry.register(Registry.VILLAGER_PROFESSION, new Identifier(string), new VillagerProfession(string, pointOfInterestType, immutableSet));
+	static VillagerProfession register(String string, PointOfInterestType pointOfInterestType, ImmutableSet<Item> immutableSet, ImmutableSet<Block> immutableSet2) {
+		return Registry.register(
+			Registry.VILLAGER_PROFESSION, new Identifier(string), new VillagerProfession(string, pointOfInterestType, immutableSet, immutableSet2)
+		);
 	}
 }

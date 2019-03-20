@@ -50,7 +50,7 @@ public class BackupLevelScreen extends Screen {
 				public void onPressed() {
 					LevelStorage levelStorage = BackupLevelScreen.this.client.getLevelStorage();
 					FileUtils.deleteQuietly(levelStorage.resolveFile(BackupLevelScreen.this.levelName, "icon.png"));
-					this.enabled = false;
+					this.active = false;
 				}
 			}
 		);
@@ -121,13 +121,13 @@ public class BackupLevelScreen extends Screen {
 				BackupLevelScreen.this.callback.confirmResult(false, 0);
 			}
 		});
-		buttonWidget.enabled = this.client.getLevelStorage().resolveFile(this.levelName, "icon.png").isFile();
+		buttonWidget.active = this.client.getLevelStorage().resolveFile(this.levelName, "icon.png").isFile();
 		LevelStorage levelStorage = this.client.getLevelStorage();
 		LevelProperties levelProperties = levelStorage.getLevelProperties(this.levelName);
 		String string = levelProperties == null ? "" : levelProperties.getLevelName();
 		this.field_3170 = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 53, 200, 20);
 		this.field_3170.setText(string);
-		this.field_3170.setChangedListener(stringx -> this.saveButton.enabled = !stringx.trim().isEmpty());
+		this.field_3170.setChangedListener(stringx -> this.saveButton.active = !stringx.trim().isEmpty());
 		this.listeners.add(this.field_3170);
 		this.focusOn(this.field_3170);
 	}
@@ -175,11 +175,11 @@ public class BackupLevelScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("selectWorld.edit.title"), this.screenWidth / 2, 20, 16777215);
 		this.drawString(this.fontRenderer, I18n.translate("selectWorld.enterName"), this.screenWidth / 2 - 100, 40, 10526880);
-		this.field_3170.draw(i, j, f);
-		super.draw(i, j, f);
+		this.field_3170.render(i, j, f);
+		super.render(i, j, f);
 	}
 }

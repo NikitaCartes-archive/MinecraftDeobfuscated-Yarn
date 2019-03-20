@@ -29,8 +29,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_1419;
-import net.minecraft.class_4209;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -75,6 +73,7 @@ import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureManager;
@@ -96,6 +95,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
+import net.minecraft.village.VillageManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.IdCountsState;
@@ -150,7 +150,7 @@ public class ServerWorld extends World {
 	);
 	private final Set<EntityNavigation> field_18262 = Sets.<EntityNavigation>newHashSet();
 	protected final RaidManager raidManager;
-	protected final class_1419 field_13958 = new class_1419(this);
+	protected final VillageManager villageManager = new VillageManager(this);
 	private final ObjectLinkedOpenHashSet<BlockAction> pendingBlockActions = new ObjectLinkedOpenHashSet<>();
 	private boolean insideTick;
 	@Nullable
@@ -312,7 +312,7 @@ public class ServerWorld extends World {
 		}
 
 		profiler.swap("village");
-		this.field_13958.method_6445();
+		this.villageManager.tick();
 		profiler.swap("portalForcer");
 		this.portalForcer.tick(this.getTime());
 		profiler.swap("raid");
@@ -336,9 +336,9 @@ public class ServerWorld extends World {
 
 			for (int j = 0; j < this.globalEntities.size(); j++) {
 				Entity entity = (Entity)this.globalEntities.get(j);
-				this.method_18472(entityx -> {
+				this.tickEntity(entityx -> {
 					entityx.age++;
-					entityx.update();
+					entityx.tick();
 				}, entity);
 				if (entity.invalid) {
 					this.globalEntities.remove(j--);
@@ -371,7 +371,7 @@ public class ServerWorld extends World {
 
 				profiler.push("tick");
 				if (!entity2.invalid && !(entity2 instanceof EnderDragonPart)) {
-					this.method_18472(this::method_18762, entity2);
+					this.tickEntity(this::method_18762, entity2);
 				}
 
 				profiler.pop();
@@ -473,10 +473,10 @@ public class ServerWorld extends World {
 		BlockPos blockPos2 = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos);
 		BoundingBox boundingBox = new BoundingBox(blockPos2, new BlockPos(blockPos2.getX(), this.getHeight(), blockPos2.getZ())).expand(3.0);
 		List<LivingEntity> list = this.getEntities(
-			LivingEntity.class, boundingBox, livingEntity -> livingEntity != null && livingEntity.isValid() && this.isSkyVisible(livingEntity.getPos())
+			LivingEntity.class, boundingBox, livingEntity -> livingEntity != null && livingEntity.isValid() && this.isSkyVisible(livingEntity.getBlockPos())
 		);
 		if (!list.isEmpty()) {
-			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getPos();
+			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getBlockPos();
 		} else {
 			if (blockPos2.getY() == -1) {
 				blockPos2 = blockPos2.up(2);
@@ -570,7 +570,7 @@ public class ServerWorld extends World {
 			if (entity.field_6016) {
 				entity.age++;
 				this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
-				entity.update();
+				entity.tick();
 				this.getProfiler().pop();
 			}
 
@@ -1162,13 +1162,12 @@ public class ServerWorld extends World {
 		if (serverPlayerEntity.getServerWorld() != this) {
 			return false;
 		} else {
-			BlockPos blockPos = serverPlayerEntity.getPos();
-			double g = blockPos.squaredDistanceTo(d, e, f);
-			if (!(g <= 1024.0) && (!bl || !(g <= 262144.0))) {
-				return false;
-			} else {
+			BlockPos blockPos = serverPlayerEntity.getBlockPos();
+			if (blockPos.method_19769(new Vec3d(d, e, f), bl ? 512.0 : 32.0)) {
 				serverPlayerEntity.networkHandler.sendPacket(packet);
 				return true;
+			} else {
+				return false;
 			}
 		}
 	}
@@ -1288,11 +1287,11 @@ public class ServerWorld extends World {
 		BlockPos blockPos2 = blockPos.toImmutable();
 		PointOfInterestType.method_19516(blockState).ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
 				this.getPointOfInterestStorage().remove(blockPos2);
-				class_4209.method_19473(this, blockPos2, blockState, false);
+				DebugRendererInfoManager.method_19777(this, blockPos2);
 			}));
 		PointOfInterestType.method_19516(blockState2).ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
 				this.getPointOfInterestStorage().add(blockPos2, pointOfInterestType);
-				class_4209.method_19473(this, blockPos2, blockState2, true);
+				DebugRendererInfoManager.method_19776(this, blockPos2);
 			}));
 	}
 

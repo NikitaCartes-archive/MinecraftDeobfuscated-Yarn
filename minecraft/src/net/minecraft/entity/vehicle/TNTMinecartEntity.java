@@ -41,8 +41,8 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.fuseTicks > 0) {
 			this.fuseTicks--;
 			this.world.addParticle(ParticleTypes.field_11251, this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);

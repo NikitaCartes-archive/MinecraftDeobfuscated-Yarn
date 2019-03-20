@@ -6,7 +6,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_1394;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,6 +22,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
+import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -76,7 +76,7 @@ public class EndermanEntity extends HostileEntity {
 		this.goalSelector.add(0, new SwimGoal(this));
 		this.goalSelector.add(1, new EndermanEntity.class_4159(this));
 		this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0, false));
-		this.goalSelector.add(7, new class_1394(this, 1.0, 0.0F));
+		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0, 0.0F));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.goalSelector.add(10, new EndermanEntity.PlaceBlockGoal(this));
@@ -395,6 +395,7 @@ public class EndermanEntity extends HostileEntity {
 		private int field_7262;
 		private int field_7261;
 		private final TargetPredicate field_18127;
+		private final TargetPredicate field_18876 = new TargetPredicate().includeHidden();
 
 		public class_1562(EndermanEntity endermanEntity) {
 			super(endermanEntity, PlayerEntity.class, false);
@@ -432,7 +433,7 @@ public class EndermanEntity extends HostileEntity {
 					return true;
 				}
 			} else {
-				return this.field_6644 != null && this.field_6644.isValid() ? true : super.shouldContinue();
+				return this.field_6644 != null && this.field_18876.test(this.field_7260, this.field_6644) ? true : super.shouldContinue();
 			}
 		}
 

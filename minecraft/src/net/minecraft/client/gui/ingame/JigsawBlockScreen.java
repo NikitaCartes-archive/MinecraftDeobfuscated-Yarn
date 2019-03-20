@@ -112,14 +112,14 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.target_pool"), this.screenWidth / 2 - 153, 30, 10526880);
-		this.targetPoolField.draw(i, j, f);
+		this.targetPoolField.render(i, j, f);
 		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.attachement_type"), this.screenWidth / 2 - 153, 70, 10526880);
-		this.attachmentTypeField.draw(i, j, f);
+		this.attachmentTypeField.render(i, j, f);
 		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.final_state"), this.screenWidth / 2 - 153, 110, 10526880);
-		this.finalStateField.draw(i, j, f);
-		super.draw(i, j, f);
+		this.finalStateField.render(i, j, f);
+		super.render(i, j, f);
 	}
 }

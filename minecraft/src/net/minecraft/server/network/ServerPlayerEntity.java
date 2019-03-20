@@ -315,7 +315,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.interactionManager.update();
 		this.field_13998--;
 		if (this.field_6008 > 0) {
@@ -366,7 +366,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	public void method_14226() {
 		try {
 			if (!this.isSpectator() || this.world.isBlockLoaded(new BlockPos(this))) {
-				super.update();
+				super.tick();
 			}
 
 			for (int i = 0; i < this.inventory.getInvSize(); i++) {

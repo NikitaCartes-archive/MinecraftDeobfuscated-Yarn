@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.util.LevelIndexedProcessor;
+import net.minecraft.util.LevelPropagator;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
@@ -18,7 +18,7 @@ import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkProvider;
 import net.minecraft.world.chunk.WorldNibbleStorage;
 
-public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S extends LightStorage<M>> extends LevelIndexedProcessor implements ChunkLightingView {
+public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S extends LightStorage<M>> extends LevelPropagator implements ChunkLightingView {
 	private static final Direction[] DIRECTIONS = Direction.values();
 	protected final ChunkProvider chunkProvider;
 	protected final LightType type;
@@ -39,10 +39,10 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	@Override
-	protected void scheduleNewUpdate(long l) {
+	protected void update(long l) {
 		this.lightStorage.updateAll();
 		if (this.lightStorage.hasChunk(ChunkSectionPos.toChunkLong(l))) {
-			super.scheduleNewUpdate(l);
+			super.update(l);
 		}
 	}
 
@@ -129,7 +129,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	@Override
-	protected boolean isInvalidIndex(long l) {
+	protected boolean isInvalid(long l) {
 		return l == Long.MAX_VALUE;
 	}
 
@@ -158,7 +158,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	@Override
-	protected int getBaseLevel(long l, long m, int i) {
+	protected int getUpdatedLevel(long l, long m, int i) {
 		return 0;
 	}
 
@@ -169,7 +169,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	public int doLightUpdates(int i, boolean bl, boolean bl2) {
 		if (!this.field_15794) {
 			if (this.lightStorage.hasLevelUpdates()) {
-				i = this.lightStorage.updateLevels(i);
+				i = this.lightStorage.updateAllRecursively(i);
 				if (i == 0) {
 					return i;
 				}
@@ -180,7 +180,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 		this.field_15794 = true;
 		if (this.hasLevelUpdates()) {
-			i = this.updateLevels(i);
+			i = this.updateAllRecursively(i);
 			this.method_17530();
 			if (i == 0) {
 				return i;
@@ -214,10 +214,10 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	public void queueLightCheck(BlockPos blockPos) {
 		long l = blockPos.asLong();
-		this.scheduleNewUpdate(l);
+		this.update(l);
 
 		for (Direction direction : DIRECTIONS) {
-			this.scheduleNewUpdate(BlockPos.offset(l, direction));
+			this.update(BlockPos.offset(l, direction));
 		}
 	}
 

@@ -72,7 +72,7 @@ public class PngFile {
 
 		void method_4547(long l, int i) {
 			try {
-				this.seek(i);
+				this.method_4545(i);
 			} catch (IOException var5) {
 				this.field_5228 = true;
 			}
@@ -84,7 +84,7 @@ public class PngFile {
 
 		protected abstract int method_4544(long l, int i) throws IOException;
 
-		protected abstract void seek(int i) throws IOException;
+		protected abstract void method_4545(int i) throws IOException;
 
 		public abstract void close() throws IOException;
 	}
@@ -94,8 +94,8 @@ public class PngFile {
 		private final ReadableByteChannel field_5229;
 		private long field_5233 = MemoryUtil.nmemAlloc(128L);
 		private int field_5232 = 128;
-		private int eofIndex;
-		private int currentIndex;
+		private int field_5231;
+		private int field_5230;
 
 		private class_1052(ReadableByteChannel readableByteChannel) {
 			this.field_5229 = readableByteChannel;
@@ -103,22 +103,22 @@ public class PngFile {
 
 		private void method_4548(int i) throws IOException {
 			ByteBuffer byteBuffer = MemoryUtil.memByteBuffer(this.field_5233, this.field_5232);
-			if (i + this.currentIndex > this.field_5232) {
-				this.field_5232 = i + this.currentIndex;
+			if (i + this.field_5230 > this.field_5232) {
+				this.field_5232 = i + this.field_5230;
 				byteBuffer = MemoryUtil.memRealloc(byteBuffer, this.field_5232);
 				this.field_5233 = MemoryUtil.memAddress(byteBuffer);
 			}
 
-			byteBuffer.position(this.eofIndex);
+			byteBuffer.position(this.field_5231);
 
-			while (i + this.currentIndex > this.eofIndex) {
+			while (i + this.field_5230 > this.field_5231) {
 				try {
 					int j = this.field_5229.read(byteBuffer);
 					if (j == -1) {
 						break;
 					}
 				} finally {
-					this.eofIndex = byteBuffer.position();
+					this.field_5231 = byteBuffer.position();
 				}
 			}
 		}
@@ -126,28 +126,28 @@ public class PngFile {
 		@Override
 		public int method_4544(long l, int i) throws IOException {
 			this.method_4548(i);
-			if (i + this.currentIndex > this.eofIndex) {
-				i = this.eofIndex - this.currentIndex;
+			if (i + this.field_5230 > this.field_5231) {
+				i = this.field_5231 - this.field_5230;
 			}
 
-			MemoryUtil.memCopy(this.field_5233 + (long)this.currentIndex, l, (long)i);
-			this.currentIndex += i;
+			MemoryUtil.memCopy(this.field_5233 + (long)this.field_5230, l, (long)i);
+			this.field_5230 += i;
 			return i;
 		}
 
 		@Override
-		public void seek(int i) throws IOException {
+		public void method_4545(int i) throws IOException {
 			if (i > 0) {
 				this.method_4548(i);
-				if (i + this.currentIndex > this.eofIndex) {
+				if (i + this.field_5230 > this.field_5231) {
 					throw new EOFException("Can't skip past the EOF.");
 				}
 			}
 
-			if (this.currentIndex + i < 0) {
-				throw new IOException("Can't seek before the beginning: " + (this.currentIndex + i));
+			if (this.field_5230 + i < 0) {
+				throw new IOException("Can't seek before the beginning: " + (this.field_5230 + i));
 			} else {
-				this.currentIndex += i;
+				this.field_5230 += i;
 			}
 		}
 
@@ -173,7 +173,7 @@ public class PngFile {
 		}
 
 		@Override
-		public void seek(int i) throws IOException {
+		public void method_4545(int i) throws IOException {
 			this.field_5234.position(this.field_5234.position() + (long)i);
 		}
 

@@ -7,12 +7,18 @@ import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.realms.RealmsAbstractButton;
+import net.minecraft.realms.RealmsAnvilLevelStorageSource;
+import net.minecraft.realms.RealmsEditBox;
 import net.minecraft.realms.RealmsGuiEventListener;
+import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -36,7 +42,7 @@ public class RealmsScreen extends Screen {
 	}
 
 	@Override
-	protected void onInitialized() {
+	public void onInitialized() {
 		this.realmsScreen.init();
 		super.onInitialized();
 	}
@@ -57,6 +63,14 @@ public class RealmsScreen extends Screen {
 	public void drawTexturedRect(int i, int j, int k, int l, int m, int n) {
 		this.realmsScreen.blit(i, j, k, l, m, n);
 		super.drawTexturedRect(i, j, k, l, m, n);
+	}
+
+	public static void blit(int i, int j, float f, float g, int k, int l, int m, int n, float h, float o) {
+		DrawableHelper.drawTexturedRect(i, j, f, g, k, l, m, n, h, o);
+	}
+
+	public static void blit(int i, int j, float f, float g, int k, int l, float h, float m) {
+		DrawableHelper.drawTexturedRect(i, j, f, g, k, l, h, m);
 	}
 
 	@Override
@@ -80,7 +94,7 @@ public class RealmsScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.realmsScreen.render(i, j, f);
 	}
 
@@ -99,10 +113,33 @@ public class RealmsScreen extends Screen {
 		super.drawTooltip(list, i, j);
 	}
 
+	public static void bindFace(String string) {
+		Identifier identifier = AbstractClientPlayerEntity.getSkinId(string);
+		if (identifier == null) {
+			identifier = AbstractClientPlayerEntity.getSkinId("default");
+		}
+
+		AbstractClientPlayerEntity.loadSkin(identifier, string);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
+	}
+
+	public static void bind(String string) {
+		Identifier identifier = new Identifier(string);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
+	}
+
 	@Override
 	public void update() {
 		this.realmsScreen.tick();
 		super.update();
+	}
+
+	public int width() {
+		return this.screenWidth;
+	}
+
+	public int height() {
+		return this.screenHeight;
 	}
 
 	public int getFontHeight() {
@@ -166,9 +203,13 @@ public class RealmsScreen extends Screen {
 		this.buttons.remove(realmsButton.getProxy());
 	}
 
+	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {
+		return new RealmsEditBox(i, j, k, l, m);
+	}
+
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
-		return this.realmsScreen.mouseClicked(d, e, i) ? true : method_2068(this, d, e, i);
+		return this.realmsScreen.mouseClicked(d, e, i) ? true : access$001(this, d, e, i);
 	}
 
 	@Override
@@ -200,6 +241,18 @@ public class RealmsScreen extends Screen {
 	public void onClosed() {
 		this.realmsScreen.removed();
 		super.onClosed();
+	}
+
+	public static String getLocalizedString(String string) {
+		return I18n.translate(string);
+	}
+
+	public static String getLocalizedString(String string, Object... objects) {
+		return I18n.translate(string, objects);
+	}
+
+	public RealmsAnvilLevelStorageSource getLevelStorageSource() {
+		return new RealmsAnvilLevelStorageSource(MinecraftClient.getInstance().getLevelStorage());
 	}
 
 	public int draw(String string, int i, int j, int k, boolean bl) {

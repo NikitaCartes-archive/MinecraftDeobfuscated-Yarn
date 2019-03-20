@@ -19,7 +19,7 @@ public abstract class RealmsSliderButton extends RealmsAbstractButton<SliderButt
 		this.minValue = d;
 		this.maxValue = e;
 		this.proxy = new SliderButtonWidget(this, j, k, l, 20, this.toPct((double)m));
-		this.getProxy().setText(this.getMessage());
+		this.getProxy().setMessage(this.getMessage());
 	}
 
 	public String getMessage() {
@@ -65,7 +65,7 @@ public abstract class RealmsSliderButton extends RealmsAbstractButton<SliderButt
 	}
 
 	public void setMessage(String string) {
-		this.proxy.setText(string);
+		this.proxy.setMessage(string);
 	}
 
 	public int getWidth() {
@@ -83,6 +83,6 @@ public abstract class RealmsSliderButton extends RealmsAbstractButton<SliderButt
 	public abstract void applyValue();
 
 	public void updateMessage() {
-		this.proxy.setText(this.getMessage());
+		this.proxy.setMessage(this.getMessage());
 	}
 }

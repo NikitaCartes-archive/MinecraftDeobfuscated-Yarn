@@ -14,7 +14,6 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.math.Direction;
 
@@ -97,7 +96,7 @@ public class EditSignScreen extends Screen {
 	}
 
 	@Override
-	public void draw(int i, int j, float f) {
+	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.drawStringCentered(this.fontRenderer, I18n.translate("sign.edit"), this.screenWidth / 2, 40, 16777215);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -108,7 +107,7 @@ public class EditSignScreen extends Screen {
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		BlockState blockState = this.sign.getCachedState();
 		float h;
-		if (blockState.getBlock().matches(BlockTags.field_15472)) {
+		if (blockState.getBlock() instanceof StandingSignBlock) {
 			h = (float)((Integer)blockState.get(StandingSignBlock.ROTATION) * 360) / 16.0F;
 		} else {
 			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
@@ -121,6 +120,6 @@ public class EditSignScreen extends Screen {
 		BlockEntityRenderDispatcher.INSTANCE.renderEntity(this.sign, -0.5, -0.75, -0.5, 0.0F);
 		this.sign.resetSelectionState();
 		GlStateManager.popMatrix();
-		super.draw(i, j, f);
+		super.render(i, j, f);
 	}
 }
