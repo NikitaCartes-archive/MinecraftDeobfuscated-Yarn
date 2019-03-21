@@ -826,7 +826,7 @@ public class FoxEntity extends AnimalEntity {
 		private int timer = FoxEntity.this.random.nextInt(140);
 
 		public DelayedCalmDownGoal() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406, Goal.ControlBit.field_18407));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406, Goal.class_4134.field_18407));
 		}
 
 		@Override
@@ -1185,7 +1185,7 @@ public class FoxEntity extends AnimalEntity {
 
 	class MoveToHuntGoal extends Goal {
 		public MoveToHuntGoal() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 
 		@Override
@@ -1238,7 +1238,7 @@ public class FoxEntity extends AnimalEntity {
 
 	class PickupItemGoal extends Goal {
 		public PickupItemGoal() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override
@@ -1285,7 +1285,7 @@ public class FoxEntity extends AnimalEntity {
 		private int counter;
 
 		public SitDownAndLookAroundGoal() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 
 		@Override
@@ -1346,7 +1346,7 @@ public class FoxEntity extends AnimalEntity {
 		int timer;
 
 		public StopWanderingGoal() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18406, Goal.ControlBit.field_18407, Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18406, Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 		}
 
 		@Override

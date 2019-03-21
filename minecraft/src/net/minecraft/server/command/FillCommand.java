@@ -47,7 +47,7 @@ public class FillCommand {
 													new MutableIntBoundingBox(
 														BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
 													),
-													BlockArgumentType.method_9655(commandContext, "block"),
+													BlockArgumentType.getBlockArgument(commandContext, "block"),
 													FillCommand.class_3058.field_13655,
 													null
 												)
@@ -60,7 +60,7 @@ public class FillCommand {
 															new MutableIntBoundingBox(
 																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
 															),
-															BlockArgumentType.method_9655(commandContext, "block"),
+															BlockArgumentType.getBlockArgument(commandContext, "block"),
 															FillCommand.class_3058.field_13655,
 															null
 														)
@@ -73,7 +73,7 @@ public class FillCommand {
 																	new MutableIntBoundingBox(
 																		BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
 																	),
-																	BlockArgumentType.method_9655(commandContext, "block"),
+																	BlockArgumentType.getBlockArgument(commandContext, "block"),
 																	FillCommand.class_3058.field_13655,
 																	BlockPredicateArgumentType.getPredicateArgument(commandContext, "filter")
 																)
@@ -88,7 +88,7 @@ public class FillCommand {
 															new MutableIntBoundingBox(
 																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
 															),
-															BlockArgumentType.method_9655(commandContext, "block"),
+															BlockArgumentType.getBlockArgument(commandContext, "block"),
 															FillCommand.class_3058.field_13655,
 															cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
 														)
@@ -102,7 +102,7 @@ public class FillCommand {
 															new MutableIntBoundingBox(
 																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
 															),
-															BlockArgumentType.method_9655(commandContext, "block"),
+															BlockArgumentType.getBlockArgument(commandContext, "block"),
 															FillCommand.class_3058.field_13652,
 															null
 														)
@@ -116,7 +116,7 @@ public class FillCommand {
 															new MutableIntBoundingBox(
 																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
 															),
-															BlockArgumentType.method_9655(commandContext, "block"),
+															BlockArgumentType.getBlockArgument(commandContext, "block"),
 															FillCommand.class_3058.field_13656,
 															null
 														)
@@ -130,7 +130,7 @@ public class FillCommand {
 															new MutableIntBoundingBox(
 																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
 															),
-															BlockArgumentType.method_9655(commandContext, "block"),
+															BlockArgumentType.getBlockArgument(commandContext, "block"),
 															FillCommand.class_3058.field_13651,
 															null
 														)

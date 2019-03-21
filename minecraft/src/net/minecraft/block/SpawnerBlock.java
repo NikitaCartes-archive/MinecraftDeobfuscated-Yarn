@@ -9,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class MobSpawnerBlock extends BlockWithEntity {
-	protected MobSpawnerBlock(Block.Settings settings) {
+public class SpawnerBlock extends BlockWithEntity {
+	protected SpawnerBlock(Block.Settings settings) {
 		super(settings);
 	}
 

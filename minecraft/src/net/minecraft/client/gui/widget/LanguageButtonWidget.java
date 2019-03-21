@@ -6,9 +6,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 
 @Environment(EnvType.CLIENT)
-public abstract class LanguageButtonWidget extends ButtonWidget {
-	public LanguageButtonWidget(int i, int j) {
-		super(i, j, 20, 20, "");
+public class LanguageButtonWidget extends ButtonWidget {
+	public LanguageButtonWidget(int i, int j, ButtonWidget.class_4241 arg) {
+		super(i, j, 20, 20, "", arg);
 	}
 
 	@Override

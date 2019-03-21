@@ -65,18 +65,8 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 	@Override
 	protected void addCloseButton() {
 		if (this.client.player.canModifyWorld()) {
-			this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("gui.done")) {
-				@Override
-				public void onPressed() {
-					LecternScreen.this.client.openScreen(null);
-				}
-			});
-			this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book")) {
-				@Override
-				public void onPressed() {
-					LecternScreen.this.sendButtonPressPacket(3);
-				}
-			});
+			this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(null)));
+			this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book"), buttonWidget -> this.sendButtonPressPacket(3)));
 		} else {
 			super.addCloseButton();
 		}
@@ -100,10 +90,6 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 		} else {
 			return false;
 		}
-	}
-
-	@Override
-	protected void playPageTurnSound() {
 	}
 
 	private void sendButtonPressPacket(int i) {

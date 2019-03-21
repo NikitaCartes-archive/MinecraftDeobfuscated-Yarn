@@ -15,6 +15,7 @@ import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
 import net.minecraft.util.Identifier;
 
@@ -28,6 +29,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	private boolean field_2718;
 
 	public AdvancementsScreen(ClientAdvancementManager clientAdvancementManager) {
+		super(NarratorManager.field_18967);
 		this.advancementHandler = clientAdvancementManager;
 	}
 

@@ -9,7 +9,7 @@ public class StopFollowingCustomerGoal extends Goal {
 
 	public StopFollowingCustomerGoal(AbstractTraderEntity abstractTraderEntity) {
 		this.field_6610 = abstractTraderEntity;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407, Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 	}
 
 	@Override

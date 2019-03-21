@@ -325,7 +325,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 
 	public static List<ItemEntity> getInputItemEntities(Hopper hopper) {
 		return (List<ItemEntity>)hopper.getInputAreaShape()
-			.getBoundingBoxList()
+			.getBoundingBoxes()
 			.stream()
 			.flatMap(
 				boundingBox -> hopper.getWorld()
@@ -424,7 +424,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	public void onEntityCollided(Entity entity) {
 		if (entity instanceof ItemEntity) {
 			BlockPos blockPos = this.getPos();
-			if (VoxelShapes.compareShapes(
+			if (VoxelShapes.matchesAnywhere(
 				VoxelShapes.cube(entity.getBoundingBox().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
 				this.getInputAreaShape(),
 				BooleanBiFunction.AND

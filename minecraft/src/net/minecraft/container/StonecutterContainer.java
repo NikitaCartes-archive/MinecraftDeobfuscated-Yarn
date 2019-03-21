@@ -22,7 +22,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class StonecutterContainer extends Container {
-	static final ImmutableList<Item> field_17626 = ImmutableList.of(
+	static final ImmutableList<Item> INGREDIENTS = ImmutableList.of(
 		Items.STONE,
 		Items.SANDSTONE,
 		Items.RED_SANDSTONE,
@@ -210,7 +210,7 @@ public class StonecutterContainer extends Container {
 				if (!this.insertItem(itemStack2, 2, 38, false)) {
 					return ItemStack.EMPTY;
 				}
-			} else if (field_17626.contains(item)) {
+			} else if (INGREDIENTS.contains(item)) {
 				if (!this.insertItem(itemStack2, 0, 1, false)) {
 					return ItemStack.EMPTY;
 				}

@@ -39,7 +39,7 @@ public class TeleportCommand {
 											commandContext.getSource(),
 											EntityArgumentType.method_9317(commandContext, "targets"),
 											commandContext.getSource().getWorld(),
-											Vec3ArgumentType.method_9734(commandContext, "location"),
+											Vec3ArgumentType.getPosArgument(commandContext, "location"),
 											null,
 											null
 										)
@@ -51,7 +51,7 @@ public class TeleportCommand {
 													commandContext.getSource(),
 													EntityArgumentType.method_9317(commandContext, "targets"),
 													commandContext.getSource().getWorld(),
-													Vec3ArgumentType.method_9734(commandContext, "location"),
+													Vec3ArgumentType.getPosArgument(commandContext, "location"),
 													RotationArgumentType.getRotationArgument(commandContext, "rotation"),
 													null
 												)
@@ -68,10 +68,10 @@ public class TeleportCommand {
 																	commandContext.getSource(),
 																	EntityArgumentType.method_9317(commandContext, "targets"),
 																	commandContext.getSource().getWorld(),
-																	Vec3ArgumentType.method_9734(commandContext, "location"),
+																	Vec3ArgumentType.getPosArgument(commandContext, "location"),
 																	null,
 																	new TeleportCommand.class_3144(
-																		EntityArgumentType.method_9313(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.field_9853
+																		EntityArgumentType.getEntityArgument(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.field_9853
 																	)
 																)
 														)
@@ -82,10 +82,11 @@ public class TeleportCommand {
 																			commandContext.getSource(),
 																			EntityArgumentType.method_9317(commandContext, "targets"),
 																			commandContext.getSource().getWorld(),
-																			Vec3ArgumentType.method_9734(commandContext, "location"),
+																			Vec3ArgumentType.getPosArgument(commandContext, "location"),
 																			null,
 																			new TeleportCommand.class_3144(
-																				EntityArgumentType.method_9313(commandContext, "facingEntity"), EntityAnchorArgumentType.getAnchorArgument(commandContext, "facingAnchor")
+																				EntityArgumentType.getEntityArgument(commandContext, "facingEntity"),
+																				EntityAnchorArgumentType.getAnchorArgument(commandContext, "facingAnchor")
 																			)
 																		)
 																)
@@ -99,7 +100,7 @@ public class TeleportCommand {
 															commandContext.getSource(),
 															EntityArgumentType.method_9317(commandContext, "targets"),
 															commandContext.getSource().getWorld(),
-															Vec3ArgumentType.method_9734(commandContext, "location"),
+															Vec3ArgumentType.getPosArgument(commandContext, "location"),
 															null,
 															new TeleportCommand.class_3144(Vec3ArgumentType.getVec3Argument(commandContext, "facingLocation"))
 														)
@@ -113,7 +114,7 @@ public class TeleportCommand {
 									commandContext -> method_13771(
 											commandContext.getSource(),
 											EntityArgumentType.method_9317(commandContext, "targets"),
-											EntityArgumentType.method_9313(commandContext, "destination")
+											EntityArgumentType.getEntityArgument(commandContext, "destination")
 										)
 								)
 						)
@@ -125,7 +126,7 @@ public class TeleportCommand {
 									commandContext.getSource(),
 									Collections.singleton(commandContext.getSource().getEntityOrThrow()),
 									commandContext.getSource().getWorld(),
-									Vec3ArgumentType.method_9734(commandContext, "location"),
+									Vec3ArgumentType.getPosArgument(commandContext, "location"),
 									DefaultPosArgument.zero(),
 									null
 								)
@@ -137,7 +138,7 @@ public class TeleportCommand {
 							commandContext -> method_13771(
 									commandContext.getSource(),
 									Collections.singleton(commandContext.getSource().getEntityOrThrow()),
-									EntityArgumentType.method_9313(commandContext, "destination")
+									EntityArgumentType.getEntityArgument(commandContext, "destination")
 								)
 						)
 				)

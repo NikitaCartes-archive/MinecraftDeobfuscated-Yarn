@@ -10,6 +10,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ChatUtil;
 
 @Environment(EnvType.CLIENT)
@@ -39,6 +40,7 @@ public class AddServerScreen extends Screen {
 	};
 
 	public AddServerScreen(Screen screen, ServerEntry serverEntry) {
+		super(new TranslatableTextComponent("addServer.title"));
 		this.parent = screen;
 		this.serverEntry = serverEntry;
 	}
@@ -67,32 +69,27 @@ public class AddServerScreen extends Screen {
 			new ButtonWidget(
 				this.screenWidth / 2 - 100,
 				this.screenHeight / 4 + 72,
-				I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getComponent().getFormattedText()
-			) {
-				@Override
-				public void onPressed() {
-					AddServerScreen.this.serverEntry
+				200,
+				20,
+				I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getComponent().getFormattedText(),
+				buttonWidget -> {
+					this.serverEntry
 						.setResourcePackState(
-							ServerEntry.ResourcePackState.values()[(AddServerScreen.this.serverEntry.getResourcePack().ordinal() + 1)
-								% ServerEntry.ResourcePackState.values().length]
+							ServerEntry.ResourcePackState.values()[(this.serverEntry.getResourcePack().ordinal() + 1) % ServerEntry.ResourcePackState.values().length]
 						);
-					AddServerScreen.this.resourcePackOptionButton
-						.setMessage(I18n.translate("addServer.resourcePack") + ": " + AddServerScreen.this.serverEntry.getResourcePack().getComponent().getFormattedText());
+					this.resourcePackOptionButton
+						.setMessage(I18n.translate("addServer.resourcePack") + ": " + this.serverEntry.getResourcePack().getComponent().getFormattedText());
 				}
-			}
+			)
 		);
-		this.buttonAdd = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 18, I18n.translate("addServer.add")) {
-			@Override
-			public void onPressed() {
-				AddServerScreen.this.addAndClose();
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 18, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				AddServerScreen.this.parent.confirmResult(false, 0);
-			}
-		});
+		this.buttonAdd = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 18, 200, 20, I18n.translate("addServer.add"), buttonWidget -> this.addAndClose())
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 18, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.parent.confirmResult(false, 0)
+			)
+		);
 		this.close();
 	}
 
@@ -130,7 +127,7 @@ public class AddServerScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("addServer.title"), this.screenWidth / 2, 17, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 17, 16777215);
 		this.drawString(this.fontRenderer, I18n.translate("addServer.enterName"), this.screenWidth / 2 - 100, 53, 10526880);
 		this.drawString(this.fontRenderer, I18n.translate("addServer.enterIp"), this.screenWidth / 2 - 100, 94, 10526880);
 		this.serverNameField.render(i, j, f);

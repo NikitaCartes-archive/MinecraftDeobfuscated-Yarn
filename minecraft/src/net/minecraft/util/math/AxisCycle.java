@@ -3,7 +3,7 @@ package net.minecraft.util.math;
 public enum AxisCycle {
 	NONE {
 		@Override
-		public int method_10056(int i, int j, int k, Direction.Axis axis) {
+		public int choose(int i, int j, int k, Direction.Axis axis) {
 			return axis.choose(i, j, k);
 		}
 
@@ -19,7 +19,7 @@ public enum AxisCycle {
 	},
 	NEXT {
 		@Override
-		public int method_10056(int i, int j, int k, Direction.Axis axis) {
+		public int choose(int i, int j, int k, Direction.Axis axis) {
 			return axis.choose(k, i, j);
 		}
 
@@ -35,7 +35,7 @@ public enum AxisCycle {
 	},
 	PREVIOUS {
 		@Override
-		public int method_10056(int i, int j, int k, Direction.Axis axis) {
+		public int choose(int i, int j, int k, Direction.Axis axis) {
 			return axis.choose(j, k, i);
 		}
 
@@ -56,7 +56,7 @@ public enum AxisCycle {
 	private AxisCycle() {
 	}
 
-	public abstract int method_10056(int i, int j, int k, Direction.Axis axis);
+	public abstract int choose(int i, int j, int k, Direction.Axis axis);
 
 	public abstract Direction.Axis cycle(Direction.Axis axis);
 

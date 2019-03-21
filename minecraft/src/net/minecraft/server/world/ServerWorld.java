@@ -17,6 +17,8 @@ import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
@@ -729,9 +731,10 @@ public class ServerWorld extends World {
 
 	public List<Entity> method_18198(@Nullable EntityType<?> entityType, Predicate<? super Entity> predicate) {
 		List<Entity> list = Lists.<Entity>newArrayList();
+		ServerChunkManager serverChunkManager = this.method_14178();
 
 		for(Entity entity : this.entitiesById.values()) {
-			if ((entityType == null || entity.getType() == entityType) && predicate.test(entity)) {
+			if ((entityType == null || entity.getType() == entityType) && serverChunkManager.isEntityInLoadedChunk(entity) && predicate.test(entity)) {
 				list.add(entity);
 			}
 		}
@@ -1024,7 +1027,7 @@ public class ServerWorld extends World {
 		this.method_14178().markForUpdate(blockPos);
 		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
 		VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos);
-		if (VoxelShapes.compareShapes(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
+		if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
 			for(EntityNavigation entityNavigation : this.field_18262) {
 				if (!entityNavigation.shouldRecalculatePath()) {
 					entityNavigation.method_18053(blockPos);
@@ -1283,14 +1286,18 @@ public class ServerWorld extends World {
 	@Override
 	public void method_19282(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
 		BlockPos blockPos2 = blockPos.toImmutable();
-		PointOfInterestType.method_19516(blockState).ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
-				this.getPointOfInterestStorage().remove(blockPos2);
-				DebugRendererInfoManager.method_19777(this, blockPos2);
-			}));
-		PointOfInterestType.method_19516(blockState2).ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
-				this.getPointOfInterestStorage().add(blockPos2, pointOfInterestType);
-				DebugRendererInfoManager.method_19776(this, blockPos2);
-			}));
+		Optional<PointOfInterestType> optional = PointOfInterestType.method_19516(blockState);
+		Optional<PointOfInterestType> optional2 = PointOfInterestType.method_19516(blockState2);
+		if (!Objects.equals(optional, optional2)) {
+			optional.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
+					this.getPointOfInterestStorage().remove(blockPos2);
+					DebugRendererInfoManager.method_19777(this, blockPos2);
+				}));
+			optional2.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
+					this.getPointOfInterestStorage().add(blockPos2, pointOfInterestType);
+					DebugRendererInfoManager.method_19776(this, blockPos2);
+				}));
+		}
 	}
 
 	public PointOfInterestStorage getPointOfInterestStorage() {

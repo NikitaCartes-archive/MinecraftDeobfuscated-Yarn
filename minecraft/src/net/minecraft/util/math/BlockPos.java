@@ -337,9 +337,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		}
 
 		public BlockPos.Mutable method_17965(AxisCycle axisCycle, int i, int j, int k) {
-			return this.set(
-				axisCycle.method_10056(i, j, k, Direction.Axis.X), axisCycle.method_10056(i, j, k, Direction.Axis.Y), axisCycle.method_10056(i, j, k, Direction.Axis.Z)
-			);
+			return this.set(axisCycle.choose(i, j, k, Direction.Axis.X), axisCycle.choose(i, j, k, Direction.Axis.Y), axisCycle.choose(i, j, k, Direction.Axis.Z));
 		}
 
 		public BlockPos.Mutable setOffset(Direction direction) {

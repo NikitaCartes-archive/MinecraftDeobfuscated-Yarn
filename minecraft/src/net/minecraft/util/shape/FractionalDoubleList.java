@@ -2,19 +2,19 @@ package net.minecraft.util.shape;
 
 import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
 
-public class FractionalDoubleList extends AbstractDoubleList {
-	private final int count;
+class FractionalDoubleList extends AbstractDoubleList {
+	private final int sectionCount;
 
-	public FractionalDoubleList(int i) {
-		this.count = i;
+	FractionalDoubleList(int i) {
+		this.sectionCount = i;
 	}
 
 	@Override
 	public double getDouble(int i) {
-		return (double)i / (double)this.count;
+		return (double)i / (double)this.sectionCount;
 	}
 
 	public int size() {
-		return this.count + 1;
+		return this.sectionCount + 1;
 	}
 }

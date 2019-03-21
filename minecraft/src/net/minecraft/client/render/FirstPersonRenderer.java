@@ -106,8 +106,8 @@ public class FirstPersonRenderer {
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		float g = MathHelper.lerp(f, clientPlayerEntity.field_3914, clientPlayerEntity.field_3916);
 		float h = MathHelper.lerp(f, clientPlayerEntity.field_3931, clientPlayerEntity.field_3932);
-		GlStateManager.rotatef((clientPlayerEntity.pitch - g) * 0.1F, 1.0F, 0.0F, 0.0F);
-		GlStateManager.rotatef((clientPlayerEntity.yaw - h) * 0.1F, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotatef((clientPlayerEntity.getPitch(f) - g) * 0.1F, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotatef((clientPlayerEntity.getYaw(f) - h) * 0.1F, 0.0F, 1.0F, 0.0F);
 	}
 
 	private float method_3227(float f) {

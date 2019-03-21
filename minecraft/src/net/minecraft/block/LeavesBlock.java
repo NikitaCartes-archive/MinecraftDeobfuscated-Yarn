@@ -88,12 +88,17 @@ public class LeavesBlock extends Block {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		BlockPos blockPos2 = blockPos.down();
-		if (world.hasRain(blockPos.up()) && !world.getBlockState(blockPos2).hasSolidTopSurface(world, blockPos2) && random.nextInt(15) == 1) {
-			double d = (double)((float)blockPos.getX() + random.nextFloat());
-			double e = (double)blockPos.getY() - 0.05;
-			double f = (double)((float)blockPos.getZ() + random.nextFloat());
-			world.addParticle(ParticleTypes.field_11232, d, e, f, 0.0, 0.0, 0.0);
+		if (world.hasRain(blockPos.up())) {
+			if (random.nextInt(15) == 1) {
+				BlockPos blockPos2 = blockPos.down();
+				BlockState blockState2 = world.getBlockState(blockPos2);
+				if (!blockState2.isFullBoundsCubeForCulling() || !Block.isFaceFullSquare(blockState2.method_11615(world, blockPos2), Direction.UP)) {
+					double d = (double)((float)blockPos.getX() + random.nextFloat());
+					double e = (double)blockPos.getY() - 0.05;
+					double f = (double)((float)blockPos.getZ() + random.nextFloat());
+					world.addParticle(ParticleTypes.field_11232, d, e, f, 0.0, 0.0, 0.0);
+				}
+			}
 		}
 	}
 

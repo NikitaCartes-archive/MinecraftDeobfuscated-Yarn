@@ -31,7 +31,7 @@ public class CartographyTableScreen extends ContainerScreen<CartographyTableCont
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.name.getFormattedText(), 8.0F, 4.0F, 4210752);
+		this.fontRenderer.draw(this.title.getFormattedText(), 8.0F, 4.0F, 4210752);
 		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 
@@ -53,7 +53,7 @@ public class CartographyTableScreen extends ContainerScreen<CartographyTableCont
 		if (itemStack.getItem() == Items.field_8204) {
 			mapState = FilledMapItem.method_7997(itemStack, this.client.world);
 			if (mapState != null) {
-				if (mapState.field_17403) {
+				if (mapState.locked) {
 					bl4 = true;
 					if (bl2 || bl3) {
 						this.drawTexturedRect(k + 35, l + 31, this.width + 50, 132, 28, 21);

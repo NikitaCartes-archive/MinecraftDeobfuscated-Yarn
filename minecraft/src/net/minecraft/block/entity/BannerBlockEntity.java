@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBannerBlock;
+import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.StandingBannerBlock;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -182,7 +182,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Environment(EnvType.CLIENT)
 	public ItemStack getPickStack(BlockState blockState) {
-		ItemStack itemStack = new ItemStack(StandingBannerBlock.method_9398(this.getColorForState(() -> blockState)));
+		ItemStack itemStack = new ItemStack(BannerBlock.method_9398(this.getColorForState(() -> blockState)));
 		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
 			itemStack.getOrCreateSubCompoundTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
 		}

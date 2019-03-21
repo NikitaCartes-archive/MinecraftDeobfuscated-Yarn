@@ -99,7 +99,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		return !this.isExtending() && this.isSource()
 			? Blocks.field_10379
 				.getDefaultState()
-				.with(PistonHeadBlock.field_12224, this.pushedBlock.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637)
+				.with(PistonHeadBlock.TYPE, this.pushedBlock.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637)
 				.with(PistonHeadBlock.FACING, this.pushedBlock.get(PistonBlock.FACING))
 			: this.pushedBlock;
 	}
@@ -109,7 +109,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		double d = (double)(f - this.nextProgress);
 		VoxelShape voxelShape = this.method_11496().getCollisionShape(this.world, this.getPos());
 		if (!voxelShape.isEmpty()) {
-			List<BoundingBox> list = voxelShape.getBoundingBoxList();
+			List<BoundingBox> list = voxelShape.getBoundingBoxes();
 			BoundingBox boundingBox = this.method_11500(this.method_11509(list));
 			List<Entity> list2 = this.world.getVisibleEntities(null, this.method_11502(boundingBox, direction, d).union(boundingBox));
 			if (!list2.isEmpty()) {
@@ -343,7 +343,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 	public VoxelShape method_11512(BlockView blockView, BlockPos blockPos) {
 		VoxelShape voxelShape;
 		if (!this.extending && this.source) {
-			voxelShape = this.pushedBlock.with(PistonBlock.field_12191, Boolean.valueOf(true)).getCollisionShape(blockView, blockPos);
+			voxelShape = this.pushedBlock.with(PistonBlock.EXTENDED, Boolean.valueOf(true)).getCollisionShape(blockView, blockPos);
 		} else {
 			voxelShape = VoxelShapes.empty();
 		}
@@ -357,7 +357,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 				blockState = Blocks.field_10379
 					.getDefaultState()
 					.with(PistonHeadBlock.FACING, this.facing)
-					.with(PistonHeadBlock.field_12227, Boolean.valueOf(this.extending != 1.0F - this.nextProgress < 4.0F));
+					.with(PistonHeadBlock.SHORT, Boolean.valueOf(this.extending != 1.0F - this.nextProgress < 4.0F));
 			} else {
 				blockState = this.pushedBlock;
 			}

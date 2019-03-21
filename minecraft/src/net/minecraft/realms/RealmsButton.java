@@ -2,6 +2,7 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.RealmsButtonWidget;
 import net.minecraft.util.Identifier;
 
@@ -12,13 +13,12 @@ public abstract class RealmsButton extends RealmsAbstractButton<RealmsButtonWidg
 	private final RealmsButtonWidget proxy;
 
 	public RealmsButton(int i, int j, int k, String string) {
-		this.field_18237 = i;
-		this.proxy = new RealmsButtonWidget(this, j, k, string);
+		this(i, j, k, 200, 20, string);
 	}
 
 	public RealmsButton(int i, int j, int k, int l, int m, String string) {
 		this.field_18237 = i;
-		this.proxy = new RealmsButtonWidget(this, j, k, string, l, m);
+		this.proxy = new RealmsButtonWidget(this, j, k, string, l, m, buttonWidget -> this.onPress());
 	}
 
 	public RealmsButtonWidget getProxy() {

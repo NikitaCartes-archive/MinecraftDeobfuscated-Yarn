@@ -19,7 +19,7 @@ public class EatGrassGoal extends Goal {
 	public EatGrassGoal(MobEntity mobEntity) {
 		this.owner = mobEntity;
 		this.world = mobEntity.world;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406, Goal.ControlBit.field_18407));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406, Goal.class_4134.field_18407));
 	}
 
 	@Override

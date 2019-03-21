@@ -20,12 +20,12 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class RecordItem extends Item {
-	private static final Map<SoundEvent, RecordItem> SOUND_ITEM_MAP = Maps.<SoundEvent, RecordItem>newHashMap();
+public class MusicDiscItem extends Item {
+	private static final Map<SoundEvent, MusicDiscItem> SOUND_ITEM_MAP = Maps.<SoundEvent, MusicDiscItem>newHashMap();
 	private final int field_8902;
 	private final SoundEvent sound;
 
-	protected RecordItem(int i, SoundEvent soundEvent, Item.Settings settings) {
+	protected MusicDiscItem(int i, SoundEvent soundEvent, Item.Settings settings) {
 		super(settings);
 		this.field_8902 = i;
 		this.sound = soundEvent;
@@ -72,8 +72,8 @@ public class RecordItem extends Item {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public static RecordItem bySound(SoundEvent soundEvent) {
-		return (RecordItem)SOUND_ITEM_MAP.get(soundEvent);
+	public static MusicDiscItem bySound(SoundEvent soundEvent) {
+		return (MusicDiscItem)SOUND_ITEM_MAP.get(soundEvent);
 	}
 
 	@Environment(EnvType.CLIENT)

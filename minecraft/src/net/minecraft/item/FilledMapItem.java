@@ -313,7 +313,7 @@ public class FilledMapItem extends MapItem {
 					mapState.method_102(playerEntity, itemStack);
 				}
 
-				if (!mapState.field_17403 && (bl || entity instanceof PlayerEntity && ((PlayerEntity)entity).getOffHandStack() == itemStack)) {
+				if (!mapState.locked && (bl || entity instanceof PlayerEntity && ((PlayerEntity)entity).getOffHandStack() == itemStack)) {
 					this.method_7998(world, entity, mapState);
 				}
 			}
@@ -368,7 +368,7 @@ public class FilledMapItem extends MapItem {
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		MapState mapState = world == null ? null : method_8001(itemStack, world);
-		if (mapState != null && mapState.field_17403) {
+		if (mapState != null && mapState.locked) {
 			list.add(new TranslatableTextComponent("filled_map.locked", method_8003(itemStack)).applyFormat(TextFormat.field_1080));
 		}
 

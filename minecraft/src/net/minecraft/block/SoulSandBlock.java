@@ -22,11 +22,6 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return true;
-	}
-
-	@Override
 	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
 		entity.setVelocity(entity.getVelocity().multiply(0.4, 1.0, 0.4));
 	}

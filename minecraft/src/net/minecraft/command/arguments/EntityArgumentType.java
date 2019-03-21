@@ -55,7 +55,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		return new EntityArgumentType(true, false);
 	}
 
-	public static Entity method_9313(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Entity getEntityArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getEntity(commandContext.getSource());
 	}
 
@@ -84,7 +84,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		return new EntityArgumentType(true, true);
 	}
 
-	public static ServerPlayerEntity method_9315(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static ServerPlayerEntity getServerPlayerArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getPlayer(commandContext.getSource());
 	}
 

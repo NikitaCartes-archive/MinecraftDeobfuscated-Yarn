@@ -9,9 +9,9 @@ import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.chunk.ChunkPos;
-import net.minecraft.world.gen.ChunkRandom;
 
 public class StructurePlacementData {
 	private Mirror mirror = Mirror.NONE;
@@ -129,7 +129,7 @@ public class StructurePlacementData {
 		} else if (this.seed != null) {
 			return this.seed == 0L ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(this.seed);
 		} else {
-			return blockPos == null ? new Random(SystemUtil.getMeasuringTimeMs()) : ChunkRandom.create(blockPos.getX(), blockPos.getZ(), 0L, 987234911L);
+			return blockPos == null ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(MathHelper.hashCode(blockPos));
 		}
 	}
 

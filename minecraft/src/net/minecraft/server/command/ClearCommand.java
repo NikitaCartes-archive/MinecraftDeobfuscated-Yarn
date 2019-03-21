@@ -36,7 +36,7 @@ public class ClearCommand {
 									commandContext -> method_13077(
 											commandContext.getSource(),
 											EntityArgumentType.method_9312(commandContext, "targets"),
-											ItemPredicateArgumentType.method_9804(commandContext, "item"),
+											ItemPredicateArgumentType.getPredicateArgument(commandContext, "item"),
 											-1
 										)
 								)
@@ -46,7 +46,7 @@ public class ClearCommand {
 											commandContext -> method_13077(
 													commandContext.getSource(),
 													EntityArgumentType.method_9312(commandContext, "targets"),
-													ItemPredicateArgumentType.method_9804(commandContext, "item"),
+													ItemPredicateArgumentType.getPredicateArgument(commandContext, "item"),
 													IntegerArgumentType.getInteger(commandContext, "maxCount")
 												)
 										)

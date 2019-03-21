@@ -160,7 +160,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, -1, 1, 6, -1, 1, false, random, field_14403);
 			this.addBlock(
 				iWorld,
-				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.EAST).with(TripwireHookBlock.field_11669, Boolean.valueOf(true)),
+				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.EAST).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
 				1,
 				-3,
 				8,
@@ -168,7 +168,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			);
 			this.addBlock(
 				iWorld,
-				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.WEST).with(TripwireHookBlock.field_11669, Boolean.valueOf(true)),
+				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.WEST).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
 				4,
 				-3,
 				8,
@@ -232,7 +232,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.SOUTH, Boolean.valueOf(true)), 3, -2, 2, mutableIntBoundingBox);
 			this.addBlock(
 				iWorld,
-				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.NORTH).with(TripwireHookBlock.field_11669, Boolean.valueOf(true)),
+				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.NORTH).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
 				7,
 				-3,
 				1,
@@ -240,7 +240,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			);
 			this.addBlock(
 				iWorld,
-				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.SOUTH).with(TripwireHookBlock.field_11669, Boolean.valueOf(true)),
+				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.SOUTH).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
 				7,
 				-3,
 				5,

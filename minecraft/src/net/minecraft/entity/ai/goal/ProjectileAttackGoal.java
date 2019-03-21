@@ -33,7 +33,7 @@ public class ProjectileAttackGoal extends Goal {
 			this.field_6577 = j;
 			this.field_6585 = f;
 			this.field_6584 = f * f;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 	}
 

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -213,7 +214,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		double j,
 		double k
 	) {
-		if (blockState.method_11604(viewableWorld, blockPos)) {
+		if (Block.isShapeFullCube(blockState.getCollisionShape(viewableWorld, blockPos))) {
 			VoxelShape voxelShape = blockState.getOutlineShape(this.method_3935(), blockPos2.down());
 			if (!voxelShape.isEmpty()) {
 				Tessellator tessellator = Tessellator.getInstance();

@@ -54,11 +54,6 @@ public class SlabBlock extends Block implements Waterloggable {
 		}
 	}
 
-	@Override
-	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.get(TYPE) == SlabType.field_12682 || blockState.get(TYPE) == SlabType.field_12679;
-	}
-
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {

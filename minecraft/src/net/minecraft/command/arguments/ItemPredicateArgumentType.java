@@ -52,7 +52,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		}
 	}
 
-	public static Predicate<ItemStack> method_9804(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Predicate<ItemStack> getPredicateArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<ItemPredicateArgumentType.ItemPredicateFactory>getArgument(string, ItemPredicateArgumentType.ItemPredicateFactory.class)
 			.create(commandContext);
 	}

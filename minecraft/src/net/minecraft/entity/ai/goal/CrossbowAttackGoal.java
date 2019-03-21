@@ -22,7 +22,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 		this.entity = hostileEntity;
 		this.field_6590 = d;
 		this.field_6591 = f * f;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 	}
 
 	@Override

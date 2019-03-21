@@ -5,8 +5,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
-public class WebBlock extends Block {
-	public WebBlock(Block.Settings settings) {
+public class CobwebBlock extends Block {
+	public CobwebBlock(Block.Settings settings) {
 		super(settings);
 	}
 

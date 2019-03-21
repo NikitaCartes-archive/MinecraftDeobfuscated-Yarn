@@ -11,6 +11,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
@@ -32,6 +33,7 @@ public class ServerConnectingScreen extends Screen {
 	private TextComponent status = new TranslatableTextComponent("connect.connecting");
 
 	public ServerConnectingScreen(Screen screen, MinecraftClient minecraftClient, ServerEntry serverEntry) {
+		super(NarratorManager.field_18967);
 		this.client = minecraftClient;
 		this.parent = screen;
 		ServerAddress serverAddress = ServerAddress.parse(serverEntry.address);
@@ -41,6 +43,7 @@ public class ServerConnectingScreen extends Screen {
 	}
 
 	public ServerConnectingScreen(Screen screen, MinecraftClient minecraftClient, String string, int i) {
+		super(NarratorManager.field_18967);
 		this.client = minecraftClient;
 		this.parent = screen;
 		minecraftClient.openWorkingScreen();
@@ -129,17 +132,14 @@ public class ServerConnectingScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				ServerConnectingScreen.this.field_2409 = true;
-				if (ServerConnectingScreen.this.connection != null) {
-					ServerConnectingScreen.this.connection.disconnect(new TranslatableTextComponent("connect.aborted"));
-				}
-
-				ServerConnectingScreen.this.client.openScreen(ServerConnectingScreen.this.parent);
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+			this.field_2409 = true;
+			if (this.connection != null) {
+				this.connection.disconnect(new TranslatableTextComponent("connect.aborted"));
 			}
-		});
+
+			this.client.openScreen(this.parent);
+		}));
 	}
 
 	@Override

@@ -54,12 +54,12 @@ public class WeightedGoal extends Goal {
 	}
 
 	@Override
-	public void setControlBits(EnumSet<Goal.ControlBit> enumSet) {
+	public void setControlBits(EnumSet<Goal.class_4134> enumSet) {
 		this.goal.setControlBits(enumSet);
 	}
 
 	@Override
-	public EnumSet<Goal.ControlBit> getControlBits() {
+	public EnumSet<Goal.class_4134> getControlBits() {
 		return this.goal.getControlBits();
 	}
 

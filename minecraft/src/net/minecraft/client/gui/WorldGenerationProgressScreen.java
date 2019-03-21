@@ -4,6 +4,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -29,6 +30,7 @@ public class WorldGenerationProgressScreen extends Screen {
 	});
 
 	public WorldGenerationProgressScreen(WorldGenerationProgressTracker worldGenerationProgressTracker) {
+		super(NarratorManager.field_18967);
 		this.progressProvider = worldGenerationProgressTracker;
 	}
 

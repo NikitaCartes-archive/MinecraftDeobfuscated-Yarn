@@ -27,7 +27,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 		this.field_6510 = i;
 		this.field_6515 = 0;
 		this.maxYDifference = j;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18407));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18407));
 	}
 
 	@Override

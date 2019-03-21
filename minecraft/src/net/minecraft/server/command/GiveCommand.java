@@ -26,7 +26,10 @@ public class GiveCommand {
 							ServerCommandManager.argument("item", ItemStackArgumentType.create())
 								.executes(
 									commandContext -> method_13401(
-											commandContext.getSource(), ItemStackArgumentType.method_9777(commandContext, "item"), EntityArgumentType.method_9312(commandContext, "targets"), 1
+											commandContext.getSource(),
+											ItemStackArgumentType.getStackArgument(commandContext, "item"),
+											EntityArgumentType.method_9312(commandContext, "targets"),
+											1
 										)
 								)
 								.then(
@@ -34,7 +37,7 @@ public class GiveCommand {
 										.executes(
 											commandContext -> method_13401(
 													commandContext.getSource(),
-													ItemStackArgumentType.method_9777(commandContext, "item"),
+													ItemStackArgumentType.getStackArgument(commandContext, "item"),
 													EntityArgumentType.method_9312(commandContext, "targets"),
 													IntegerArgumentType.getInteger(commandContext, "count")
 												)

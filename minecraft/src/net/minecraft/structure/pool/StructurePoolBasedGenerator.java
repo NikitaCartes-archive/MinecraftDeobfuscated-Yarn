@@ -236,7 +236,7 @@ public class StructurePoolBasedGenerator {
 										mutableIntBoundingBox4.maxY = mutableIntBoundingBox4.minY + u;
 									}
 
-									if (!VoxelShapes.compareShapes(
+									if (!VoxelShapes.matchesAnywhere(
 										(VoxelShape)atomicReference3.get(), VoxelShapes.cube(BoundingBox.method_19316(mutableIntBoundingBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND
 									)) {
 										atomicReference3.set(

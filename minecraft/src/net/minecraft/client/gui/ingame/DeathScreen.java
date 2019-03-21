@@ -12,17 +12,22 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.TextComponentUtil;
+import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.text.event.ClickEvent;
 
 @Environment(EnvType.CLIENT)
 public class DeathScreen extends Screen {
 	private int ticksSinceDeath;
 	private final TextComponent message;
+	private final boolean field_18974;
 
-	public DeathScreen(@Nullable TextComponent textComponent) {
+	public DeathScreen(@Nullable TextComponent textComponent, boolean bl) {
+		super(new TranslatableTextComponent(bl ? "deathScreen.title.hardcore" : "deathScreen.title"));
 		this.message = textComponent;
+		this.field_18974 = bl;
 	}
 
 	@Override
@@ -30,7 +35,7 @@ public class DeathScreen extends Screen {
 		this.ticksSinceDeath = 0;
 		String string;
 		String string2;
-		if (this.client.world.getLevelProperties().isHardcore()) {
+		if (this.field_18974) {
 			string = I18n.translate("deathScreen.spectate");
 			string2 = I18n.translate("deathScreen." + (this.client.isInSingleplayer() ? "deleteWorld" : "leaveServer"));
 		} else {
@@ -38,30 +43,36 @@ public class DeathScreen extends Screen {
 			string2 = I18n.translate("deathScreen.titleScreen");
 		}
 
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 72, string) {
-			@Override
-			public void onPressed() {
-				DeathScreen.this.client.player.requestRespawn();
-				DeathScreen.this.client.openScreen(null);
-			}
-		});
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 72, 200, 20, string, buttonWidgetx -> {
+			this.client.player.requestRespawn();
+			this.client.openScreen(null);
+		}));
 		ButtonWidget buttonWidget = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96, string2) {
-				@Override
-				public void onPressed() {
-					if (DeathScreen.this.client.world.getLevelProperties().isHardcore()) {
-						DeathScreen.this.client.openScreen(new MainMenuScreen());
+			new ButtonWidget(
+				this.screenWidth / 2 - 100,
+				this.screenHeight / 4 + 96,
+				200,
+				20,
+				string2,
+				buttonWidgetx -> {
+					if (this.field_18974) {
+						this.client.openScreen(new MainMenuScreen());
 					} else {
 						YesNoScreen yesNoScreen = new YesNoScreen(
-							DeathScreen.this, I18n.translate("deathScreen.quit.confirm"), "", I18n.translate("deathScreen.titleScreen"), I18n.translate("deathScreen.respawn"), 0
+							this,
+							new TranslatableTextComponent("deathScreen.quit.confirm"),
+							new StringTextComponent(""),
+							I18n.translate("deathScreen.titleScreen"),
+							I18n.translate("deathScreen.respawn"),
+							0
 						);
-						DeathScreen.this.client.openScreen(yesNoScreen);
+						this.client.openScreen(yesNoScreen);
 						yesNoScreen.disableButtons(20);
 					}
 				}
-			}
+			)
 		);
-		if (!this.client.world.getLevelProperties().isHardcore() && this.client.getSession() == null) {
+		if (!this.field_18974 && this.client.getSession() == null) {
 			buttonWidget.active = false;
 		}
 
@@ -84,7 +95,7 @@ public class DeathScreen extends Screen {
 				this.client.world.disconnect();
 			}
 
-			this.client.method_18096(new CloseWorldScreen(I18n.translate("menu.savingLevel")));
+			this.client.method_18096(new CloseWorldScreen(new TranslatableTextComponent("menu.savingLevel")));
 			this.client.openScreen(new MainMenuScreen());
 		} else {
 			this.client.player.requestRespawn();
@@ -94,11 +105,10 @@ public class DeathScreen extends Screen {
 
 	@Override
 	public void render(int i, int j, float f) {
-		boolean bl = this.client.world.getLevelProperties().isHardcore();
 		this.drawGradientRect(0, 0, this.screenWidth, this.screenHeight, 1615855616, -1602211792);
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef(2.0F, 2.0F, 2.0F);
-		this.drawStringCentered(this.fontRenderer, I18n.translate(bl ? "deathScreen.title.hardcore" : "deathScreen.title"), this.screenWidth / 2 / 2, 30, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2 / 2, 30, 16777215);
 		GlStateManager.popMatrix();
 		if (this.message != null) {
 			this.drawStringCentered(this.fontRenderer, this.message.getFormattedText(), this.screenWidth / 2, 85, 16777215);

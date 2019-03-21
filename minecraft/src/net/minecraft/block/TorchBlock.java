@@ -5,10 +5,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.tag.BlockTags;
+import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
@@ -40,11 +41,8 @@ public class TorchBlock extends Block {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		boolean bl = block.matches(BlockTags.field_16584)
-			|| block instanceof StainedGlassBlock
-			|| block == Blocks.field_10033
-			|| block.matches(BlockTags.field_15504)
-			|| blockState2.hasSolidTopSurface(viewableWorld, blockPos2);
+		VoxelShape voxelShape = blockState2.getCollisionShape(viewableWorld, blockPos2).getFace(Direction.UP);
+		boolean bl = !VoxelShapes.matchesAnywhere(BOUNDING_SHAPE, voxelShape, BooleanBiFunction.ONLY_FIRST);
 		return bl && block != Blocks.field_10613;
 	}
 

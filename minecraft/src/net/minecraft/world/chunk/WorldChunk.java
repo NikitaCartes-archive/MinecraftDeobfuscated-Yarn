@@ -468,7 +468,7 @@ public class WorldChunk implements Chunk {
 		this.shouldSave = true;
 	}
 
-	public void appendEntities(@Nullable Entity entity, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
+	public void appendEntities(@Nullable Entity entity, BoundingBox boundingBox, List<Entity> list, @Nullable Predicate<? super Entity> predicate) {
 		int i = MathHelper.floor((boundingBox.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((boundingBox.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);

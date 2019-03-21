@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_2566;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
@@ -24,7 +23,7 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class NbtTextComponent extends AbstractTextComponent implements class_2566 {
+public abstract class NbtTextComponent extends AbstractTextComponent implements TextComponentWithSelectors {
 	private static final Logger LOGGER = LogManager.getLogger();
 	protected final boolean field_11778;
 	protected final String path;
@@ -66,7 +65,7 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 	}
 
 	@Override
-	public TextComponent method_10890(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public TextComponent resolveSelectors(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
 		if (serverCommandSource != null && this.field_11779 != null) {
 			Stream<String> stream = this.method_10916(serverCommandSource).flatMap(compoundTag -> {
 				try {

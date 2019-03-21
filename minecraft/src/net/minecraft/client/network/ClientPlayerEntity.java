@@ -899,7 +899,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 								Vec3d vec3d13 = vec3d7.add(vec3d9);
 								Iterator<BoundingBox> iterator = this.world
 									.getCollidingBoundingBoxesForEntity(this, boundingBox, Collections.emptySet())
-									.flatMap(voxelShapex -> voxelShapex.getBoundingBoxList().stream())
+									.flatMap(voxelShapex -> voxelShapex.getBoundingBoxes().stream())
 									.iterator();
 								float s = Float.MIN_VALUE;
 

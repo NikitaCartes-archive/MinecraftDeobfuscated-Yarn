@@ -13,9 +13,7 @@ import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -90,9 +88,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		if (this.active && this.isHovered() && SystemUtil.getMeasuringTimeMs() > this.nextNarration) {
 			String string = this.getNarrationMessage();
 			if (!string.isEmpty()) {
-				NarratorManager narratorManager = NarratorManager.INSTANCE;
-				narratorManager.clear();
-				narratorManager.onChatMessage(ChatMessageType.field_11735, new StringTextComponent(string));
+				NarratorManager.INSTANCE.method_19788(string);
 				this.nextNarration = Long.MAX_VALUE;
 			}
 		}

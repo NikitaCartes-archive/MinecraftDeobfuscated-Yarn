@@ -9,15 +9,18 @@ import net.minecraft.server.network.packet.ClientCommandC2SPacket;
 
 @Environment(EnvType.CLIENT)
 public class SleepingChatScreen extends ChatScreen {
+	public SleepingChatScreen() {
+		super("");
+	}
+
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 40, I18n.translate("multiplayer.stopSleeping")) {
-			@Override
-			public void onPressed() {
-				SleepingChatScreen.this.stopSleeping();
-			}
-		});
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100, this.screenHeight - 40, 200, 20, I18n.translate("multiplayer.stopSleeping"), buttonWidget -> this.stopSleeping()
+			)
+		);
 	}
 
 	@Override

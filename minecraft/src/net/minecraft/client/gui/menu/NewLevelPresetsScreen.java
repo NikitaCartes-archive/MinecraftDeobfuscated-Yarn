@@ -24,6 +24,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -35,7 +36,6 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 public class NewLevelPresetsScreen extends Screen {
 	private static final List<NewLevelPresetsScreen.class_431> field_2518 = Lists.<NewLevelPresetsScreen.class_431>newArrayList();
 	private final CustomizeFlatLevelScreen field_2519;
-	private String field_2522;
 	private String field_2520;
 	private String field_2524;
 	private NewLevelPresetsScreen.class_4196 field_2521;
@@ -44,6 +44,7 @@ public class NewLevelPresetsScreen extends Screen {
 	public int field_18746 = -1;
 
 	public NewLevelPresetsScreen(CustomizeFlatLevelScreen customizeFlatLevelScreen) {
+		super(new TranslatableTextComponent("createWorld.customize.presets.title"));
 		this.field_2519 = customizeFlatLevelScreen;
 	}
 
@@ -54,26 +55,21 @@ public class NewLevelPresetsScreen extends Screen {
 		this.field_2523.setMaxLength(1230);
 		this.field_2523.setText(this.field_2519.method_2138());
 		this.listeners.add(this.field_2523);
-		this.field_2522 = I18n.translate("createWorld.customize.presets.title");
 		this.field_2520 = I18n.translate("createWorld.customize.presets.share");
 		this.field_2524 = I18n.translate("createWorld.customize.presets.list");
 		this.field_2521 = new NewLevelPresetsScreen.class_4196();
 		this.listeners.add(this.field_2521);
 		this.field_2525 = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("createWorld.customize.presets.select")) {
-				@Override
-				public void onPressed() {
-					NewLevelPresetsScreen.this.field_2519.method_2139(NewLevelPresetsScreen.this.field_2523.getText());
-					NewLevelPresetsScreen.this.client.openScreen(NewLevelPresetsScreen.this.field_2519);
-				}
-			}
+			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("createWorld.customize.presets.select"), buttonWidget -> {
+				this.field_2519.method_2139(this.field_2523.getText());
+				this.client.openScreen(this.field_2519);
+			})
 		);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				NewLevelPresetsScreen.this.client.openScreen(NewLevelPresetsScreen.this.field_2519);
-			}
-		});
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.field_2519)
+			)
+		);
 		this.method_2191();
 	}
 
@@ -98,7 +94,7 @@ public class NewLevelPresetsScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.field_2521.render(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.field_2522, this.screenWidth / 2, 8, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 8, 16777215);
 		this.drawString(this.fontRenderer, this.field_2520, 50, 30, 10526880);
 		this.drawString(this.fontRenderer, this.field_2524, 50, 70, 10526880);
 		this.field_2523.render(i, j, f);

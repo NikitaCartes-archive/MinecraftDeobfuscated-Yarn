@@ -8,12 +8,10 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.gui.widget.BookPageButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.TextComponentUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -21,7 +19,6 @@ import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
@@ -50,13 +47,20 @@ public class WrittenBookScreen extends Screen {
 	private int cachedPageIndex = -1;
 	private BookPageButtonWidget lastPageButton;
 	private BookPageButtonWidget nextPageButton;
+	private final boolean field_18976;
 
 	public WrittenBookScreen(WrittenBookScreen.Contents contents) {
-		this.contents = contents;
+		this(contents, true);
 	}
 
 	public WrittenBookScreen() {
-		this(EMPTY_PROVIDER);
+		this(EMPTY_PROVIDER, false);
+	}
+
+	private WrittenBookScreen(WrittenBookScreen.Contents contents, boolean bl) {
+		super(NarratorManager.field_18967);
+		this.contents = contents;
+		this.field_18976 = bl;
 	}
 
 	public void setPageProvider(WrittenBookScreen.Contents contents) {
@@ -89,39 +93,14 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	protected void addCloseButton() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 200, 20, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				WrittenBookScreen.this.client.openScreen(null);
-			}
-		});
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(null)));
 	}
 
 	protected void addPageButtons() {
 		int i = (this.screenWidth - 192) / 2;
 		int j = 2;
-		this.lastPageButton = this.addButton(new BookPageButtonWidget(i + 116, 159, true) {
-			@Override
-			public void onPressed() {
-				WrittenBookScreen.this.goToNextPage();
-			}
-
-			@Override
-			public void playDownSound(SoundManager soundManager) {
-				WrittenBookScreen.this.playPageTurnSound();
-			}
-		});
-		this.nextPageButton = this.addButton(new BookPageButtonWidget(i + 43, 159, false) {
-			@Override
-			public void onPressed() {
-				WrittenBookScreen.this.goToPreviousPage();
-			}
-
-			@Override
-			public void playDownSound(SoundManager soundManager) {
-				WrittenBookScreen.this.playPageTurnSound();
-			}
-		});
+		this.lastPageButton = this.addButton(new BookPageButtonWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.field_18976));
+		this.nextPageButton = this.addButton(new BookPageButtonWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.field_18976));
 		this.updatePageButtons();
 	}
 
@@ -283,10 +262,6 @@ public class WrittenBookScreen extends Screen {
 		}
 
 		return builder.build();
-	}
-
-	protected void playPageTurnSound() {
-		MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
 	}
 
 	@Environment(EnvType.CLIENT)

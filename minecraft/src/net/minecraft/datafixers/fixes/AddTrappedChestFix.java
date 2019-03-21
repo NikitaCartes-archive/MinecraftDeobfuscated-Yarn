@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.class_1191;
 import net.minecraft.datafixers.TypeReferences;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,7 +78,7 @@ public class AddTrappedChestFix extends DataFix {
 										int kxx = dynamic.get("x").asInt(0) - (k << 4);
 										int lxx = dynamic.get("y").asInt(0);
 										int m = dynamic.get("z").asInt(0) - (l << 4);
-										return intSet.contains(class_1191.method_5051(kxx, lxx, m)) ? typedxxx.update(taggedChoiceType.finder(), pair -> pair.mapFirst(string -> {
+										return intSet.contains(LeavesFix.method_5051(kxx, lxx, m)) ? typedxxx.update(taggedChoiceType.finder(), pair -> pair.mapFirst(string -> {
 												if (!Objects.equals(string, "minecraft:chest")) {
 													LOGGER.warn("Block Entity was expected to be a chest");
 												}
@@ -94,7 +93,7 @@ public class AddTrappedChestFix extends DataFix {
 		}
 	}
 
-	public static final class class_1216 extends class_1191.class_1193 {
+	public static final class class_1216 extends LeavesFix.class_1193 {
 		@Nullable
 		private IntSet field_5741;
 

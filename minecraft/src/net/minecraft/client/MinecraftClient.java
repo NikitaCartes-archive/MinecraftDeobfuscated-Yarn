@@ -108,7 +108,6 @@ import net.minecraft.client.resource.FoliageColormapResourceSupplier;
 import net.minecraft.client.resource.GrassColormapResourceSupplier;
 import net.minecraft.client.resource.RedirectedResourcePack;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.IdentifierSearchableContainer;
 import net.minecraft.client.search.SearchManager;
@@ -763,7 +762,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		if (screen == null && this.world == null) {
 			screen = new MainMenuScreen();
 		} else if (screen == null && this.player.getHealth() <= 0.0F) {
-			screen = new DeathScreen(null);
+			screen = new DeathScreen(null, this.world.getLevelProperties().isHardcore());
 		}
 
 		if (screen instanceof MainMenuScreen || screen instanceof MultiplayerScreen) {
@@ -777,6 +776,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			KeyBinding.unpressAll();
 			screen.initialize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
 			this.skipGameRender = false;
+			NarratorManager.INSTANCE.method_19788(screen.getTitle().getString());
 		} else {
 			this.soundManager.playAll();
 			this.mouse.lockCursor();
@@ -1006,7 +1006,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 				this.server.stop(true);
 			}
 
-			this.method_18096(new CloseWorldScreen(I18n.translate("menu.savingLevel")));
+			this.method_18096(new CloseWorldScreen(new TranslatableTextComponent("menu.savingLevel")));
 		} catch (Throwable var2) {
 		}
 
@@ -1443,7 +1443,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		boolean bl3 = this.options.chatVisibility != ChatVisibility.HIDDEN;
 		if (bl3) {
 			while(this.options.keyChat.wasPressed()) {
-				this.openScreen(new ChatScreen());
+				this.openScreen(new ChatScreen(""));
 			}
 
 			if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {

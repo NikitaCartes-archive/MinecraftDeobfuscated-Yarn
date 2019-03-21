@@ -556,7 +556,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 
 	class class_1529 extends Goal {
 		public class_1529() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18407, Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18407, Goal.class_4134.field_18406));
 		}
 
 		@Override

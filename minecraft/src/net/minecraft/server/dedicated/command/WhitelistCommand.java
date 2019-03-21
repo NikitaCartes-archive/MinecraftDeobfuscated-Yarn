@@ -49,7 +49,7 @@ public class WhitelistCommand {
 										);
 									}
 								)
-								.executes(commandContext -> method_13838(commandContext.getSource(), GameProfileArgumentType.getProfilesArgument(commandContext, "targets")))
+								.executes(commandContext -> method_13838(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
 						)
 				)
 				.then(
@@ -61,7 +61,7 @@ public class WhitelistCommand {
 											commandContext.getSource().getMinecraftServer().getPlayerManager().getWhitelistedNames(), suggestionsBuilder
 										)
 								)
-								.executes(commandContext -> method_13845(commandContext.getSource(), GameProfileArgumentType.getProfilesArgument(commandContext, "targets")))
+								.executes(commandContext -> method_13845(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
 						)
 				)
 				.then(ServerCommandManager.literal("reload").executes(commandContext -> method_13850(commandContext.getSource())))

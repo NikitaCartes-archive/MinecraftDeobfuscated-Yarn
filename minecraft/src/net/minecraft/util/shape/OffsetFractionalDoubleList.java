@@ -2,11 +2,11 @@ package net.minecraft.util.shape;
 
 import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
 
-public class SequentialDoubleList extends AbstractDoubleList {
+public class OffsetFractionalDoubleList extends AbstractDoubleList {
 	private final int count;
 	private final int offset;
 
-	SequentialDoubleList(int i, int j) {
+	OffsetFractionalDoubleList(int i, int j) {
 		this.count = i;
 		this.offset = j;
 	}

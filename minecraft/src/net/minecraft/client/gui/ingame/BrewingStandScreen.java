@@ -29,7 +29,7 @@ public class BrewingStandScreen extends ContainerScreen<BrewingStandContainer> {
 	@Override
 	protected void drawForeground(int i, int j) {
 		this.fontRenderer
-			.draw(this.name.getFormattedText(), (float)(this.width / 2 - this.fontRenderer.getStringWidth(this.name.getFormattedText()) / 2), 6.0F, 4210752);
+			.draw(this.title.getFormattedText(), (float)(this.width / 2 - this.fontRenderer.getStringWidth(this.title.getFormattedText()) / 2), 6.0F, 4210752);
 		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 

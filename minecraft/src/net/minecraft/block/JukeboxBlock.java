@@ -6,7 +6,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.RecordItem;
+import net.minecraft.item.MusicDiscItem;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -90,8 +90,8 @@ public class JukeboxBlock extends BlockWithEntity {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof JukeboxBlockEntity) {
 			Item item = ((JukeboxBlockEntity)blockEntity).getRecord().getItem();
-			if (item instanceof RecordItem) {
-				return ((RecordItem)item).method_8010();
+			if (item instanceof MusicDiscItem) {
+				return ((MusicDiscItem)item).method_8010();
 			}
 		}
 

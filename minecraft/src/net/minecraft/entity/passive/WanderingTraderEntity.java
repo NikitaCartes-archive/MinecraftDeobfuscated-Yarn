@@ -241,7 +241,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 			this.field_17759 = wanderingTraderEntity2;
 			this.proximityDistance = d;
 			this.speed = e;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override

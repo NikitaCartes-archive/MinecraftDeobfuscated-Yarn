@@ -229,9 +229,4 @@ public class WorldUpdater {
 	public TextComponent getStatus() {
 		return this.status;
 	}
-
-	@Environment(EnvType.CLIENT)
-	public String getLevelName() {
-		return this.levelName;
-	}
 }

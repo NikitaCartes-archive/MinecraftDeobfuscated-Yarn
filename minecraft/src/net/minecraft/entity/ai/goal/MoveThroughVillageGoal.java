@@ -33,7 +33,7 @@ public class MoveThroughVillageGoal extends Goal {
 		this.field_6524 = bl;
 		this.field_18414 = i;
 		this.field_18415 = booleanSupplier;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
 		}

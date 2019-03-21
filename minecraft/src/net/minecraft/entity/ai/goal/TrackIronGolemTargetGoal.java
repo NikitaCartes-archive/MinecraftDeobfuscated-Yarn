@@ -11,7 +11,7 @@ public class TrackIronGolemTargetGoal extends TrackTargetGoal {
 	public TrackIronGolemTargetGoal(IronGolemEntity ironGolemEntity) {
 		super(ironGolemEntity, false, true);
 		this.ironGolem = ironGolemEntity;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18408));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
 	}
 
 	@Override

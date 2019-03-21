@@ -8,6 +8,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.server.network.packet.UpdateJigsawC2SPacket;
 import net.minecraft.util.Identifier;
 
@@ -19,6 +20,7 @@ public class JigsawBlockScreen extends Screen {
 	private TextFieldWidget finalStateField;
 
 	public JigsawBlockScreen(JigsawBlockEntity jigsawBlockEntity) {
+		super(NarratorManager.field_18967);
 		this.jigsaw = jigsawBlockEntity;
 	}
 
@@ -56,18 +58,8 @@ public class JigsawBlockScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				JigsawBlockScreen.this.onDone();
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				JigsawBlockScreen.this.onCancel();
-			}
-		});
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.onDone()));
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.onCancel()));
 		this.targetPoolField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 40, 300, 20);
 		this.targetPoolField.setMaxLength(128);
 		this.targetPoolField.setText(this.jigsaw.getTargetPool().toString());

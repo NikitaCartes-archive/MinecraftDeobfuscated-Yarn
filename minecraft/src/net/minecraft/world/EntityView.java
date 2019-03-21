@@ -35,7 +35,7 @@ public interface EntityView {
 			: this.getVisibleEntities(entity, voxelShape.getBoundingBox())
 				.stream()
 				.filter(entity2 -> !entity2.invalid && entity2.field_6033 && (entity == null || !entity2.method_5794(entity)))
-				.noneMatch(entityx -> VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(entityx.getBoundingBox()), BooleanBiFunction.AND));
+				.noneMatch(entityx -> VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cube(entityx.getBoundingBox()), BooleanBiFunction.AND));
 	}
 
 	default <T extends Entity> List<T> method_18467(Class<? extends T> class_, BoundingBox boundingBox) {

@@ -44,7 +44,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.name.getFormattedText(), 12.0F, 5.0F, 4210752);
+		this.fontRenderer.draw(this.title.getFormattedText(), 12.0F, 5.0F, 4210752);
 		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 

@@ -24,6 +24,7 @@ import net.minecraft.client.gui.ingame.ChatScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.sortme.CommandBlockExecutor;
@@ -48,6 +49,10 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	protected AbstractCommandBlockScreen.class_464 field_2759;
 	private boolean suggestionsDisabled;
 
+	public AbstractCommandBlockScreen() {
+		super(NarratorManager.field_18967);
+	}
+
 	@Override
 	public void update() {
 		this.consoleCommandTextField.tick();
@@ -60,26 +65,17 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.doneButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				AbstractCommandBlockScreen.this.method_2359();
-			}
-		});
-		this.cancelButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				AbstractCommandBlockScreen.this.method_2358();
-			}
-		});
-		this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 150 - 20, this.method_2364(), 20, 20, "O") {
-			@Override
-			public void onPressed() {
-				CommandBlockExecutor commandBlockExecutor = AbstractCommandBlockScreen.this.getCommandExecutor();
-				commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
-				AbstractCommandBlockScreen.this.updateTrackedOutput();
-			}
-		});
+		this.doneButton = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 4 - 150, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.method_2359())
+		);
+		this.cancelButton = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.method_2358())
+		);
+		this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 150 - 20, this.method_2364(), 20, 20, "O", buttonWidget -> {
+			CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
+			commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
+			this.updateTrackedOutput();
+		}));
 		this.consoleCommandTextField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 150, 50, 300, 20);
 		this.consoleCommandTextField.setMaxLength(32500);
 		this.consoleCommandTextField.setRenderTextProvider(this::method_2348);

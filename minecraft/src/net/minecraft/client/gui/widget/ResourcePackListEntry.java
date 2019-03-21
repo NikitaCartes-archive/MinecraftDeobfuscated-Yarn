@@ -160,14 +160,13 @@ public class ResourcePackListEntry extends EntryListWidget.Entry<ResourcePackLis
 				if (resourcePackCompatibility.isCompatible()) {
 					this.method_2680().select(this);
 				} else {
-					String string = field_3163.getFormattedText();
-					String string2 = resourcePackCompatibility.getConfirmMessage().getFormattedText();
+					TextComponent textComponent = resourcePackCompatibility.getConfirmMessage();
 					this.client.openScreen(new YesNoScreen((bl, ix) -> {
 						this.client.openScreen(this.method_2680());
 						if (bl) {
 							this.method_2680().select(this);
 						}
-					}, string, string2, 0));
+					}, field_3163, textComponent, 0));
 				}
 
 				return true;

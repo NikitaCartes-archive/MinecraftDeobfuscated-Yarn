@@ -50,7 +50,7 @@ public class ReplaceItemCommand {
 															commandContext.getSource(),
 															BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
 															ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
-															ItemStackArgumentType.method_9777(commandContext, "item").method_9781(1, false)
+															ItemStackArgumentType.getStackArgument(commandContext, "item").method_9781(1, false)
 														)
 												)
 												.then(
@@ -60,7 +60,7 @@ public class ReplaceItemCommand {
 																	commandContext.getSource(),
 																	BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
 																	ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
-																	ItemStackArgumentType.method_9777(commandContext, "item").method_9781(IntegerArgumentType.getInteger(commandContext, "count"), true)
+																	ItemStackArgumentType.getStackArgument(commandContext, "item").method_9781(IntegerArgumentType.getInteger(commandContext, "count"), true)
 																)
 														)
 												)
@@ -81,7 +81,7 @@ public class ReplaceItemCommand {
 															commandContext.getSource(),
 															EntityArgumentType.method_9317(commandContext, "targets"),
 															ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
-															ItemStackArgumentType.method_9777(commandContext, "item").method_9781(1, false)
+															ItemStackArgumentType.getStackArgument(commandContext, "item").method_9781(1, false)
 														)
 												)
 												.then(
@@ -91,7 +91,7 @@ public class ReplaceItemCommand {
 																	commandContext.getSource(),
 																	EntityArgumentType.method_9317(commandContext, "targets"),
 																	ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
-																	ItemStackArgumentType.method_9777(commandContext, "item").method_9781(IntegerArgumentType.getInteger(commandContext, "count"), true)
+																	ItemStackArgumentType.getStackArgument(commandContext, "item").method_9781(IntegerArgumentType.getInteger(commandContext, "count"), true)
 																)
 														)
 												)

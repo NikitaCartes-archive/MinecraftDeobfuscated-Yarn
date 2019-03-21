@@ -109,11 +109,6 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return true;
-	}
-
-	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			this.method_10217(world, blockPos, blockState);

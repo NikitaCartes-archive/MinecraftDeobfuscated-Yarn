@@ -279,7 +279,7 @@ public class ShulkerBulletEntity extends Entity {
 				if (this.field_7628 != null) {
 					BlockPos blockPos = new BlockPos(this);
 					Direction.Axis axis = this.field_7628.getAxis();
-					if (this.world.doesBlockHaveSolidTopSurface(blockPos.offset(this.field_7628))) {
+					if (this.world.doesBlockHaveSolidTopSurface(blockPos.offset(this.field_7628), this)) {
 						this.method_7486(axis);
 					} else {
 						BlockPos blockPos2 = new BlockPos(this.field_7626);

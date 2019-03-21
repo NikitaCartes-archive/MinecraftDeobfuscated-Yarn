@@ -27,7 +27,7 @@ public class ItemEnchantmentArgumentType implements ArgumentType<Enchantment> {
 		return new ItemEnchantmentArgumentType();
 	}
 
-	public static Enchantment method_9334(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static Enchantment getEnchantmentArgument(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, Enchantment.class);
 	}
 

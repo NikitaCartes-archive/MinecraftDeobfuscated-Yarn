@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.gui.ingame.RecipeBookProvider;
 import net.minecraft.client.gui.recipebook.RecipeBookGui;
+import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.RecipeBookButtonWidget;
 import net.minecraft.container.CraftingTableContainer;
 import net.minecraft.container.Slot;
@@ -33,18 +34,12 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 		this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
 		this.listeners.add(this.recipeBookGui);
 		this.focusOn(this.recipeBookGui);
-		this.addButton(
-			new RecipeBookButtonWidget(this.left + 5, this.screenHeight / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
-				@Override
-				public void onPressed() {
-					CraftingTableScreen.this.recipeBookGui.reset(CraftingTableScreen.this.isNarrow);
-					CraftingTableScreen.this.recipeBookGui.toggleOpen();
-					CraftingTableScreen.this.left = CraftingTableScreen.this.recipeBookGui
-						.findLeftEdge(CraftingTableScreen.this.isNarrow, CraftingTableScreen.this.screenWidth, CraftingTableScreen.this.width);
-					this.setPos(CraftingTableScreen.this.left + 5, CraftingTableScreen.this.screenHeight / 2 - 49);
-				}
-			}
-		);
+		this.addButton(new RecipeBookButtonWidget(this.left + 5, this.screenHeight / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
+			this.recipeBookGui.reset(this.isNarrow);
+			this.recipeBookGui.toggleOpen();
+			this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
+			((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 5, this.screenHeight / 2 - 49);
+		}));
 	}
 
 	@Override
@@ -72,7 +67,7 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.name.getFormattedText(), 28.0F, 6.0F, 4210752);
+		this.fontRenderer.draw(this.title.getFormattedText(), 28.0F, 6.0F, 4210752);
 		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
 

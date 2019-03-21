@@ -139,6 +139,6 @@ public class BirdNavigation extends EntityNavigation {
 
 	@Override
 	public boolean isValidPosition(BlockPos blockPos) {
-		return this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos);
+		return this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this.entity);
 	}
 }

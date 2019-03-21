@@ -72,6 +72,9 @@ public class Block implements ItemProvider {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
 	private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
+	protected static final VoxelShape field_18966 = VoxelShapes.combineAndSimplify(
+		VoxelShapes.fullCube(), createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
+	);
 	protected final int lightLevel;
 	protected final float hardness;
 	protected final float resistance;
@@ -134,6 +137,12 @@ public class Block implements ItemProvider {
 
 	public static VoxelShape createCuboidShape(double d, double e, double f, double g, double h, double i) {
 		return VoxelShapes.cube(d / 16.0, e / 16.0, f / 16.0, g / 16.0, h / 16.0, i / 16.0);
+	}
+
+	protected static boolean method_16361(BlockView blockView, BlockPos blockPos) {
+		return !VoxelShapes.matchesAnywhere(
+			blockView.getBlockState(blockPos).getCollisionShape(blockView, blockPos).getFace(Direction.UP), field_18966, BooleanBiFunction.ONLY_SECOND
+		);
 	}
 
 	@Deprecated
@@ -259,27 +268,13 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public final boolean method_16361(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
-	}
-
-	@Deprecated
 	public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.getMaterial().blocksLight() && blockState.method_11604(blockView, blockPos) && !blockState.emitsRedstonePower();
+		return blockState.getMaterial().blocksLight() && isShapeFullCube(blockState.getCollisionShape(blockView, blockPos)) && !blockState.emitsRedstonePower();
 	}
 
 	@Deprecated
 	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return this.material.suffocates() && blockState.method_11604(blockView, blockPos);
-	}
-
-	public final boolean method_9555(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.method_11603(blockView, blockPos);
-	}
-
-	@Deprecated
-	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.getMaterial().blocksLight() && blockState.method_11604(blockView, blockPos);
+		return this.material.suffocates() && isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
 	}
 
 	@Deprecated
@@ -351,7 +346,7 @@ public class Block implements ItemProvider {
 			} else {
 				VoxelShape voxelShape = blockState.getCullShape(blockView, blockPos, direction);
 				VoxelShape voxelShape2 = blockState2.getCullShape(blockView, blockPos2, direction.getOpposite());
-				boolean bl = VoxelShapes.compareShapes(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
+				boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
 				if (object2ByteLinkedOpenHashMap.size() == 200) {
 					object2ByteLinkedOpenHashMap.removeLastByte();
 				}
@@ -401,7 +396,7 @@ public class Block implements ItemProvider {
 	}
 
 	public static boolean isShapeFullCube(VoxelShape voxelShape) {
-		return !VoxelShapes.compareShapes(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
+		return !VoxelShapes.matchesAnywhere(VoxelShapes.fullCube(), voxelShape, BooleanBiFunction.NOT_SAME);
 	}
 
 	@Deprecated
@@ -678,7 +673,7 @@ public class Block implements ItemProvider {
 	@Deprecated
 	@Environment(EnvType.CLIENT)
 	public float getAmbientOcclusionLightLevel(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.method_11603(blockView, blockPos) ? 0.2F : 1.0F;
+		return isShapeFullCube(blockState.getCollisionShape(blockView, blockPos)) ? 0.2F : 1.0F;
 	}
 
 	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {

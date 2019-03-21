@@ -82,19 +82,13 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 		private KeyBindingEntry(KeyBinding keyBinding) {
 			this.binding = keyBinding;
 			this.bindingName = I18n.translate(keyBinding.getId());
-			this.editButton = new ButtonWidget(0, 0, 75, 20, I18n.translate(keyBinding.getId())) {
-				@Override
-				public void onPressed() {
-					KeyBindingListWidget.this.gui.focusedBinding = keyBinding;
-				}
-			};
-			this.resetButton = new ButtonWidget(0, 0, 50, 20, I18n.translate("controls.reset")) {
-				@Override
-				public void onPressed() {
-					KeyBindingListWidget.this.client.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
-					KeyBinding.updateKeysByCode();
-				}
-			};
+			this.editButton = new ButtonWidget(
+				0, 0, 75, 20, I18n.translate(keyBinding.getId()), buttonWidget -> KeyBindingListWidget.this.gui.focusedBinding = keyBinding
+			);
+			this.resetButton = new ButtonWidget(0, 0, 50, 20, I18n.translate("controls.reset"), buttonWidget -> {
+				KeyBindingListWidget.this.client.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
+				KeyBinding.updateKeysByCode();
+			});
 		}
 
 		@Override

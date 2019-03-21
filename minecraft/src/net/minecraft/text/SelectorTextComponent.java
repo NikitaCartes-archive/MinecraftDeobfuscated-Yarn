@@ -3,7 +3,6 @@ package net.minecraft.text;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import javax.annotation.Nullable;
-import net.minecraft.class_2566;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.entity.Entity;
@@ -11,7 +10,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class SelectorTextComponent extends AbstractTextComponent implements class_2566 {
+public class SelectorTextComponent extends AbstractTextComponent implements TextComponentWithSelectors {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final String pattern;
 	@Nullable
@@ -36,7 +35,7 @@ public class SelectorTextComponent extends AbstractTextComponent implements clas
 	}
 
 	@Override
-	public TextComponent method_10890(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public TextComponent resolveSelectors(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
 		return (TextComponent)(serverCommandSource != null && this.field_11790 != null
 			? EntitySelector.getNames(this.field_11790.getEntities(serverCommandSource))
 			: new StringTextComponent(""));

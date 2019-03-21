@@ -25,12 +25,11 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public abstract class ContainerScreen<T extends Container> extends Screen implements ContainerProvider<T> {
 	public static final Identifier BACKGROUND_TEXTURE = new Identifier("textures/gui/container/inventory.png");
-	public int width = 176;
+	protected int width = 176;
 	protected int height = 166;
-	public final T container;
+	protected final T container;
 	protected final PlayerInventory playerInventory;
-	protected final TextComponent name;
-	public int left;
+	protected int left;
 	protected int top;
 	protected Slot focusedSlot;
 	private Slot touchDragSlotStart;
@@ -56,9 +55,9 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 	private ItemStack field_2791 = ItemStack.EMPTY;
 
 	public ContainerScreen(T container, PlayerInventory playerInventory, TextComponent textComponent) {
+		super(textComponent);
 		this.container = container;
 		this.playerInventory = playerInventory;
-		this.name = textComponent;
 		this.field_2798 = true;
 	}
 

@@ -13,7 +13,7 @@ public class PounceAtTargetGoal extends Goal {
 	public PounceAtTargetGoal(MobEntity mobEntity, float f) {
 		this.owner = mobEntity;
 		this.field_6475 = f;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407, Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 	}
 
 	@Override

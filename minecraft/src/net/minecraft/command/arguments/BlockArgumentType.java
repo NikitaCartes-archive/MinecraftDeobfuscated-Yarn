@@ -23,7 +23,7 @@ public class BlockArgumentType implements ArgumentType<BlockArgument> {
 		return new BlockArgument(blockArgumentParser.getBlockState(), blockArgumentParser.method_9692().keySet(), blockArgumentParser.getNbtData());
 	}
 
-	public static BlockArgument method_9655(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static BlockArgument getBlockArgument(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, BlockArgument.class);
 	}
 

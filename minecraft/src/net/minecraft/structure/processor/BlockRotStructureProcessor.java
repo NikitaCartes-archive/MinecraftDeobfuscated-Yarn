@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ViewableWorld;
 
 public class BlockRotStructureProcessor extends StructureProcessor {
@@ -31,7 +30,7 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData structurePlacementData
 	) {
-		Random random = new Random(MathHelper.hashCode(structureBlockInfo2.pos));
+		Random random = structurePlacementData.getRandom(blockPos);
 		return !(this.integrity >= 1.0F) && !(random.nextFloat() <= this.integrity) ? null : structureBlockInfo2;
 	}
 

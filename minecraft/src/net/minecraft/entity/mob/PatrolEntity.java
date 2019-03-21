@@ -135,7 +135,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			this.field_16481 = patrolEntity;
 			this.field_16480 = d;
 			this.field_16535 = e;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override

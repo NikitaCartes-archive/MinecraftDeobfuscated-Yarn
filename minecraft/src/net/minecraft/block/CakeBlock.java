@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 public class CakeBlock extends Block {
 	public static final IntegerProperty BITES = Properties.BITES;
-	protected static final VoxelShape[] field_10738 = new VoxelShape[]{
+	protected static final VoxelShape[] BITES_TO_SHAPE = new VoxelShape[]{
 		Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 8.0, 15.0),
 		Block.createCuboidShape(3.0, 0.0, 1.0, 15.0, 8.0, 15.0),
 		Block.createCuboidShape(5.0, 0.0, 1.0, 15.0, 8.0, 15.0),
@@ -36,7 +36,7 @@ public class CakeBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10738[blockState.get(BITES)];
+		return BITES_TO_SHAPE[blockState.get(BITES)];
 	}
 
 	@Override

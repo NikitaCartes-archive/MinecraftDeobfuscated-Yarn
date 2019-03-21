@@ -32,7 +32,7 @@ public class SetBlockCommand {
 									commandContext -> method_13620(
 											commandContext.getSource(),
 											BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-											BlockArgumentType.method_9655(commandContext, "block"),
+											BlockArgumentType.getBlockArgument(commandContext, "block"),
 											SetBlockCommand.class_3121.field_13722,
 											null
 										)
@@ -43,7 +43,7 @@ public class SetBlockCommand {
 											commandContext -> method_13620(
 													commandContext.getSource(),
 													BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-													BlockArgumentType.method_9655(commandContext, "block"),
+													BlockArgumentType.getBlockArgument(commandContext, "block"),
 													SetBlockCommand.class_3121.field_13721,
 													null
 												)
@@ -55,7 +55,7 @@ public class SetBlockCommand {
 											commandContext -> method_13620(
 													commandContext.getSource(),
 													BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-													BlockArgumentType.method_9655(commandContext, "block"),
+													BlockArgumentType.getBlockArgument(commandContext, "block"),
 													SetBlockCommand.class_3121.field_13722,
 													cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
 												)
@@ -67,7 +67,7 @@ public class SetBlockCommand {
 											commandContext -> method_13620(
 													commandContext.getSource(),
 													BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-													BlockArgumentType.method_9655(commandContext, "block"),
+													BlockArgumentType.getBlockArgument(commandContext, "block"),
 													SetBlockCommand.class_3121.field_13722,
 													null
 												)
