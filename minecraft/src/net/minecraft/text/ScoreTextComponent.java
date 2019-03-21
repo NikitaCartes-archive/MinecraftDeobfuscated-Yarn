@@ -4,7 +4,6 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.List;
 import javax.annotation.Nullable;
-import net.minecraft.class_2566;
 import net.minecraft.command.EntitySelector;
 import net.minecraft.command.EntitySelectorReader;
 import net.minecraft.command.arguments.EntityArgumentType;
@@ -16,7 +15,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.ChatUtil;
 
-public class ScoreTextComponent extends AbstractTextComponent implements class_2566 {
+public class ScoreTextComponent extends AbstractTextComponent implements TextComponentWithSelectors {
 	private final String name;
 	@Nullable
 	private final EntitySelector selector;
@@ -75,7 +74,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements class_2
 	}
 
 	@Override
-	public TextComponent method_10890(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public TextComponent resolveSelectors(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
 		if (serverCommandSource == null) {
 			return this.method_10929();
 		} else {

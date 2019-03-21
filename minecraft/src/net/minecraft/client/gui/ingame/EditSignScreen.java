@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.StandingSignBlock;
+import net.minecraft.block.SignBlock;
 import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.client.gui.Screen;
@@ -15,6 +15,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.server.network.packet.UpdateSignC2SPacket;
 import net.minecraft.text.StringTextComponent;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Direction;
 
 @Environment(EnvType.CLIENT)
@@ -25,18 +26,16 @@ public class EditSignScreen extends Screen {
 	private SelectionManager selectionManager;
 
 	public EditSignScreen(SignBlockEntity signBlockEntity) {
+		super(new TranslatableTextComponent("sign.edit"));
 		this.sign = signBlockEntity;
 	}
 
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				EditSignScreen.this.finishEditing();
-			}
-		});
+		this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.finishEditing())
+		);
 		this.sign.setEditable(false);
 		this.selectionManager = new SelectionManager(
 			this.client,
@@ -98,7 +97,7 @@ public class EditSignScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("sign.edit"), this.screenWidth / 2, 40, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 40, 16777215);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)(this.screenWidth / 2), 0.0F, 50.0F);
@@ -107,8 +106,8 @@ public class EditSignScreen extends Screen {
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
 		BlockState blockState = this.sign.getCachedState();
 		float h;
-		if (blockState.getBlock() instanceof StandingSignBlock) {
-			h = (float)((Integer)blockState.get(StandingSignBlock.ROTATION) * 360) / 16.0F;
+		if (blockState.getBlock() instanceof SignBlock) {
+			h = (float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F;
 		} else {
 			h = ((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 		}

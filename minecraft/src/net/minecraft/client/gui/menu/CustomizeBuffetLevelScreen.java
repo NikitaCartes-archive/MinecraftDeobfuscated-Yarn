@@ -13,6 +13,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
@@ -30,12 +31,12 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private final NewLevelScreen field_2437;
 	private final List<Identifier> field_2440 = Lists.<Identifier>newArrayList();
 	private final Identifier[] field_2435 = new Identifier[Registry.BIOME.getIds().size()];
-	private String field_2442;
 	private CustomizeBuffetLevelScreen.class_4190 field_2441;
 	private int field_2439;
 	private ButtonWidget field_2438;
 
 	public CustomizeBuffetLevelScreen(NewLevelScreen newLevelScreen, CompoundTag compoundTag) {
+		super(new TranslatableTextComponent("createWorld.customize.buffet.title"));
 		this.field_2437 = newLevelScreen;
 		int i = 0;
 
@@ -100,7 +101,6 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.field_2442 = I18n.translate("createWorld.customize.buffet.title");
 		this.addButton(
 			new ButtonWidget(
 				(this.screenWidth - 200) / 2,
@@ -109,40 +109,32 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				20,
 				I18n.translate("createWorld.customize.buffet.generatortype")
 					+ " "
-					+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)field_2436.get(this.field_2439)))
-			) {
-				@Override
-				public void onPressed() {
-					CustomizeBuffetLevelScreen.this.field_2439++;
-					if (CustomizeBuffetLevelScreen.this.field_2439 >= CustomizeBuffetLevelScreen.field_2436.size()) {
-						CustomizeBuffetLevelScreen.this.field_2439 = 0;
+					+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)field_2436.get(this.field_2439))),
+				buttonWidget -> {
+					this.field_2439++;
+					if (this.field_2439 >= field_2436.size()) {
+						this.field_2439 = 0;
 					}
 
-					this.setMessage(
+					buttonWidget.setMessage(
 						I18n.translate("createWorld.customize.buffet.generatortype")
 							+ " "
-							+ I18n.translate(
-								SystemUtil.createTranslationKey("generator", (Identifier)CustomizeBuffetLevelScreen.field_2436.get(CustomizeBuffetLevelScreen.this.field_2439))
-							)
+							+ I18n.translate(SystemUtil.createTranslationKey("generator", (Identifier)field_2436.get(this.field_2439)))
 					);
 				}
-			}
+			)
 		);
 		this.field_2441 = new CustomizeBuffetLevelScreen.class_4190();
 		this.listeners.add(this.field_2441);
-		this.field_2438 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				CustomizeBuffetLevelScreen.this.field_2437.field_3200 = CustomizeBuffetLevelScreen.this.method_2153();
-				CustomizeBuffetLevelScreen.this.client.openScreen(CustomizeBuffetLevelScreen.this.field_2437);
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				CustomizeBuffetLevelScreen.this.client.openScreen(CustomizeBuffetLevelScreen.this.field_2437);
-			}
-		});
+		this.field_2438 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
+			this.field_2437.field_18979 = this.method_2153();
+			this.client.openScreen(this.field_2437);
+		}));
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.field_2437)
+			)
+		);
 		this.method_2151();
 	}
 
@@ -154,7 +146,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.drawTextureBackground(0);
 		this.field_2441.render(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.field_2442, this.screenWidth / 2, 8, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 8, 16777215);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.generator"), this.screenWidth / 2, 30, 10526880);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("createWorld.customize.buffet.biome"), this.screenWidth / 2, 68, 10526880);
 		super.render(i, j, f);

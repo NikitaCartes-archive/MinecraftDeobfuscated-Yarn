@@ -43,7 +43,7 @@ public class EnchantCommand {
 									commandContext -> method_13241(
 											commandContext.getSource(),
 											EntityArgumentType.method_9317(commandContext, "targets"),
-											ItemEnchantmentArgumentType.method_9334(commandContext, "enchantment"),
+											ItemEnchantmentArgumentType.getEnchantmentArgument(commandContext, "enchantment"),
 											1
 										)
 								)
@@ -53,7 +53,7 @@ public class EnchantCommand {
 											commandContext -> method_13241(
 													commandContext.getSource(),
 													EntityArgumentType.method_9317(commandContext, "targets"),
-													ItemEnchantmentArgumentType.method_9334(commandContext, "enchantment"),
+													ItemEnchantmentArgumentType.getEnchantmentArgument(commandContext, "enchantment"),
 													IntegerArgumentType.getInteger(commandContext, "level")
 												)
 										)

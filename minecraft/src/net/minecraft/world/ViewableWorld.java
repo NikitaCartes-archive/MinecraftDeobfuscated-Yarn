@@ -15,9 +15,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.shape.AbstractVoxelShapeContainer;
-import net.minecraft.util.shape.BitSetVoxelShapeContainer;
+import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.OffsetVoxelShape;
+import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.border.WorldBorder;
@@ -130,8 +130,8 @@ public interface ViewableWorld extends ExtendedBlockView {
 		} else {
 			verticalEntityPosition = VerticalEntityPosition.fromEntity(entity);
 			VoxelShape voxelShape2 = this.getWorldBorder().asVoxelShape();
-			boolean bl = VoxelShapes.compareShapes(voxelShape2, VoxelShapes.cube(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
-			boolean bl2 = VoxelShapes.compareShapes(voxelShape2, VoxelShapes.cube(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
+			boolean bl = VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cube(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
+			boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cube(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
 			if (!bl && bl2) {
 				stream = Stream.concat(Stream.of(voxelShape2), this.getCollidingEntityBoundingBoxesForEntity(entity, voxelShape, set));
 			} else {
@@ -145,8 +145,8 @@ public interface ViewableWorld extends ExtendedBlockView {
 		int l = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.Y)) + 1;
 		int m = MathHelper.floor(voxelShape.getMinimum(Direction.Axis.Z)) - 1;
 		int n = MathHelper.ceil(voxelShape.getMaximum(Direction.Axis.Z)) + 1;
-		AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(j - i, l - k, n - m);
-		Predicate<VoxelShape> predicate = voxelShape2x -> !voxelShape2x.isEmpty() && VoxelShapes.compareShapes(voxelShape, voxelShape2x, BooleanBiFunction.AND);
+		VoxelSet voxelSet = new BitSetVoxelSet(j - i, l - k, n - m);
+		Predicate<VoxelShape> predicate = voxelShape2x -> !voxelShape2x.isEmpty() && VoxelShapes.matchesAnywhere(voxelShape, voxelShape2x, BooleanBiFunction.AND);
 		AtomicReference<ChunkPos> atomicReference = new AtomicReference(new ChunkPos(i >> 4, m >> 4));
 		AtomicReference<Chunk> atomicReference2 = new AtomicReference(this.getChunk(i >> 4, m >> 4, ChunkStatus.EMPTY, false));
 		Stream<VoxelShape> stream2 = BlockPos.getBlocksInCuboid(i, k, m, j - 1, l - 1, n - 1).map(blockPos -> {
@@ -174,10 +174,10 @@ public interface ViewableWorld extends ExtendedBlockView {
 				if ((!blx || !bl2x) && (!bl2x || !bl3) && (!bl3 || !blx) && chunk != null) {
 					VoxelShape voxelShapex = chunk.getBlockState(blockPos).getCollisionShape(this, blockPos, verticalEntityPosition);
 					VoxelShape voxelShape2x = VoxelShapes.empty().offset((double)(-o), (double)(-p), (double)(-q));
-					if (VoxelShapes.compareShapes(voxelShape2x, voxelShapex, BooleanBiFunction.AND)) {
+					if (VoxelShapes.matchesAnywhere(voxelShape2x, voxelShapex, BooleanBiFunction.AND)) {
 						return VoxelShapes.empty();
 					} else if (voxelShapex == VoxelShapes.fullCube()) {
-						abstractVoxelShapeContainer.modify(o - i, p - k, q - m, true, true);
+						voxelSet.set(o - i, p - k, q - m, true, true);
 						return VoxelShapes.empty();
 					} else {
 						return voxelShapex.offset((double)o, (double)p, (double)q);
@@ -187,9 +187,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 				}
 			}
 		});
-		return Stream.concat(
-			stream, Stream.concat(stream2, Stream.generate(() -> new OffsetVoxelShape(abstractVoxelShapeContainer, i, k, m)).limit(1L)).filter(predicate)
-		);
+		return Stream.concat(stream, Stream.concat(stream2, Stream.generate(() -> new OffsetVoxelShape(voxelSet, i, k, m)).limit(1L)).filter(predicate));
 	}
 
 	default boolean isWaterAt(BlockPos blockPos) {

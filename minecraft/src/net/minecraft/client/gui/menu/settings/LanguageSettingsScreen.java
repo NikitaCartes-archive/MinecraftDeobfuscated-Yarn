@@ -12,6 +12,7 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -25,6 +26,7 @@ public class LanguageSettingsScreen extends Screen {
 	private int selectedIndex = -1;
 
 	public LanguageSettingsScreen(Screen screen, GameOptions gameOptions, LanguageManager languageManager) {
+		super(new TranslatableTextComponent("options.language"));
 		this.parent = screen;
 		this.settings = gameOptions;
 		this.languageManager = languageManager;
@@ -36,39 +38,46 @@ public class LanguageSettingsScreen extends Screen {
 		this.listeners.add(this.languageSelectionList);
 		this.forceUnicodeButton = this.addButton(
 			new OptionButtonWidget(
-				this.screenWidth / 2 - 155, this.screenHeight - 38, 150, 20, GameOption.FORCE_UNICODE_FONT, GameOption.FORCE_UNICODE_FONT.method_18495(this.settings)
-			) {
-				@Override
-				public void onPressed() {
-					GameOption.FORCE_UNICODE_FONT.method_18491(LanguageSettingsScreen.this.settings);
-					LanguageSettingsScreen.this.settings.write();
-					this.setMessage(GameOption.FORCE_UNICODE_FONT.method_18495(LanguageSettingsScreen.this.settings));
-					LanguageSettingsScreen.this.method_2181();
+				this.screenWidth / 2 - 155,
+				this.screenHeight - 38,
+				150,
+				20,
+				GameOption.FORCE_UNICODE_FONT,
+				GameOption.FORCE_UNICODE_FONT.method_18495(this.settings),
+				buttonWidget -> {
+					GameOption.FORCE_UNICODE_FONT.method_18491(this.settings);
+					this.settings.write();
+					buttonWidget.setMessage(GameOption.FORCE_UNICODE_FONT.method_18495(this.settings));
+					this.method_2181();
 				}
-			}
+			)
 		);
 		this.doneButton = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 155 + 160, this.screenHeight - 38, 150, 20, I18n.translate("gui.done")) {
-				@Override
-				public void onPressed() {
-					if (LanguageSettingsScreen.this.selectedIndex > -1) {
-						LanguageSettingsScreen.LanguageSelectionEntry languageSelectionEntry = (LanguageSettingsScreen.LanguageSelectionEntry)LanguageSettingsScreen.this.languageSelectionList
+			new ButtonWidget(
+				this.screenWidth / 2 - 155 + 160,
+				this.screenHeight - 38,
+				150,
+				20,
+				I18n.translate("gui.done"),
+				buttonWidget -> {
+					if (this.selectedIndex > -1) {
+						LanguageSettingsScreen.LanguageSelectionEntry languageSelectionEntry = (LanguageSettingsScreen.LanguageSelectionEntry)this.languageSelectionList
 							.getInputListeners()
-							.get(LanguageSettingsScreen.this.selectedIndex);
-						if (!languageSelectionEntry.languageDefinition.getCode().equals(LanguageSettingsScreen.this.languageManager.getLanguage().getCode())) {
-							LanguageSettingsScreen.this.languageManager.setLanguage(languageSelectionEntry.languageDefinition);
-							LanguageSettingsScreen.this.settings.language = languageSelectionEntry.languageDefinition.getCode();
-							LanguageSettingsScreen.this.client.reloadResources();
-							LanguageSettingsScreen.this.fontRenderer.setRightToLeft(LanguageSettingsScreen.this.languageManager.isRightToLeft());
-							LanguageSettingsScreen.this.doneButton.setMessage(I18n.translate("gui.done"));
-							LanguageSettingsScreen.this.forceUnicodeButton.setMessage(GameOption.FORCE_UNICODE_FONT.method_18495(LanguageSettingsScreen.this.settings));
-							LanguageSettingsScreen.this.settings.write();
+							.get(this.selectedIndex);
+						if (!languageSelectionEntry.languageDefinition.getCode().equals(this.languageManager.getLanguage().getCode())) {
+							this.languageManager.setLanguage(languageSelectionEntry.languageDefinition);
+							this.settings.language = languageSelectionEntry.languageDefinition.getCode();
+							this.client.reloadResources();
+							this.fontRenderer.setRightToLeft(this.languageManager.isRightToLeft());
+							this.doneButton.setMessage(I18n.translate("gui.done"));
+							this.forceUnicodeButton.setMessage(GameOption.FORCE_UNICODE_FONT.method_18495(this.settings));
+							this.settings.write();
 						}
 					}
 
-					LanguageSettingsScreen.this.client.openScreen(LanguageSettingsScreen.this.parent);
+					this.client.openScreen(this.parent);
 				}
-			}
+			)
 		);
 		super.onInitialized();
 	}
@@ -80,7 +89,7 @@ public class LanguageSettingsScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.languageSelectionList.render(i, j, f);
-		this.drawStringCentered(this.fontRenderer, I18n.translate("options.language"), this.screenWidth / 2, 16, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 16, 16777215);
 		this.drawStringCentered(this.fontRenderer, "(" + I18n.translate("options.languageWarning") + ")", this.screenWidth / 2, this.screenHeight - 56, 8421504);
 		super.render(i, j, f);
 	}

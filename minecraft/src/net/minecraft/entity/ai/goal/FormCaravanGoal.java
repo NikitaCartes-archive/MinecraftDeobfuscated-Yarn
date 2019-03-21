@@ -15,7 +15,7 @@ public class FormCaravanGoal extends Goal {
 	public FormCaravanGoal(LlamaEntity llamaEntity, double d) {
 		this.owner = llamaEntity;
 		this.speed = d;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 	}
 
 	@Override

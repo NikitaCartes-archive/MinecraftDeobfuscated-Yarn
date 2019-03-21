@@ -25,6 +25,7 @@ import net.minecraft.client.gui.menu.YesNoScreen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
@@ -169,6 +170,7 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 			this.loadLevel();
 			return true;
 		} else {
+			NarratorManager.INSTANCE.method_19788(new TranslatableTextComponent("narrator.select", this.levelSummary.getDisplayName()).getString());
 			this.field_3248 = SystemUtil.getMeasuringTimeMs();
 			return false;
 		}
@@ -176,23 +178,23 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 
 	public void loadLevel() {
 		if (this.levelSummary.isOutdatedLevel() || this.levelSummary.isLegacyCustomizedWorld()) {
-			String string = I18n.translate("selectWorld.backupQuestion");
-			String string2 = I18n.translate(
+			TextComponent textComponent = new TranslatableTextComponent("selectWorld.backupQuestion");
+			TextComponent textComponent2 = new TranslatableTextComponent(
 				"selectWorld.backupWarning", this.levelSummary.getVersionTextComponent().getFormattedText(), SharedConstants.getGameVersion().getName()
 			);
 			if (this.levelSummary.isLegacyCustomizedWorld()) {
-				string = I18n.translate("selectWorld.backupQuestion.customized");
-				string2 = I18n.translate("selectWorld.backupWarning.customized");
+				textComponent = new TranslatableTextComponent("selectWorld.backupQuestion.customized");
+				textComponent2 = new TranslatableTextComponent("selectWorld.backupWarning.customized");
 			}
 
 			this.client.openScreen(new BackupPromptScreen(this.guiLevelSelect, bl -> {
 				if (bl) {
-					String stringx = this.levelSummary.getName();
-					BackupLevelScreen.backupLevel(this.client.getLevelStorage(), stringx);
+					String string = this.levelSummary.getName();
+					BackupLevelScreen.backupLevel(this.client.getLevelStorage(), string);
 				}
 
 				this.loadLevelInternal();
-			}, string, string2));
+			}, textComponent, textComponent2));
 		} else if (this.levelSummary.isFutureLevel()) {
 			this.client
 				.openScreen(
@@ -216,8 +218,8 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 								this.client.openScreen(this.guiLevelSelect);
 							}
 						},
-						I18n.translate("selectWorld.versionQuestion"),
-						I18n.translate("selectWorld.versionWarning", this.levelSummary.getVersionTextComponent().getFormattedText()),
+						new TranslatableTextComponent("selectWorld.versionQuestion"),
+						new TranslatableTextComponent("selectWorld.versionWarning", this.levelSummary.getVersionTextComponent().getFormattedText()),
 						I18n.translate("selectWorld.versionJoinButton"),
 						I18n.translate("gui.cancel"),
 						0
@@ -242,8 +244,8 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 
 						this.client.openScreen(this.guiLevelSelect);
 					},
-					I18n.translate("selectWorld.deleteQuestion"),
-					I18n.translate("selectWorld.deleteWarning", this.levelSummary.getDisplayName()),
+					new TranslatableTextComponent("selectWorld.deleteQuestion"),
+					new TranslatableTextComponent("selectWorld.deleteWarning", this.levelSummary.getDisplayName()),
 					I18n.translate("selectWorld.deleteButton"),
 					I18n.translate("gui.cancel"),
 					0
@@ -280,8 +282,8 @@ public final class LevelSelectEntryWidget extends EntryListWidget.Entry<LevelSel
 										this.client.openScreen(this.guiLevelSelect);
 									}
 								},
-								I18n.translate("selectWorld.recreate.customized.title"),
-								I18n.translate("selectWorld.recreate.customized.text"),
+								new TranslatableTextComponent("selectWorld.recreate.customized.title"),
+								new TranslatableTextComponent("selectWorld.recreate.customized.text"),
 								I18n.translate("gui.proceed"),
 								I18n.translate("gui.cancel"),
 								0

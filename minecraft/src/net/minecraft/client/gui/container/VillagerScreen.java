@@ -40,29 +40,23 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 		super.onInitialized();
 		int i = (this.screenWidth - this.width) / 2;
 		int j = (this.screenHeight - this.height) / 2;
-		this.buttonPageNext = this.addButton(new VillagerScreen.WidgetButtonPage(i + 120 + 27, j + 24 - 1, true) {
-			@Override
-			public void onPressed() {
-				VillagerScreen.this.recipeIndex++;
-				TraderRecipeList traderRecipeList = VillagerScreen.this.container.getRecipes();
-				if (traderRecipeList != null && VillagerScreen.this.recipeIndex >= traderRecipeList.size()) {
-					VillagerScreen.this.recipeIndex = traderRecipeList.size() - 1;
-				}
-
-				VillagerScreen.this.syncRecipeIndex();
+		this.buttonPageNext = this.addButton(new VillagerScreen.WidgetButtonPage(i + 120 + 27, j + 24 - 1, true, buttonWidget -> {
+			this.recipeIndex++;
+			TraderRecipeList traderRecipeList = this.container.getRecipes();
+			if (traderRecipeList != null && this.recipeIndex >= traderRecipeList.size()) {
+				this.recipeIndex = traderRecipeList.size() - 1;
 			}
-		});
-		this.buttonPagePrevious = this.addButton(new VillagerScreen.WidgetButtonPage(i + 36 - 19, j + 24 - 1, false) {
-			@Override
-			public void onPressed() {
-				VillagerScreen.this.recipeIndex--;
-				if (VillagerScreen.this.recipeIndex < 0) {
-					VillagerScreen.this.recipeIndex = 0;
-				}
 
-				VillagerScreen.this.syncRecipeIndex();
+			this.syncRecipeIndex();
+		}));
+		this.buttonPagePrevious = this.addButton(new VillagerScreen.WidgetButtonPage(i + 36 - 19, j + 24 - 1, false, buttonWidget -> {
+			this.recipeIndex--;
+			if (this.recipeIndex < 0) {
+				this.recipeIndex = 0;
 			}
-		});
+
+			this.syncRecipeIndex();
+		}));
 		this.buttonPageNext.active = false;
 		this.buttonPagePrevious.active = false;
 	}
@@ -71,7 +65,7 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 	protected void drawForeground(int i, int j) {
 		int k = this.container.method_19258();
 		if (k > 0 && k <= 5 && this.container.canLevel()) {
-			String string = this.name.getFormattedText();
+			String string = this.title.getFormattedText();
 			String string2 = "- " + I18n.translate("merchant.level." + k);
 			int l = this.fontRenderer.getStringWidth(string);
 			int m = this.fontRenderer.getStringWidth(string2);
@@ -81,7 +75,7 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 			this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 			this.fontRenderer.draw(string2, (float)(o + l + 3), 6.0F, 4210752);
 		} else {
-			String string = this.name.getFormattedText();
+			String string = this.title.getFormattedText();
 			this.fontRenderer.draw(string, (float)(this.width / 2 - this.fontRenderer.getStringWidth(string) / 2), 6.0F, 4210752);
 			this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 		}
@@ -208,11 +202,11 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	abstract static class WidgetButtonPage extends ButtonWidget {
+	static class WidgetButtonPage extends ButtonWidget {
 		private final boolean next;
 
-		public WidgetButtonPage(int i, int j, boolean bl) {
-			super(i, j, 12, 19, "");
+		public WidgetButtonPage(int i, int j, boolean bl, ButtonWidget.class_4241 arg) {
+			super(i, j, 12, 19, "", arg);
 			this.next = bl;
 		}
 

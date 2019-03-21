@@ -110,7 +110,7 @@ public class ExperienceCommand {
 									ServerCommandManager.literal("points")
 										.executes(
 											commandContext -> method_13328(
-													commandContext.getSource(), EntityArgumentType.method_9315(commandContext, "targets"), ExperienceCommand.class_3055.field_13644
+													commandContext.getSource(), EntityArgumentType.getServerPlayerArgument(commandContext, "targets"), ExperienceCommand.class_3055.field_13644
 												)
 										)
 								)
@@ -118,7 +118,7 @@ public class ExperienceCommand {
 									ServerCommandManager.literal("levels")
 										.executes(
 											commandContext -> method_13328(
-													commandContext.getSource(), EntityArgumentType.method_9315(commandContext, "targets"), ExperienceCommand.class_3055.field_13641
+													commandContext.getSource(), EntityArgumentType.getServerPlayerArgument(commandContext, "targets"), ExperienceCommand.class_3055.field_13641
 												)
 										)
 								)

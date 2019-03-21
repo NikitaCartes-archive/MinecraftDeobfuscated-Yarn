@@ -330,7 +330,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		protected boolean isTargetPos(ViewableWorld viewableWorld, BlockPos blockPos) {
 			BlockPos blockPos2 = blockPos.up();
 			return viewableWorld.isAir(blockPos2) && viewableWorld.isAir(blockPos2.up())
-				? viewableWorld.getBlockState(blockPos).hasSolidTopSurface(viewableWorld, blockPos)
+				? viewableWorld.getBlockState(blockPos).hasSolidTopSurface(viewableWorld, blockPos, this.field_7237)
 				: false;
 		}
 
@@ -359,7 +359,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 			this.field_7242 = mobEntityWithAi;
 			this.field_7243 = d;
 			this.field_7241 = mobEntityWithAi.world;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override

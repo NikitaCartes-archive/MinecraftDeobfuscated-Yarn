@@ -11,12 +11,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_248;
-import net.minecraft.class_250;
-import net.minecraft.class_254;
-import net.minecraft.class_255;
-import net.minecraft.class_257;
-import net.minecraft.class_263;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.VerticalEntityPosition;
@@ -32,18 +26,15 @@ import net.minecraft.world.chunk.Chunk;
 
 public final class VoxelShapes {
 	private static final VoxelShape FULL_CUBE = SystemUtil.get(() -> {
-		AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(1, 1, 1);
-		abstractVoxelShapeContainer.modify(0, 0, 0, true, true);
-		return new SimpleVoxelShape(abstractVoxelShapeContainer);
+		VoxelSet voxelSet = new BitSetVoxelSet(1, 1, 1);
+		voxelSet.set(0, 0, 0, true, true);
+		return new SimpleVoxelShape(voxelSet);
 	});
 	public static final VoxelShape field_17669 = cube(
 		Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY
 	);
 	private static final VoxelShape EMPTY = new ArrayVoxelShape(
-		new BitSetVoxelShapeContainer(0, 0, 0),
-		new DoubleArrayList(new double[]{0.0}),
-		new DoubleArrayList(new double[]{0.0}),
-		new DoubleArrayList(new double[]{0.0})
+		new BitSetVoxelSet(0, 0, 0), new DoubleArrayList(new double[]{0.0}), new DoubleArrayList(new double[]{0.0}), new DoubleArrayList(new double[]{0.0})
 	);
 
 	public static VoxelShape empty() {
@@ -75,21 +66,21 @@ public final class VoxelShapes {
 				int r = (int)Math.round(boundingBox.maxY * (double)m);
 				int s = (int)Math.round(boundingBox.minZ * (double)n);
 				int t = (int)Math.round(boundingBox.maxZ * (double)n);
-				BitSetVoxelShapeContainer bitSetVoxelShapeContainer = new BitSetVoxelShapeContainer(l, m, n, o, q, s, p, r, t);
+				BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(l, m, n, o, q, s, p, r, t);
 
 				for (long u = (long)o; u < (long)p; u++) {
 					for (long v = (long)q; v < (long)r; v++) {
 						for (long w = (long)s; w < (long)t; w++) {
-							bitSetVoxelShapeContainer.modify((int)u, (int)v, (int)w, false, true);
+							bitSetVoxelSet.set((int)u, (int)v, (int)w, false, true);
 						}
 					}
 				}
 
-				return new SimpleVoxelShape(bitSetVoxelShapeContainer);
+				return new SimpleVoxelShape(bitSetVoxelSet);
 			}
 		} else {
 			return new ArrayVoxelShape(
-				FULL_CUBE.shape,
+				FULL_CUBE.voxels,
 				new double[]{boundingBox.minX, boundingBox.maxX},
 				new double[]{boundingBox.minY, boundingBox.maxY},
 				new double[]{boundingBox.minZ, boundingBox.maxZ}
@@ -115,7 +106,7 @@ public final class VoxelShapes {
 		}
 	}
 
-	public static long lcm(int i, int j) {
+	protected static long lcm(int i, int j) {
 		return (long)i * (long)(j / IntMath.gcd(i, j));
 	}
 
@@ -144,28 +135,30 @@ public final class VoxelShapes {
 			} else if (voxelShape2.isEmpty()) {
 				return bl ? voxelShape : empty();
 			} else {
-				class_255 lv = method_1069(1, voxelShape.getIncludedPoints(Direction.Axis.X), voxelShape2.getIncludedPoints(Direction.Axis.X), bl, bl2);
-				class_255 lv2 = method_1069(
-					lv.method_1066().size() - 1, voxelShape.getIncludedPoints(Direction.Axis.Y), voxelShape2.getIncludedPoints(Direction.Axis.Y), bl, bl2
+				DoubleListPair doubleListPair = createListPair(1, voxelShape.getIncludedPoints(Direction.Axis.X), voxelShape2.getIncludedPoints(Direction.Axis.X), bl, bl2);
+				DoubleListPair doubleListPair2 = createListPair(
+					doubleListPair.getMergedList().size() - 1, voxelShape.getIncludedPoints(Direction.Axis.Y), voxelShape2.getIncludedPoints(Direction.Axis.Y), bl, bl2
 				);
-				class_255 lv3 = method_1069(
-					(lv.method_1066().size() - 1) * (lv2.method_1066().size() - 1),
+				DoubleListPair doubleListPair3 = createListPair(
+					(doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1),
 					voxelShape.getIncludedPoints(Direction.Axis.Z),
 					voxelShape2.getIncludedPoints(Direction.Axis.Z),
 					bl,
 					bl2
 				);
-				BitSetVoxelShapeContainer bitSetVoxelShapeContainer = BitSetVoxelShapeContainer.method_1040(
-					voxelShape.shape, voxelShape2.shape, lv, lv2, lv3, booleanBiFunction
+				BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.combine(
+					voxelShape.voxels, voxelShape2.voxels, doubleListPair, doubleListPair2, doubleListPair3, booleanBiFunction
 				);
-				return (VoxelShape)(lv instanceof class_248 && lv2 instanceof class_248 && lv3 instanceof class_248
-					? new SimpleVoxelShape(bitSetVoxelShapeContainer)
-					: new ArrayVoxelShape(bitSetVoxelShapeContainer, lv.method_1066(), lv2.method_1066(), lv3.method_1066()));
+				return (VoxelShape)(doubleListPair instanceof FractionalDoubleListPair
+						&& doubleListPair2 instanceof FractionalDoubleListPair
+						&& doubleListPair3 instanceof FractionalDoubleListPair
+					? new SimpleVoxelShape(bitSetVoxelSet)
+					: new ArrayVoxelShape(bitSetVoxelSet, doubleListPair.getMergedList(), doubleListPair2.getMergedList(), doubleListPair3.getMergedList()));
 			}
 		}
 	}
 
-	public static boolean compareShapes(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
+	public static boolean matchesAnywhere(VoxelShape voxelShape, VoxelShape voxelShape2, BooleanBiFunction booleanBiFunction) {
 		if (booleanBiFunction.apply(false, false)) {
 			throw new IllegalArgumentException();
 		} else if (voxelShape == voxelShape2) {
@@ -188,33 +181,33 @@ public final class VoxelShapes {
 				}
 			}
 
-			class_255 lv = method_1069(1, voxelShape.getIncludedPoints(Direction.Axis.X), voxelShape2.getIncludedPoints(Direction.Axis.X), bl, bl2);
-			class_255 lv2 = method_1069(
-				lv.method_1066().size() - 1, voxelShape.getIncludedPoints(Direction.Axis.Y), voxelShape2.getIncludedPoints(Direction.Axis.Y), bl, bl2
+			DoubleListPair doubleListPair = createListPair(1, voxelShape.getIncludedPoints(Direction.Axis.X), voxelShape2.getIncludedPoints(Direction.Axis.X), bl, bl2);
+			DoubleListPair doubleListPair2 = createListPair(
+				doubleListPair.getMergedList().size() - 1, voxelShape.getIncludedPoints(Direction.Axis.Y), voxelShape2.getIncludedPoints(Direction.Axis.Y), bl, bl2
 			);
-			class_255 lv3 = method_1069(
-				(lv.method_1066().size() - 1) * (lv2.method_1066().size() - 1),
+			DoubleListPair doubleListPair3 = createListPair(
+				(doubleListPair.getMergedList().size() - 1) * (doubleListPair2.getMergedList().size() - 1),
 				voxelShape.getIncludedPoints(Direction.Axis.Z),
 				voxelShape2.getIncludedPoints(Direction.Axis.Z),
 				bl,
 				bl2
 			);
-			return method_1071(lv, lv2, lv3, voxelShape.shape, voxelShape2.shape, booleanBiFunction);
+			return matchesAnywhere(doubleListPair, doubleListPair2, doubleListPair3, voxelShape.voxels, voxelShape2.voxels, booleanBiFunction);
 		}
 	}
 
-	private static boolean method_1071(
-		class_255 arg,
-		class_255 arg2,
-		class_255 arg3,
-		AbstractVoxelShapeContainer abstractVoxelShapeContainer,
-		AbstractVoxelShapeContainer abstractVoxelShapeContainer2,
+	private static boolean matchesAnywhere(
+		DoubleListPair doubleListPair,
+		DoubleListPair doubleListPair2,
+		DoubleListPair doubleListPair3,
+		VoxelSet voxelSet,
+		VoxelSet voxelSet2,
 		BooleanBiFunction booleanBiFunction
 	) {
-		return !arg.method_1065(
-			(i, j, k) -> arg2.method_1065(
-					(kx, l, m) -> arg3.method_1065(
-							(mx, n, o) -> !booleanBiFunction.apply(abstractVoxelShapeContainer.method_1044(i, kx, mx), abstractVoxelShapeContainer2.method_1044(j, l, n))
+		return !doubleListPair.forAllOverlappingSections(
+			(i, j, k) -> doubleListPair2.forAllOverlappingSections(
+					(kx, l, m) -> doubleListPair3.forAllOverlappingSections(
+							(mx, n, o) -> !booleanBiFunction.apply(voxelSet.inBoundsAndContains(i, kx, mx), voxelSet2.inBoundsAndContains(j, l, n))
 						)
 				)
 		);
@@ -332,7 +325,9 @@ public final class VoxelShapes {
 			BooleanBiFunction booleanBiFunction = axisDirection == Direction.AxisDirection.POSITIVE ? BooleanBiFunction.ONLY_FIRST : BooleanBiFunction.ONLY_SECOND;
 			return DoubleMath.fuzzyEquals(voxelShape3.getMaximum(axis), 1.0, 1.0E-7)
 				&& DoubleMath.fuzzyEquals(voxelShape4.getMinimum(axis), 0.0, 1.0E-7)
-				&& !compareShapes(new class_263(voxelShape3, axis, voxelShape3.shape.getSize(axis) - 1), new class_263(voxelShape4, axis, 0), booleanBiFunction);
+				&& !matchesAnywhere(
+					new SliceVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape4, axis, 0), booleanBiFunction
+				);
 		}
 	}
 
@@ -342,13 +337,13 @@ public final class VoxelShapes {
 		int i;
 		if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
 			bl = DoubleMath.fuzzyEquals(voxelShape.getMaximum(axis), 1.0, 1.0E-7);
-			i = voxelShape.shape.getSize(axis) - 1;
+			i = voxelShape.voxels.getSize(axis) - 1;
 		} else {
 			bl = DoubleMath.fuzzyEquals(voxelShape.getMinimum(axis), 0.0, 1.0E-7);
 			i = 0;
 		}
 
-		return (VoxelShape)(!bl ? empty() : new class_263(voxelShape, axis, i));
+		return (VoxelShape)(!bl ? empty() : new SliceVoxelShape(voxelShape, axis, i));
 	}
 
 	public static boolean method_1080(VoxelShape voxelShape, VoxelShape voxelShape2, Direction direction) {
@@ -365,9 +360,9 @@ public final class VoxelShapes {
 				voxelShape4 = empty();
 			}
 
-			return !compareShapes(
+			return !matchesAnywhere(
 				fullCube(),
-				combine(new class_263(voxelShape3, axis, voxelShape3.shape.getSize(axis) - 1), new class_263(voxelShape4, axis, 0), BooleanBiFunction.OR),
+				combine(new SliceVoxelShape(voxelShape3, axis, voxelShape3.voxels.getSize(axis) - 1), new SliceVoxelShape(voxelShape4, axis, 0), BooleanBiFunction.OR),
 				BooleanBiFunction.ONLY_FIRST
 			);
 		} else {
@@ -376,30 +371,30 @@ public final class VoxelShapes {
 	}
 
 	@VisibleForTesting
-	protected static class_255 method_1069(int i, DoubleList doubleList, DoubleList doubleList2, boolean bl, boolean bl2) {
+	protected static DoubleListPair createListPair(int i, DoubleList doubleList, DoubleList doubleList2, boolean bl, boolean bl2) {
 		int j = doubleList.size() - 1;
 		int k = doubleList2.size() - 1;
 		if (doubleList instanceof FractionalDoubleList && doubleList2 instanceof FractionalDoubleList) {
 			long l = lcm(j, k);
 			if ((long)i * l <= 256L) {
-				return new class_248(j, k);
+				return new FractionalDoubleListPair(j, k);
 			}
 		}
 
 		if (doubleList.getDouble(j) < doubleList2.getDouble(0) - 1.0E-7) {
-			return new class_257(doubleList, doubleList2, false);
+			return new DisjointDoubleListPair(doubleList, doubleList2, false);
 		} else if (doubleList2.getDouble(k) < doubleList.getDouble(0) - 1.0E-7) {
-			return new class_257(doubleList2, doubleList, true);
+			return new DisjointDoubleListPair(doubleList2, doubleList, true);
 		} else if (j != k || !Objects.equals(doubleList, doubleList2)) {
-			return new class_254(doubleList, doubleList2, bl, bl2);
-		} else if (doubleList instanceof class_250) {
-			return (class_255)doubleList;
+			return new SimpleDoubleListPair(doubleList, doubleList2, bl, bl2);
+		} else if (doubleList instanceof IdentityListMerger) {
+			return (DoubleListPair)doubleList;
 		} else {
-			return (class_255)(doubleList2 instanceof class_250 ? (class_255)doubleList2 : new class_250(doubleList));
+			return (DoubleListPair)(doubleList2 instanceof IdentityListMerger ? (DoubleListPair)doubleList2 : new IdentityListMerger(doubleList));
 		}
 	}
 
-	public interface ShapeConsumer {
+	public interface BoxConsumer {
 		void consume(double d, double e, double f, double g, double h, double i);
 	}
 }

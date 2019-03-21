@@ -152,7 +152,7 @@ public class VindicatorEntity extends IllagerEntity {
 	static class VindicatorBreakDoorGoal extends BreakDoorGoal {
 		public VindicatorBreakDoorGoal(MobEntity mobEntity) {
 			super(mobEntity, 6);
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override

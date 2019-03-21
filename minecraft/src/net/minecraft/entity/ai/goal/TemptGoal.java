@@ -37,7 +37,7 @@ public class TemptGoal extends Goal {
 		this.field_6615 = d;
 		this.field_6622 = ingredient;
 		this.field_6620 = bl;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
 		}

@@ -123,10 +123,6 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().mirror(this, mirror);
 	}
 
-	public boolean method_11604(BlockView blockView, BlockPos blockPos) {
-		return this.getBlock().method_9555(this, blockView, blockPos);
-	}
-
 	@Environment(EnvType.CLIENT)
 	public boolean hasBlockEntityBreakingRender() {
 		return this.getBlock().hasBlockEntityBreakingRender(this);
@@ -144,10 +140,6 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 	@Environment(EnvType.CLIENT)
 	public float getAmbientOcclusionLightLevel(BlockView blockView, BlockPos blockPos) {
 		return this.getBlock().getAmbientOcclusionLightLevel(this, blockView, blockPos);
-	}
-
-	public boolean method_11603(BlockView blockView, BlockPos blockPos) {
-		return this.getBlock().method_16361(this, blockView, blockPos);
 	}
 
 	public boolean isSimpleFullBlock(BlockView blockView, BlockPos blockPos) {
@@ -223,8 +215,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().getRayTraceShape(this, blockView, blockPos);
 	}
 
-	public boolean hasSolidTopSurface(BlockView blockView, BlockPos blockPos) {
-		return this.getBlock().hasSolidTopSurface(this, blockView, blockPos);
+	public final boolean hasSolidTopSurface(BlockView blockView, BlockPos blockPos, Entity entity) {
+		return Block.isFaceFullSquare(this.getCollisionShape(blockView, blockPos, VerticalEntityPosition.fromEntity(entity)), Direction.UP);
 	}
 
 	public Vec3d getOffsetPos(BlockView blockView, BlockPos blockPos) {

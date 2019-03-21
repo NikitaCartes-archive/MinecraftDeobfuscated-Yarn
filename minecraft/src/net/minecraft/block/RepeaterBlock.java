@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 
 public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	public static final BooleanProperty LOCKED = Properties.LOCKED;
-	public static final IntegerProperty field_11451 = Properties.DELAY;
+	public static final IntegerProperty DELAY = Properties.DELAY;
 
 	protected RepeaterBlock(Block.Settings settings) {
 		super(settings);
@@ -28,7 +28,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 			this.stateFactory
 				.getDefaultState()
 				.with(field_11177, Direction.NORTH)
-				.with(field_11451, Integer.valueOf(1))
+				.with(DELAY, Integer.valueOf(1))
 				.with(LOCKED, Boolean.valueOf(false))
 				.with(POWERED, Boolean.valueOf(false))
 		);
@@ -39,14 +39,14 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 		if (!playerEntity.abilities.allowModifyWorld) {
 			return false;
 		} else {
-			world.setBlockState(blockPos, blockState.method_11572(field_11451), 3);
+			world.setBlockState(blockPos, blockState.method_11572(DELAY), 3);
 			return true;
 		}
 	}
 
 	@Override
 	protected int getUpdateDelayInternal(BlockState blockState) {
-		return (Integer)blockState.get(field_11451) * 2;
+		return (Integer)blockState.get(DELAY) * 2;
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 			double f = (double)((float)blockPos.getZ() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
 			float g = -5.0F;
 			if (random.nextBoolean()) {
-				g = (float)((Integer)blockState.get(field_11451) * 2 - 1);
+				g = (float)((Integer)blockState.get(DELAY) * 2 - 1);
 			}
 
 			g /= 16.0F;
@@ -96,6 +96,6 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11177, field_11451, LOCKED, POWERED);
+		builder.with(field_11177, DELAY, LOCKED, POWERED);
 	}
 }

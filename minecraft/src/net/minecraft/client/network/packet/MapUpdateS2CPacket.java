@@ -115,7 +115,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void apply(MapState mapState) {
 		mapState.scale = this.scale;
 		mapState.showIcons = this.showIcons;
-		mapState.field_17403 = this.field_17433;
+		mapState.locked = this.field_17433;
 		mapState.icons.clear();
 
 		for (int i = 0; i < this.icons.length; i++) {

@@ -10,8 +10,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.world.World;
 
-public class LeashItem extends Item {
-	public LeashItem(Item.Settings settings) {
+public class LeadItem extends Item {
+	public LeadItem(Item.Settings settings) {
 		super(settings);
 	}
 

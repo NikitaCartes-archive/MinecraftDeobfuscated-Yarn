@@ -38,13 +38,10 @@ public class BooleanGameOption extends GameOption {
 
 	@Override
 	public AbstractButtonWidget createOptionButton(GameOptions gameOptions, int i, int j, int k) {
-		return new OptionButtonWidget(i, j, k, 20, this, this.method_18495(gameOptions)) {
-			@Override
-			public void onPressed() {
-				BooleanGameOption.this.method_18491(gameOptions);
-				this.setMessage(BooleanGameOption.this.method_18495(gameOptions));
-			}
-		};
+		return new OptionButtonWidget(i, j, k, 20, this, this.method_18495(gameOptions), buttonWidget -> {
+			this.method_18491(gameOptions);
+			buttonWidget.setMessage(this.method_18495(gameOptions));
+		});
 	}
 
 	public String method_18495(GameOptions gameOptions) {

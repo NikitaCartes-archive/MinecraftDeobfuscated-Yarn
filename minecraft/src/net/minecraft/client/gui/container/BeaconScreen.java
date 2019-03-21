@@ -7,7 +7,6 @@ import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
-import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.Sprite;
@@ -59,8 +58,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.doneButton = new BeaconScreen.WidgetButtonIconDone(this.left + 164, this.top + 107);
-		this.addButton(this.doneButton);
+		this.doneButton = this.addButton(new BeaconScreen.WidgetButtonIconDone(this.left + 164, this.top + 107));
 		this.addButton(new BeaconScreen.WidgetButtonIconCancel(this.left + 190, this.top + 107));
 		this.canConsumeGem = true;
 		this.doneButton.active = false;
@@ -163,7 +161,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	abstract static class WidgetButtonIcon extends ButtonWidget {
+	abstract static class WidgetButtonIcon extends AbstractButtonWidget {
 		private boolean disabled;
 
 		protected WidgetButtonIcon(int i, int j) {
@@ -206,7 +204,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void onPressed() {
+		public void onClick(double d, double e) {
 			BeaconScreen.this.client.player.networkHandler.sendPacket(new GuiCloseC2SPacket(BeaconScreen.this.client.player.container.syncId));
 			BeaconScreen.this.client.openScreen(null);
 		}
@@ -224,7 +222,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void onPressed() {
+		public void onClick(double d, double e) {
 			BeaconScreen.this.client
 				.getNetworkHandler()
 				.sendPacket(new UpdateBeaconC2SPacket(StatusEffect.getRawId(BeaconScreen.this.primaryEffect), StatusEffect.getRawId(BeaconScreen.this.secondaryEffect)));
@@ -252,7 +250,7 @@ public class BeaconScreen extends ContainerScreen<BeaconContainer> {
 		}
 
 		@Override
-		public void onPressed() {
+		public void onClick(double d, double e) {
 			if (!this.isDisabled()) {
 				if (this.primary) {
 					BeaconScreen.this.primaryEffect = this.effect;

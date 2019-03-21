@@ -440,7 +440,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 		class_1435(DolphinEntity dolphinEntity) {
 			this.field_6752 = dolphinEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 
 		@Override
@@ -534,7 +534,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 		class_1436(DolphinEntity dolphinEntity, double d) {
 			this.field_6755 = dolphinEntity;
 			this.field_6754 = d;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 
 		@Override

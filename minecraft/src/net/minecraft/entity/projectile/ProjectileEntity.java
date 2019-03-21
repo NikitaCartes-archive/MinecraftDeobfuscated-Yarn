@@ -175,7 +175,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 		if (!blockState.isAir() && !bl) {
 			VoxelShape voxelShape = blockState.getCollisionShape(this.world, blockPos);
 			if (!voxelShape.isEmpty()) {
-				for (BoundingBox boundingBox : voxelShape.getBoundingBoxList()) {
+				for (BoundingBox boundingBox : voxelShape.getBoundingBoxes()) {
 					if (boundingBox.offset(blockPos).contains(new Vec3d(this.x, this.y, this.z))) {
 						this.inGround = true;
 						break;

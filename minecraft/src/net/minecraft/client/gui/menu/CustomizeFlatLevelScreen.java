@@ -22,6 +22,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
@@ -30,7 +31,6 @@ import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 public class CustomizeFlatLevelScreen extends Screen {
 	private final NewLevelScreen parent;
 	private FlatChunkGeneratorConfig config = FlatChunkGeneratorConfig.getDefaultConfig();
-	private String titleText;
 	private String tileText;
 	private String heightText;
 	private CustomizeFlatLevelScreen.class_4192 field_2424;
@@ -38,6 +38,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	public int widgetButtonAddLayer = -1;
 
 	public CustomizeFlatLevelScreen(NewLevelScreen newLevelScreen, CompoundTag compoundTag) {
+		super(new TranslatableTextComponent("createWorld.customize.flat.title"));
 		this.parent = newLevelScreen;
 		this.method_2144(compoundTag);
 	}
@@ -60,51 +61,38 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	@Override
 	protected void onInitialized() {
-		this.titleText = I18n.translate("createWorld.customize.flat.title");
 		this.tileText = I18n.translate("createWorld.customize.flat.tile");
 		this.heightText = I18n.translate("createWorld.customize.flat.height");
 		this.field_2424 = new CustomizeFlatLevelScreen.class_4192();
 		this.listeners.add(this.field_2424);
 		this.widgetButtonRemoveLayer = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.flat.removeLayer")) {
-				@Override
-				public void onPressed() {
-					if (CustomizeFlatLevelScreen.this.method_2147()) {
-						List<FlatChunkGeneratorLayer> list = CustomizeFlatLevelScreen.this.config.getLayers();
-						int i = list.size() - CustomizeFlatLevelScreen.this.widgetButtonAddLayer - 1;
-						list.remove(i);
-						CustomizeFlatLevelScreen.this.widgetButtonAddLayer = Math.min(CustomizeFlatLevelScreen.this.widgetButtonAddLayer, list.size() - 1);
-						CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
-						CustomizeFlatLevelScreen.this.method_2145();
-					}
+			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.flat.removeLayer"), buttonWidget -> {
+				if (this.method_2147()) {
+					List<FlatChunkGeneratorLayer> list = this.config.getLayers();
+					int i = list.size() - this.widgetButtonAddLayer - 1;
+					list.remove(i);
+					this.widgetButtonAddLayer = Math.min(this.widgetButtonAddLayer, list.size() - 1);
+					this.config.updateLayerBlocks();
+					this.method_2145();
 				}
-			}
+			})
 		);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.presets")) {
-			@Override
-			public void onPressed() {
-				CustomizeFlatLevelScreen.this.client.openScreen(new NewLevelPresetsScreen(CustomizeFlatLevelScreen.this));
-				CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
-				CustomizeFlatLevelScreen.this.method_2145();
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				CustomizeFlatLevelScreen.this.parent.field_3200 = CustomizeFlatLevelScreen.this.method_2140();
-				CustomizeFlatLevelScreen.this.client.openScreen(CustomizeFlatLevelScreen.this.parent);
-				CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
-				CustomizeFlatLevelScreen.this.method_2145();
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				CustomizeFlatLevelScreen.this.client.openScreen(CustomizeFlatLevelScreen.this.parent);
-				CustomizeFlatLevelScreen.this.config.updateLayerBlocks();
-				CustomizeFlatLevelScreen.this.method_2145();
-			}
-		});
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 52, 150, 20, I18n.translate("createWorld.customize.presets"), buttonWidget -> {
+			this.client.openScreen(new NewLevelPresetsScreen(this));
+			this.config.updateLayerBlocks();
+			this.method_2145();
+		}));
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
+			this.parent.field_18979 = this.method_2140();
+			this.client.openScreen(this.parent);
+			this.config.updateLayerBlocks();
+			this.method_2145();
+		}));
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+			this.client.openScreen(this.parent);
+			this.config.updateLayerBlocks();
+			this.method_2145();
+		}));
 		this.config.updateLayerBlocks();
 		this.method_2145();
 	}
@@ -122,7 +110,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.field_2424.render(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.titleText, this.screenWidth / 2, 8, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 8, 16777215);
 		int k = this.screenWidth / 2 - 92 - 16;
 		this.drawString(this.fontRenderer, this.tileText, k, 32, 16777215);
 		this.drawString(this.fontRenderer, this.heightText, k + 2 + 213 - this.fontRenderer.getStringWidth(this.heightText), 32, 16777215);

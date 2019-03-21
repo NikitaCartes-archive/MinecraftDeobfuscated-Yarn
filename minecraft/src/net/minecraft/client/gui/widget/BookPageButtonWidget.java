@@ -4,15 +4,20 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.audio.PositionedSoundInstance;
+import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.gui.WrittenBookScreen;
+import net.minecraft.sound.SoundEvents;
 
 @Environment(EnvType.CLIENT)
-public abstract class BookPageButtonWidget extends ButtonWidget {
+public class BookPageButtonWidget extends ButtonWidget {
 	private final boolean isNextPageButton;
+	private final boolean field_18977;
 
-	public BookPageButtonWidget(int i, int j, boolean bl) {
-		super(i, j, 23, 13, "");
+	public BookPageButtonWidget(int i, int j, boolean bl, ButtonWidget.class_4241 arg, boolean bl2) {
+		super(i, j, 23, 13, "", arg);
 		this.isNextPageButton = bl;
+		this.field_18977 = bl2;
 	}
 
 	@Override
@@ -30,5 +35,12 @@ public abstract class BookPageButtonWidget extends ButtonWidget {
 		}
 
 		this.drawTexturedRect(this.x, this.y, k, l, 23, 13);
+	}
+
+	@Override
+	public void playDownSound(SoundManager soundManager) {
+		if (this.field_18977) {
+			soundManager.play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
+		}
 	}
 }

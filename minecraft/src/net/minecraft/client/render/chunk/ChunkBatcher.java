@@ -16,10 +16,10 @@ import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_294;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.GlBuffer;
+import net.minecraft.client.gl.GlBufferRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.util.SystemUtil;
@@ -43,7 +43,7 @@ public class ChunkBatcher {
 	private final PriorityBlockingQueue<ChunkRenderTask> pendingChunks = Queues.newPriorityBlockingQueue();
 	private final BlockingQueue<BlockLayeredBufferBuilder> availableBuffers;
 	private final BufferRenderer bufferRenderer = new BufferRenderer();
-	private final class_294 field_4441 = new class_294();
+	private final GlBufferRenderer field_4441 = new GlBufferRenderer();
 	private final Queue<ChunkBatcher.ChunkUploadTask> pendingUploads = Queues.<ChunkBatcher.ChunkUploadTask>newPriorityQueue();
 	private final ChunkRenderWorker activeWorker;
 	private Vec3d field_18766 = Vec3d.ZERO;
@@ -235,7 +235,7 @@ public class ChunkBatcher {
 	}
 
 	private void method_3621(BufferBuilder bufferBuilder, GlBuffer glBuffer) {
-		this.field_4441.method_1372(glBuffer);
+		this.field_4441.setGlBuffer(glBuffer);
 		this.field_4441.draw(bufferBuilder);
 	}
 

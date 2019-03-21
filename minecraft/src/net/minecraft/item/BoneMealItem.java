@@ -81,7 +81,7 @@ public class BoneMealItem extends Item {
 					for (int j = 0; j < i / 16; j++) {
 						blockPos2 = blockPos2.add(random.nextInt(3) - 1, (random.nextInt(3) - 1) * random.nextInt(3) / 2, random.nextInt(3) - 1);
 						biome = world.getBiome(blockPos2);
-						if (world.getBlockState(blockPos2).method_11603(world, blockPos2)) {
+						if (Block.isShapeFullCube(world.getBlockState(blockPos2).getCollisionShape(world, blockPos2))) {
 							continue label79;
 						}
 					}

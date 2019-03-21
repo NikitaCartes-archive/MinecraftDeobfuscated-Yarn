@@ -10,20 +10,20 @@ final class ArrayVoxelShape extends VoxelShape {
 	private final DoubleList yPoints;
 	private final DoubleList zPoints;
 
-	ArrayVoxelShape(AbstractVoxelShapeContainer abstractVoxelShapeContainer, double[] ds, double[] es, double[] fs) {
+	ArrayVoxelShape(VoxelSet voxelSet, double[] ds, double[] es, double[] fs) {
 		this(
-			abstractVoxelShapeContainer,
-			DoubleArrayList.wrap(Arrays.copyOf(ds, abstractVoxelShapeContainer.getXSize() + 1)),
-			DoubleArrayList.wrap(Arrays.copyOf(es, abstractVoxelShapeContainer.getYSize() + 1)),
-			DoubleArrayList.wrap(Arrays.copyOf(fs, abstractVoxelShapeContainer.getZSize() + 1))
+			voxelSet,
+			DoubleArrayList.wrap(Arrays.copyOf(ds, voxelSet.getXSize() + 1)),
+			DoubleArrayList.wrap(Arrays.copyOf(es, voxelSet.getYSize() + 1)),
+			DoubleArrayList.wrap(Arrays.copyOf(fs, voxelSet.getZSize() + 1))
 		);
 	}
 
-	ArrayVoxelShape(AbstractVoxelShapeContainer abstractVoxelShapeContainer, DoubleList doubleList, DoubleList doubleList2, DoubleList doubleList3) {
-		super(abstractVoxelShapeContainer);
-		int i = abstractVoxelShapeContainer.getXSize() + 1;
-		int j = abstractVoxelShapeContainer.getYSize() + 1;
-		int k = abstractVoxelShapeContainer.getZSize() + 1;
+	ArrayVoxelShape(VoxelSet voxelSet, DoubleList doubleList, DoubleList doubleList2, DoubleList doubleList3) {
+		super(voxelSet);
+		int i = voxelSet.getXSize() + 1;
+		int j = voxelSet.getYSize() + 1;
+		int k = voxelSet.getZSize() + 1;
 		if (i == doubleList.size() && j == doubleList2.size() && k == doubleList3.size()) {
 			this.xPoints = doubleList;
 			this.yPoints = doubleList2;

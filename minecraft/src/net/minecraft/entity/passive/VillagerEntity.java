@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -43,6 +44,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.WitchEntity;
+import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.Item;
@@ -638,14 +640,17 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	public void talkWithVillager(VillagerEntity villagerEntity, long l) {
 		if ((l < this.gossipStartTime || l >= this.gossipStartTime + 1200L) && (l < villagerEntity.gossipStartTime || l >= villagerEntity.gossipStartTime + 1200L)) {
-			if (this.wantsGolem(this) || this.isLackingBuddyGolem(l)) {
+			boolean bl = this.isLackingBuddyGolem(l);
+			if (this.wantsGolem(this) || bl) {
 				this.gossip.startGossip(this.getUuid(), VillageGossipType.field_18429, VillageGossipType.field_18429.maxReputation);
 			}
 
 			this.gossip.shareGossipFrom(villagerEntity.gossip, this.random, 10);
 			this.gossipStartTime = l;
 			villagerEntity.gossipStartTime = l;
-			this.trySpawnGolem();
+			if (bl) {
+				this.trySpawnGolem();
+			}
 		}
 	}
 
@@ -655,10 +660,18 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			Optional<VillagerEntity.GolemSpawnCondition> optional = this.getBrain().getMemory(MemoryModuleType.field_18874);
 			if (optional.isPresent()) {
 				if (((VillagerEntity.GolemSpawnCondition)optional.get()).canSpawn(this.world.getTime())) {
-					if (this.gossip.getGossipCount(VillageGossipType.field_18429) >= 10L) {
+					LivingEntity livingEntity = this.getAttacker();
+					boolean bl = livingEntity instanceof ZombieEntity && this.age - this.getLastAttackedTime() <= 1200;
+					boolean bl2 = this.gossip.getGossipCount(VillageGossipType.field_18429, d -> d > 30.0) >= 5L;
+					if (bl || bl2) {
 						BoundingBox boundingBox = this.getBoundingBox().stretch(80.0, 80.0, 80.0);
-						List<VillagerEntity> list = this.world.getEntities(VillagerEntity.class, boundingBox, this::wantsGolem);
-						if (list.size() >= 10) {
+						List<VillagerEntity> list = (List<VillagerEntity>)this.world
+							.getEntities(VillagerEntity.class, boundingBox, this::wantsGolem)
+							.stream()
+							.limit(5L)
+							.collect(Collectors.toList());
+						boolean bl3 = list.size() >= 5;
+						if (bl || bl3) {
 							IronGolemEntity ironGolemEntity = this.spawnIronGolem();
 							if (ironGolemEntity != null) {
 								UUID uUID = ironGolemEntity.getUuid();

@@ -21,12 +21,12 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
-	public static final DirectionProperty field_11443 = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
 	public static final BooleanProperty field_11444 = RedstoneTorchBlock.LIT;
 
 	protected RedstoneTorchWallBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11443, Direction.NORTH).with(field_11444, Boolean.valueOf(true)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_11444, Boolean.valueOf(true)));
 	}
 
 	@Override
@@ -55,14 +55,14 @@ public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockState blockState = Blocks.field_10099.getPlacementState(itemPlacementContext);
-		return blockState == null ? null : this.getDefaultState().with(field_11443, blockState.get(field_11443));
+		return blockState == null ? null : this.getDefaultState().with(FACING, blockState.get(FACING));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((Boolean)blockState.get(field_11444)) {
-			Direction direction = ((Direction)blockState.get(field_11443)).getOpposite();
+			Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
 			double d = 0.27;
 			double e = (double)blockPos.getX() + 0.5 + (random.nextDouble() - 0.5) * 0.2 + 0.27 * (double)direction.getOffsetX();
 			double f = (double)blockPos.getY() + 0.7 + (random.nextDouble() - 0.5) * 0.2 + 0.22;
@@ -73,13 +73,13 @@ public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
 
 	@Override
 	protected boolean method_10488(World world, BlockPos blockPos, BlockState blockState) {
-		Direction direction = ((Direction)blockState.get(field_11443)).getOpposite();
+		Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
 		return world.isEmittingRedstonePower(blockPos.offset(direction), direction);
 	}
 
 	@Override
 	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.get(field_11444) && blockState.get(field_11443) != direction ? 15 : 0;
+		return blockState.get(field_11444) && blockState.get(FACING) != direction ? 15 : 0;
 	}
 
 	@Override
@@ -94,6 +94,6 @@ public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11443, field_11444);
+		builder.with(FACING, field_11444);
 	}
 }

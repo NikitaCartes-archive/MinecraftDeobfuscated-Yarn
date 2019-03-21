@@ -32,7 +32,7 @@ public class AnimalMateGoal extends Goal {
 		this.world = animalEntity.world;
 		this.field_6403 = class_;
 		this.chance = d;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 	}
 
 	@Override

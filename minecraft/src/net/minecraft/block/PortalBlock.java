@@ -50,16 +50,12 @@ public class PortalBlock extends Block {
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (world.dimension.hasVisibleSky() && world.getGameRules().getBoolean("doMobSpawning") && random.nextInt(2000) < world.getDifficulty().getId()) {
-			int i = blockPos.getY();
-			BlockPos blockPos2 = blockPos;
-
-			while (!world.getBlockState(blockPos2).hasSolidTopSurface(world, blockPos2) && blockPos2.getY() > 0) {
-				blockPos2 = blockPos2.down();
+			while (world.getBlockState(blockPos).getBlock() == this) {
+				blockPos = blockPos.down();
 			}
 
-			BlockPos blockPos3 = blockPos2.up();
-			if (i > 0 && !world.getBlockState(blockPos3).isSimpleFullBlock(world, blockPos3)) {
-				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, blockPos3, SpawnType.field_16474, false, false);
+			if (Block.isFaceFullSquare(world.getBlockState(blockPos).getCollisionShape(world, blockPos), Direction.UP)) {
+				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();
 				}

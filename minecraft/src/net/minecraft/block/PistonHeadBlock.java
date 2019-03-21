@@ -22,8 +22,8 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class PistonHeadBlock extends FacingBlock {
-	public static final EnumProperty<PistonType> field_12224 = Properties.PISTON_TYPE;
-	public static final BooleanProperty field_12227 = Properties.SHORT;
+	public static final EnumProperty<PistonType> TYPE = Properties.PISTON_TYPE;
+	public static final BooleanProperty SHORT = Properties.SHORT;
 	protected static final VoxelShape field_12222 = Block.createCuboidShape(12.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape field_12214 = Block.createCuboidShape(0.0, 0.0, 0.0, 4.0, 16.0, 16.0);
 	protected static final VoxelShape field_12228 = Block.createCuboidShape(0.0, 0.0, 12.0, 16.0, 16.0, 16.0);
@@ -45,9 +45,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	public PistonHeadBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_12224, PistonType.field_12637).with(field_12227, Boolean.valueOf(false))
-		);
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(TYPE, PistonType.field_12637).with(SHORT, Boolean.valueOf(false)));
 	}
 
 	private VoxelShape method_11520(BlockState blockState) {
@@ -79,7 +77,7 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	private VoxelShape method_11519(BlockState blockState) {
-		boolean bl = (Boolean)blockState.get(field_12227);
+		boolean bl = (Boolean)blockState.get(SHORT);
 		switch ((Direction)blockState.get(FACING)) {
 			case DOWN:
 			default:
@@ -95,11 +93,6 @@ public class PistonHeadBlock extends FacingBlock {
 			case EAST:
 				return bl ? field_12219 : field_12218;
 		}
-	}
-
-	@Override
-	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.get(FACING) == Direction.UP;
 	}
 
 	@Override
@@ -122,7 +115,7 @@ public class PistonHeadBlock extends FacingBlock {
 			Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
 			blockPos = blockPos.offset(direction);
 			BlockState blockState3 = world.getBlockState(blockPos);
-			if ((blockState3.getBlock() == Blocks.field_10560 || blockState3.getBlock() == Blocks.field_10615) && (Boolean)blockState3.get(PistonBlock.field_12191)) {
+			if ((blockState3.getBlock() == Blocks.field_10560 || blockState3.getBlock() == Blocks.field_10615) && (Boolean)blockState3.get(PistonBlock.EXTENDED)) {
 				dropStacks(blockState3, world, blockPos);
 				world.clearBlockState(blockPos);
 			}
@@ -155,7 +148,7 @@ public class PistonHeadBlock extends FacingBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		return new ItemStack(blockState.get(field_12224) == PistonType.field_12634 ? Blocks.field_10615 : Blocks.field_10560);
+		return new ItemStack(blockState.get(TYPE) == PistonType.field_12634 ? Blocks.field_10615 : Blocks.field_10560);
 	}
 
 	@Override
@@ -170,7 +163,7 @@ public class PistonHeadBlock extends FacingBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, field_12224, field_12227);
+		builder.with(FACING, TYPE, SHORT);
 	}
 
 	@Override

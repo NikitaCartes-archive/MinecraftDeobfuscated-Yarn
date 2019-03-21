@@ -41,7 +41,7 @@ public class Vec3ArgumentType implements ArgumentType<PosArgument> {
 		return commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsolutePos(commandContext.getSource());
 	}
 
-	public static PosArgument method_9734(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static PosArgument getPosArgument(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, PosArgument.class);
 	}
 

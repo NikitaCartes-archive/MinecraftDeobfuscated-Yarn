@@ -13,6 +13,7 @@ import net.minecraft.client.gui.widget.SelectedResourcePackListWidget;
 import net.minecraft.client.resource.ClientResourcePackContainer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.ResourcePackContainerManager;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
@@ -23,49 +24,51 @@ public class ResourcePackSettingsScreen extends Screen {
 	private boolean field_3155;
 
 	public ResourcePackSettingsScreen(Screen screen) {
+		super(new TranslatableTextComponent("resourcePack.title"));
 		this.parent = screen;
 	}
 
 	@Override
 	protected void onInitialized() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 48, 150, 20, I18n.translate("resourcePack.openFolder")) {
-			@Override
-			public void onPressed() {
-				SystemUtil.getOperatingSystem().open(ResourcePackSettingsScreen.this.client.getResourcePackDir());
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight - 48, 150, 20, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				if (ResourcePackSettingsScreen.this.field_3155) {
-					List<ClientResourcePackContainer> list = Lists.<ClientResourcePackContainer>newArrayList();
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 154,
+				this.screenHeight - 48,
+				150,
+				20,
+				I18n.translate("resourcePack.openFolder"),
+				buttonWidget -> SystemUtil.getOperatingSystem().open(this.client.getResourcePackDir())
+			)
+		);
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight - 48, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
+			if (this.field_3155) {
+				List<ClientResourcePackContainer> listx = Lists.<ClientResourcePackContainer>newArrayList();
 
-					for (ResourcePackListEntry resourcePackListEntry : ResourcePackSettingsScreen.this.selectedList.getInputListeners()) {
-						list.add(resourcePackListEntry.getResourcePack());
-					}
+				for (ResourcePackListEntry resourcePackListEntry : this.selectedList.getInputListeners()) {
+					listx.add(resourcePackListEntry.getResourcePack());
+				}
 
-					Collections.reverse(list);
-					ResourcePackSettingsScreen.this.client.method_1520().setEnabled(list);
-					ResourcePackSettingsScreen.this.client.options.resourcePacks.clear();
-					ResourcePackSettingsScreen.this.client.options.incompatibleResourcePacks.clear();
+				Collections.reverse(listx);
+				this.client.method_1520().setEnabled(listx);
+				this.client.options.resourcePacks.clear();
+				this.client.options.incompatibleResourcePacks.clear();
 
-					for (ClientResourcePackContainer clientResourcePackContainer : list) {
-						if (!clientResourcePackContainer.sortsTillEnd()) {
-							ResourcePackSettingsScreen.this.client.options.resourcePacks.add(clientResourcePackContainer.getName());
-							if (!clientResourcePackContainer.getCompatibility().isCompatible()) {
-								ResourcePackSettingsScreen.this.client.options.incompatibleResourcePacks.add(clientResourcePackContainer.getName());
-							}
+				for (ClientResourcePackContainer clientResourcePackContainerx : listx) {
+					if (!clientResourcePackContainerx.sortsTillEnd()) {
+						this.client.options.resourcePacks.add(clientResourcePackContainerx.getName());
+						if (!clientResourcePackContainerx.getCompatibility().isCompatible()) {
+							this.client.options.incompatibleResourcePacks.add(clientResourcePackContainerx.getName());
 						}
 					}
-
-					ResourcePackSettingsScreen.this.client.options.write();
-					ResourcePackSettingsScreen.this.client.openScreen(ResourcePackSettingsScreen.this.parent);
-					ResourcePackSettingsScreen.this.client.reloadResources();
-				} else {
-					ResourcePackSettingsScreen.this.client.openScreen(ResourcePackSettingsScreen.this.parent);
 				}
+
+				this.client.options.write();
+				this.client.openScreen(this.parent);
+				this.client.reloadResources();
+			} else {
+				this.client.openScreen(this.parent);
 			}
-		});
+		}));
 		AvailableResourcePackListWidget availableResourcePackListWidget = this.availableList;
 		SelectedResourcePackListWidget selectedResourcePackListWidget = this.selectedList;
 		this.availableList = new AvailableResourcePackListWidget(this.client, 200, this.screenHeight);
@@ -121,7 +124,7 @@ public class ResourcePackSettingsScreen extends Screen {
 		this.drawTextureBackground(0);
 		this.availableList.render(i, j, f);
 		this.selectedList.render(i, j, f);
-		this.drawStringCentered(this.fontRenderer, I18n.translate("resourcePack.title"), this.screenWidth / 2, 16, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 16, 16777215);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("resourcePack.folderInfo"), this.screenWidth / 2 - 77, this.screenHeight - 26, 8421504);
 		super.render(i, j, f);
 	}

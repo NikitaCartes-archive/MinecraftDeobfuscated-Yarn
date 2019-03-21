@@ -659,7 +659,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		BoundingBox boundingBox = this.getBoundingBox();
 		VerticalEntityPosition verticalEntityPosition = VerticalEntityPosition.fromEntity(this);
 		VoxelShape voxelShape = this.world.getWorldBorder().asVoxelShape();
-		Stream<VoxelShape> stream = VoxelShapes.compareShapes(voxelShape, VoxelShapes.cube(boundingBox.contract(1.0E-7)), BooleanBiFunction.AND)
+		Stream<VoxelShape> stream = VoxelShapes.matchesAnywhere(voxelShape, VoxelShapes.cube(boundingBox.contract(1.0E-7)), BooleanBiFunction.AND)
 			? Stream.empty()
 			: Stream.of(voxelShape);
 		BoundingBox boundingBox2 = boundingBox.method_18804(vec3d).expand(1.0E-7);

@@ -1100,7 +1100,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int i = guiSlotUpdateS2CPacket.getSlot();
 		this.client.getTutorialManager().onSlotUpdate(itemStack);
 		if (guiSlotUpdateS2CPacket.getId() == -1) {
-			playerEntity.inventory.setCursorStack(itemStack);
+			if (!(this.client.currentScreen instanceof CreativePlayerInventoryScreen)) {
+				playerEntity.inventory.setCursorStack(itemStack);
+			}
 		} else if (guiSlotUpdateS2CPacket.getId() == -2) {
 			playerEntity.inventory.setInvStack(i, itemStack);
 		} else {
@@ -1510,7 +1512,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (combatEventS2CPacket.type == CombatEventS2CPacket.Type.DEATH) {
 			Entity entity = this.world.getEntityById(combatEventS2CPacket.entityId);
 			if (entity == this.client.player) {
-				this.client.openScreen(new DeathScreen(combatEventS2CPacket.deathMessage));
+				this.client.openScreen(new DeathScreen(combatEventS2CPacket.deathMessage, this.world.getLevelProperties().isHardcore()));
 			}
 		}
 	}
@@ -1741,7 +1743,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 							ServerList.updateServerListEntry(serverEntryx);
 							this.client.openScreen(null);
-						}, I18n.translate("multiplayer.texturePrompt.line1"), I18n.translate("multiplayer.texturePrompt.line2"), 0)));
+						}, new TranslatableTextComponent("multiplayer.texturePrompt.line1"), new TranslatableTextComponent("multiplayer.texturePrompt.line2"), 0)));
 				}
 			}
 		}

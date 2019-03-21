@@ -24,6 +24,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 	@Nullable
 	private BlockPos field_18370;
 	private float field_18371;
+	private int field_18964;
 
 	public WanderAroundTask(int i) {
 		super(i);
@@ -37,18 +38,14 @@ public class WanderAroundTask extends Task<MobEntity> {
 	}
 
 	protected boolean method_18978(ServerWorld serverWorld, MobEntity mobEntity) {
-		if (serverWorld.random.nextInt(100) < 15) {
-			return false;
+		Brain<?> brain = mobEntity.getBrain();
+		WalkTarget walkTarget = (WalkTarget)brain.getMemory(MemoryModuleType.field_18445).get();
+		if (!this.method_18980(mobEntity, walkTarget) && this.method_18977(mobEntity, walkTarget)) {
+			this.field_18370 = walkTarget.getLookTarget().getBlockPos();
+			return true;
 		} else {
-			Brain<?> brain = mobEntity.getBrain();
-			WalkTarget walkTarget = (WalkTarget)brain.getMemory(MemoryModuleType.field_18445).get();
-			if (!this.method_18980(mobEntity, walkTarget) && this.method_18977(mobEntity, walkTarget)) {
-				this.field_18370 = walkTarget.getLookTarget().getBlockPos();
-				return true;
-			} else {
-				brain.forget(MemoryModuleType.field_18445);
-				return false;
-			}
+			brain.forget(MemoryModuleType.field_18445);
+			return false;
 		}
 	}
 
@@ -72,20 +69,24 @@ public class WanderAroundTask extends Task<MobEntity> {
 	protected void method_18982(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		mobEntity.getBrain().putMemory(MemoryModuleType.field_18449, this.field_18369);
 		mobEntity.getNavigation().startMovingAlong(this.field_18369, (double)this.field_18371);
+		this.field_18964 = serverWorld.getRandom().nextInt(10);
 	}
 
 	protected void method_18983(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		Path path = mobEntity.getNavigation().getCurrentPath();
-		if (this.field_18369 != path) {
-			this.field_18369 = path;
-			mobEntity.getBrain().putMemory(MemoryModuleType.field_18449, path);
-		}
+		this.field_18964--;
+		if (this.field_18964 <= 0) {
+			Path path = mobEntity.getNavigation().getCurrentPath();
+			if (this.field_18369 != path) {
+				this.field_18369 = path;
+				mobEntity.getBrain().putMemory(MemoryModuleType.field_18449, path);
+			}
 
-		if (path != null && this.field_18370 != null) {
-			WalkTarget walkTarget = (WalkTarget)mobEntity.getBrain().getMemory(MemoryModuleType.field_18445).get();
-			if (walkTarget.getLookTarget().getBlockPos().squaredDistanceTo(this.field_18370) > 4.0 && this.method_18977(mobEntity, walkTarget)) {
-				this.field_18370 = walkTarget.getLookTarget().getBlockPos();
-				this.method_18982(serverWorld, mobEntity, l);
+			if (path != null && this.field_18370 != null) {
+				WalkTarget walkTarget = (WalkTarget)mobEntity.getBrain().getMemory(MemoryModuleType.field_18445).get();
+				if (walkTarget.getLookTarget().getBlockPos().squaredDistanceTo(this.field_18370) > 4.0 && this.method_18977(mobEntity, walkTarget)) {
+					this.field_18370 = walkTarget.getLookTarget().getBlockPos();
+					this.method_18982(serverWorld, mobEntity, l);
+				}
 			}
 		}
 	}

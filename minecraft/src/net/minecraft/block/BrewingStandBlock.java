@@ -26,7 +26,7 @@ import net.minecraft.world.World;
 
 public class BrewingStandBlock extends BlockWithEntity {
 	public static final BooleanProperty[] BOTTLE_PROPERTIES = new BooleanProperty[]{Properties.HAS_BOTTLE_0, Properties.HAS_BOTTLE_1, Properties.HAS_BOTTLE_2};
-	protected static final VoxelShape field_10701 = VoxelShapes.union(
+	protected static final VoxelShape SHAPE = VoxelShapes.union(
 		Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 2.0, 15.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 14.0, 9.0)
 	);
 
@@ -53,7 +53,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_10701;
+		return SHAPE;
 	}
 
 	@Override

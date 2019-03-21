@@ -49,7 +49,7 @@ public enum BannerPattern {
 	GRADIENT_DOWN("gradient", "gra", "# #", " # ", " # "),
 	GRADIENT_UP("gradient_up", "gru", " # ", " # ", "# #"),
 	BRICKS("bricks", "bri", new ItemStack(Blocks.field_10104)),
-	field_18689("globe", "glb"),
+	GLOBE("globe", "glb"),
 	CREEPER("creeper", "cre", new ItemStack(Items.CREEPER_HEAD)),
 	SKULL("skull", "sku", new ItemStack(Items.WITHER_SKELETON_SKULL)),
 	FLOWER("flower", "flo", new ItemStack(Blocks.field_10554)),

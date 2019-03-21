@@ -230,7 +230,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 
 		public PickupBannerAsLeaderGoal(T raiderEntity2) {
 			this.field_16603 = raiderEntity2;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override
@@ -281,7 +281,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 		public class_4223(IllagerEntity illagerEntity, float f) {
 			this.field_18883 = illagerEntity;
 			this.field_18884 = f * f;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 
 		@Override

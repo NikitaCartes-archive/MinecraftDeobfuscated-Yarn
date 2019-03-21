@@ -32,7 +32,7 @@ public class MapState extends PersistentState {
 	public boolean unlimitedTracking;
 	public byte scale;
 	public byte[] colorArray = new byte[16384];
-	public boolean field_17403;
+	public boolean locked;
 	public final List<MapState.class_23> field_112 = Lists.<MapState.class_23>newArrayList();
 	private final Map<PlayerEntity, MapState.class_23> field_120 = Maps.<PlayerEntity, MapState.class_23>newHashMap();
 	private final Map<String, MapBannerInstance> field_123 = Maps.<String, MapBannerInstance>newHashMap();
@@ -68,7 +68,7 @@ public class MapState extends PersistentState {
 		this.scale = (byte)MathHelper.clamp(compoundTag.getByte("scale"), 0, 4);
 		this.showIcons = !compoundTag.containsKey("trackingPosition", 1) || compoundTag.getBoolean("trackingPosition");
 		this.unlimitedTracking = compoundTag.getBoolean("unlimitedTracking");
-		this.field_17403 = compoundTag.getBoolean("locked");
+		this.locked = compoundTag.getBoolean("locked");
 		this.colorArray = compoundTag.getByteArray("colors");
 		if (this.colorArray.length != 16384) {
 			this.colorArray = new byte[16384];
@@ -116,7 +116,7 @@ public class MapState extends PersistentState {
 		compoundTag.putByteArray("colors", this.colorArray);
 		compoundTag.putBoolean("trackingPosition", this.showIcons);
 		compoundTag.putBoolean("unlimitedTracking", this.unlimitedTracking);
-		compoundTag.putBoolean("locked", this.field_17403);
+		compoundTag.putBoolean("locked", this.locked);
 		ListTag listTag = new ListTag();
 
 		for (MapBannerInstance mapBannerInstance : this.field_123.values()) {
@@ -135,7 +135,7 @@ public class MapState extends PersistentState {
 	}
 
 	public void method_18818(MapState mapState) {
-		this.field_17403 = true;
+		this.locked = true;
 		this.xCenter = mapState.xCenter;
 		this.zCenter = mapState.zCenter;
 		this.field_123.putAll(mapState.field_123);
@@ -389,7 +389,7 @@ public class MapState extends PersistentState {
 					FilledMapItem.method_8003(itemStack),
 					MapState.this.scale,
 					MapState.this.showIcons,
-					MapState.this.field_17403,
+					MapState.this.locked,
 					MapState.this.icons.values(),
 					MapState.this.colorArray,
 					this.field_129,
@@ -403,7 +403,7 @@ public class MapState extends PersistentState {
 						FilledMapItem.method_8003(itemStack),
 						MapState.this.scale,
 						MapState.this.showIcons,
-						MapState.this.field_17403,
+						MapState.this.locked,
 						MapState.this.icons.values(),
 						MapState.this.colorArray,
 						0,

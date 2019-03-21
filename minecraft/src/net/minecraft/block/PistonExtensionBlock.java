@@ -30,7 +30,7 @@ import net.minecraft.world.loot.context.LootContextParameters;
 
 public class PistonExtensionBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = PistonHeadBlock.FACING;
-	public static final EnumProperty<PistonType> TYPE = PistonHeadBlock.field_12224;
+	public static final EnumProperty<PistonType> TYPE = PistonHeadBlock.TYPE;
 
 	public PistonExtensionBlock(Block.Settings settings) {
 		super(settings);
@@ -61,7 +61,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	public void onBroken(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
 		BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
 		BlockState blockState2 = iWorld.getBlockState(blockPos2);
-		if (blockState2.getBlock() instanceof PistonBlock && (Boolean)blockState2.get(PistonBlock.field_12191)) {
+		if (blockState2.getBlock() instanceof PistonBlock && (Boolean)blockState2.get(PistonBlock.EXTENDED)) {
 			iWorld.clearBlockState(blockPos2);
 		}
 	}

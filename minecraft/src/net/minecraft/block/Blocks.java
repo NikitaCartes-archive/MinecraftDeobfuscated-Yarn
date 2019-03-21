@@ -254,7 +254,7 @@ public class Blocks {
 		"detector_rail", new DetectorRailBlock(Block.Settings.of(Material.PART).noCollision().strength(0.7F).sounds(BlockSoundGroup.METAL))
 	);
 	public static final Block field_10615 = register("sticky_piston", new PistonBlock(true, Block.Settings.of(Material.PISTON).strength(0.5F)));
-	public static final Block field_10343 = register("cobweb", new WebBlock(Block.Settings.of(Material.COBWEB).noCollision().strength(4.0F)));
+	public static final Block field_10343 = register("cobweb", new CobwebBlock(Block.Settings.of(Material.COBWEB).noCollision().strength(4.0F)));
 	public static final Block field_10479 = register(
 		"grass", new FernBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
@@ -401,9 +401,7 @@ public class Blocks {
 				.dropsNothing()
 		)
 	);
-	public static final Block field_10260 = register(
-		"spawner", new MobSpawnerBlock(Block.Settings.of(Material.STONE).strength(5.0F).sounds(BlockSoundGroup.METAL))
-	);
+	public static final Block field_10260 = register("spawner", new SpawnerBlock(Block.Settings.of(Material.STONE).strength(5.0F).sounds(BlockSoundGroup.METAL)));
 	public static final Block field_10563 = register("oak_stairs", new StairsBlock(field_10161.getDefaultState(), Block.Settings.copy(field_10161)));
 	public static final Block field_10034 = register("chest", new ChestBlock(Block.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block field_10091 = register("redstone_wire", new RedstoneWireBlock(Block.Settings.of(Material.PART).noCollision().breakInstantly()));
@@ -422,22 +420,22 @@ public class Blocks {
 	);
 	public static final Block field_10181 = register("furnace", new FurnaceBlock(Block.Settings.of(Material.STONE).strength(3.5F).lightLevel(13)));
 	public static final Block field_10121 = register(
-		"oak_sign", new StandingSignBlock(Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"oak_sign", new SignBlock(Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10411 = register(
-		"spruce_sign", new StandingSignBlock(Block.Settings.of(Material.WOOD, field_10037.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"spruce_sign", new SignBlock(Block.Settings.of(Material.WOOD, field_10037.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10231 = register(
-		"birch_sign", new StandingSignBlock(Block.Settings.of(Material.WOOD, MaterialColor.SAND).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"birch_sign", new SignBlock(Block.Settings.of(Material.WOOD, MaterialColor.SAND).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10284 = register(
-		"acacia_sign", new StandingSignBlock(Block.Settings.of(Material.WOOD, MaterialColor.ORANGE).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"acacia_sign", new SignBlock(Block.Settings.of(Material.WOOD, MaterialColor.ORANGE).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10544 = register(
-		"jungle_sign", new StandingSignBlock(Block.Settings.of(Material.WOOD, field_10306.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"jungle_sign", new SignBlock(Block.Settings.of(Material.WOOD, field_10306.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10330 = register(
-		"dark_oak_sign", new StandingSignBlock(Block.Settings.of(Material.WOOD, field_10010.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"dark_oak_sign", new SignBlock(Block.Settings.of(Material.WOOD, field_10010.materialColor).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10149 = register(
 		"oak_door", new DoorBlock(Block.Settings.of(Material.WOOD, field_10161.materialColor).strength(3.0F).sounds(BlockSoundGroup.WOOD))
@@ -707,7 +705,7 @@ public class Blocks {
 		"mycelium", new MyceliumBlock(Block.Settings.of(Material.ORGANIC, MaterialColor.PURPLE).ticksRandomly().strength(0.6F).sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block field_10588 = register(
-		"lily_pad", new WaterlilyBlock(Block.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.GRASS))
+		"lily_pad", new LilyPadBlock(Block.Settings.of(Material.PLANT).breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block field_10266 = register("nether_bricks", new Block(Block.Settings.of(Material.STONE, MaterialColor.NETHER).strength(2.0F, 6.0F)));
 	public static final Block field_10364 = register(
@@ -1079,52 +1077,52 @@ public class Blocks {
 		"large_fern", new TallPlantBlock(Block.Settings.of(Material.REPLACEABLE_PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block field_10154 = register(
-		"white_banner", new StandingBannerBlock(DyeColor.field_7952, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"white_banner", new BannerBlock(DyeColor.field_7952, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10045 = register(
-		"orange_banner", new StandingBannerBlock(DyeColor.field_7946, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"orange_banner", new BannerBlock(DyeColor.field_7946, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10438 = register(
-		"magenta_banner", new StandingBannerBlock(DyeColor.field_7958, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"magenta_banner", new BannerBlock(DyeColor.field_7958, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10452 = register(
-		"light_blue_banner", new StandingBannerBlock(DyeColor.field_7951, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"light_blue_banner", new BannerBlock(DyeColor.field_7951, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10547 = register(
-		"yellow_banner", new StandingBannerBlock(DyeColor.field_7947, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"yellow_banner", new BannerBlock(DyeColor.field_7947, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10229 = register(
-		"lime_banner", new StandingBannerBlock(DyeColor.field_7961, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"lime_banner", new BannerBlock(DyeColor.field_7961, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10612 = register(
-		"pink_banner", new StandingBannerBlock(DyeColor.field_7954, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"pink_banner", new BannerBlock(DyeColor.field_7954, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10185 = register(
-		"gray_banner", new StandingBannerBlock(DyeColor.field_7944, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"gray_banner", new BannerBlock(DyeColor.field_7944, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_9985 = register(
-		"light_gray_banner", new StandingBannerBlock(DyeColor.field_7967, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"light_gray_banner", new BannerBlock(DyeColor.field_7967, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10165 = register(
-		"cyan_banner", new StandingBannerBlock(DyeColor.field_7955, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"cyan_banner", new BannerBlock(DyeColor.field_7955, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10368 = register(
-		"purple_banner", new StandingBannerBlock(DyeColor.field_7945, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"purple_banner", new BannerBlock(DyeColor.field_7945, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10281 = register(
-		"blue_banner", new StandingBannerBlock(DyeColor.field_7966, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"blue_banner", new BannerBlock(DyeColor.field_7966, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10602 = register(
-		"brown_banner", new StandingBannerBlock(DyeColor.field_7957, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"brown_banner", new BannerBlock(DyeColor.field_7957, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10198 = register(
-		"green_banner", new StandingBannerBlock(DyeColor.field_7942, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"green_banner", new BannerBlock(DyeColor.field_7942, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10406 = register(
-		"red_banner", new StandingBannerBlock(DyeColor.field_7964, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"red_banner", new BannerBlock(DyeColor.field_7964, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10062 = register(
-		"black_banner", new StandingBannerBlock(DyeColor.BLACK, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
+		"black_banner", new BannerBlock(DyeColor.BLACK, Block.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD))
 	);
 	public static final Block field_10202 = register(
 		"white_wall_banner",

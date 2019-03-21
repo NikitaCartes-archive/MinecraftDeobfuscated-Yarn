@@ -51,7 +51,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return blockState2.hasSolidTopSurface(viewableWorld, blockPos2) || blockState2.getBlock().matches(BlockTags.field_16584);
+		return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP) || blockState2.getBlock().matches(BlockTags.field_16584);
 	}
 
 	@Override

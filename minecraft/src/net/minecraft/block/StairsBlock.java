@@ -36,8 +36,8 @@ public class StairsBlock extends Block implements Waterloggable {
 	public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
 	public static final EnumProperty<StairShape> SHAPE = Properties.STAIR_SHAPE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	protected static final VoxelShape field_11562 = SlabBlock.TOP_SHAPE;
-	protected static final VoxelShape field_11576 = SlabBlock.BOTTOM_SHAPE;
+	protected static final VoxelShape TOP_SHAPE = SlabBlock.TOP_SHAPE;
+	protected static final VoxelShape BOTTOM_SHAPE = SlabBlock.BOTTOM_SHAPE;
 	protected static final VoxelShape field_11561 = Block.createCuboidShape(0.0, 0.0, 0.0, 8.0, 8.0, 8.0);
 	protected static final VoxelShape field_11578 = Block.createCuboidShape(0.0, 0.0, 8.0, 8.0, 8.0, 16.0);
 	protected static final VoxelShape field_11568 = Block.createCuboidShape(0.0, 8.0, 0.0, 8.0, 16.0, 8.0);
@@ -46,8 +46,8 @@ public class StairsBlock extends Block implements Waterloggable {
 	protected static final VoxelShape field_11569 = Block.createCuboidShape(8.0, 0.0, 8.0, 16.0, 8.0, 16.0);
 	protected static final VoxelShape field_11577 = Block.createCuboidShape(8.0, 8.0, 0.0, 16.0, 16.0, 8.0);
 	protected static final VoxelShape field_11567 = Block.createCuboidShape(8.0, 8.0, 8.0, 16.0, 16.0, 16.0);
-	protected static final VoxelShape[] field_11566 = method_10672(field_11562, field_11561, field_11575, field_11578, field_11569);
-	protected static final VoxelShape[] field_11564 = method_10672(field_11576, field_11568, field_11577, field_11563, field_11567);
+	protected static final VoxelShape[] field_11566 = method_10672(TOP_SHAPE, field_11561, field_11575, field_11578, field_11569);
+	protected static final VoxelShape[] field_11564 = method_10672(BOTTOM_SHAPE, field_11568, field_11577, field_11563, field_11567);
 	private static final int[] field_11570 = new int[]{12, 5, 3, 10, 14, 13, 7, 11, 13, 7, 11, 14, 8, 4, 1, 2, 4, 1, 2, 8};
 	private final Block baseBlock;
 	private final BlockState baseBlockState;
@@ -173,11 +173,6 @@ public class StairsBlock extends Block implements Waterloggable {
 	@Override
 	public void onDestroyedByExplosion(World world, BlockPos blockPos, Explosion explosion) {
 		this.baseBlock.onDestroyedByExplosion(world, blockPos, explosion);
-	}
-
-	@Override
-	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return blockState.get(HALF) == BlockHalf.TOP;
 	}
 
 	@Override

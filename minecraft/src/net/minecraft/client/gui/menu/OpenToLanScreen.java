@@ -19,55 +19,48 @@ public class OpenToLanScreen extends Screen {
 	private boolean allowCommands;
 
 	public OpenToLanScreen(Screen screen) {
+		super(new TranslatableTextComponent("lanServer.title"));
 		this.parent = screen;
 	}
 
 	@Override
 	protected void onInitialized() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("lanServer.start")) {
-			@Override
-			public void onPressed() {
-				OpenToLanScreen.this.client.openScreen(null);
-				int i = NetworkUtils.findLocalPort();
-				TextComponent textComponent;
-				if (OpenToLanScreen.this.client.getServer().openToLan(GameMode.byName(OpenToLanScreen.this.gameMode), OpenToLanScreen.this.allowCommands, i)) {
-					textComponent = new TranslatableTextComponent("commands.publish.started", i);
-				} else {
-					textComponent = new TranslatableTextComponent("commands.publish.failed");
-				}
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("lanServer.start"), buttonWidget -> {
+			this.client.openScreen(null);
+			int i = NetworkUtils.findLocalPort();
+			TextComponent textComponent;
+			if (this.client.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i)) {
+				textComponent = new TranslatableTextComponent("commands.publish.started", i);
+			} else {
+				textComponent = new TranslatableTextComponent("commands.publish.failed");
+			}
 
-				OpenToLanScreen.this.client.inGameHud.getChatHud().addMessage(textComponent);
+			this.client.inGameHud.getChatHud().addMessage(textComponent);
+		}));
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent)
+			)
+		);
+		this.buttonGameMode = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
+			if ("spectator".equals(this.gameMode)) {
+				this.gameMode = "creative";
+			} else if ("creative".equals(this.gameMode)) {
+				this.gameMode = "adventure";
+			} else if ("adventure".equals(this.gameMode)) {
+				this.gameMode = "survival";
+			} else {
+				this.gameMode = "spectator";
 			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				OpenToLanScreen.this.client.openScreen(OpenToLanScreen.this.parent);
-			}
-		});
-		this.buttonGameMode = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode")) {
-			@Override
-			public void onPressed() {
-				if ("spectator".equals(OpenToLanScreen.this.gameMode)) {
-					OpenToLanScreen.this.gameMode = "creative";
-				} else if ("creative".equals(OpenToLanScreen.this.gameMode)) {
-					OpenToLanScreen.this.gameMode = "adventure";
-				} else if ("adventure".equals(OpenToLanScreen.this.gameMode)) {
-					OpenToLanScreen.this.gameMode = "survival";
-				} else {
-					OpenToLanScreen.this.gameMode = "spectator";
-				}
 
-				OpenToLanScreen.this.updateButtonText();
-			}
-		});
-		this.buttonAllowCommands = this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.allowCommands")) {
-			@Override
-			public void onPressed() {
-				OpenToLanScreen.this.allowCommands = !OpenToLanScreen.this.allowCommands;
-				OpenToLanScreen.this.updateButtonText();
-			}
-		});
+			this.updateButtonText();
+		}));
+		this.buttonAllowCommands = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.allowCommands"), buttonWidget -> {
+				this.allowCommands = !this.allowCommands;
+				this.updateButtonText();
+			})
+		);
 		this.updateButtonText();
 	}
 
@@ -79,7 +72,7 @@ public class OpenToLanScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("lanServer.title"), this.screenWidth / 2, 50, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 50, 16777215);
 		this.drawStringCentered(this.fontRenderer, I18n.translate("lanServer.otherPlayers"), this.screenWidth / 2, 82, 16777215);
 		super.render(i, j, f);
 	}

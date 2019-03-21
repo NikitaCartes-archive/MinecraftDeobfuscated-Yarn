@@ -37,27 +37,24 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.modeButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence")) {
-			@Override
-			public void onPressed() {
-				CommandBlockScreen.this.cycleType();
-				CommandBlockScreen.this.updateMode();
-			}
-		});
-		this.conditionalModeButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional")) {
-			@Override
-			public void onPressed() {
-				CommandBlockScreen.this.conditional = !CommandBlockScreen.this.conditional;
-				CommandBlockScreen.this.updateConditionalMode();
-			}
-		});
-		this.redstoneTriggerButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered")) {
-			@Override
-			public void onPressed() {
-				CommandBlockScreen.this.autoActivate = !CommandBlockScreen.this.autoActivate;
-				CommandBlockScreen.this.updateActivationMode();
-			}
-		});
+		this.modeButton = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence"), buttonWidget -> {
+				this.cycleType();
+				this.updateMode();
+			})
+		);
+		this.conditionalModeButton = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional"), buttonWidget -> {
+				this.conditional = !this.conditional;
+				this.updateConditionalMode();
+			})
+		);
+		this.redstoneTriggerButton = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered"), buttonWidget -> {
+				this.autoActivate = !this.autoActivate;
+				this.updateActivationMode();
+			})
+		);
 		this.doneButton.active = false;
 		this.toggleTrackingOutputButton.active = false;
 		this.modeButton.active = false;

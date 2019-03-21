@@ -19,7 +19,6 @@ import net.minecraft.resource.ResourceManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -74,17 +73,12 @@ public class SoundSystem {
 	private synchronized void initializeSystem() {
 		if (!this.initialized) {
 			try {
-				Thread thread = new Thread(() -> {
-					this.initialized = true;
-					this.soundEngine.init();
-					this.listener.method_19673();
-					this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
-					this.soundLoader.method_19741(this.streamedSounds).join();
-					this.streamedSounds.clear();
-					LOGGER.info(MARKER, "Sound engine started");
-				}, "Sound Library Loader");
-				thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
-				thread.start();
+				this.initialized = true;
+				this.soundEngine.init();
+				this.listener.method_19673();
+				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
+				this.soundLoader.method_19741(this.streamedSounds).thenRun(this.streamedSounds::clear);
+				LOGGER.info(MARKER, "Sound engine started");
 			} catch (RuntimeException var2) {
 				LOGGER.error(MARKER, "Error starting SoundSystem. Turning off sounds & music", (Throwable)var2);
 				this.settings.setSoundVolume(SoundCategory.field_15250, 0.0F);

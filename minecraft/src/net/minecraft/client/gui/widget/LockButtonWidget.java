@@ -6,11 +6,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 
 @Environment(EnvType.CLIENT)
-public abstract class LockButtonWidget extends ButtonWidget {
+public class LockButtonWidget extends ButtonWidget {
 	private boolean locked;
 
-	public LockButtonWidget(int i, int j) {
-		super(i, j, 20, 20, "");
+	public LockButtonWidget(int i, int j, ButtonWidget.class_4241 arg) {
+		super(i, j, 20, 20, "", arg);
 	}
 
 	public boolean isLocked() {

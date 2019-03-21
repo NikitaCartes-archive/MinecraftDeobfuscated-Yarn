@@ -8,11 +8,11 @@ import net.minecraft.client.gui.widget.VideoSettingsListWidget;
 import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TranslatableTextComponent;
 
 @Environment(EnvType.CLIENT)
 public class VideoSettingsScreen extends Screen {
 	private final Screen parent;
-	protected String title = "Video Settings";
 	private final GameOptions settings;
 	private VideoSettingsListWidget field_2639;
 	private static final GameOption[] MENU_OPTIONS = new GameOption[]{
@@ -34,21 +34,18 @@ public class VideoSettingsScreen extends Screen {
 	};
 
 	public VideoSettingsScreen(Screen screen, GameOptions gameOptions) {
+		super(new TranslatableTextComponent("options.videoTitle"));
 		this.parent = screen;
 		this.settings = gameOptions;
 	}
 
 	@Override
 	protected void onInitialized() {
-		this.title = I18n.translate("options.videoTitle");
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 27, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				VideoSettingsScreen.this.client.options.write();
-				VideoSettingsScreen.this.client.window.method_4475();
-				VideoSettingsScreen.this.client.openScreen(VideoSettingsScreen.this.parent);
-			}
-		});
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
+			this.client.options.write();
+			this.client.window.method_4475();
+			this.client.openScreen(this.parent);
+		}));
 		this.field_2639 = new VideoSettingsListWidget(this.client, this.screenWidth, this.screenHeight, 32, this.screenHeight - 32, 25, MENU_OPTIONS);
 		this.listeners.add(this.field_2639);
 	}
@@ -92,7 +89,7 @@ public class VideoSettingsScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.field_2639.render(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 5, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 5, 16777215);
 		super.render(i, j, f);
 	}
 }

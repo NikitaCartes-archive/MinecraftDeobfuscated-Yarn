@@ -1,10 +1,6 @@
-package net.minecraft;
+package net.minecraft.world.biome.layer;
 
-import net.minecraft.world.biome.layer.BiomeLayers;
-import net.minecraft.world.biome.layer.LayerRandomnessSource;
-import net.minecraft.world.biome.layer.SouthEastSamplingLayer;
-
-public enum class_3639 implements SouthEastSamplingLayer {
+public enum AddBiomeGroups3And4Layer implements SouthEastSamplingLayer {
 	field_16059;
 
 	@Override

@@ -7,9 +7,6 @@ import java.util.ListIterator;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.audio.PositionedSoundInstance;
-import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.WrittenBookScreen;
@@ -19,13 +16,13 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.server.network.packet.BookUpdateC2SPacket;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SystemUtil;
@@ -54,6 +51,7 @@ public class EditBookScreen extends Screen {
 	private final Hand hand;
 
 	public EditBookScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
+		super(NarratorManager.field_18967);
 		this.player = playerEntity;
 		this.itemStack = itemStack;
 		this.hand = hand;
@@ -84,68 +82,32 @@ public class EditBookScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.buttonSign = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.signButton")) {
-			@Override
-			public void onPressed() {
-				EditBookScreen.this.signing = true;
-				EditBookScreen.this.updateButtons();
+		this.buttonSign = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.signButton"), buttonWidget -> {
+			this.signing = true;
+			this.updateButtons();
+		}));
+		this.buttonDone = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> {
+			this.client.openScreen(null);
+			this.finalizeBook(false);
+		}));
+		this.buttonFinalize = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton"), buttonWidget -> {
+			if (this.signing) {
+				this.finalizeBook(true);
+				this.client.openScreen(null);
 			}
-		});
-		this.buttonDone = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				EditBookScreen.this.client.openScreen(null);
-				EditBookScreen.this.finalizeBook(false);
+		}));
+		this.buttonCancel = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+			if (this.signing) {
+				this.signing = false;
 			}
-		});
-		this.buttonFinalize = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton")) {
-			@Override
-			public void onPressed() {
-				if (EditBookScreen.this.signing) {
-					EditBookScreen.this.finalizeBook(true);
-					EditBookScreen.this.client.openScreen(null);
-				}
-			}
-		});
-		this.buttonCancel = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				if (EditBookScreen.this.signing) {
-					EditBookScreen.this.signing = false;
-				}
 
-				EditBookScreen.this.updateButtons();
-			}
-		});
+			this.updateButtons();
+		}));
 		int i = (this.screenWidth - 192) / 2;
 		int j = 2;
-		this.buttonPreviousPage = this.addButton(new BookPageButtonWidget(i + 116, 159, true) {
-			@Override
-			public void onPressed() {
-				EditBookScreen.this.openNextPage();
-			}
-
-			@Override
-			public void playDownSound(SoundManager soundManager) {
-				EditBookScreen.this.playPageTurnSound();
-			}
-		});
-		this.buttonNextPage = this.addButton(new BookPageButtonWidget(i + 43, 159, false) {
-			@Override
-			public void onPressed() {
-				EditBookScreen.this.openPreviousPage();
-			}
-
-			@Override
-			public void playDownSound(SoundManager soundManager) {
-				EditBookScreen.this.playPageTurnSound();
-			}
-		});
+		this.buttonPreviousPage = this.addButton(new BookPageButtonWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
+		this.buttonNextPage = this.addButton(new BookPageButtonWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
 		this.updateButtons();
-	}
-
-	protected void playPageTurnSound() {
-		MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
 	}
 
 	private String stripFromatting(String string) {

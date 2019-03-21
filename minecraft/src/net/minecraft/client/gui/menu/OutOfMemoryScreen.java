@@ -6,23 +6,31 @@ import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.StringTextComponent;
 
 @Environment(EnvType.CLIENT)
 public class OutOfMemoryScreen extends Screen {
+	public OutOfMemoryScreen() {
+		super(new StringTextComponent("Out of memory!"));
+	}
+
 	@Override
 	protected void onInitialized() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.toTitle")) {
-			@Override
-			public void onPressed() {
-				OutOfMemoryScreen.this.client.openScreen(new MainMenuScreen());
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 160, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("menu.quit")) {
-			@Override
-			public void onPressed() {
-				OutOfMemoryScreen.this.client.scheduleStop();
-			}
-		});
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 155,
+				this.screenHeight / 4 + 120 + 12,
+				150,
+				20,
+				I18n.translate("gui.toTitle"),
+				buttonWidget -> this.client.openScreen(new MainMenuScreen())
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 155 + 160, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("menu.quit"), buttonWidget -> this.client.scheduleStop()
+			)
+		);
 	}
 
 	@Override
@@ -33,7 +41,7 @@ public class OutOfMemoryScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, "Out of memory!", this.screenWidth / 2, this.screenHeight / 4 - 60 + 20, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, this.screenHeight / 4 - 60 + 20, 16777215);
 		this.drawString(this.fontRenderer, "Minecraft has run out of memory.", this.screenWidth / 2 - 140, this.screenHeight / 4 - 60 + 60 + 0, 10526880);
 		this.drawString(
 			this.fontRenderer, "This could be caused by a bug in the game or by the", this.screenWidth / 2 - 140, this.screenHeight / 4 - 60 + 60 + 18, 10526880

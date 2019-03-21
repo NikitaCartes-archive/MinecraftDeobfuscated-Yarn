@@ -193,7 +193,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 		protected final List<RecipeAlternatesWidget.AlternateButtonWidget.InputSlot> slots = Lists.<RecipeAlternatesWidget.AlternateButtonWidget.InputSlot>newArrayList();
 
 		public AlternateButtonWidget(int i, int j, Recipe<?> recipe, boolean bl) {
-			super(i, j, "");
+			super(i, j, 200, 20, "");
 			this.width = 24;
 			this.height = 24;
 			this.recipe = recipe;

@@ -26,7 +26,7 @@ public class DeOpCommand {
 									commandContext.getSource().getMinecraftServer().getPlayerManager().getOpNames(), suggestionsBuilder
 								)
 						)
-						.executes(commandContext -> method_13144(commandContext.getSource(), GameProfileArgumentType.getProfilesArgument(commandContext, "targets")))
+						.executes(commandContext -> method_13144(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
 				)
 		);
 	}

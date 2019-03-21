@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -48,7 +49,9 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Set<String> PROTOCOLS = Sets.<String>newHashSet("http", "https");
 	protected static final int CONFIRM_URL_BUTTON_ID = 31102009;
+	protected final TextComponent title;
 	protected final List<InputListener> listeners = Lists.<InputListener>newArrayList();
+	@Nullable
 	public MinecraftClient client;
 	public ItemRenderer itemRenderer;
 	public int screenWidth;
@@ -58,6 +61,14 @@ public abstract class Screen extends ScreenComponent implements Drawable, YesNoC
 	public boolean passEvents;
 	public TextRenderer fontRenderer;
 	private URI uri;
+
+	protected Screen(TextComponent textComponent) {
+		this.title = textComponent;
+	}
+
+	public TextComponent getTitle() {
+		return this.title;
+	}
 
 	@Override
 	public void render(int i, int j, float f) {

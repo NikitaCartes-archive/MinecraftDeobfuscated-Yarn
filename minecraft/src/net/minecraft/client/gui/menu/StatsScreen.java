@@ -42,7 +42,6 @@ import net.minecraft.util.registry.Registry;
 @Environment(EnvType.CLIENT)
 public class StatsScreen extends Screen implements StatsListener {
 	protected final Screen parent;
-	protected String field_2649 = "Select world";
 	private StatsScreen.class_4198 field_2644;
 	private StatsScreen.class_4200 field_2642;
 	private StatsScreen.class_4202 field_2646;
@@ -52,13 +51,13 @@ public class StatsScreen extends Screen implements StatsListener {
 	private boolean field_2645 = true;
 
 	public StatsScreen(Screen screen, StatHandler statHandler) {
+		super(new TranslatableTextComponent("gui.stats"));
 		this.parent = screen;
 		this.statHandler = statHandler;
 	}
 
 	@Override
 	protected void onInitialized() {
-		this.field_2649 = I18n.translate("gui.stats");
 		this.field_2645 = true;
 		this.client.getNetworkHandler().sendPacket(new ClientStatusC2SPacket(ClientStatusC2SPacket.Mode.field_12775));
 	}
@@ -70,30 +69,26 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	public void method_2267() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight - 28, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				StatsScreen.this.client.openScreen(StatsScreen.this.parent);
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 120, this.screenHeight - 52, 80, 20, I18n.translate("stat.generalButton")) {
-			@Override
-			public void onPressed() {
-				StatsScreen.this.method_19390(StatsScreen.this.field_2644);
-			}
-		});
-		ButtonWidget buttonWidget = this.addButton(new ButtonWidget(this.screenWidth / 2 - 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.itemsButton")) {
-			@Override
-			public void onPressed() {
-				StatsScreen.this.method_19390(StatsScreen.this.field_2642);
-			}
-		});
-		ButtonWidget buttonWidget2 = this.addButton(new ButtonWidget(this.screenWidth / 2 + 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.mobsButton")) {
-			@Override
-			public void onPressed() {
-				StatsScreen.this.method_19390(StatsScreen.this.field_2646);
-			}
-		});
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100, this.screenHeight - 28, 200, 20, I18n.translate("gui.done"), buttonWidgetx -> this.client.openScreen(this.parent)
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 120, this.screenHeight - 52, 80, 20, I18n.translate("stat.generalButton"), buttonWidgetx -> this.method_19390(this.field_2644)
+			)
+		);
+		ButtonWidget buttonWidget = this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.itemsButton"), buttonWidgetx -> this.method_19390(this.field_2642)
+			)
+		);
+		ButtonWidget buttonWidget2 = this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 + 40, this.screenHeight - 52, 80, 20, I18n.translate("stat.mobsButton"), buttonWidgetx -> this.method_19390(this.field_2646)
+			)
+		);
 		if (this.field_2642.getInputListeners().isEmpty()) {
 			buttonWidget.active = false;
 		}
@@ -117,7 +112,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			);
 		} else {
 			this.method_19399().render(i, j, f);
-			this.drawStringCentered(this.fontRenderer, this.field_2649, this.screenWidth / 2, 20, 16777215);
+			this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 20, 16777215);
 			super.render(i, j, f);
 		}
 	}

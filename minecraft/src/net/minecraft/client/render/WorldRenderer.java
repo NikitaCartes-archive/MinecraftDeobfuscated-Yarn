@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.AbstractSignBlock;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
@@ -27,7 +28,6 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.EnderChestBlock;
 import net.minecraft.block.LeavesBlock;
-import net.minecraft.block.SignBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
@@ -68,7 +68,7 @@ import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.RecordItem;
+import net.minecraft.item.MusicDiscItem;
 import net.minecraft.particle.ItemStackParticleParameters;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleType;
@@ -1636,7 +1636,10 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				PartiallyBrokenBlockEntry partiallyBrokenBlockEntry = (PartiallyBrokenBlockEntry)iterator.next();
 				BlockPos blockPos = partiallyBrokenBlockEntry.getPos();
 				Block block = this.world.getBlockState(blockPos).getBlock();
-				if (!(block instanceof ChestBlock) && !(block instanceof EnderChestBlock) && !(block instanceof SignBlock) && !(block instanceof AbstractSkullBlock)) {
+				if (!(block instanceof ChestBlock)
+					&& !(block instanceof EnderChestBlock)
+					&& !(block instanceof AbstractSignBlock)
+					&& !(block instanceof AbstractSkullBlock)) {
 					double g = (double)blockPos.getX() - d;
 					double h = (double)blockPos.getY() - e;
 					double i = (double)blockPos.getZ() - f;
@@ -1698,7 +1701,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 	}
 
 	public static void drawDebugShapeOutline(VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
-		List<BoundingBox> list = voxelShape.getBoundingBoxList();
+		List<BoundingBox> list = voxelShape.getBoundingBoxes();
 		int k = MathHelper.ceil((double)list.size() / 3.0);
 
 		for (int l = 0; l < list.size(); l++) {
@@ -1716,7 +1719,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(1, VertexFormats.POSITION_COLOR);
-		voxelShape.method_1104((k, l, m, n, o, p) -> {
+		voxelShape.forEachEdge((k, l, m, n, o, p) -> {
 			bufferBuilder.vertex(k + d, l + e, m + f).color(g, h, i, j).next();
 			bufferBuilder.vertex(n + d, o + e, p + f).color(g, h, i, j).next();
 		});
@@ -1839,9 +1842,9 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		}
 
 		if (soundEvent != null) {
-			RecordItem recordItem = RecordItem.bySound(soundEvent);
-			if (recordItem != null) {
-				this.client.inGameHud.setRecordPlayingOverlay(recordItem.getDescription().getFormattedText());
+			MusicDiscItem musicDiscItem = MusicDiscItem.bySound(soundEvent);
+			if (musicDiscItem != null) {
+				this.client.inGameHud.setRecordPlayingOverlay(musicDiscItem.getDescription().getFormattedText());
 			}
 
 			SoundInstance var5 = PositionedSoundInstance.record(soundEvent, (float)blockPos.getX(), (float)blockPos.getY(), (float)blockPos.getZ());
@@ -1982,8 +1985,8 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.world.playSound(blockPos, SoundEvents.field_15102, SoundCategory.field_15245, 0.5F, 2.6F + (random.nextFloat() - random.nextFloat()) * 0.8F, false);
 				break;
 			case 1010:
-				if (Item.byRawId(j) instanceof RecordItem) {
-					this.method_8562(((RecordItem)Item.byRawId(j)).getSound(), blockPos);
+				if (Item.byRawId(j) instanceof MusicDiscItem) {
+					this.method_8562(((MusicDiscItem)Item.byRawId(j)).getSound(), blockPos);
 				} else {
 					this.method_8562(null, blockPos);
 				}

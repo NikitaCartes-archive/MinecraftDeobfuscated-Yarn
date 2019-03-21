@@ -10,10 +10,10 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class WaterlilyBlock extends PlantBlock {
+public class LilyPadBlock extends PlantBlock {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(1.0, 0.0, 1.0, 15.0, 1.5, 15.0);
 
-	protected WaterlilyBlock(Block.Settings settings) {
+	protected LilyPadBlock(Block.Settings settings) {
 		super(settings);
 	}
 

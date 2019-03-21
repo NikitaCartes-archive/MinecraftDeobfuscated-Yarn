@@ -12,11 +12,6 @@ public class BlastFurnaceScreen extends AbstractFurnaceScreen<BlastFurnaceContai
 	private static final Identifier BG_TEX = new Identifier("textures/gui/container/blast_furnace.png");
 
 	public BlastFurnaceScreen(BlastFurnaceContainer blastFurnaceContainer, PlayerInventory playerInventory, TextComponent textComponent) {
-		super(blastFurnaceContainer, new BlastFurnaceRecipeBookScreen(), playerInventory, textComponent);
-	}
-
-	@Override
-	protected Identifier getBackgroundTexture() {
-		return BG_TEX;
+		super(blastFurnaceContainer, new BlastFurnaceRecipeBookScreen(), playerInventory, textComponent, BG_TEX);
 	}
 }

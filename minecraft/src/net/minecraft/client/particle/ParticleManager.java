@@ -394,7 +394,7 @@ public class ParticleManager implements ResourceReloadListener {
 		if (!blockState.isAir()) {
 			VoxelShape voxelShape = blockState.getOutlineShape(this.world, blockPos);
 			double d = 0.25;
-			voxelShape.method_1089(
+			voxelShape.forEachBox(
 				(dx, e, f, g, h, i) -> {
 					double j = Math.min(1.0, g - dx);
 					double k = Math.min(1.0, h - e);

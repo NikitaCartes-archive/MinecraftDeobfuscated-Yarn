@@ -1121,7 +1121,7 @@ public class Items {
 	public static final Item field_18138 = register(
 		"leather_horse_armor", new DyeableHorseArmorItem(3, "leather", new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
 	);
-	public static final Item field_8719 = register("lead", new LeashItem(new Item.Settings().itemGroup(ItemGroup.TOOLS)));
+	public static final Item field_8719 = register("lead", new LeadItem(new Item.Settings().itemGroup(ItemGroup.TOOLS)));
 	public static final Item field_8448 = register("name_tag", new NameTagItem(new Item.Settings().itemGroup(ItemGroup.TOOLS)));
 	public static final Item field_8220 = register(
 		"command_block_minecart", new MinecartItem(AbstractMinecartEntity.Type.field_7681, new Item.Settings().stackSize(1))
@@ -1222,40 +1222,40 @@ public class Items {
 	public static final Item field_8361 = register("knowledge_book", new KnowledgeBookItem(new Item.Settings().stackSize(1)));
 	public static final Item field_8688 = register("debug_stick", new DebugStickItem(new Item.Settings().stackSize(1)));
 	public static final Item field_8144 = register(
-		"music_disc_13", new RecordItem(1, SoundEvents.field_14592, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_13", new MusicDiscItem(1, SoundEvents.field_14592, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8075 = register(
-		"music_disc_cat", new RecordItem(2, SoundEvents.field_14744, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_cat", new MusicDiscItem(2, SoundEvents.field_14744, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8425 = register(
-		"music_disc_blocks", new RecordItem(3, SoundEvents.field_14829, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_blocks", new MusicDiscItem(3, SoundEvents.field_14829, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8623 = register(
-		"music_disc_chirp", new RecordItem(4, SoundEvents.field_15039, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_chirp", new MusicDiscItem(4, SoundEvents.field_15039, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8502 = register(
-		"music_disc_far", new RecordItem(5, SoundEvents.field_14944, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_far", new MusicDiscItem(5, SoundEvents.field_14944, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8534 = register(
-		"music_disc_mall", new RecordItem(6, SoundEvents.field_15059, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_mall", new MusicDiscItem(6, SoundEvents.field_15059, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8344 = register(
-		"music_disc_mellohi", new RecordItem(7, SoundEvents.field_15169, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_mellohi", new MusicDiscItem(7, SoundEvents.field_15169, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8834 = register(
-		"music_disc_stal", new RecordItem(8, SoundEvents.field_14578, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_stal", new MusicDiscItem(8, SoundEvents.field_14578, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8065 = register(
-		"music_disc_strad", new RecordItem(9, SoundEvents.field_14656, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_strad", new MusicDiscItem(9, SoundEvents.field_14656, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8355 = register(
-		"music_disc_ward", new RecordItem(10, SoundEvents.field_14838, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_ward", new MusicDiscItem(10, SoundEvents.field_14838, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8731 = register(
-		"music_disc_11", new RecordItem(11, SoundEvents.field_14654, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_11", new MusicDiscItem(11, SoundEvents.field_14654, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8806 = register(
-		"music_disc_wait", new RecordItem(12, SoundEvents.field_14759, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
+		"music_disc_wait", new MusicDiscItem(12, SoundEvents.field_14759, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8903))
 	);
 	public static final Item field_8547 = register("trident", new TridentItem(new Item.Settings().durability(250).itemGroup(ItemGroup.COMBAT)));
 	public static final Item field_8614 = register("phantom_membrane", new Item(new Item.Settings().itemGroup(ItemGroup.BREWING)));
@@ -1279,7 +1279,7 @@ public class Items {
 		"mojang_banner_pattern", new BannerPatternItem(BannerPattern.MOJANG, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC).rarity(Rarity.field_8904))
 	);
 	public static final Item field_18674 = register(
-		"globe_banner_pattern", new BannerPatternItem(BannerPattern.field_18689, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
+		"globe_banner_pattern", new BannerPatternItem(BannerPattern.GLOBE, new Item.Settings().stackSize(1).itemGroup(ItemGroup.MISC))
 	);
 	public static final Item BARREL = registerBlock(Blocks.field_16328, ItemGroup.DECORATIONS);
 	public static final Item SMOKER = registerBlock(Blocks.field_16334, ItemGroup.DECORATIONS);

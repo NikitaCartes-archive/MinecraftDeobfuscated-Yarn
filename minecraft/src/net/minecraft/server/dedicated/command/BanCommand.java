@@ -29,13 +29,13 @@ public class BanCommand {
 				)
 				.then(
 					ServerCommandManager.argument("targets", GameProfileArgumentType.create())
-						.executes(commandContext -> method_13022(commandContext.getSource(), GameProfileArgumentType.getProfilesArgument(commandContext, "targets"), null))
+						.executes(commandContext -> method_13022(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets"), null))
 						.then(
 							ServerCommandManager.argument("reason", MessageArgumentType.create())
 								.executes(
 									commandContext -> method_13022(
 											commandContext.getSource(),
-											GameProfileArgumentType.getProfilesArgument(commandContext, "targets"),
+											GameProfileArgumentType.getProfileArgument(commandContext, "targets"),
 											MessageArgumentType.getMessageArgument(commandContext, "reason")
 										)
 								)

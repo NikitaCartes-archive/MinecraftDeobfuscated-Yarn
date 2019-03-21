@@ -3,6 +3,7 @@ package net.minecraft.client.gui.widget;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -10,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.menu.LevelSelectScreen;
 import net.minecraft.client.gui.menu.SevereErrorScreen;
-import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.level.storage.LevelStorageException;
@@ -54,7 +55,7 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
 				LOGGER.error("Couldn't load level list", (Throwable)var7);
-				this.client.openScreen(new SevereErrorScreen(I18n.translate("selectWorld.unable_to_load"), var7.getMessage()));
+				this.client.openScreen(new SevereErrorScreen(new TranslatableTextComponent("selectWorld.unable_to_load"), var7.getMessage()));
 				return;
 			}
 
@@ -87,17 +88,15 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 
 	public void method_2751(int i) {
 		this.field_3236 = i;
-		this.parent.method_2746(this.method_2753());
+		this.parent.method_19940(this.method_2753().isPresent());
 	}
 
 	@Override
 	protected void moveSelection(int i) {
 		this.field_3236 = MathHelper.clamp(this.field_3236 + i, 0, this.getEntryCount() - 1);
-		if (this.method_2753() != null) {
-			this.method_19349(this.method_2753());
-		}
-
-		this.parent.method_2746(this.method_2753());
+		Optional<LevelSelectEntryWidget> optional = this.method_2753();
+		optional.ifPresent(this::method_19349);
+		this.parent.method_19940(optional.isPresent());
 	}
 
 	@Override
@@ -110,9 +109,8 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 		return i == this.field_3236;
 	}
 
-	@Nullable
-	public LevelSelectEntryWidget method_2753() {
-		return this.field_3236 >= 0 && this.field_3236 < this.getEntryCount() ? (LevelSelectEntryWidget)this.getInputListeners().get(this.field_3236) : null;
+	public Optional<LevelSelectEntryWidget> method_2753() {
+		return this.field_3236 >= 0 && this.field_3236 < this.getEntryCount() ? Optional.of(this.getInputListeners().get(this.field_3236)) : Optional.empty();
 	}
 
 	public LevelSelectScreen method_2752() {
@@ -121,9 +119,9 @@ public class LevelListWidget extends EntryListWidget<LevelSelectEntryWidget> {
 
 	@Override
 	public void onFocusChanged(boolean bl) {
-		if (bl && this.method_2753() == null && this.getEntryCount() > 0) {
+		if (bl && !this.method_2753().isPresent() && this.getEntryCount() > 0) {
 			this.field_3236 = 0;
-			this.parent.method_2746(this.method_2753());
+			this.parent.method_19940(false);
 		}
 	}
 }

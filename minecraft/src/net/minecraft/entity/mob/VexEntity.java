@@ -211,7 +211,7 @@ public class VexEntity extends HostileEntity {
 
 	class ChargeTargetGoal extends Goal {
 		public ChargeTargetGoal() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override
@@ -261,7 +261,7 @@ public class VexEntity extends HostileEntity {
 
 	class LookAtTargetGoal extends Goal {
 		public LookAtTargetGoal() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override

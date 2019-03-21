@@ -19,12 +19,18 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	private static final Identifier RECIPE_BUTTON_TEXTURE = new Identifier("textures/gui/recipe_button.png");
 	public final AbstractFurnaceRecipeBookScreen recipeBook;
 	private boolean narrow;
+	private final Identifier field_18975;
 
 	public AbstractFurnaceScreen(
-		T abstractFurnaceContainer, AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen, PlayerInventory playerInventory, TextComponent textComponent
+		T abstractFurnaceContainer,
+		AbstractFurnaceRecipeBookScreen abstractFurnaceRecipeBookScreen,
+		PlayerInventory playerInventory,
+		TextComponent textComponent,
+		Identifier identifier
 	) {
 		super(abstractFurnaceContainer, playerInventory, textComponent);
 		this.recipeBook = abstractFurnaceRecipeBookScreen;
+		this.field_18975 = identifier;
 	}
 
 	@Override
@@ -33,21 +39,13 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 		this.narrow = this.screenWidth < 379;
 		this.recipeBook.initialize(this.screenWidth, this.screenHeight, this.client, this.narrow, this.container);
 		this.left = this.recipeBook.findLeftEdge(this.narrow, this.screenWidth, this.width);
-		this.addButton(
-			new RecipeBookButtonWidget(this.left + 20, this.screenHeight / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE) {
-				@Override
-				public void onPressed() {
-					AbstractFurnaceScreen.this.recipeBook.reset(AbstractFurnaceScreen.this.narrow);
-					AbstractFurnaceScreen.this.recipeBook.toggleOpen();
-					AbstractFurnaceScreen.this.left = AbstractFurnaceScreen.this.recipeBook
-						.findLeftEdge(AbstractFurnaceScreen.this.narrow, AbstractFurnaceScreen.this.screenWidth, AbstractFurnaceScreen.this.width);
-					this.setPos(AbstractFurnaceScreen.this.left + 20, AbstractFurnaceScreen.this.screenHeight / 2 - 49);
-				}
-			}
-		);
+		this.addButton(new RecipeBookButtonWidget(this.left + 20, this.screenHeight / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
+			this.recipeBook.reset(this.narrow);
+			this.recipeBook.toggleOpen();
+			this.left = this.recipeBook.findLeftEdge(this.narrow, this.screenWidth, this.width);
+			((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 20, this.screenHeight / 2 - 49);
+		}));
 	}
-
-	protected abstract Identifier getBackgroundTexture();
 
 	@Override
 	public void update() {
@@ -73,7 +71,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		String string = this.name.getFormattedText();
+		String string = this.title.getFormattedText();
 		this.fontRenderer.draw(string, (float)(this.width / 2 - this.fontRenderer.getStringWidth(string) / 2), 6.0F, 4210752);
 		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
 	}
@@ -81,7 +79,7 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(this.getBackgroundTexture());
+		this.client.getTextureManager().bindTexture(this.field_18975);
 		int k = this.left;
 		int l = this.top;
 		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);

@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.DoublePredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -73,8 +74,12 @@ public class VillagerGossips {
 		return reputation != null ? reputation.getValue(predicate) : 0;
 	}
 
-	public long getGossipCount(VillageGossipType villageGossipType) {
-		return this.entityReputation.values().stream().filter(reputation -> reputation.associatedGossip.containsKey(villageGossipType)).count();
+	public long getGossipCount(VillageGossipType villageGossipType, DoublePredicate doublePredicate) {
+		return this.entityReputation
+			.values()
+			.stream()
+			.filter(reputation -> doublePredicate.test((double)(reputation.associatedGossip.getOrDefault(villageGossipType, 0) * villageGossipType.multiplier)))
+			.count();
 	}
 
 	public void startGossip(UUID uUID, VillageGossipType villageGossipType, int i) {

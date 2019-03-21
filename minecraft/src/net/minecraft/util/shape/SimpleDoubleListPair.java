@@ -1,22 +1,22 @@
-package net.minecraft;
+package net.minecraft.util.shape;
 
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
-public final class class_254 implements class_255 {
-	private final DoubleArrayList field_1377;
+final class SimpleDoubleListPair implements DoubleListPair {
+	private final DoubleArrayList mergedList;
 	private final IntArrayList field_1376;
 	private final IntArrayList field_1378;
 
-	public class_254(DoubleList doubleList, DoubleList doubleList2, boolean bl, boolean bl2) {
+	SimpleDoubleListPair(DoubleList doubleList, DoubleList doubleList2, boolean bl, boolean bl2) {
 		int i = 0;
 		int j = 0;
 		double d = Double.NaN;
 		int k = doubleList.size();
 		int l = doubleList2.size();
 		int m = k + l;
-		this.field_1377 = new DoubleArrayList(m);
+		this.mergedList = new DoubleArrayList(m);
 		this.field_1376 = new IntArrayList(m);
 		this.field_1378 = new IntArrayList(m);
 
@@ -24,8 +24,8 @@ public final class class_254 implements class_255 {
 			boolean bl3 = i < k;
 			boolean bl4 = j < l;
 			if (!bl3 && !bl4) {
-				if (this.field_1377.isEmpty()) {
-					this.field_1377.add(Math.min(doubleList.getDouble(k - 1), doubleList2.getDouble(l - 1)));
+				if (this.mergedList.isEmpty()) {
+					this.mergedList.add(Math.min(doubleList.getDouble(k - 1), doubleList2.getDouble(l - 1)));
 				}
 
 				return;
@@ -37,9 +37,9 @@ public final class class_254 implements class_255 {
 				if (!(d >= e - 1.0E-7)) {
 					this.field_1376.add(i - 1);
 					this.field_1378.add(j - 1);
-					this.field_1377.add(e);
+					this.mergedList.add(e);
 					d = e;
-				} else if (!this.field_1377.isEmpty()) {
+				} else if (!this.mergedList.isEmpty()) {
 					this.field_1376.set(this.field_1376.size() - 1, i - 1);
 					this.field_1378.set(this.field_1378.size() - 1, j - 1);
 				}
@@ -48,9 +48,9 @@ public final class class_254 implements class_255 {
 	}
 
 	@Override
-	public boolean method_1065(class_255.class_256 arg) {
-		for (int i = 0; i < this.field_1377.size() - 1; i++) {
-			if (!arg.merge(this.field_1376.getInt(i), this.field_1378.getInt(i), i)) {
+	public boolean forAllOverlappingSections(DoubleListPair.SectionPairPredicate sectionPairPredicate) {
+		for (int i = 0; i < this.mergedList.size() - 1; i++) {
+			if (!sectionPairPredicate.merge(this.field_1376.getInt(i), this.field_1378.getInt(i), i)) {
 				return false;
 			}
 		}
@@ -59,7 +59,7 @@ public final class class_254 implements class_255 {
 	}
 
 	@Override
-	public DoubleList method_1066() {
-		return this.field_1377;
+	public DoubleList getMergedList() {
+		return this.mergedList;
 	}
 }

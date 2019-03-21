@@ -8,7 +8,7 @@ public class SwimGoal extends Goal {
 
 	public SwimGoal(MobEntity mobEntity) {
 		this.entityMob = mobEntity;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407));
 		mobEntity.getNavigation().setCanSwim(true);
 	}
 

@@ -15,6 +15,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.Identifier;
@@ -36,6 +37,7 @@ public class EndCreditsScreen extends Screen {
 	private float field_2635 = 0.5F;
 
 	public EndCreditsScreen(boolean bl, Runnable runnable) {
+		super(NarratorManager.field_18967);
 		this.field_2627 = bl;
 		this.field_2630 = runnable;
 		if (!bl) {

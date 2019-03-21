@@ -11,12 +11,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_2566;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.util.Language;
 
-public class TranslatableTextComponent extends AbstractTextComponent implements class_2566 {
+public class TranslatableTextComponent extends AbstractTextComponent implements TextComponentWithSelectors {
 	private static final Language EMPTY_LANGUAGE = new Language();
 	private static final Language LANGUAGE = Language.getInstance();
 	private final String key;
@@ -183,7 +182,7 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 	}
 
 	@Override
-	public TextComponent method_10890(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public TextComponent resolveSelectors(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
 		Object[] objects = new Object[this.params.length];
 
 		for (int i = 0; i < objects.length; i++) {

@@ -570,7 +570,7 @@ public class TurtleEntity extends AnimalEntity {
 					World world = this.field_6932.world;
 					world.playSound(null, blockPos, SoundEvents.field_14634, SoundCategory.field_15245, 0.3F, 0.9F + world.random.nextFloat() * 0.2F);
 					world.setBlockState(
-						this.targetPos.up(), Blocks.field_10195.getDefaultState().with(TurtleEggBlock.field_11710, Integer.valueOf(this.field_6932.random.nextInt(4) + 1)), 3
+						this.targetPos.up(), Blocks.field_10195.getDefaultState().with(TurtleEggBlock.EGGS, Integer.valueOf(this.field_6932.random.nextInt(4) + 1)), 3
 					);
 					this.field_6932.setHasEgg(false);
 					this.field_6932.method_6676(false);
@@ -643,7 +643,7 @@ public class TurtleEntity extends AnimalEntity {
 			this.field_6938 = turtleEntity;
 			this.field_6935 = d;
 			this.field_6937 = Sets.<Item>newHashSet(item);
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 
 		@Override

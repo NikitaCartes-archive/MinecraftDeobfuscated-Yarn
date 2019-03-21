@@ -46,7 +46,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 			if (blockState.getBlock() != Blocks.field_10124) {
 				VoxelShape voxelShape = blockState.getOutlineShape(blockView, blockPos2);
 
-				for (BoundingBox boundingBox : voxelShape.getBoundingBoxList()) {
+				for (BoundingBox boundingBox : voxelShape.getBoundingBoxes()) {
 					BoundingBox boundingBox2 = boundingBox.offset(blockPos2).expand(0.002).offset(-d, -e, -f);
 					double g = boundingBox2.minX;
 					double h = boundingBox2.minY;

@@ -212,7 +212,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 					for (int l = 255; l > (blockPos2 == null ? 0 : blockPos2.getY()); l--) {
 						BlockPos blockPos3 = new BlockPos(blockPos.getX() + j, l, blockPos.getZ() + k);
 						BlockState blockState = blockView.getBlockState(blockPos3);
-						if (blockState.method_11603(blockView, blockPos3) && (bl || blockState.getBlock() != Blocks.field_9987)) {
+						if (Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos3)) && (bl || blockState.getBlock() != Blocks.field_9987)) {
 							blockPos2 = blockPos3;
 							break;
 						}
@@ -242,8 +242,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			BlockPos blockPos5 = blockPos4.up();
 			BlockPos blockPos6 = blockPos4.up(2);
 			if (blockState.getBlock() == Blocks.field_10471
-				&& !worldChunk.getBlockState(blockPos5).method_11603(worldChunk, blockPos5)
-				&& !worldChunk.getBlockState(blockPos6).method_11603(worldChunk, blockPos6)) {
+				&& !Block.isShapeFullCube(worldChunk.getBlockState(blockPos5).getCollisionShape(worldChunk, blockPos5))
+				&& !Block.isShapeFullCube(worldChunk.getBlockState(blockPos6).getCollisionShape(worldChunk, blockPos6))) {
 				double e = blockPos4.squaredDistanceToCenter(0.0, 0.0, 0.0, true);
 				if (blockPos3 == null || e < d) {
 					blockPos3 = blockPos4;

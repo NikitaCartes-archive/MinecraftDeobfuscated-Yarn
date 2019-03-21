@@ -23,12 +23,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockEntityProvider {
-	public static final EnumProperty<ComparatorMode> field_10789 = Properties.COMPARATOR_MODE;
+	public static final EnumProperty<ComparatorMode> MODE = Properties.COMPARATOR_MODE;
 
 	public ComparatorBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(field_11177, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(field_10789, ComparatorMode.field_12576)
+			this.stateFactory.getDefaultState().with(field_11177, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(MODE, ComparatorMode.field_12576)
 		);
 	}
 
@@ -44,7 +44,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 	}
 
 	private int method_9773(World world, BlockPos blockPos, BlockState blockState) {
-		return blockState.get(field_10789) == ComparatorMode.field_12578
+		return blockState.get(MODE) == ComparatorMode.field_12578
 			? Math.max(this.method_9991(world, blockPos, blockState) - this.getMaxInputLevelSides(world, blockPos, blockState), 0)
 			: this.method_9991(world, blockPos, blockState);
 	}
@@ -105,8 +105,8 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 		if (!playerEntity.abilities.allowModifyWorld) {
 			return false;
 		} else {
-			blockState = blockState.method_11572(field_10789);
-			float f = blockState.get(field_10789) == ComparatorMode.field_12578 ? 0.55F : 0.5F;
+			blockState = blockState.method_11572(MODE);
+			float f = blockState.get(MODE) == ComparatorMode.field_12578 ? 0.55F : 0.5F;
 			world.playSound(playerEntity, blockPos, SoundEvents.field_14762, SoundCategory.field_15245, 0.3F, f);
 			world.setBlockState(blockPos, blockState, 2);
 			this.method_9775(world, blockPos, blockState);
@@ -137,7 +137,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 			comparatorBlockEntity.setOutputSignal(i);
 		}
 
-		if (j != i || blockState.get(field_10789) == ComparatorMode.field_12576) {
+		if (j != i || blockState.get(MODE) == ComparatorMode.field_12576) {
 			boolean bl = this.method_9990(world, blockPos, blockState);
 			boolean bl2 = (Boolean)blockState.get(POWERED);
 			if (bl2 && !bl) {
@@ -169,6 +169,6 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11177, field_10789, POWERED);
+		builder.with(field_11177, MODE, POWERED);
 	}
 }

@@ -18,6 +18,8 @@ import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.options.ServerList;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.sortme.ServerEntryNetworkPart;
+import net.minecraft.text.TextComponent;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.MathHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +45,7 @@ public class MultiplayerScreen extends Screen {
 	private boolean field_3048;
 
 	public MultiplayerScreen(Screen screen) {
+		super(new TranslatableTextComponent("multiplayer.title"));
 		this.parent = screen;
 	}
 
@@ -74,79 +77,74 @@ public class MultiplayerScreen extends Screen {
 
 	public void method_2540() {
 		this.listeners.add(this.serverListWidget);
-		this.buttonSelect = this.addButton(new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.select")) {
-			@Override
-			public void onPressed() {
-				MultiplayerScreen.this.method_2536();
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.direct")) {
-			@Override
-			public void onPressed() {
-				MultiplayerScreen.this.field_3035 = true;
-				MultiplayerScreen.this.field_3051 = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
-				MultiplayerScreen.this.client.openScreen(new DirectConnectServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.add")) {
-			@Override
-			public void onPressed() {
-				MultiplayerScreen.this.field_3038 = true;
-				MultiplayerScreen.this.field_3051 = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
-				MultiplayerScreen.this.client.openScreen(new AddServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
-			}
-		});
+		this.buttonSelect = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.select"), buttonWidget -> this.method_2536())
+		);
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.direct"), buttonWidget -> {
+			this.field_3035 = true;
+			this.field_3051 = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
+			this.client.openScreen(new DirectConnectServerScreen(this, this.field_3051));
+		}));
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 50, this.screenHeight - 52, 100, 20, I18n.translate("selectServer.add"), buttonWidget -> {
+			this.field_3038 = true;
+			this.field_3051 = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
+			this.client.openScreen(new AddServerScreen(this, this.field_3051));
+		}));
 		this.buttonEdit = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 154, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.edit")) {
-				@Override
-				public void onPressed() {
-					EntryListWidget.Entry<?> entry = MultiplayerScreen.this.serverListWidget.getIndex() < 0
+			new ButtonWidget(
+				this.screenWidth / 2 - 154,
+				this.screenHeight - 28,
+				70,
+				20,
+				I18n.translate("selectServer.edit"),
+				buttonWidget -> {
+					EntryListWidget.Entry<?> entry = this.serverListWidget.getIndex() < 0
 						? null
-						: (EntryListWidget.Entry)MultiplayerScreen.this.serverListWidget.getInputListeners().get(MultiplayerScreen.this.serverListWidget.getIndex());
-					MultiplayerScreen.this.field_3036 = true;
+						: (EntryListWidget.Entry)this.serverListWidget.getInputListeners().get(this.serverListWidget.getIndex());
+					this.field_3036 = true;
 					if (entry instanceof RemoteServerListEntry) {
 						ServerEntry serverEntry = ((RemoteServerListEntry)entry).getServerEntry();
-						MultiplayerScreen.this.field_3051 = new ServerEntry(serverEntry.name, serverEntry.address, false);
-						MultiplayerScreen.this.field_3051.copyFrom(serverEntry);
-						MultiplayerScreen.this.client.openScreen(new AddServerScreen(MultiplayerScreen.this, MultiplayerScreen.this.field_3051));
+						this.field_3051 = new ServerEntry(serverEntry.name, serverEntry.address, false);
+						this.field_3051.copyFrom(serverEntry);
+						this.client.openScreen(new AddServerScreen(this, this.field_3051));
 					}
 				}
-			}
+			)
 		);
 		this.buttonDelete = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 74, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.delete")) {
-				@Override
-				public void onPressed() {
-					EntryListWidget.Entry<?> entry = MultiplayerScreen.this.serverListWidget.getIndex() < 0
+			new ButtonWidget(
+				this.screenWidth / 2 - 74,
+				this.screenHeight - 28,
+				70,
+				20,
+				I18n.translate("selectServer.delete"),
+				buttonWidget -> {
+					EntryListWidget.Entry<?> entry = this.serverListWidget.getIndex() < 0
 						? null
-						: (EntryListWidget.Entry)MultiplayerScreen.this.serverListWidget.getInputListeners().get(MultiplayerScreen.this.serverListWidget.getIndex());
+						: (EntryListWidget.Entry)this.serverListWidget.getInputListeners().get(this.serverListWidget.getIndex());
 					if (entry instanceof RemoteServerListEntry) {
 						String string = ((RemoteServerListEntry)entry).getServerEntry().name;
 						if (string != null) {
-							MultiplayerScreen.this.field_3039 = true;
-							String string2 = I18n.translate("selectServer.deleteQuestion");
-							String string3 = I18n.translate("selectServer.deleteWarning", string);
-							String string4 = I18n.translate("selectServer.deleteButton");
-							String string5 = I18n.translate("gui.cancel");
-							YesNoScreen yesNoScreen = new YesNoScreen(MultiplayerScreen.this, string2, string3, string4, string5, MultiplayerScreen.this.serverListWidget.getIndex());
-							MultiplayerScreen.this.client.openScreen(yesNoScreen);
+							this.field_3039 = true;
+							TextComponent textComponent = new TranslatableTextComponent("selectServer.deleteQuestion");
+							TextComponent textComponent2 = new TranslatableTextComponent("selectServer.deleteWarning", string);
+							String string2 = I18n.translate("selectServer.deleteButton");
+							String string3 = I18n.translate("gui.cancel");
+							YesNoScreen yesNoScreen = new YesNoScreen(this, textComponent, textComponent2, string2, string3, this.serverListWidget.getIndex());
+							this.client.openScreen(yesNoScreen);
 						}
 					}
 				}
-			}
+			)
 		);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.refresh")) {
-			@Override
-			public void onPressed() {
-				MultiplayerScreen.this.method_2534();
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 76, this.screenHeight - 28, 75, 20, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				MultiplayerScreen.this.client.openScreen(MultiplayerScreen.this.parent);
-			}
-		});
+		this.addButton(
+			new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight - 28, 70, 20, I18n.translate("selectServer.refresh"), buttonWidget -> this.method_2534())
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 + 4 + 76, this.screenHeight - 28, 75, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent)
+			)
+		);
 		this.setIndex(this.serverListWidget.getIndex());
 	}
 
@@ -247,7 +245,7 @@ public class MultiplayerScreen extends Screen {
 		this.field_3042 = null;
 		this.drawBackground();
 		this.serverListWidget.render(i, j, f);
-		this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.title"), this.screenWidth / 2, 20, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 20, 16777215);
 		super.render(i, j, f);
 		if (this.field_3042 != null) {
 			this.drawTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.field_3042)), i, j);

@@ -232,7 +232,7 @@ public class IronGolemEntity extends GolemEntity {
 		BlockPos blockPos = new BlockPos(this);
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = viewableWorld.getBlockState(blockPos2);
-		if (!blockState.hasSolidTopSurface(viewableWorld, blockPos2)) {
+		if (!blockState.hasSolidTopSurface(viewableWorld, blockPos2, this)) {
 			return false;
 		} else {
 			BlockPos blockPos3 = blockPos.up();

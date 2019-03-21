@@ -11,11 +11,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class RailBlock extends AbstractRailBlock {
-	public static final EnumProperty<RailShape> RAIL_SHAPE = Properties.RAIL_SHAPE;
+	public static final EnumProperty<RailShape> SHAPE = Properties.RAIL_SHAPE;
 
 	protected RailBlock(Block.Settings settings) {
 		super(false, settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(RAIL_SHAPE, RailShape.field_12665));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(SHAPE, RailShape.field_12665));
 	}
 
 	@Override
@@ -27,76 +27,76 @@ public class RailBlock extends AbstractRailBlock {
 
 	@Override
 	public Property<RailShape> getShapeProperty() {
-		return RAIL_SHAPE;
+		return SHAPE;
 	}
 
 	@Override
 	public BlockState rotate(BlockState blockState, Rotation rotation) {
 		switch (rotation) {
 			case ROT_180:
-				switch ((RailShape)blockState.get(RAIL_SHAPE)) {
+				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12666);
+						return blockState.with(SHAPE, RailShape.field_12666);
 					case field_12666:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12667);
+						return blockState.with(SHAPE, RailShape.field_12667);
 					case field_12670:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12668);
+						return blockState.with(SHAPE, RailShape.field_12668);
 					case field_12668:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12670);
+						return blockState.with(SHAPE, RailShape.field_12670);
 					case field_12664:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12672);
+						return blockState.with(SHAPE, RailShape.field_12672);
 					case field_12671:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12663);
+						return blockState.with(SHAPE, RailShape.field_12663);
 					case field_12672:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12664);
+						return blockState.with(SHAPE, RailShape.field_12664);
 					case field_12663:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12671);
+						return blockState.with(SHAPE, RailShape.field_12671);
 				}
 			case ROT_270:
-				switch ((RailShape)blockState.get(RAIL_SHAPE)) {
+				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12670);
+						return blockState.with(SHAPE, RailShape.field_12670);
 					case field_12666:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12668);
+						return blockState.with(SHAPE, RailShape.field_12668);
 					case field_12670:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12666);
+						return blockState.with(SHAPE, RailShape.field_12666);
 					case field_12668:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12667);
+						return blockState.with(SHAPE, RailShape.field_12667);
 					case field_12664:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12663);
+						return blockState.with(SHAPE, RailShape.field_12663);
 					case field_12671:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12664);
+						return blockState.with(SHAPE, RailShape.field_12664);
 					case field_12672:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12671);
+						return blockState.with(SHAPE, RailShape.field_12671);
 					case field_12663:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12672);
+						return blockState.with(SHAPE, RailShape.field_12672);
 					case field_12665:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12674);
+						return blockState.with(SHAPE, RailShape.field_12674);
 					case field_12674:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12665);
+						return blockState.with(SHAPE, RailShape.field_12665);
 				}
 			case ROT_90:
-				switch ((RailShape)blockState.get(RAIL_SHAPE)) {
+				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12668);
+						return blockState.with(SHAPE, RailShape.field_12668);
 					case field_12666:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12670);
+						return blockState.with(SHAPE, RailShape.field_12670);
 					case field_12670:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12667);
+						return blockState.with(SHAPE, RailShape.field_12667);
 					case field_12668:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12666);
+						return blockState.with(SHAPE, RailShape.field_12666);
 					case field_12664:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12671);
+						return blockState.with(SHAPE, RailShape.field_12671);
 					case field_12671:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12672);
+						return blockState.with(SHAPE, RailShape.field_12672);
 					case field_12672:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12663);
+						return blockState.with(SHAPE, RailShape.field_12663);
 					case field_12663:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12664);
+						return blockState.with(SHAPE, RailShape.field_12664);
 					case field_12665:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12674);
+						return blockState.with(SHAPE, RailShape.field_12674);
 					case field_12674:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12665);
+						return blockState.with(SHAPE, RailShape.field_12665);
 				}
 			default:
 				return blockState;
@@ -105,43 +105,43 @@ public class RailBlock extends AbstractRailBlock {
 
 	@Override
 	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		RailShape railShape = blockState.get(RAIL_SHAPE);
+		RailShape railShape = blockState.get(SHAPE);
 		switch (mirror) {
 			case LEFT_RIGHT:
 				switch (railShape) {
 					case field_12670:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12668);
+						return blockState.with(SHAPE, RailShape.field_12668);
 					case field_12668:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12670);
+						return blockState.with(SHAPE, RailShape.field_12670);
 					case field_12664:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12663);
+						return blockState.with(SHAPE, RailShape.field_12663);
 					case field_12671:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12672);
+						return blockState.with(SHAPE, RailShape.field_12672);
 					case field_12672:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12671);
+						return blockState.with(SHAPE, RailShape.field_12671);
 					case field_12663:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12664);
+						return blockState.with(SHAPE, RailShape.field_12664);
 					default:
 						return super.mirror(blockState, mirror);
 				}
 			case FRONT_BACK:
 				switch (railShape) {
 					case field_12667:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12666);
+						return blockState.with(SHAPE, RailShape.field_12666);
 					case field_12666:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12667);
+						return blockState.with(SHAPE, RailShape.field_12667);
 					case field_12670:
 					case field_12668:
 					default:
 						break;
 					case field_12664:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12671);
+						return blockState.with(SHAPE, RailShape.field_12671);
 					case field_12671:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12664);
+						return blockState.with(SHAPE, RailShape.field_12664);
 					case field_12672:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12663);
+						return blockState.with(SHAPE, RailShape.field_12663);
 					case field_12663:
-						return blockState.with(RAIL_SHAPE, RailShape.field_12672);
+						return blockState.with(SHAPE, RailShape.field_12672);
 				}
 		}
 
@@ -150,6 +150,6 @@ public class RailBlock extends AbstractRailBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(RAIL_SHAPE);
+		builder.with(SHAPE);
 	}
 }

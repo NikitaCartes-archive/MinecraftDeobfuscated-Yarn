@@ -39,7 +39,7 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 	public static class IntRangeArgumentType implements NumberRangeArgumentType<NumberRange.Integer> {
 		private static final Collection<String> EXAMPLES = Arrays.asList("0..5", "0", "-5", "-100..", "..100");
 
-		public static NumberRange.Integer method_9425(CommandContext<ServerCommandSource> commandContext, String string) {
+		public static NumberRange.Integer getRangeArgument(CommandContext<ServerCommandSource> commandContext, String string) {
 			return commandContext.getArgument(string, NumberRange.Integer.class);
 		}
 

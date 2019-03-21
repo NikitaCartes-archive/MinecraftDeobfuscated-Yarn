@@ -8,7 +8,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_2566;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 
@@ -24,8 +23,8 @@ public class TextFormatter {
 	}
 
 	public static TextComponent method_10881(@Nullable ServerCommandSource serverCommandSource, TextComponent textComponent, @Nullable Entity entity) throws CommandSyntaxException {
-		TextComponent textComponent2 = textComponent instanceof class_2566
-			? ((class_2566)textComponent).method_10890(serverCommandSource, entity)
+		TextComponent textComponent2 = textComponent instanceof TextComponentWithSelectors
+			? ((TextComponentWithSelectors)textComponent).resolveSelectors(serverCommandSource, entity)
 			: textComponent.copyShallow();
 
 		for (TextComponent textComponent3 : textComponent.getChildren()) {

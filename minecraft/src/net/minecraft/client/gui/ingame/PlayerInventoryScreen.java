@@ -53,25 +53,19 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 			this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
 			this.listeners.add(this.recipeBook);
 			this.focusOn(this.recipeBook);
-			this.addButton(
-				new RecipeBookButtonWidget(this.left + 104, this.screenHeight / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX) {
-					@Override
-					public void onPressed() {
-						PlayerInventoryScreen.this.recipeBook.reset(PlayerInventoryScreen.this.isNarrow);
-						PlayerInventoryScreen.this.recipeBook.toggleOpen();
-						PlayerInventoryScreen.this.left = PlayerInventoryScreen.this.recipeBook
-							.findLeftEdge(PlayerInventoryScreen.this.isNarrow, PlayerInventoryScreen.this.screenWidth, PlayerInventoryScreen.this.width);
-						this.setPos(PlayerInventoryScreen.this.left + 104, PlayerInventoryScreen.this.screenHeight / 2 - 22);
-						PlayerInventoryScreen.this.isMouseDown = true;
-					}
-				}
-			);
+			this.addButton(new RecipeBookButtonWidget(this.left + 104, this.screenHeight / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
+				this.recipeBook.reset(this.isNarrow);
+				this.recipeBook.toggleOpen();
+				this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
+				((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 104, this.screenHeight / 2 - 22);
+				this.isMouseDown = true;
+			}));
 		}
 	}
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.name.getFormattedText(), 97.0F, 8.0F, 4210752);
+		this.fontRenderer.draw(this.title.getFormattedText(), 97.0F, 8.0F, 4210752);
 	}
 
 	@Override

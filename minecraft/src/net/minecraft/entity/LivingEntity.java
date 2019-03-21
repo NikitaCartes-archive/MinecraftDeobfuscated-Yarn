@@ -1581,13 +1581,14 @@ public abstract class LivingEntity extends Entity {
 					BoundingBox boundingBox2 = boundingBox.offset(q, 0.0, r);
 					if (this.world.isEntityColliding(this, boundingBox2)) {
 						BlockPos blockPos = new BlockPos(s, this.y, t);
-						if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos)) {
+						if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, this)) {
 							this.method_5859(s, this.y + 1.0, t);
 							return;
 						}
 
 						BlockPos blockPos2 = new BlockPos(s, this.y - 1.0, t);
-						if (this.world.getBlockState(blockPos2).hasSolidTopSurface(this.world, blockPos2) || this.world.getFluidState(blockPos2).matches(FluidTags.field_15517)) {
+						if (this.world.getBlockState(blockPos2).hasSolidTopSurface(this.world, blockPos2, this)
+							|| this.world.getFluidState(blockPos2).matches(FluidTags.field_15517)) {
 							k = s;
 							l = this.y + 1.0;
 							e = t;
@@ -1595,7 +1596,7 @@ public abstract class LivingEntity extends Entity {
 					} else {
 						BlockPos blockPosx = new BlockPos(s, this.y + 1.0, t);
 						if (this.world.isEntityColliding(this, boundingBox2.offset(0.0, 1.0, 0.0))
-							&& this.world.getBlockState(blockPosx).hasSolidTopSurface(this.world, blockPosx)) {
+							&& this.world.getBlockState(blockPosx).hasSolidTopSurface(this.world, blockPosx, this)) {
 							k = s;
 							l = this.y + 2.0;
 							e = t;

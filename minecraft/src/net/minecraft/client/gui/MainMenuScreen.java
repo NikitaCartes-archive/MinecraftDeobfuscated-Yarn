@@ -24,6 +24,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.realms.RealmsBridge;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.TextFormat;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
@@ -65,6 +66,7 @@ public class MainMenuScreen extends Screen {
 	}
 
 	public MainMenuScreen(boolean bl) {
+		super(new TranslatableTextComponent("narrator.screen.title"));
 		this.doBackgroundFade = bl;
 		this.field_17776 = (double)new Random().nextFloat() < 1.0E-4;
 		this.warningTitle = "";
@@ -119,26 +121,23 @@ public class MainMenuScreen extends Screen {
 		}
 
 		this.addButton(
-			new LanguageButtonWidget(this.screenWidth / 2 - 124, j + 72 + 12) {
-				@Override
-				public void onPressed() {
-					MainMenuScreen.this.client
-						.openScreen(new LanguageSettingsScreen(MainMenuScreen.this, MainMenuScreen.this.client.options, MainMenuScreen.this.client.getLanguageManager()));
-				}
-			}
+			new LanguageButtonWidget(
+				this.screenWidth / 2 - 124,
+				j + 72 + 12,
+				buttonWidget -> this.client.openScreen(new LanguageSettingsScreen(this, this.client.options, this.client.getLanguageManager()))
+			)
 		);
-		this.buttonOptions = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, j + 72 + 12, 98, 20, I18n.translate("menu.options")) {
-			@Override
-			public void onPressed() {
-				MainMenuScreen.this.client.openScreen(new SettingsScreen(MainMenuScreen.this, MainMenuScreen.this.client.options));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit")) {
-			@Override
-			public void onPressed() {
-				MainMenuScreen.this.client.scheduleStop();
-			}
-		});
+		this.buttonOptions = this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100,
+				j + 72 + 12,
+				98,
+				20,
+				I18n.translate("menu.options"),
+				buttonWidget -> this.client.openScreen(new SettingsScreen(this, this.client.options))
+			)
+		);
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, j + 72 + 12, 98, 20, I18n.translate("menu.quit"), buttonWidget -> this.client.scheduleStop()));
 		synchronized (this.mutex) {
 			this.warningTitleWidth = this.fontRenderer.getStringWidth(this.warningTitle);
 			this.warningTextWidth = this.fontRenderer.getStringWidth(this.warningText);
@@ -162,46 +161,47 @@ public class MainMenuScreen extends Screen {
 	}
 
 	private void initWidgetsNormal(int i, int j) {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i, I18n.translate("menu.singleplayer")) {
-			@Override
-			public void onPressed() {
-				MainMenuScreen.this.client.openScreen(new LevelSelectScreen(MainMenuScreen.this));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i + j * 1, I18n.translate("menu.multiplayer")) {
-			@Override
-			public void onPressed() {
-				MainMenuScreen.this.client.openScreen(new MultiplayerScreen(MainMenuScreen.this));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i + j * 2, I18n.translate("menu.online")) {
-			@Override
-			public void onPressed() {
-				MainMenuScreen.this.switchToRealms();
-			}
-		});
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100, i, 200, 20, I18n.translate("menu.singleplayer"), buttonWidget -> this.client.openScreen(new LevelSelectScreen(this))
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100, i + j * 1, 200, 20, I18n.translate("menu.multiplayer"), buttonWidget -> this.client.openScreen(new MultiplayerScreen(this))
+			)
+		);
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i + j * 2, 200, 20, I18n.translate("menu.online"), buttonWidget -> this.switchToRealms()));
 	}
 
 	private void initWidgetsDemo(int i, int j) {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, i, I18n.translate("menu.playdemo")) {
-			@Override
-			public void onPressed() {
-				MainMenuScreen.this.client.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.field_17704);
-			}
-		});
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100,
+				i,
+				200,
+				20,
+				I18n.translate("menu.playdemo"),
+				buttonWidget -> this.client.startIntegratedServer("Demo_World", "Demo_World", MinecraftServer.field_17704)
+			)
+		);
 		this.buttonResetDemo = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 100, i + j * 1, I18n.translate("menu.resetdemo")) {
-				@Override
-				public void onPressed() {
-					LevelStorage levelStorage = MainMenuScreen.this.client.getLevelStorage();
-					LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");
-					if (levelProperties != null) {
-						MainMenuScreen.this.client
+			new ButtonWidget(
+				this.screenWidth / 2 - 100,
+				i + j * 1,
+				200,
+				20,
+				I18n.translate("menu.resetdemo"),
+				buttonWidget -> {
+					LevelStorage levelStoragex = this.client.getLevelStorage();
+					LevelProperties levelPropertiesx = levelStoragex.getLevelProperties("Demo_World");
+					if (levelPropertiesx != null) {
+						this.client
 							.openScreen(
 								new YesNoScreen(
-									MainMenuScreen.this,
-									I18n.translate("selectWorld.deleteQuestion"),
-									I18n.translate("selectWorld.deleteWarning", levelProperties.getLevelName()),
+									this,
+									new TranslatableTextComponent("selectWorld.deleteQuestion"),
+									new TranslatableTextComponent("selectWorld.deleteWarning", levelPropertiesx.getLevelName()),
 									I18n.translate("selectWorld.deleteButton"),
 									I18n.translate("gui.cancel"),
 									12
@@ -209,7 +209,7 @@ public class MainMenuScreen extends Screen {
 							);
 					}
 				}
-			}
+			)
 		);
 		LevelStorage levelStorage = this.client.getLevelStorage();
 		LevelProperties levelProperties = levelStorage.getLevelProperties("Demo_World");

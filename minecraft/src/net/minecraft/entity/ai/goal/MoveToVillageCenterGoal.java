@@ -21,7 +21,7 @@ public class MoveToVillageCenterGoal extends Goal {
 	public MoveToVillageCenterGoal(MobEntityWithAi mobEntityWithAi, int i) {
 		this.owner = mobEntityWithAi;
 		this.searchRange = i;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 	}
 
 	@Override

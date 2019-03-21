@@ -20,12 +20,12 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
-public class StandingBannerBlock extends AbstractBannerBlock {
+public class BannerBlock extends AbstractBannerBlock {
 	public static final IntegerProperty ROTATION = Properties.ROTATION_16;
 	private static final Map<DyeColor, Block> field_9925 = Maps.<DyeColor, Block>newHashMap();
-	private static final VoxelShape field_9923 = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
+	private static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 
-	public StandingBannerBlock(DyeColor dyeColor, Block.Settings settings) {
+	public BannerBlock(DyeColor dyeColor, Block.Settings settings) {
 		super(dyeColor, settings);
 		this.setDefaultState(this.stateFactory.getDefaultState().with(ROTATION, Integer.valueOf(0)));
 		field_9925.put(dyeColor, this);
@@ -38,7 +38,7 @@ public class StandingBannerBlock extends AbstractBannerBlock {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return field_9923;
+		return SHAPE;
 	}
 
 	@Override

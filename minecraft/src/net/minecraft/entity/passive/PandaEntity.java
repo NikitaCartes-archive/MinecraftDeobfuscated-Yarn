@@ -938,7 +938,7 @@ public class PandaEntity extends AnimalEntity {
 
 		public class_1448(PandaEntity pandaEntity) {
 			this.field_6803 = pandaEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406, Goal.ControlBit.field_18407));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406, Goal.class_4134.field_18407));
 		}
 
 		@Override
@@ -991,7 +991,7 @@ public class PandaEntity extends AnimalEntity {
 		private int field_6804;
 
 		public class_1449() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override

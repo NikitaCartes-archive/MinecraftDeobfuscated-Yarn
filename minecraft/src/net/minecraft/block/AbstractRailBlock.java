@@ -12,7 +12,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public abstract class AbstractRailBlock extends Block {
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
+	protected static final VoxelShape STRAIGHT_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
 	protected static final VoxelShape ASCENDING_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
 	private final boolean allowCurves;
 
@@ -36,13 +36,12 @@ public abstract class AbstractRailBlock extends Block {
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		RailShape railShape = blockState.getBlock() == this ? blockState.get(this.getShapeProperty()) : null;
-		return railShape != null && railShape.isAscending() ? ASCENDING_SHAPE : SHAPE;
+		return railShape != null && railShape.isAscending() ? ASCENDING_SHAPE : STRAIGHT_SHAPE;
 	}
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
-		return viewableWorld.getBlockState(blockPos2).hasSolidTopSurface(viewableWorld, blockPos2);
+		return method_16361(viewableWorld, blockPos.down());
 	}
 
 	@Override
@@ -63,24 +62,24 @@ public abstract class AbstractRailBlock extends Block {
 			RailShape railShape = blockState.get(this.getShapeProperty());
 			boolean bl = false;
 			BlockPos blockPos3 = blockPos.down();
-			if (!world.getBlockState(blockPos3).hasSolidTopSurface(world, blockPos3)) {
+			if (!method_16361(world, blockPos3)) {
 				bl = true;
 			}
 
 			BlockPos blockPos4 = blockPos.east();
-			if (railShape == RailShape.field_12667 && !world.getBlockState(blockPos4).hasSolidTopSurface(world, blockPos4)) {
+			if (railShape == RailShape.field_12667 && !method_16361(world, blockPos4)) {
 				bl = true;
 			} else {
 				BlockPos blockPos5 = blockPos.west();
-				if (railShape == RailShape.field_12666 && !world.getBlockState(blockPos5).hasSolidTopSurface(world, blockPos5)) {
+				if (railShape == RailShape.field_12666 && !method_16361(world, blockPos5)) {
 					bl = true;
 				} else {
 					BlockPos blockPos6 = blockPos.north();
-					if (railShape == RailShape.field_12670 && !world.getBlockState(blockPos6).hasSolidTopSurface(world, blockPos6)) {
+					if (railShape == RailShape.field_12670 && !method_16361(world, blockPos6)) {
 						bl = true;
 					} else {
 						BlockPos blockPos7 = blockPos.south();
-						if (railShape == RailShape.field_12668 && !world.getBlockState(blockPos7).hasSolidTopSurface(world, blockPos7)) {
+						if (railShape == RailShape.field_12668 && !method_16361(world, blockPos7)) {
 							bl = true;
 						}
 					}

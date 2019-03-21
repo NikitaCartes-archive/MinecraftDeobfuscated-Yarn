@@ -291,9 +291,9 @@ public abstract class MobEntity extends LivingEntity {
 			if (this.age % 5 == 0) {
 				boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity);
 				boolean bl2 = !(this.getRiddenEntity() instanceof BoatEntity);
-				this.goalSelector.changeBits(Goal.ControlBit.field_18405, bl);
-				this.goalSelector.changeBits(Goal.ControlBit.field_18407, bl && bl2);
-				this.goalSelector.changeBits(Goal.ControlBit.field_18406, bl);
+				this.goalSelector.changeBits(Goal.class_4134.field_18405, bl);
+				this.goalSelector.changeBits(Goal.class_4134.field_18407, bl && bl2);
+				this.goalSelector.changeBits(Goal.class_4134.field_18406, bl);
 			}
 		}
 	}

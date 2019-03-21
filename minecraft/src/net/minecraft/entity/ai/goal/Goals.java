@@ -23,10 +23,10 @@ public class Goals {
 			return false;
 		}
 	};
-	private final Map<Goal.ControlBit, WeightedGoal> field_18411 = new EnumMap(Goal.ControlBit.class);
+	private final Map<Goal.class_4134, WeightedGoal> field_18411 = new EnumMap(Goal.class_4134.class);
 	private final Set<WeightedGoal> all = Sets.<WeightedGoal>newLinkedHashSet();
 	private final Profiler profiler;
-	private final EnumSet<Goal.ControlBit> usedBits = EnumSet.noneOf(Goal.ControlBit.class);
+	private final EnumSet<Goal.class_4134> usedBits = EnumSet.noneOf(Goal.class_4134.class);
 	private int timeInterval = 3;
 
 	public Goals(Profiler profiler) {
@@ -49,9 +49,9 @@ public class Goals {
 				weightedGoal -> !weightedGoal.method_19056() || weightedGoal.getControlBits().stream().anyMatch(this.usedBits::contains) || !weightedGoal.shouldContinue()
 			)
 			.forEach(Goal::onRemove);
-		this.field_18411.forEach((controlBit, weightedGoal) -> {
+		this.field_18411.forEach((arg, weightedGoal) -> {
 			if (!weightedGoal.method_19056()) {
-				this.field_18411.remove(controlBit);
+				this.field_18411.remove(arg);
 			}
 		});
 		this.profiler.pop();
@@ -63,14 +63,14 @@ public class Goals {
 			.filter(
 				weightedGoal -> weightedGoal.getControlBits()
 						.stream()
-						.allMatch(controlBit -> ((WeightedGoal)this.field_18411.getOrDefault(controlBit, field_18410)).method_19055(weightedGoal))
+						.allMatch(arg -> ((WeightedGoal)this.field_18411.getOrDefault(arg, field_18410)).method_19055(weightedGoal))
 			)
 			.filter(WeightedGoal::canStart)
 			.forEach(weightedGoal -> {
-				weightedGoal.getControlBits().forEach(controlBit -> {
-					WeightedGoal weightedGoal2 = (WeightedGoal)this.field_18411.getOrDefault(controlBit, field_18410);
+				weightedGoal.getControlBits().forEach(arg -> {
+					WeightedGoal weightedGoal2 = (WeightedGoal)this.field_18411.getOrDefault(arg, field_18410);
 					weightedGoal2.onRemove();
-					this.field_18411.put(controlBit, weightedGoal);
+					this.field_18411.put(arg, weightedGoal);
 				});
 				weightedGoal.start();
 			});
@@ -84,19 +84,19 @@ public class Goals {
 		return this.all.stream().filter(WeightedGoal::method_19056);
 	}
 
-	public void addBits(Goal.ControlBit controlBit) {
-		this.usedBits.add(controlBit);
+	public void addBits(Goal.class_4134 arg) {
+		this.usedBits.add(arg);
 	}
 
-	public void removeBits(Goal.ControlBit controlBit) {
-		this.usedBits.remove(controlBit);
+	public void removeBits(Goal.class_4134 arg) {
+		this.usedBits.remove(arg);
 	}
 
-	public void changeBits(Goal.ControlBit controlBit, boolean bl) {
+	public void changeBits(Goal.class_4134 arg, boolean bl) {
 		if (bl) {
-			this.removeBits(controlBit);
+			this.removeBits(arg);
 		} else {
-			this.addBits(controlBit);
+			this.addBits(arg);
 		}
 	}
 }

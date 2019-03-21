@@ -4,6 +4,7 @@ import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ProgressListener;
@@ -14,6 +15,10 @@ public class WorkingScreen extends Screen implements ProgressListener {
 	private String task = "";
 	private int progress;
 	private boolean done;
+
+	public WorkingScreen() {
+		super(NarratorManager.field_18967);
+	}
 
 	@Override
 	public boolean doesEscapeKeyClose() {

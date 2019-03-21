@@ -8,6 +8,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TranslatableTextComponent;
 
 @Environment(EnvType.CLIENT)
 public class DirectConnectServerScreen extends Screen {
@@ -17,6 +18,7 @@ public class DirectConnectServerScreen extends Screen {
 	private TextFieldWidget addressField;
 
 	public DirectConnectServerScreen(Screen screen, ServerEntry serverEntry) {
+		super(new TranslatableTextComponent("selectServer.direct"));
 		this.parent = screen;
 		this.serverEntry = serverEntry;
 	}
@@ -30,19 +32,15 @@ public class DirectConnectServerScreen extends Screen {
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
 		this.selectServerButton = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 12, I18n.translate("selectServer.select")) {
-				@Override
-				public void onPressed() {
-					DirectConnectServerScreen.this.saveAndClose();
-				}
-			}
+			new ButtonWidget(
+				this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 12, 200, 20, I18n.translate("selectServer.select"), buttonWidget -> this.saveAndClose()
+			)
 		);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				DirectConnectServerScreen.this.parent.confirmResult(false, 0);
-			}
-		});
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.parent.confirmResult(false, 0)
+			)
+		);
 		this.addressField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 116, 200, 20);
 		this.addressField.setMaxLength(128);
 		this.addressField.setFocused(true);
@@ -79,7 +77,7 @@ public class DirectConnectServerScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("selectServer.direct"), this.screenWidth / 2, 20, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 20, 16777215);
 		this.drawString(this.fontRenderer, I18n.translate("addServer.enterIp"), this.screenWidth / 2 - 100, 100, 10526880);
 		this.addressField.render(i, j, f);
 		super.render(i, j, f);

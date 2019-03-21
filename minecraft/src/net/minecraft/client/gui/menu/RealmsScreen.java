@@ -13,6 +13,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.realms.RealmsAbstractButton;
 import net.minecraft.realms.RealmsAnvilLevelStorageSource;
@@ -28,6 +29,7 @@ public class RealmsScreen extends Screen {
 	private static final Logger LOGGER_REALMS = LogManager.getLogger();
 
 	public RealmsScreen(net.minecraft.realms.RealmsScreen realmsScreen) {
+		super(NarratorManager.field_18967);
 		this.realmsScreen = realmsScreen;
 	}
 

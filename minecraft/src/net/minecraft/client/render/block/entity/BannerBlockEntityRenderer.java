@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.StandingBannerBlock;
 import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.client.model.Cuboid;
@@ -33,9 +33,9 @@ public class BannerBlockEntityRenderer extends BlockEntityRenderer<BannerBlockEn
 		} else {
 			l = bannerBlockEntity.getWorld().getTime();
 			BlockState blockState = bannerBlockEntity.getCachedState();
-			if (blockState.getBlock() instanceof StandingBannerBlock) {
+			if (blockState.getBlock() instanceof BannerBlock) {
 				GlStateManager.translatef((float)d + 0.5F, (float)e + 0.5F, (float)f + 0.5F);
-				GlStateManager.rotatef((float)(-(Integer)blockState.get(StandingBannerBlock.ROTATION) * 360) / 16.0F, 0.0F, 1.0F, 0.0F);
+				GlStateManager.rotatef((float)(-(Integer)blockState.get(BannerBlock.ROTATION) * 360) / 16.0F, 0.0F, 1.0F, 0.0F);
 				cuboid.visible = true;
 			} else {
 				GlStateManager.translatef((float)d + 0.5F, (float)e - 0.16666667F, (float)f + 0.5F);

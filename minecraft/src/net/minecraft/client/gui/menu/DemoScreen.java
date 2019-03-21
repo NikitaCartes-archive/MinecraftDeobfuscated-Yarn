@@ -7,6 +7,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 
@@ -14,23 +15,21 @@ import net.minecraft.util.SystemUtil;
 public class DemoScreen extends Screen {
 	private static final Identifier DEMO_BG = new Identifier("textures/gui/demo_background.png");
 
+	public DemoScreen() {
+		super(new TranslatableTextComponent("demo.help.title"));
+	}
+
 	@Override
 	protected void onInitialized() {
 		int i = -16;
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 116, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.buy")) {
-			@Override
-			public void onPressed() {
-				this.active = false;
-				SystemUtil.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later")) {
-			@Override
-			public void onPressed() {
-				DemoScreen.this.client.openScreen(null);
-				DemoScreen.this.client.mouse.lockCursor();
-			}
-		});
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 116, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.buy"), buttonWidget -> {
+			buttonWidget.active = false;
+			SystemUtil.getOperatingSystem().open("http://www.minecraft.net/store?source=demo");
+		}));
+		this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, this.screenHeight / 2 + 62 + -16, 114, 20, I18n.translate("demo.help.later"), buttonWidget -> {
+			this.client.openScreen(null);
+			this.client.mouse.lockCursor();
+		}));
 	}
 
 	@Override
@@ -48,7 +47,7 @@ public class DemoScreen extends Screen {
 		this.drawBackground();
 		int k = (this.screenWidth - 248) / 2 + 10;
 		int l = (this.screenHeight - 166) / 2 + 8;
-		this.fontRenderer.draw(I18n.translate("demo.help.title"), (float)k, (float)l, 2039583);
+		this.fontRenderer.draw(this.title.getFormattedText(), (float)k, (float)l, 2039583);
 		l += 12;
 		GameOptions gameOptions = this.client.options;
 		this.fontRenderer

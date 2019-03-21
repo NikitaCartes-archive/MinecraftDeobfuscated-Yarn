@@ -20,7 +20,7 @@ public class AvoidGoal extends TrackTargetGoal {
 	public AvoidGoal(MobEntityWithAi mobEntityWithAi, Class<?>... classs) {
 		super(mobEntityWithAi, true);
 		this.field_6637 = classs;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18408));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
 	}
 
 	@Override

@@ -105,7 +105,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		public DefendTraderGoal(LlamaEntity llamaEntity) {
 			super(llamaEntity, false);
 			this.field_17718 = llamaEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18408));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
 		}
 
 		@Override

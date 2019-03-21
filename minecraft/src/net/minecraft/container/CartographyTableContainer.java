@@ -124,11 +124,11 @@ public class CartographyTableContainer extends Container {
 			MapState mapState = FilledMapItem.method_7997(itemStack, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
-				if (item == Items.field_8407 && !mapState.field_17403 && mapState.scale < 4) {
+				if (item == Items.field_8407 && !mapState.locked && mapState.scale < 4) {
 					itemStack4 = itemStack.copy();
 					itemStack4.setAmount(1);
 					itemStack4.getOrCreateTag().putInt("map_scale_direction", 1);
-				} else if (item == Items.GLASS_PANE && !mapState.field_17403) {
+				} else if (item == Items.GLASS_PANE && !mapState.locked) {
 					itemStack4 = itemStack.copy();
 					itemStack4.setAmount(1);
 				} else {

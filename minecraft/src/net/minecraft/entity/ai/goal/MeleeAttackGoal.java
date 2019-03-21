@@ -25,7 +25,7 @@ public class MeleeAttackGoal extends Goal {
 		this.entity = mobEntityWithAi;
 		this.field_6500 = d;
 		this.field_6502 = bl;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 	}
 
 	@Override

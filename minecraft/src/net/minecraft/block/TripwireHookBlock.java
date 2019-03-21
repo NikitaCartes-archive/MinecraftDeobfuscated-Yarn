@@ -25,8 +25,8 @@ import net.minecraft.world.World;
 
 public class TripwireHookBlock extends Block {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
-	public static final BooleanProperty field_11671 = Properties.POWERED;
-	public static final BooleanProperty field_11669 = Properties.ATTACHED;
+	public static final BooleanProperty POWERED = Properties.POWERED;
+	public static final BooleanProperty ATTACHED = Properties.ATTACHED;
 	protected static final VoxelShape field_11665 = Block.createCuboidShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
 	protected static final VoxelShape field_11668 = Block.createCuboidShape(5.0, 0.0, 0.0, 11.0, 10.0, 6.0);
 	protected static final VoxelShape field_11670 = Block.createCuboidShape(10.0, 0.0, 5.0, 16.0, 10.0, 11.0);
@@ -35,7 +35,7 @@ public class TripwireHookBlock extends Block {
 	public TripwireHookBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_11671, Boolean.valueOf(false)).with(field_11669, Boolean.valueOf(false))
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false))
 		);
 	}
 
@@ -78,7 +78,7 @@ public class TripwireHookBlock extends Block {
 	@Nullable
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.getDefaultState().with(field_11671, Boolean.valueOf(false)).with(field_11669, Boolean.valueOf(false));
+		BlockState blockState = this.getDefaultState().with(POWERED, Boolean.valueOf(false)).with(ATTACHED, Boolean.valueOf(false));
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		Direction[] directions = itemPlacementContext.getPlacementFacings();
@@ -103,8 +103,8 @@ public class TripwireHookBlock extends Block {
 
 	public void method_10776(World world, BlockPos blockPos, BlockState blockState, boolean bl, boolean bl2, int i, @Nullable BlockState blockState2) {
 		Direction direction = blockState.get(FACING);
-		boolean bl3 = (Boolean)blockState.get(field_11669);
-		boolean bl4 = (Boolean)blockState.get(field_11671);
+		boolean bl3 = (Boolean)blockState.get(ATTACHED);
+		boolean bl4 = (Boolean)blockState.get(POWERED);
 		boolean bl5 = !bl;
 		boolean bl6 = false;
 		int j = 0;
@@ -141,7 +141,7 @@ public class TripwireHookBlock extends Block {
 
 		bl5 &= j > 1;
 		bl6 &= bl5;
-		BlockState blockState4 = this.getDefaultState().with(field_11669, Boolean.valueOf(bl5)).with(field_11671, Boolean.valueOf(bl6));
+		BlockState blockState4 = this.getDefaultState().with(ATTACHED, Boolean.valueOf(bl5)).with(POWERED, Boolean.valueOf(bl6));
 		if (j > 0) {
 			BlockPos blockPos2x = blockPos.offset(direction, j);
 			Direction direction2 = direction.getOpposite();
@@ -163,7 +163,7 @@ public class TripwireHookBlock extends Block {
 				BlockPos blockPos3 = blockPos.offset(direction, l);
 				BlockState blockState5 = blockStates[l];
 				if (blockState5 != null) {
-					world.setBlockState(blockPos3, blockState5.with(field_11669, Boolean.valueOf(bl5)), 3);
+					world.setBlockState(blockPos3, blockState5.with(ATTACHED, Boolean.valueOf(bl5)), 3);
 					if (!world.getBlockState(blockPos3).isAir()) {
 					}
 				}
@@ -196,8 +196,8 @@ public class TripwireHookBlock extends Block {
 	@Override
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!bl && blockState.getBlock() != blockState2.getBlock()) {
-			boolean bl2 = (Boolean)blockState.get(field_11669);
-			boolean bl3 = (Boolean)blockState.get(field_11671);
+			boolean bl2 = (Boolean)blockState.get(ATTACHED);
+			boolean bl3 = (Boolean)blockState.get(POWERED);
 			if (bl2 || bl3) {
 				this.method_10776(world, blockPos, blockState, true, false, -1, null);
 			}
@@ -213,12 +213,12 @@ public class TripwireHookBlock extends Block {
 
 	@Override
 	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		return blockState.get(field_11671) ? 15 : 0;
+		return blockState.get(POWERED) ? 15 : 0;
 	}
 
 	@Override
 	public int getStrongRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
-		if (!(Boolean)blockState.get(field_11671)) {
+		if (!(Boolean)blockState.get(POWERED)) {
 			return 0;
 		} else {
 			return blockState.get(FACING) == direction ? 15 : 0;
@@ -247,6 +247,6 @@ public class TripwireHookBlock extends Block {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, field_11671, field_11669);
+		builder.with(FACING, POWERED, ATTACHED);
 	}
 }

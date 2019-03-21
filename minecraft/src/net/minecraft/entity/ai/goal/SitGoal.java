@@ -10,7 +10,7 @@ public class SitGoal extends Goal {
 
 	public SitGoal(TameableEntity tameableEntity) {
 		this.entity = tameableEntity;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407, Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 	}
 
 	@Override

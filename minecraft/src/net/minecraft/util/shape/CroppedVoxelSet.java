@@ -2,8 +2,8 @@ package net.minecraft.util.shape;
 
 import net.minecraft.util.math.Direction;
 
-public final class OffsetVoxelShapeContainer extends AbstractVoxelShapeContainer {
-	private final AbstractVoxelShapeContainer parent;
+final class CroppedVoxelSet extends VoxelSet {
+	private final VoxelSet parent;
 	private final int xMin;
 	private final int yMin;
 	private final int zMin;
@@ -11,9 +11,9 @@ public final class OffsetVoxelShapeContainer extends AbstractVoxelShapeContainer
 	private final int yMax;
 	private final int zMax;
 
-	public OffsetVoxelShapeContainer(AbstractVoxelShapeContainer abstractVoxelShapeContainer, int i, int j, int k, int l, int m, int n) {
+	public CroppedVoxelSet(VoxelSet voxelSet, int i, int j, int k, int l, int m, int n) {
 		super(l - i, m - j, n - k);
-		this.parent = abstractVoxelShapeContainer;
+		this.parent = voxelSet;
 		this.xMin = i;
 		this.yMin = j;
 		this.zMin = k;
@@ -28,8 +28,8 @@ public final class OffsetVoxelShapeContainer extends AbstractVoxelShapeContainer
 	}
 
 	@Override
-	public void modify(int i, int j, int k, boolean bl, boolean bl2) {
-		this.parent.modify(this.xMin + i, this.yMin + j, this.zMin + k, bl, bl2);
+	public void set(int i, int j, int k, boolean bl, boolean bl2) {
+		this.parent.set(this.xMin + i, this.yMin + j, this.zMin + k, bl, bl2);
 	}
 
 	@Override

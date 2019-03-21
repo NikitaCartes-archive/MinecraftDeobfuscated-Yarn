@@ -9,13 +9,8 @@ import net.minecraft.client.gui.menu.RealmsButton;
 public class RealmsButtonWidget extends ButtonWidget implements RealmsButton<net.minecraft.realms.RealmsButton> {
 	private final net.minecraft.realms.RealmsButton realmsButton;
 
-	public RealmsButtonWidget(net.minecraft.realms.RealmsButton realmsButton, int i, int j, String string) {
-		super(i, j, string);
-		this.realmsButton = realmsButton;
-	}
-
-	public RealmsButtonWidget(net.minecraft.realms.RealmsButton realmsButton, int i, int j, String string, int k, int l) {
-		super(i, j, k, l, string);
+	public RealmsButtonWidget(net.minecraft.realms.RealmsButton realmsButton, int i, int j, String string, int k, int l, ButtonWidget.class_4241 arg) {
+		super(i, j, k, l, string, arg);
 		this.realmsButton = realmsButton;
 	}
 
@@ -54,7 +49,7 @@ public class RealmsButtonWidget extends ButtonWidget implements RealmsButton<net
 	}
 
 	@Override
-	public void onPressed() {
+	public void onClick(double d, double e) {
 		this.realmsButton.onPress();
 	}
 

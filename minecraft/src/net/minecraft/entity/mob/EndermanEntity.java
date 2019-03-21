@@ -385,7 +385,10 @@ public class EndermanEntity extends HostileEntity {
 		private boolean method_7033(
 			ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState, BlockState blockState2, BlockState blockState3, BlockPos blockPos2
 		) {
-			return blockState2.isAir() && !blockState3.isAir() && blockState3.method_11604(viewableWorld, blockPos2) && blockState.canPlaceAt(viewableWorld, blockPos);
+			return blockState2.isAir()
+				&& !blockState3.isAir()
+				&& Block.isShapeFullCube(blockState3.getCollisionShape(viewableWorld, blockPos2))
+				&& blockState.canPlaceAt(viewableWorld, blockPos);
 		}
 	}
 
@@ -468,7 +471,7 @@ public class EndermanEntity extends HostileEntity {
 
 		public class_4159(EndermanEntity endermanEntity) {
 			this.field_18524 = endermanEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407, Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 		}
 
 		@Override

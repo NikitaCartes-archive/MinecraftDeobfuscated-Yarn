@@ -7,7 +7,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class AutomaticItemPlacementContext extends ItemPlacementContext {
-	private final Direction field_13362;
+	private final Direction direction;
 
 	public AutomaticItemPlacementContext(World world, BlockPos blockPos, Direction direction, ItemStack itemStack, Direction direction2) {
 		super(
@@ -16,7 +16,7 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 			itemStack,
 			new BlockHitResult(new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), direction2, blockPos, false)
 		);
-		this.field_13362 = direction;
+		this.direction = direction;
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 
 	@Override
 	public Direction[] getPlacementFacings() {
-		switch (this.field_13362) {
+		switch (this.direction) {
 			case DOWN:
 			default:
 				return new Direction[]{Direction.DOWN, Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST, Direction.UP};
@@ -60,7 +60,7 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 
 	@Override
 	public Direction getPlayerHorizontalFacing() {
-		return this.field_13362.getAxis() == Direction.Axis.Y ? Direction.NORTH : this.field_13362;
+		return this.direction.getAxis() == Direction.Axis.Y ? Direction.NORTH : this.direction;
 	}
 
 	@Override
@@ -70,6 +70,6 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 
 	@Override
 	public float getPlayerYaw() {
-		return (float)(this.field_13362.getHorizontal() * 90);
+		return (float)(this.direction.getHorizontal() * 90);
 	}
 }

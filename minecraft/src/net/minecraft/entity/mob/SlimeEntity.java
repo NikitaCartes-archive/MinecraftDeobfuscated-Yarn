@@ -395,7 +395,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		public class_1622(SlimeEntity slimeEntity) {
 			this.field_7393 = slimeEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18406));
 		}
 
 		@Override
@@ -442,7 +442,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		public class_1623(SlimeEntity slimeEntity) {
 			this.field_7394 = slimeEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407, Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 			slimeEntity.getNavigation().setCanSwim(true);
 		}
 
@@ -466,7 +466,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		public class_1624(SlimeEntity slimeEntity) {
 			this.field_7395 = slimeEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407, Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 		}
 
 		@Override
@@ -487,7 +487,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 		public class_1626(SlimeEntity slimeEntity) {
 			this.field_7402 = slimeEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18406));
 		}
 
 		@Override

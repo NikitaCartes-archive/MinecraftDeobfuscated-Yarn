@@ -29,16 +29,15 @@ public class SettingsScreen extends Screen {
 	private ButtonWidget difficultyButton;
 	private LockButtonWidget lockDifficultyButton;
 	private Difficulty field_18745;
-	protected String title = "Options";
 
 	public SettingsScreen(Screen screen, GameOptions gameOptions) {
+		super(new TranslatableTextComponent("options.title"));
 		this.parent = screen;
 		this.settings = gameOptions;
 	}
 
 	@Override
 	protected void onInitialized() {
-		this.title = I18n.translate("options.title");
 		int i = 0;
 
 		for (GameOption gameOption : field_2504) {
@@ -50,34 +49,35 @@ public class SettingsScreen extends Screen {
 
 		if (this.client.world != null) {
 			this.field_18745 = this.client.world.getDifficulty();
-			this.difficultyButton = new ButtonWidget(
-				this.screenWidth / 2 - 155 + i % 2 * 160, this.screenHeight / 6 - 12 + 24 * (i >> 1), 150, 20, this.method_2189(this.field_18745)
-			) {
-				@Override
-				public void onPressed() {
-					SettingsScreen.this.field_18745 = Difficulty.getDifficulty(SettingsScreen.this.field_18745.getId() + 1);
-					SettingsScreen.this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(SettingsScreen.this.field_18745));
-					SettingsScreen.this.difficultyButton.setMessage(SettingsScreen.this.method_2189(SettingsScreen.this.field_18745));
-				}
-			};
-			this.addButton(this.difficultyButton);
+			this.difficultyButton = this.addButton(
+				new ButtonWidget(
+					this.screenWidth / 2 - 155 + i % 2 * 160, this.screenHeight / 6 - 12 + 24 * (i >> 1), 150, 20, this.method_2189(this.field_18745), buttonWidget -> {
+						this.field_18745 = Difficulty.getDifficulty(this.field_18745.getId() + 1);
+						this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(this.field_18745));
+						this.difficultyButton.setMessage(this.method_2189(this.field_18745));
+					}
+				)
+			);
 			if (this.client.isIntegratedServerRunning() && !this.client.world.getLevelProperties().isHardcore()) {
 				this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
-				this.lockDifficultyButton = new LockButtonWidget(this.difficultyButton.x + this.difficultyButton.getWidth(), this.difficultyButton.y) {
-					@Override
-					public void onPressed() {
-						TranslatableTextComponent translatableTextComponent = new TranslatableTextComponent("difficulty.lock.title");
-						TranslatableTextComponent translatableTextComponent2 = new TranslatableTextComponent(
-							"options.difficulty." + SettingsScreen.this.client.world.getLevelProperties().getDifficulty().getTranslationKey()
-						);
-						TranslatableTextComponent translatableTextComponent3 = new TranslatableTextComponent("difficulty.lock.question", translatableTextComponent2);
-						YesNoScreen yesNoScreen = new YesNoScreen(
-							SettingsScreen.this, translatableTextComponent.getFormattedText(), translatableTextComponent3.getFormattedText(), 109
-						);
-						SettingsScreen.this.client.openScreen(yesNoScreen);
-					}
-				};
-				this.addButton(this.lockDifficultyButton);
+				this.lockDifficultyButton = this.addButton(
+					new LockButtonWidget(
+						this.difficultyButton.x + this.difficultyButton.getWidth(),
+						this.difficultyButton.y,
+						buttonWidget -> this.client
+								.openScreen(
+									new YesNoScreen(
+										this,
+										new TranslatableTextComponent("difficulty.lock.title"),
+										new TranslatableTextComponent(
+											"difficulty.lock.question",
+											new TranslatableTextComponent("options.difficulty." + this.client.world.getLevelProperties().getDifficulty().getTranslationKey())
+										),
+										109
+									)
+								)
+					)
+				);
 				this.lockDifficultyButton.setLocked(this.client.world.getLevelProperties().isDifficultyLocked());
 				this.lockDifficultyButton.active = !this.lockDifficultyButton.isLocked();
 				this.difficultyButton.active = !this.lockDifficultyButton.isLocked();
@@ -92,75 +92,101 @@ public class SettingsScreen extends Screen {
 					150,
 					20,
 					GameOption.REALMS_NOTIFICATIONS,
-					GameOption.REALMS_NOTIFICATIONS.method_18495(this.settings)
-				) {
-					@Override
-					public void onPressed() {
-						GameOption.REALMS_NOTIFICATIONS.method_18491(SettingsScreen.this.settings);
-						SettingsScreen.this.settings.write();
-						this.setMessage(GameOption.REALMS_NOTIFICATIONS.method_18495(SettingsScreen.this.settings));
+					GameOption.REALMS_NOTIFICATIONS.method_18495(this.settings),
+					buttonWidget -> {
+						GameOption.REALMS_NOTIFICATIONS.method_18491(this.settings);
+						this.settings.write();
+						buttonWidget.setMessage(GameOption.REALMS_NOTIFICATIONS.method_18495(this.settings));
 					}
-				}
+				)
 			);
 		}
 
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 48 - 6, 150, 20, I18n.translate("options.skinCustomisation")) {
-			@Override
-			public void onPressed() {
-				SettingsScreen.this.client.openScreen(new SkinSettingsScreen(SettingsScreen.this));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 48 - 6, 150, 20, I18n.translate("options.sounds")) {
-			@Override
-			public void onPressed() {
-				SettingsScreen.this.client.openScreen(new AudioSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 72 - 6, 150, 20, I18n.translate("options.video")) {
-			@Override
-			public void onPressed() {
-				SettingsScreen.this.client.openScreen(new VideoSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 72 - 6, 150, 20, I18n.translate("options.controls")) {
-			@Override
-			public void onPressed() {
-				SettingsScreen.this.client.openScreen(new ControlsSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
-			}
-		});
 		this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 96 - 6, 150, 20, I18n.translate("options.language")) {
-				@Override
-				public void onPressed() {
-					SettingsScreen.this.client
-						.openScreen(new LanguageSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings, SettingsScreen.this.client.getLanguageManager()));
-				}
-			}
+			new ButtonWidget(
+				this.screenWidth / 2 - 155,
+				this.screenHeight / 6 + 48 - 6,
+				150,
+				20,
+				I18n.translate("options.skinCustomisation"),
+				buttonWidget -> this.client.openScreen(new SkinSettingsScreen(this))
+			)
 		);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 96 - 6, 150, 20, I18n.translate("options.chat.title")) {
-			@Override
-			public void onPressed() {
-				SettingsScreen.this.client.openScreen(new ChatSettingsScreen(SettingsScreen.this, SettingsScreen.this.settings));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight / 6 + 120 - 6, 150, 20, I18n.translate("options.resourcepack")) {
-			@Override
-			public void onPressed() {
-				SettingsScreen.this.client.openScreen(new ResourcePackSettingsScreen(SettingsScreen.this));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, this.screenHeight / 6 + 120 - 6, 150, 20, I18n.translate("options.accessibility.title")) {
-			@Override
-			public void onPressed() {
-				SettingsScreen.this.client.openScreen(new AccessibilityScreen(SettingsScreen.this, SettingsScreen.this.settings));
-			}
-		});
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				SettingsScreen.this.client.openScreen(SettingsScreen.this.parent);
-			}
-		});
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 + 5,
+				this.screenHeight / 6 + 48 - 6,
+				150,
+				20,
+				I18n.translate("options.sounds"),
+				buttonWidget -> this.client.openScreen(new AudioSettingsScreen(this, this.settings))
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 155,
+				this.screenHeight / 6 + 72 - 6,
+				150,
+				20,
+				I18n.translate("options.video"),
+				buttonWidget -> this.client.openScreen(new VideoSettingsScreen(this, this.settings))
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 + 5,
+				this.screenHeight / 6 + 72 - 6,
+				150,
+				20,
+				I18n.translate("options.controls"),
+				buttonWidget -> this.client.openScreen(new ControlsSettingsScreen(this, this.settings))
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 155,
+				this.screenHeight / 6 + 96 - 6,
+				150,
+				20,
+				I18n.translate("options.language"),
+				buttonWidget -> this.client.openScreen(new LanguageSettingsScreen(this, this.settings, this.client.getLanguageManager()))
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 + 5,
+				this.screenHeight / 6 + 96 - 6,
+				150,
+				20,
+				I18n.translate("options.chat.title"),
+				buttonWidget -> this.client.openScreen(new ChatSettingsScreen(this, this.settings))
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 155,
+				this.screenHeight / 6 + 120 - 6,
+				150,
+				20,
+				I18n.translate("options.resourcepack"),
+				buttonWidget -> this.client.openScreen(new ResourcePackSettingsScreen(this))
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 + 5,
+				this.screenHeight / 6 + 120 - 6,
+				150,
+				20,
+				I18n.translate("options.accessibility.title"),
+				buttonWidget -> this.client.openScreen(new AccessibilityScreen(this, this.settings))
+			)
+		);
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(this.parent)
+			)
+		);
 	}
 
 	public String method_2189(Difficulty difficulty) {
@@ -186,7 +212,7 @@ public class SettingsScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 15, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 15, 16777215);
 		super.render(i, j, f);
 	}
 }

@@ -4,28 +4,35 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Tessellator;
+import net.minecraft.text.StringTextComponent;
+import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 
 @Environment(EnvType.CLIENT)
 public abstract class ResourcePackListWidget extends EntryListWidget<ResourcePackListEntry> {
-	protected final MinecraftClient field_3166;
+	private final MinecraftClient field_3166;
+	private final TextComponent field_18978;
 
-	public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j) {
+	public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j, TextComponent textComponent) {
 		super(minecraftClient, i, j, 32, j - 55 + 4, 36);
 		this.field_3166 = minecraftClient;
 		this.centerListVertically = false;
 		this.setRenderHeader(true, (int)(9.0F * 1.5F));
+		this.field_18978 = textComponent;
 	}
 
 	@Override
 	protected void renderHeader(int i, int j, Tessellator tessellator) {
-		String string = TextFormat.field_1073 + "" + TextFormat.field_1067 + this.getTitle();
+		TextComponent textComponent = new StringTextComponent("").append(this.field_18978).applyFormat(TextFormat.field_1073, TextFormat.field_1067);
 		this.field_3166
 			.textRenderer
-			.draw(string, (float)(i + this.width / 2 - this.field_3166.textRenderer.getStringWidth(string) / 2), (float)Math.min(this.y + 3, j), 16777215);
+			.draw(
+				textComponent.getFormattedText(),
+				(float)(i + this.width / 2 - this.field_3166.textRenderer.getStringWidth(textComponent.getFormattedText()) / 2),
+				(float)Math.min(this.y + 3, j),
+				16777215
+			);
 	}
-
-	protected abstract String getTitle();
 
 	@Override
 	public int getEntryWidth() {

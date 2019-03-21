@@ -8,6 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -35,32 +36,16 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 
 			for (int i = 0; i < 4; i++) {
 				BlockPos blockPos2 = blockPos.add(random.nextInt(4) - random.nextInt(4), random.nextInt(3) - random.nextInt(3), random.nextInt(4) - random.nextInt(4));
-				BlockPos blockPos3 = blockPos2.down();
-				if (iWorld.isAir(blockPos2) && iWorld.getBlockState(blockPos3).hasSolidTopSurface(iWorld, blockPos3)) {
+				if (iWorld.isAir(blockPos2)) {
 					iWorld.setBlockState(blockPos2, Blocks.field_10034.getDefaultState(), 2);
 					LootableContainerBlockEntity.setLootTable(iWorld, random, blockPos2, LootTables.CHEST_SPAWN_BONUS);
-					BlockPos blockPos4 = blockPos2.east();
-					BlockPos blockPos5 = blockPos2.west();
-					BlockPos blockPos6 = blockPos2.north();
-					BlockPos blockPos7 = blockPos2.south();
-					BlockPos blockPos8 = blockPos5.down();
-					if (iWorld.isAir(blockPos5) && iWorld.getBlockState(blockPos8).hasSolidTopSurface(iWorld, blockPos8)) {
-						iWorld.setBlockState(blockPos5, Blocks.field_10336.getDefaultState(), 2);
-					}
+					BlockState blockState2 = Blocks.field_10336.getDefaultState();
 
-					BlockPos blockPos9 = blockPos4.down();
-					if (iWorld.isAir(blockPos4) && iWorld.getBlockState(blockPos9).hasSolidTopSurface(iWorld, blockPos9)) {
-						iWorld.setBlockState(blockPos4, Blocks.field_10336.getDefaultState(), 2);
-					}
-
-					BlockPos blockPos10 = blockPos6.down();
-					if (iWorld.isAir(blockPos6) && iWorld.getBlockState(blockPos10).hasSolidTopSurface(iWorld, blockPos10)) {
-						iWorld.setBlockState(blockPos6, Blocks.field_10336.getDefaultState(), 2);
-					}
-
-					BlockPos blockPos11 = blockPos7.down();
-					if (iWorld.isAir(blockPos7) && iWorld.getBlockState(blockPos11).hasSolidTopSurface(iWorld, blockPos11)) {
-						iWorld.setBlockState(blockPos7, Blocks.field_10336.getDefaultState(), 2);
+					for (Direction direction : Direction.Type.HORIZONTAL) {
+						BlockPos blockPos3 = blockPos2.offset(direction);
+						if (blockState2.canPlaceAt(iWorld, blockPos3)) {
+							iWorld.setBlockState(blockPos3, blockState2, 2);
+						}
 					}
 
 					return true;

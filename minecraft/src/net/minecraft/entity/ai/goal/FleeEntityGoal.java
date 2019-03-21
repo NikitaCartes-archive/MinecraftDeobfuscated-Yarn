@@ -39,7 +39,7 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 		this.field_6395 = e;
 		this.field_6388 = predicate2;
 		this.field_6394 = mobEntityWithAi.getNavigation();
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		this.field_18084 = new TargetPredicate().setBaseMaxDistance((double)f).setPredicate(predicate2.and(predicate));
 	}
 

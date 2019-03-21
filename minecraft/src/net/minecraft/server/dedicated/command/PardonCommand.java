@@ -29,7 +29,7 @@ public class PardonCommand {
 									commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().getNames(), suggestionsBuilder
 								)
 						)
-						.executes(commandContext -> method_13473(commandContext.getSource(), GameProfileArgumentType.getProfilesArgument(commandContext, "targets")))
+						.executes(commandContext -> method_13473(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
 				)
 		);
 	}

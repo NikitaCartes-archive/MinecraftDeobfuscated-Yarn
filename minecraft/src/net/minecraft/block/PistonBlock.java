@@ -29,7 +29,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class PistonBlock extends FacingBlock {
-	public static final BooleanProperty field_12191 = Properties.EXTENDED;
+	public static final BooleanProperty EXTENDED = Properties.EXTENDED;
 	protected static final VoxelShape field_12188 = Block.createCuboidShape(0.0, 0.0, 0.0, 12.0, 16.0, 16.0);
 	protected static final VoxelShape field_12184 = Block.createCuboidShape(4.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 	protected static final VoxelShape field_12186 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 12.0);
@@ -40,18 +40,18 @@ public class PistonBlock extends FacingBlock {
 
 	public PistonBlock(boolean bl, Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(field_12191, Boolean.valueOf(false)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(EXTENDED, Boolean.valueOf(false)));
 		this.isSticky = bl;
 	}
 
 	@Override
 	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !(Boolean)blockState.get(field_12191);
+		return !(Boolean)blockState.get(EXTENDED);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		if ((Boolean)blockState.get(field_12191)) {
+		if ((Boolean)blockState.get(EXTENDED)) {
 			switch ((Direction)blockState.get(FACING)) {
 				case DOWN:
 					return field_12190;
@@ -70,11 +70,6 @@ public class PistonBlock extends FacingBlock {
 		} else {
 			return VoxelShapes.fullCube();
 		}
-	}
-
-	@Override
-	public boolean hasSolidTopSurface(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !(Boolean)blockState.get(field_12191) || blockState.get(FACING) == Direction.DOWN;
 	}
 
 	@Override
@@ -107,17 +102,17 @@ public class PistonBlock extends FacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite()).with(field_12191, Boolean.valueOf(false));
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite()).with(EXTENDED, Boolean.valueOf(false));
 	}
 
 	private void method_11483(World world, BlockPos blockPos, BlockState blockState) {
 		Direction direction = blockState.get(FACING);
 		boolean bl = this.method_11482(world, blockPos, direction);
-		if (bl && !(Boolean)blockState.get(field_12191)) {
+		if (bl && !(Boolean)blockState.get(EXTENDED)) {
 			if (new PistonHandler(world, blockPos, direction, true).calculatePush()) {
 				world.addBlockAction(blockPos, this, 0, direction.getId());
 			}
-		} else if (!bl && (Boolean)blockState.get(field_12191)) {
+		} else if (!bl && (Boolean)blockState.get(EXTENDED)) {
 			BlockPos blockPos2 = blockPos.offset(direction, 2);
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			int i = 1;
@@ -164,7 +159,7 @@ public class PistonBlock extends FacingBlock {
 		if (!world.isClient) {
 			boolean bl = this.method_11482(world, blockPos, direction);
 			if (bl && (i == 1 || i == 2)) {
-				world.setBlockState(blockPos, blockState.with(field_12191, Boolean.valueOf(true)), 2);
+				world.setBlockState(blockPos, blockState.with(EXTENDED, Boolean.valueOf(true)), 2);
 				return false;
 			}
 
@@ -178,7 +173,7 @@ public class PistonBlock extends FacingBlock {
 				return false;
 			}
 
-			world.setBlockState(blockPos, blockState.with(field_12191, Boolean.valueOf(true)), 67);
+			world.setBlockState(blockPos, blockState.with(EXTENDED, Boolean.valueOf(true)), 67);
 			world.playSound(null, blockPos, SoundEvents.field_15134, SoundCategory.field_15245, 0.5F, world.random.nextFloat() * 0.25F + 0.6F);
 		} else if (i == 1 || i == 2) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos.offset(direction));
@@ -254,7 +249,7 @@ public class PistonBlock extends FacingBlock {
 						case field_15970:
 							return direction == direction2;
 					}
-				} else if ((Boolean)blockState.get(field_12191)) {
+				} else if ((Boolean)blockState.get(EXTENDED)) {
 					return false;
 				}
 
@@ -314,7 +309,7 @@ public class PistonBlock extends FacingBlock {
 
 			if (bl) {
 				PistonType pistonType = this.isSticky ? PistonType.field_12634 : PistonType.field_12637;
-				BlockState blockState2 = Blocks.field_10379.getDefaultState().with(PistonHeadBlock.FACING, direction).with(PistonHeadBlock.field_12224, pistonType);
+				BlockState blockState2 = Blocks.field_10379.getDefaultState().with(PistonHeadBlock.FACING, direction).with(PistonHeadBlock.TYPE, pistonType);
 				BlockState blockState = Blocks.field_10008
 					.getDefaultState()
 					.with(PistonExtensionBlock.FACING, direction)
@@ -359,12 +354,12 @@ public class PistonBlock extends FacingBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACING, field_12191);
+		builder.with(FACING, EXTENDED);
 	}
 
 	@Override
 	public boolean method_9526(BlockState blockState) {
-		return (Boolean)blockState.get(field_12191);
+		return (Boolean)blockState.get(EXTENDED);
 	}
 
 	@Override

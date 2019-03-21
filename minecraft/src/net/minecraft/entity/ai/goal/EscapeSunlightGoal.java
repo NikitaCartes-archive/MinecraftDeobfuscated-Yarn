@@ -21,7 +21,7 @@ public class EscapeSunlightGoal extends Goal {
 		this.owner = mobEntityWithAi;
 		this.speed = d;
 		this.world = mobEntityWithAi.world;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 	}
 
 	@Override

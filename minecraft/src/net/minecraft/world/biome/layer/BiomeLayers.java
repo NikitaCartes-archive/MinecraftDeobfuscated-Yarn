@@ -2,7 +2,6 @@ package net.minecraft.world.biome.layer;
 
 import com.google.common.collect.ImmutableList;
 import java.util.function.LongFunction;
-import net.minecraft.class_3639;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
@@ -46,7 +45,7 @@ public class BiomeLayers {
 		layerFactory = AddIslandLayer.field_16158.create((LayerSampleContext<T>)longFunction.apply(2L), layerFactory);
 		LayerFactory<T> layerFactory2 = OceanTemperatureLayer.field_16105.create((LayerSampleContext<T>)longFunction.apply(2L));
 		layerFactory2 = stack(2001L, ScaleLayer.field_16196, layerFactory2, 6, longFunction);
-		layerFactory = class_3639.field_16059.create((LayerSampleContext<T>)longFunction.apply(2L), layerFactory);
+		layerFactory = AddBiomeGroups3And4Layer.field_16059.create((LayerSampleContext<T>)longFunction.apply(2L), layerFactory);
 		layerFactory = IncreaseEdgeCurvatureLayer.INSTANCE.create((LayerSampleContext<T>)longFunction.apply(3L), layerFactory);
 		layerFactory = BiomeGroupLayer.AddGroup2Layer.field_17399.create((LayerSampleContext<T>)longFunction.apply(2L), layerFactory);
 		layerFactory = BiomeGroupLayer.AddGroup3Layer.field_17401.create((LayerSampleContext<T>)longFunction.apply(2L), layerFactory);
@@ -143,7 +142,7 @@ public class BiomeLayers {
 			|| i == DEEP_FROZEN_OCEAN_ID;
 	}
 
-	public static boolean isShallowOcean(int i) {
+	protected static boolean isShallowOcean(int i) {
 		return i == WARM_OCEAN_ID || i == LUKEWARM_OCEAN_ID || i == OCEAN_ID || i == COLD_OCEAN_ID || i == FROZEN_OCEAN_ID;
 	}
 }

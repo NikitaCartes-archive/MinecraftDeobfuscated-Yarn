@@ -1,91 +1,61 @@
 package net.minecraft.block;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.entity.VerticalEntityPosition;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.DyeItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.state.StateFactory;
+import net.minecraft.state.property.IntegerProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.Mirror;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.BlockView;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.ViewableWorld;
 
-public abstract class SignBlock extends BlockWithEntity implements Waterloggable {
-	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
+public class SignBlock extends AbstractSignBlock {
+	public static final IntegerProperty ROTATION = Properties.ROTATION_16;
 
-	protected SignBlock(Block.Settings settings) {
+	public SignBlock(Block.Settings settings) {
 		super(settings);
+		this.setDefaultState(this.stateFactory.getDefaultState().with(ROTATION, Integer.valueOf(0)).with(WATERLOGGED, Boolean.valueOf(false)));
+	}
+
+	@Override
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return viewableWorld.getBlockState(blockPos.down()).getMaterial().method_15799();
+	}
+
+	@Override
+	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
+		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
+		return this.getDefaultState()
+			.with(ROTATION, Integer.valueOf(MathHelper.floor((double)((180.0F + itemPlacementContext.getPlayerYaw()) * 16.0F / 360.0F) + 0.5) & 15))
+			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if ((Boolean)blockState.get(WATERLOGGED)) {
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
-		}
-
-		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
+			? Blocks.field_10124.getDefaultState()
+			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
-	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
-		return SHAPE;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public boolean hasBlockEntityBreakingRender(BlockState blockState) {
-		return true;
+	public BlockState rotate(BlockState blockState, Rotation rotation) {
+		return blockState.with(ROTATION, Integer.valueOf(rotation.method_10502((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
-	public boolean canMobSpawnInside() {
-		return true;
+	public BlockState mirror(BlockState blockState, Mirror mirror) {
+		return blockState.with(ROTATION, Integer.valueOf(mirror.method_10344((Integer)blockState.get(ROTATION), 16)));
 	}
 
 	@Override
-	public BlockEntity createBlockEntity(BlockView blockView) {
-		return new SignBlockEntity();
-	}
-
-	@Override
-	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		if (world.isClient) {
-			return true;
-		} else {
-			BlockEntity blockEntity = world.getBlockEntity(blockPos);
-			if (blockEntity instanceof SignBlockEntity) {
-				SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
-				ItemStack itemStack = playerEntity.getStackInHand(hand);
-				if (itemStack.getItem() instanceof DyeItem && playerEntity.abilities.creativeMode) {
-					boolean bl = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
-					if (bl && !playerEntity.isCreative()) {
-						itemStack.subtractAmount(1);
-					}
-				}
-
-				return signBlockEntity.onActivate(playerEntity);
-			} else {
-				return false;
-			}
-		}
-	}
-
-	@Override
-	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
+		builder.with(ROTATION, WATERLOGGED);
 	}
 }

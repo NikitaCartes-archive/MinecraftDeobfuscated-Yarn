@@ -22,7 +22,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	private static final VoxelShape NORMAL_OUTLINE_SHAPE;
 	private static final VoxelShape BOTTOM_OUTLINE_SHAPE;
 	private static final VoxelShape COLLISION_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
-	private static final VoxelShape field_17578 = VoxelShapes.fullCube().offset(0.0, -1.0, 0.0);
+	private static final VoxelShape OUTLINE_SHAPE = VoxelShapes.fullCube().offset(0.0, -1.0, 0.0);
 	public static final IntegerProperty DISTANCE = Properties.DISTANCE_0_7;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	public static final BooleanProperty BOTTOM = Properties.BOTTOM;
@@ -120,7 +120,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		if (verticalEntityPosition.isAboveBlock(VoxelShapes.fullCube(), blockPos, true) && !verticalEntityPosition.isSneaking()) {
 			return NORMAL_OUTLINE_SHAPE;
 		} else {
-			return blockState.get(DISTANCE) != 0 && blockState.get(BOTTOM) && verticalEntityPosition.isAboveBlock(field_17578, blockPos, true)
+			return blockState.get(DISTANCE) != 0 && blockState.get(BOTTOM) && verticalEntityPosition.isAboveBlock(OUTLINE_SHAPE, blockPos, true)
 				? COLLISION_SHAPE
 				: VoxelShapes.empty();
 		}

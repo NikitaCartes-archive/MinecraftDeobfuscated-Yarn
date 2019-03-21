@@ -9,6 +9,7 @@ import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.text.TranslatableTextComponent;
 
 @Environment(EnvType.CLIENT)
 public class ChatSettingsScreen extends Screen {
@@ -29,24 +30,22 @@ public class ChatSettingsScreen extends Screen {
 	};
 	private final Screen parent;
 	private final GameOptions settings;
-	private String field_2353;
 	private AbstractButtonWidget field_2355;
 
 	public ChatSettingsScreen(Screen screen, GameOptions gameOptions) {
+		super(new TranslatableTextComponent("options.chat.title"));
 		this.parent = screen;
 		this.settings = gameOptions;
 	}
 
 	@Override
 	protected void onInitialized() {
-		this.field_2353 = I18n.translate("options.chat.title");
 		int i = 0;
 
 		for (GameOption gameOption : SETTINGS) {
 			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
 			int k = this.screenHeight / 6 + 24 * (i >> 1);
-			AbstractButtonWidget abstractButtonWidget = gameOption.createOptionButton(this.client.options, j, k, 150);
-			this.addButton(abstractButtonWidget);
+			AbstractButtonWidget abstractButtonWidget = this.addButton(gameOption.createOptionButton(this.client.options, j, k, 150));
 			if (gameOption == GameOption.NARRATOR) {
 				this.field_2355 = abstractButtonWidget;
 				abstractButtonWidget.active = NarratorManager.INSTANCE.isActive();
@@ -55,12 +54,16 @@ public class ChatSettingsScreen extends Screen {
 			i++;
 		}
 
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 24 * (i + 1) / 2, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				ChatSettingsScreen.this.client.openScreen(ChatSettingsScreen.this.parent);
-			}
-		});
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 100,
+				this.screenHeight / 6 + 24 * (i + 1) / 2,
+				200,
+				20,
+				I18n.translate("gui.done"),
+				buttonWidget -> this.client.openScreen(this.parent)
+			)
+		);
 	}
 
 	@Override
@@ -71,7 +74,7 @@ public class ChatSettingsScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.field_2353, this.screenWidth / 2, 20, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 20, 16777215);
 		super.render(i, j, f);
 	}
 

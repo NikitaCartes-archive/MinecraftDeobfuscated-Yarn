@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.WaterlilyBlock;
+import net.minecraft.block.LilyPadBlock;
 import net.minecraft.client.network.packet.EntitySpawnS2CPacket;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -479,8 +479,8 @@ public class BoatEntity extends Entity {
 							if (r <= 0 || s != k && s != l - 1) {
 								pooledMutable.method_10113(p, s, q);
 								BlockState blockState = this.world.getBlockState(pooledMutable);
-								if (!(blockState.getBlock() instanceof WaterlilyBlock)
-									&& VoxelShapes.compareShapes(
+								if (!(blockState.getBlock() instanceof LilyPadBlock)
+									&& VoxelShapes.matchesAnywhere(
 										blockState.getCollisionShape(this.world, pooledMutable).offset((double)p, (double)s, (double)q), voxelShape, BooleanBiFunction.AND
 									)) {
 									f += blockState.getBlock().getFrictionCoefficient();

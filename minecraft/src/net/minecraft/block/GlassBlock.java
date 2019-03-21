@@ -14,6 +14,11 @@ public class GlassBlock extends TransparentBlock {
 	}
 
 	@Override
+	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return false;
+	}
+
+	@Override
 	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.CUTOUT;
 	}

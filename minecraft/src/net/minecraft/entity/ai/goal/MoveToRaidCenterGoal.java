@@ -18,7 +18,7 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 
 	public MoveToRaidCenterGoal(T raiderEntity) {
 		this.owner = raiderEntity;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 	}
 
 	@Override

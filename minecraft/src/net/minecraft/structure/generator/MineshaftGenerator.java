@@ -239,9 +239,7 @@ public class MineshaftGenerator {
 		protected boolean method_14915(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Identifier identifier) {
 			BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
 			if (mutableIntBoundingBox.contains(blockPos) && iWorld.getBlockState(blockPos).isAir() && !iWorld.getBlockState(blockPos.down()).isAir()) {
-				BlockState blockState = Blocks.field_10167
-					.getDefaultState()
-					.with(RailBlock.RAIL_SHAPE, random.nextBoolean() ? RailShape.field_12665 : RailShape.field_12674);
+				BlockState blockState = Blocks.field_10167.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.field_12665 : RailShape.field_12674);
 				this.addBlock(iWorld, blockState, i, j, k, mutableIntBoundingBox);
 				ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
 					iWorld.getWorld(), (double)((float)blockPos.getX() + 0.5F), (double)((float)blockPos.getY() + 0.5F), (double)((float)blockPos.getZ() + 0.5F)
@@ -319,7 +317,7 @@ public class MineshaftGenerator {
 				}
 
 				if (this.hasRails) {
-					BlockState blockState3 = Blocks.field_10167.getDefaultState().with(RailBlock.RAIL_SHAPE, RailShape.field_12665);
+					BlockState blockState3 = Blocks.field_10167.getDefaultState().with(RailBlock.SHAPE, RailShape.field_12665);
 
 					for (int oxx = 0; oxx <= m; oxx++) {
 						BlockState blockState4 = this.getBlockAt(iWorld, 1, -1, oxx, mutableIntBoundingBox);

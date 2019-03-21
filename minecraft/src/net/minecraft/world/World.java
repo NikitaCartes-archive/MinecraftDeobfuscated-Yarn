@@ -846,8 +846,13 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		return isHeightInvalid(blockPos) ? false : this.chunkManager.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
 
-	public boolean doesBlockHaveSolidTopSurface(BlockPos blockPos) {
-		return this.isHeightValidAndBlockLoaded(blockPos) && this.getBlockState(blockPos).hasSolidTopSurface(this, blockPos);
+	public boolean doesBlockHaveSolidTopSurface(BlockPos blockPos, Entity entity) {
+		if (isHeightInvalid(blockPos)) {
+			return false;
+		} else {
+			Chunk chunk = this.getChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4, ChunkStatus.FULL, false);
+			return chunk == null ? false : chunk.getBlockState(blockPos).hasSolidTopSurface(this, blockPos, entity);
+		}
 	}
 
 	public void calculateAmbientDarkness() {
@@ -884,8 +889,9 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 
 		for (int m = i; m <= j; m++) {
 			for (int n = k; n <= l; n++) {
-				if (this.isChunkLoaded(m, n)) {
-					this.method_8497(m, n).appendEntities(entity, boundingBox, list, predicate);
+				WorldChunk worldChunk = this.getChunkManager().getWorldChunk(m, n, false);
+				if (worldChunk != null) {
+					worldChunk.appendEntities(entity, boundingBox, list, predicate);
 				}
 			}
 		}

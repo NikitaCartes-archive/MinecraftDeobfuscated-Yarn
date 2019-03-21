@@ -18,6 +18,11 @@ public class StainedGlassBlock extends TransparentBlock {
 		return true;
 	}
 
+	@Override
+	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return false;
+	}
+
 	public DyeColor getColor() {
 		return this.color;
 	}

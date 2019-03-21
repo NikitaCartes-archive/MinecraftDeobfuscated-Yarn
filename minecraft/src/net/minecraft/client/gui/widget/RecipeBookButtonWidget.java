@@ -7,14 +7,14 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class RecipeBookButtonWidget extends ButtonWidget {
+public class RecipeBookButtonWidget extends ButtonWidget {
 	private final Identifier texture;
 	private final int u;
 	private final int v;
 	private final int hoverVOffset;
 
-	public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier) {
-		super(i, j, k, l, "");
+	public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, ButtonWidget.class_4241 arg) {
+		super(i, j, k, l, "", arg);
 		this.u = m;
 		this.v = n;
 		this.hoverVOffset = o;

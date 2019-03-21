@@ -1,11 +1,10 @@
 package net.minecraft.util.shape;
 
 import java.util.BitSet;
-import net.minecraft.class_255;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.math.Direction;
 
-public final class BitSetVoxelShapeContainer extends AbstractVoxelShapeContainer {
+public final class BitSetVoxelSet extends VoxelSet {
 	private final BitSet storage;
 	private int xMin;
 	private int yMin;
@@ -14,11 +13,11 @@ public final class BitSetVoxelShapeContainer extends AbstractVoxelShapeContainer
 	private int yMax;
 	private int zMax;
 
-	public BitSetVoxelShapeContainer(int i, int j, int k) {
+	public BitSetVoxelSet(int i, int j, int k) {
 		this(i, j, k, i, j, k, 0, 0, 0);
 	}
 
-	public BitSetVoxelShapeContainer(int i, int j, int k, int l, int m, int n, int o, int p, int q) {
+	public BitSetVoxelSet(int i, int j, int k, int l, int m, int n, int o, int p, int q) {
 		super(i, j, k);
 		this.storage = new BitSet(i * j * k);
 		this.xMin = l;
@@ -29,17 +28,17 @@ public final class BitSetVoxelShapeContainer extends AbstractVoxelShapeContainer
 		this.zMax = q;
 	}
 
-	public BitSetVoxelShapeContainer(AbstractVoxelShapeContainer abstractVoxelShapeContainer) {
-		super(abstractVoxelShapeContainer.xSize, abstractVoxelShapeContainer.ySize, abstractVoxelShapeContainer.zSize);
-		if (abstractVoxelShapeContainer instanceof BitSetVoxelShapeContainer) {
-			this.storage = (BitSet)((BitSetVoxelShapeContainer)abstractVoxelShapeContainer).storage.clone();
+	public BitSetVoxelSet(VoxelSet voxelSet) {
+		super(voxelSet.xSize, voxelSet.ySize, voxelSet.zSize);
+		if (voxelSet instanceof BitSetVoxelSet) {
+			this.storage = (BitSet)((BitSetVoxelSet)voxelSet).storage.clone();
 		} else {
 			this.storage = new BitSet(this.xSize * this.ySize * this.zSize);
 
 			for (int i = 0; i < this.xSize; i++) {
 				for (int j = 0; j < this.ySize; j++) {
 					for (int k = 0; k < this.zSize; k++) {
-						if (abstractVoxelShapeContainer.contains(i, j, k)) {
+						if (voxelSet.contains(i, j, k)) {
 							this.storage.set(this.getIndex(i, j, k));
 						}
 					}
@@ -47,12 +46,12 @@ public final class BitSetVoxelShapeContainer extends AbstractVoxelShapeContainer
 			}
 		}
 
-		this.xMin = abstractVoxelShapeContainer.getMin(Direction.Axis.X);
-		this.yMin = abstractVoxelShapeContainer.getMin(Direction.Axis.Y);
-		this.zMin = abstractVoxelShapeContainer.getMin(Direction.Axis.Z);
-		this.xMax = abstractVoxelShapeContainer.getMax(Direction.Axis.X);
-		this.yMax = abstractVoxelShapeContainer.getMax(Direction.Axis.Y);
-		this.zMax = abstractVoxelShapeContainer.getMax(Direction.Axis.Z);
+		this.xMin = voxelSet.getMin(Direction.Axis.X);
+		this.yMin = voxelSet.getMin(Direction.Axis.Y);
+		this.zMin = voxelSet.getMin(Direction.Axis.Z);
+		this.xMax = voxelSet.getMax(Direction.Axis.X);
+		this.yMax = voxelSet.getMax(Direction.Axis.Y);
+		this.zMax = voxelSet.getMax(Direction.Axis.Z);
 	}
 
 	protected int getIndex(int i, int j, int k) {
@@ -65,7 +64,7 @@ public final class BitSetVoxelShapeContainer extends AbstractVoxelShapeContainer
 	}
 
 	@Override
-	public void modify(int i, int j, int k, boolean bl, boolean bl2) {
+	public void set(int i, int j, int k, boolean bl, boolean bl2) {
 		this.storage.set(this.getIndex(i, j, k), bl2);
 		if (bl && bl2) {
 			this.xMin = Math.min(this.xMin, i);
@@ -93,7 +92,7 @@ public final class BitSetVoxelShapeContainer extends AbstractVoxelShapeContainer
 	}
 
 	@Override
-	protected boolean method_1059(int i, int j, int k, int l) {
+	protected boolean isColumnFull(int i, int j, int k, int l) {
 		if (k < 0 || l < 0 || i < 0) {
 			return false;
 		} else {
@@ -102,30 +101,30 @@ public final class BitSetVoxelShapeContainer extends AbstractVoxelShapeContainer
 	}
 
 	@Override
-	protected void method_1060(int i, int j, int k, int l, boolean bl) {
+	protected void setColumn(int i, int j, int k, int l, boolean bl) {
 		this.storage.set(this.getIndex(k, l, i), this.getIndex(k, l, j), bl);
 	}
 
-	static BitSetVoxelShapeContainer method_1040(
-		AbstractVoxelShapeContainer abstractVoxelShapeContainer,
-		AbstractVoxelShapeContainer abstractVoxelShapeContainer2,
-		class_255 arg,
-		class_255 arg2,
-		class_255 arg3,
+	static BitSetVoxelSet combine(
+		VoxelSet voxelSet,
+		VoxelSet voxelSet2,
+		DoubleListPair doubleListPair,
+		DoubleListPair doubleListPair2,
+		DoubleListPair doubleListPair3,
 		BooleanBiFunction booleanBiFunction
 	) {
-		BitSetVoxelShapeContainer bitSetVoxelShapeContainer = new BitSetVoxelShapeContainer(
-			arg.method_1066().size() - 1, arg2.method_1066().size() - 1, arg3.method_1066().size() - 1
+		BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(
+			doubleListPair.getMergedList().size() - 1, doubleListPair2.getMergedList().size() - 1, doubleListPair3.getMergedList().size() - 1
 		);
 		int[] is = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
-		arg.method_1065((i, j, k) -> {
+		doubleListPair.forAllOverlappingSections((i, j, k) -> {
 			boolean[] bls = new boolean[]{false};
-			boolean bl = arg2.method_1065((l, m, n) -> {
+			boolean bl = doubleListPair2.forAllOverlappingSections((l, m, n) -> {
 				boolean[] bls2 = new boolean[]{false};
-				boolean blx = arg3.method_1065((o, p, q) -> {
-					boolean blxx = booleanBiFunction.apply(abstractVoxelShapeContainer.method_1044(i, l, o), abstractVoxelShapeContainer2.method_1044(j, m, p));
+				boolean blx = doubleListPair3.forAllOverlappingSections((o, p, q) -> {
+					boolean blxx = booleanBiFunction.apply(voxelSet.inBoundsAndContains(i, l, o), voxelSet2.inBoundsAndContains(j, m, p));
 					if (blxx) {
-						bitSetVoxelShapeContainer.storage.set(bitSetVoxelShapeContainer.getIndex(k, n, q));
+						bitSetVoxelSet.storage.set(bitSetVoxelSet.getIndex(k, n, q));
 						is[2] = Math.min(is[2], q);
 						is[5] = Math.max(is[5], q);
 						bls2[0] = true;
@@ -148,12 +147,12 @@ public final class BitSetVoxelShapeContainer extends AbstractVoxelShapeContainer
 
 			return bl;
 		});
-		bitSetVoxelShapeContainer.xMin = is[0];
-		bitSetVoxelShapeContainer.yMin = is[1];
-		bitSetVoxelShapeContainer.zMin = is[2];
-		bitSetVoxelShapeContainer.xMax = is[3] + 1;
-		bitSetVoxelShapeContainer.yMax = is[4] + 1;
-		bitSetVoxelShapeContainer.zMax = is[5] + 1;
-		return bitSetVoxelShapeContainer;
+		bitSetVoxelSet.xMin = is[0];
+		bitSetVoxelSet.yMin = is[1];
+		bitSetVoxelSet.zMin = is[2];
+		bitSetVoxelSet.xMax = is[3] + 1;
+		bitSetVoxelSet.yMax = is[4] + 1;
+		bitSetVoxelSet.zMax = is[5] + 1;
+		return bitSetVoxelSet;
 	}
 }

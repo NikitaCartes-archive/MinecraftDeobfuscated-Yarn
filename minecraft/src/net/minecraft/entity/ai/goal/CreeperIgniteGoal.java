@@ -10,7 +10,7 @@ public class CreeperIgniteGoal extends Goal {
 
 	public CreeperIgniteGoal(CreeperEntity creeperEntity) {
 		this.owner = creeperEntity;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 	}
 
 	@Override

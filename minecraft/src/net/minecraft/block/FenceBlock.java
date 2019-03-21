@@ -6,7 +6,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.LeashItem;
+import net.minecraft.item.LeadItem;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
@@ -67,7 +67,7 @@ public class FenceBlock extends HorizontalConnectedBlock {
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient) {
-			return LeashItem.method_7994(playerEntity, world, blockPos);
+			return LeadItem.method_7994(playerEntity, world, blockPos);
 		} else {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			return itemStack.getItem() == Items.field_8719 || itemStack.isEmpty();

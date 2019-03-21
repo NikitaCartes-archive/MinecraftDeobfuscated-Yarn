@@ -25,7 +25,7 @@ public class EntityDataObject implements DataCommandObject {
 	public static final Function<String, DataCommand.class_3167> field_13800 = string -> new DataCommand.class_3167() {
 			@Override
 			public DataCommandObject method_13924(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
-				return new EntityDataObject(EntityArgumentType.method_9313(commandContext, string));
+				return new EntityDataObject(EntityArgumentType.getEntityArgument(commandContext, string));
 			}
 
 			@Override

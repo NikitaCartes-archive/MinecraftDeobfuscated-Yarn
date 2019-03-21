@@ -51,14 +51,14 @@ public abstract class MobEntityWithAi extends MobEntity {
 			this.method_6142(f);
 			if (f > 10.0F) {
 				this.detachLeash(true, true);
-				this.goalSelector.addBits(Goal.ControlBit.field_18405);
+				this.goalSelector.addBits(Goal.class_4134.field_18405);
 			} else if (f > 6.0F) {
 				double d = (entity.x - this.x) / (double)f;
 				double e = (entity.y - this.y) / (double)f;
 				double g = (entity.z - this.z) / (double)f;
 				this.setVelocity(this.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
 			} else {
-				this.goalSelector.removeBits(Goal.ControlBit.field_18405);
+				this.goalSelector.removeBits(Goal.class_4134.field_18405);
 				float h = 2.0F;
 				Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y - this.y, entity.z - this.z).normalize().multiply((double)Math.max(f - 2.0F, 0.0F));
 				this.getNavigation().startMovingTo(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z, this.method_6148());

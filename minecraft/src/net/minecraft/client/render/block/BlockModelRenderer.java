@@ -242,27 +242,27 @@ public class BlockModelRenderer {
 		switch (direction) {
 			case DOWN:
 				bitSet.set(1, f >= 1.0E-4F || h >= 1.0E-4F || i <= 0.9999F || k <= 0.9999F);
-				bitSet.set(0, (g < 1.0E-4F || blockState.method_11604(extendedBlockView, blockPos)) && g == j);
+				bitSet.set(0, (g < 1.0E-4F || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && g == j);
 				break;
 			case UP:
 				bitSet.set(1, f >= 1.0E-4F || h >= 1.0E-4F || i <= 0.9999F || k <= 0.9999F);
-				bitSet.set(0, (j > 0.9999F || blockState.method_11604(extendedBlockView, blockPos)) && g == j);
+				bitSet.set(0, (j > 0.9999F || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && g == j);
 				break;
 			case NORTH:
 				bitSet.set(1, f >= 1.0E-4F || g >= 1.0E-4F || i <= 0.9999F || j <= 0.9999F);
-				bitSet.set(0, (h < 1.0E-4F || blockState.method_11604(extendedBlockView, blockPos)) && h == k);
+				bitSet.set(0, (h < 1.0E-4F || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && h == k);
 				break;
 			case SOUTH:
 				bitSet.set(1, f >= 1.0E-4F || g >= 1.0E-4F || i <= 0.9999F || j <= 0.9999F);
-				bitSet.set(0, (k > 0.9999F || blockState.method_11604(extendedBlockView, blockPos)) && h == k);
+				bitSet.set(0, (k > 0.9999F || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && h == k);
 				break;
 			case WEST:
 				bitSet.set(1, g >= 1.0E-4F || h >= 1.0E-4F || j <= 0.9999F || k <= 0.9999F);
-				bitSet.set(0, (f < 1.0E-4F || blockState.method_11604(extendedBlockView, blockPos)) && f == i);
+				bitSet.set(0, (f < 1.0E-4F || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && f == i);
 				break;
 			case EAST:
 				bitSet.set(1, g >= 1.0E-4F || h >= 1.0E-4F || j <= 0.9999F || k <= 0.9999F);
-				bitSet.set(0, (i > 0.9999F || blockState.method_11604(extendedBlockView, blockPos)) && f == i);
+				bitSet.set(0, (i > 0.9999F || Block.isShapeFullCube(blockState.getCollisionShape(extendedBlockView, blockPos))) && f == i);
 		}
 	}
 

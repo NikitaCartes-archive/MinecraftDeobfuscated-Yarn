@@ -142,7 +142,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 			this.ticksOpen++;
 			this.viewerCount = ChestBlockEntity.recalculateViewerCountIfNecessary(this.world, this, this.ticksOpen, i, j, k, this.viewerCount);
 			BlockState blockState = this.getCachedState();
-			boolean bl = (Boolean)blockState.get(BarrelBlock.field_18006);
+			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
 			boolean bl2 = this.viewerCount > 0;
 			if (bl2 != bl) {
 				this.playSound(blockState, bl2 ? SoundEvents.field_17604 : SoundEvents.field_17603);
@@ -152,7 +152,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 	}
 
 	private void method_18318(BlockState blockState, boolean bl) {
-		this.world.setBlockState(this.getPos(), blockState.with(BarrelBlock.field_18006, Boolean.valueOf(bl)), 3);
+		this.world.setBlockState(this.getPos(), blockState.with(BarrelBlock.OPEN, Boolean.valueOf(bl)), 3);
 	}
 
 	private void playSound(BlockState blockState, SoundEvent soundEvent) {

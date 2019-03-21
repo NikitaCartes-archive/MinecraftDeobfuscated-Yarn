@@ -263,9 +263,9 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	protected static boolean method_9486(BlockView blockView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return blockView.getBlockState(blockPos2).hasSolidTopSurface(blockView, blockPos2)
-			&& !blockView.getBlockState(blockPos).getMaterial().method_15799()
-			&& !blockView.getBlockState(blockPos.up()).getMaterial().method_15799();
+		return Block.isFaceFullSquare(blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2), Direction.UP)
+			&& !blockView.getBlockState(blockPos).isAir()
+			&& !blockView.getBlockState(blockPos.up()).isAir();
 	}
 
 	@Override

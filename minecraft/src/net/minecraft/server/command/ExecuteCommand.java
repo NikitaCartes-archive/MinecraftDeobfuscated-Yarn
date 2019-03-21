@@ -503,7 +503,7 @@ public class ExecuteCommand {
 													commandNode,
 													ServerCommandManager.argument("range", NumberRangeArgumentType.method_9422()),
 													bl,
-													commandContext -> method_13313(commandContext, NumberRangeArgumentType.IntRangeArgumentType.method_9425(commandContext, "range"))
+													commandContext -> method_13313(commandContext, NumberRangeArgumentType.IntRangeArgumentType.getRangeArgument(commandContext, "range"))
 												)
 											)
 									)

@@ -1285,6 +1285,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 
 				this.player.playerContainer.setPlayerRestriction(this.player, true);
+				this.player.playerContainer.sendContentUpdates();
 			} else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
 				this.creativeItemDropThreshold += 20;
 				ItemEntity itemEntity = this.player.dropItem(itemStack, true);

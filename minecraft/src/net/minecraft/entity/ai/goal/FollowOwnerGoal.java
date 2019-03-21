@@ -1,7 +1,6 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
@@ -11,12 +10,11 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ViewableWorld;
 
 public class FollowOwnerGoal extends Goal {
-	private final TameableEntity caller;
+	protected final TameableEntity caller;
 	private LivingEntity owner;
 	protected final ViewableWorld world;
 	private final double field_6442;
@@ -33,7 +31,7 @@ public class FollowOwnerGoal extends Goal {
 		this.field_6446 = tameableEntity.getNavigation();
 		this.minDistance = f;
 		this.field_6450 = g;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		if (!(tameableEntity.getNavigation() instanceof MobNavigation) && !(tameableEntity.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
 		}
@@ -90,7 +88,7 @@ public class FollowOwnerGoal extends Goal {
 
 							for (int l = 0; l <= 4; l++) {
 								for (int m = 0; m <= 4; m++) {
-									if ((l < 1 || m < 1 || l > 3 || m > 3) && this.method_6263(i, j, k, l, m)) {
+									if ((l < 1 || m < 1 || l > 3 || m > 3) && this.method_6263(new BlockPos(i + l, k - 1, j + m))) {
 										this.caller.setPositionAndAngles((double)((float)(i + l) + 0.5F), (double)k, (double)((float)(j + m) + 0.5F), this.caller.yaw, this.caller.pitch);
 										this.field_6446.stop();
 										return;
@@ -104,10 +102,9 @@ public class FollowOwnerGoal extends Goal {
 		}
 	}
 
-	protected boolean method_6263(int i, int j, int k, int l, int m) {
-		BlockPos blockPos = new BlockPos(i + l, k - 1, j + m);
+	protected boolean method_6263(BlockPos blockPos) {
 		BlockState blockState = this.world.getBlockState(blockPos);
-		return Block.isFaceFullSquare(blockState.getCollisionShape(this.world, blockPos), Direction.DOWN)
+		return blockState.hasSolidTopSurface(this.world, blockPos, this.caller)
 			&& blockState.allowsSpawning(this.caller)
 			&& this.world.isAir(blockPos.up())
 			&& this.world.isAir(blockPos.up(2));

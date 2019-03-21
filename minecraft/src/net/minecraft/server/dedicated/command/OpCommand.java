@@ -33,7 +33,7 @@ public class OpCommand {
 								);
 							}
 						)
-						.executes(commandContext -> method_13465(commandContext.getSource(), GameProfileArgumentType.getProfilesArgument(commandContext, "targets")))
+						.executes(commandContext -> method_13465(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
 				)
 		);
 	}

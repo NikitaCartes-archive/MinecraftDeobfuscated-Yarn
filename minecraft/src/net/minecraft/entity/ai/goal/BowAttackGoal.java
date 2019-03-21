@@ -24,7 +24,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 		this.field_6569 = d;
 		this.field_6575 = i;
 		this.field_6570 = f * f;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 	}
 
 	public void method_6305(int i) {

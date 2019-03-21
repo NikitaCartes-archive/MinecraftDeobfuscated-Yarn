@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.datafixers.fixes;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import net.minecraft.datafixers.TypeReferences;
 import net.minecraft.util.PackedIntegerArray;
 
-public class class_1191 extends DataFix {
+public class LeavesFix extends DataFix {
 	private static final int[][] field_5687 = new int[][]{{-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0}, {0, 0, -1}, {0, 0, 1}};
 	private static final Object2IntMap<String> field_5688 = DataFixUtils.make(new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> {
 		object2IntOpenHashMap.put("minecraft:acacia_leaves", 0);
@@ -66,7 +66,7 @@ public class class_1191 extends DataFix {
 		"minecraft:stripped_spruce_log"
 	);
 
-	public class_1191(Schema schema, boolean bl) {
+	public LeavesFix(Schema schema, boolean bl) {
 		super(schema, bl);
 	}
 
@@ -91,13 +91,13 @@ public class class_1191 extends DataFix {
 							Typed<?> typed2 = typedx.updateTyped(
 								opticFinder2,
 								typedxx -> {
-									Int2ObjectMap<class_1191.class_1192> int2ObjectMap = new Int2ObjectOpenHashMap<>(
-										(Map<? extends Integer, ? extends class_1191.class_1192>)typedxx.getAllTyped(opticFinder3)
+									Int2ObjectMap<LeavesFix.class_1192> int2ObjectMap = new Int2ObjectOpenHashMap<>(
+										(Map<? extends Integer, ? extends LeavesFix.class_1192>)typedxx.getAllTyped(opticFinder3)
 											.stream()
-											.map(typedxxx -> new class_1191.class_1192(typedxxx, this.getInputSchema()))
-											.collect(Collectors.toMap(class_1191.class_1193::method_5077, arg -> arg))
+											.map(typedxxx -> new LeavesFix.class_1192(typedxxx, this.getInputSchema()))
+											.collect(Collectors.toMap(LeavesFix.class_1193::method_5077, arg -> arg))
 									);
-									if (int2ObjectMap.values().stream().allMatch(class_1191.class_1193::method_5079)) {
+									if (int2ObjectMap.values().stream().allMatch(LeavesFix.class_1193::method_5079)) {
 										return typedxx;
 									} else {
 										List<IntSet> list = Lists.<IntSet>newArrayList();
@@ -106,7 +106,7 @@ public class class_1191 extends DataFix {
 											list.add(new IntOpenHashSet());
 										}
 
-										for (class_1191.class_1192 lv : int2ObjectMap.values()) {
+										for (LeavesFix.class_1192 lv : int2ObjectMap.values()) {
 											if (!lv.method_5079()) {
 												for (int j = 0; j < 4096; j++) {
 													int k = lv.method_5075(j);
@@ -137,7 +137,7 @@ public class class_1191 extends DataFix {
 													int q = n + js[1];
 													int r = o + js[2];
 													if (p >= 0 && p <= 15 && r >= 0 && r <= 15 && q >= 0 && q <= 255) {
-														class_1191.class_1192 lv2 = int2ObjectMap.get(q >> 4);
+														LeavesFix.class_1192 lv2 = int2ObjectMap.get(q >> 4);
 														if (lv2 != null && !lv2.method_5079()) {
 															int s = method_5051(p, q & 15, r);
 															int t = lv2.method_5075(s);
@@ -215,7 +215,7 @@ public class class_1191 extends DataFix {
 		return i;
 	}
 
-	public static final class class_1192 extends class_1191.class_1193 {
+	public static final class class_1192 extends LeavesFix.class_1193 {
 		@Nullable
 		private IntSet field_5689;
 		@Nullable
@@ -236,14 +236,14 @@ public class class_1191 extends DataFix {
 			for (int i = 0; i < this.field_5692.size(); i++) {
 				Dynamic<?> dynamic = (Dynamic<?>)this.field_5692.get(i);
 				String string = dynamic.get("Name").asString("");
-				if (class_1191.field_5688.containsKey(string)) {
+				if (LeavesFix.field_5688.containsKey(string)) {
 					boolean bl = Objects.equals(dynamic.get("Properties").get("decayable").asString(""), "false");
 					this.field_5689.add(i);
 					this.field_5690.put(this.method_5082(string, bl, 7), i);
 					this.field_5692.set(i, this.method_5072(dynamic, string, bl, 7));
 				}
 
-				if (class_1191.field_5686.contains(string)) {
+				if (LeavesFix.field_5686.contains(string)) {
 					this.field_5691.add(i);
 				}
 			}
@@ -351,10 +351,10 @@ public class class_1191 extends DataFix {
 		}
 
 		protected int method_5082(String string, boolean bl, int i) {
-			return class_1191.field_5688.get(string) << 5 | (bl ? 16 : 0) | i;
+			return LeavesFix.field_5688.get(string) << 5 | (bl ? 16 : 0) | i;
 		}
 
-		public int method_5077() {
+		int method_5077() {
 			return this.field_5694;
 		}
 

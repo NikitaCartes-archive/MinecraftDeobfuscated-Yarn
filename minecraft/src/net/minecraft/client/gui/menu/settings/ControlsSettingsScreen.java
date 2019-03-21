@@ -10,13 +10,13 @@ import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class ControlsSettingsScreen extends Screen {
 	private static final GameOption[] SETTINGS = new GameOption[]{GameOption.INVERT_MOUSE, GameOption.SENSITIVITY, GameOption.TOUCHSCREEN, GameOption.AUTO_JUMP};
 	private final Screen parent;
-	protected String title = "Controls";
 	private final GameOptions settings;
 	public KeyBinding focusedBinding;
 	public long field_2723;
@@ -24,6 +24,7 @@ public class ControlsSettingsScreen extends Screen {
 	private ButtonWidget resetButton;
 
 	public ControlsSettingsScreen(Screen screen, GameOptions gameOptions) {
+		super(new TranslatableTextComponent("controls.title"));
 		this.parent = screen;
 		this.settings = gameOptions;
 	}
@@ -33,23 +34,20 @@ public class ControlsSettingsScreen extends Screen {
 		this.keyBindingListWidget = new KeyBindingListWidget(this, this.client);
 		this.listeners.add(this.keyBindingListWidget);
 		this.focusOn(this.keyBindingListWidget);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155 + 160, this.screenHeight - 29, 150, 20, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				ControlsSettingsScreen.this.client.openScreen(ControlsSettingsScreen.this.parent);
-			}
-		});
-		this.resetButton = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 29, 150, 20, I18n.translate("controls.resetAll")) {
-			@Override
-			public void onPressed() {
-				for (KeyBinding keyBinding : ControlsSettingsScreen.this.client.options.keysAll) {
+		this.addButton(
+			new ButtonWidget(
+				this.screenWidth / 2 - 155 + 160, this.screenHeight - 29, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(this.parent)
+			)
+		);
+		this.resetButton = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 29, 150, 20, I18n.translate("controls.resetAll"), buttonWidget -> {
+				for (KeyBinding keyBinding : this.client.options.keysAll) {
 					keyBinding.setKeyCode(keyBinding.getDefaultKeyCode());
 				}
 
 				KeyBinding.updateKeysByCode();
-			}
-		});
-		this.title = I18n.translate("controls.title");
+			})
+		);
 		int i = 0;
 
 		for (GameOption gameOption : SETTINGS) {
@@ -107,7 +105,7 @@ public class ControlsSettingsScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.drawBackground();
 		this.keyBindingListWidget.render(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 8, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 8, 16777215);
 		boolean bl = false;
 
 		for (KeyBinding keyBinding : this.settings.keysAll) {

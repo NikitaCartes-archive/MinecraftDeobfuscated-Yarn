@@ -29,6 +29,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.text.TextComponent;
@@ -43,8 +44,8 @@ public class ChatScreen extends Screen {
 	private String field_2389 = "";
 	private int field_2387 = -1;
 	protected TextFieldWidget chatField;
-	private String field_2384 = "";
-	protected final List<String> commandExceptions = Lists.<String>newArrayList();
+	private String field_18973 = "";
+	protected final List<String> field_18972 = Lists.<String>newArrayList();
 	protected int commandExceptionsX;
 	protected int commandExceptionsWidth;
 	private ParseResults<CommandSource> parseResults;
@@ -53,11 +54,9 @@ public class ChatScreen extends Screen {
 	private boolean field_2380;
 	private boolean suggestionsTemporarilyDisabled;
 
-	public ChatScreen() {
-	}
-
 	public ChatScreen(String string) {
-		this.field_2384 = string;
+		super(NarratorManager.field_18967);
+		this.field_18973 = string;
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public class ChatScreen extends Screen {
 		this.chatField = new TextFieldWidget(this.fontRenderer, 4, this.screenHeight - 12, this.screenWidth - 4, 12);
 		this.chatField.setMaxLength(256);
 		this.chatField.setHasBorder(false);
-		this.chatField.setText(this.field_2384);
+		this.chatField.setText(this.field_18973);
 		this.chatField.setRenderTextProvider(this::getRenderText);
 		this.chatField.setChangedListener(this::onChatFieldChanged);
 		this.listeners.add(this.chatField);
@@ -96,7 +95,7 @@ public class ChatScreen extends Screen {
 
 	private void onChatFieldChanged(String string) {
 		String string2 = this.chatField.getText();
-		this.field_2380 = !string2.equals(this.field_2384);
+		this.field_2380 = !string2.equals(this.field_18973);
 		this.updateCommand();
 	}
 
@@ -182,7 +181,7 @@ public class ChatScreen extends Screen {
 			this.suggestionsWindow = null;
 		}
 
-		this.commandExceptions.clear();
+		this.field_18972.clear();
 		StringReader stringReader = new StringReader(string);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
@@ -218,18 +217,18 @@ public class ChatScreen extends Screen {
 				if (commandSyntaxException.getType() == CommandSyntaxException.BUILT_IN_EXCEPTIONS.literalIncorrect()) {
 					i++;
 				} else {
-					this.commandExceptions.add(commandSyntaxException.getMessage());
+					this.field_18972.add(commandSyntaxException.getMessage());
 				}
 			}
 
 			if (i > 0) {
-				this.commandExceptions.add(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().create().getMessage());
+				this.field_18972.add(CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand().create().getMessage());
 			}
 		}
 
 		this.commandExceptionsX = 0;
 		this.commandExceptionsWidth = this.screenWidth;
-		if (this.commandExceptions.isEmpty()) {
+		if (this.field_18972.isEmpty()) {
 			this.method_2107(TextFormat.field_1080);
 		}
 
@@ -365,7 +364,7 @@ public class ChatScreen extends Screen {
 		} else {
 			int k = 0;
 
-			for (String string : this.commandExceptions) {
+			for (String string : this.field_18972) {
 				drawRect(
 					this.commandExceptionsX - 1,
 					this.screenHeight - 14 - 13 - 12 * k,
@@ -410,7 +409,7 @@ public class ChatScreen extends Screen {
 		}
 
 		if (!list.isEmpty()) {
-			this.commandExceptions.addAll(list);
+			this.field_18972.addAll(list);
 			this.commandExceptionsX = MathHelper.clamp(this.chatField.method_1889(suggestionContext.startPos), 0, this.screenWidth - i);
 			this.commandExceptionsWidth = i;
 		}

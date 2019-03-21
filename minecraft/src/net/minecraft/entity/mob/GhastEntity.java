@@ -155,7 +155,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		public FlyRandomlyGoal(GhastEntity ghastEntity) {
 			this.field_7279 = ghastEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		@Override
@@ -289,7 +289,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		public class_1572(GhastEntity ghastEntity) {
 			this.field_7274 = ghastEntity;
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18406));
 		}
 
 		@Override

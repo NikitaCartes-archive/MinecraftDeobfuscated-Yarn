@@ -461,7 +461,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 
 	abstract class class_1601 extends Goal {
 		public class_1601() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
 		}
 
 		protected boolean method_7104() {

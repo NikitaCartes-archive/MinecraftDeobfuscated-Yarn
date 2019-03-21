@@ -105,7 +105,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> field_13568 = register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13534 = register("melon", new MelonFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13524 = register(
-		"pumpkin", new PumpkinFeature(DefaultFeatureConfig::deserialize, Blocks.field_10261.getDefaultState())
+		"pumpkin", new WildCropFeature(DefaultFeatureConfig::deserialize, Blocks.field_10261.getDefaultState())
 	);
 	public static final Feature<DefaultFeatureConfig> field_13583 = register("reed", new ReedFeature(DefaultFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_13539 = register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig::deserialize));
@@ -155,7 +155,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DecoratedFeatureConfig> field_13561 = register("decorated_flower", new DecoratedFlowerFeature(DecoratedFeatureConfig::deserialize));
 	public static final Feature<DefaultFeatureConfig> field_17004 = register(
 		"sweet_berry_bush",
-		new PumpkinFeature(DefaultFeatureConfig::deserialize, Blocks.field_16999.getDefaultState().with(SweetBerryBushBlock.AGE, Integer.valueOf(3)))
+		new WildCropFeature(DefaultFeatureConfig::deserialize, Blocks.field_16999.getDefaultState().with(SweetBerryBushBlock.AGE, Integer.valueOf(3)))
 	);
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig::deserialize));
 	public static final BiMap<String, StructureFeature<?>> STRUCTURES = SystemUtil.consume(HashBiMap.create(), hashBiMap -> {

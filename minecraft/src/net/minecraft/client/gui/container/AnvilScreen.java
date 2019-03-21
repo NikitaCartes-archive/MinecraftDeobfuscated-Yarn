@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.container;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -27,6 +28,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 		super(anvilContainer, playerInventory, textComponent);
 	}
 
+	@Nullable
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
@@ -72,7 +74,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 	protected void drawForeground(int i, int j) {
 		GlStateManager.disableLighting();
 		GlStateManager.disableBlend();
-		this.fontRenderer.draw(this.name.getFormattedText(), 60.0F, 6.0F, 4210752);
+		this.fontRenderer.draw(this.title.getFormattedText(), 60.0F, 6.0F, 4210752);
 		int k = this.container.getLevelCost();
 		if (k > 0) {
 			int l = 8453920;

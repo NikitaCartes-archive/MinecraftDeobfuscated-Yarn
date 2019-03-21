@@ -31,7 +31,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public final DefaultedList<ItemStack> main = DefaultedList.create(36, ItemStack.EMPTY);
 	public final DefaultedList<ItemStack> armor = DefaultedList.create(4, ItemStack.EMPTY);
 	public final DefaultedList<ItemStack> offHand = DefaultedList.create(1, ItemStack.EMPTY);
-	private final List<DefaultedList<ItemStack>> field_7543 = ImmutableList.of(this.main, this.armor, this.offHand);
+	private final List<DefaultedList<ItemStack>> combinedInventory = ImmutableList.of(this.main, this.armor, this.offHand);
 	public int selectedSlot;
 	public final PlayerEntity player;
 	private ItemStack cursorStack = ItemStack.EMPTY;
@@ -266,7 +266,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	public void updateItems() {
-		for (DefaultedList<ItemStack> defaultedList : this.field_7543) {
+		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
 			for (int i = 0; i < defaultedList.size(); i++) {
 				if (!defaultedList.get(i).isEmpty()) {
 					defaultedList.get(i).update(this.player.world, this.player, i, this.selectedSlot == i);
@@ -354,7 +354,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public ItemStack takeInvStack(int i, int j) {
 		List<ItemStack> list = null;
 
-		for (DefaultedList<ItemStack> defaultedList : this.field_7543) {
+		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
 			if (i < defaultedList.size()) {
 				list = defaultedList;
 				break;
@@ -367,7 +367,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	public void removeOne(ItemStack itemStack) {
-		for (DefaultedList<ItemStack> defaultedList : this.field_7543) {
+		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
 			for (int i = 0; i < defaultedList.size(); i++) {
 				if (defaultedList.get(i) == itemStack) {
 					defaultedList.set(i, ItemStack.EMPTY);
@@ -381,7 +381,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public ItemStack removeInvStack(int i) {
 		DefaultedList<ItemStack> defaultedList = null;
 
-		for (DefaultedList<ItemStack> defaultedList2 : this.field_7543) {
+		for (DefaultedList<ItemStack> defaultedList2 : this.combinedInventory) {
 			if (i < defaultedList2.size()) {
 				defaultedList = defaultedList2;
 				break;
@@ -403,7 +403,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public void setInvStack(int i, ItemStack itemStack) {
 		DefaultedList<ItemStack> defaultedList = null;
 
-		for (DefaultedList<ItemStack> defaultedList2 : this.field_7543) {
+		for (DefaultedList<ItemStack> defaultedList2 : this.combinedInventory) {
 			if (i < defaultedList2.size()) {
 				defaultedList = defaultedList2;
 				break;
@@ -505,7 +505,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	public ItemStack getInvStack(int i) {
 		List<ItemStack> list = null;
 
-		for (DefaultedList<ItemStack> defaultedList : this.field_7543) {
+		for (DefaultedList<ItemStack> defaultedList : this.combinedInventory) {
 			if (i < defaultedList.size()) {
 				list = defaultedList;
 				break;
@@ -548,7 +548,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	public void dropAll() {
-		for (List<ItemStack> list : this.field_7543) {
+		for (List<ItemStack> list : this.combinedInventory) {
 			for (int i = 0; i < list.size(); i++) {
 				ItemStack itemStack = (ItemStack)list.get(i);
 				if (!itemStack.isEmpty()) {
@@ -583,7 +583,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	public boolean containsStack(ItemStack itemStack) {
-		for (List<ItemStack> list : this.field_7543) {
+		for (List<ItemStack> list : this.combinedInventory) {
 			for (ItemStack itemStack2 : list) {
 				if (!itemStack2.isEmpty() && itemStack2.isEqualIgnoreTags(itemStack)) {
 					return true;
@@ -596,7 +596,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	@Environment(EnvType.CLIENT)
 	public boolean method_7382(Tag<Item> tag) {
-		for (List<ItemStack> list : this.field_7543) {
+		for (List<ItemStack> list : this.combinedInventory) {
 			for (ItemStack itemStack : list) {
 				if (!itemStack.isEmpty() && tag.contains(itemStack.getItem())) {
 					return true;
@@ -617,7 +617,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	@Override
 	public void clear() {
-		for (List<ItemStack> list : this.field_7543) {
+		for (List<ItemStack> list : this.combinedInventory) {
 			list.clear();
 		}
 	}

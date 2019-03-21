@@ -49,19 +49,19 @@ public class PistonBlockEntityRenderer extends BlockEntityRenderer<PistonBlockEn
 			);
 			World world = this.getWorld();
 			if (blockState.getBlock() == Blocks.field_10379 && pistonBlockEntity.getProgress(g) <= 4.0F) {
-				blockState = blockState.with(PistonHeadBlock.field_12227, Boolean.valueOf(true));
+				blockState = blockState.with(PistonHeadBlock.SHORT, Boolean.valueOf(true));
 				this.method_3575(blockPos, blockState, bufferBuilder, world, false);
 			} else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
 				PistonType pistonType = blockState.getBlock() == Blocks.field_10615 ? PistonType.field_12634 : PistonType.field_12637;
 				BlockState blockState2 = Blocks.field_10379
 					.getDefaultState()
-					.with(PistonHeadBlock.field_12224, pistonType)
+					.with(PistonHeadBlock.TYPE, pistonType)
 					.with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
-				blockState2 = blockState2.with(PistonHeadBlock.field_12227, Boolean.valueOf(pistonBlockEntity.getProgress(g) >= 0.5F));
+				blockState2 = blockState2.with(PistonHeadBlock.SHORT, Boolean.valueOf(pistonBlockEntity.getProgress(g) >= 0.5F));
 				this.method_3575(blockPos, blockState2, bufferBuilder, world, false);
 				BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.method_11506());
 				bufferBuilder.setOffset(d - (double)blockPos2.getX(), e - (double)blockPos2.getY(), f - (double)blockPos2.getZ());
-				blockState = blockState.with(PistonBlock.field_12191, Boolean.valueOf(true));
+				blockState = blockState.with(PistonBlock.EXTENDED, Boolean.valueOf(true));
 				this.method_3575(blockPos2, blockState, bufferBuilder, world, true);
 			} else {
 				this.method_3575(blockPos, blockState, bufferBuilder, world, false);

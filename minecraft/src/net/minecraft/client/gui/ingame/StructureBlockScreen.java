@@ -14,6 +14,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
@@ -54,6 +55,7 @@ public class StructureBlockScreen extends Screen {
 	private final DecimalFormat decimalFormat = new DecimalFormat("0.0###");
 
 	public StructureBlockScreen(StructureBlockBlockEntity structureBlockBlockEntity) {
+		super(new TranslatableTextComponent(Blocks.field_10465.getTranslationKey()));
 		this.structureBlock = structureBlockBlockEntity;
 		this.decimalFormat.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.ROOT));
 	}
@@ -91,118 +93,78 @@ public class StructureBlockScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		this.client.keyboard.enableRepeatEvents(true);
-		this.buttonDone = this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done")) {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.done();
-			}
-		});
-		this.buttonCancel = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.cancel();
-			}
-		});
-		this.buttonSave = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.save")) {
-			@Override
-			public void onPressed() {
-				if (StructureBlockScreen.this.structureBlock.getMode() == StructureBlockMode.field_12695) {
-					StructureBlockScreen.this.method_2516(StructureBlockBlockEntity.Action.field_12110);
-					StructureBlockScreen.this.client.openScreen(null);
+		this.buttonDone = this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.done()));
+		this.buttonCancel = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.cancel()));
+		this.buttonSave = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.save"), buttonWidget -> {
+				if (this.structureBlock.getMode() == StructureBlockMode.field_12695) {
+					this.method_2516(StructureBlockBlockEntity.Action.field_12110);
+					this.client.openScreen(null);
 				}
-			}
-		});
-		this.buttonLoad = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.load")) {
-			@Override
-			public void onPressed() {
-				if (StructureBlockScreen.this.structureBlock.getMode() == StructureBlockMode.field_12697) {
-					StructureBlockScreen.this.method_2516(StructureBlockBlockEntity.Action.field_12109);
-					StructureBlockScreen.this.client.openScreen(null);
+			})
+		);
+		this.buttonLoad = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 + 4 + 100, 185, 50, 20, I18n.translate("structure_block.button.load"), buttonWidget -> {
+				if (this.structureBlock.getMode() == StructureBlockMode.field_12697) {
+					this.method_2516(StructureBlockBlockEntity.Action.field_12109);
+					this.client.openScreen(null);
 				}
-			}
-		});
-		this.buttonMode = this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, 185, 50, 20, "MODE") {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.structureBlock.cycleMode();
-				StructureBlockScreen.this.updateMode();
-			}
-		});
-		this.buttonDetect = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 100, 120, 50, 20, I18n.translate("structure_block.button.detect_size")) {
-			@Override
-			public void onPressed() {
-				if (StructureBlockScreen.this.structureBlock.getMode() == StructureBlockMode.field_12695) {
-					StructureBlockScreen.this.method_2516(StructureBlockBlockEntity.Action.field_12106);
-					StructureBlockScreen.this.client.openScreen(null);
+			})
+		);
+		this.buttonMode = this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, 185, 50, 20, "MODE", buttonWidget -> {
+			this.structureBlock.cycleMode();
+			this.updateMode();
+		}));
+		this.buttonDetect = this.addButton(
+			new ButtonWidget(this.screenWidth / 2 + 4 + 100, 120, 50, 20, I18n.translate("structure_block.button.detect_size"), buttonWidget -> {
+				if (this.structureBlock.getMode() == StructureBlockMode.field_12695) {
+					this.method_2516(StructureBlockBlockEntity.Action.field_12106);
+					this.client.openScreen(null);
 				}
+			})
+		);
+		this.buttonEntities = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 100, 160, 50, 20, "ENTITIES", buttonWidget -> {
+			this.structureBlock.setIgnoreEntities(!this.structureBlock.shouldIgnoreEntities());
+			this.updateIgnoreEntitiesButton();
+		}));
+		this.buttonMirror = this.addButton(new ButtonWidget(this.screenWidth / 2 - 20, 185, 40, 20, "MIRROR", buttonWidget -> {
+			switch (this.structureBlock.getMirror()) {
+				case NONE:
+					this.structureBlock.setMirror(Mirror.LEFT_RIGHT);
+					break;
+				case LEFT_RIGHT:
+					this.structureBlock.setMirror(Mirror.FRONT_BACK);
+					break;
+				case FRONT_BACK:
+					this.structureBlock.setMirror(Mirror.NONE);
 			}
-		});
-		this.buttonEntities = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 100, 160, 50, 20, "ENTITIES") {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.structureBlock.setIgnoreEntities(!StructureBlockScreen.this.structureBlock.shouldIgnoreEntities());
-				StructureBlockScreen.this.updateIgnoreEntitiesButton();
-			}
-		});
-		this.buttonMirror = this.addButton(new ButtonWidget(this.screenWidth / 2 - 20, 185, 40, 20, "MIRROR") {
-			@Override
-			public void onPressed() {
-				switch (StructureBlockScreen.this.structureBlock.getMirror()) {
-					case NONE:
-						StructureBlockScreen.this.structureBlock.setMirror(Mirror.LEFT_RIGHT);
-						break;
-					case LEFT_RIGHT:
-						StructureBlockScreen.this.structureBlock.setMirror(Mirror.FRONT_BACK);
-						break;
-					case FRONT_BACK:
-						StructureBlockScreen.this.structureBlock.setMirror(Mirror.NONE);
-				}
 
-				StructureBlockScreen.this.updateMirrorButton();
-			}
-		});
-		this.buttonShowAir = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 100, 80, 50, 20, "SHOWAIR") {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.structureBlock.setShowAir(!StructureBlockScreen.this.structureBlock.shouldShowAir());
-				StructureBlockScreen.this.updateShowAirButton();
-			}
-		});
-		this.buttonShowBoundingBox = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 100, 80, 50, 20, "SHOWBB") {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.structureBlock.setShowBoundingBox(!StructureBlockScreen.this.structureBlock.shouldShowBoundingBox());
-				StructureBlockScreen.this.updateShowBoundingBoxButton();
-			}
-		});
-		this.buttonRotate0 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 1 - 40 - 1 - 40 - 20, 185, 40, 20, "0") {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.structureBlock.setRotation(Rotation.ROT_0);
-				StructureBlockScreen.this.updateRotationButton();
-			}
-		});
-		this.buttonRotate90 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 1 - 40 - 20, 185, 40, 20, "90") {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.structureBlock.setRotation(Rotation.ROT_90);
-				StructureBlockScreen.this.updateRotationButton();
-			}
-		});
-		this.buttonRotate180 = this.addButton(new ButtonWidget(this.screenWidth / 2 + 1 + 20, 185, 40, 20, "180") {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.structureBlock.setRotation(Rotation.ROT_180);
-				StructureBlockScreen.this.updateRotationButton();
-			}
-		});
-		this.buttonRotate270 = this.addButton(new ButtonWidget(this.screenWidth / 2 + 1 + 40 + 1 + 20, 185, 40, 20, "270") {
-			@Override
-			public void onPressed() {
-				StructureBlockScreen.this.structureBlock.setRotation(Rotation.ROT_270);
-				StructureBlockScreen.this.updateRotationButton();
-			}
-		});
+			this.updateMirrorButton();
+		}));
+		this.buttonShowAir = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 100, 80, 50, 20, "SHOWAIR", buttonWidget -> {
+			this.structureBlock.setShowAir(!this.structureBlock.shouldShowAir());
+			this.updateShowAirButton();
+		}));
+		this.buttonShowBoundingBox = this.addButton(new ButtonWidget(this.screenWidth / 2 + 4 + 100, 80, 50, 20, "SHOWBB", buttonWidget -> {
+			this.structureBlock.setShowBoundingBox(!this.structureBlock.shouldShowBoundingBox());
+			this.updateShowBoundingBoxButton();
+		}));
+		this.buttonRotate0 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 1 - 40 - 1 - 40 - 20, 185, 40, 20, "0", buttonWidget -> {
+			this.structureBlock.setRotation(Rotation.ROT_0);
+			this.updateRotationButton();
+		}));
+		this.buttonRotate90 = this.addButton(new ButtonWidget(this.screenWidth / 2 - 1 - 40 - 20, 185, 40, 20, "90", buttonWidget -> {
+			this.structureBlock.setRotation(Rotation.ROT_90);
+			this.updateRotationButton();
+		}));
+		this.buttonRotate180 = this.addButton(new ButtonWidget(this.screenWidth / 2 + 1 + 20, 185, 40, 20, "180", buttonWidget -> {
+			this.structureBlock.setRotation(Rotation.ROT_180);
+			this.updateRotationButton();
+		}));
+		this.buttonRotate270 = this.addButton(new ButtonWidget(this.screenWidth / 2 + 1 + 40 + 1 + 20, 185, 40, 20, "270", buttonWidget -> {
+			this.structureBlock.setRotation(Rotation.ROT_270);
+			this.updateRotationButton();
+		}));
 		this.inputName = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 40, 300, 20) {
 			@Override
 			public boolean charTyped(char c, int i) {
@@ -494,7 +456,7 @@ public class StructureBlockScreen extends Screen {
 	public void render(int i, int j, float f) {
 		this.drawBackground();
 		StructureBlockMode structureBlockMode = this.structureBlock.getMode();
-		this.drawStringCentered(this.fontRenderer, I18n.translate(Blocks.field_10465.getTranslationKey()), this.screenWidth / 2, 10, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 10, 16777215);
 		if (structureBlockMode != StructureBlockMode.field_12696) {
 			this.drawString(this.fontRenderer, I18n.translate("structure_block.structure_name"), this.screenWidth / 2 - 153, 30, 10526880);
 			this.inputName.render(i, j, f);

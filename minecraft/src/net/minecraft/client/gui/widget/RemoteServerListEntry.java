@@ -18,7 +18,9 @@ import net.minecraft.client.options.ServerEntry;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.TextFormat;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
@@ -246,6 +248,7 @@ public class RemoteServerListEntry extends ServerListWidget.Entry {
 			this.guiMultiplayer.method_2536();
 		}
 
+		NarratorManager.INSTANCE.method_19788(new TranslatableTextComponent("narrator.select", this.serverEntry.name).getString());
 		this.field_3067 = SystemUtil.getMeasuringTimeMs();
 		return false;
 	}

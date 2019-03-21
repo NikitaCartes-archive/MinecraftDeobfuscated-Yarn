@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -20,6 +21,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -173,7 +175,7 @@ public final class SpawnHelper {
 	}
 
 	public static boolean isClearForSpawn(BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState) {
-		if (blockState.method_11603(blockView, blockPos)) {
+		if (Block.isShapeFullCube(blockState.getCollisionShape(blockView, blockPos))) {
 			return false;
 		} else if (blockState.emitsRedstonePower()) {
 			return false;
@@ -196,7 +198,8 @@ public final class SpawnHelper {
 				case field_6317:
 				default:
 					BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
-					if (!blockState2.hasSolidTopSurface(viewableWorld, blockPos3) && !SpawnRestriction.canSpawn(entityType, blockState2)) {
+					if (!Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos3, VerticalEntityPosition.minValue()), Direction.UP)
+						&& !SpawnRestriction.canSpawn(entityType, blockState2)) {
 						return false;
 					} else {
 						Block block = blockState2.getBlock();

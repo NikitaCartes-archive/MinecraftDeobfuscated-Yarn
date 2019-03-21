@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggable {
 	public static final BooleanProperty OPEN = Properties.OPEN;
-	public static final EnumProperty<BlockHalf> BLOCK_HALF = Properties.BLOCK_HALF;
+	public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
@@ -39,7 +39,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 				.getDefaultState()
 				.with(field_11177, Direction.NORTH)
 				.with(OPEN, Boolean.valueOf(false))
-				.with(BLOCK_HALF, BlockHalf.BOTTOM)
+				.with(HALF, BlockHalf.BOTTOM)
 				.with(POWERED, Boolean.valueOf(false))
 				.with(WATERLOGGED, Boolean.valueOf(false))
 		);
@@ -48,7 +48,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		if (!(Boolean)blockState.get(OPEN)) {
-			return blockState.get(BLOCK_HALF) == BlockHalf.TOP ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
+			return blockState.get(HALF) == BlockHalf.TOP ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
 		} else {
 			switch ((Direction)blockState.get(field_11177)) {
 				case NORTH:
@@ -129,10 +129,10 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		Direction direction = itemPlacementContext.getFacing();
 		if (!itemPlacementContext.method_7717() && direction.getAxis().isHorizontal()) {
 			blockState = blockState.with(field_11177, direction)
-				.with(BLOCK_HALF, itemPlacementContext.getPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
+				.with(HALF, itemPlacementContext.getPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
 		} else {
 			blockState = blockState.with(field_11177, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())
-				.with(BLOCK_HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
+				.with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
 		}
 
 		if (itemPlacementContext.getWorld().isReceivingRedstonePower(itemPlacementContext.getBlockPos())) {
@@ -149,7 +149,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11177, OPEN, BLOCK_HALF, POWERED, WATERLOGGED);
+		builder.with(field_11177, OPEN, HALF, POWERED, WATERLOGGED);
 	}
 
 	@Override

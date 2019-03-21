@@ -5,16 +5,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 
 @Environment(EnvType.CLIENT)
-public abstract class ButtonWidget extends AbstractButtonWidget {
-	public ButtonWidget(int i, int j, String string) {
-		super(i, j, string);
-	}
+public class ButtonWidget extends AbstractButtonWidget {
+	protected final ButtonWidget.class_4241 onPress;
 
-	public ButtonWidget(int i, int j, int k, int l, String string) {
+	public ButtonWidget(int i, int j, int k, int l, String string, ButtonWidget.class_4241 arg) {
 		super(i, j, k, l, string);
+		this.onPress = arg;
 	}
 
-	public abstract void onPressed();
+	public void onPressed() {
+		this.onPress.onPress(this);
+	}
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
@@ -45,5 +46,10 @@ public abstract class ButtonWidget extends AbstractButtonWidget {
 		} else {
 			return false;
 		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public interface class_4241 {
+		void onPress(ButtonWidget buttonWidget);
 	}
 }

@@ -5,25 +5,25 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.AxisCycle;
 import net.minecraft.util.math.Direction;
 
-public abstract class AbstractVoxelShapeContainer {
+public abstract class VoxelSet {
 	private static final Direction.Axis[] AXES = Direction.Axis.values();
-	public final int xSize;
-	public final int ySize;
-	public final int zSize;
+	protected final int xSize;
+	protected final int ySize;
+	protected final int zSize;
 
-	protected AbstractVoxelShapeContainer(int i, int j, int k) {
+	protected VoxelSet(int i, int j, int k) {
 		this.xSize = i;
 		this.ySize = j;
 		this.zSize = k;
 	}
 
-	public boolean method_1062(AxisCycle axisCycle, int i, int j, int k) {
-		return this.method_1044(
-			axisCycle.method_10056(i, j, k, Direction.Axis.X), axisCycle.method_10056(i, j, k, Direction.Axis.Y), axisCycle.method_10056(i, j, k, Direction.Axis.Z)
+	public boolean inBoundsAndContains(AxisCycle axisCycle, int i, int j, int k) {
+		return this.inBoundsAndContains(
+			axisCycle.choose(i, j, k, Direction.Axis.X), axisCycle.choose(i, j, k, Direction.Axis.Y), axisCycle.choose(i, j, k, Direction.Axis.Z)
 		);
 	}
 
-	public boolean method_1044(int i, int j, int k) {
+	public boolean inBoundsAndContains(int i, int j, int k) {
 		if (i < 0 || j < 0 || k < 0) {
 			return false;
 		} else {
@@ -31,15 +31,13 @@ public abstract class AbstractVoxelShapeContainer {
 		}
 	}
 
-	public boolean method_1057(AxisCycle axisCycle, int i, int j, int k) {
-		return this.contains(
-			axisCycle.method_10056(i, j, k, Direction.Axis.X), axisCycle.method_10056(i, j, k, Direction.Axis.Y), axisCycle.method_10056(i, j, k, Direction.Axis.Z)
-		);
+	public boolean contains(AxisCycle axisCycle, int i, int j, int k) {
+		return this.contains(axisCycle.choose(i, j, k, Direction.Axis.X), axisCycle.choose(i, j, k, Direction.Axis.Y), axisCycle.choose(i, j, k, Direction.Axis.Z));
 	}
 
 	public abstract boolean contains(int i, int j, int k);
 
-	public abstract void modify(int i, int j, int k, boolean bl, boolean bl2);
+	public abstract void set(int i, int j, int k, boolean bl, boolean bl2);
 
 	public boolean isEmpty() {
 		for (Direction.Axis axis : AXES) {
@@ -65,7 +63,7 @@ public abstract class AbstractVoxelShapeContainer {
 				AxisCycle axisCycle = AxisCycle.between(Direction.Axis.X, axis);
 
 				for (int l = 0; l < k; l++) {
-					if (this.method_1057(axisCycle, l, i, j)) {
+					if (this.contains(axisCycle, l, i, j)) {
 						return l;
 					}
 				}
@@ -89,7 +87,7 @@ public abstract class AbstractVoxelShapeContainer {
 				AxisCycle axisCycle = AxisCycle.between(Direction.Axis.X, axis);
 
 				for (int l = k - 1; l >= 0; l--) {
-					if (this.method_1057(axisCycle, l, i, j)) {
+					if (this.contains(axisCycle, l, i, j)) {
 						return l + 1;
 					}
 				}
@@ -120,14 +118,14 @@ public abstract class AbstractVoxelShapeContainer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_1064(AbstractVoxelShapeContainer.class_253 arg, boolean bl) {
-		this.method_1052(arg, AxisCycle.NONE, bl);
-		this.method_1052(arg, AxisCycle.NEXT, bl);
-		this.method_1052(arg, AxisCycle.PREVIOUS, bl);
+	public void forEachEdge(VoxelSet.BoxConsumer boxConsumer, boolean bl) {
+		this.forEachEdge(boxConsumer, AxisCycle.NONE, bl);
+		this.forEachEdge(boxConsumer, AxisCycle.NEXT, bl);
+		this.forEachEdge(boxConsumer, AxisCycle.PREVIOUS, bl);
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void method_1052(AbstractVoxelShapeContainer.class_253 arg, AxisCycle axisCycle, boolean bl) {
+	private void forEachEdge(VoxelSet.BoxConsumer boxConsumer, AxisCycle axisCycle, boolean bl) {
 		AxisCycle axisCycle2 = axisCycle.opposite();
 		int i = this.getSize(axisCycle2.cycle(Direction.Axis.X));
 		int j = this.getSize(axisCycle2.cycle(Direction.Axis.Y));
@@ -143,7 +141,7 @@ public abstract class AbstractVoxelShapeContainer {
 
 					for (int r = 0; r <= 1; r++) {
 						for (int s = 0; s <= 1; s++) {
-							if (this.method_1062(axisCycle2, l + r - 1, m + s - 1, o)) {
+							if (this.inBoundsAndContains(axisCycle2, l + r - 1, m + s - 1, o)) {
 								p++;
 								q ^= r ^ s;
 							}
@@ -156,23 +154,23 @@ public abstract class AbstractVoxelShapeContainer {
 								n = o;
 							}
 						} else {
-							arg.consume(
-								axisCycle2.method_10056(l, m, o, Direction.Axis.X),
-								axisCycle2.method_10056(l, m, o, Direction.Axis.Y),
-								axisCycle2.method_10056(l, m, o, Direction.Axis.Z),
-								axisCycle2.method_10056(l, m, o + 1, Direction.Axis.X),
-								axisCycle2.method_10056(l, m, o + 1, Direction.Axis.Y),
-								axisCycle2.method_10056(l, m, o + 1, Direction.Axis.Z)
+							boxConsumer.consume(
+								axisCycle2.choose(l, m, o, Direction.Axis.X),
+								axisCycle2.choose(l, m, o, Direction.Axis.Y),
+								axisCycle2.choose(l, m, o, Direction.Axis.Z),
+								axisCycle2.choose(l, m, o + 1, Direction.Axis.X),
+								axisCycle2.choose(l, m, o + 1, Direction.Axis.Y),
+								axisCycle2.choose(l, m, o + 1, Direction.Axis.Z)
 							);
 						}
 					} else if (n != -1) {
-						arg.consume(
-							axisCycle2.method_10056(l, m, n, Direction.Axis.X),
-							axisCycle2.method_10056(l, m, n, Direction.Axis.Y),
-							axisCycle2.method_10056(l, m, n, Direction.Axis.Z),
-							axisCycle2.method_10056(l, m, o, Direction.Axis.X),
-							axisCycle2.method_10056(l, m, o, Direction.Axis.Y),
-							axisCycle2.method_10056(l, m, o, Direction.Axis.Z)
+						boxConsumer.consume(
+							axisCycle2.choose(l, m, n, Direction.Axis.X),
+							axisCycle2.choose(l, m, n, Direction.Axis.Y),
+							axisCycle2.choose(l, m, n, Direction.Axis.Z),
+							axisCycle2.choose(l, m, o, Direction.Axis.X),
+							axisCycle2.choose(l, m, o, Direction.Axis.Y),
+							axisCycle2.choose(l, m, o, Direction.Axis.Z)
 						);
 						n = -1;
 					}
@@ -181,9 +179,9 @@ public abstract class AbstractVoxelShapeContainer {
 		}
 	}
 
-	protected boolean method_1059(int i, int j, int k, int l) {
+	protected boolean isColumnFull(int i, int j, int k, int l) {
 		for (int m = i; m < j; m++) {
-			if (!this.method_1044(k, l, m)) {
+			if (!this.inBoundsAndContains(k, l, m)) {
 				return false;
 			}
 		}
@@ -191,15 +189,15 @@ public abstract class AbstractVoxelShapeContainer {
 		return true;
 	}
 
-	protected void method_1060(int i, int j, int k, int l, boolean bl) {
+	protected void setColumn(int i, int j, int k, int l, boolean bl) {
 		for (int m = i; m < j; m++) {
-			this.modify(k, l, m, false, bl);
+			this.set(k, l, m, false, bl);
 		}
 	}
 
-	protected boolean method_1054(int i, int j, int k, int l, int m) {
+	protected boolean isRectangleFull(int i, int j, int k, int l, int m) {
 		for (int n = i; n < j; n++) {
-			if (!this.method_1059(k, l, n, m)) {
+			if (!this.isColumnFull(k, l, n, m)) {
 				return false;
 			}
 		}
@@ -207,56 +205,56 @@ public abstract class AbstractVoxelShapeContainer {
 		return true;
 	}
 
-	public void method_1053(AbstractVoxelShapeContainer.class_253 arg, boolean bl) {
-		AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(this);
+	public void forEachBox(VoxelSet.BoxConsumer boxConsumer, boolean bl) {
+		VoxelSet voxelSet = new BitSetVoxelSet(this);
 
 		for (int i = 0; i <= this.xSize; i++) {
 			for (int j = 0; j <= this.ySize; j++) {
 				int k = -1;
 
 				for (int l = 0; l <= this.zSize; l++) {
-					if (abstractVoxelShapeContainer.method_1044(i, j, l)) {
+					if (voxelSet.inBoundsAndContains(i, j, l)) {
 						if (bl) {
 							if (k == -1) {
 								k = l;
 							}
 						} else {
-							arg.consume(i, j, l, i + 1, j + 1, l + 1);
+							boxConsumer.consume(i, j, l, i + 1, j + 1, l + 1);
 						}
 					} else if (k != -1) {
 						int m = i;
 						int n = i;
 						int o = j;
 						int p = j;
-						abstractVoxelShapeContainer.method_1060(k, l, i, j, false);
+						voxelSet.setColumn(k, l, i, j, false);
 
-						while (abstractVoxelShapeContainer.method_1059(k, l, m - 1, o)) {
-							abstractVoxelShapeContainer.method_1060(k, l, m - 1, o, false);
+						while (voxelSet.isColumnFull(k, l, m - 1, o)) {
+							voxelSet.setColumn(k, l, m - 1, o, false);
 							m--;
 						}
 
-						while (abstractVoxelShapeContainer.method_1059(k, l, n + 1, o)) {
-							abstractVoxelShapeContainer.method_1060(k, l, n + 1, o, false);
+						while (voxelSet.isColumnFull(k, l, n + 1, o)) {
+							voxelSet.setColumn(k, l, n + 1, o, false);
 							n++;
 						}
 
-						while (abstractVoxelShapeContainer.method_1054(m, n + 1, k, l, o - 1)) {
+						while (voxelSet.isRectangleFull(m, n + 1, k, l, o - 1)) {
 							for (int q = m; q <= n; q++) {
-								abstractVoxelShapeContainer.method_1060(k, l, q, o - 1, false);
+								voxelSet.setColumn(k, l, q, o - 1, false);
 							}
 
 							o--;
 						}
 
-						while (abstractVoxelShapeContainer.method_1054(m, n + 1, k, l, p + 1)) {
+						while (voxelSet.isRectangleFull(m, n + 1, k, l, p + 1)) {
 							for (int q = m; q <= n; q++) {
-								abstractVoxelShapeContainer.method_1060(k, l, q, p + 1, false);
+								voxelSet.setColumn(k, l, q, p + 1, false);
 							}
 
 							p++;
 						}
 
-						arg.consume(m, o, k, n + 1, p + 1, l);
+						boxConsumer.consume(m, o, k, n + 1, p + 1, l);
 						k = -1;
 					}
 				}
@@ -264,13 +262,13 @@ public abstract class AbstractVoxelShapeContainer {
 		}
 	}
 
-	public void method_1046(AbstractVoxelShapeContainer.class_252 arg) {
+	public void method_1046(VoxelSet.class_252 arg) {
 		this.method_1061(arg, AxisCycle.NONE);
 		this.method_1061(arg, AxisCycle.NEXT);
 		this.method_1061(arg, AxisCycle.PREVIOUS);
 	}
 
-	private void method_1061(AbstractVoxelShapeContainer.class_252 arg, AxisCycle axisCycle) {
+	private void method_1061(VoxelSet.class_252 arg, AxisCycle axisCycle) {
 		AxisCycle axisCycle2 = axisCycle.opposite();
 		Direction.Axis axis = axisCycle2.cycle(Direction.Axis.Z);
 		int i = this.getSize(axisCycle2.cycle(Direction.Axis.X));
@@ -284,22 +282,19 @@ public abstract class AbstractVoxelShapeContainer {
 				boolean bl = false;
 
 				for (int n = 0; n <= k; n++) {
-					boolean bl2 = n != k && this.method_1057(axisCycle2, l, m, n);
+					boolean bl2 = n != k && this.contains(axisCycle2, l, m, n);
 					if (!bl && bl2) {
 						arg.consume(
-							direction,
-							axisCycle2.method_10056(l, m, n, Direction.Axis.X),
-							axisCycle2.method_10056(l, m, n, Direction.Axis.Y),
-							axisCycle2.method_10056(l, m, n, Direction.Axis.Z)
+							direction, axisCycle2.choose(l, m, n, Direction.Axis.X), axisCycle2.choose(l, m, n, Direction.Axis.Y), axisCycle2.choose(l, m, n, Direction.Axis.Z)
 						);
 					}
 
 					if (bl && !bl2) {
 						arg.consume(
 							direction2,
-							axisCycle2.method_10056(l, m, n - 1, Direction.Axis.X),
-							axisCycle2.method_10056(l, m, n - 1, Direction.Axis.Y),
-							axisCycle2.method_10056(l, m, n - 1, Direction.Axis.Z)
+							axisCycle2.choose(l, m, n - 1, Direction.Axis.X),
+							axisCycle2.choose(l, m, n - 1, Direction.Axis.Y),
+							axisCycle2.choose(l, m, n - 1, Direction.Axis.Z)
 						);
 					}
 
@@ -309,11 +304,11 @@ public abstract class AbstractVoxelShapeContainer {
 		}
 	}
 
-	public interface class_252 {
-		void consume(Direction direction, int i, int j, int k);
+	public interface BoxConsumer {
+		void consume(int i, int j, int k, int l, int m, int n);
 	}
 
-	public interface class_253 {
-		void consume(int i, int j, int k, int l, int m, int n);
+	public interface class_252 {
+		void consume(Direction direction, int i, int j, int k);
 	}
 }

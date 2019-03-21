@@ -16,7 +16,7 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 		super(catEntity, d, i, 6);
 		this.cat = catEntity;
 		this.field_6515 = -2;
-		this.setControlBits(EnumSet.of(Goal.ControlBit.field_18407, Goal.ControlBit.field_18405));
+		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
 	}
 
 	@Override

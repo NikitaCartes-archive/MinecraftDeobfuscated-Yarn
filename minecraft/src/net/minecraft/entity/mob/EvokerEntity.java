@@ -2,12 +2,14 @@ package net.minecraft.entity.mob;
 
 import java.util.List;
 import javax.annotation.Nullable;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
+import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
@@ -185,7 +187,13 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			double j = 0.0;
 
 			do {
-				if (!EvokerEntity.this.world.doesBlockHaveSolidTopSurface(blockPos) && EvokerEntity.this.world.doesBlockHaveSolidTopSurface(blockPos.down())) {
+				BlockPos blockPos2 = blockPos.down();
+				if (!Block.isFaceFullSquare(
+						EvokerEntity.this.world.getBlockState(blockPos).getCollisionShape(EvokerEntity.this.world, blockPos, VerticalEntityPosition.minValue()), Direction.UP
+					)
+					&& Block.isFaceFullSquare(
+						EvokerEntity.this.world.getBlockState(blockPos2).getCollisionShape(EvokerEntity.this.world, blockPos2, VerticalEntityPosition.minValue()), Direction.UP
+					)) {
 					if (!EvokerEntity.this.world.isAir(blockPos)) {
 						BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos);
 						VoxelShape voxelShape = blockState.getCollisionShape(EvokerEntity.this.world, blockPos);

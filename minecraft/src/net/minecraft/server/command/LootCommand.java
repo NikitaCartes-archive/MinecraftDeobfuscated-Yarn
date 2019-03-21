@@ -78,7 +78,7 @@ public class LootCommand {
 																	commandContext,
 																	IdentifierArgumentType.getIdentifierArgument(commandContext, "loot_table"),
 																	BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-																	ItemStackArgumentType.method_9777(commandContext, "tool").method_9781(1, false),
+																	ItemStackArgumentType.getStackArgument(commandContext, "tool").method_9781(1, false),
 																	arg
 																)
 														)
@@ -122,7 +122,7 @@ public class LootCommand {
 							ServerCommandManager.literal("kill")
 								.then(
 									ServerCommandManager.argument("target", EntityArgumentType.oneEntity())
-										.executes(commandContext -> method_13189(commandContext, EntityArgumentType.method_9313(commandContext, "target"), arg))
+										.executes(commandContext -> method_13189(commandContext, EntityArgumentType.getEntityArgument(commandContext, "target"), arg))
 								)
 						)
 						.then(
@@ -136,7 +136,7 @@ public class LootCommand {
 													commandContext -> method_13219(
 															commandContext,
 															BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-															ItemStackArgumentType.method_9777(commandContext, "tool").method_9781(1, false),
+															ItemStackArgumentType.getStackArgument(commandContext, "tool").method_9781(1, false),
 															arg
 														)
 												)

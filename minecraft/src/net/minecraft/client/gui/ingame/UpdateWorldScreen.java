@@ -8,6 +8,7 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.YesNoCallback;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.dimension.DimensionType;
@@ -28,6 +29,7 @@ public class UpdateWorldScreen extends Screen {
 	private final WorldUpdater updater;
 
 	public UpdateWorldScreen(YesNoCallback yesNoCallback, String string, LevelStorage levelStorage) {
+		super(new TranslatableTextComponent("optimizeWorld.title", levelStorage.getLevelProperties(string).getLevelName()));
 		this.callback = yesNoCallback;
 		this.updater = new WorldUpdater(string, levelStorage, levelStorage.getLevelProperties(string));
 	}
@@ -35,13 +37,10 @@ public class UpdateWorldScreen extends Screen {
 	@Override
 	protected void onInitialized() {
 		super.onInitialized();
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 150, I18n.translate("gui.cancel")) {
-			@Override
-			public void onPressed() {
-				UpdateWorldScreen.this.updater.cancel();
-				UpdateWorldScreen.this.callback.confirmResult(false, 0);
-			}
-		});
+		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 150, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+			this.updater.cancel();
+			this.callback.confirmResult(false, 0);
+		}));
 	}
 
 	@Override
@@ -59,7 +58,7 @@ public class UpdateWorldScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("optimizeWorld.title", this.updater.getLevelName()), this.screenWidth / 2, 20, 16777215);
+		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 20, 16777215);
 		int k = this.screenWidth / 2 - 150;
 		int l = this.screenWidth / 2 + 150;
 		int m = this.screenHeight / 4 + 100;

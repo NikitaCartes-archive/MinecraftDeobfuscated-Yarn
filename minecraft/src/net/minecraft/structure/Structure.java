@@ -33,8 +33,8 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.AbstractVoxelShapeContainer;
-import net.minecraft.util.shape.BitSetVoxelShapeContainer;
+import net.minecraft.util.shape.BitSetVoxelSet;
+import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
@@ -81,7 +81,7 @@ public class Structure {
 						compoundTag.remove("y");
 						compoundTag.remove("z");
 						list2.add(new Structure.StructureBlockInfo(blockPos7, blockState, compoundTag));
-					} else if (!blockState.isFullOpaque(world, blockPos6) && !blockState.method_11604(world, blockPos6)) {
+					} else if (!blockState.isFullOpaque(world, blockPos6) && !Block.isShapeFullCube(blockState.getCollisionShape(world, blockPos6))) {
 						list3.add(new Structure.StructureBlockInfo(blockPos7, blockState, null));
 					} else {
 						list.add(new Structure.StructureBlockInfo(blockPos7, blockState, null));
@@ -259,17 +259,17 @@ public class Structure {
 
 				if (j <= m) {
 					if (!structurePlacementData.method_16444()) {
-						AbstractVoxelShapeContainer abstractVoxelShapeContainer = new BitSetVoxelShapeContainer(m - j + 1, n - k + 1, o - l + 1);
+						VoxelSet voxelSet = new BitSetVoxelSet(m - j + 1, n - k + 1, o - l + 1);
 						int q = j;
 						int r = k;
 						int s = l;
 
 						for (Pair<BlockPos, CompoundTag> pair : list3) {
 							BlockPos blockPos6 = pair.getFirst();
-							abstractVoxelShapeContainer.modify(blockPos6.getX() - q, blockPos6.getY() - r, blockPos6.getZ() - s, true, true);
+							voxelSet.set(blockPos6.getX() - q, blockPos6.getY() - r, blockPos6.getZ() - s, true, true);
 						}
 
-						abstractVoxelShapeContainer.method_1046((direction, mx, nx, ox) -> {
+						voxelSet.method_1046((direction, mx, nx, ox) -> {
 							BlockPos blockPosx = new BlockPos(q + mx, r + nx, s + ox);
 							BlockPos blockPos2 = blockPosx.offset(direction);
 							BlockState blockStatex = iWorld.getBlockState(blockPosx);

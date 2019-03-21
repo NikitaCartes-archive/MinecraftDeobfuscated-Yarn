@@ -298,7 +298,7 @@ public class ZombieEntity extends HostileEntity {
 					int n = j + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 					int o = k + MathHelper.nextInt(this.random, 7, 40) * MathHelper.nextInt(this.random, -1, 1);
 					BlockPos blockPos = new BlockPos(m, n - 1, o);
-					if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos) && this.world.getLightLevel(new BlockPos(m, n, o)) < 10) {
+					if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, zombieEntity) && this.world.getLightLevel(new BlockPos(m, n, o)) < 10) {
 						zombieEntity.setPosition((double)m, (double)n, (double)o);
 						if (!this.world.method_18458((double)m, (double)n, (double)o, 7.0)
 							&& this.world.method_8606(zombieEntity)

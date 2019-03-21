@@ -27,7 +27,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 		new TranslatableTextComponent("argument.player.unknown")
 	);
 
-	public static Collection<GameProfile> getProfilesArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Collection<GameProfile> getProfileArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<GameProfileArgumentType.ProfileSupplier>getArgument(string, GameProfileArgumentType.ProfileSupplier.class)
 			.getNames(commandContext.getSource());
 	}

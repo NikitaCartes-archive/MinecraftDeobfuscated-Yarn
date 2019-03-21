@@ -224,12 +224,12 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			}
 
 			BlockPos blockPos2 = blockPos.offset(this.getAttachedFace());
-			if (!this.world.doesBlockHaveSolidTopSurface(blockPos2)) {
+			if (!this.world.doesBlockHaveSolidTopSurface(blockPos2, this)) {
 				boolean bl = false;
 
 				for (Direction direction2 : Direction.values()) {
 					blockPos2 = blockPos.offset(direction2);
-					if (this.world.doesBlockHaveSolidTopSurface(blockPos2)) {
+					if (this.world.doesBlockHaveSolidTopSurface(blockPos2, this)) {
 						this.dataTracker.set(ATTACHED_FACE, direction2);
 						bl = true;
 						break;
@@ -242,7 +242,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			}
 
 			BlockPos blockPos3 = blockPos.offset(this.getAttachedFace().getOpposite());
-			if (this.world.doesBlockHaveSolidTopSurface(blockPos3)) {
+			if (this.world.doesBlockHaveSolidTopSurface(blockPos3, this)) {
 				this.method_7127();
 			}
 		}
@@ -332,7 +332,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 					boolean bl = false;
 
 					for (Direction direction : Direction.values()) {
-						if (this.world.doesBlockHaveSolidTopSurface(blockPos2.offset(direction))) {
+						if (this.world.doesBlockHaveSolidTopSurface(blockPos2.offset(direction), this)) {
 							this.dataTracker.set(ATTACHED_FACE, direction);
 							bl = true;
 							break;
@@ -589,7 +589,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		private int counter;
 
 		public ShootBulletGoal() {
-			this.setControlBits(EnumSet.of(Goal.ControlBit.field_18405, Goal.ControlBit.field_18406));
+			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
 		}
 
 		@Override
