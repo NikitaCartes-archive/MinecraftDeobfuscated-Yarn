@@ -2,14 +2,13 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.RealmsButtonWidget;
-import net.minecraft.util.Identifier;
+import net.minecraft.class_2960;
 
 @Environment(EnvType.CLIENT)
-public abstract class RealmsButton extends RealmsAbstractButton<RealmsButtonWidget> {
-	protected static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
+public abstract class RealmsButton extends AbstractRealmsButton<RealmsButtonProxy> {
+	protected static final class_2960 WIDGETS_LOCATION = new class_2960("textures/gui/widgets.png");
 	private final int field_18237;
-	private final RealmsButtonWidget proxy;
+	private final RealmsButtonProxy proxy;
 
 	public RealmsButton(int i, int j, int k, String string) {
 		this(i, j, k, 200, 20, string);
@@ -17,10 +16,10 @@ public abstract class RealmsButton extends RealmsAbstractButton<RealmsButtonWidg
 
 	public RealmsButton(int i, int j, int k, int l, int m, String string) {
 		this.field_18237 = i;
-		this.proxy = new RealmsButtonWidget(this, j, k, string, l, m, buttonWidget -> this.onPress());
+		this.proxy = new RealmsButtonProxy(this, j, k, string, l, m, arg -> this.onPress());
 	}
 
-	public RealmsButtonWidget getProxy() {
+	public RealmsButtonProxy getProxy() {
 		return this.proxy;
 	}
 
@@ -37,18 +36,18 @@ public abstract class RealmsButton extends RealmsAbstractButton<RealmsButtonWidg
 	}
 
 	public int getHeight() {
-		return this.proxy.getY();
+		return this.proxy.getHeight();
 	}
 
 	public int method_19461() {
-		return this.proxy.getHeight();
+		return this.proxy.method_2066();
 	}
 
 	public void renderBg(int i, int j) {
 	}
 
 	public int getYImage(boolean bl) {
-		return this.proxy.getTexId(bl);
+		return this.proxy.getSuperYImage(bl);
 	}
 
 	public abstract void onPress();

@@ -2,7 +2,7 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.network.ServerAddress;
+import net.minecraft.class_639;
 
 @Environment(EnvType.CLIENT)
 public class RealmsServerAddress {
@@ -23,7 +23,7 @@ public class RealmsServerAddress {
 	}
 
 	public static RealmsServerAddress parseString(String string) {
-		ServerAddress serverAddress = ServerAddress.parse(string);
-		return new RealmsServerAddress(serverAddress.getAddress(), serverAddress.getPort());
+		class_639 lv = class_639.method_2950(string);
+		return new RealmsServerAddress(lv.method_2952(), lv.method_2954());
 	}
 }

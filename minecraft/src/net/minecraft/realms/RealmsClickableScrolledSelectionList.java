@@ -2,15 +2,14 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.InputListener;
-import net.minecraft.client.gui.widget.ClickableScrolledSelectionList;
+import net.minecraft.class_364;
 
 @Environment(EnvType.CLIENT)
 public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEventListener {
-	private final ClickableScrolledSelectionList proxy;
+	private final RealmsClickableScrolledSelectionListProxy proxy;
 
 	public RealmsClickableScrolledSelectionList(int i, int j, int k, int l, int m) {
-		this.proxy = new ClickableScrolledSelectionList(this, i, j, k, l, m);
+		this.proxy = new RealmsClickableScrolledSelectionListProxy(this, i, j, k, l, m);
 	}
 
 	public void render(int i, int j, float f) {
@@ -18,7 +17,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public int width() {
-		return this.proxy.width();
+		return this.proxy.getWidth();
 	}
 
 	protected void renderItem(int i, int j, int k, int l, Tezzelator tezzelator, int m, int n) {
@@ -48,11 +47,11 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public int getScrollbarPosition() {
-		return this.proxy.width() / 2 + 124;
+		return this.proxy.getWidth() / 2 + 124;
 	}
 
 	@Override
-	public InputListener getProxy() {
+	public class_364 getProxy() {
 		return this.proxy;
 	}
 
@@ -61,7 +60,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public int getScroll() {
-		return this.proxy.getScrollY();
+		return this.proxy.getScroll();
 	}
 
 	protected void renderList(int i, int j, int k, int l) {
@@ -74,7 +73,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public void setLeftPos(int i) {
-		this.proxy.setX(i);
+		this.proxy.setLeftPos(i);
 	}
 
 	public int method_1915() {
@@ -90,7 +89,7 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 	}
 
 	public double method_1917() {
-		return this.proxy.getScrollY();
+		return this.proxy.method_2086();
 	}
 
 	public int itemHeight() {
