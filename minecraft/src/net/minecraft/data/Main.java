@@ -8,18 +8,20 @@ import java.util.stream.Collectors;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
-import net.minecraft.data.dev.NbtProvider;
-import net.minecraft.data.report.BlockListProvider;
-import net.minecraft.data.report.CommandSyntaxProvider;
-import net.minecraft.data.report.ItemListProvider;
-import net.minecraft.data.server.AdvancementsProvider;
-import net.minecraft.data.server.BlockTagsProvider;
-import net.minecraft.data.server.EntityTypeTagsProvider;
-import net.minecraft.data.server.FluidTagsProvider;
-import net.minecraft.data.server.ItemTagsProvider;
-import net.minecraft.data.server.LootTablesProvider;
-import net.minecraft.data.server.RecipesProvider;
-import net.minecraft.data.validate.StructureValidatorProvider;
+import net.minecraft.class_2403;
+import net.minecraft.class_2409;
+import net.minecraft.class_2422;
+import net.minecraft.class_2425;
+import net.minecraft.class_2427;
+import net.minecraft.class_2438;
+import net.minecraft.class_2446;
+import net.minecraft.class_2461;
+import net.minecraft.class_2463;
+import net.minecraft.class_2466;
+import net.minecraft.class_2467;
+import net.minecraft.class_2469;
+import net.minecraft.class_2471;
+import net.minecraft.class_3843;
 
 public class Main {
 	public static void main(String[] strings) throws IOException {
@@ -42,45 +44,45 @@ public class Main {
 			boolean bl4 = bl || optionSet.has(optionSpec4);
 			boolean bl5 = bl || optionSet.has(optionSpec5);
 			boolean bl6 = bl || optionSet.has(optionSpec6);
-			DataGenerator dataGenerator = create(
+			class_2403 lv = method_4968(
 				path, (Collection<Path>)optionSet.valuesOf(optionSpec9).stream().map(string -> Paths.get(string)).collect(Collectors.toList()), bl2, bl3, bl4, bl5, bl6
 			);
-			dataGenerator.run();
+			lv.method_10315();
 		} else {
 			optionParser.printHelpOn(System.out);
 		}
 	}
 
-	public static DataGenerator create(Path path, Collection<Path> collection, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5) {
-		DataGenerator dataGenerator = new DataGenerator(path, collection);
+	public static class_2403 method_4968(Path path, Collection<Path> collection, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5) {
+		class_2403 lv = new class_2403(path, collection);
 		if (bl || bl2) {
-			dataGenerator.install(new SnbtProvider(dataGenerator));
+			lv.method_10314(new class_2463(lv));
 		}
 
 		if (bl2) {
-			dataGenerator.install(new FluidTagsProvider(dataGenerator));
-			dataGenerator.install(new BlockTagsProvider(dataGenerator));
-			dataGenerator.install(new ItemTagsProvider(dataGenerator));
-			dataGenerator.install(new EntityTypeTagsProvider(dataGenerator));
-			dataGenerator.install(new RecipesProvider(dataGenerator));
-			dataGenerator.install(new AdvancementsProvider(dataGenerator));
-			dataGenerator.install(new LootTablesProvider(dataGenerator));
+			lv.method_10314(new class_2469(lv));
+			lv.method_10314(new class_2466(lv));
+			lv.method_10314(new class_2471(lv));
+			lv.method_10314(new class_2467(lv));
+			lv.method_10314(new class_2446(lv));
+			lv.method_10314(new class_2409(lv));
+			lv.method_10314(new class_2438(lv));
 		}
 
 		if (bl3) {
-			dataGenerator.install(new NbtProvider(dataGenerator));
+			lv.method_10314(new class_2461(lv));
 		}
 
 		if (bl4) {
-			dataGenerator.install(new BlockListProvider(dataGenerator));
-			dataGenerator.install(new ItemListProvider(dataGenerator));
-			dataGenerator.install(new CommandSyntaxProvider(dataGenerator));
+			lv.method_10314(new class_2422(lv));
+			lv.method_10314(new class_2427(lv));
+			lv.method_10314(new class_2425(lv));
 		}
 
 		if (bl5) {
-			dataGenerator.install(new StructureValidatorProvider(dataGenerator));
+			lv.method_10314(new class_3843(lv));
 		}
 
-		return dataGenerator;
+		return lv;
 	}
 }

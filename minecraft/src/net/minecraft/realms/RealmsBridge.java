@@ -4,30 +4,30 @@ import com.mojang.bridge.game.GameVersion;
 import java.lang.reflect.Constructor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.Screen;
-import net.minecraft.client.gui.menu.NoticeScreen;
-import net.minecraft.text.StringTextComponent;
-import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.SystemUtil;
+import net.minecraft.class_155;
+import net.minecraft.class_156;
+import net.minecraft.class_2585;
+import net.minecraft.class_2588;
+import net.minecraft.class_310;
+import net.minecraft.class_403;
+import net.minecraft.class_437;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBridge extends RealmsScreen {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private Screen previousScreen;
+	private class_437 previousScreen;
 
-	public void switchToRealms(Screen screen) {
-		this.previousScreen = screen;
+	public void switchToRealms(class_437 arg) {
+		this.previousScreen = arg;
 
 		try {
 			Class<?> class_ = Class.forName("com.mojang.realmsclient.RealmsMainScreen");
 			Constructor<?> constructor = class_.getDeclaredConstructor(RealmsScreen.class);
 			constructor.setAccessible(true);
 			Object object = constructor.newInstance(this);
-			MinecraftClient.getInstance().openScreen(((RealmsScreen)object).getProxy());
+			class_310.method_1551().method_1507(((RealmsScreen)object).getProxy());
 		} catch (ClassNotFoundException var5) {
 			LOGGER.error("Realms module missing");
 			this.showMissingRealmsErrorScreen();
@@ -37,9 +37,9 @@ public class RealmsBridge extends RealmsScreen {
 		}
 	}
 
-	public net.minecraft.client.gui.menu.RealmsScreen getNotificationScreen(Screen screen) {
+	public RealmsScreenProxy getNotificationScreen(class_437 arg) {
 		try {
-			this.previousScreen = screen;
+			this.previousScreen = arg;
 			Class<?> class_ = Class.forName("com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen");
 			Constructor<?> constructor = class_.getDeclaredConstructor(RealmsScreen.class);
 			constructor.setAccessible(true);
@@ -56,33 +56,33 @@ public class RealmsBridge extends RealmsScreen {
 
 	@Override
 	public void init() {
-		MinecraftClient.getInstance().openScreen(this.previousScreen);
+		class_310.method_1551().method_1507(this.previousScreen);
 	}
 
 	public static void openUri(String string) {
-		SystemUtil.getOperatingSystem().open(string);
+		class_156.method_668().method_670(string);
 	}
 
 	public static void setClipboard(String string) {
-		MinecraftClient.getInstance().keyboard.setClipboard(string);
+		class_310.method_1551().field_1774.method_1455(string);
 	}
 
 	private void showMissingRealmsErrorScreen() {
-		MinecraftClient.getInstance()
-			.openScreen(
-				new NoticeScreen(
-					() -> MinecraftClient.getInstance().openScreen(this.previousScreen),
-					new StringTextComponent(""),
-					new TranslatableTextComponent(SharedConstants.getGameVersion().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
+		class_310.method_1551()
+			.method_1507(
+				new class_403(
+					() -> class_310.method_1551().method_1507(this.previousScreen),
+					new class_2585(""),
+					new class_2588(class_155.method_16673().isStable() ? "realms.missing.module.error.text" : "realms.missing.snapshot.error.text")
 				)
 			);
 	}
 
 	public static String getVersionString() {
-		return SharedConstants.getGameVersion().getName();
+		return class_155.method_16673().getName();
 	}
 
 	public static GameVersion getCurrentVersion() {
-		return SharedConstants.getGameVersion();
+		return class_155.method_16673();
 	}
 }

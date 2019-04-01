@@ -2,15 +2,14 @@ package net.minecraft.realms;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.SliderButtonWidget;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.class_2960;
+import net.minecraft.class_3532;
 
 @Environment(EnvType.CLIENT)
-public abstract class RealmsSliderButton extends RealmsAbstractButton<SliderButtonWidget> {
-	protected static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
+public abstract class RealmsSliderButton extends AbstractRealmsButton<RealmsSliderButtonProxy> {
+	protected static final class_2960 WIDGETS_LOCATION = new class_2960("textures/gui/widgets.png");
 	private final int field_18804;
-	private final SliderButtonWidget proxy;
+	private final RealmsSliderButtonProxy proxy;
 	private final double minValue;
 	private final double maxValue;
 
@@ -18,7 +17,7 @@ public abstract class RealmsSliderButton extends RealmsAbstractButton<SliderButt
 		this.field_18804 = i;
 		this.minValue = d;
 		this.maxValue = e;
-		this.proxy = new SliderButtonWidget(this, j, k, l, 20, this.toPct((double)m));
+		this.proxy = new RealmsSliderButtonProxy(this, j, k, l, 20, this.toPct((double)m));
 		this.getProxy().setMessage(this.getMessage());
 	}
 
@@ -27,15 +26,15 @@ public abstract class RealmsSliderButton extends RealmsAbstractButton<SliderButt
 	}
 
 	public double toPct(double d) {
-		return MathHelper.clamp((this.clamp(d) - this.minValue) / (this.maxValue - this.minValue), 0.0, 1.0);
+		return class_3532.method_15350((this.clamp(d) - this.minValue) / (this.maxValue - this.minValue), 0.0, 1.0);
 	}
 
 	public double toValue(double d) {
-		return this.clamp(MathHelper.lerp(MathHelper.clamp(d, 0.0, 1.0), this.minValue, this.maxValue));
+		return this.clamp(class_3532.method_16436(class_3532.method_15350(d, 0.0, 1.0), this.minValue, this.maxValue));
 	}
 
 	public double clamp(double d) {
-		return MathHelper.clamp(d, this.minValue, this.maxValue);
+		return class_3532.method_15350(d, this.minValue, this.maxValue);
 	}
 
 	public int getYImage(boolean bl) {
@@ -48,7 +47,7 @@ public abstract class RealmsSliderButton extends RealmsAbstractButton<SliderButt
 	public void onRelease(double d, double e) {
 	}
 
-	public SliderButtonWidget getProxy() {
+	public RealmsSliderButtonProxy getProxy() {
 		return this.proxy;
 	}
 
@@ -77,7 +76,7 @@ public abstract class RealmsSliderButton extends RealmsAbstractButton<SliderButt
 	}
 
 	public int method_19463() {
-		return this.proxy.getY();
+		return this.proxy.method_19362();
 	}
 
 	public abstract void applyValue();

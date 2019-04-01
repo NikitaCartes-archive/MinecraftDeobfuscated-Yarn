@@ -3,123 +3,123 @@ package net.minecraft.realms;
 import java.nio.ByteBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.BufferBuilder;
-import net.minecraft.client.render.VertexFormat;
+import net.minecraft.class_287;
+import net.minecraft.class_293;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBufferBuilder {
-	private BufferBuilder field_5669;
+	private class_287 field_5669;
 
-	public RealmsBufferBuilder(BufferBuilder bufferBuilder) {
-		this.field_5669 = bufferBuilder;
+	public RealmsBufferBuilder(class_287 arg) {
+		this.field_5669 = arg;
 	}
 
-	public RealmsBufferBuilder from(BufferBuilder bufferBuilder) {
-		this.field_5669 = bufferBuilder;
+	public RealmsBufferBuilder from(class_287 arg) {
+		this.field_5669 = arg;
 		return this;
 	}
 
 	public void sortQuads(float f, float g, float h) {
-		this.field_5669.sortQuads(f, g, h);
+		this.field_5669.method_1341(f, g, h);
 	}
 
 	public void fixupQuadColor(int i) {
-		this.field_5669.setQuadColor(i);
+		this.field_5669.method_1332(i);
 	}
 
 	public ByteBuffer getBuffer() {
-		return this.field_5669.getByteBuffer();
+		return this.field_5669.method_1342();
 	}
 
 	public void postNormal(float f, float g, float h) {
-		this.field_5669.postNormal(f, g, h);
+		this.field_5669.method_1320(f, g, h);
 	}
 
 	public int getDrawMode() {
-		return this.field_5669.getDrawMode();
+		return this.field_5669.method_1338();
 	}
 
 	public void offset(double d, double e, double f) {
-		this.field_5669.setOffset(d, e, f);
+		this.field_5669.method_1331(d, e, f);
 	}
 
-	public void restoreState(BufferBuilder.State state) {
-		this.field_5669.restoreState(state);
+	public void restoreState(class_287.class_288 arg) {
+		this.field_5669.method_1324(arg);
 	}
 
 	public void endVertex() {
-		this.field_5669.next();
+		this.field_5669.method_1344();
 	}
 
 	public RealmsBufferBuilder normal(float f, float g, float h) {
-		return this.from(this.field_5669.normal(f, g, h));
+		return this.from(this.field_5669.method_1318(f, g, h));
 	}
 
 	public void end() {
-		this.field_5669.end();
+		this.field_5669.method_1326();
 	}
 
-	public void begin(int i, VertexFormat vertexFormat) {
-		this.field_5669.begin(i, vertexFormat);
+	public void begin(int i, class_293 arg) {
+		this.field_5669.method_1328(i, arg);
 	}
 
 	public RealmsBufferBuilder color(int i, int j, int k, int l) {
-		return this.from(this.field_5669.color(i, j, k, l));
+		return this.from(this.field_5669.method_1323(i, j, k, l));
 	}
 
 	public void faceTex2(int i, int j, int k, int l) {
-		this.field_5669.brightness(i, j, k, l);
+		this.field_5669.method_1339(i, j, k, l);
 	}
 
 	public void postProcessFacePosition(double d, double e, double f) {
-		this.field_5669.postPosition(d, e, f);
+		this.field_5669.method_1322(d, e, f);
 	}
 
 	public void fixupVertexColor(float f, float g, float h, int i) {
-		this.field_5669.setColor(f, g, h, i);
+		this.field_5669.method_1314(f, g, h, i);
 	}
 
 	public RealmsBufferBuilder color(float f, float g, float h, float i) {
-		return this.from(this.field_5669.color(f, g, h, i));
+		return this.from(this.field_5669.method_1336(f, g, h, i));
 	}
 
 	public RealmsVertexFormat getVertexFormat() {
-		return new RealmsVertexFormat(this.field_5669.getVertexFormat());
+		return new RealmsVertexFormat(this.field_5669.method_1311());
 	}
 
 	public void faceTint(float f, float g, float h, int i) {
-		this.field_5669.multiplyColor(f, g, h, i);
+		this.field_5669.method_1317(f, g, h, i);
 	}
 
 	public RealmsBufferBuilder tex2(int i, int j) {
-		return this.from(this.field_5669.texture(i, j));
+		return this.from(this.field_5669.method_1313(i, j));
 	}
 
 	public void putBulkData(int[] is) {
-		this.field_5669.putVertexData(is);
+		this.field_5669.method_1333(is);
 	}
 
 	public RealmsBufferBuilder tex(double d, double e) {
-		return this.from(this.field_5669.texture(d, e));
+		return this.from(this.field_5669.method_1312(d, e));
 	}
 
 	public int getVertexCount() {
-		return this.field_5669.getVertexCount();
+		return this.field_5669.method_1337();
 	}
 
 	public void clear() {
-		this.field_5669.clear();
+		this.field_5669.method_1343();
 	}
 
 	public RealmsBufferBuilder vertex(double d, double e, double f) {
-		return this.from(this.field_5669.vertex(d, e, f));
+		return this.from(this.field_5669.method_1315(d, e, f));
 	}
 
 	public void fixupQuadColor(float f, float g, float h) {
-		this.field_5669.setQuadColor(f, g, h);
+		this.field_5669.method_1330(f, g, h);
 	}
 
 	public void noColor() {
-		this.field_5669.disableColor();
+		this.field_5669.method_1327();
 	}
 }
