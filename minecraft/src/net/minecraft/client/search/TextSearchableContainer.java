@@ -48,7 +48,7 @@ public class TextSearchableContainer<T> extends IdentifierSearchableContainer<T>
 			List<T> list3 = this.byText.findAll(string2);
 			return Lists.<T>newArrayList(
 				new IdentifierSearchableContainer.Iterator<>(
-					list.iterator(), new TextSearchableContainer.Iterator<>(list2.iterator(), list3.iterator(), this::method_4796), this::method_4796
+					list.iterator(), new TextSearchableContainer.Iterator<>(list2.iterator(), list3.iterator(), this::compare), this::compare
 				)
 			);
 		}

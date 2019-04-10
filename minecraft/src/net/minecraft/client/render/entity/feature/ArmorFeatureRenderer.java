@@ -45,7 +45,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 
@@ -93,7 +93,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		float m = (float)entity.age + h;
 		consumer.accept(SKIN);
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
-		gameRenderer.method_3201(true);
+		gameRenderer.setFogBlack(true);
 		GlStateManager.enableBlend();
 		GlStateManager.depthFunc(514);
 		GlStateManager.depthMask(false);
@@ -123,7 +123,7 @@ public abstract class ArmorFeatureRenderer<T extends LivingEntity, M extends Bip
 		GlStateManager.depthMask(true);
 		GlStateManager.depthFunc(515);
 		GlStateManager.disableBlend();
-		gameRenderer.method_3201(false);
+		gameRenderer.setFogBlack(false);
 	}
 
 	private Identifier getArmorTexture(ArmorItem armorItem, boolean bl) {

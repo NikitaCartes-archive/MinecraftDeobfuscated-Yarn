@@ -29,7 +29,7 @@ public class DamageTracker {
 
 	public void setFallDeathSuffix() {
 		this.clearFallDeathSuffix();
-		if (this.entity.canClimb()) {
+		if (this.entity.isClimbing()) {
 			Block block = this.entity.world.getBlockState(new BlockPos(this.entity.x, this.entity.getBoundingBox().minY, this.entity.z)).getBlock();
 			if (block == Blocks.field_9983) {
 				this.fallDeathSuffix = "ladder";
@@ -48,7 +48,7 @@ public class DamageTracker {
 		this.recentDamage.add(damageRecord);
 		this.ageOnLastDamage = this.entity.age;
 		this.hasDamage = true;
-		if (damageRecord.isAttackerLiving() && !this.recentlyAttacked && this.entity.isValid()) {
+		if (damageRecord.isAttackerLiving() && !this.recentlyAttacked && this.entity.isAlive()) {
 			this.recentlyAttacked = true;
 			this.ageOnLastAttacked = this.entity.age;
 			this.ageOnLastUpdate = this.ageOnLastAttacked;
@@ -166,7 +166,7 @@ public class DamageTracker {
 
 	public void update() {
 		int i = this.recentlyAttacked ? 300 : 100;
-		if (this.hasDamage && (!this.entity.isValid() || this.entity.age - this.ageOnLastDamage > i)) {
+		if (this.hasDamage && (!this.entity.isAlive() || this.entity.age - this.ageOnLastDamage > i)) {
 			boolean bl = this.recentlyAttacked;
 			this.hasDamage = false;
 			this.recentlyAttacked = false;

@@ -15,13 +15,13 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	public GoToOwnerAndPurrGoal(CatEntity catEntity, double d, int i) {
 		super(catEntity, d, i, 6);
 		this.cat = catEntity;
-		this.field_6515 = -2;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
+		this.lowestY = -2;
+		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.cat.isTamed() && !this.cat.isSitting() && !this.cat.shouldPurr() && super.canStart();
+		return this.cat.isTamed() && !this.cat.isSitting() && !this.cat.isSleepingWithOwner() && super.canStart();
 	}
 
 	@Override
@@ -36,9 +36,9 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	public void onRemove() {
-		super.onRemove();
-		this.cat.setShouldPurr(false);
+	public void stop() {
+		super.stop();
+		this.cat.setSleepingWithOwner(false);
 	}
 
 	@Override
@@ -46,9 +46,9 @@ public class GoToOwnerAndPurrGoal extends MoveToTargetPosGoal {
 		super.tick();
 		this.cat.getSitGoal().setEnabledWithOwner(false);
 		if (!this.hasReached()) {
-			this.cat.setShouldPurr(false);
-		} else if (!this.cat.shouldPurr()) {
-			this.cat.setShouldPurr(true);
+			this.cat.setSleepingWithOwner(false);
+		} else if (!this.cat.isSleepingWithOwner()) {
+			this.cat.setSleepingWithOwner(true);
 		}
 	}
 

@@ -45,12 +45,12 @@ public class SmallFireballEntity extends AbstractFireballEntity {
 				}
 			}
 
-			this.invalidate();
+			this.remove();
 		}
 	}
 
 	@Override
-	public boolean doesCollide() {
+	public boolean collides() {
 		return false;
 	}
 

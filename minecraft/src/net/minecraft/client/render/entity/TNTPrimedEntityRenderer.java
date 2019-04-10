@@ -35,7 +35,7 @@ public class TNTPrimedEntityRenderer extends EntityRenderer<PrimedTntEntity> {
 		this.bindEntityTexture(primedTntEntity);
 		GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(-0.5F, -0.5F, 0.5F);
-		blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), primedTntEntity.method_5718());
+		blockRenderManager.renderDynamic(Blocks.field_10375.getDefaultState(), primedTntEntity.getBrightnessAtEyes());
 		GlStateManager.translatef(0.0F, 0.0F, 1.0F);
 		if (this.renderOutlines) {
 			GlStateManager.enableColorMaterial();

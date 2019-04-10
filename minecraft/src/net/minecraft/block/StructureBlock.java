@@ -63,17 +63,17 @@ public class StructureBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof StructureBlockBlockEntity) {
 				StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)blockEntity;
-				boolean bl = world.isReceivingRedstonePower(blockPos);
-				boolean bl2 = structureBlockBlockEntity.isPowered();
-				if (bl && !bl2) {
+				boolean bl2 = world.isReceivingRedstonePower(blockPos);
+				boolean bl3 = structureBlockBlockEntity.isPowered();
+				if (bl2 && !bl3) {
 					structureBlockBlockEntity.setPowered(true);
 					this.method_10703(structureBlockBlockEntity);
-				} else if (!bl && bl2) {
+				} else if (!bl2 && bl3) {
 					structureBlockBlockEntity.setPowered(false);
 				}
 			}

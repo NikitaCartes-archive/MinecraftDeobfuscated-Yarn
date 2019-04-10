@@ -18,7 +18,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 public class BrewingStandContainer extends Container {
 	private final Inventory inventory;
 	private final PropertyDelegate propertyDelegate;
-	private final Slot slotIngredient;
+	private final Slot ingredientSlot;
 
 	public BrewingStandContainer(int i, PlayerInventory playerInventory) {
 		this(i, playerInventory, new BasicInventory(5), new ArrayPropertyDelegate(2));
@@ -33,7 +33,7 @@ public class BrewingStandContainer extends Container {
 		this.addSlot(new BrewingStandContainer.SlotPotion(inventory, 0, 56, 51));
 		this.addSlot(new BrewingStandContainer.SlotPotion(inventory, 1, 79, 58));
 		this.addSlot(new BrewingStandContainer.SlotPotion(inventory, 2, 102, 51));
-		this.slotIngredient = this.addSlot(new BrewingStandContainer.SlotIngredient(inventory, 3, 79, 17));
+		this.ingredientSlot = this.addSlot(new BrewingStandContainer.SlotIngredient(inventory, 3, 79, 17));
 		this.addSlot(new BrewingStandContainer.SlotFuel(inventory, 4, 17, 17));
 		this.addProperties(propertyDelegate);
 
@@ -61,7 +61,7 @@ public class BrewingStandContainer extends Container {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if ((i < 0 || i > 2) && i != 3 && i != 4) {
-				if (this.slotIngredient.canInsert(itemStack2)) {
+				if (this.ingredientSlot.canInsert(itemStack2)) {
 					if (!this.insertItem(itemStack2, 3, 4, false)) {
 						return ItemStack.EMPTY;
 					}

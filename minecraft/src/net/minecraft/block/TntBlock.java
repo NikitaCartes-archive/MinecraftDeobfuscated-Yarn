@@ -29,20 +29,20 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (world.isReceivingRedstonePower(blockPos)) {
 				primeTnt(world, blockPos);
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 			}
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (world.isReceivingRedstonePower(blockPos)) {
 			primeTnt(world, blockPos);
-			world.clearBlockState(blockPos);
+			world.clearBlockState(blockPos, false);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class TntBlock extends Block {
 			primeTnt(world, blockPos, playerEntity);
 			world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
 			if (item == Items.field_8884) {
-				itemStack.applyDamage(1, playerEntity);
+				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			} else {
 				itemStack.subtractAmount(1);
 			}
@@ -106,7 +106,7 @@ public class TntBlock extends Block {
 			Entity entity2 = projectileEntity.getOwner();
 			if (projectileEntity.isOnFire()) {
 				primeTnt(world, blockPos, entity2 instanceof LivingEntity ? (LivingEntity)entity2 : null);
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 			}
 		}
 	}

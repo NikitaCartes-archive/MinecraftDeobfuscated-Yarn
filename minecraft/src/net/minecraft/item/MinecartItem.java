@@ -65,7 +65,7 @@ public class MinecartItem extends Item {
 
 		@Override
 		protected void playSound(BlockPointer blockPointer) {
-			blockPointer.getWorld().playEvent(1000, blockPointer.getBlockPos(), 0);
+			blockPointer.getWorld().method_20290(1000, blockPointer.getBlockPos(), 0);
 		}
 	};
 	private final AbstractMinecartEntity.Type type;

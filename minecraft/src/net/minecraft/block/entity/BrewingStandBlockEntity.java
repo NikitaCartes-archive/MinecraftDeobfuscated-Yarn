@@ -187,7 +187,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 
 		this.inventory.set(3, itemStack);
-		this.world.playEvent(1035, blockPos, 0);
+		this.world.method_20290(1035, blockPos, 0);
 	}
 
 	@Override

@@ -88,10 +88,10 @@ public class IllagerBeastEntityModel extends EntityModel<RavagerEntity> {
 
 	public void method_17089(RavagerEntity ravagerEntity, float f, float g, float h) {
 		super.animateModel(ravagerEntity, f, g, h);
-		int i = ravagerEntity.method_7074();
-		int j = ravagerEntity.method_7072();
+		int i = ravagerEntity.getStunTick();
+		int j = ravagerEntity.getRoarTick();
 		int k = 20;
-		int l = ravagerEntity.method_7070();
+		int l = ravagerEntity.getAttackTick();
 		int m = 10;
 		if (l > 0) {
 			float n = this.method_2801((float)l - h, 10.0F);

@@ -39,7 +39,7 @@ public abstract class SectionRelativeLevelPropagator extends LevelPropagator {
 					}
 
 					if (p != m) {
-						int q = this.getUpdatedLevel(p, l, this.getLevel(p));
+						int q = this.getPropagatedLevel(p, l, this.getLevel(p));
 						if (j > q) {
 							j = q;
 						}
@@ -56,13 +56,13 @@ public abstract class SectionRelativeLevelPropagator extends LevelPropagator {
 	}
 
 	@Override
-	protected int getUpdatedLevel(long l, long m, int i) {
-		return l == Long.MAX_VALUE ? this.method_18749(m) : i + 1;
+	protected int getPropagatedLevel(long l, long m, int i) {
+		return l == Long.MAX_VALUE ? this.getInitialLevel(m) : i + 1;
 	}
 
-	protected abstract int method_18749(long l);
+	protected abstract int getInitialLevel(long l);
 
-	public void method_18750(long l, int i, boolean bl) {
+	public void update(long l, int i, boolean bl) {
 		this.update(Long.MAX_VALUE, l, i, bl);
 	}
 }

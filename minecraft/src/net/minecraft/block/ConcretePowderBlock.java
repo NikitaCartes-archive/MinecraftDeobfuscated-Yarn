@@ -41,7 +41,7 @@ public class ConcretePowderBlock extends FallingBlock {
 			if (direction != Direction.DOWN || hardensIn(blockState)) {
 				mutable.set(blockPos).setOffset(direction);
 				blockState = blockView.getBlockState(mutable);
-				if (hardensIn(blockState) && !Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction.getOpposite())) {
+				if (hardensIn(blockState) && !Block.isSolidFullSquare(blockState, blockView, blockPos, direction.getOpposite())) {
 					bl = true;
 					break;
 				}

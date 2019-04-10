@@ -58,24 +58,6 @@ public class BlockTags {
 	public static final Tag<Block> field_15500 = register("signs");
 	public static final Tag<Block> field_17753 = register("dragon_immune");
 	public static final Tag<Block> field_17754 = register("wither_immune");
-	public static final Tag<Block> field_18830 = register("unemployed_poi");
-	public static final Tag<Block> field_18831 = register("armorer_poi");
-	public static final Tag<Block> field_18832 = register("butcher_poi");
-	public static final Tag<Block> field_18833 = register("cartographer_poi");
-	public static final Tag<Block> field_18834 = register("cleric_poi");
-	public static final Tag<Block> field_18835 = register("farmer_poi");
-	public static final Tag<Block> field_18836 = register("fisherman_poi");
-	public static final Tag<Block> field_18837 = register("fletcher_poi");
-	public static final Tag<Block> field_18838 = register("leatherworker_poi");
-	public static final Tag<Block> field_18839 = register("librarian_poi");
-	public static final Tag<Block> field_18840 = register("mason_poi");
-	public static final Tag<Block> field_18841 = register("nitwit_poi");
-	public static final Tag<Block> field_18842 = register("shepherd_poi");
-	public static final Tag<Block> field_18843 = register("toolsmith_poi");
-	public static final Tag<Block> field_18844 = register("weaponsmith_poi");
-	public static final Tag<Block> field_18845 = register("job_site_poi");
-	public static final Tag<Block> field_18846 = register("meeting_site_poi");
-	public static final Tag<Block> field_18847 = register("points_of_interest");
 
 	public static void setContainer(TagContainer<Block> tagContainer) {
 		container = tagContainer;

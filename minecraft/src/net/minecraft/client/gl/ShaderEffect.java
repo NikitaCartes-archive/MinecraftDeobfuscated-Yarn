@@ -269,7 +269,7 @@ public class ShaderEffect implements AutoCloseable {
 	}
 
 	private void setupProjectionMatrix() {
-		this.projectionMatrix = Matrix4f.method_4933((float)this.mainTarget.texWidth, (float)this.mainTarget.texHeight, 0.1F, 1000.0F);
+		this.projectionMatrix = Matrix4f.projectionMatrix((float)this.mainTarget.texWidth, (float)this.mainTarget.texHeight, 0.1F, 1000.0F);
 	}
 
 	public void setupDimensions(int i, int j) {

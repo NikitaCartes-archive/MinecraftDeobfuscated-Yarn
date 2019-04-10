@@ -30,7 +30,7 @@ public class BlockRotStructureProcessor extends StructureProcessor {
 		Structure.StructureBlockInfo structureBlockInfo2,
 		StructurePlacementData structurePlacementData
 	) {
-		Random random = structurePlacementData.getRandom(blockPos);
+		Random random = structurePlacementData.getRandom(structureBlockInfo2.pos);
 		return !(this.integrity >= 1.0F) && !(random.nextFloat() <= this.integrity) ? null : structureBlockInfo2;
 	}
 

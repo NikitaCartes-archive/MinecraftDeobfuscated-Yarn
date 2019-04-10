@@ -9,13 +9,16 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 
-@Environment(EnvType.CLIENT)
 public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 	private BlockPos pos;
 	private Identifier attachmentType;
 	private Identifier targetPool;
 	private String finalState;
 
+	public UpdateJigsawC2SPacket() {
+	}
+
+	@Environment(EnvType.CLIENT)
 	public UpdateJigsawC2SPacket(BlockPos blockPos, Identifier identifier, Identifier identifier2, String string) {
 		this.pos = blockPos;
 		this.attachmentType = identifier;

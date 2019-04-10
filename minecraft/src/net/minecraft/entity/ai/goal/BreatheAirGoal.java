@@ -16,7 +16,7 @@ public class BreatheAirGoal extends Goal {
 
 	public BreatheAirGoal(MobEntityWithAi mobEntityWithAi) {
 		this.owner = mobEntityWithAi;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
@@ -67,8 +67,7 @@ public class BreatheAirGoal extends Goal {
 	@Override
 	public void tick() {
 		this.moveToAir();
-		this.owner
-			.updateVelocity(0.02F, new Vec3d((double)this.owner.movementInputSideways, (double)this.owner.movementInputUp, (double)this.owner.movementInputForward));
+		this.owner.updateVelocity(0.02F, new Vec3d((double)this.owner.sidewaysSpeed, (double)this.owner.upwardSpeed, (double)this.owner.forwardSpeed));
 		this.owner.move(MovementType.field_6308, this.owner.getVelocity());
 	}
 

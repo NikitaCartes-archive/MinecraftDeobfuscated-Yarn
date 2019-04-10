@@ -28,7 +28,7 @@ public class PointOfInterest implements DynamicSerializable {
 
 	public <T> PointOfInterest(Dynamic<T> dynamic, Runnable runnable) {
 		this(
-			(BlockPos)dynamic.get("pos").map(BlockPos::method_19438).orElse(new BlockPos(0, 0, 0)),
+			(BlockPos)dynamic.get("pos").map(BlockPos::deserialize).orElse(new BlockPos(0, 0, 0)),
 			Registry.POINT_OF_INTEREST_TYPE.get(new Identifier(dynamic.get("type").asString(""))),
 			dynamic.get("free_tickets").asInt(0),
 			runnable

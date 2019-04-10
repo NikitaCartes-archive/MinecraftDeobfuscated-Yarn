@@ -13,7 +13,7 @@ public class MendingEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean isLootOnly() {
+	public boolean isTreasure() {
 		return true;
 	}
 

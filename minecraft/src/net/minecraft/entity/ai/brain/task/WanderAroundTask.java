@@ -39,7 +39,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 
 	protected boolean method_18978(ServerWorld serverWorld, MobEntity mobEntity) {
 		Brain<?> brain = mobEntity.getBrain();
-		WalkTarget walkTarget = (WalkTarget)brain.getMemory(MemoryModuleType.field_18445).get();
+		WalkTarget walkTarget = (WalkTarget)brain.getOptionalMemory(MemoryModuleType.field_18445).get();
 		if (!this.method_18980(mobEntity, walkTarget) && this.method_18977(mobEntity, walkTarget)) {
 			this.field_18370 = walkTarget.getLookTarget().getBlockPos();
 			return true;
@@ -51,7 +51,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 
 	protected boolean method_18979(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		if (this.field_18369 != null && this.field_18370 != null) {
-			Optional<WalkTarget> optional = mobEntity.getBrain().getMemory(MemoryModuleType.field_18445);
+			Optional<WalkTarget> optional = mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18445);
 			EntityNavigation entityNavigation = mobEntity.getNavigation();
 			return !entityNavigation.isIdle() && optional.isPresent() && !this.method_18980(mobEntity, (WalkTarget)optional.get());
 		} else {
@@ -82,8 +82,8 @@ public class WanderAroundTask extends Task<MobEntity> {
 			}
 
 			if (path != null && this.field_18370 != null) {
-				WalkTarget walkTarget = (WalkTarget)mobEntity.getBrain().getMemory(MemoryModuleType.field_18445).get();
-				if (walkTarget.getLookTarget().getBlockPos().squaredDistanceTo(this.field_18370) > 4.0 && this.method_18977(mobEntity, walkTarget)) {
+				WalkTarget walkTarget = (WalkTarget)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18445).get();
+				if (walkTarget.getLookTarget().getBlockPos().getSquaredDistance(this.field_18370) > 4.0 && this.method_18977(mobEntity, walkTarget)) {
 					this.field_18370 = walkTarget.getLookTarget().getBlockPos();
 					this.method_18982(serverWorld, mobEntity, l);
 				}
@@ -94,7 +94,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 	private boolean method_18977(MobEntity mobEntity, WalkTarget walkTarget) {
 		BlockPos blockPos = walkTarget.getLookTarget().getBlockPos();
 		this.field_18369 = mobEntity.getNavigation().findPathTo(blockPos);
-		this.field_18371 = walkTarget.method_19095();
+		this.field_18371 = walkTarget.getSpeed();
 		if (!this.method_18980(mobEntity, walkTarget)) {
 			if (this.field_18369 != null) {
 				return true;
@@ -111,6 +111,6 @@ public class WanderAroundTask extends Task<MobEntity> {
 	}
 
 	private boolean method_18980(MobEntity mobEntity, WalkTarget walkTarget) {
-		return walkTarget.getLookTarget().getBlockPos().method_19455(new BlockPos(mobEntity)) <= walkTarget.method_19096();
+		return walkTarget.getLookTarget().getBlockPos().getManhattanDistance(new BlockPos(mobEntity)) <= walkTarget.getCompletionRange();
 	}
 }

@@ -81,7 +81,7 @@ public class FireBlock extends Block {
 	public BlockState getStateForPosition(BlockView blockView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = blockView.getBlockState(blockPos2);
-		if (!this.isFlammable(blockState) && !Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.UP)) {
+		if (!this.isFlammable(blockState) && !Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.UP)) {
 			BlockState blockState2 = this.getDefaultState();
 
 			for(Direction direction : Direction.values()) {
@@ -100,7 +100,7 @@ public class FireBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return Block.isFaceFullSquare(viewableWorld.getBlockState(blockPos2).getCollisionShape(viewableWorld, blockPos2), Direction.UP)
+		return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, Direction.UP)
 			|| this.areBlocksAroundFlammable(viewableWorld, blockPos);
 	}
 
@@ -113,14 +113,14 @@ public class FireBlock extends Block {
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (world.getGameRules().getBoolean("doFireTick")) {
 			if (!blockState.canPlaceAt(world, blockPos)) {
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 			}
 
 			Block block = world.getBlockState(blockPos.down()).getBlock();
 			boolean bl = world.dimension instanceof TheEndDimension && block == Blocks.field_9987 || block == Blocks.field_10515 || block == Blocks.field_10092;
 			int i = blockState.get(AGE);
 			if (!bl && world.isRaining() && this.isRainingAround(world, blockPos) && random.nextFloat() < 0.2F + (float)i * 0.03F) {
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 			} else {
 				int j = Math.min(15, i + random.nextInt(3) / 2);
 				if (i != j) {
@@ -132,15 +132,15 @@ public class FireBlock extends Block {
 					world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + random.nextInt(10));
 					if (!this.areBlocksAroundFlammable(world, blockPos)) {
 						BlockPos blockPos2 = blockPos.down();
-						if (!Block.isFaceFullSquare(world.getBlockState(blockPos2).getCollisionShape(world, blockPos2), Direction.UP) || i > 3) {
-							world.clearBlockState(blockPos);
+						if (!Block.isSolidFullSquare(world.getBlockState(blockPos2), world, blockPos2, Direction.UP) || i > 3) {
+							world.clearBlockState(blockPos, false);
 						}
 
 						return;
 					}
 
 					if (i == 15 && random.nextInt(4) == 0 && !this.isFlammable(world.getBlockState(blockPos.down()))) {
-						world.clearBlockState(blockPos);
+						world.clearBlockState(blockPos, false);
 						return;
 					}
 				}
@@ -209,7 +209,7 @@ public class FireBlock extends Block {
 				int l = Math.min(j + random.nextInt(5) / 4, 15);
 				world.setBlockState(blockPos, this.getStateForPosition(world, blockPos).with(AGE, Integer.valueOf(l)), 3);
 			} else {
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 			}
 
 			Block block = blockState.getBlock();
@@ -249,12 +249,12 @@ public class FireBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (world.dimension.getType() != DimensionType.field_13072 && world.dimension.getType() != DimensionType.field_13076
 				|| !((PortalBlock)Blocks.field_10316).method_10352(world, blockPos)) {
 				if (!blockState.canPlaceAt(world, blockPos)) {
-					world.clearBlockState(blockPos);
+					world.clearBlockState(blockPos, false);
 				} else {
 					world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world) + world.random.nextInt(10));
 				}
@@ -280,7 +280,7 @@ public class FireBlock extends Block {
 
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = world.getBlockState(blockPos2);
-		if (!this.isFlammable(blockState2) && !Block.isFaceFullSquare(blockState2.getCollisionShape(world, blockPos2), Direction.UP)) {
+		if (!this.isFlammable(blockState2) && !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.UP)) {
 			if (this.isFlammable(world.getBlockState(blockPos.west()))) {
 				for(int i = 0; i < 2; ++i) {
 					double d = (double)blockPos.getX() + random.nextDouble() * 0.1F;

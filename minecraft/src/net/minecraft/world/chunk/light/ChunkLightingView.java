@@ -26,7 +26,7 @@ public interface ChunkLightingView extends LightingView {
 		}
 
 		@Override
-		public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
+		public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
 		}
 	}
 }

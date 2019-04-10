@@ -17,7 +17,7 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class BoatItem extends Item {
-	private static final Predicate<Entity> field_17497 = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::doesCollide);
+	private static final Predicate<Entity> field_17497 = EntityPredicates.EXCEPT_SPECTATOR.and(Entity::collides);
 	private final BoatEntity.Type type;
 
 	public BoatItem(BoatEntity.Type type, Item.Settings settings) {
@@ -34,7 +34,7 @@ public class BoatItem extends Item {
 		} else {
 			Vec3d vec3d = playerEntity.getRotationVec(1.0F);
 			double d = 5.0;
-			List<Entity> list = world.getEntities(playerEntity, playerEntity.getBoundingBox().method_18804(vec3d.multiply(5.0)).expand(1.0), field_17497);
+			List<Entity> list = world.getEntities(playerEntity, playerEntity.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), field_17497);
 			if (!list.isEmpty()) {
 				Vec3d vec3d2 = playerEntity.getCameraPosVec(1.0F);
 
@@ -50,7 +50,7 @@ public class BoatItem extends Item {
 				BoatEntity boatEntity = new BoatEntity(world, hitResult.getPos().x, hitResult.getPos().y, hitResult.getPos().z);
 				boatEntity.setBoatType(this.type);
 				boatEntity.yaw = playerEntity.yaw;
-				if (!world.isEntityColliding(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
+				if (!world.doesNotCollide(boatEntity, boatEntity.getBoundingBox().expand(-0.1))) {
 					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				} else {
 					if (!world.isClient) {

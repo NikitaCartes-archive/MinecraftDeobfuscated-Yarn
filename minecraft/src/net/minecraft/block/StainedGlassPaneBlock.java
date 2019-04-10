@@ -1,10 +1,9 @@
 package net.minecraft.block;
 
+import net.minecraft.client.block.ColoredBlock;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
-public class StainedGlassPaneBlock extends PaneBlock {
+public class StainedGlassPaneBlock extends PaneBlock implements ColoredBlock {
 	private final DyeColor color;
 
 	public StainedGlassPaneBlock(DyeColor dyeColor, Block.Settings settings) {
@@ -21,6 +20,7 @@ public class StainedGlassPaneBlock extends PaneBlock {
 		);
 	}
 
+	@Override
 	public DyeColor getColor() {
 		return this.color;
 	}
@@ -28,23 +28,5 @@ public class StainedGlassPaneBlock extends PaneBlock {
 	@Override
 	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.TRANSLUCENT;
-	}
-
-	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
-		if (blockState2.getBlock() != blockState.getBlock()) {
-			if (!world.isClient) {
-				BeaconBlock.onStainedGlassAdded(world, blockPos);
-			}
-		}
-	}
-
-	@Override
-	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (blockState.getBlock() != blockState2.getBlock()) {
-			if (!world.isClient) {
-				BeaconBlock.onStainedGlassAdded(world, blockPos);
-			}
-		}
 	}
 }

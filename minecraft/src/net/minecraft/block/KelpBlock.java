@@ -75,7 +75,7 @@ public class KelpBlock extends Block implements FluidFillable {
 		if (block == Blocks.field_10092) {
 			return false;
 		} else {
-			return block == this || block == Blocks.field_10463 || Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP);
+			return block == this || block == Blocks.field_10463 || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP);
 		}
 	}
 

@@ -22,7 +22,7 @@ public class DyeItem extends Item {
 	public boolean interactWithEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
 		if (livingEntity instanceof SheepEntity) {
 			SheepEntity sheepEntity = (SheepEntity)livingEntity;
-			if (sheepEntity.isValid() && !sheepEntity.isSheared() && sheepEntity.getColor() != this.color) {
+			if (sheepEntity.isAlive() && !sheepEntity.isSheared() && sheepEntity.getColor() != this.color) {
 				sheepEntity.setColor(this.color);
 				itemStack.subtractAmount(1);
 			}

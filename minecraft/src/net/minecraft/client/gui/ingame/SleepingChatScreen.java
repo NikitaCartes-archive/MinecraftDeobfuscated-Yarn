@@ -14,17 +14,15 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	@Override
-	protected void onInitialized() {
-		super.onInitialized();
+	protected void init() {
+		super.init();
 		this.addButton(
-			new ButtonWidget(
-				this.screenWidth / 2 - 100, this.screenHeight - 40, 200, 20, I18n.translate("multiplayer.stopSleeping"), buttonWidget -> this.stopSleeping()
-			)
+			new ButtonWidget(this.width / 2 - 100, this.height - 40, 200, 20, I18n.translate("multiplayer.stopSleeping"), buttonWidget -> this.stopSleeping())
 		);
 	}
 
 	@Override
-	public void close() {
+	public void onClose() {
 		this.stopSleeping();
 	}
 
@@ -35,11 +33,11 @@ public class SleepingChatScreen extends ChatScreen {
 		} else if (i == 257 || i == 335) {
 			String string = this.chatField.getText().trim();
 			if (!string.isEmpty()) {
-				this.client.player.sendChatMessage(string);
+				this.minecraft.player.sendChatMessage(string);
 			}
 
 			this.chatField.setText("");
-			this.client.inGameHud.getChatHud().method_1820();
+			this.minecraft.inGameHud.getChatHud().method_1820();
 			return true;
 		}
 
@@ -47,7 +45,7 @@ public class SleepingChatScreen extends ChatScreen {
 	}
 
 	private void stopSleeping() {
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
-		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.client.player, ClientCommandC2SPacket.Mode.field_12986));
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.player.networkHandler;
+		clientPlayNetworkHandler.sendPacket(new ClientCommandC2SPacket(this.minecraft.player, ClientCommandC2SPacket.Mode.field_12986));
 	}
 }

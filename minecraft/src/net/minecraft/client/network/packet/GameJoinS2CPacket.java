@@ -14,21 +14,23 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int playerEntityId;
 	private boolean hardcore;
 	private GameMode gameMode;
-	private DimensionType field_12284;
+	private DimensionType dimension;
 	private int maxPlayers;
 	private LevelGeneratorType generatorType;
+	private int chunkLoadDistance;
 	private boolean reducedDebugInfo;
 
 	public GameJoinS2CPacket() {
 	}
 
-	public GameJoinS2CPacket(int i, GameMode gameMode, boolean bl, DimensionType dimensionType, int j, LevelGeneratorType levelGeneratorType, boolean bl2) {
+	public GameJoinS2CPacket(int i, GameMode gameMode, boolean bl, DimensionType dimensionType, int j, LevelGeneratorType levelGeneratorType, int k, boolean bl2) {
 		this.playerEntityId = i;
-		this.field_12284 = dimensionType;
+		this.dimension = dimensionType;
 		this.gameMode = gameMode;
 		this.maxPlayers = j;
 		this.hardcore = bl;
 		this.generatorType = levelGeneratorType;
+		this.chunkLoadDistance = k;
 		this.reducedDebugInfo = bl2;
 	}
 
@@ -39,13 +41,14 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.hardcore = (i & 8) == 8;
 		i &= -9;
 		this.gameMode = GameMode.byId(i);
-		this.field_12284 = DimensionType.byRawId(packetByteBuf.readInt());
+		this.dimension = DimensionType.byRawId(packetByteBuf.readInt());
 		this.maxPlayers = packetByteBuf.readUnsignedByte();
 		this.generatorType = LevelGeneratorType.getTypeFromName(packetByteBuf.readString(16));
 		if (this.generatorType == null) {
 			this.generatorType = LevelGeneratorType.DEFAULT;
 		}
 
+		this.chunkLoadDistance = packetByteBuf.readVarInt();
 		this.reducedDebugInfo = packetByteBuf.readBoolean();
 	}
 
@@ -58,9 +61,10 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		packetByteBuf.writeByte(i);
-		packetByteBuf.writeInt(this.field_12284.getRawId());
+		packetByteBuf.writeInt(this.dimension.getRawId());
 		packetByteBuf.writeByte(this.maxPlayers);
 		packetByteBuf.writeString(this.generatorType.getName());
+		packetByteBuf.writeVarInt(this.chunkLoadDistance);
 		packetByteBuf.writeBoolean(this.reducedDebugInfo);
 	}
 
@@ -85,12 +89,17 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Environment(EnvType.CLIENT)
 	public DimensionType getDimension() {
-		return this.field_12284;
+		return this.dimension;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public LevelGeneratorType method_11563() {
+	public LevelGeneratorType getGeneratorType() {
 		return this.generatorType;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public int getChunkLoadDistance() {
+		return this.chunkLoadDistance;
 	}
 
 	@Environment(EnvType.CLIENT)

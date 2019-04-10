@@ -48,8 +48,6 @@ import net.minecraft.client.gl.GlDebug;
 import net.minecraft.client.gl.GlFramebuffer;
 import net.minecraft.client.gui.CloseWorldScreen;
 import net.minecraft.client.gui.ContainerScreenRegistry;
-import net.minecraft.client.gui.FocusedInputListener;
-import net.minecraft.client.gui.InputListener;
 import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.Overlay;
 import net.minecraft.client.gui.Screen;
@@ -122,6 +120,7 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.ToastManager;
 import net.minecraft.client.tutorial.TutorialManager;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.Session;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.WindowProvider;
 import net.minecraft.client.world.ClientWorld;
@@ -173,7 +172,6 @@ import net.minecraft.util.GameTaskQueue;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
-import net.minecraft.util.Session;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
@@ -206,7 +204,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperListener, WindowEventHandler, FocusedInputListener, AutoCloseable {
+public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperListener, WindowEventHandler, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final boolean IS_SYSTEM_MAC = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.MAC;
 	public static final Identifier DEFAULT_TEXT_RENDERER_ID = new Identifier("default");
@@ -242,7 +240,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	public ParticleManager particleManager;
 	private final SearchManager searchManager = new SearchManager();
 	private final Session session;
-	private boolean isPaused;
+	private boolean paused;
 	private float pausedTickDelta;
 	public TextRenderer textRenderer;
 	@Nullable
@@ -298,7 +296,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	private BakedModelManager bakedModelManager;
 	private BlockRenderManager blockRenderManager;
 	private PaintingManager paintingManager;
-	private StatusEffectSpriteManager field_18173;
+	private StatusEffectSpriteManager statusEffectSpriteManager;
 	private final ToastManager toastManager;
 	private final MinecraftClientGame game = new MinecraftClientGame(this);
 	private volatile boolean isRunning = true;
@@ -307,9 +305,9 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	private long nextDebugInfoUpdateTime;
 	private int fpsCounter;
 	private final TutorialManager tutorialManager;
-	private boolean isWindowFocused;
+	private boolean windowFocused;
 	private final Queue<Runnable> renderTaskQueue = Queues.newConcurrentLinkedQueue();
-	private CompletableFuture<Void> field_18174;
+	private CompletableFuture<Void> resourceReloadFuture;
 	private String openProfilerSection = "root";
 
 	public MinecraftClient(RunArgs runArgs) {
@@ -350,7 +348,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 
 		Bootstrap.initialize();
 		Bootstrap.logMissingTranslations();
-		KeybindTextComponent.field_11766 = KeyBinding::method_1419;
+		KeybindTextComponent.field_11766 = KeyBinding::getLocalizedName;
 		this.dataFixer = Schemas.getFixer();
 		this.toastManager = new ToastManager(this);
 		this.tutorialManager = new TutorialManager(this);
@@ -514,8 +512,8 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		this.resourceManager.registerListener(this.particleManager);
 		this.paintingManager = new PaintingManager(this.textureManager);
 		this.resourceManager.registerListener(this.paintingManager);
-		this.field_18173 = new StatusEffectSpriteManager(this.textureManager);
-		this.resourceManager.registerListener(this.field_18173);
+		this.statusEffectSpriteManager = new StatusEffectSpriteManager(this.textureManager);
+		this.resourceManager.registerListener(this.statusEffectSpriteManager);
 		this.inGameHud = new InGameHud(this);
 		this.debugRenderer = new DebugRenderer(this);
 		GLX.setGlfwErrorCallback(this::handleGlErrorByDisableVsync);
@@ -533,7 +531,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		}
 
 		SplashScreen.method_18819(this);
-		this.method_18502(
+		this.setOverlay(
 			new SplashScreen(
 				this,
 				this.resourceManager
@@ -654,12 +652,12 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	public CompletableFuture<Void> reloadResources() {
-		if (this.field_18174 != null) {
-			return this.field_18174;
+		if (this.resourceReloadFuture != null) {
+			return this.resourceReloadFuture;
 		} else {
 			CompletableFuture<Void> completableFuture = new CompletableFuture();
 			if (this.overlay instanceof SplashScreen) {
-				this.field_18174 = completableFuture;
+				this.resourceReloadFuture = completableFuture;
 				return completableFuture;
 			} else {
 				this.resourcePackContainerManager.callCreators();
@@ -668,7 +666,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 					.stream()
 					.map(ResourcePackContainer::createResourcePack)
 					.collect(Collectors.toList());
-				this.method_18502(new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture, list), () -> {
+				this.setOverlay(new SplashScreen(this, this.resourceManager.beginMonitoredReload(SystemUtil.getServerWorkerExecutor(), this, voidFuture, list), () -> {
 					this.languageManager.reloadResources(list);
 					if (this.worldRenderer != null) {
 						this.worldRenderer.reload();
@@ -735,28 +733,9 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		return this.levelStorage;
 	}
 
-	@Nullable
-	@Override
-	public InputListener getFocused() {
-		return this.overlay == null ? this.currentScreen : null;
-	}
-
-	@Nullable
-	@Override
-	public InputListener method_19355(double d, double e) {
-		return this.overlay == null
-				&& this.currentScreen != null
-				&& d >= 0.0
-				&& d < (double)this.currentScreen.screenWidth
-				&& e >= 0.0
-				&& e < (double)this.currentScreen.screenHeight
-			? this.currentScreen
-			: null;
-	}
-
 	public void openScreen(@Nullable Screen screen) {
 		if (this.currentScreen != null) {
-			this.currentScreen.onClosed();
+			this.currentScreen.removed();
 		}
 
 		if (screen == null && this.world == null) {
@@ -774,34 +753,35 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		if (screen != null) {
 			this.mouse.unlockCursor();
 			KeyBinding.unpressAll();
-			screen.initialize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
+			screen.init(this, this.window.getScaledWidth(), this.window.getScaledHeight());
 			this.skipGameRender = false;
-			NarratorManager.INSTANCE.method_19788(screen.getTitle().getString());
+			NarratorManager.INSTANCE.method_19788(screen.getNarrationMessage());
 		} else {
 			this.soundManager.playAll();
 			this.mouse.lockCursor();
 		}
 	}
 
-	public void method_18502(@Nullable Overlay overlay) {
+	public void setOverlay(@Nullable Overlay overlay) {
 		this.overlay = overlay;
 	}
 
 	public void stop() {
 		try {
 			LOGGER.info("Stopping!");
+			NarratorManager.INSTANCE.method_20371();
 
 			try {
 				if (this.world != null) {
 					this.world.disconnect();
 				}
 
-				this.openWorkingScreen();
+				this.disconnect();
 			} catch (Throwable var5) {
 			}
 
 			if (this.currentScreen != null) {
-				this.currentScreen.onClosed();
+				this.currentScreen.removed();
 			}
 
 			this.close();
@@ -823,8 +803,8 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			this.worldRenderer.close();
 			this.soundManager.close();
 			this.resourcePackContainerManager.close();
-			this.particleManager.method_18829();
-			this.field_18173.close();
+			this.particleManager.clearAtlas();
+			this.statusEffectSpriteManager.close();
 			this.paintingManager.close();
 			SystemUtil.method_18350();
 		} finally {
@@ -841,9 +821,9 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			this.scheduleStop();
 		}
 
-		if (this.field_18174 != null && !(this.overlay instanceof SplashScreen)) {
-			CompletableFuture<Void> completableFuture = this.field_18174;
-			this.field_18174 = null;
+		if (this.resourceReloadFuture != null && !(this.overlay instanceof SplashScreen)) {
+			CompletableFuture<Void> completableFuture = this.resourceReloadFuture;
+			this.resourceReloadFuture = null;
 			this.reloadResources().thenRun(() -> completableFuture.complete(null));
 		}
 
@@ -853,7 +833,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		}
 
 		if (bl) {
-			this.renderTickCounter.method_1658(SystemUtil.getMeasuringTimeMs());
+			this.renderTickCounter.beginRenderTick(SystemUtil.getMeasuringTimeMs());
 			this.profiler.push("scheduledExecutables");
 			this.executeTaskQueue();
 			this.profiler.pop();
@@ -883,7 +863,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		this.profiler.pop();
 		if (!this.skipGameRender) {
 			this.profiler.swap("gameRenderer");
-			this.gameRenderer.render(this.isPaused ? this.pausedTickDelta : this.renderTickCounter.tickDelta, l, bl);
+			this.gameRenderer.render(this.paused ? this.pausedTickDelta : this.renderTickCounter.tickDelta, l, bl);
 			this.profiler.swap("toasts");
 			this.toastManager.draw();
 			this.profiler.pop();
@@ -908,16 +888,16 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		this.window.setPhase("Post render");
 		++this.fpsCounter;
 		boolean bl2 = this.isIntegratedServerRunning()
-			&& (this.currentScreen != null && this.currentScreen.isPauseScreen() || this.overlay != null && this.overlay.method_18640())
+			&& (this.currentScreen != null && this.currentScreen.isPauseScreen() || this.overlay != null && this.overlay.pausesGame())
 			&& !this.server.isRemote();
-		if (this.isPaused != bl2) {
-			if (this.isPaused) {
+		if (this.paused != bl2) {
+			if (this.paused) {
 				this.pausedTickDelta = this.renderTickCounter.tickDelta;
 			} else {
 				this.renderTickCounter.tickDelta = this.pausedTickDelta;
 			}
 
-			this.isPaused = bl2;
+			this.paused = bl2;
 		}
 
 		long o = SystemUtil.getMeasuringTimeNano();
@@ -931,7 +911,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 				currentFps,
 				ChunkRenderer.chunkUpdateCount,
 				ChunkRenderer.chunkUpdateCount == 1 ? "" : "s",
-				(double)this.options.maxFps == GameOption.FRAMERATE_LIMIT.method_18617() ? "inf" : this.options.maxFps,
+				(double)this.options.maxFps == GameOption.FRAMERATE_LIMIT.getMax() ? "inf" : this.options.maxFps,
 				this.options.enableVsync ? " vsync" : "",
 				this.options.fancyGraphics ? "" : " fast",
 				this.options.cloudRenderMode == CloudRenderMode.field_18162
@@ -968,7 +948,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		int i = this.window.calculateScaleFactor(this.options.guiScale, this.forcesUnicodeFont());
 		this.window.setScaleFactor((double)i);
 		if (this.currentScreen != null) {
-			this.currentScreen.onScaleChanged(this, this.window.getScaledWidth(), this.window.getScaledHeight());
+			this.currentScreen.resize(this, this.window.getScaledWidth(), this.window.getScaledHeight());
 		}
 
 		GlFramebuffer glFramebuffer = this.getFramebuffer();
@@ -990,7 +970,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	private boolean isFramerateLimited() {
-		return (double)this.getFramerateLimit() < GameOption.FRAMERATE_LIMIT.method_18617();
+		return (double)this.getFramerateLimit() < GameOption.FRAMERATE_LIMIT.getMax();
 	}
 
 	public void cleanUpAfterCrash() {
@@ -1006,7 +986,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 				this.server.stop(true);
 			}
 
-			this.method_18096(new CloseWorldScreen(new TranslatableTextComponent("menu.savingLevel")));
+			this.disconnect(new CloseWorldScreen(new TranslatableTextComponent("menu.savingLevel")));
 		} catch (Throwable var2) {
 		}
 
@@ -1268,15 +1248,15 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		}
 
 		this.profiler.push("gui");
-		if (!this.isPaused) {
+		if (!this.paused) {
 			this.inGameHud.tick();
 		}
 
 		this.profiler.pop();
 		this.gameRenderer.updateTargetedEntity(1.0F);
-		this.tutorialManager.method_4911(this.world, this.hitResult);
+		this.tutorialManager.tick(this.world, this.hitResult);
 		this.profiler.push("gameMode");
-		if (!this.isPaused && this.world != null) {
+		if (!this.paused && this.world != null) {
 			this.interactionManager.tick();
 		}
 
@@ -1300,7 +1280,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		}
 
 		if (this.currentScreen != null) {
-			Screen.wrapScreenError(() -> this.currentScreen.update(), "Ticking screen", this.currentScreen.getClass().getCanonicalName());
+			Screen.wrapScreenError(() -> this.currentScreen.tick(), "Ticking screen", this.currentScreen.getClass().getCanonicalName());
 		}
 
 		if (!this.options.debugEnabled) {
@@ -1318,39 +1298,39 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 
 		if (this.world != null) {
 			this.profiler.swap("gameRenderer");
-			if (!this.isPaused) {
+			if (!this.paused) {
 				this.gameRenderer.tick();
 			}
 
 			this.profiler.swap("levelRenderer");
-			if (!this.isPaused) {
+			if (!this.paused) {
 				this.worldRenderer.tick();
 			}
 
 			this.profiler.swap("level");
-			if (!this.isPaused) {
+			if (!this.paused) {
 				if (this.world.getTicksSinceLightning() > 0) {
 					this.world.setTicksSinceLightning(this.world.getTicksSinceLightning() - 1);
 				}
 
-				this.world.method_18116();
+				this.world.tickEntities();
 			}
-		} else if (this.gameRenderer.method_3175()) {
+		} else if (this.gameRenderer.isShaderEnabled()) {
 			this.gameRenderer.disableShader();
 		}
 
-		if (!this.isPaused) {
+		if (!this.paused) {
 			this.musicTracker.tick();
-			this.soundManager.tick();
 		}
 
+		this.soundManager.tick(this.paused);
 		if (this.world != null) {
-			if (!this.isPaused) {
+			if (!this.paused) {
 				this.world.setMobSpawnOptions(this.world.getDifficulty() != Difficulty.PEACEFUL, true);
 				this.tutorialManager.tick();
 
 				try {
-					this.world.method_8441(() -> true);
+					this.world.tick(() -> true);
 				} catch (Throwable var4) {
 					CrashReport crashReport = CrashReport.create(var4, "Exception in world tick");
 					if (this.world == null) {
@@ -1365,12 +1345,12 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			}
 
 			this.profiler.swap("animateTick");
-			if (!this.isPaused && this.world != null) {
+			if (!this.paused && this.world != null) {
 				this.world.doRandomBlockDisplayTicks(MathHelper.floor(this.player.x), MathHelper.floor(this.player.y), MathHelper.floor(this.player.z));
 			}
 
 			this.profiler.swap("particles");
-			if (!this.isPaused) {
+			if (!this.paused) {
 				this.particleManager.tick();
 			}
 		} else if (this.clientConnection != null) {
@@ -1384,7 +1364,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	private void handleInputEvents() {
-		for(; this.options.keyTogglePerspective.wasPressed(); this.worldRenderer.method_3292()) {
+		for(; this.options.keyTogglePerspective.wasPressed(); this.worldRenderer.scheduleTerrainUpdate()) {
 			++this.options.perspective;
 			if (this.options.perspective > 2) {
 				this.options.perspective = 0;
@@ -1436,7 +1416,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 
 		while(this.options.keyDrop.wasPressed()) {
 			if (!this.player.isSpectator()) {
-				this.player.dropSelectedItem(Screen.isControlPressed());
+				this.player.dropSelectedItem(Screen.hasControlDown());
 			}
 		}
 
@@ -1486,7 +1466,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	public void startIntegratedServer(String string, String string2, @Nullable LevelInfo levelInfo) {
-		this.openWorkingScreen();
+		this.disconnect();
 		WorldSaveHandler worldSaveHandler = this.levelStorage.method_242(string, null);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
 		if (levelProperties == null && levelInfo != null) {
@@ -1536,7 +1516,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		this.openScreen(worldGenerationProgressScreen);
 
 		while(!this.server.method_3820()) {
-			worldGenerationProgressScreen.update();
+			worldGenerationProgressScreen.tick();
 			this.render(false);
 
 			try {
@@ -1559,10 +1539,10 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		this.clientConnection = clientConnection;
 	}
 
-	public void method_1481(ClientWorld clientWorld) {
+	public void joinWorld(ClientWorld clientWorld) {
 		WorkingScreen workingScreen = new WorkingScreen();
 		workingScreen.method_15412(new TranslatableTextComponent("connect.joining"));
-		this.method_18098(workingScreen);
+		this.reset(workingScreen);
 		this.world = clientWorld;
 		this.setWorld(clientWorld);
 		if (!this.isIntegratedServerRunning) {
@@ -1576,23 +1556,23 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		}
 	}
 
-	public void openWorkingScreen() {
-		this.method_18096(new WorkingScreen());
+	public void disconnect() {
+		this.disconnect(new WorkingScreen());
 	}
 
-	public void method_18096(Screen screen) {
+	public void disconnect(Screen screen) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			this.clear();
-			clientPlayNetworkHandler.method_2868();
+			clientPlayNetworkHandler.clearWorld();
 		}
 
 		IntegratedServer integratedServer = this.server;
 		this.server = null;
-		this.gameRenderer.method_3203();
+		this.gameRenderer.reset();
 		this.interactionManager = null;
 		NarratorManager.INSTANCE.clear();
-		this.method_18098(screen);
+		this.reset(screen);
 		if (this.world != null) {
 			if (integratedServer != null) {
 				while(!integratedServer.isServerThreadAlive()) {
@@ -1612,7 +1592,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		this.player = null;
 	}
 
-	private void method_18098(Screen screen) {
+	private void reset(Screen screen) {
 		this.musicTracker.stop();
 		this.soundManager.stopAll();
 		this.cameraEntity = null;
@@ -1673,7 +1653,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 					return;
 				}
 
-				if (bl && Screen.isControlPressed() && block.hasBlockEntity()) {
+				if (bl && Screen.hasControlDown() && block.hasBlockEntity()) {
 					blockEntity = this.world.getBlockEntity(blockPos);
 				}
 			} else {
@@ -1964,7 +1944,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	public boolean isPaused() {
-		return this.isPaused;
+		return this.paused;
 	}
 
 	public SoundManager getSoundManager() {
@@ -2093,7 +2073,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	public boolean isWindowFocused() {
-		return this.isWindowFocused;
+		return this.windowFocused;
 	}
 
 	public HotbarStorage getCreativeHotbarStorage() {
@@ -2112,13 +2092,13 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 		return this.paintingManager;
 	}
 
-	public StatusEffectSpriteManager method_18505() {
-		return this.field_18173;
+	public StatusEffectSpriteManager getStatusEffectSpriteManager() {
+		return this.statusEffectSpriteManager;
 	}
 
 	@Override
 	public void onWindowFocusChanged(boolean bl) {
-		this.isWindowFocused = bl;
+		this.windowFocused = bl;
 	}
 
 	public Profiler getProfiler() {
@@ -2134,12 +2114,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 	}
 
 	@Nullable
-	public Overlay method_18506() {
+	public Overlay getOverlay() {
 		return this.overlay;
-	}
-
-	@Override
-	public boolean isMouseOver(double d, double e) {
-		return true;
 	}
 }

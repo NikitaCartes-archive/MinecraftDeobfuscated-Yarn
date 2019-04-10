@@ -23,14 +23,14 @@ public class TropicalFishSomethingFeatureRenderer extends FeatureRenderer<Tropic
 			this.bindTexture(tropicalFishEntity.getVarietyId());
 			float[] fs = tropicalFishEntity.getPatternColorComponents();
 			GlStateManager.color3f(fs[0], fs[1], fs[2]);
-			this.getModel().method_17081(entityModel);
+			this.getModel().copyStateTo(entityModel);
 			entityModel.animateModel(tropicalFishEntity, f, g, h);
 			entityModel.render(tropicalFishEntity, f, g, i, j, k, l);
 		}
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 }

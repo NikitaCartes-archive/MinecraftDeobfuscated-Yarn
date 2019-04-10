@@ -97,6 +97,6 @@ public class CowEntity extends AnimalEntity {
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return this.isChild() ? entitySize.height : 1.3F;
+		return this.isChild() ? entitySize.height * 0.95F : 1.3F;
 	}
 }

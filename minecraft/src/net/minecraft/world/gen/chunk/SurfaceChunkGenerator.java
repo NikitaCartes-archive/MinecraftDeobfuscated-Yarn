@@ -100,7 +100,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			n /= 2.0;
 		}
 
-		return MathHelper.lerpClamped(h / 512.0, l / 512.0, (m / 10.0 + 1.0) / 2.0);
+		return MathHelper.clampedLerp(h / 512.0, l / 512.0, (m / 10.0 + 1.0) / 2.0);
 	}
 
 	protected double[] sampleNoiseColumn(int i, int j) {
@@ -120,9 +120,9 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			double q = this.sampleNoise(i, p, j, d, e, f, g);
 			q -= this.computeNoiseFalloff(h, m, p);
 			if ((double)p > n) {
-				q = MathHelper.lerpClamped(q, (double)l, ((double)p - n) / (double)k);
+				q = MathHelper.clampedLerp(q, (double)l, ((double)p - n) / (double)k);
 			} else if ((double)p < o) {
-				q = MathHelper.lerpClamped(q, -30.0, (o - (double)p) / (o - 1.0));
+				q = MathHelper.clampedLerp(q, -30.0, (o - (double)p) / (o - 1.0));
 			}
 
 			ds[p] = q;
@@ -212,7 +212,9 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 				int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
 				double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625);
 				biomes[n * 16 + m]
-					.buildSurface(chunkRandom, chunk, o, p, q, e, this.getConfig().getDefaultBlock(), this.getConfig().getDefaultFluid(), 63, this.world.getSeed());
+					.buildSurface(
+						chunkRandom, chunk, o, p, q, e, this.getConfig().getDefaultBlock(), this.getConfig().getDefaultFluid(), this.getSeaLevel(), this.world.getSeed()
+					);
 			}
 		}
 

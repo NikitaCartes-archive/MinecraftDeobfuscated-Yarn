@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ScoreboardEntry;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.world.ClientWorld;
 
 @Environment(EnvType.CLIENT)
@@ -21,9 +21,9 @@ public class ClientGameSession implements GameSession {
 		this.playerCount = clientPlayNetworkHandler.getScoreboardEntries().size();
 		this.remoteServer = !clientPlayNetworkHandler.getClientConnection().isLocal();
 		this.difficulty = clientWorld.getDifficulty().getTranslationKey();
-		ScoreboardEntry scoreboardEntry = clientPlayNetworkHandler.method_2871(clientPlayerEntity.getUuid());
-		if (scoreboardEntry != null) {
-			this.gameMode = scoreboardEntry.getGameMode().getName();
+		PlayerListEntry playerListEntry = clientPlayNetworkHandler.getScoreboardEntry(clientPlayerEntity.getUuid());
+		if (playerListEntry != null) {
+			this.gameMode = playerListEntry.getGameMode().getName();
 		} else {
 			this.gameMode = "unknown";
 		}

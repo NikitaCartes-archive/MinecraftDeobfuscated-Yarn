@@ -42,7 +42,7 @@ enum AdvancementTabType {
 		}
 
 		int m = bl ? this.field_2672 + this.field_2670 : this.field_2672;
-		drawableHelper.drawTexturedRect(i + this.method_2302(k), j + this.method_2305(k), l, m, this.field_2671, this.field_2670);
+		drawableHelper.blit(i + this.method_2302(k), j + this.method_2305(k), l, m, this.field_2671, this.field_2670);
 	}
 
 	public void drawIcon(int i, int j, int k, ItemRenderer itemRenderer, ItemStack itemStack) {

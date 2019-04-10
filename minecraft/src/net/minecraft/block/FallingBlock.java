@@ -18,7 +18,7 @@ public class FallingBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 	}
 

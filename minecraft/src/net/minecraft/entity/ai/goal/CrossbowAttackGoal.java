@@ -22,27 +22,32 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 		this.entity = hostileEntity;
 		this.field_6590 = d;
 		this.field_6591 = f * f;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.entity.getTarget() != null && this.isEntityHoldingCrossbow();
+		return this.method_19996() && this.isEntityHoldingCrossbow();
 	}
 
 	private boolean isEntityHoldingCrossbow() {
-		return this.entity.method_18809(Items.field_8399);
+		return this.entity.isHolding(Items.field_8399);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return (this.canStart() || !this.entity.getNavigation().isIdle()) && this.isEntityHoldingCrossbow();
+		return this.method_19996() && (this.canStart() || !this.entity.getNavigation().isIdle()) && this.isEntityHoldingCrossbow();
+	}
+
+	private boolean method_19996() {
+		return this.entity.getTarget() != null && this.entity.getTarget().isAlive();
 	}
 
 	@Override
-	public void onRemove() {
-		super.onRemove();
-		this.entity.method_19540(false);
+	public void stop() {
+		super.stop();
+		this.entity.setAttacking(false);
+		this.entity.setTarget(null);
 		this.field_6592 = 0;
 		if (this.entity.isUsingItem()) {
 			this.entity.method_6021();
@@ -78,7 +83,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 			this.entity.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 			if (this.stage == CrossbowAttackGoal.Stage.field_16534) {
 				if (!bl3) {
-					this.entity.setCurrentHand(ProjectileUtil.method_18812(this.entity, Items.field_8399));
+					this.entity.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.entity, Items.field_8399));
 					this.stage = CrossbowAttackGoal.Stage.field_16530;
 					this.entity.setCharging(true);
 				}
@@ -102,7 +107,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 				}
 			} else if (this.stage == CrossbowAttackGoal.Stage.field_16533 && bl) {
 				this.entity.attack(livingEntity, 1.0F);
-				ItemStack itemStack2 = this.entity.getStackInHand(ProjectileUtil.method_18812(this.entity, Items.field_8399));
+				ItemStack itemStack2 = this.entity.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this.entity, Items.field_8399));
 				CrossbowItem.setCharged(itemStack2, false);
 				this.stage = CrossbowAttackGoal.Stage.field_16534;
 			}

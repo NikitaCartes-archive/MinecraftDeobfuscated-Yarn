@@ -6,9 +6,11 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 
@@ -29,7 +31,7 @@ public class IceBlock extends TransparentBlock {
 		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
 		if (EnchantmentHelper.getLevel(Enchantments.field_9099, itemStack) == 0) {
 			if (world.dimension.doesWaterVaporize()) {
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 				return;
 			}
 
@@ -49,7 +51,7 @@ public class IceBlock extends TransparentBlock {
 
 	protected void melt(BlockState blockState, World world, BlockPos blockPos) {
 		if (world.dimension.doesWaterVaporize()) {
-			world.clearBlockState(blockPos);
+			world.clearBlockState(blockPos, false);
 		} else {
 			world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());
 			world.updateNeighbor(blockPos, Blocks.field_10382, blockPos);
@@ -59,5 +61,10 @@ public class IceBlock extends TransparentBlock {
 	@Override
 	public PistonBehavior getPistonBehavior(BlockState blockState) {
 		return PistonBehavior.field_15974;
+	}
+
+	@Override
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return entityType == EntityType.POLAR_BEAR;
 	}
 }

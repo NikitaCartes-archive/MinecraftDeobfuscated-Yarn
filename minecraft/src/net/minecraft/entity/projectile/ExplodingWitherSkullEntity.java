@@ -39,8 +39,8 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	protected float method_7466() {
-		return this.method_7503() ? 0.73F : super.method_7466();
+	protected float getDrag() {
+		return this.isCharged() ? 0.73F : super.getDrag();
 	}
 
 	@Override
@@ -52,7 +52,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	public float getEffectiveExplosionResistance(
 		Explosion explosion, BlockView blockView, BlockPos blockPos, BlockState blockState, FluidState fluidState, float f
 	) {
-		return this.method_7503() && WitherEntity.canDestroy(blockState) ? Math.min(0.8F, f) : f;
+		return this.isCharged() && WitherEntity.canDestroy(blockState) ? Math.min(0.8F, f) : f;
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 				Entity entity = ((EntityHitResult)hitResult).getEntity();
 				if (this.owner != null) {
 					if (entity.damage(DamageSource.mob(this.owner), 8.0F)) {
-						if (entity.isValid()) {
+						if (entity.isAlive()) {
 							this.dealDamage(this.owner, entity);
 						} else {
 							this.owner.heal(5.0F);
@@ -86,14 +86,16 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 				}
 			}
 
-			Explosion.class_4179 lv = this.world.getGameRules().getBoolean("mobGriefing") ? Explosion.class_4179.field_18687 : Explosion.class_4179.field_18685;
-			this.world.createExplosion(this, this.x, this.y, this.z, 1.0F, false, lv);
-			this.invalidate();
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean("mobGriefing")
+				? Explosion.DestructionType.field_18687
+				: Explosion.DestructionType.field_18685;
+			this.world.createExplosion(this, this.x, this.y, this.z, 1.0F, false, destructionType);
+			this.remove();
 		}
 	}
 
 	@Override
-	public boolean doesCollide() {
+	public boolean collides() {
 		return false;
 	}
 
@@ -107,7 +109,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 		this.dataTracker.startTracking(CHARGED, false);
 	}
 
-	public boolean method_7503() {
+	public boolean isCharged() {
 		return this.dataTracker.get(CHARGED);
 	}
 
@@ -116,7 +118,7 @@ public class ExplodingWitherSkullEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	protected boolean method_7468() {
+	protected boolean isBurning() {
 		return false;
 	}
 }

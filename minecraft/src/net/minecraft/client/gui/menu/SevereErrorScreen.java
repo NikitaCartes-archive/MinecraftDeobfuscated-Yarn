@@ -17,21 +17,21 @@ public class SevereErrorScreen extends Screen {
 	}
 
 	@Override
-	protected void onInitialized() {
-		super.onInitialized();
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 140, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(null)));
+	protected void init() {
+		super.init();
+		this.addButton(new ButtonWidget(this.width / 2 - 100, 140, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(null)));
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawGradientRect(0, 0, this.screenWidth, this.screenHeight, -12574688, -11530224);
-		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 90, 16777215);
-		this.drawStringCentered(this.fontRenderer, this.message, this.screenWidth / 2, 110, 16777215);
+		this.fillGradient(0, 0, this.width, this.height, -12574688, -11530224);
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 90, 16777215);
+		this.drawCenteredString(this.font, this.message, this.width / 2, 110, 16777215);
 		super.render(i, j, f);
 	}
 
 	@Override
-	public boolean doesEscapeKeyClose() {
+	public boolean shouldCloseOnEsc() {
 		return false;
 	}
 }

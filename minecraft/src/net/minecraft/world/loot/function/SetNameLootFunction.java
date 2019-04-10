@@ -25,20 +25,20 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final TextComponent name;
 	@Nullable
-	private final LootContext.EntityTarget entityTarget;
+	private final LootContext.EntityTarget entity;
 
 	private SetNameLootFunction(LootCondition[] lootConditions, @Nullable TextComponent textComponent, @Nullable LootContext.EntityTarget entityTarget) {
 		super(lootConditions);
 		this.name = textComponent;
-		this.entityTarget = entityTarget;
+		this.entity = entityTarget;
 	}
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.entityTarget != null ? ImmutableSet.of(this.entityTarget.getIdentifier()) : ImmutableSet.of();
+		return this.entity != null ? ImmutableSet.of(this.entity.getIdentifier()) : ImmutableSet.of();
 	}
 
-	public static UnaryOperator<TextComponent> method_16190(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
+	public static UnaryOperator<TextComponent> applySourceEntity(LootContext lootContext, @Nullable LootContext.EntityTarget entityTarget) {
 		if (entityTarget != null) {
 			Entity entity = lootContext.get(entityTarget.getIdentifier());
 			if (entity != null) {
@@ -60,7 +60,7 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
 		if (this.name != null) {
-			itemStack.setDisplayName((TextComponent)method_16190(lootContext, this.entityTarget).apply(this.name));
+			itemStack.setDisplayName((TextComponent)applySourceEntity(lootContext, this.entity).apply(this.name));
 		}
 
 		return itemStack;
@@ -77,8 +77,8 @@ public class SetNameLootFunction extends ConditionalLootFunction {
 				jsonObject.add("name", TextComponent.Serializer.toJson(setNameLootFunction.name));
 			}
 
-			if (setNameLootFunction.entityTarget != null) {
-				jsonObject.add("entity", jsonSerializationContext.serialize(setNameLootFunction.entityTarget));
+			if (setNameLootFunction.entity != null) {
+				jsonObject.add("entity", jsonSerializationContext.serialize(setNameLootFunction.entity));
 			}
 		}
 

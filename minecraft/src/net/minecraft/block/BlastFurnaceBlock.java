@@ -31,7 +31,7 @@ public class BlastFurnaceBlock extends AbstractFurnaceBlock {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof BlastFurnaceBlockEntity) {
 			playerEntity.openContainer((NameableContainerProvider)blockEntity);
-			playerEntity.increaseStat(Stats.field_17272);
+			playerEntity.incrementStat(Stats.field_17272);
 		}
 	}
 

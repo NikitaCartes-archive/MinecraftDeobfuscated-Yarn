@@ -154,7 +154,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 					BoundingBox boundingBox = new BoundingBox(
 						(double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (double)((float)j + this.entity.getHeight()), (double)k + g + 0.5
 					);
-					if (!this.entity.world.isEntityColliding(this.entity, boundingBox)) {
+					if (!this.entity.world.doesNotCollide(this.entity, boundingBox)) {
 						return null;
 					}
 

@@ -13,16 +13,16 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class FollowCustomerTask extends Task<VillagerEntity> {
-	private final float field_18362;
+	private final float speed;
 
 	public FollowCustomerTask(float f) {
 		super(Integer.MAX_VALUE);
-		this.field_18362 = f;
+		this.speed = f;
 	}
 
 	protected boolean method_18954(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		PlayerEntity playerEntity = villagerEntity.getCurrentCustomer();
-		return villagerEntity.isValid()
+		return villagerEntity.isAlive()
 			&& playerEntity != null
 			&& !villagerEntity.isInsideWater()
 			&& !villagerEntity.velocityModified
@@ -35,7 +35,7 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_18956(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		this.method_18953(villagerEntity);
+		this.update(villagerEntity);
 	}
 
 	protected void method_18957(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
@@ -46,7 +46,12 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_18958(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		this.method_18953(villagerEntity);
+		this.update(villagerEntity);
+	}
+
+	@Override
+	protected boolean isTimeLimitExceeded(long l) {
+		return false;
 	}
 
 	@Override
@@ -56,10 +61,10 @@ public class FollowCustomerTask extends Task<VillagerEntity> {
 		);
 	}
 
-	private void method_18953(VillagerEntity villagerEntity) {
+	private void update(VillagerEntity villagerEntity) {
 		EntityPosWrapper entityPosWrapper = new EntityPosWrapper(villagerEntity.getCurrentCustomer());
 		Brain<?> brain = villagerEntity.getBrain();
-		brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(entityPosWrapper, this.field_18362, 2));
+		brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(entityPosWrapper, this.speed, 2));
 		brain.putMemory(MemoryModuleType.field_18446, entityPosWrapper);
 	}
 }

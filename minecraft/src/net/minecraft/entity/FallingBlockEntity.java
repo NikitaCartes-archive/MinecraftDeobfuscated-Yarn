@@ -65,7 +65,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	public boolean method_5732() {
+	public boolean canPlayerAttack() {
 		return false;
 	}
 
@@ -79,7 +79,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -89,14 +89,14 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	public boolean doesCollide() {
-		return !this.invalid;
+	public boolean collides() {
+		return !this.removed;
 	}
 
 	@Override
 	public void tick() {
 		if (this.block.isAir()) {
-			this.invalidate();
+			this.remove();
 		} else {
 			this.prevX = this.x;
 			this.prevY = this.y;
@@ -105,9 +105,9 @@ public class FallingBlockEntity extends Entity {
 			if (this.timeFalling++ == 0) {
 				BlockPos blockPos = new BlockPos(this);
 				if (this.world.getBlockState(blockPos).getBlock() == block) {
-					this.world.clearBlockState(blockPos);
+					this.world.clearBlockState(blockPos, false);
 				} else if (!this.world.isClient) {
-					this.invalidate();
+					this.remove();
 					return;
 				}
 			}
@@ -143,10 +143,10 @@ public class FallingBlockEntity extends Entity {
 					BlockState blockState = this.world.getBlockState(blockPos);
 					this.setVelocity(this.getVelocity().multiply(0.7, -0.5, 0.7));
 					if (blockState.getBlock() != Blocks.field_10008) {
-						this.invalidate();
+						this.remove();
 						if (!this.destroyedOnLanding) {
 							if (bl2
-								|| blockState.method_11587(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP))
+								|| blockState.canReplace(new AutomaticItemPlacementContext(this.world, blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP))
 									&& this.block.canPlaceAt(this.world, blockPos)) {
 								if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
 									this.block = this.block.with(Properties.WATERLOGGED, Boolean.valueOf(true));
@@ -188,7 +188,7 @@ public class FallingBlockEntity extends Entity {
 						this.dropItem(block);
 					}
 
-					this.invalidate();
+					this.remove();
 				}
 			}
 
@@ -201,7 +201,7 @@ public class FallingBlockEntity extends Entity {
 		if (this.hurtEntities) {
 			int i = MathHelper.ceil(f - 1.0F);
 			if (i > 0) {
-				List<Entity> list = Lists.<Entity>newArrayList(this.world.getVisibleEntities(this, this.getBoundingBox()));
+				List<Entity> list = Lists.<Entity>newArrayList(this.world.getEntities(this, this.getBoundingBox()));
 				boolean bl = this.block.matches(BlockTags.field_15486);
 				DamageSource damageSource = bl ? DamageSource.ANVIL : DamageSource.FALLING_BLOCK;
 

@@ -39,6 +39,15 @@ public abstract class DoorInteractGoal extends Goal {
 		}
 	}
 
+	protected void setDoorOpen(boolean bl) {
+		if (this.field_6412) {
+			BlockState blockState = this.owner.world.getBlockState(this.doorPos);
+			if (blockState.getBlock() instanceof DoorBlock) {
+				((DoorBlock)blockState.getBlock()).setOpen(this.owner.world, this.doorPos, bl);
+			}
+		}
+	}
+
 	@Override
 	public boolean canStart() {
 		if (!this.owner.horizontalCollision) {

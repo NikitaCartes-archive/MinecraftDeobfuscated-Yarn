@@ -8,14 +8,14 @@ public enum Attachment implements StringRepresentable {
 	field_17100("single_wall"),
 	field_17101("double_wall");
 
-	private final String field_17102;
+	private final String name;
 
 	private Attachment(String string2) {
-		this.field_17102 = string2;
+		this.name = string2;
 	}
 
 	@Override
 	public String asString() {
-		return this.field_17102;
+		return this.name;
 	}
 }

@@ -1,25 +1,27 @@
 package net.minecraft.client.gui.widget;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.menu.settings.ControlsSettingsScreen;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.menu.options.ControlsOptionsScreen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TextFormat;
 import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
-public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.Entry> {
-	private final ControlsSettingsScreen gui;
-	private final MinecraftClient client;
+public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget.Entry> {
+	private final ControlsOptionsScreen gui;
 	private int field_2733;
 
-	public KeyBindingListWidget(ControlsSettingsScreen controlsSettingsScreen, MinecraftClient minecraftClient) {
-		super(minecraftClient, controlsSettingsScreen.screenWidth + 45, controlsSettingsScreen.screenHeight, 63, controlsSettingsScreen.screenHeight - 32, 20);
-		this.gui = controlsSettingsScreen;
-		this.client = minecraftClient;
+	public KeyBindingListWidget(ControlsOptionsScreen controlsOptionsScreen, MinecraftClient minecraftClient) {
+		super(minecraftClient, controlsOptionsScreen.width + 45, controlsOptionsScreen.height, 63, controlsOptionsScreen.height - 32, 20);
+		this.gui = controlsOptionsScreen;
 		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
 		Arrays.sort(keyBindings);
 		String string = null;
@@ -28,7 +30,7 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 			String string2 = keyBinding.getCategory();
 			if (!string2.equals(string)) {
 				string = string2;
-				this.addEntry(new KeyBindingListWidget.CategoryEntry(string2));
+				this.addItem(new KeyBindingListWidget.CategoryEntry(string2));
 			}
 
 			int i = minecraftClient.textRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
@@ -36,7 +38,7 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 				this.field_2733 = i;
 			}
 
-			this.addEntry(new KeyBindingListWidget.KeyBindingEntry(keyBinding));
+			this.addItem(new KeyBindingListWidget.KeyBindingEntry(keyBinding));
 		}
 	}
 
@@ -46,8 +48,8 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 	}
 
 	@Override
-	public int getEntryWidth() {
-		return super.getEntryWidth() + 32;
+	public int getItemWidth() {
+		return super.getItemWidth() + 32;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -61,15 +63,25 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 		}
 
 		@Override
-		public void draw(int i, int j, int k, int l, boolean bl, float f) {
+		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 			KeyBindingListWidget.this.client
 				.textRenderer
-				.draw(this.name, (float)(KeyBindingListWidget.this.client.currentScreen.screenWidth / 2 - this.nameWidth / 2), (float)(this.getY() + j - 9 - 1), 16777215);
+				.draw(this.name, (float)(KeyBindingListWidget.this.client.currentScreen.width / 2 - this.nameWidth / 2), (float)(j + m - 9 - 1), 16777215);
+		}
+
+		@Override
+		public boolean changeFocus(boolean bl) {
+			return false;
+		}
+
+		@Override
+		public List<? extends Element> children() {
+			return Collections.emptyList();
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class Entry extends EntryListWidget.Entry<KeyBindingListWidget.Entry> {
+	public abstract static class Entry extends ElementListWidget.ElementItem<KeyBindingListWidget.Entry> {
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -82,29 +94,37 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 		private KeyBindingEntry(KeyBinding keyBinding) {
 			this.binding = keyBinding;
 			this.bindingName = I18n.translate(keyBinding.getId());
-			this.editButton = new ButtonWidget(
-				0, 0, 75, 20, I18n.translate(keyBinding.getId()), buttonWidget -> KeyBindingListWidget.this.gui.focusedBinding = keyBinding
-			);
+			this.editButton = new ButtonWidget(0, 0, 75, 20, this.bindingName, buttonWidget -> KeyBindingListWidget.this.gui.focusedBinding = keyBinding) {
+				@Override
+				protected String getNarrationMessage() {
+					return keyBinding.isNotBound()
+						? I18n.translate("narrator.controls.unbound", KeyBindingEntry.this.bindingName)
+						: I18n.translate("narrator.controls.bound", KeyBindingEntry.this.bindingName, super.getNarrationMessage());
+				}
+			};
 			this.resetButton = new ButtonWidget(0, 0, 50, 20, I18n.translate("controls.reset"), buttonWidget -> {
 				KeyBindingListWidget.this.client.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
 				KeyBinding.updateKeysByCode();
-			});
+			}) {
+				@Override
+				protected String getNarrationMessage() {
+					return I18n.translate("narrator.controls.reset", KeyBindingEntry.this.bindingName);
+				}
+			};
 		}
 
 		@Override
-		public void draw(int i, int j, int k, int l, boolean bl, float f) {
-			int m = this.getY();
-			int n = this.getX();
+		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 			boolean bl2 = KeyBindingListWidget.this.gui.focusedBinding == this.binding;
 			KeyBindingListWidget.this.client
 				.textRenderer
-				.draw(this.bindingName, (float)(n + 90 - KeyBindingListWidget.this.field_2733), (float)(m + j / 2 - 9 / 2), 16777215);
-			this.resetButton.x = n + 190;
-			this.resetButton.y = m;
+				.draw(this.bindingName, (float)(k + 90 - KeyBindingListWidget.this.field_2733), (float)(j + m / 2 - 9 / 2), 16777215);
+			this.resetButton.x = k + 190;
+			this.resetButton.y = j;
 			this.resetButton.active = !this.binding.isDefault();
-			this.resetButton.render(k, l, f);
-			this.editButton.x = n + 105;
-			this.editButton.y = m;
+			this.resetButton.render(n, o, f);
+			this.editButton.x = k + 105;
+			this.editButton.y = j;
 			this.editButton.setMessage(this.binding.getLocalizedName());
 			boolean bl3 = false;
 			if (!this.binding.isNotBound()) {
@@ -122,7 +142,12 @@ public class KeyBindingListWidget extends EntryListWidget<KeyBindingListWidget.E
 				this.editButton.setMessage(TextFormat.field_1061 + this.editButton.getMessage());
 			}
 
-			this.editButton.render(k, l, f);
+			this.editButton.render(n, o, f);
+		}
+
+		@Override
+		public List<? extends Element> children() {
+			return ImmutableList.of(this.editButton, this.resetButton);
 		}
 
 		@Override

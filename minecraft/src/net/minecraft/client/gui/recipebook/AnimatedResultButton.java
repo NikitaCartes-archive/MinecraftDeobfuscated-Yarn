@@ -57,7 +57,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 
 	@Override
 	public void renderButton(int i, int j, float f) {
-		if (!Screen.isControlPressed()) {
+		if (!Screen.hasControlDown()) {
 			this.time += f;
 		}
 
@@ -85,7 +85,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 			this.bounce -= f;
 		}
 
-		this.drawTexturedRect(this.x, this.y, k, l, this.width, this.height);
+		this.blit(this.x, this.y, k, l, this.width, this.height);
 		List<Recipe<?>> list = this.getResults();
 		this.currentResultIndex = MathHelper.floor(this.time / 30.0F) % list.size();
 		ItemStack itemStack = ((Recipe)list.get(this.currentResultIndex)).getOutput();
@@ -124,7 +124,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 
 	public List<String> method_2644(Screen screen) {
 		ItemStack itemStack = ((Recipe)this.getResults().get(this.currentResultIndex)).getOutput();
-		List<String> list = screen.getStackTooltip(itemStack);
+		List<String> list = screen.getTooltipFromItem(itemStack);
 		if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingContainer)).size() > 1) {
 			list.add(I18n.translate("gui.recipebook.moreRecipes"));
 		}
@@ -138,19 +138,7 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 	}
 
 	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		if (i == 0 || i == 1) {
-			boolean bl = this.clicked(d, e);
-			if (bl) {
-				this.playDownSound(MinecraftClient.getInstance().getSoundManager());
-				if (i == 0) {
-					this.onClick(d, e);
-				}
-
-				return true;
-			}
-		}
-
-		return false;
+	protected boolean isValidClickButton(int i) {
+		return i == 0 || i == 1;
 	}
 }

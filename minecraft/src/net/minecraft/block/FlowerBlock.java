@@ -15,7 +15,11 @@ public class FlowerBlock extends PlantBlock {
 	public FlowerBlock(StatusEffect statusEffect, int i, Block.Settings settings) {
 		super(settings);
 		this.effectInStew = statusEffect;
-		this.effectInStewDuration = i * 20;
+		if (statusEffect.isInstant()) {
+			this.effectInStewDuration = i;
+		} else {
+			this.effectInStewDuration = i * 20;
+		}
 	}
 
 	@Override

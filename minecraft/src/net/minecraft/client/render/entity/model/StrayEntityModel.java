@@ -41,7 +41,7 @@ public class StrayEntityModel<T extends MobEntity & RangedAttacker> extends Bipe
 		this.armPoseRight = BipedEntityModel.ArmPose.field_3409;
 		this.armPoseLeft = BipedEntityModel.ArmPose.field_3409;
 		ItemStack itemStack = mobEntity.getStackInHand(Hand.MAIN);
-		if (itemStack.getItem() == Items.field_8102 && mobEntity.method_6510()) {
+		if (itemStack.getItem() == Items.field_8102 && mobEntity.isAttacking()) {
 			if (mobEntity.getMainHand() == AbsoluteHand.field_6183) {
 				this.armPoseRight = BipedEntityModel.ArmPose.field_3403;
 			} else {
@@ -55,9 +55,9 @@ public class StrayEntityModel<T extends MobEntity & RangedAttacker> extends Bipe
 	public void method_19690(T mobEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(mobEntity, f, g, h, i, j, k);
 		ItemStack itemStack = mobEntity.getMainHandStack();
-		if (mobEntity.method_6510() && (itemStack.isEmpty() || itemStack.getItem() != Items.field_8102)) {
-			float l = MathHelper.sin(this.swingProgress * (float) Math.PI);
-			float m = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
+		if (mobEntity.isAttacking() && (itemStack.isEmpty() || itemStack.getItem() != Items.field_8102)) {
+			float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
+			float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 			this.armRight.roll = 0.0F;
 			this.armLeft.roll = 0.0F;
 			this.armRight.yaw = -(0.1F - l * 0.6F);

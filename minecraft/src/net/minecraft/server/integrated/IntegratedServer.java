@@ -20,7 +20,7 @@ import net.minecraft.server.LanServerPinger;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
-import net.minecraft.server.command.ServerCommandManager;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.UserCache;
 import net.minecraft.util.crash.CrashReport;
@@ -62,7 +62,7 @@ public class IntegratedServer extends MinecraftServer {
 			new File(minecraftClient.runDirectory, "saves"),
 			minecraftClient.getNetworkProxy(),
 			minecraftClient.getDataFixer(),
-			new ServerCommandManager(false),
+			new CommandManager(false),
 			yggdrasilAuthenticationService,
 			minecraftSessionService,
 			gameProfileRepository,
@@ -77,7 +77,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.setWorldHeight(256);
 		this.setPlayerManager(new IntegratedPlayerManager(this));
 		this.client = minecraftClient;
-		this.levelInfo = this.isDemo() ? MinecraftServer.field_17704 : levelInfo;
+		this.levelInfo = this.isDemo() ? MinecraftServer.WORLD_INFO : levelInfo;
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public class IronGolemFlowerFeatureRenderer extends FeatureRenderer<IronGolemEnt
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

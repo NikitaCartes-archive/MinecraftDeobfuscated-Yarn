@@ -1,7 +1,5 @@
 package net.minecraft.network.listener;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.network.ButtonClickServerPacket;
 import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
 import net.minecraft.server.network.packet.BoatPaddleStateC2SPacket;
@@ -127,7 +125,6 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onQueryBlockNbt(QueryBlockNbtC2SPacket queryBlockNbtC2SPacket);
 
-	@Environment(EnvType.CLIENT)
 	void onJigsawUpdate(UpdateJigsawC2SPacket updateJigsawC2SPacket);
 
 	void onUpdateDifficulty(UpdateDifficultyC2SPacket updateDifficultyC2SPacket);

@@ -57,9 +57,9 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 				ServerWorld serverWorld = lootContext.getWorld();
 				BlockPos blockPos2 = serverWorld.locateStructure(this.destination, blockPos, this.searchRadius, this.skipExistingChunks);
 				if (blockPos2 != null) {
-					ItemStack itemStack2 = FilledMapItem.method_8005(serverWorld, blockPos2.getX(), blockPos2.getZ(), this.zoom, true, true);
+					ItemStack itemStack2 = FilledMapItem.createMap(serverWorld, blockPos2.getX(), blockPos2.getZ(), this.zoom, true, true);
 					FilledMapItem.method_8002(serverWorld, itemStack2);
-					MapState.method_110(itemStack2, blockPos2, "+", this.decoration);
+					MapState.addDecorationsTag(itemStack2, blockPos2, "+", this.decoration);
 					itemStack2.setDisplayName(new TranslatableTextComponent("filled_map." + this.destination.toLowerCase(Locale.ROOT)));
 					return itemStack2;
 				}
@@ -84,22 +84,22 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public ExplorationMapLootFunction.Builder destination(String string) {
+		public ExplorationMapLootFunction.Builder withDestination(String string) {
 			this.destination = string;
 			return this;
 		}
 
-		public ExplorationMapLootFunction.Builder decoration(MapIcon.Type type) {
+		public ExplorationMapLootFunction.Builder withDecoration(MapIcon.Type type) {
 			this.decoration = type;
 			return this;
 		}
 
-		public ExplorationMapLootFunction.Builder zoom(byte b) {
+		public ExplorationMapLootFunction.Builder withZoom(byte b) {
 			this.zoom = b;
 			return this;
 		}
 
-		public ExplorationMapLootFunction.Builder skipExistingChunks(boolean bl) {
+		public ExplorationMapLootFunction.Builder withSkipExistingChunks(boolean bl) {
 			this.skipExistingChunks = bl;
 			return this;
 		}

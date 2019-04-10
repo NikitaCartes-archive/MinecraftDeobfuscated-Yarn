@@ -18,6 +18,7 @@ public class JigsawBlockScreen extends Screen {
 	private TextFieldWidget attachmentTypeField;
 	private TextFieldWidget targetPoolField;
 	private TextFieldWidget finalStateField;
+	private ButtonWidget field_19103;
 
 	public JigsawBlockScreen(JigsawBlockEntity jigsawBlockEntity) {
 		super(NarratorManager.field_18967);
@@ -25,7 +26,7 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.attachmentTypeField.tick();
 		this.targetPoolField.tick();
 		this.finalStateField.tick();
@@ -33,15 +34,15 @@ public class JigsawBlockScreen extends Screen {
 
 	private void onDone() {
 		this.updateServer();
-		this.client.openScreen(null);
+		this.minecraft.openScreen(null);
 	}
 
 	private void onCancel() {
-		this.client.openScreen(null);
+		this.minecraft.openScreen(null);
 	}
 
 	private void updateServer() {
-		this.client
+		this.minecraft
 			.getNetworkHandler()
 			.sendPacket(
 				new UpdateJigsawC2SPacket(
@@ -51,44 +52,51 @@ public class JigsawBlockScreen extends Screen {
 	}
 
 	@Override
-	public void close() {
+	public void onClose() {
 		this.onCancel();
 	}
 
 	@Override
-	protected void onInitialized() {
-		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.onDone()));
-		this.addButton(new ButtonWidget(this.screenWidth / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.onCancel()));
-		this.targetPoolField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 40, 300, 20);
+	protected void init() {
+		this.minecraft.keyboard.enableRepeatEvents(true);
+		this.field_19103 = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, 210, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.onDone()));
+		this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.onCancel()));
+		this.targetPoolField = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20);
 		this.targetPoolField.setMaxLength(128);
 		this.targetPoolField.setText(this.jigsaw.getTargetPool().toString());
-		this.listeners.add(this.targetPoolField);
-		this.attachmentTypeField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 80, 300, 20);
+		this.targetPoolField.setChangedListener(string -> this.method_20118());
+		this.children.add(this.targetPoolField);
+		this.attachmentTypeField = new TextFieldWidget(this.font, this.width / 2 - 152, 80, 300, 20);
 		this.attachmentTypeField.setMaxLength(128);
 		this.attachmentTypeField.setText(this.jigsaw.getAttachmentType().toString());
-		this.listeners.add(this.attachmentTypeField);
-		this.finalStateField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 152, 120, 300, 20);
+		this.attachmentTypeField.setChangedListener(string -> this.method_20118());
+		this.children.add(this.attachmentTypeField);
+		this.finalStateField = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 300, 20);
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
-		this.listeners.add(this.finalStateField);
-		this.focusOn(this.targetPoolField);
+		this.children.add(this.finalStateField);
+		this.method_20085(this.targetPoolField);
+		this.method_20118();
+	}
+
+	protected void method_20118() {
+		this.field_19103.active = Identifier.isValidIdentifier(this.attachmentTypeField.getText()) & Identifier.isValidIdentifier(this.targetPoolField.getText());
 	}
 
 	@Override
-	public void onScaleChanged(MinecraftClient minecraftClient, int i, int j) {
+	public void resize(MinecraftClient minecraftClient, int i, int j) {
 		String string = this.attachmentTypeField.getText();
 		String string2 = this.targetPoolField.getText();
 		String string3 = this.finalStateField.getText();
-		this.initialize(minecraftClient, i, j);
+		this.init(minecraftClient, i, j);
 		this.attachmentTypeField.setText(string);
 		this.targetPoolField.setText(string2);
 		this.finalStateField.setText(string3);
 	}
 
 	@Override
-	public void onClosed() {
-		this.client.keyboard.enableRepeatEvents(false);
+	public void removed() {
+		this.minecraft.keyboard.enableRepeatEvents(false);
 	}
 
 	@Override
@@ -105,12 +113,12 @@ public class JigsawBlockScreen extends Screen {
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.target_pool"), this.screenWidth / 2 - 153, 30, 10526880);
+		this.renderBackground();
+		this.drawString(this.font, I18n.translate("jigsaw_block.target_pool"), this.width / 2 - 153, 30, 10526880);
 		this.targetPoolField.render(i, j, f);
-		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.attachement_type"), this.screenWidth / 2 - 153, 70, 10526880);
+		this.drawString(this.font, I18n.translate("jigsaw_block.attachement_type"), this.width / 2 - 153, 70, 10526880);
 		this.attachmentTypeField.render(i, j, f);
-		this.drawString(this.fontRenderer, I18n.translate("jigsaw_block.final_state"), this.screenWidth / 2 - 153, 110, 10526880);
+		this.drawString(this.font, I18n.translate("jigsaw_block.final_state"), this.width / 2 - 153, 110, 10526880);
 		this.finalStateField.render(i, j, f);
 		super.render(i, j, f);
 	}

@@ -25,7 +25,7 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvancement>> {
 	public void method_10348(Consumer<SimpleAdvancement> consumer) {
-		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Task.create()
 			.display(
 				Blocks.field_10471,
 				new TranslatableTextComponent("advancements.end.root.title"),
@@ -38,7 +38,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13078))
 			.build(consumer, "end/root");
-		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement)
 			.display(
 				Blocks.field_10337,
@@ -52,7 +52,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("killed_dragon", OnKilledCriterion.Conditions.createKill(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
 			.build(consumer, "end/kill_dragon");
-		SimpleAdvancement simpleAdvancement3 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement3 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement2)
 			.display(
 				Items.field_8634,
@@ -66,7 +66,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("entered_end_gateway", EnterBlockCriterion.Conditions.block(Blocks.field_10613))
 			.build(consumer, "end/enter_end_gateway");
-		SimpleAdvancement simpleAdvancement4 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement4 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement2)
 			.display(
 				Items.field_8301,
@@ -80,7 +80,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("summoned_dragon", SummonedEntityCriterion.Conditions.method_9129(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
 			.build(consumer, "end/respawn_dragon");
-		SimpleAdvancement simpleAdvancement5 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement5 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement3)
 			.display(
 				Blocks.field_10286,
@@ -94,7 +94,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("in_city", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9017(Feature.END_CITY)))
 			.build(consumer, "end/find_end_city");
-		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement2)
 			.display(
 				Items.field_8613,
@@ -108,7 +108,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("dragon_breath", InventoryChangedCriterion.Conditions.items(Items.field_8613))
 			.build(consumer, "end/dragon_breath");
-		SimpleAdvancement simpleAdvancement7 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement7 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement5)
 			.display(
 				Items.field_8815,
@@ -121,9 +121,9 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
-			.criterion("levitated", LevitationCriterion.Conditions.method_9013(DistancePredicate.method_8856(NumberRange.Float.atLeast(50.0F))))
+			.criterion("levitated", LevitationCriterion.Conditions.method_9013(DistancePredicate.method_8856(NumberRange.FloatRange.atLeast(50.0F))))
 			.build(consumer, "end/levitate");
-		SimpleAdvancement simpleAdvancement8 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement8 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement5)
 			.display(
 				Items.field_8833,
@@ -137,7 +137,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("elytra", InventoryChangedCriterion.Conditions.items(Items.field_8833))
 			.build(consumer, "end/elytra");
-		SimpleAdvancement simpleAdvancement9 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement9 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement2)
 			.display(
 				Blocks.field_10081,

@@ -17,18 +17,18 @@ import net.minecraft.util.math.Vec3d;
 public class GoToIfNearbyTask extends Task<MobEntityWithAi> {
 	private final MemoryModuleType<GlobalPos> target;
 	private long nextUpdateTime;
-	private final int maxDistanceSquared;
+	private final int maxDistance;
 
 	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> memoryModuleType, int i) {
 		this.target = memoryModuleType;
-		this.maxDistanceSquared = i;
+		this.maxDistance = i;
 	}
 
 	protected boolean method_18993(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getMemory(this.target);
+		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.target);
 		return optional.isPresent()
 			&& Objects.equals(serverWorld.getDimension().getType(), ((GlobalPos)optional.get()).getDimension())
-			&& ((GlobalPos)optional.get()).getPos().method_19769(mobEntityWithAi.getPos(), (double)this.maxDistanceSquared);
+			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
 	}
 
 	@Override

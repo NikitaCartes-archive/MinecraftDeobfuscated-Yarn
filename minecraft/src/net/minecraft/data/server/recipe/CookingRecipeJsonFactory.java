@@ -22,7 +22,7 @@ public class CookingRecipeJsonFactory {
 	private final Ingredient input;
 	private final float exp;
 	private final int time;
-	private final SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.create();
+	private final SimpleAdvancement.Task builder = SimpleAdvancement.Task.create();
 	private String group;
 	private final CookingRecipeSerializer<?> serializer;
 
@@ -102,7 +102,7 @@ public class CookingRecipeJsonFactory {
 		private final Item result;
 		private final float experience;
 		private final int cookingTime;
-		private final SimpleAdvancement.Builder builder;
+		private final SimpleAdvancement.Task builder;
 		private final Identifier advancementId;
 		private final RecipeSerializer<? extends CookingRecipe> cookingRecipeSerializer;
 
@@ -113,7 +113,7 @@ public class CookingRecipeJsonFactory {
 			Item item,
 			float f,
 			int i,
-			SimpleAdvancement.Builder builder,
+			SimpleAdvancement.Task task,
 			Identifier identifier2,
 			RecipeSerializer<? extends CookingRecipe> recipeSerializer
 		) {
@@ -123,7 +123,7 @@ public class CookingRecipeJsonFactory {
 			this.result = item;
 			this.experience = f;
 			this.cookingTime = i;
-			this.builder = builder;
+			this.builder = task;
 			this.advancementId = identifier2;
 			this.cookingRecipeSerializer = recipeSerializer;
 		}

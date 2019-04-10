@@ -36,14 +36,14 @@ public class SheepWoolFeatureRenderer extends FeatureRenderer<SheepEntity, Sheep
 				GlStateManager.color3f(hs[0], hs[1], hs[2]);
 			}
 
-			this.getModel().method_17081(this.field_4891);
+			this.getModel().copyStateTo(this.field_4891);
 			this.field_4891.method_17118(sheepEntity, f, g, h);
 			this.field_4891.render(sheepEntity, f, g, i, j, k, l);
 		}
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 }

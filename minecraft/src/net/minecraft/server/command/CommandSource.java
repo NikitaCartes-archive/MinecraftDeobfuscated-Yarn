@@ -20,7 +20,7 @@ import net.minecraft.util.Identifier;
 public interface CommandSource {
 	Collection<String> getPlayerNames();
 
-	default Collection<String> method_9269() {
+	default Collection<String> getEntitySuggestions() {
 		return Collections.emptyList();
 	}
 
@@ -32,11 +32,11 @@ public interface CommandSource {
 
 	CompletableFuture<Suggestions> getCompletions(CommandContext<CommandSource> commandContext, SuggestionsBuilder suggestionsBuilder);
 
-	default Collection<CommandSource.RelativePosition> method_17771() {
+	default Collection<CommandSource.RelativePosition> getBlockPositionSuggestions() {
 		return Collections.singleton(CommandSource.RelativePosition.ZERO_WORLD);
 	}
 
-	default Collection<CommandSource.RelativePosition> method_17772() {
+	default Collection<CommandSource.RelativePosition> getPositionSuggestions() {
 		return Collections.singleton(CommandSource.RelativePosition.ZERO_WORLD);
 	}
 

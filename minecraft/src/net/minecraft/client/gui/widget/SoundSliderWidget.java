@@ -13,18 +13,18 @@ public class SoundSliderWidget extends SliderWidget {
 	public SoundSliderWidget(MinecraftClient minecraftClient, int i, int j, SoundCategory soundCategory, int k) {
 		super(minecraftClient.options, i, j, k, 20, (double)minecraftClient.options.getSoundVolume(soundCategory));
 		this.category = soundCategory;
-		this.updateText();
+		this.updateMessage();
 	}
 
 	@Override
-	protected void updateText() {
-		String string = (float)this.progress == (float)this.getYImage(false) ? I18n.translate("options.off") : (int)((float)this.progress * 100.0F) + "%";
+	protected void updateMessage() {
+		String string = (float)this.value == (float)this.getYImage(false) ? I18n.translate("options.off") : (int)((float)this.value * 100.0F) + "%";
 		this.setMessage(I18n.translate("soundCategory." + this.category.getName()) + ": " + string);
 	}
 
 	@Override
-	protected void onProgressChanged() {
-		this.gameOptions.setSoundVolume(this.category, (float)this.progress);
-		this.gameOptions.write();
+	protected void applyValue() {
+		this.options.setSoundVolume(this.category, (float)this.value);
+		this.options.write();
 	}
 }

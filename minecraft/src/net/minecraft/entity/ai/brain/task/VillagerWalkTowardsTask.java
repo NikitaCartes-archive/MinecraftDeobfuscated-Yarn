@@ -32,17 +32,23 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 
 	protected void method_19509(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<?> brain = villagerEntity.getBrain();
-		brain.getMemory(this.field_18382).ifPresent(globalPos -> {
+		brain.getOptionalMemory(this.field_18382).ifPresent(globalPos -> {
 			if (this.method_19597(serverWorld, villagerEntity, globalPos)) {
-				brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), this.field_18383, this.field_18384));
-			} else {
 				villagerEntity.releaseTicketFor(this.field_18382);
 				brain.forget(this.field_18382);
+			} else if (!this.method_19988(serverWorld, villagerEntity, globalPos)) {
+				brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), this.field_18383, this.field_18384));
 			}
 		});
 	}
 
 	private boolean method_19597(ServerWorld serverWorld, VillagerEntity villagerEntity, GlobalPos globalPos) {
-		return globalPos.getDimension() == serverWorld.getDimension().getType() && globalPos.getPos().method_19455(new BlockPos(villagerEntity)) < this.field_18385;
+		return globalPos.getDimension() != serverWorld.getDimension().getType()
+			|| globalPos.getPos().getManhattanDistance(new BlockPos(villagerEntity)) > this.field_18385;
+	}
+
+	private boolean method_19988(ServerWorld serverWorld, VillagerEntity villagerEntity, GlobalPos globalPos) {
+		return globalPos.getDimension() == serverWorld.getDimension().getType()
+			&& globalPos.getPos().getManhattanDistance(new BlockPos(villagerEntity)) <= this.field_18384;
 	}
 }

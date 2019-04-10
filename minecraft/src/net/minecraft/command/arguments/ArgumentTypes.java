@@ -45,7 +45,7 @@ public class ArgumentTypes {
 		register("column_pos", ColumnPosArgumentType.class, new ConstantArgumentSerializer(ColumnPosArgumentType::create));
 		register("vec3", Vec3ArgumentType.class, new ConstantArgumentSerializer(Vec3ArgumentType::create));
 		register("vec2", Vec2ArgumentType.class, new ConstantArgumentSerializer(Vec2ArgumentType::create));
-		register("block_state", BlockArgumentType.class, new ConstantArgumentSerializer(BlockArgumentType::create));
+		register("block_state", BlockStateArgumentType.class, new ConstantArgumentSerializer(BlockStateArgumentType::create));
 		register("block_predicate", BlockPredicateArgumentType.class, new ConstantArgumentSerializer(BlockPredicateArgumentType::create));
 		register("item_stack", ItemStackArgumentType.class, new ConstantArgumentSerializer(ItemStackArgumentType::create));
 		register("item_predicate", ItemPredicateArgumentType.class, new ConstantArgumentSerializer(ItemPredicateArgumentType::create));

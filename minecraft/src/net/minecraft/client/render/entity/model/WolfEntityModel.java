@@ -9,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
-	private final Cuboid field_3621;
+	private final Cuboid head;
 	private final Cuboid field_3623;
 	private final Cuboid field_3622;
 	private final Cuboid field_3620;
@@ -21,9 +21,9 @@ public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
 	public WolfEntityModel() {
 		float f = 0.0F;
 		float g = 13.5F;
-		this.field_3621 = new Cuboid(this, 0, 0);
-		this.field_3621.addBox(-2.0F, -3.0F, -2.0F, 6, 6, 4, 0.0F);
-		this.field_3621.setRotationPoint(-1.0F, 13.5F, -7.0F);
+		this.head = new Cuboid(this, 0, 0);
+		this.head.addBox(-2.0F, -3.0F, -2.0F, 6, 6, 4, 0.0F);
+		this.head.setRotationPoint(-1.0F, 13.5F, -7.0F);
 		this.field_3623 = new Cuboid(this, 18, 14);
 		this.field_3623.addBox(-3.0F, -2.0F, -3.0F, 6, 9, 6, 0.0F);
 		this.field_3623.setRotationPoint(0.0F, 14.0F, 2.0F);
@@ -45,9 +45,9 @@ public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
 		this.field_3617 = new Cuboid(this, 9, 18);
 		this.field_3617.addBox(0.0F, 0.0F, -1.0F, 2, 8, 2, 0.0F);
 		this.field_3617.setRotationPoint(-1.0F, 12.0F, 8.0F);
-		this.field_3621.setTextureOffset(16, 14).addBox(-2.0F, -5.0F, 0.0F, 2, 2, 1, 0.0F);
-		this.field_3621.setTextureOffset(16, 14).addBox(2.0F, -5.0F, 0.0F, 2, 2, 1, 0.0F);
-		this.field_3621.setTextureOffset(0, 10).addBox(-0.5F, 0.0F, -5.0F, 3, 3, 4, 0.0F);
+		this.head.setTextureOffset(16, 14).addBox(-2.0F, -5.0F, 0.0F, 2, 2, 1, 0.0F);
+		this.head.setTextureOffset(16, 14).addBox(2.0F, -5.0F, 0.0F, 2, 2, 1, 0.0F);
+		this.head.setTextureOffset(0, 10).addBox(-0.5F, 0.0F, -5.0F, 3, 3, 4, 0.0F);
 	}
 
 	public void method_17132(T wolfEntity, float f, float g, float h, float i, float j, float k) {
@@ -57,7 +57,7 @@ public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
 			float l = 2.0F;
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(0.0F, 5.0F * k, 2.0F * k);
-			this.field_3621.method_2852(k);
+			this.head.method_2852(k);
 			GlStateManager.popMatrix();
 			GlStateManager.pushMatrix();
 			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
@@ -71,7 +71,7 @@ public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
 			this.field_3619.render(k);
 			GlStateManager.popMatrix();
 		} else {
-			this.field_3621.method_2852(k);
+			this.head.method_2852(k);
 			this.field_3623.render(k);
 			this.field_3622.render(k);
 			this.field_3620.render(k);
@@ -120,16 +120,16 @@ public class WolfEntityModel<T extends WolfEntity> extends EntityModel<T> {
 			this.field_3624.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
 		}
 
-		this.field_3621.roll = wolfEntity.method_6719(h) + wolfEntity.method_6715(h, 0.0F);
-		this.field_3619.roll = wolfEntity.method_6715(h, -0.08F);
-		this.field_3623.roll = wolfEntity.method_6715(h, -0.16F);
-		this.field_3617.roll = wolfEntity.method_6715(h, -0.2F);
+		this.head.roll = wolfEntity.getBegAnimationProgress(h) + wolfEntity.getShakeAnimationProgress(h, 0.0F);
+		this.field_3619.roll = wolfEntity.getShakeAnimationProgress(h, -0.08F);
+		this.field_3623.roll = wolfEntity.getShakeAnimationProgress(h, -0.16F);
+		this.field_3617.roll = wolfEntity.getShakeAnimationProgress(h, -0.2F);
 	}
 
 	public void method_17133(T wolfEntity, float f, float g, float h, float i, float j, float k) {
 		super.setAngles(wolfEntity, f, g, h, i, j, k);
-		this.field_3621.pitch = j * (float) (Math.PI / 180.0);
-		this.field_3621.yaw = i * (float) (Math.PI / 180.0);
+		this.head.pitch = j * (float) (Math.PI / 180.0);
+		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.field_3617.pitch = h;
 	}
 }

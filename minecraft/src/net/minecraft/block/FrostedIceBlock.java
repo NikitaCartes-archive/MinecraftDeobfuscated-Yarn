@@ -52,12 +52,12 @@ public class FrostedIceBlock extends IceBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (block == this && this.method_10202(world, blockPos, 2)) {
 			this.melt(blockState, world, blockPos);
 		}
 
-		super.neighborUpdate(blockState, world, blockPos, block, blockPos2);
+		super.neighborUpdate(blockState, world, blockPos, block, blockPos2, bl);
 	}
 
 	private boolean method_10202(BlockView blockView, BlockPos blockPos, int i) {

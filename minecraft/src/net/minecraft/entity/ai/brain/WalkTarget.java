@@ -5,8 +5,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class WalkTarget {
 	private final LookTarget lookTarget;
-	private final float field_18461;
-	private final int field_18462;
+	private final float speed;
+	private final int completionRange;
 
 	public WalkTarget(BlockPos blockPos, float f, int i) {
 		this(new BlockPosLookTarget(blockPos), f, i);
@@ -18,19 +18,19 @@ public class WalkTarget {
 
 	public WalkTarget(LookTarget lookTarget, float f, int i) {
 		this.lookTarget = lookTarget;
-		this.field_18461 = f;
-		this.field_18462 = i;
+		this.speed = f;
+		this.completionRange = i;
 	}
 
 	public LookTarget getLookTarget() {
 		return this.lookTarget;
 	}
 
-	public float method_19095() {
-		return this.field_18461;
+	public float getSpeed() {
+		return this.speed;
 	}
 
-	public int method_19096() {
-		return this.field_18462;
+	public int getCompletionRange() {
+		return this.completionRange;
 	}
 }

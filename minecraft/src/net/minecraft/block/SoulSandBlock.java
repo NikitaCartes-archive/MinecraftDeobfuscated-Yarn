@@ -32,8 +32,13 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
+	}
+
+	@Override
+	public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return true;
 	}
 
 	@Override
@@ -42,7 +47,7 @@ public class SoulSandBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 	}
 

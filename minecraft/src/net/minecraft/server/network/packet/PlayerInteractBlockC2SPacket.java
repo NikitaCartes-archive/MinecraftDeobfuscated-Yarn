@@ -25,13 +25,13 @@ public class PlayerInteractBlockC2SPacket implements Packet<ServerPlayPacketList
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.hand = packetByteBuf.readEnumConstant(Hand.class);
-		this.field_17602 = packetByteBuf.method_17814();
+		this.field_17602 = packetByteBuf.readBlockHitResult();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeEnumConstant(this.hand);
-		packetByteBuf.method_17813(this.field_17602);
+		packetByteBuf.writeBlockHitResult(this.field_17602);
 	}
 
 	public void method_12547(ServerPlayPacketListener serverPlayPacketListener) {

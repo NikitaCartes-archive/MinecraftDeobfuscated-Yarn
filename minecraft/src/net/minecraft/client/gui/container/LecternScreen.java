@@ -45,28 +45,28 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 	}
 
 	@Override
-	protected void onInitialized() {
-		super.onInitialized();
+	protected void init() {
+		super.init();
 		this.lecternContainer.addListener(this.listener);
 	}
 
 	@Override
-	public void close() {
-		this.client.player.closeGui();
-		super.close();
+	public void onClose() {
+		this.minecraft.player.closeGui();
+		super.onClose();
 	}
 
 	@Override
-	public void onClosed() {
-		super.onClosed();
+	public void removed() {
+		super.removed();
 		this.lecternContainer.removeListener(this.listener);
 	}
 
 	@Override
 	protected void addCloseButton() {
-		if (this.client.player.canModifyWorld()) {
-			this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(null)));
-			this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book"), buttonWidget -> this.sendButtonPressPacket(3)));
+		if (this.minecraft.player.canModifyWorld()) {
+			this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(null)));
+			this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("lectern.take_book"), buttonWidget -> this.sendButtonPressPacket(3)));
 		} else {
 			super.addCloseButton();
 		}
@@ -93,7 +93,7 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 	}
 
 	private void sendButtonPressPacket(int i) {
-		this.client.interactionManager.clickButton(this.lecternContainer.syncId, i);
+		this.minecraft.interactionManager.clickButton(this.lecternContainer.syncId, i);
 	}
 
 	@Override

@@ -26,7 +26,7 @@ public class ShapelessRecipeJsonFactory {
 	private final Item output;
 	private final int outputCount;
 	private final List<Ingredient> inputs = Lists.<Ingredient>newArrayList();
-	private final SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.create();
+	private final SimpleAdvancement.Task builder = SimpleAdvancement.Task.create();
 	private String group;
 
 	public ShapelessRecipeJsonFactory(ItemProvider itemProvider, int i) {
@@ -125,18 +125,18 @@ public class ShapelessRecipeJsonFactory {
 		private final int count;
 		private final String group;
 		private final List<Ingredient> inputs;
-		private final SimpleAdvancement.Builder builder;
+		private final SimpleAdvancement.Task builder;
 		private final Identifier advancementId;
 
 		public ShapelessRecipeJsonProvider(
-			Identifier identifier, Item item, int i, String string, List<Ingredient> list, SimpleAdvancement.Builder builder, Identifier identifier2
+			Identifier identifier, Item item, int i, String string, List<Ingredient> list, SimpleAdvancement.Task task, Identifier identifier2
 		) {
 			this.recipeId = identifier;
 			this.output = item;
 			this.count = i;
 			this.group = string;
 			this.inputs = list;
-			this.builder = builder;
+			this.builder = task;
 			this.advancementId = identifier2;
 		}
 

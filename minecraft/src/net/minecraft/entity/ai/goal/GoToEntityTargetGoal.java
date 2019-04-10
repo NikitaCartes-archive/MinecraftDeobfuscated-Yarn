@@ -19,7 +19,7 @@ public class GoToEntityTargetGoal extends Goal {
 		this.owner = mobEntityWithAi;
 		this.field_6530 = d;
 		this.maxDistance = f;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
@@ -45,12 +45,12 @@ public class GoToEntityTargetGoal extends Goal {
 	@Override
 	public boolean shouldContinue() {
 		return !this.owner.getNavigation().isIdle()
-			&& this.target.isValid()
+			&& this.target.isAlive()
 			&& this.target.squaredDistanceTo(this.owner) < (double)(this.maxDistance * this.maxDistance);
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.target = null;
 	}
 

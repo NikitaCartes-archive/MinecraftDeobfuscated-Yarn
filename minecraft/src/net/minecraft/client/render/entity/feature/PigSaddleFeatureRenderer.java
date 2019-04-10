@@ -18,13 +18,13 @@ public class PigSaddleFeatureRenderer extends FeatureRenderer<PigEntity, PigEnti
 	public void method_4196(PigEntity pigEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (pigEntity.isSaddled()) {
 			this.bindTexture(SKIN);
-			this.getModel().method_17081(this.field_4887);
+			this.getModel().copyStateTo(this.field_4887);
 			this.field_4887.render(pigEntity, f, g, i, j, k, l);
 		}
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

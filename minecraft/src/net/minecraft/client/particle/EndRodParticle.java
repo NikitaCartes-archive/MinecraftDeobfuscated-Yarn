@@ -15,7 +15,7 @@ public class EndRodParticle extends AnimatedParticle {
 		this.scale *= 0.75F;
 		this.maxAge = 60 + this.random.nextInt(12);
 		this.setTargetColor(15916745);
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override

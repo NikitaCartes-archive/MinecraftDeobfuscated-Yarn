@@ -20,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class BlockEntity {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final BlockEntityType<?> type;
+	@Nullable
 	protected World world;
 	protected BlockPos pos = BlockPos.ORIGIN;
 	protected boolean invalid;

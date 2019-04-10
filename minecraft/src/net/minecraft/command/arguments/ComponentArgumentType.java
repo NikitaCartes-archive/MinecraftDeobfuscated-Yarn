@@ -21,7 +21,7 @@ public class ComponentArgumentType implements ArgumentType<TextComponent> {
 	private ComponentArgumentType() {
 	}
 
-	public static TextComponent getComponentArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static TextComponent getComponent(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, TextComponent.class);
 	}
 

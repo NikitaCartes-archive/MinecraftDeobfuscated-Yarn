@@ -26,7 +26,7 @@ public class BirdNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected Vec3d method_6347() {
+	protected Vec3d getPos() {
 		return new Vec3d(this.entity.x, this.entity.y, this.entity.z);
 	}
 
@@ -129,11 +129,11 @@ public class BirdNavigation extends EntityNavigation {
 		}
 	}
 
-	public void method_6332(boolean bl) {
+	public void setCanPathThroughDoors(boolean bl) {
 		this.nodeMaker.setCanPathThroughDoors(bl);
 	}
 
-	public void method_6331(boolean bl) {
+	public void setCanEnterOpenDoors(boolean bl) {
 		this.nodeMaker.setCanEnterOpenDoors(bl);
 	}
 

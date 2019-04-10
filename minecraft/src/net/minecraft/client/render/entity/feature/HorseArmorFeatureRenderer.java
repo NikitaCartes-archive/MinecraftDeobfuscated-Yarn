@@ -21,7 +21,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 		ItemStack itemStack = horseEntity.getArmorType();
 		if (itemStack.getItem() instanceof HorseArmorItem) {
 			HorseArmorItem horseArmorItem = (HorseArmorItem)itemStack.getItem();
-			this.getModel().method_17081(this.model);
+			this.getModel().copyStateTo(this.model);
 			this.model.method_17084(horseEntity, f, g, h);
 			this.bindTexture(horseArmorItem.getHorseArmorTexture());
 			if (horseArmorItem instanceof DyeableHorseArmorItem) {
@@ -40,7 +40,7 @@ public class HorseArmorFeatureRenderer extends FeatureRenderer<HorseEntity, Hors
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

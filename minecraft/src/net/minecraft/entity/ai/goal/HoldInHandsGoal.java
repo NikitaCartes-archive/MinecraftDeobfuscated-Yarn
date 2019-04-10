@@ -38,7 +38,7 @@ public class HoldInHandsGoal<T extends MobEntity> extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.field_17755.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
 		if (this.sound != null) {
 			this.field_17755.playSound(this.sound, 1.0F, this.field_17755.getRand().nextFloat() * 0.2F + 0.9F);

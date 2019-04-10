@@ -21,6 +21,6 @@ public class PolarBearEntityRenderer extends MobEntityRenderer<PolarBearEntity, 
 
 	protected void method_4099(PolarBearEntity polarBearEntity, float f) {
 		GlStateManager.scalef(1.2F, 1.2F, 1.2F);
-		super.method_4042(polarBearEntity, f);
+		super.scale(polarBearEntity, f);
 	}
 }

@@ -13,9 +13,9 @@ public class TraderInventory implements Inventory {
 	private final Trader trader;
 	private final DefaultedList<ItemStack> inventory = DefaultedList.create(3, ItemStack.EMPTY);
 	@Nullable
-	private TraderRecipe traderRecipe;
+	private TradeOffer traderRecipe;
 	private int recipeIndex;
-	private int field_18668;
+	private int traderRewardedExperience;
 
 	public TraderInventory(Trader trader) {
 		this.trader = trader;
@@ -102,23 +102,23 @@ public class TraderInventory implements Inventory {
 
 		if (itemStack.isEmpty()) {
 			this.setInvStack(2, ItemStack.EMPTY);
-			this.field_18668 = 0;
+			this.traderRewardedExperience = 0;
 		} else {
-			TraderRecipeList traderRecipeList = this.trader.getRecipes();
-			if (!traderRecipeList.isEmpty()) {
-				TraderRecipe traderRecipe = traderRecipeList.getValidRecipe(itemStack, itemStack2, this.recipeIndex);
-				if (traderRecipe == null || traderRecipe.isDisabled()) {
-					this.traderRecipe = traderRecipe;
-					traderRecipe = traderRecipeList.getValidRecipe(itemStack2, itemStack, this.recipeIndex);
+			TraderOfferList traderOfferList = this.trader.getOffers();
+			if (!traderOfferList.isEmpty()) {
+				TradeOffer tradeOffer = traderOfferList.getValidRecipe(itemStack, itemStack2, this.recipeIndex);
+				if (tradeOffer == null || tradeOffer.isDisabled()) {
+					this.traderRecipe = tradeOffer;
+					tradeOffer = traderOfferList.getValidRecipe(itemStack2, itemStack, this.recipeIndex);
 				}
 
-				if (traderRecipe != null && !traderRecipe.isDisabled()) {
-					this.traderRecipe = traderRecipe;
-					this.setInvStack(2, traderRecipe.getSellItem());
-					this.field_18668 = traderRecipe.getRewardedExp();
+				if (tradeOffer != null && !tradeOffer.isDisabled()) {
+					this.traderRecipe = tradeOffer;
+					this.setInvStack(2, tradeOffer.getSellItem());
+					this.traderRewardedExperience = tradeOffer.getTraderExperience();
 				} else {
 					this.setInvStack(2, ItemStack.EMPTY);
-					this.field_18668 = 0;
+					this.traderRewardedExperience = 0;
 				}
 			}
 
@@ -127,7 +127,7 @@ public class TraderInventory implements Inventory {
 	}
 
 	@Nullable
-	public TraderRecipe getVillagerRecipe() {
+	public TradeOffer getTradeOffer() {
 		return this.traderRecipe;
 	}
 
@@ -142,7 +142,7 @@ public class TraderInventory implements Inventory {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_19252() {
-		return this.field_18668;
+	public int getTraderRewardedExperience() {
+		return this.traderRewardedExperience;
 	}
 }

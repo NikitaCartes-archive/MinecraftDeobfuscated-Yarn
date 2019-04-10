@@ -49,8 +49,8 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (this.lastCachedPatternButtonTextureId < BannerPattern.COUNT) {
 			BannerPattern bannerPattern = BannerPattern.values()[this.lastCachedPatternButtonTextureId];
 			String string = "b" + PATTERN_BUTTON_BACKGROUND_COLOR.getId();
@@ -69,41 +69,41 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.title.getFormattedText(), 8.0F, 4.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+		this.font.draw(this.title.getFormattedText(), 8.0F, 4.0F, 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
-		this.drawBackground();
+		this.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		int k = this.left;
 		int l = this.top;
-		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
+		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
 		Slot slot = this.container.getBannerSlot();
 		Slot slot2 = this.container.getDyeSlot();
 		Slot slot3 = this.container.getPatternSlot();
 		Slot slot4 = this.container.getOutputSlot();
 		if (!slot.hasStack()) {
-			this.drawTexturedRect(k + slot.xPosition, l + slot.yPosition, this.width, 0, 16, 16);
+			this.blit(k + slot.xPosition, l + slot.yPosition, this.containerWidth, 0, 16, 16);
 		}
 
 		if (!slot2.hasStack()) {
-			this.drawTexturedRect(k + slot2.xPosition, l + slot2.yPosition, this.width + 16, 0, 16, 16);
+			this.blit(k + slot2.xPosition, l + slot2.yPosition, this.containerWidth + 16, 0, 16, 16);
 		}
 
 		if (!slot3.hasStack()) {
-			this.drawTexturedRect(k + slot3.xPosition, l + slot3.yPosition, this.width + 32, 0, 16, 16);
+			this.blit(k + slot3.xPosition, l + slot3.yPosition, this.containerWidth + 32, 0, 16, 16);
 		}
 
 		int m = (int)(41.0F * this.scrollPosition);
-		this.drawTexturedRect(k + 119, l + 13 + m, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
+		this.blit(k + 119, l + 13 + m, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
 		if (this.output != null && !this.hasTooManyPatterns) {
-			this.client.getTextureManager().bindTexture(this.output);
-			drawTexturedRect(k + 141, l + 8, 1.0F, 1.0F, 20, 40, 20, 40, 64.0F, 64.0F);
+			this.minecraft.getTextureManager().bindTexture(this.output);
+			blit(k + 141, l + 8, 20, 40, 1.0F, 1.0F, 20, 40, 64, 64);
 		} else if (this.hasTooManyPatterns) {
-			this.drawTexturedRect(k + slot4.xPosition - 2, l + slot4.yPosition - 2, this.width, 17, 17, 16);
+			this.blit(k + slot4.xPosition - 2, l + slot4.yPosition - 2, this.containerWidth, 17, 17, 16);
 		}
 
 		if (this.canApplyDyePattern) {
@@ -115,29 +115,29 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 				int r = q - this.firstPatternButtonId;
 				int s = n + r % 4 * 14;
 				int t = o + r / 4 * 14;
-				this.client.getTextureManager().bindTexture(TEXTURE);
-				int u = this.height;
+				this.minecraft.getTextureManager().bindTexture(TEXTURE);
+				int u = this.containerHeight;
 				if (q == this.container.getSelectedPattern()) {
 					u += 14;
 				} else if (i >= s && j >= t && i < s + 14 && j < t + 14) {
 					u += 28;
 				}
 
-				this.drawTexturedRect(s, t, 0, u, 14, 14);
+				this.blit(s, t, 0, u, 14, 14);
 				if (this.patternButtonTextureIds[q] != null) {
-					this.client.getTextureManager().bindTexture(this.patternButtonTextureIds[q]);
-					drawTexturedRect(s + 4, t + 2, 1.0F, 1.0F, 20, 40, 5, 10, 64.0F, 64.0F);
+					this.minecraft.getTextureManager().bindTexture(this.patternButtonTextureIds[q]);
+					blit(s + 4, t + 2, 5, 10, 1.0F, 1.0F, 20, 40, 64, 64);
 				}
 			}
 		} else if (this.canApplySpecialPattern) {
 			int n = k + 60;
 			int o = l + 13;
-			this.client.getTextureManager().bindTexture(TEXTURE);
-			this.drawTexturedRect(n, o, 0, this.height, 14, 14);
+			this.minecraft.getTextureManager().bindTexture(TEXTURE);
+			this.blit(n, o, 0, this.containerHeight, 14, 14);
 			int p = this.container.getSelectedPattern();
 			if (this.patternButtonTextureIds[p] != null) {
-				this.client.getTextureManager().bindTexture(this.patternButtonTextureIds[p]);
-				drawTexturedRect(n + 4, o + 2, 1.0F, 1.0F, 20, 40, 5, 10, 64.0F, 64.0F);
+				this.minecraft.getTextureManager().bindTexture(this.patternButtonTextureIds[p]);
+				blit(n + 4, o + 2, 5, 10, 1.0F, 1.0F, 20, 40, 64, 64);
 			}
 		}
 	}
@@ -154,9 +154,9 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 				int n = m - this.firstPatternButtonId;
 				double f = d - (double)(j + n % 4 * 14);
 				double g = e - (double)(k + n / 4 * 14);
-				if (f >= 0.0 && g >= 0.0 && f < 14.0 && g < 14.0 && this.container.onButtonClick(this.client.player, m)) {
+				if (f >= 0.0 && g >= 0.0 && f < 14.0 && g < 14.0 && this.container.onButtonClick(this.minecraft.player, m)) {
 					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_14920, 1.0F));
-					this.client.interactionManager.clickButton(this.container.syncId, m);
+					this.minecraft.interactionManager.clickButton(this.container.syncId, m);
 					return true;
 				}
 			}
@@ -205,7 +205,7 @@ public class LoomScreen extends ContainerScreen<LoomContainer> {
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		return d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
+		return d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
 	}
 
 	private void onInventoryChanged() {

@@ -3,6 +3,7 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
@@ -37,7 +38,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 
 	protected void method_19039(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
-		VillagerEntity.GolemSpawnCondition golemSpawnCondition = (VillagerEntity.GolemSpawnCondition)brain.getMemory(MemoryModuleType.field_18874)
+		VillagerEntity.GolemSpawnCondition golemSpawnCondition = (VillagerEntity.GolemSpawnCondition)brain.getOptionalMemory(MemoryModuleType.field_18874)
 			.orElseGet(VillagerEntity.GolemSpawnCondition::new);
 		golemSpawnCondition.setLastWorked(l);
 		brain.putMemory(MemoryModuleType.field_18874, golemSpawnCondition);
@@ -45,7 +46,7 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 			villagerEntity.restock();
 			this.field_18403 = true;
 			villagerEntity.playWorkSound();
-			brain.getMemory(MemoryModuleType.field_18439)
+			brain.getOptionalMemory(MemoryModuleType.field_18439)
 				.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.field_18446, new BlockPosLookTarget(globalPos.getPos())));
 		}
 
@@ -53,10 +54,15 @@ public class VillagerWorkTask extends Task<VillagerEntity> {
 	}
 
 	protected boolean method_19040(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getMemory(MemoryModuleType.field_18439).get();
-		return this.ticks < 100
-			&& Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType())
-			&& globalPos.getPos().method_19769(villagerEntity.getPos(), 1.73);
+		Optional<GlobalPos> optional = villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18439);
+		if (!optional.isPresent()) {
+			return false;
+		} else {
+			GlobalPos globalPos = (GlobalPos)optional.get();
+			return this.ticks < 100
+				&& Objects.equals(globalPos.getDimension(), serverWorld.getDimension().getType())
+				&& globalPos.getPos().isWithinDistance(villagerEntity.getPos(), 1.73);
+		}
 	}
 
 	private boolean method_19036(long l, long m) {

@@ -34,8 +34,8 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_633(UniformLootTableRange uniformLootTableRange) {
-		return create(lootConditions -> new SetDamageLootFunction(lootConditions, uniformLootTableRange));
+	public static ConditionalLootFunction.Builder<?> builder(UniformLootTableRange uniformLootTableRange) {
+		return builder(lootConditions -> new SetDamageLootFunction(lootConditions, uniformLootTableRange));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetDamageLootFunction> {

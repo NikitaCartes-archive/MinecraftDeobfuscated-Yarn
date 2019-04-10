@@ -15,7 +15,7 @@ public class JumpControl {
 	}
 
 	public void tick() {
-		this.entity.doJump(this.active);
+		this.entity.setJumping(this.active);
 		this.active = false;
 	}
 }

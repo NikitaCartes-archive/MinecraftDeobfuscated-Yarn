@@ -31,9 +31,9 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
@@ -43,7 +43,7 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 			this.velocityX *= 0.07;
 			this.velocityZ *= 0.07;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (!this.world.getFluidState(new BlockPos(this.posX, this.posY, this.posZ)).matches(FluidTags.field_15517) || this.onGround) {
+			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.field_15517) || this.onGround) {
 				this.markDead();
 			}
 
@@ -61,7 +61,7 @@ public class CurrentDownParticle extends SpriteBillboardParticle {
 
 		public Particle method_3114(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			CurrentDownParticle currentDownParticle = new CurrentDownParticle(world, d, e, f);
-			currentDownParticle.method_18140(this.field_17890);
+			currentDownParticle.setSprite(this.field_17890);
 			return currentDownParticle;
 		}
 	}

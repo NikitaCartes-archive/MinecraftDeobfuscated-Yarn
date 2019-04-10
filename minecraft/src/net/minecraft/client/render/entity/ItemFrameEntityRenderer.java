@@ -23,8 +23,8 @@ import net.minecraft.util.math.BlockPos;
 @Environment(EnvType.CLIENT)
 public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 	private static final Identifier MAP_BACKGROUND_TEX = new Identifier("textures/map/map_background.png");
-	private static final ModelIdentifier field_4721 = new ModelIdentifier("item_frame", "map=false");
-	private static final ModelIdentifier field_4723 = new ModelIdentifier("item_frame", "map=true");
+	private static final ModelIdentifier NORMAL_FRAME = new ModelIdentifier("item_frame", "map=false");
+	private static final ModelIdentifier MAP_FRAME = new ModelIdentifier("item_frame", "map=true");
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final ItemRenderer itemRenderer;
 
@@ -45,7 +45,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		this.renderManager.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 		BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
 		BakedModelManager bakedModelManager = blockRenderManager.getModels().getModelManager();
-		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204 ? field_4723 : field_4721;
+		ModelIdentifier modelIdentifier = itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204 ? MAP_FRAME : NORMAL_FRAME;
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(-0.5F, -0.5F, -0.5F);
 		if (this.renderOutlines) {
@@ -67,7 +67,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		}
 
 		GlStateManager.translatef(0.0F, 0.0F, 0.4375F);
-		this.method_3992(itemFrameEntity);
+		this.renderItem(itemFrameEntity);
 		if (itemFrameEntity.getHeldItemStack().getItem() == Items.field_8204) {
 			GuiLighting.disable();
 			GlStateManager.popAttributes();
@@ -85,7 +85,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		return null;
 	}
 
-	private void method_3992(ItemFrameEntity itemFrameEntity) {
+	private void renderItem(ItemFrameEntity itemFrameEntity) {
 		ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 		if (!itemStack.isEmpty()) {
 			GlStateManager.pushMatrix();
@@ -99,7 +99,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 				float f = 0.0078125F;
 				GlStateManager.scalef(0.0078125F, 0.0078125F, 0.0078125F);
 				GlStateManager.translatef(-64.0F, -64.0F, 0.0F);
-				MapState mapState = FilledMapItem.method_8001(itemStack, itemFrameEntity.world);
+				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, itemFrameEntity.world);
 				GlStateManager.translatef(0.0F, 0.0F, -1.0F);
 				if (mapState != null) {
 					this.client.gameRenderer.getMapRenderer().draw(mapState, true);
@@ -117,12 +117,12 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 		if (MinecraftClient.isHudEnabled()
 			&& !itemFrameEntity.getHeldItemStack().isEmpty()
 			&& itemFrameEntity.getHeldItemStack().hasDisplayName()
-			&& this.renderManager.field_4678 == itemFrameEntity) {
-			double g = itemFrameEntity.squaredDistanceTo(this.renderManager.field_4686.getPos());
-			float h = itemFrameEntity.isSneaking() ? 32.0F : 64.0F;
+			&& this.renderManager.targetedEntity == itemFrameEntity) {
+			double g = itemFrameEntity.squaredDistanceTo(this.renderManager.camera.getPos());
+			float h = itemFrameEntity.isInSneakingPose() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
 				String string = itemFrameEntity.getHeldItemStack().getDisplayName().getFormattedText();
-				this.renderEntityLabel(itemFrameEntity, string, d, e, f, 64);
+				this.renderLabel(itemFrameEntity, string, d, e, f, 64);
 			}
 		}
 	}

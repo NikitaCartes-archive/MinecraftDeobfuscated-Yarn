@@ -32,7 +32,7 @@ public class DamageSourcePropertiesLootCondition implements LootCondition {
 		return blockPos != null && damageSource != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), damageSource);
 	}
 
-	public static LootCondition.Builder method_837(DamageSourcePredicate.Builder builder) {
+	public static LootCondition.Builder builder(DamageSourcePredicate.Builder builder) {
 		return () -> new DamageSourcePropertiesLootCondition(builder.build());
 	}
 

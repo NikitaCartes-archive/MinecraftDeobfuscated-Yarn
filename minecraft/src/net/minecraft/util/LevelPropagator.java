@@ -42,7 +42,7 @@ public abstract class LevelPropagator {
 		}
 	}
 
-	private int minLevel(int i, int j) {
+	private int min(int i, int j) {
 		int k = i;
 		if (i > j) {
 			k = j;
@@ -71,7 +71,7 @@ public abstract class LevelPropagator {
 		int i = this.idToLevel.get(l) & 255;
 		if (i != 255) {
 			int j = this.getLevel(l);
-			int k = this.minLevel(j, i);
+			int k = this.min(j, i);
 			this.removeFromLevel(l, k, this.levelCount, true);
 			this.hasUpdates = this.minLevel < this.levelCount;
 		}
@@ -99,7 +99,7 @@ public abstract class LevelPropagator {
 		}
 	}
 
-	protected void update(long l) {
+	protected void fullyUpdate(long l) {
 		this.update(l, l, this.levelCount - 1, false);
 	}
 
@@ -129,9 +129,9 @@ public abstract class LevelPropagator {
 				n = this.getMergedLevel(m, l, i);
 			}
 
-			int o = this.minLevel(j, k);
+			int o = this.min(j, k);
 			if (j != n) {
-				int p = this.minLevel(j, n);
+				int p = this.min(j, n);
 				if (o != p && !bl2) {
 					this.removeFromLevel(m, o, p, false);
 				}
@@ -145,7 +145,7 @@ public abstract class LevelPropagator {
 
 	protected final void updateRecursively(long l, long m, int i, boolean bl) {
 		int j = this.idToLevel.get(m) & 255;
-		int k = this.getUpdatedLevel(l, m, i);
+		int k = this.getPropagatedLevel(l, m, i);
 		if (bl) {
 			this.update(l, m, k, this.getLevel(m), j, true);
 		} else {
@@ -187,7 +187,7 @@ public abstract class LevelPropagator {
 					this.setLevel(l, k);
 					this.updateNeighborsRecursively(l, k, true);
 				} else if (k > j) {
-					this.add(l, k, this.minLevel(this.levelCount - 1, k));
+					this.add(l, k, this.min(this.levelCount - 1, k));
 					this.setLevel(l, this.levelCount - 1);
 					this.updateNeighborsRecursively(l, j, false);
 				}
@@ -208,5 +208,5 @@ public abstract class LevelPropagator {
 
 	protected abstract void setLevel(long l, int i);
 
-	protected abstract int getUpdatedLevel(long l, long m, int i);
+	protected abstract int getPropagatedLevel(long l, long m, int i);
 }

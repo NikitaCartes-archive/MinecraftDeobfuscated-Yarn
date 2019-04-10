@@ -69,7 +69,7 @@ public class PathNode {
 		return f + g + h;
 	}
 
-	public Vec3d method_19312() {
+	public Vec3d getPos() {
 		return new Vec3d((double)this.x, (double)this.y, (double)this.z);
 	}
 
@@ -95,7 +95,7 @@ public class PathNode {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static PathNode method_28(PacketByteBuf packetByteBuf) {
+	public static PathNode fromBuffer(PacketByteBuf packetByteBuf) {
 		PathNode pathNode = new PathNode(packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt());
 		pathNode.field_46 = packetByteBuf.readFloat();
 		pathNode.field_45 = packetByteBuf.readFloat();

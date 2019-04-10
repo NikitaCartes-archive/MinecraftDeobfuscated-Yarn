@@ -33,10 +33,7 @@ public class FlintAndSteelItem extends Item {
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			if (playerEntity instanceof ServerPlayerEntity) {
 				Criterions.PLACED_BLOCK.handle((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
-			}
-
-			if (playerEntity != null) {
-				itemStack.applyDamage(1, playerEntity);
+				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 			}
 
 			return ActionResult.field_5812;
@@ -46,7 +43,7 @@ public class FlintAndSteelItem extends Item {
 				iWorld.playSound(playerEntity, blockPos, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, random.nextFloat() * 0.4F + 0.8F);
 				iWorld.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
 				if (playerEntity != null) {
-					itemUsageContext.getItemStack().applyDamage(1, playerEntity);
+					itemUsageContext.getItemStack().applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 				}
 
 				return ActionResult.field_5812;

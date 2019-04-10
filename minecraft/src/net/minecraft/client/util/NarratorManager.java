@@ -68,9 +68,9 @@ public class NarratorManager implements ClientChatListener {
 		ToastManager toastManager = MinecraftClient.getInstance().getToastManager();
 		if (this.narrator.active()) {
 			if (narratorOption == NarratorOption.field_18176) {
-				SystemToast.method_1990(toastManager, SystemToast.Type.field_2219, new TranslatableTextComponent("narrator.toast.disabled"), null);
+				SystemToast.show(toastManager, SystemToast.Type.field_2219, new TranslatableTextComponent("narrator.toast.disabled"), null);
 			} else {
-				SystemToast.method_1990(
+				SystemToast.show(
 					toastManager,
 					SystemToast.Type.field_2219,
 					new TranslatableTextComponent("narrator.toast.enabled"),
@@ -78,7 +78,7 @@ public class NarratorManager implements ClientChatListener {
 				);
 			}
 		} else {
-			SystemToast.method_1990(
+			SystemToast.show(
 				toastManager,
 				SystemToast.Type.field_2219,
 				new TranslatableTextComponent("narrator.toast.disabled"),
@@ -93,5 +93,9 @@ public class NarratorManager implements ClientChatListener {
 
 	public void clear() {
 		this.narrator.clear();
+	}
+
+	public void method_20371() {
+		this.narrator.destroy();
 	}
 }

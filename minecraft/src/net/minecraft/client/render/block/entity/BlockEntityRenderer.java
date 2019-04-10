@@ -38,13 +38,13 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 			&& hitResult != null
 			&& hitResult.getType() == HitResult.Type.BLOCK
 			&& blockEntity.getPos().equals(((BlockHitResult)hitResult).getBlockPos())) {
-			this.method_3570(true);
-			this.method_3567(blockEntity, ((Nameable)blockEntity).getDisplayName().getFormattedText(), d, e, f, 12);
-			this.method_3570(false);
+			this.disableLightmap(true);
+			this.renderName(blockEntity, ((Nameable)blockEntity).getDisplayName().getFormattedText(), d, e, f, 12);
+			this.disableLightmap(false);
 		}
 	}
 
-	protected void method_3570(boolean bl) {
+	protected void disableLightmap(boolean bl) {
 		GlStateManager.activeTexture(GLX.GL_TEXTURE1);
 		if (bl) {
 			GlStateManager.disableTexture();
@@ -78,13 +78,13 @@ public abstract class BlockEntityRenderer<T extends BlockEntity> {
 		return false;
 	}
 
-	protected void method_3567(T blockEntity, String string, double d, double e, double f, int i) {
+	protected void renderName(T blockEntity, String string, double d, double e, double f, int i) {
 		Camera camera = this.renderManager.cameraEntity;
 		double g = blockEntity.getSquaredDistance(camera.getPos().x, camera.getPos().y, camera.getPos().z);
 		if (!(g > (double)(i * i))) {
 			float h = camera.getYaw();
 			float j = camera.getPitch();
-			GameRenderer.method_3179(this.getFontRenderer(), string, (float)d + 0.5F, (float)e + 1.5F, (float)f + 0.5F, 0, h, j, false);
+			GameRenderer.renderFloatingText(this.getFontRenderer(), string, (float)d + 0.5F, (float)e + 1.5F, (float)f + 0.5F, 0, h, j, false);
 		}
 	}
 }

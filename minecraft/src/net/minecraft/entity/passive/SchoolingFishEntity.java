@@ -41,7 +41,7 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	}
 
 	public boolean hasLeader() {
-		return this.leader != null && this.leader.isValid();
+		return this.leader != null && this.leader.isAlive();
 	}
 
 	public SchoolingFishEntity joinGroupOf(SchoolingFishEntity schoolingFishEntity) {
@@ -71,7 +71,7 @@ public abstract class SchoolingFishEntity extends FishEntity {
 	public void tick() {
 		super.tick();
 		if (this.hasOtherFishInGroup() && this.world.random.nextInt(200) == 1) {
-			List<FishEntity> list = this.world.method_18467(this.getClass(), this.getBoundingBox().expand(8.0, 8.0, 8.0));
+			List<FishEntity> list = this.world.getEntities(this.getClass(), this.getBoundingBox().expand(8.0, 8.0, 8.0));
 			if (list.size() <= 1) {
 				this.groupSize = 1;
 			}
@@ -100,10 +100,10 @@ public abstract class SchoolingFishEntity extends FishEntity {
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (entityData == null) {
 			entityData = new SchoolingFishEntity.Data(this);
 		} else {

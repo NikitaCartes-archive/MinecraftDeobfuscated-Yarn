@@ -56,7 +56,7 @@ public class SplashScreen extends Overlay {
 			}
 
 			int n = MathHelper.ceil((1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F)) * 255.0F);
-			drawRect(0, 0, k, l, 16777215 | n << 24);
+			fill(0, 0, k, l, 16777215 | n << 24);
 			o = 1.0F - MathHelper.clamp(g - 1.0F, 0.0F, 1.0F);
 		} else if (this.field_18219) {
 			if (this.client.currentScreen != null && h < 1.0F) {
@@ -64,10 +64,10 @@ public class SplashScreen extends Overlay {
 			}
 
 			int n = MathHelper.ceil(MathHelper.clamp((double)h, 0.15, 1.0) * 255.0);
-			drawRect(0, 0, k, l, 16777215 | n << 24);
+			fill(0, 0, k, l, 16777215 | n << 24);
 			o = MathHelper.clamp(h, 0.0F, 1.0F);
 		} else {
-			drawRect(0, 0, k, l, -1);
+			fill(0, 0, k, l, -1);
 			o = 1.0F;
 		}
 
@@ -76,7 +76,7 @@ public class SplashScreen extends Overlay {
 		this.client.getTextureManager().bindTexture(LOGO);
 		GlStateManager.enableBlend();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, o);
-		this.drawTexturedRect(n, p, 0, 0, 256, 256);
+		this.blit(n, p, 0, 0, 256, 256);
 		float q = this.reloadMonitor.getProgress();
 		this.field_17770 = this.field_17770 * 0.95F + q * 0.050000012F;
 		if (g < 1.0F) {
@@ -84,7 +84,7 @@ public class SplashScreen extends Overlay {
 		}
 
 		if (g >= 2.0F) {
-			this.client.method_18502(null);
+			this.client.setOverlay(null);
 		}
 
 		if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || h >= 2.0F)) {
@@ -92,18 +92,16 @@ public class SplashScreen extends Overlay {
 			this.field_17771 = SystemUtil.getMeasuringTimeMs();
 			this.field_18218.run();
 			if (this.client.currentScreen != null) {
-				this.client.currentScreen.initialize(this.client, this.client.window.getScaledWidth(), this.client.window.getScaledHeight());
+				this.client.currentScreen.init(this.client, this.client.window.getScaledWidth(), this.client.window.getScaledHeight());
 			}
 		}
 	}
 
 	private void renderProgressBar(int i, int j, int k, int l, float f, float g) {
 		int m = MathHelper.ceil((float)(k - i - 2) * f);
-		drawRect(
-			i - 1, j - 1, k + 1, l + 1, 0xFF000000 | Math.round((1.0F - g) * 255.0F) << 16 | Math.round((1.0F - g) * 255.0F) << 8 | Math.round((1.0F - g) * 255.0F)
-		);
-		drawRect(i, j, k, l, -1);
-		drawRect(
+		fill(i - 1, j - 1, k + 1, l + 1, 0xFF000000 | Math.round((1.0F - g) * 255.0F) << 16 | Math.round((1.0F - g) * 255.0F) << 8 | Math.round((1.0F - g) * 255.0F));
+		fill(i, j, k, l, -1);
+		fill(
 			i + 1,
 			j + 1,
 			i + m,
@@ -116,7 +114,7 @@ public class SplashScreen extends Overlay {
 	}
 
 	@Override
-	public boolean method_18640() {
+	public boolean pausesGame() {
 		return true;
 	}
 

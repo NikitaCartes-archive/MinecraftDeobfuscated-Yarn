@@ -43,25 +43,25 @@ public abstract class RegionBasedStorage implements AutoCloseable {
 	public CompoundTag getTagAt(ChunkPos chunkPos) throws IOException {
 		RegionFile regionFile = this.getRegionFile(chunkPos);
 		DataInputStream dataInputStream = regionFile.getChunkDataInputStream(chunkPos);
-		Throwable var5 = null;
+		Throwable var4 = null;
 
-		Object var6;
+		Object var5;
 		try {
 			if (dataInputStream != null) {
 				return NbtIo.read(dataInputStream);
 			}
 
-			var6 = null;
-		} catch (Throwable var16) {
-			var5 = var16;
-			throw var16;
+			var5 = null;
+		} catch (Throwable var15) {
+			var4 = var15;
+			throw var15;
 		} finally {
 			if (dataInputStream != null) {
-				if (var5 != null) {
+				if (var4 != null) {
 					try {
 						dataInputStream.close();
-					} catch (Throwable var15) {
-						var5.addSuppressed(var15);
+					} catch (Throwable var14) {
+						var4.addSuppressed(var14);
 					}
 				} else {
 					dataInputStream.close();
@@ -69,7 +69,7 @@ public abstract class RegionBasedStorage implements AutoCloseable {
 			}
 		}
 
-		return (CompoundTag)var6;
+		return (CompoundTag)var5;
 	}
 
 	protected void setTagAt(ChunkPos chunkPos, CompoundTag compoundTag) throws IOException {

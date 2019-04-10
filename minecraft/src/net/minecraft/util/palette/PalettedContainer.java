@@ -214,6 +214,6 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	}
 
 	public boolean method_19526(T object) {
-		return this.palette.method_19525(object);
+		return this.palette.accepts(object);
 	}
 }

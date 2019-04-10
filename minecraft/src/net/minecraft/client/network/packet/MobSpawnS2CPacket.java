@@ -86,7 +86,7 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeShort(this.yaw);
 		packetByteBuf.writeShort(this.pitch);
 		packetByteBuf.writeShort(this.headPitch);
-		this.dataTracker.serializePacket(packetByteBuf);
+		this.dataTracker.toPacketByteBuf(packetByteBuf);
 	}
 
 	public void method_11217(ClientPlayPacketListener clientPlayPacketListener) {

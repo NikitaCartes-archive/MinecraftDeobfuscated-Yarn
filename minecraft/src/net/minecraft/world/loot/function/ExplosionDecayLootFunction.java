@@ -35,8 +35,8 @@ public class ExplosionDecayLootFunction extends ConditionalLootFunction {
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_478() {
-		return create(ExplosionDecayLootFunction::new);
+	public static ConditionalLootFunction.Builder<?> builder() {
+		return builder(ExplosionDecayLootFunction::new);
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<ExplosionDecayLootFunction> {

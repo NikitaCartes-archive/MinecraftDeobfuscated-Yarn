@@ -44,7 +44,7 @@ public abstract class ConditionalLootFunction implements LootFunction {
 		}
 	}
 
-	protected static ConditionalLootFunction.Builder<?> create(Function<LootCondition[], LootFunction> function) {
+	protected static ConditionalLootFunction.Builder<?> builder(Function<LootCondition[], LootFunction> function) {
 		return new ConditionalLootFunction.Joiner(function);
 	}
 
@@ -53,14 +53,14 @@ public abstract class ConditionalLootFunction implements LootFunction {
 
 		public T method_524(LootCondition.Builder builder) {
 			this.conditionList.add(builder.build());
-			return this.build();
+			return this.getThisBuilder();
 		}
 
 		public final T method_525() {
-			return this.build();
+			return this.getThisBuilder();
 		}
 
-		protected abstract T build();
+		protected abstract T getThisBuilder();
 
 		protected LootCondition[] getConditions() {
 			return (LootCondition[])this.conditionList.toArray(new LootCondition[0]);

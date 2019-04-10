@@ -8,12 +8,12 @@ import net.minecraft.entity.mob.MobEntity;
 public class TargetPredicate {
 	public static final TargetPredicate DEFAULT = new TargetPredicate();
 	private double baseMaxDistance = -1.0;
-	private boolean includeInvulnerable = false;
-	private boolean includeTeammates = false;
-	private boolean includeHidden = false;
-	private boolean ignoreEntityTargetRules = false;
+	private boolean includeInvulnerable;
+	private boolean includeTeammates;
+	private boolean includeHidden;
+	private boolean ignoreEntityTargetRules;
 	private boolean useDistanceScalingFactor = true;
-	private Predicate<LivingEntity> predicate = null;
+	private Predicate<LivingEntity> predicate;
 
 	public TargetPredicate setBaseMaxDistance(double d) {
 		this.baseMaxDistance = d;
@@ -55,7 +55,7 @@ public class TargetPredicate {
 			return false;
 		} else if (livingEntity2.isSpectator()) {
 			return false;
-		} else if (!livingEntity2.isValid()) {
+		} else if (!livingEntity2.isAlive()) {
 			return false;
 		} else if (!this.includeInvulnerable && livingEntity2.isInvulnerable()) {
 			return false;

@@ -39,8 +39,8 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	protected void method_18974(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		VillagerEntity villagerEntity2 = this.method_19570(villagerEntity);
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
-		serverWorld.summonParticle(villagerEntity2, (byte)18);
-		serverWorld.summonParticle(villagerEntity, (byte)18);
+		serverWorld.sendEntityStatus(villagerEntity2, (byte)18);
+		serverWorld.sendEntityStatus(villagerEntity, (byte)18);
 		int i = 275 + villagerEntity.getRand().nextInt(50);
 		this.field_18368 = l + (long)i;
 	}
@@ -52,8 +52,8 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 			if (l >= this.field_18368) {
 				Optional<BlockPos> optional = this.method_19573(serverWorld, villagerEntity);
 				if (!optional.isPresent()) {
-					serverWorld.summonParticle(villagerEntity2, (byte)13);
-					serverWorld.summonParticle(villagerEntity, (byte)13);
+					serverWorld.sendEntityStatus(villagerEntity2, (byte)13);
+					serverWorld.sendEntityStatus(villagerEntity, (byte)13);
 					return;
 				}
 
@@ -70,8 +70,8 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 			}
 
 			if (villagerEntity.getRand().nextInt(35) == 0) {
-				serverWorld.summonParticle(villagerEntity2, (byte)12);
-				serverWorld.summonParticle(villagerEntity, (byte)12);
+				serverWorld.sendEntityStatus(villagerEntity2, (byte)12);
+				serverWorld.sendEntityStatus(villagerEntity, (byte)12);
 			}
 		}
 	}
@@ -81,12 +81,12 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 	}
 
 	private VillagerEntity method_19570(VillagerEntity villagerEntity) {
-		return (VillagerEntity)villagerEntity.getBrain().getMemory(MemoryModuleType.field_18448).get();
+		return (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18448).get();
 	}
 
 	private boolean method_18972(VillagerEntity villagerEntity) {
 		Brain<VillagerEntity> brain = villagerEntity.getBrain();
-		if (!brain.getMemory(MemoryModuleType.field_18448).isPresent()) {
+		if (!brain.getOptionalMemory(MemoryModuleType.field_18448).isPresent()) {
 			return false;
 		} else {
 			VillagerEntity villagerEntity2 = this.method_19570(villagerEntity);
@@ -98,7 +98,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 
 	private Optional<BlockPos> method_19573(ServerWorld serverWorld, VillagerEntity villagerEntity) {
 		return serverWorld.getPointOfInterestStorage()
-			.getPosition(PointOfInterestType.field_18517.getCompletedCondition(), blockPos -> true, new BlockPos(villagerEntity), 48);
+			.getPosition(PointOfInterestType.field_18517.getCompletionCondition(), blockPos -> true, new BlockPos(villagerEntity), 48);
 	}
 
 	private Optional<VillagerEntity> method_18970(VillagerEntity villagerEntity, VillagerEntity villagerEntity2) {
@@ -111,7 +111,7 @@ public class VillagerBreedTask extends Task<VillagerEntity> {
 			villagerEntity3.setBreedingAge(-24000);
 			villagerEntity3.setPositionAndAngles(villagerEntity.x, villagerEntity.y, villagerEntity.z, 0.0F, 0.0F);
 			villagerEntity.world.spawnEntity(villagerEntity3);
-			villagerEntity.world.summonParticle(villagerEntity3, (byte)12);
+			villagerEntity.world.sendEntityStatus(villagerEntity3, (byte)12);
 			return Optional.of(villagerEntity3);
 		}
 	}

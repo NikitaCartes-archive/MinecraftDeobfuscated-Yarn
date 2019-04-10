@@ -66,7 +66,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 		this.field_3425.render(k);
 		this.field_3420.render(k);
 		this.field_3418.render(k);
-		if (illagerEntity.method_6990() == IllagerEntity.State.field_7207) {
+		if (illagerEntity.getState() == IllagerEntity.State.field_7207) {
 			this.field_3423.render(k);
 		} else {
 			this.field_3426.render(k);
@@ -108,10 +108,10 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 			this.field_3418.roll = 0.0F;
 		}
 
-		IllagerEntity.State state = illagerEntity.method_6990();
+		IllagerEntity.State state = illagerEntity.getState();
 		if (state == IllagerEntity.State.field_7211) {
-			float l = MathHelper.sin(this.swingProgress * (float) Math.PI);
-			float m = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
+			float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
+			float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 			this.field_3426.roll = 0.0F;
 			this.field_3417.roll = 0.0F;
 			this.field_3426.yaw = (float) (Math.PI / 20);
@@ -161,6 +161,17 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 			float l = MathHelper.clamp(this.field_3424, 0.0F, 25.0F);
 			this.field_3417.yaw = MathHelper.lerp(l / 25.0F, 0.4F, 0.85F);
 			this.field_3417.pitch = MathHelper.lerp(l / 25.0F, this.field_3417.pitch, (float) (-Math.PI / 2));
+		} else if (state == IllagerEntity.State.field_19012) {
+			this.field_3426.rotationPointZ = 0.0F;
+			this.field_3426.rotationPointX = -5.0F;
+			this.field_3426.pitch = MathHelper.cos(h * 0.6662F) * 0.05F;
+			this.field_3426.roll = 2.670354F;
+			this.field_3426.yaw = 0.0F;
+			this.field_3417.rotationPointZ = 0.0F;
+			this.field_3417.rotationPointX = 5.0F;
+			this.field_3417.pitch = MathHelper.cos(h * 0.6662F) * 0.05F;
+			this.field_3417.roll = (float) (-Math.PI * 3.0 / 4.0);
+			this.field_3417.yaw = 0.0F;
 		}
 	}
 

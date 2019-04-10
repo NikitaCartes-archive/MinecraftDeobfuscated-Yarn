@@ -17,7 +17,7 @@ public class HuskEntityRenderer extends ZombieEntityRenderer {
 	protected void method_3985(ZombieEntity zombieEntity, float f) {
 		float g = 1.0625F;
 		GlStateManager.scalef(1.0625F, 1.0625F, 1.0625F);
-		super.method_4042(zombieEntity, f);
+		super.scale(zombieEntity, f);
 	}
 
 	@Override

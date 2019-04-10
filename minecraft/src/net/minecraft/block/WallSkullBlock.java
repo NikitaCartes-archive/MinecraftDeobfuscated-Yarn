@@ -55,7 +55,7 @@ public class WallSkullBlock extends AbstractSkullBlock {
 			if (direction.getAxis().isHorizontal()) {
 				Direction direction2 = direction.getOpposite();
 				blockState = blockState.with(FACING, direction2);
-				if (!blockView.getBlockState(blockPos.offset(direction)).method_11587(itemPlacementContext)) {
+				if (!blockView.getBlockState(blockPos.offset(direction)).canReplace(itemPlacementContext)) {
 					return blockState;
 				}
 			}

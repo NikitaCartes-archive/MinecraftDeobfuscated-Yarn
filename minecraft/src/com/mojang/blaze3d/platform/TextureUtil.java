@@ -111,7 +111,7 @@ public class TextureUtil {
 			int o = l >> m;
 
 			try (NativeImage nativeImage = new NativeImage(n, o, false)) {
-				nativeImage.method_4327(m, false);
+				nativeImage.loadFromTextureImage(m, false);
 				nativeImage.writeFile(string2);
 				LOGGER.debug("Exported png to: {}", new File(string2).getAbsolutePath());
 			} catch (IOException var22) {

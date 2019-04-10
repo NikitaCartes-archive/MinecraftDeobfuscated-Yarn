@@ -1,7 +1,6 @@
 package net.minecraft.world;
 
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import java.io.DataInputStream;
 import java.io.File;
@@ -12,6 +11,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.TagHelper;
@@ -103,7 +103,7 @@ public class PersistentStateManager {
 			}
 
 			int j = compoundTag.containsKey("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-			var36 = TagHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, j, i);
+			var36 = TagHelper.update(this.dataFixer, DataFixTypes.field_19219, compoundTag, j, i);
 		} catch (Throwable var33) {
 			var5 = var33;
 			throw var33;

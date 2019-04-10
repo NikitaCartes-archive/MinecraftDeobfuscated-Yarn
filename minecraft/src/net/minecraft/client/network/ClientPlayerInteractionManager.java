@@ -122,16 +122,6 @@ public class ClientPlayerInteractionManager {
 				}
 
 				this.currentBreakingPos = new BlockPos(this.currentBreakingPos.getX(), -1, this.currentBreakingPos.getZ());
-				if (!this.gameMode.isCreative()) {
-					ItemStack itemStack2 = this.client.player.getMainHandStack();
-					if (!itemStack2.isEmpty()) {
-						itemStack2.onBlockBroken(world, blockState, blockPos, this.client.player);
-						if (itemStack2.isEmpty()) {
-							this.client.player.setStackInHand(Hand.MAIN, ItemStack.EMPTY);
-						}
-					}
-				}
-
 				return bl;
 			}
 		}
@@ -307,7 +297,7 @@ public class ClientPlayerInteractionManager {
 				} else {
 					this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
 					if (!itemStack.isEmpty() && !clientPlayerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
-						ItemUsageContext itemUsageContext = new ItemUsageContext(clientPlayerEntity, clientPlayerEntity.getStackInHand(hand), blockHitResult);
+						ItemUsageContext itemUsageContext = new ItemUsageContext(clientPlayerEntity, hand, blockHitResult);
 						ActionResult actionResult;
 						if (this.gameMode.isCreative()) {
 							int i = itemStack.getAmount();

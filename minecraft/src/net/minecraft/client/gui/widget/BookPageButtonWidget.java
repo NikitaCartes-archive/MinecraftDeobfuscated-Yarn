@@ -12,12 +12,12 @@ import net.minecraft.sound.SoundEvents;
 @Environment(EnvType.CLIENT)
 public class BookPageButtonWidget extends ButtonWidget {
 	private final boolean isNextPageButton;
-	private final boolean field_18977;
+	private final boolean playPageTurnSound;
 
-	public BookPageButtonWidget(int i, int j, boolean bl, ButtonWidget.class_4241 arg, boolean bl2) {
-		super(i, j, 23, 13, "", arg);
+	public BookPageButtonWidget(int i, int j, boolean bl, ButtonWidget.PressAction pressAction, boolean bl2) {
+		super(i, j, 23, 13, "", pressAction);
 		this.isNextPageButton = bl;
-		this.field_18977 = bl2;
+		this.playPageTurnSound = bl2;
 	}
 
 	@Override
@@ -34,12 +34,12 @@ public class BookPageButtonWidget extends ButtonWidget {
 			l += 13;
 		}
 
-		this.drawTexturedRect(this.x, this.y, k, l, 23, 13);
+		this.blit(this.x, this.y, k, l, 23, 13);
 	}
 
 	@Override
 	public void playDownSound(SoundManager soundManager) {
-		if (this.field_18977) {
+		if (this.playPageTurnSound) {
 			soundManager.play(PositionedSoundInstance.master(SoundEvents.field_17481, 1.0F));
 		}
 	}

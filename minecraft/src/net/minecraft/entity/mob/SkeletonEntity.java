@@ -29,7 +29,7 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	SoundEvent method_6998() {
+	SoundEvent getStepSound() {
 		return SoundEvents.field_14548;
 	}
 
@@ -39,8 +39,8 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 		Entity entity = damageSource.getAttacker();
 		if (entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
-			if (creeperEntity.method_7008()) {
-				creeperEntity.method_7002();
+			if (creeperEntity.shouldDropHead()) {
+				creeperEntity.onHeadDropped();
 				this.dropItem(Items.SKELETON_SKULL);
 			}
 		}

@@ -18,45 +18,45 @@ public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 
 	public MoveToRaidCenterGoal(T raiderEntity) {
 		this.owner = raiderEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.owner.getTarget() == null && !this.owner.hasPassengers() && this.owner.hasActiveRaid();
+		return this.owner.getTarget() == null
+			&& !this.owner.hasPassengers()
+			&& this.owner.hasActiveRaid()
+			&& !this.owner.getRaid().isFinished()
+			&& !((ServerWorld)this.owner.world).isNearOccupiedPointOfInterest(new BlockPos(this.owner));
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return this.owner.world instanceof ServerWorld && !((ServerWorld)this.owner.world).method_19500(new BlockPos(this.owner));
+		return this.owner.hasActiveRaid()
+			&& !this.owner.getRaid().isFinished()
+			&& this.owner.world instanceof ServerWorld
+			&& !((ServerWorld)this.owner.world).isNearOccupiedPointOfInterest(new BlockPos(this.owner));
 	}
 
 	@Override
 	public void tick() {
 		if (this.owner.hasActiveRaid()) {
 			Raid raid = this.owner.getRaid();
-			if (this.owner.isPatrolLeader()) {
-				this.owner.setRaidCenter(raid.getCenter());
-			} else {
-				RaiderEntity raiderEntity = raid.getLeader(this.owner.getWave());
-				if (raiderEntity != null && raiderEntity.hasPatrolTarget()) {
-					this.owner.setRaidCenter(raiderEntity.getPatrolTarget());
-				}
+			if (this.owner.age % 20 == 0) {
+				this.includeFreeRaiders(raid);
 			}
 
-			this.includeFreeRaiders(raid);
-		}
-
-		if (!this.owner.isNavigating() && this.owner.hasPatrolTarget()) {
-			Vec3d vec3d = new Vec3d(this.owner.getPatrolTarget());
-			Vec3d vec3d2 = new Vec3d(this.owner.x, this.owner.y, this.owner.z);
-			Vec3d vec3d3 = vec3d2.subtract(vec3d);
-			vec3d = vec3d3.multiply(0.4).add(vec3d);
-			Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
-			BlockPos blockPos = new BlockPos(vec3d4);
-			blockPos = this.owner.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
-			if (!this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
-				this.moveToAlternativePosition();
+			if (!this.owner.isNavigating()) {
+				Vec3d vec3d = new Vec3d(raid.getCenter());
+				Vec3d vec3d2 = new Vec3d(this.owner.x, this.owner.y, this.owner.z);
+				Vec3d vec3d3 = vec3d2.subtract(vec3d);
+				vec3d = vec3d3.multiply(0.4).add(vec3d);
+				Vec3d vec3d4 = vec3d.subtract(vec3d2).normalize().multiply(10.0).add(vec3d2);
+				BlockPos blockPos = new BlockPos(vec3d4);
+				blockPos = this.owner.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, blockPos);
+				if (!this.owner.getNavigation().startMovingTo((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 1.0)) {
+					this.moveToAlternativePosition();
+				}
 			}
 		}
 	}

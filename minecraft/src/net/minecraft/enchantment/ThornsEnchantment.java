@@ -1,6 +1,7 @@
 package net.minecraft.enchantment;
 
 import java.util.Random;
+import java.util.Map.Entry;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -31,17 +32,17 @@ public class ThornsEnchantment extends Enchantment {
 	@Override
 	public void onUserDamaged(LivingEntity livingEntity, Entity entity, int i) {
 		Random random = livingEntity.getRand();
-		ItemStack itemStack = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.field_9097, livingEntity);
+		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.field_9097, livingEntity);
 		if (method_8243(i, random)) {
 			if (entity != null) {
 				entity.damage(DamageSource.thorns(livingEntity), (float)method_8242(i, random));
 			}
 
-			if (!itemStack.isEmpty()) {
-				itemStack.applyDamage(3, livingEntity);
+			if (entry != null) {
+				((ItemStack)entry.getValue()).applyDamage(3, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
 			}
-		} else if (!itemStack.isEmpty()) {
-			itemStack.applyDamage(1, livingEntity);
+		} else if (entry != null) {
+			((ItemStack)entry.getValue()).applyDamage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus((EquipmentSlot)entry.getKey()));
 		}
 	}
 

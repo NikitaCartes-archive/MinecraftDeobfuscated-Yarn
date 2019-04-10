@@ -31,7 +31,7 @@ public class PufferfishEntityRenderer extends MobEntityRenderer<PufferfishEntity
 	}
 
 	public void method_4094(PufferfishEntity pufferfishEntity, double d, double e, double f, float g, float h) {
-		int i = pufferfishEntity.method_6594();
+		int i = pufferfishEntity.getPuffState();
 		if (i != this.field_4765) {
 			if (i == 0) {
 				this.model = this.smallModel;

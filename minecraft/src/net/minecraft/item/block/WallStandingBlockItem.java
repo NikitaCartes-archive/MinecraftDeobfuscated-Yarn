@@ -12,17 +12,17 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.ViewableWorld;
 
 public class WallStandingBlockItem extends BlockItem {
-	protected final Block block;
+	protected final Block wallBlock;
 
 	public WallStandingBlockItem(Block block, Block block2, Item.Settings settings) {
 		super(block, settings);
-		this.block = block2;
+		this.wallBlock = block2;
 	}
 
 	@Nullable
 	@Override
 	protected BlockState getBlockState(ItemPlacementContext itemPlacementContext) {
-		BlockState blockState = this.block.getPlacementState(itemPlacementContext);
+		BlockState blockState = this.wallBlock.getPlacementState(itemPlacementContext);
 		BlockState blockState2 = null;
 		ViewableWorld viewableWorld = itemPlacementContext.getWorld();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
@@ -37,12 +37,12 @@ public class WallStandingBlockItem extends BlockItem {
 			}
 		}
 
-		return blockState2 != null && viewableWorld.method_8628(blockState2, blockPos, VerticalEntityPosition.minValue()) ? blockState2 : null;
+		return blockState2 != null && viewableWorld.canPlace(blockState2, blockPos, VerticalEntityPosition.minValue()) ? blockState2 : null;
 	}
 
 	@Override
 	public void registerBlockItemMap(Map<Block, Item> map, Item item) {
 		super.registerBlockItemMap(map, item);
-		map.put(this.block, item);
+		map.put(this.wallBlock, item);
 	}
 }

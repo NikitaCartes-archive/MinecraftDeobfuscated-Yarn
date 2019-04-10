@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 public class BatEntity extends AmbientEntity {
 	private static final TrackedData<Byte> BAT_FLAGS = DataTracker.registerData(BatEntity.class, TrackedDataHandlerRegistry.BYTE);
-	private static final TargetPredicate field_18100 = new TargetPredicate().setBaseMaxDistance(4.0).includeTeammates();
+	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(4.0).includeTeammates();
 	private BlockPos field_6729;
 
 	public BatEntity(EntityType<? extends BatEntity> entityType, World world) {
@@ -121,20 +121,20 @@ public class BatEntity extends AmbientEntity {
 					this.headYaw = (float)this.random.nextInt(360);
 				}
 
-				if (this.world.method_18462(field_18100, this) != null) {
+				if (this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this) != null) {
 					this.setRoosting(false);
-					this.world.playEvent(null, 1025, blockPos, 0);
+					this.world.playLevelEvent(null, 1025, blockPos, 0);
 				}
 			} else {
 				this.setRoosting(false);
-				this.world.playEvent(null, 1025, blockPos, 0);
+				this.world.playLevelEvent(null, 1025, blockPos, 0);
 			}
 		} else {
 			if (this.field_6729 != null && (!this.world.isAir(this.field_6729) || this.field_6729.getY() < 1)) {
 				this.field_6729 = null;
 			}
 
-			if (this.field_6729 == null || this.random.nextInt(30) == 0 || this.field_6729.method_19769(this.getPos(), 2.0)) {
+			if (this.field_6729 == null || this.random.nextInt(30) == 0 || this.field_6729.isWithinDistance(this.getPos(), 2.0)) {
 				this.field_6729 = new BlockPos(
 					(int)this.x + this.random.nextInt(7) - this.random.nextInt(7),
 					(int)this.y + this.random.nextInt(6) - 2,
@@ -150,7 +150,7 @@ public class BatEntity extends AmbientEntity {
 			this.setVelocity(vec3d2);
 			float g = (float)(MathHelper.atan2(vec3d2.z, vec3d2.x) * 180.0F / (float)Math.PI) - 90.0F;
 			float h = MathHelper.wrapDegrees(g - this.yaw);
-			this.movementInputForward = 0.5F;
+			this.forwardSpeed = 0.5F;
 			this.yaw += h;
 			if (this.random.nextInt(100) == 0 && this.world.getBlockState(blockPos2).isSimpleFullBlock(this.world, blockPos2)) {
 				this.setRoosting(true);
@@ -159,7 +159,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -168,7 +168,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected void method_5623(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+	protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
 	}
 
 	@Override

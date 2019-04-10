@@ -39,7 +39,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 		if (!itemStack.isEmpty()) {
 			GlStateManager.pushMatrix();
 			this.method_4193(absoluteHand);
-			if (livingEntity.isSneaking()) {
+			if (livingEntity.isInSneakingPose()) {
 				GlStateManager.translatef(0.0F, 0.2F, 0.0F);
 			}
 
@@ -57,7 +57,7 @@ public class HeldItemFeatureRenderer<T extends LivingEntity, M extends EntityMod
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

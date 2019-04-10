@@ -14,29 +14,29 @@ public class SquidInkParticle extends AnimatedParticle {
 		this.setColorAlpha(1.0F);
 		this.setColor(0.0F, 0.0F, 0.0F);
 		this.maxAge = (int)((double)(this.scale * 12.0F) / (Math.random() * 0.8F + 0.2F));
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 		this.collidesWithWorld = false;
 		this.velocityX = g;
 		this.velocityY = h;
 		this.velocityZ = i;
-		this.method_3091(0.0F);
+		this.setResistance(0.0F);
 	}
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17866);
+			this.setSpriteForAge(this.spriteProvider);
 			if (this.age > this.maxAge / 2) {
 				this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
 			}
 
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.world.getBlockState(new BlockPos(this.posX, this.posY, this.posZ)).isAir()) {
+			if (this.world.getBlockState(new BlockPos(this.x, this.y, this.z)).isAir()) {
 				this.velocityY -= 0.008F;
 			}
 

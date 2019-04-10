@@ -14,28 +14,30 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.predicate.NbtPredicate;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
-import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 
 public class EntityDataObject implements DataCommandObject {
-	private static final SimpleCommandExceptionType field_13799 = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.data.entity.invalid"));
-	public static final Function<String, DataCommand.class_3167> field_13800 = string -> new DataCommand.class_3167() {
+	private static final SimpleCommandExceptionType INVALID_ENTITY_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("commands.data.entity.invalid")
+	);
+	public static final Function<String, DataCommand.ObjectType> field_13800 = string -> new DataCommand.ObjectType() {
 			@Override
-			public DataCommandObject method_13924(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
-				return new EntityDataObject(EntityArgumentType.getEntityArgument(commandContext, string));
+			public DataCommandObject getObject(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+				return new EntityDataObject(EntityArgumentType.getEntity(commandContext, string));
 			}
 
 			@Override
-			public ArgumentBuilder<ServerCommandSource, ?> method_13925(
+			public ArgumentBuilder<ServerCommandSource, ?> addArgumentsToBuilder(
 				ArgumentBuilder<ServerCommandSource, ?> argumentBuilder,
 				Function<ArgumentBuilder<ServerCommandSource, ?>, ArgumentBuilder<ServerCommandSource, ?>> function
 			) {
 				return argumentBuilder.then(
-					ServerCommandManager.literal("entity")
-						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(ServerCommandManager.argument(string, EntityArgumentType.oneEntity())))
+					CommandManager.literal("entity")
+						.then((ArgumentBuilder<ServerCommandSource, ?>)function.apply(CommandManager.argument(string, EntityArgumentType.entity())))
 				);
 			}
 		};
@@ -46,9 +48,9 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public void method_13880(CompoundTag compoundTag) throws CommandSyntaxException {
+	public void setTag(CompoundTag compoundTag) throws CommandSyntaxException {
 		if (this.field_13801 instanceof PlayerEntity) {
-			throw field_13799.create();
+			throw INVALID_ENTITY_EXCEPTION.create();
 		} else {
 			UUID uUID = this.field_13801.getUuid();
 			this.field_13801.fromTag(compoundTag);
@@ -57,22 +59,22 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public CompoundTag method_13881() {
+	public CompoundTag getTag() {
 		return NbtPredicate.entityToTag(this.field_13801);
 	}
 
 	@Override
-	public TextComponent method_13883() {
+	public TextComponent getModifiedFeedback() {
 		return new TranslatableTextComponent("commands.data.entity.modified", this.field_13801.getDisplayName());
 	}
 
 	@Override
-	public TextComponent method_13882(Tag tag) {
+	public TextComponent getQueryFeedback(Tag tag) {
 		return new TranslatableTextComponent("commands.data.entity.query", this.field_13801.getDisplayName(), tag.toTextComponent());
 	}
 
 	@Override
-	public TextComponent method_13879(NbtPathArgumentType.class_2209 arg, double d, int i) {
-		return new TranslatableTextComponent("commands.data.entity.get", arg, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
+	public TextComponent getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
+		return new TranslatableTextComponent("commands.data.entity.get", nbtPath, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
 	}
 }

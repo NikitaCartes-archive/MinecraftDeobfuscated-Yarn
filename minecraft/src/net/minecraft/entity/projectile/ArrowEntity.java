@@ -89,14 +89,14 @@ public class ArrowEntity extends ProjectileEntity {
 		super.tick();
 		if (this.world.isClient) {
 			if (this.inGround) {
-				if (this.field_7576 % 5 == 0) {
+				if (this.inGroundTime % 5 == 0) {
 					this.spawnParticles(1);
 				}
 			} else {
 				this.spawnParticles(2);
 			}
-		} else if (this.inGround && this.field_7576 != 0 && !this.effects.isEmpty() && this.field_7576 >= 600) {
-			this.world.summonParticle(this, (byte)0);
+		} else if (this.inGround && this.inGroundTime != 0 && !this.effects.isEmpty() && this.inGroundTime >= 600) {
+			this.world.sendEntityStatus(this, (byte)0);
 			this.potion = Potions.field_8984;
 			this.effects.clear();
 			this.dataTracker.set(COLOR, -1);
@@ -215,7 +215,7 @@ public class ArrowEntity extends ProjectileEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 0) {
 			int i = this.getColor();
 			if (i != -1) {
@@ -237,7 +237,7 @@ public class ArrowEntity extends ProjectileEntity {
 				}
 			}
 		} else {
-			super.method_5711(b);
+			super.handleStatus(b);
 		}
 	}
 }

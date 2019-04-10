@@ -39,7 +39,7 @@ public class ItemEntityRenderer extends EntityRenderer<ItemEntity> {
 			float j = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.hoverHeight) * 0.1F + 0.1F;
 			float k = bakedModel.getTransformation().getTransformation(ModelTransformation.Type.field_4318).scale.y();
 			GlStateManager.translatef((float)d, (float)e + j + 0.25F * k, (float)f);
-			if (bl || this.renderManager.settings != null) {
+			if (bl || this.renderManager.gameOptions != null) {
 				float l = (((float)itemEntity.getAge() + g) / 20.0F + itemEntity.hoverHeight) * (180.0F / (float)Math.PI);
 				GlStateManager.rotatef(l, 0.0F, 1.0F, 0.0F);
 			}

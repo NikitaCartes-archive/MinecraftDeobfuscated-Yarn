@@ -16,7 +16,6 @@ public class VboChunkRendererList extends ChunkRendererList {
 				GlBuffer glBuffer = chunkRenderer.getGlBuffer(blockRenderLayer.ordinal());
 				GlStateManager.pushMatrix();
 				this.translateToOrigin(chunkRenderer);
-				chunkRenderer.multiplyMatrix();
 				glBuffer.bind();
 				this.method_1356();
 				glBuffer.draw(7);

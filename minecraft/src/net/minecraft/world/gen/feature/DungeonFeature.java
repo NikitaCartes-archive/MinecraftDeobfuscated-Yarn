@@ -113,7 +113,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 			iWorld.setBlockState(blockPos, Blocks.field_10260.getDefaultState(), 2);
 			BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 			if (blockEntity instanceof MobSpawnerBlockEntity) {
-				((MobSpawnerBlockEntity)blockEntity).getLogic().method_8274(this.getMobSpawnerEntity(random));
+				((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));
 			} else {
 				LOGGER.error("Failed to fetch mob spawner entity at ({}, {}, {})", blockPos.getX(), blockPos.getY(), blockPos.getZ());
 			}

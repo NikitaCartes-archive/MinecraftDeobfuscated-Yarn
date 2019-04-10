@@ -14,7 +14,7 @@ import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class HoldingPatternPhase extends AbstractPhase {
-	private static final TargetPredicate field_18121 = new TargetPredicate().setBaseMaxDistance(64.0);
+	private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(64.0);
 	private Path field_7043;
 	private Vec3d field_7045;
 	private boolean field_7044;
@@ -58,12 +58,16 @@ public class HoldingPatternPhase extends AbstractPhase {
 			}
 
 			double d = 64.0;
-			PlayerEntity playerEntity = this.dragon.world.method_18461(field_18121, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			PlayerEntity playerEntity = this.dragon
+				.world
+				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			if (playerEntity != null) {
-				d = blockPos.method_19770(playerEntity.getPos(), true) / 512.0;
+				d = blockPos.getSquaredDistance(playerEntity.getPos(), true) / 512.0;
 			}
 
-			if (playerEntity != null && (this.dragon.getRand().nextInt(MathHelper.abs((int)d) + 2) == 0 || this.dragon.getRand().nextInt(i + 2) == 0)) {
+			if (playerEntity != null
+				&& !playerEntity.abilities.invulnerable
+				&& (this.dragon.getRand().nextInt(MathHelper.abs((int)d) + 2) == 0 || this.dragon.getRand().nextInt(i + 2) == 0)) {
 				this.method_6843(playerEntity);
 				return;
 			}

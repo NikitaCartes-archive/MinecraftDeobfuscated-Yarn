@@ -15,16 +15,16 @@ public class Schedule {
 	public static final Schedule VILLAGER_BABY = register("villager_baby")
 		.withActivity(10, Activity.field_18595)
 		.withActivity(3000, Activity.field_18885)
-		.withActivity(8000, Activity.field_18595)
-		.withActivity(11000, Activity.field_18885)
-		.withActivity(13000, Activity.field_18597)
+		.withActivity(6000, Activity.field_18595)
+		.withActivity(10000, Activity.field_18885)
+		.withActivity(12000, Activity.field_18597)
 		.build();
 	public static final Schedule VILLAGER_DEFAULT = register("villager_default")
 		.withActivity(10, Activity.field_18595)
 		.withActivity(2000, Activity.field_18596)
 		.withActivity(9000, Activity.field_18598)
-		.withActivity(12000, Activity.field_18595)
-		.withActivity(13000, Activity.field_18597)
+		.withActivity(11000, Activity.field_18595)
+		.withActivity(12000, Activity.field_18597)
 		.build();
 	private final Map<Activity, ScheduleRule> scheduleRules = Maps.<Activity, ScheduleRule>newHashMap();
 

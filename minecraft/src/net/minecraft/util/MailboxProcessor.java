@@ -11,8 +11,8 @@ import org.apache.logging.log4j.Logger;
 public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final AtomicInteger stateFlags = new AtomicInteger(0);
-	public final Mailbox<? super T, ? extends Runnable> taskList;
-	private final Executor field_17042;
+	public final Mailbox<? super T, ? extends Runnable> mailbox;
+	private final Executor executor;
 	private final String name;
 
 	public static MailboxProcessor<Runnable> create(Executor executor, String string) {
@@ -20,8 +20,8 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 	}
 
 	public MailboxProcessor(Mailbox<? super T, ? extends Runnable> mailbox, Executor executor, String string) {
-		this.field_17042 = executor;
-		this.taskList = mailbox;
+		this.executor = executor;
+		this.mailbox = mailbox;
 		this.name = string;
 	}
 
@@ -48,7 +48,7 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 		if ((this.stateFlags.get() & 1) != 0) {
 			return false;
 		} else {
-			return !this.taskList.isEmpty();
+			return !this.mailbox.isEmpty();
 		}
 	}
 
@@ -68,7 +68,7 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 		if (!this.isLocked()) {
 			return false;
 		} else {
-			Runnable runnable = (Runnable)this.taskList.getNext();
+			Runnable runnable = (Runnable)this.mailbox.poll();
 			if (runnable == null) {
 				return false;
 			} else {
@@ -89,17 +89,17 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 
 	@Override
 	public void send(T object) {
-		this.taskList.add(object);
+		this.mailbox.add(object);
 		this.execute();
 	}
 
 	private void execute() {
 		if (this.hasMessages() && this.lock()) {
 			try {
-				this.field_17042.execute(this);
+				this.executor.execute(this);
 			} catch (RejectedExecutionException var4) {
 				try {
-					this.field_17042.execute(this);
+					this.executor.execute(this);
 				} catch (RejectedExecutionException var3) {
 					LOGGER.error("Cound not schedule mailbox", var3);
 				}
@@ -118,7 +118,7 @@ public class MailboxProcessor<T> implements Actor<T>, AutoCloseable, Runnable {
 	}
 
 	public String toString() {
-		return this.name + " " + this.stateFlags.get() + " " + this.taskList.isEmpty();
+		return this.name + " " + this.stateFlags.get() + " " + this.mailbox.isEmpty();
 	}
 
 	@Override

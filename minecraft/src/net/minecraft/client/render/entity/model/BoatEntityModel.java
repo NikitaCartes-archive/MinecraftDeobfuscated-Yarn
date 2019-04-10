@@ -85,8 +85,8 @@ public class BoatEntityModel extends EntityModel<BoatEntity> {
 	protected void method_2797(BoatEntity boatEntity, int i, float f, float g) {
 		float h = boatEntity.method_7551(i, g);
 		Cuboid cuboid = this.field_3325[i];
-		cuboid.pitch = (float)MathHelper.lerpClamped((float) (-Math.PI / 3), (float) (-Math.PI / 12), (double)((MathHelper.sin(-h) + 1.0F) / 2.0F));
-		cuboid.yaw = (float)MathHelper.lerpClamped((float) (-Math.PI / 4), (float) (Math.PI / 4), (double)((MathHelper.sin(-h + 1.0F) + 1.0F) / 2.0F));
+		cuboid.pitch = (float)MathHelper.clampedLerp((float) (-Math.PI / 3), (float) (-Math.PI / 12), (double)((MathHelper.sin(-h) + 1.0F) / 2.0F));
+		cuboid.yaw = (float)MathHelper.clampedLerp((float) (-Math.PI / 4), (float) (Math.PI / 4), (double)((MathHelper.sin(-h + 1.0F) + 1.0F) / 2.0F));
 		if (i == 1) {
 			cuboid.yaw = (float) Math.PI - cuboid.yaw;
 		}

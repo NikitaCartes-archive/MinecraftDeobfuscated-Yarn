@@ -22,7 +22,7 @@ public class AvoidSunlightGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		((MobNavigation)this.owner.getNavigation()).setAvoidSunlight(false);
 	}
 }

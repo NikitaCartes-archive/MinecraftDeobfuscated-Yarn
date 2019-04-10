@@ -63,10 +63,10 @@ public class TraderLlamaEntity extends LlamaEntity {
 	}
 
 	@Override
-	protected void method_6726(PlayerEntity playerEntity) {
+	protected void putPlayerOnBack(PlayerEntity playerEntity) {
 		Entity entity = this.getHoldingEntity();
 		if (!(entity instanceof WanderingTraderEntity)) {
-			super.method_6726(playerEntity);
+			super.putPlayerOnBack(playerEntity);
 		}
 	}
 
@@ -76,20 +76,20 @@ public class TraderLlamaEntity extends LlamaEntity {
 		if (this.despawnDelay > 0 && --this.despawnDelay == 0 && this.getHoldingEntity() instanceof WanderingTraderEntity) {
 			WanderingTraderEntity wanderingTraderEntity = (WanderingTraderEntity)this.getHoldingEntity();
 			int i = wanderingTraderEntity.getDespawnDelay();
-			if (i > 0) {
-				this.despawnDelay = i;
+			if (i - 1 > 0) {
+				this.despawnDelay = i - 1;
 			} else {
-				this.invalidate();
+				this.remove();
 			}
 		}
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		EntityData entityData2 = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (spawnType == SpawnType.field_16467) {
 			this.setBreedingAge(0);
 		}
@@ -105,7 +105,7 @@ public class TraderLlamaEntity extends LlamaEntity {
 		public DefendTraderGoal(LlamaEntity llamaEntity) {
 			super(llamaEntity, false);
 			this.field_17718 = llamaEntity;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
+			this.setControls(EnumSet.of(Goal.Control.field_18408));
 		}
 
 		@Override

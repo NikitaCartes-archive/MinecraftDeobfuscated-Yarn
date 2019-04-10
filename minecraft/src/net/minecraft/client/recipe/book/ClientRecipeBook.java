@@ -63,23 +63,23 @@ public class ClientRecipeBook extends RecipeBook {
 		this.orderedResults.add(recipeResultCollection);
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 		if (recipeBookGroup == RecipeBookGroup.field_1811 || recipeBookGroup == RecipeBookGroup.field_1808 || recipeBookGroup == RecipeBookGroup.field_1812) {
-			this.method_18092(RecipeBookGroup.field_1804, recipeResultCollection);
+			this.addGroupResults(RecipeBookGroup.field_1804, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17111 || recipeBookGroup == RecipeBookGroup.field_17112) {
-			this.method_18092(RecipeBookGroup.field_17110, recipeResultCollection);
+			this.addGroupResults(RecipeBookGroup.field_17110, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17114) {
-			this.method_18092(RecipeBookGroup.field_17113, recipeResultCollection);
+			this.addGroupResults(RecipeBookGroup.field_17113, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17764) {
-			this.method_18092(RecipeBookGroup.field_17764, recipeResultCollection);
+			this.addGroupResults(RecipeBookGroup.field_17764, recipeResultCollection);
 		} else if (recipeBookGroup == RecipeBookGroup.field_17765) {
-			this.method_18092(RecipeBookGroup.field_17765, recipeResultCollection);
+			this.addGroupResults(RecipeBookGroup.field_17765, recipeResultCollection);
 		} else {
-			this.method_18092(RecipeBookGroup.field_1809, recipeResultCollection);
+			this.addGroupResults(RecipeBookGroup.field_1809, recipeResultCollection);
 		}
 
 		return recipeResultCollection;
 	}
 
-	private void method_18092(RecipeBookGroup recipeBookGroup, RecipeResultCollection recipeResultCollection) {
+	private void addGroupResults(RecipeBookGroup recipeBookGroup, RecipeResultCollection recipeResultCollection) {
 		((List)this.resultsByGroup.computeIfAbsent(recipeBookGroup, recipeBookGroupx -> Lists.newArrayList())).add(recipeResultCollection);
 	}
 

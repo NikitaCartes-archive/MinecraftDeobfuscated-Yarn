@@ -16,7 +16,7 @@ public class EvokerIllagerEntityRenderer<T extends SpellcastingIllagerEntity> ex
 		super(entityRenderDispatcher, new EvilVillagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
 		this.addFeature(new HeldItemFeatureRenderer<T, EvilVillagerEntityModel<T>>(this) {
 			public void method_17147(T spellcastingIllagerEntity, float f, float g, float h, float i, float j, float k, float l) {
-				if (spellcastingIllagerEntity.method_7137()) {
+				if (spellcastingIllagerEntity.isSpellcasting()) {
 					super.method_17162(spellcastingIllagerEntity, f, g, h, i, j, k, l);
 				}
 			}

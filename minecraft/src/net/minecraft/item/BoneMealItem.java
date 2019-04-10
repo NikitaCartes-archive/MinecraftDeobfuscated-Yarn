@@ -30,16 +30,16 @@ public class BoneMealItem extends Item {
 		BlockPos blockPos2 = blockPos.offset(itemUsageContext.getFacing());
 		if (method_7720(itemUsageContext.getItemStack(), world, blockPos)) {
 			if (!world.isClient) {
-				world.playEvent(2005, blockPos, 0);
+				world.method_20290(2005, blockPos, 0);
 			}
 
 			return ActionResult.field_5812;
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
-			boolean bl = Block.isFaceFullSquare(blockState.getCollisionShape(world, blockPos), itemUsageContext.getFacing());
+			boolean bl = Block.isSolidFullSquare(blockState, world, blockPos, itemUsageContext.getFacing());
 			if (bl && method_7719(itemUsageContext.getItemStack(), world, blockPos2, itemUsageContext.getFacing())) {
 				if (!world.isClient) {
-					world.playEvent(2005, blockPos2, 0);
+					world.method_20290(2005, blockPos2, 0);
 				}
 
 				return ActionResult.field_5812;

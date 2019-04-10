@@ -44,27 +44,27 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		new TranslatableTextComponent("argument.entity.selector.not_allowed")
 	);
 	private final boolean singleTarget;
-	private final boolean playerOnly;
+	private final boolean playersOnly;
 
 	protected EntityArgumentType(boolean bl, boolean bl2) {
 		this.singleTarget = bl;
-		this.playerOnly = bl2;
+		this.playersOnly = bl2;
 	}
 
-	public static EntityArgumentType oneEntity() {
+	public static EntityArgumentType entity() {
 		return new EntityArgumentType(true, false);
 	}
 
-	public static Entity getEntityArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Entity getEntity(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getEntity(commandContext.getSource());
 	}
 
-	public static EntityArgumentType multipleEntities() {
+	public static EntityArgumentType entities() {
 		return new EntityArgumentType(false, false);
 	}
 
-	public static Collection<? extends Entity> method_9317(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		Collection<? extends Entity> collection = method_9307(commandContext, string);
+	public static Collection<? extends Entity> getEntities(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		Collection<? extends Entity> collection = getOptionalEntities(commandContext, string);
 		if (collection.isEmpty()) {
 			throw ENTITY_NOT_FOUND_EXCEPTION.create();
 		} else {
@@ -72,27 +72,27 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		}
 	}
 
-	public static Collection<? extends Entity> method_9307(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Collection<? extends Entity> getOptionalEntities(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getEntities(commandContext.getSource());
 	}
 
-	public static Collection<ServerPlayerEntity> method_9310(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Collection<ServerPlayerEntity> getOptionalPlayers(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getPlayers(commandContext.getSource());
 	}
 
-	public static EntityArgumentType onePlayer() {
+	public static EntityArgumentType player() {
 		return new EntityArgumentType(true, true);
 	}
 
-	public static ServerPlayerEntity getServerPlayerArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static ServerPlayerEntity getPlayer(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getPlayer(commandContext.getSource());
 	}
 
-	public static EntityArgumentType multiplePlayer() {
+	public static EntityArgumentType players() {
 		return new EntityArgumentType(false, true);
 	}
 
-	public static Collection<ServerPlayerEntity> method_9312(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Collection<ServerPlayerEntity> getPlayers(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		List<ServerPlayerEntity> list = commandContext.<EntitySelector>getArgument(string, EntitySelector.class).getPlayers(commandContext.getSource());
 		if (list.isEmpty()) {
 			throw PLAYER_NOT_FOUND_EXCEPTION.create();
@@ -106,14 +106,14 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 		EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 		EntitySelector entitySelector = entitySelectorReader.read();
 		if (entitySelector.getCount() > 1 && this.singleTarget) {
-			if (this.playerOnly) {
+			if (this.playersOnly) {
 				stringReader.setCursor(0);
 				throw TOO_MANY_PLAYERS_EXCEPTION.createWithContext(stringReader);
 			} else {
 				stringReader.setCursor(0);
 				throw TOO_MANY_ENTITIES_EXCEPTION.createWithContext(stringReader);
 			}
-		} else if (entitySelector.includesEntities() && this.playerOnly && !entitySelector.method_9820()) {
+		} else if (entitySelector.includesNonPlayers() && this.playersOnly && !entitySelector.isSenderOnly()) {
 			stringReader.setCursor(0);
 			throw PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.createWithContext(stringReader);
 		} else {
@@ -136,7 +136,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 
 			return entitySelectorReader.listSuggestions(suggestionsBuilder, suggestionsBuilderx -> {
 				Collection<String> collection = commandSource.getPlayerNames();
-				Iterable<String> iterable = (Iterable<String>)(this.playerOnly ? collection : Iterables.concat(collection, commandSource.method_9269()));
+				Iterable<String> iterable = (Iterable<String>)(this.playersOnly ? collection : Iterables.concat(collection, commandSource.getEntitySuggestions()));
 				CommandSource.suggestMatching(iterable, suggestionsBuilderx);
 			});
 		} else {
@@ -156,7 +156,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 				b = (byte)(b | 1);
 			}
 
-			if (entityArgumentType.playerOnly) {
+			if (entityArgumentType.playersOnly) {
 				b = (byte)(b | 2);
 			}
 
@@ -170,7 +170,7 @@ public class EntityArgumentType implements ArgumentType<EntitySelector> {
 
 		public void method_9319(EntityArgumentType entityArgumentType, JsonObject jsonObject) {
 			jsonObject.addProperty("amount", entityArgumentType.singleTarget ? "single" : "multiple");
-			jsonObject.addProperty("type", entityArgumentType.playerOnly ? "players" : "entities");
+			jsonObject.addProperty("type", entityArgumentType.playersOnly ? "players" : "entities");
 		}
 	}
 }

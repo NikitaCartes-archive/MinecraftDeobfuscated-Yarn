@@ -40,13 +40,13 @@ public class StrayEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	SoundEvent method_6998() {
+	SoundEvent getStepSound() {
 		return SoundEvents.field_14540;
 	}
 
 	@Override
-	protected ProjectileEntity method_6996(ItemStack itemStack, float f) {
-		ProjectileEntity projectileEntity = super.method_6996(itemStack, f);
+	protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
+		ProjectileEntity projectileEntity = super.createArrowProjectile(itemStack, f);
 		if (projectileEntity instanceof ArrowEntity) {
 			((ArrowEntity)projectileEntity).addEffect(new StatusEffectInstance(StatusEffects.field_5909, 600));
 		}

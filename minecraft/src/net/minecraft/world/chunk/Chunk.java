@@ -62,12 +62,12 @@ public interface Chunk extends BlockViewWithStructures {
 
 	default int getLightLevel(BlockPos blockPos, int i, boolean bl) {
 		LightingProvider lightingProvider = this.getLightingProvider();
-		if (lightingProvider == null) {
-			return 0;
-		} else {
+		if (lightingProvider != null && this.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
 			int j = bl ? lightingProvider.get(LightType.SKY).getLightLevel(blockPos) - i : 0;
 			int k = lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos);
 			return Math.max(k, j);
+		} else {
+			return 0;
 		}
 	}
 

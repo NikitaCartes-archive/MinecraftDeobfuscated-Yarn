@@ -14,31 +14,31 @@ public class StatusEffects {
 		1,
 		"speed",
 		new StatusEffect(StatusEffectType.field_18271, 8171462)
-			.method_5566(EntityAttributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.2F, EntityAttributeModifier.Operation.field_6331)
+			.addAttributeModifier(EntityAttributes.MOVEMENT_SPEED, "91AEAA56-376B-4498-935B-2F7F68070635", 0.2F, EntityAttributeModifier.Operation.field_6331)
 	);
 	public static final StatusEffect field_5909 = register(
 		2,
 		"slowness",
 		new StatusEffect(StatusEffectType.field_18272, 5926017)
-			.method_5566(EntityAttributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15F, EntityAttributeModifier.Operation.field_6331)
+			.addAttributeModifier(EntityAttributes.MOVEMENT_SPEED, "7107DE5E-7CE8-4030-940E-514C1F160890", -0.15F, EntityAttributeModifier.Operation.field_6331)
 	);
 	public static final StatusEffect field_5917 = register(
 		3,
 		"haste",
 		new StatusEffect(StatusEffectType.field_18271, 14270531)
-			.method_5566(EntityAttributes.ATTACK_SPEED, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.1F, EntityAttributeModifier.Operation.field_6331)
+			.addAttributeModifier(EntityAttributes.ATTACK_SPEED, "AF8B6E3F-3328-4C0A-AA36-5BA2BB9DBEF3", 0.1F, EntityAttributeModifier.Operation.field_6331)
 	);
 	public static final StatusEffect field_5901 = register(
 		4,
 		"mining_fatigue",
 		new StatusEffect(StatusEffectType.field_18272, 4866583)
-			.method_5566(EntityAttributes.ATTACK_SPEED, "55FCED67-E92A-486E-9800-B47F202C4386", -0.1F, EntityAttributeModifier.Operation.field_6331)
+			.addAttributeModifier(EntityAttributes.ATTACK_SPEED, "55FCED67-E92A-486E-9800-B47F202C4386", -0.1F, EntityAttributeModifier.Operation.field_6331)
 	);
 	public static final StatusEffect field_5910 = register(
 		5,
 		"strength",
 		new DamageModifierStatusEffect(StatusEffectType.field_18271, 9643043, 3.0)
-			.method_5566(EntityAttributes.ATTACK_DAMAGE, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0, EntityAttributeModifier.Operation.field_6328)
+			.addAttributeModifier(EntityAttributes.ATTACK_DAMAGE, "648D7064-6A60-4F59-8ABE-C2C23A6DD7A9", 0.0, EntityAttributeModifier.Operation.field_6328)
 	);
 	public static final StatusEffect field_5915 = register(6, "instant_health", new InstantStatusEffect(StatusEffectType.field_18271, 16262179));
 	public static final StatusEffect field_5921 = register(7, "instant_damage", new InstantStatusEffect(StatusEffectType.field_18272, 4393481));
@@ -56,7 +56,7 @@ public class StatusEffects {
 		18,
 		"weakness",
 		new DamageModifierStatusEffect(StatusEffectType.field_18272, 4738376, -4.0)
-			.method_5566(EntityAttributes.ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0, EntityAttributeModifier.Operation.field_6328)
+			.addAttributeModifier(EntityAttributes.ATTACK_DAMAGE, "22653B89-116E-49DC-9B6B-9971489B5BE5", 0.0, EntityAttributeModifier.Operation.field_6328)
 	);
 	public static final StatusEffect field_5899 = register(19, "poison", new StatusEffect(StatusEffectType.field_18272, 5149489));
 	public static final StatusEffect field_5920 = register(20, "wither", new StatusEffect(StatusEffectType.field_18272, 3484199));
@@ -64,7 +64,7 @@ public class StatusEffects {
 		21,
 		"health_boost",
 		new HealthBoostStatusEffect(StatusEffectType.field_18271, 16284963)
-			.method_5566(EntityAttributes.MAX_HEALTH, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0, EntityAttributeModifier.Operation.field_6328)
+			.addAttributeModifier(EntityAttributes.MAX_HEALTH, "5D6F0BA2-1186-46AC-B896-C61C5CEE99CC", 4.0, EntityAttributeModifier.Operation.field_6328)
 	);
 	public static final StatusEffect field_5898 = register(22, "absorption", new AbsorptionStatusEffect(StatusEffectType.field_18271, 2445989));
 	public static final StatusEffect field_5922 = register(23, "saturation", new InstantStatusEffect(StatusEffectType.field_18271, 16262179));
@@ -74,13 +74,13 @@ public class StatusEffects {
 		26,
 		"luck",
 		new StatusEffect(StatusEffectType.field_18271, 3381504)
-			.method_5566(EntityAttributes.LUCK, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0, EntityAttributeModifier.Operation.field_6328)
+			.addAttributeModifier(EntityAttributes.LUCK, "03C3C89D-7037-4B42-869F-B146BCB64D2E", 1.0, EntityAttributeModifier.Operation.field_6328)
 	);
 	public static final StatusEffect field_5908 = register(
 		27,
 		"unluck",
 		new StatusEffect(StatusEffectType.field_18272, 12624973)
-			.method_5566(EntityAttributes.LUCK, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0, EntityAttributeModifier.Operation.field_6328)
+			.addAttributeModifier(EntityAttributes.LUCK, "CC5AF142-2BD2-4215-B636-2605AED11727", -1.0, EntityAttributeModifier.Operation.field_6328)
 	);
 	public static final StatusEffect field_5906 = register(28, "slow_falling", new StatusEffect(StatusEffectType.field_18271, 16773073));
 	public static final StatusEffect field_5927 = register(29, "conduit_power", new StatusEffect(StatusEffectType.field_18271, 1950417));
@@ -93,19 +93,20 @@ public class StatusEffects {
 
 		@Override
 		public void applyUpdateEffect(LivingEntity livingEntity, int i) {
-			if (livingEntity instanceof ServerPlayerEntity) {
+			if (livingEntity instanceof ServerPlayerEntity && !livingEntity.isSpectator()) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 				ServerWorld serverWorld = serverPlayerEntity.getServerWorld();
 				if (serverWorld.getDifficulty() == Difficulty.PEACEFUL) {
 					return;
 				}
 
-				if (serverWorld.method_19500(new BlockPos(livingEntity))) {
+				if (serverWorld.isNearOccupiedPointOfInterest(new BlockPos(livingEntity))) {
 					serverWorld.getRaidManager().startRaid(serverPlayerEntity);
 				}
 			}
 		}
 	});
+	public static final StatusEffect field_18980 = register(32, "hero_of_the_village", new StatusEffect(StatusEffectType.field_18271, 4521796));
 
 	private static StatusEffect register(int i, String string, StatusEffect statusEffect) {
 		return Registry.register(Registry.STATUS_EFFECT, i, string, statusEffect);

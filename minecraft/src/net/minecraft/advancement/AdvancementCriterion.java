@@ -35,7 +35,7 @@ public class AdvancementCriterion {
 		if (criterion == null) {
 			throw new JsonSyntaxException("Invalid criterion trigger: " + identifier);
 		} else {
-			CriterionConditions criterionConditions = criterion.deserializeConditions(
+			CriterionConditions criterionConditions = criterion.conditionsFromJson(
 				JsonHelper.getObject(jsonObject, "conditions", new JsonObject()), jsonDeserializationContext
 			);
 			return new AdvancementCriterion(criterionConditions);

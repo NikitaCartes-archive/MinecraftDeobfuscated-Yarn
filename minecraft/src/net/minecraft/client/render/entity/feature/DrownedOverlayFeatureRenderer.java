@@ -27,7 +27,7 @@ public class DrownedOverlayFeatureRenderer<T extends ZombieEntity> extends Featu
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 }

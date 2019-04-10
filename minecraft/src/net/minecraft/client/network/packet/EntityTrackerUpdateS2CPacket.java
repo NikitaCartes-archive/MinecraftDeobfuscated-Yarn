@@ -35,7 +35,7 @@ public class EntityTrackerUpdateS2CPacket implements Packet<ClientPlayPacketList
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeVarInt(this.id);
-		DataTracker.serializePacket(this.trackedValues, packetByteBuf);
+		DataTracker.entriesToPacket(this.trackedValues, packetByteBuf);
 	}
 
 	public void method_11808(ClientPlayPacketListener clientPlayPacketListener) {

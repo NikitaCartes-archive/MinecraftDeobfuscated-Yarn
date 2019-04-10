@@ -59,6 +59,6 @@ public class ExplodingWitherSkullEntityRenderer extends EntityRenderer<Exploding
 	}
 
 	protected Identifier method_4160(ExplodingWitherSkullEntity explodingWitherSkullEntity) {
-		return explodingWitherSkullEntity.method_7503() ? INVINCIBLE_SKIN : SKIN;
+		return explodingWitherSkullEntity.isCharged() ? INVINCIBLE_SKIN : SKIN;
 	}
 }

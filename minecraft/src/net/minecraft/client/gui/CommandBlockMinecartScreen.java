@@ -25,8 +25,8 @@ public class CommandBlockMinecartScreen extends AbstractCommandBlockScreen {
 	}
 
 	@Override
-	protected void onInitialized() {
-		super.onInitialized();
+	protected void init() {
+		super.init();
 		this.trackingOutput = this.getCommandExecutor().isTrackingOutput();
 		this.updateTrackedOutput();
 		this.consoleCommandTextField.setText(this.getCommandExecutor().getCommand());
@@ -36,7 +36,7 @@ public class CommandBlockMinecartScreen extends AbstractCommandBlockScreen {
 	protected void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor) {
 		if (commandBlockExecutor instanceof CommandBlockMinecartEntity.class_1698) {
 			CommandBlockMinecartEntity.class_1698 lv = (CommandBlockMinecartEntity.class_1698)commandBlockExecutor;
-			this.client
+			this.minecraft
 				.getNetworkHandler()
 				.sendPacket(
 					new UpdateCommandBlockMinecartC2SPacket(lv.method_7569().getEntityId(), this.consoleCommandTextField.getText(), commandBlockExecutor.isTrackingOutput())

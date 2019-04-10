@@ -67,11 +67,11 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 
 	public InventoryChangedCriterion.Conditions method_8952(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		JsonObject jsonObject2 = JsonHelper.getObject(jsonObject, "slots", new JsonObject());
-		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject2.get("occupied"));
-		NumberRange.Integer integer2 = NumberRange.Integer.fromJson(jsonObject2.get("full"));
-		NumberRange.Integer integer3 = NumberRange.Integer.fromJson(jsonObject2.get("empty"));
+		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject2.get("occupied"));
+		NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject2.get("full"));
+		NumberRange.IntRange intRange3 = NumberRange.IntRange.fromJson(jsonObject2.get("empty"));
 		ItemPredicate[] itemPredicates = ItemPredicate.deserializeAll(jsonObject.get("items"));
-		return new InventoryChangedCriterion.Conditions(integer, integer2, integer3, itemPredicates);
+		return new InventoryChangedCriterion.Conditions(intRange, intRange2, intRange3, itemPredicates);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, PlayerInventory playerInventory) {
@@ -82,21 +82,21 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final NumberRange.Integer occupied;
-		private final NumberRange.Integer full;
-		private final NumberRange.Integer empty;
+		private final NumberRange.IntRange field_9629;
+		private final NumberRange.IntRange field_9630;
+		private final NumberRange.IntRange field_9631;
 		private final ItemPredicate[] items;
 
-		public Conditions(NumberRange.Integer integer, NumberRange.Integer integer2, NumberRange.Integer integer3, ItemPredicate[] itemPredicates) {
+		public Conditions(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, NumberRange.IntRange intRange3, ItemPredicate[] itemPredicates) {
 			super(InventoryChangedCriterion.ID);
-			this.occupied = integer;
-			this.full = integer2;
-			this.empty = integer3;
+			this.field_9629 = intRange;
+			this.field_9630 = intRange2;
+			this.field_9631 = intRange3;
 			this.items = itemPredicates;
 		}
 
 		public static InventoryChangedCriterion.Conditions items(ItemPredicate... itemPredicates) {
-			return new InventoryChangedCriterion.Conditions(NumberRange.Integer.ANY, NumberRange.Integer.ANY, NumberRange.Integer.ANY, itemPredicates);
+			return new InventoryChangedCriterion.Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);
 		}
 
 		public static InventoryChangedCriterion.Conditions items(ItemProvider... itemProviders) {
@@ -104,7 +104,7 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 
 			for(int i = 0; i < itemProviders.length; ++i) {
 				itemPredicates[i] = new ItemPredicate(
-					null, itemProviders[i].getItem(), NumberRange.Integer.ANY, NumberRange.Integer.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY
+					null, itemProviders[i].getItem(), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new EnchantmentPredicate[0], null, NbtPredicate.ANY
 				);
 			}
 
@@ -114,11 +114,11 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			if (!this.occupied.isDummy() || !this.full.isDummy() || !this.empty.isDummy()) {
+			if (!this.field_9629.isDummy() || !this.field_9630.isDummy() || !this.field_9631.isDummy()) {
 				JsonObject jsonObject2 = new JsonObject();
-				jsonObject2.add("occupied", this.occupied.serialize());
-				jsonObject2.add("full", this.full.serialize());
-				jsonObject2.add("empty", this.empty.serialize());
+				jsonObject2.add("occupied", this.field_9629.serialize());
+				jsonObject2.add("full", this.field_9630.serialize());
+				jsonObject2.add("empty", this.field_9631.serialize());
 				jsonObject.add("slots", jsonObject2);
 			}
 
@@ -162,11 +162,11 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 				}
 			}
 
-			if (!this.full.test(i)) {
+			if (!this.field_9630.test(i)) {
 				return false;
-			} else if (!this.empty.test(j)) {
+			} else if (!this.field_9631.test(j)) {
 				return false;
-			} else if (!this.occupied.test(k)) {
+			} else if (!this.field_9629.test(k)) {
 				return false;
 			} else {
 				return list.isEmpty();

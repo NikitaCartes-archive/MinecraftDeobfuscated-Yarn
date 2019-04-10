@@ -5,11 +5,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
@@ -38,12 +36,7 @@ public class TorchBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		Block block = blockState2.getBlock();
-		VoxelShape voxelShape = blockState2.getCollisionShape(viewableWorld, blockPos2).getFace(Direction.UP);
-		boolean bl = !VoxelShapes.matchesAnywhere(BOUNDING_SHAPE, voxelShape, BooleanBiFunction.ONLY_FIRST);
-		return bl && block != Blocks.field_10613;
+		return isSolidSmallSquare(viewableWorld, blockPos.down(), Direction.UP);
 	}
 
 	@Environment(EnvType.CLIENT)

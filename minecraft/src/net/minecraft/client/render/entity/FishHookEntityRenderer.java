@@ -37,8 +37,8 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			float i = 1.0F;
 			float j = 0.5F;
 			float k = 0.5F;
-			GlStateManager.rotatef(180.0F - this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef((float)(this.renderManager.settings.perspective == 2 ? -1 : 1) * -this.renderManager.field_4677, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef(180.0F - this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef((float)(this.renderManager.gameOptions.perspective == 2 ? -1 : 1) * -this.renderManager.cameraPitch, 1.0F, 0.0F, 0.0F);
 			if (this.renderOutlines) {
 				GlStateManager.enableColorMaterial();
 				GlStateManager.setupSolidRenderingTextureCombine(this.getOutlineColor(fishHookEntity));
@@ -63,7 +63,7 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 				l = -l;
 			}
 
-			float m = playerEntity.method_6055(h);
+			float m = playerEntity.getHandSwingProgress(h);
 			float n = MathHelper.sin(MathHelper.sqrt(m) * (float) Math.PI);
 			float o = MathHelper.lerp(h, playerEntity.field_6220, playerEntity.field_6283) * (float) (Math.PI / 180.0);
 			double p = (double)MathHelper.sin(o);
@@ -74,8 +74,8 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 			double u;
 			double v;
 			double w;
-			if ((this.renderManager.settings == null || this.renderManager.settings.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
-				double x = this.renderManager.settings.fov;
+			if ((this.renderManager.gameOptions == null || this.renderManager.gameOptions.perspective <= 0) && playerEntity == MinecraftClient.getInstance().player) {
+				double x = this.renderManager.gameOptions.fov;
 				x /= 100.0;
 				Vec3d vec3d = new Vec3d((double)l * -0.36 * x, -0.045 * x, 0.4);
 				vec3d = vec3d.rotateX(-MathHelper.lerp(h, playerEntity.prevPitch, playerEntity.pitch) * (float) (Math.PI / 180.0));
@@ -90,7 +90,7 @@ public class FishHookEntityRenderer extends EntityRenderer<FishHookEntity> {
 				t = MathHelper.lerp((double)h, playerEntity.prevX, playerEntity.x) - q * r - p * 0.8;
 				u = playerEntity.prevY + (double)playerEntity.getStandingEyeHeight() + (playerEntity.y - playerEntity.prevY) * (double)h - 0.45;
 				v = MathHelper.lerp((double)h, playerEntity.prevZ, playerEntity.z) - p * r + q * 0.8;
-				w = playerEntity.isSneaking() ? -0.1875 : 0.0;
+				w = playerEntity.isInSneakingPose() ? -0.1875 : 0.0;
 			}
 
 			double x = MathHelper.lerp((double)h, fishHookEntity.prevX, fishHookEntity.x);

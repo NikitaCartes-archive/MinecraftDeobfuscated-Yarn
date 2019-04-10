@@ -45,7 +45,7 @@ public class ContainerScreenRegistry {
 		if (containerType == null) {
 			LOGGER.warn("Trying to open invalid screen with name: {}", textComponent.getString());
 		} else {
-			ContainerScreenRegistry.GuiFactory<T, ?> guiFactory = method_17540(containerType);
+			ContainerScreenRegistry.GuiFactory<T, ?> guiFactory = getFactory(containerType);
 			if (guiFactory == null) {
 				LOGGER.warn("Failed to create screen for menu type: {}", Registry.CONTAINER.getId(containerType));
 			} else {
@@ -55,7 +55,7 @@ public class ContainerScreenRegistry {
 	}
 
 	@Nullable
-	private static <T extends Container> ContainerScreenRegistry.GuiFactory<T, ?> method_17540(ContainerType<T> containerType) {
+	private static <T extends Container> ContainerScreenRegistry.GuiFactory<T, ?> getFactory(ContainerType<T> containerType) {
 		return (ContainerScreenRegistry.GuiFactory<T, ?>)GUI_FACTORIES.get(containerType);
 	}
 

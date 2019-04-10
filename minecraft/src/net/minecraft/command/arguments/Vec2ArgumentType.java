@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Vec2f;
@@ -23,17 +23,17 @@ public class Vec2ArgumentType implements ArgumentType<PosArgument> {
 	public static final SimpleCommandExceptionType INCOMPLETE_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableTextComponent("argument.pos2d.incomplete")
 	);
-	private final boolean field_10744;
+	private final boolean centerIntegers;
 
 	public Vec2ArgumentType(boolean bl) {
-		this.field_10744 = bl;
+		this.centerIntegers = bl;
 	}
 
 	public static Vec2ArgumentType create() {
 		return new Vec2ArgumentType(true);
 	}
 
-	public static Vec2f getVec2Argument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Vec2f getVec2(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		Vec3d vec3d = commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsolutePos(commandContext.getSource());
 		return new Vec2f((float)vec3d.x, (float)vec3d.z);
 	}
@@ -43,10 +43,10 @@ public class Vec2ArgumentType implements ArgumentType<PosArgument> {
 		if (!stringReader.canRead()) {
 			throw INCOMPLETE_EXCEPTION.createWithContext(stringReader);
 		} else {
-			CoordinateArgument coordinateArgument = CoordinateArgument.parse(stringReader, this.field_10744);
+			CoordinateArgument coordinateArgument = CoordinateArgument.parse(stringReader, this.centerIntegers);
 			if (stringReader.canRead() && stringReader.peek() == ' ') {
 				stringReader.skip();
-				CoordinateArgument coordinateArgument2 = CoordinateArgument.parse(stringReader, this.field_10744);
+				CoordinateArgument coordinateArgument2 = CoordinateArgument.parse(stringReader, this.centerIntegers);
 				return new DefaultPosArgument(coordinateArgument, new CoordinateArgument(true, 0.0), coordinateArgument2);
 			} else {
 				stringReader.setCursor(i);
@@ -65,10 +65,10 @@ public class Vec2ArgumentType implements ArgumentType<PosArgument> {
 			if (!string.isEmpty() && string.charAt(0) == '^') {
 				collection = Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL);
 			} else {
-				collection = ((CommandSource)commandContext.getSource()).method_17772();
+				collection = ((CommandSource)commandContext.getSource()).getPositionSuggestions();
 			}
 
-			return CommandSource.method_9252(string, collection, suggestionsBuilder, ServerCommandManager.getCommandValidator(this::method_9725));
+			return CommandSource.method_9252(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9725));
 		}
 	}
 

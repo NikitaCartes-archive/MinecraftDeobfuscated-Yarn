@@ -47,7 +47,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static SetStewEffectLootFunction.Builder create() {
+	public static SetStewEffectLootFunction.Builder builder() {
 		return new SetStewEffectLootFunction.Builder();
 	}
 

@@ -52,7 +52,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 }

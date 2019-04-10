@@ -23,9 +23,9 @@ public class IronGolemEntityRenderer extends MobEntityRenderer<IronGolemEntity, 
 
 	protected void method_3986(IronGolemEntity ironGolemEntity, float f, float g, float h) {
 		super.setupTransforms(ironGolemEntity, f, g, h);
-		if (!((double)ironGolemEntity.field_6225 < 0.01)) {
+		if (!((double)ironGolemEntity.limbDistance < 0.01)) {
 			float i = 13.0F;
-			float j = ironGolemEntity.field_6249 - ironGolemEntity.field_6225 * (1.0F - h) + 6.0F;
+			float j = ironGolemEntity.limbAngle - ironGolemEntity.limbDistance * (1.0F - h) + 6.0F;
 			float k = (Math.abs(j % 13.0F - 6.5F) - 3.25F) / 3.25F;
 			GlStateManager.rotatef(6.5F * k, 0.0F, 0.0F, 1.0F);
 		}

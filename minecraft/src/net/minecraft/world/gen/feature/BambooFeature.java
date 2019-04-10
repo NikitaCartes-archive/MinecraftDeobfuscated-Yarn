@@ -11,6 +11,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
@@ -46,7 +47,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 							int n = l - blockPos.getX();
 							int o = m - blockPos.getZ();
 							if (n * n + o * o <= k * k) {
-								mutable2.set(l, blockPos.getY() - 1, m);
+								mutable2.set(l, iWorld.getTop(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
 								if (iWorld.getBlockState(mutable2).getBlock().matches(BlockTags.field_15464)) {
 									iWorld.setBlockState(mutable2, Blocks.field_10520.getDefaultState(), 2);
 								}

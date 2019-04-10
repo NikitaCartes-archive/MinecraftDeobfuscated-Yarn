@@ -290,7 +290,9 @@ public class TaigaVillageData {
 					new Identifier("village/taiga/villagers"),
 					new Identifier("empty"),
 					ImmutableList.of(
-						new Pair<>(new SinglePoolElement("village/taiga/villagers/nitwit"), 1), new Pair<>(new SinglePoolElement("village/taiga/villagers/unemployed"), 10)
+						new Pair<>(new SinglePoolElement("village/taiga/villagers/nitwit"), 1),
+						new Pair<>(new SinglePoolElement("village/taiga/villagers/baby"), 1),
+						new Pair<>(new SinglePoolElement("village/taiga/villagers/unemployed"), 10)
 					),
 					StructurePool.Projection.RIGID
 				)

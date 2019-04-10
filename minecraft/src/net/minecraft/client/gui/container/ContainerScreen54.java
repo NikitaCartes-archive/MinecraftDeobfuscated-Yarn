@@ -21,29 +21,29 @@ public class ContainerScreen54 extends ContainerScreen<GenericContainer> impleme
 		int i = 222;
 		int j = 114;
 		this.rows = genericContainer.getRows();
-		this.height = 114 + this.rows * 18;
+		this.containerHeight = 114 + this.rows * 18;
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
+		this.renderBackground();
 		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+		this.font.draw(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
-		int k = (this.screenWidth - this.width) / 2;
-		int l = (this.screenHeight - this.height) / 2;
-		this.drawTexturedRect(k, l, 0, 0, this.width, this.rows * 18 + 17);
-		this.drawTexturedRect(k, l + this.rows * 18 + 17, 0, 126, this.width, 96);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		int k = (this.width - this.containerWidth) / 2;
+		int l = (this.height - this.containerHeight) / 2;
+		this.blit(k, l, 0, 0, this.containerWidth, this.rows * 18 + 17);
+		this.blit(k, l + this.rows * 18 + 17, 0, 126, this.containerWidth, 96);
 	}
 }

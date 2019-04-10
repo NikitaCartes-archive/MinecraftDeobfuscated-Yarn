@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.menu;
 
+import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -13,61 +14,57 @@ import net.minecraft.text.TranslatableTextComponent;
 @Environment(EnvType.CLIENT)
 public class DirectConnectServerScreen extends Screen {
 	private ButtonWidget selectServerButton;
-	private final Screen parent;
 	private final ServerEntry serverEntry;
 	private TextFieldWidget addressField;
+	private final BooleanConsumer field_19235;
 
-	public DirectConnectServerScreen(Screen screen, ServerEntry serverEntry) {
+	public DirectConnectServerScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
 		super(new TranslatableTextComponent("selectServer.direct"));
-		this.parent = screen;
 		this.serverEntry = serverEntry;
+		this.field_19235 = booleanConsumer;
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.addressField.tick();
 	}
 
 	@Override
-	protected void onInitialized() {
-		this.client.keyboard.enableRepeatEvents(true);
+	protected void init() {
+		this.minecraft.keyboard.enableRepeatEvents(true);
 		this.selectServerButton = this.addButton(
-			new ButtonWidget(
-				this.screenWidth / 2 - 100, this.screenHeight / 4 + 96 + 12, 200, 20, I18n.translate("selectServer.select"), buttonWidget -> this.saveAndClose()
-			)
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20, I18n.translate("selectServer.select"), buttonWidget -> this.saveAndClose())
 		);
 		this.addButton(
-			new ButtonWidget(
-				this.screenWidth / 2 - 100, this.screenHeight / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.parent.confirmResult(false, 0)
-			)
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.field_19235.accept(false))
 		);
-		this.addressField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 116, 200, 20);
+		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20);
 		this.addressField.setMaxLength(128);
 		this.addressField.setFocused(true);
-		this.addressField.setText(this.client.options.lastServer);
+		this.addressField.setText(this.minecraft.options.lastServer);
 		this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
-		this.listeners.add(this.addressField);
-		this.focusOn(this.addressField);
+		this.children.add(this.addressField);
+		this.method_20085(this.addressField);
 		this.onAddressFieldChanged();
 	}
 
 	@Override
-	public void onScaleChanged(MinecraftClient minecraftClient, int i, int j) {
+	public void resize(MinecraftClient minecraftClient, int i, int j) {
 		String string = this.addressField.getText();
-		this.initialize(minecraftClient, i, j);
+		this.init(minecraftClient, i, j);
 		this.addressField.setText(string);
 	}
 
 	private void saveAndClose() {
 		this.serverEntry.address = this.addressField.getText();
-		this.parent.confirmResult(true, 0);
+		this.field_19235.accept(true);
 	}
 
 	@Override
-	public void onClosed() {
-		this.client.keyboard.enableRepeatEvents(false);
-		this.client.options.lastServer = this.addressField.getText();
-		this.client.options.write();
+	public void removed() {
+		this.minecraft.keyboard.enableRepeatEvents(false);
+		this.minecraft.options.lastServer = this.addressField.getText();
+		this.minecraft.options.write();
 	}
 
 	private void onAddressFieldChanged() {
@@ -76,9 +73,9 @@ public class DirectConnectServerScreen extends Screen {
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 20, 16777215);
-		this.drawString(this.fontRenderer, I18n.translate("addServer.enterIp"), this.screenWidth / 2 - 100, 100, 10526880);
+		this.renderBackground();
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 16777215);
+		this.drawString(this.font, I18n.translate("addServer.enterIp"), this.width / 2 - 100, 100, 10526880);
 		this.addressField.render(i, j, f);
 		super.render(i, j, f);
 	}

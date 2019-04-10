@@ -7,9 +7,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.util.registry.Registry;
 
 public abstract class AbstractRuleTest {
-	AbstractRuleTest() {
-	}
-
 	public abstract boolean test(BlockState blockState, Random random);
 
 	public <T> Dynamic<T> method_16767(DynamicOps<T> dynamicOps) {

@@ -157,7 +157,7 @@ public abstract class AbstractFurnaceContainer extends CraftingContainer<Invento
 	}
 
 	protected boolean isSmeltable(ItemStack itemStack) {
-		return this.world.getRecipeManager().get(this.recipeType, new BasicInventory(itemStack), this.world).isPresent();
+		return this.world.getRecipeManager().getFirstMatch(this.recipeType, new BasicInventory(itemStack), this.world).isPresent();
 	}
 
 	protected boolean isFuel(ItemStack itemStack) {

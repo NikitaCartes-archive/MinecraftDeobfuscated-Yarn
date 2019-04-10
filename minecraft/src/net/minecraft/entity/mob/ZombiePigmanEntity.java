@@ -7,8 +7,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.ZombieRaiseArmsGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -41,7 +41,6 @@ public class ZombiePigmanEntity extends ZombieEntity {
 
 	public ZombiePigmanEntity(EntityType<? extends ZombiePigmanEntity> entityType, World world) {
 		super(entityType, world);
-		this.fireImmune = true;
 		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
 	}
 
@@ -54,11 +53,11 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	protected void method_7208() {
+	protected void initCustomGoals() {
 		this.goalSelector.add(2, new ZombieRaiseArmsGoal(this, 1.0, false));
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
-		this.targetSelector.add(1, new ZombiePigmanEntity.class_1592(this));
-		this.targetSelector.add(2, new ZombiePigmanEntity.class_1591(this));
+		this.targetSelector.add(1, new ZombiePigmanEntity.AvoidZombiesGoal(this));
+		this.targetSelector.add(2, new ZombiePigmanEntity.FollowPlayerIfAngryGoal(this));
 	}
 
 	@Override
@@ -70,14 +69,14 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	protected boolean method_7209() {
+	protected boolean canConvertInWater() {
 		return false;
 	}
 
 	@Override
 	protected void mobTick() {
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
-		if (this.method_7079()) {
+		if (this.isAngry()) {
 			if (!this.isChild() && !entityAttributeInstance.hasModifier(field_7307)) {
 				entityAttributeInstance.addModifier(field_7307);
 			}
@@ -92,9 +91,9 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		}
 
 		if (this.anger > 0 && this.angerTarget != null && this.getAttacker() == null) {
-			PlayerEntity playerEntity = this.world.method_18470(this.angerTarget);
+			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
 			this.setAttacker(playerEntity);
-			this.field_6258 = playerEntity;
+			this.attackingPlayer = playerEntity;
 			this.playerHitTimer = this.getLastAttackedTime();
 		}
 
@@ -107,8 +106,8 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this) && !viewableWorld.isInFluid(this.getBoundingBox());
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
 	}
 
 	@Override
@@ -129,10 +128,10 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		String string = compoundTag.getString("HurtBy");
 		if (!string.isEmpty()) {
 			this.angerTarget = UUID.fromString(string);
-			PlayerEntity playerEntity = this.world.method_18470(this.angerTarget);
+			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.angerTarget);
 			this.setAttacker(playerEntity);
 			if (playerEntity != null) {
-				this.field_6258 = playerEntity;
+				this.attackingPlayer = playerEntity;
 				this.playerHitTimer = this.getLastAttackedTime();
 			}
 		}
@@ -160,7 +159,7 @@ public class ZombiePigmanEntity extends ZombieEntity {
 		}
 	}
 
-	public boolean method_7079() {
+	public boolean isAngry() {
 		return this.anger > 0;
 	}
 
@@ -195,33 +194,33 @@ public class ZombiePigmanEntity extends ZombieEntity {
 	}
 
 	@Override
-	public boolean method_7076(PlayerEntity playerEntity) {
-		return this.method_7079();
+	public boolean isAngryAt(PlayerEntity playerEntity) {
+		return this.isAngry();
 	}
 
-	static class class_1591 extends FollowTargetGoal<PlayerEntity> {
-		public class_1591(ZombiePigmanEntity zombiePigmanEntity) {
+	static class AvoidZombiesGoal extends RevengeGoal {
+		public AvoidZombiesGoal(ZombiePigmanEntity zombiePigmanEntity) {
+			super(zombiePigmanEntity);
+			this.setGroupRevenge(new Class[]{ZombieEntity.class});
+		}
+
+		@Override
+		protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
+			super.setMobEntityTarget(mobEntity, livingEntity);
+			if (mobEntity instanceof ZombiePigmanEntity) {
+				((ZombiePigmanEntity)mobEntity).copyEntityData(livingEntity);
+			}
+		}
+	}
+
+	static class FollowPlayerIfAngryGoal extends FollowTargetGoal<PlayerEntity> {
+		public FollowPlayerIfAngryGoal(ZombiePigmanEntity zombiePigmanEntity) {
 			super(zombiePigmanEntity, PlayerEntity.class, true);
 		}
 
 		@Override
 		public boolean canStart() {
-			return ((ZombiePigmanEntity)this.entity).method_7079() && super.canStart();
-		}
-	}
-
-	static class class_1592 extends AvoidGoal {
-		public class_1592(ZombiePigmanEntity zombiePigmanEntity) {
-			super(zombiePigmanEntity);
-			this.method_6318(new Class[]{ZombieEntity.class});
-		}
-
-		@Override
-		protected void method_6319(MobEntity mobEntity, LivingEntity livingEntity) {
-			super.method_6319(mobEntity, livingEntity);
-			if (mobEntity instanceof ZombiePigmanEntity) {
-				((ZombiePigmanEntity)mobEntity).copyEntityData(livingEntity);
-			}
+			return ((ZombiePigmanEntity)this.entity).isAngry() && super.canStart();
 		}
 	}
 }

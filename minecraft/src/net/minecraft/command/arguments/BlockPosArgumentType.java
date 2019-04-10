@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
@@ -29,7 +29,7 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 		return new BlockPosArgumentType();
 	}
 
-	public static BlockPos getValidPosArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static BlockPos getLoadedBlockPos(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		BlockPos blockPos = commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
 		if (!commandContext.getSource().getWorld().isBlockLoaded(blockPos)) {
 			throw UNLOADED_EXCEPTION.create();
@@ -43,7 +43,7 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 		}
 	}
 
-	public static BlockPos getPosArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static BlockPos getBlockPos(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
 	}
 
@@ -61,10 +61,10 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 			if (!string.isEmpty() && string.charAt(0) == '^') {
 				collection = Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL);
 			} else {
-				collection = ((CommandSource)commandContext.getSource()).method_17771();
+				collection = ((CommandSource)commandContext.getSource()).getBlockPositionSuggestions();
 			}
 
-			return CommandSource.method_9260(string, collection, suggestionsBuilder, ServerCommandManager.getCommandValidator(this::method_9699));
+			return CommandSource.method_9260(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9699));
 		}
 	}
 

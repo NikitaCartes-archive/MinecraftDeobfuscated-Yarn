@@ -48,7 +48,7 @@ public class FluidRenderer {
 		BlockPos blockPos2 = blockPos.offset(direction);
 		BlockState blockState = blockView.getBlockState(blockPos2);
 		if (blockState.isFullBoundsCubeForCulling()) {
-			VoxelShape voxelShape = VoxelShapes.cube(0.0, 0.0, 0.0, 1.0, (double)f, 1.0);
+			VoxelShape voxelShape = VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)f, 1.0);
 			VoxelShape voxelShape2 = blockState.method_11615(blockView, blockPos2);
 			return VoxelShapes.method_1083(voxelShape, voxelShape2, direction);
 		} else {

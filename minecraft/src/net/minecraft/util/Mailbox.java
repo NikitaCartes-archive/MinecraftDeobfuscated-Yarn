@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 
 public interface Mailbox<T, F> {
 	@Nullable
-	F getNext();
+	F poll();
 
 	boolean add(T object);
 
@@ -74,7 +74,7 @@ public interface Mailbox<T, F> {
 
 		@Nullable
 		@Override
-		public T getNext() {
+		public T poll() {
 			return (T)this.queue.poll();
 		}
 

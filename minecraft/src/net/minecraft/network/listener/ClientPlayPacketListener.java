@@ -9,6 +9,8 @@ import net.minecraft.client.network.packet.BossBarS2CPacket;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.client.network.packet.ChunkDataS2CPacket;
 import net.minecraft.client.network.packet.ChunkDeltaUpdateS2CPacket;
+import net.minecraft.client.network.packet.ChunkLoadDistanceS2CPacket;
+import net.minecraft.client.network.packet.ChunkRenderDistanceCenterS2CPacket;
 import net.minecraft.client.network.packet.CombatEventS2CPacket;
 import net.minecraft.client.network.packet.CommandSuggestionsS2CPacket;
 import net.minecraft.client.network.packet.CommandTreeS2CPacket;
@@ -72,7 +74,7 @@ import net.minecraft.client.network.packet.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.client.network.packet.ScoreboardPlayerUpdateS2CPacket;
 import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
 import net.minecraft.client.network.packet.SetCameraEntityS2CPacket;
-import net.minecraft.client.network.packet.SetVillagerRecipesPacket;
+import net.minecraft.client.network.packet.SetTradeOffersPacket;
 import net.minecraft.client.network.packet.SignEditorOpenS2CPacket;
 import net.minecraft.client.network.packet.StatisticsS2CPacket;
 import net.minecraft.client.network.packet.StopSoundS2CPacket;
@@ -261,5 +263,9 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onOpenContainer(OpenContainerPacket openContainerPacket);
 
-	void onSetVillagerRecipes(SetVillagerRecipesPacket setVillagerRecipesPacket);
+	void onSetTradeOffers(SetTradeOffersPacket setTradeOffersPacket);
+
+	void handleChunkLoadDistance(ChunkLoadDistanceS2CPacket chunkLoadDistanceS2CPacket);
+
+	void handleChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket chunkRenderDistanceCenterS2CPacket);
 }

@@ -31,7 +31,7 @@ public class TagEntry extends LeafEntry {
 		this.name.values().forEach(item -> consumer.accept(new ItemStack(item)));
 	}
 
-	private boolean method_447(LootContext lootContext, Consumer<LootChoice> consumer) {
+	private boolean grow(LootContext lootContext, Consumer<LootChoice> consumer) {
 		if (!this.test(lootContext)) {
 			return false;
 		} else {
@@ -50,11 +50,11 @@ public class TagEntry extends LeafEntry {
 
 	@Override
 	public boolean expand(LootContext lootContext, Consumer<LootChoice> consumer) {
-		return this.expand ? this.method_447(lootContext, consumer) : super.expand(lootContext, consumer);
+		return this.expand ? this.grow(lootContext, consumer) : super.expand(lootContext, consumer);
 	}
 
-	public static LeafEntry.Builder<?> create(Tag<Item> tag) {
-		return create((i, j, lootConditions, lootFunctions) -> new TagEntry(tag, true, i, j, lootConditions, lootFunctions));
+	public static LeafEntry.Builder<?> builder(Tag<Item> tag) {
+		return builder((i, j, lootConditions, lootFunctions) -> new TagEntry(tag, true, i, j, lootConditions, lootFunctions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<TagEntry> {

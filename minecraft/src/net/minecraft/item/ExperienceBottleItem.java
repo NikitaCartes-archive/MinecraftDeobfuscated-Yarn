@@ -35,7 +35,7 @@ public class ExperienceBottleItem extends Item {
 		);
 		if (!world.isClient) {
 			ThrownExperienceBottleEntity thrownExperienceBottleEntity = new ThrownExperienceBottleEntity(world, playerEntity);
-			thrownExperienceBottleEntity.method_16940(itemStack);
+			thrownExperienceBottleEntity.setItem(itemStack);
 			thrownExperienceBottleEntity.method_19207(playerEntity, playerEntity.pitch, playerEntity.yaw, -20.0F, 0.7F, 1.0F);
 			world.spawnEntity(thrownExperienceBottleEntity);
 		}

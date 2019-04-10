@@ -21,9 +21,9 @@ public class WaterBubbleParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.maxAge-- <= 0) {
 			this.markDead();
 		} else {
@@ -32,7 +32,7 @@ public class WaterBubbleParticle extends SpriteBillboardParticle {
 			this.velocityX *= 0.85F;
 			this.velocityY *= 0.85F;
 			this.velocityZ *= 0.85F;
-			if (!this.world.getFluidState(new BlockPos(this.posX, this.posY, this.posZ)).matches(FluidTags.field_15517)) {
+			if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).matches(FluidTags.field_15517)) {
 				this.markDead();
 			}
 		}
@@ -53,7 +53,7 @@ public class WaterBubbleParticle extends SpriteBillboardParticle {
 
 		public Particle method_3011(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			WaterBubbleParticle waterBubbleParticle = new WaterBubbleParticle(world, d, e, f, g, h, i);
-			waterBubbleParticle.method_18140(this.field_17786);
+			waterBubbleParticle.setSprite(this.field_17786);
 			return waterBubbleParticle;
 		}
 	}

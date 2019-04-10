@@ -24,7 +24,6 @@ import net.minecraft.world.loot.LootTables;
 public class MagmaCubeEntity extends SlimeEntity {
 	public MagmaCubeEntity(EntityType<? extends MagmaCubeEntity> entityType, World world) {
 		super(entityType, world);
-		this.fireImmune = true;
 	}
 
 	@Override
@@ -39,13 +38,13 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this) && !viewableWorld.isInFluid(this.getBoundingBox());
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this) && !viewableWorld.intersectsFluid(this.getBoundingBox());
 	}
 
 	@Override
-	protected void method_7161(int i, boolean bl) {
-		super.method_7161(i, bl);
+	protected void setSize(int i, boolean bl) {
+		super.setSize(i, bl);
 		this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue((double)(i * 3));
 	}
 
@@ -56,7 +55,7 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	public float method_5718() {
+	public float getBrightnessAtEyes() {
 		return 1.0F;
 	}
 
@@ -76,13 +75,13 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected int method_7154() {
-		return super.method_7154() * 4;
+	protected int getTicksUntilNextJump() {
+		return super.getTicksUntilNextJump() * 4;
 	}
 
 	@Override
-	protected void method_7156() {
-		this.sizeX *= 0.9F;
+	protected void updateStretch() {
+		this.targetStretch *= 0.9F;
 	}
 
 	@Override
@@ -93,13 +92,13 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected void method_6010(Tag<Fluid> tag) {
+	protected void swimUpward(Tag<Fluid> tag) {
 		if (tag == FluidTags.field_15518) {
 			Vec3d vec3d = this.getVelocity();
 			this.setVelocity(vec3d.x, (double)(0.22F + (float)this.getSize() * 0.05F), vec3d.z);
 			this.velocityDirty = true;
 		} else {
-			super.method_6010(tag);
+			super.swimUpward(tag);
 		}
 	}
 
@@ -108,13 +107,13 @@ public class MagmaCubeEntity extends SlimeEntity {
 	}
 
 	@Override
-	protected boolean method_7163() {
-		return this.method_6034();
+	protected boolean isBig() {
+		return this.canMoveVoluntarily();
 	}
 
 	@Override
-	protected int method_7158() {
-		return super.method_7158() + 2;
+	protected int getDamageAmount() {
+		return super.getDamageAmount() + 2;
 	}
 
 	@Override

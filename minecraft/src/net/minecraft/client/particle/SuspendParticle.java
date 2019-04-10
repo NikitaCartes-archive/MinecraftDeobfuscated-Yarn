@@ -34,9 +34,9 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.maxAge-- <= 0) {
 			this.markDead();
 		} else {
@@ -58,7 +58,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 		public Particle method_3110(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
 			suspendParticle.setColor(0.3F, 0.5F, 1.0F);
-			suspendParticle.method_18140(this.field_17881);
+			suspendParticle.setSprite(this.field_17881);
 			suspendParticle.setColorAlpha(1.0F - world.random.nextFloat() * 0.7F);
 			suspendParticle.setMaxAge(suspendParticle.getMaxAge() / 2);
 			return suspendParticle;
@@ -75,7 +75,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 		public Particle method_3111(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
-			suspendParticle.method_18140(this.field_17882);
+			suspendParticle.setSprite(this.field_17882);
 			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
 			return suspendParticle;
 		}
@@ -91,7 +91,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 		public Particle method_3112(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
-			suspendParticle.method_18140(this.field_17883);
+			suspendParticle.setSprite(this.field_17883);
 			return suspendParticle;
 		}
 	}
@@ -106,7 +106,7 @@ public class SuspendParticle extends SpriteBillboardParticle {
 
 		public Particle method_18044(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			SuspendParticle suspendParticle = new SuspendParticle(world, d, e, f, g, h, i);
-			suspendParticle.method_18140(this.field_17880);
+			suspendParticle.setSprite(this.field_17880);
 			suspendParticle.setColor(1.0F, 1.0F, 1.0F);
 			suspendParticle.setMaxAge(3 + world.getRandom().nextInt(5));
 			return suspendParticle;

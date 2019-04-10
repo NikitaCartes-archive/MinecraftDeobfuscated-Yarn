@@ -2,7 +2,7 @@ package net.minecraft.util.shape;
 
 import it.unimi.dsi.fastutil.doubles.AbstractDoubleList;
 
-class FractionalDoubleList extends AbstractDoubleList {
+public class FractionalDoubleList extends AbstractDoubleList {
 	private final int sectionCount;
 
 	FractionalDoubleList(int i) {

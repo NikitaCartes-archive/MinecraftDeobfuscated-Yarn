@@ -35,11 +35,11 @@ public class EntityPropertiesLootCondition implements LootCondition {
 		return blockPos != null && this.predicate.test(lootContext.getWorld(), new Vec3d(blockPos), entity);
 	}
 
-	public static LootCondition.Builder method_15972(LootContext.EntityTarget entityTarget) {
-		return method_917(entityTarget, EntityPredicate.Builder.create());
+	public static LootCondition.Builder create(LootContext.EntityTarget entityTarget) {
+		return builder(entityTarget, EntityPredicate.Builder.create());
 	}
 
-	public static LootCondition.Builder method_917(LootContext.EntityTarget entityTarget, EntityPredicate.Builder builder) {
+	public static LootCondition.Builder builder(LootContext.EntityTarget entityTarget, EntityPredicate.Builder builder) {
 		return () -> new EntityPropertiesLootCondition(builder.build(), entityTarget);
 	}
 

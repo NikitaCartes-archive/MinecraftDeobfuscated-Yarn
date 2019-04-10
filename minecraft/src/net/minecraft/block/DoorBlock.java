@@ -106,7 +106,7 @@ public class DoorBlock extends Block {
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
 			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
-			world.playEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
+			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			ItemStack itemStack = playerEntity.getMainHandStack();
 			if (!world.isClient && !playerEntity.isCreative()) {
 				Block.dropStacks(blockState, world, blockPos, null, playerEntity, itemStack);
@@ -143,7 +143,7 @@ public class DoorBlock extends Block {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		if (blockPos.getY() < 255 && itemPlacementContext.getWorld().getBlockState(blockPos.up()).method_11587(itemPlacementContext)) {
+		if (blockPos.getY() < 255 && itemPlacementContext.getWorld().getBlockState(blockPos.up()).canReplace(itemPlacementContext)) {
 			World world = itemPlacementContext.getWorld();
 			boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
 			return this.getDefaultState()
@@ -208,7 +208,7 @@ public class DoorBlock extends Block {
 		} else {
 			blockState = blockState.method_11572(OPEN);
 			world.setBlockState(blockPos, blockState, 10);
-			world.playEvent(playerEntity, blockState.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
+			world.playLevelEvent(playerEntity, blockState.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
 			return true;
 		}
 	}
@@ -222,15 +222,15 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		boolean bl = world.isReceivingRedstonePower(blockPos)
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+		boolean bl2 = world.isReceivingRedstonePower(blockPos)
 			|| world.isReceivingRedstonePower(blockPos.offset(blockState.get(HALF) == DoubleBlockHalf.field_12607 ? Direction.UP : Direction.DOWN));
-		if (block != this && bl != blockState.get(POWERED)) {
-			if (bl != blockState.get(OPEN)) {
-				this.playOpenCloseSound(world, blockPos, bl);
+		if (block != this && bl2 != blockState.get(POWERED)) {
+			if (bl2 != blockState.get(OPEN)) {
+				this.playOpenCloseSound(world, blockPos, bl2);
 			}
 
-			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), 2);
+			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl2)).with(OPEN, Boolean.valueOf(bl2)), 2);
 		}
 	}
 
@@ -239,14 +239,14 @@ public class DoorBlock extends Block {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		if (blockState.get(HALF) == DoubleBlockHalf.field_12607) {
-			return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP);
+			return Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP);
 		} else {
 			return blockState2.getBlock() == this;
 		}
 	}
 
 	private void playOpenCloseSound(World world, BlockPos blockPos, boolean bl) {
-		world.playEvent(null, bl ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
+		world.playLevelEvent(null, bl ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
 	}
 
 	@Override

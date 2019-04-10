@@ -1,5 +1,6 @@
 package net.minecraft.item;
 
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -13,6 +14,7 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 		super(
 			world,
 			null,
+			Hand.MAIN,
 			itemStack,
 			new BlockHitResult(new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5), direction2, blockPos, false)
 		);
@@ -26,7 +28,7 @@ public class AutomaticItemPlacementContext extends ItemPlacementContext {
 
 	@Override
 	public boolean canPlace() {
-		return this.world.getBlockState(this.hitResult.getBlockPos()).method_11587(this);
+		return this.world.getBlockState(this.hitResult.getBlockPos()).canReplace(this);
 	}
 
 	@Override

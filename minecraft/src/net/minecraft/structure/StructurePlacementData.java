@@ -26,8 +26,6 @@ public class StructurePlacementData {
 	@Nullable
 	private Random random;
 	@Nullable
-	private Long seed;
-	@Nullable
 	private Integer field_15572;
 	private int field_15575;
 	private final List<StructureProcessor> processors = Lists.<StructureProcessor>newArrayList();
@@ -43,7 +41,6 @@ public class StructurePlacementData {
 		structurePlacementData.boundingBox = this.boundingBox;
 		structurePlacementData.placeFluids = this.placeFluids;
 		structurePlacementData.random = this.random;
-		structurePlacementData.seed = this.seed;
 		structurePlacementData.field_15572 = this.field_15572;
 		structurePlacementData.field_15575 = this.field_15575;
 		structurePlacementData.processors.addAll(this.processors);
@@ -78,11 +75,6 @@ public class StructurePlacementData {
 
 	public StructurePlacementData setBoundingBox(MutableIntBoundingBox mutableIntBoundingBox) {
 		this.boundingBox = mutableIntBoundingBox;
-		return this;
-	}
-
-	public StructurePlacementData setSeed(@Nullable Long long_) {
-		this.seed = long_;
 		return this;
 	}
 
@@ -126,8 +118,6 @@ public class StructurePlacementData {
 	public Random getRandom(@Nullable BlockPos blockPos) {
 		if (this.random != null) {
 			return this.random;
-		} else if (this.seed != null) {
-			return this.seed == 0L ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(this.seed);
 		} else {
 			return blockPos == null ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(MathHelper.hashCode(blockPos));
 		}

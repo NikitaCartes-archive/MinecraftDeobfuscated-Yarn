@@ -1,6 +1,5 @@
 package net.minecraft.world;
 
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import javax.annotation.Nullable;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
@@ -163,7 +163,7 @@ public class WorldSaveHandler implements PlayerSaveHandler {
 
 		if (compoundTag != null) {
 			int i = compoundTag.containsKey("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
-			playerEntity.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
+			playerEntity.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.field_19213, compoundTag, i));
 		}
 
 		return compoundTag;

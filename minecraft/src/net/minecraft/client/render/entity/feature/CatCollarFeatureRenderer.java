@@ -21,14 +21,14 @@ public class CatCollarFeatureRenderer extends FeatureRenderer<CatEntity, CatEnti
 			this.bindTexture(field_16260);
 			float[] fs = catEntity.getCollarColor().getColorComponents();
 			GlStateManager.color3f(fs[0], fs[1], fs[2]);
-			this.getModel().method_17081(this.field_16261);
+			this.getModel().copyStateTo(this.field_16261);
 			this.field_16261.method_17074(catEntity, f, g, h);
 			this.field_16261.render(catEntity, f, g, i, j, k, l);
 		}
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 }

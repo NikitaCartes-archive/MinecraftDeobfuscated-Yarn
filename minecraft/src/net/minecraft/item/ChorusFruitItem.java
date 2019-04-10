@@ -28,7 +28,7 @@ public class ChorusFruitItem extends Item {
 					livingEntity.stopRiding();
 				}
 
-				if (livingEntity.method_6082(g, h, j, true)) {
+				if (livingEntity.teleport(g, h, j, true)) {
 					world.playSound(null, d, e, f, SoundEvents.field_14890, SoundCategory.field_15248, 1.0F, 1.0F);
 					livingEntity.playSound(SoundEvents.field_14890, 1.0F, 1.0F);
 					break;

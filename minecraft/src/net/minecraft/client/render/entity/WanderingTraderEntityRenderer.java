@@ -5,16 +5,16 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
 import net.minecraft.client.render.entity.feature.VillagerHeldItemFeatureRenderer;
-import net.minecraft.client.render.entity.model.VillagerEntityModel;
+import net.minecraft.client.render.entity.model.VillagerResemblingModel;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTraderEntity, VillagerEntityModel<WanderingTraderEntity>> {
+public class WanderingTraderEntityRenderer extends MobEntityRenderer<WanderingTraderEntity, VillagerResemblingModel<WanderingTraderEntity>> {
 	private static final Identifier TEXTURE = new Identifier("textures/entity/wandering_trader.png");
 
 	public WanderingTraderEntityRenderer(EntityRenderDispatcher entityRenderDispatcher) {
-		super(entityRenderDispatcher, new VillagerEntityModel<>(0.0F), 0.5F);
+		super(entityRenderDispatcher, new VillagerResemblingModel<>(0.0F), 0.5F);
 		this.addFeature(new HeadFeatureRenderer<>(this));
 		this.addFeature(new VillagerHeldItemFeatureRenderer<>(this));
 	}

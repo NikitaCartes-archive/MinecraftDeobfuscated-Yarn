@@ -24,9 +24,9 @@ public class EntityPosWrapper implements LookTarget {
 	}
 
 	@Override
-	public boolean method_18990(LivingEntity livingEntity) {
-		Optional<List<LivingEntity>> optional = livingEntity.getBrain().getMemory(MemoryModuleType.field_18442);
-		return this.entity.isValid() && optional.isPresent() && ((List)optional.get()).contains(this.entity);
+	public boolean isSeenBy(LivingEntity livingEntity) {
+		Optional<List<LivingEntity>> optional = livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18442);
+		return this.entity.isAlive() && optional.isPresent() && ((List)optional.get()).contains(this.entity);
 	}
 
 	public String toString() {

@@ -62,7 +62,7 @@ public class DolphinHeldItemFeatureRenderer extends FeatureRenderer<DolphinEntit
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

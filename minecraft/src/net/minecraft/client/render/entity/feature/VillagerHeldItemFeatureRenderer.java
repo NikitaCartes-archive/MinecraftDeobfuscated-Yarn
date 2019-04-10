@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderLayer;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.entity.model.VillagerEntityModel;
+import net.minecraft.client.render.entity.model.VillagerResemblingModel;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.entity.EquipmentSlot;
@@ -15,10 +15,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
-public class VillagerHeldItemFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, VillagerEntityModel<T>> {
+public class VillagerHeldItemFeatureRenderer<T extends LivingEntity> extends FeatureRenderer<T, VillagerResemblingModel<T>> {
 	private final ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
 
-	public VillagerHeldItemFeatureRenderer(FeatureRendererContext<T, VillagerEntityModel<T>> featureRendererContext) {
+	public VillagerHeldItemFeatureRenderer(FeatureRendererContext<T, VillagerResemblingModel<T>> featureRendererContext) {
 		super(featureRendererContext);
 	}
 
@@ -45,7 +45,7 @@ public class VillagerHeldItemFeatureRenderer<T extends LivingEntity> extends Fea
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

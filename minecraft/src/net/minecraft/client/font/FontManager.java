@@ -179,7 +179,7 @@ public class FontManager implements AutoCloseable {
 					return CompletableFuture.completedFuture(object);
 				}
 			};
-			this.resourceReloadListener.apply(helper, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);
+			this.resourceReloadListener.reload(helper, resourceManager, DummyProfiler.INSTANCE, DummyProfiler.INSTANCE, executor, executor2);
 		}
 	}
 

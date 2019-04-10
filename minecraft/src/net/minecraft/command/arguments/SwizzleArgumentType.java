@@ -22,7 +22,7 @@ public class SwizzleArgumentType implements ArgumentType<EnumSet<Direction.Axis>
 		return new SwizzleArgumentType();
 	}
 
-	public static EnumSet<Direction.Axis> getSwizzleArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static EnumSet<Direction.Axis> getSwizzle(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, EnumSet.class);
 	}
 

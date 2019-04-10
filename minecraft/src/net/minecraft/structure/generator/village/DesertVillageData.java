@@ -244,7 +244,9 @@ public class DesertVillageData {
 					new Identifier("village/desert/villagers"),
 					new Identifier("empty"),
 					ImmutableList.of(
-						new Pair<>(new SinglePoolElement("village/desert/villagers/nitwit"), 1), new Pair<>(new SinglePoolElement("village/desert/villagers/unemployed"), 10)
+						new Pair<>(new SinglePoolElement("village/desert/villagers/nitwit"), 1),
+						new Pair<>(new SinglePoolElement("village/desert/villagers/baby"), 1),
+						new Pair<>(new SinglePoolElement("village/desert/villagers/unemployed"), 10)
 					),
 					StructurePool.Projection.RIGID
 				)

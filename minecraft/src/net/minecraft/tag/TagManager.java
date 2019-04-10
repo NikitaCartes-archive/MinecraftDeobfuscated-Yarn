@@ -61,7 +61,7 @@ public class TagManager implements ResourceReloadListener {
 	}
 
 	@Override
-	public CompletableFuture<Void> apply(
+	public CompletableFuture<Void> reload(
 		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
 	) {
 		CompletableFuture<Map<Identifier, Tag.Builder<Block>>> completableFuture = this.blocks.prepareReload(resourceManager, executor);

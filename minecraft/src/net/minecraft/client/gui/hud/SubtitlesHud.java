@@ -78,7 +78,7 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 				int n = m / 2;
 				float f = 1.0F;
 				int o = this.client.textRenderer.getStringWidth(string);
-				int p = MathHelper.floor(MathHelper.lerpClamped(255.0, 75.0, (double)((float)(SystemUtil.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F)));
+				int p = MathHelper.floor(MathHelper.clampedLerp(255.0, 75.0, (double)((float)(SystemUtil.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F)));
 				int q = p << 16 | p << 8 | p;
 				GlStateManager.pushMatrix();
 				GlStateManager.translatef(
@@ -87,7 +87,7 @@ public class SubtitlesHud extends DrawableHelper implements ListenerSoundInstanc
 					0.0F
 				);
 				GlStateManager.scalef(1.0F, 1.0F, 1.0F);
-				drawRect(-l - 1, -n - 1, l + 1, n + 1, this.client.options.method_19345(0.8F));
+				fill(-l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8F));
 				GlStateManager.enableBlend();
 				if (!bl) {
 					if (d > 0.0) {

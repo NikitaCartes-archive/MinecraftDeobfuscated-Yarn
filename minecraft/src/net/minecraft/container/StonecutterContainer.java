@@ -10,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -49,7 +50,9 @@ public class StonecutterContainer extends Container {
 		Items.SMOOTH_QUARTZ,
 		Items.END_STONE,
 		Items.END_STONE_BRICKS,
-		Items.SMOOTH_STONE
+		Items.SMOOTH_STONE,
+		Items.field_19174,
+		Items.field_19175
 	);
 	private final BlockContext context;
 	private final Property selectedRecipe = Property.create();
@@ -61,7 +64,7 @@ public class StonecutterContainer extends Container {
 	final Slot outputSlot;
 	private Runnable contentsChangedListener = () -> {
 	};
-	public final Inventory inventory = new BasicInventory(2) {
+	public final Inventory inventory = new BasicInventory(1) {
 		@Override
 		public void markDirty() {
 			super.markDirty();
@@ -69,6 +72,7 @@ public class StonecutterContainer extends Container {
 			StonecutterContainer.this.contentsChangedListener.run();
 		}
 	};
+	private final CraftingResultInventory field_19173 = new CraftingResultInventory();
 
 	public StonecutterContainer(int i, PlayerInventory playerInventory) {
 		this(i, playerInventory, BlockContext.EMPTY);
@@ -79,7 +83,7 @@ public class StonecutterContainer extends Container {
 		this.context = blockContext;
 		this.world = playerInventory.player.world;
 		this.inputSlot = this.addSlot(new Slot(this.inventory, 0, 20, 33));
-		this.outputSlot = this.addSlot(new Slot(this.inventory, 1, 143, 33) {
+		this.outputSlot = this.addSlot(new Slot(this.field_19173, 1, 143, 33) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
 				return false;
@@ -166,7 +170,7 @@ public class StonecutterContainer extends Container {
 		this.selectedRecipe.set(-1);
 		this.outputSlot.setStack(ItemStack.EMPTY);
 		if (!itemStack.isEmpty()) {
-			this.availableRecipes = this.world.getRecipeManager().method_17877(RecipeType.field_17641, inventory, this.world);
+			this.availableRecipes = this.world.getRecipeManager().getAllMatches(RecipeType.field_17641, inventory, this.world);
 		}
 	}
 
@@ -189,6 +193,11 @@ public class StonecutterContainer extends Container {
 	@Environment(EnvType.CLIENT)
 	public void setContentsChangedListener(Runnable runnable) {
 		this.contentsChangedListener = runnable;
+	}
+
+	@Override
+	public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
+		return false;
 	}
 
 	@Override
@@ -241,7 +250,7 @@ public class StonecutterContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.inventory.removeInvStack(1);
+		this.field_19173.removeInvStack(1);
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory)));
 	}
 }

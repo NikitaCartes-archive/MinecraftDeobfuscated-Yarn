@@ -35,17 +35,14 @@ public class JigsawBlockEntity extends BlockEntity {
 		return this.finalState;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setAttachmentType(Identifier identifier) {
 		this.attachmentType = identifier;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setTargetPool(Identifier identifier) {
 		this.targetPool = identifier;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public void setFinalState(String string) {
 		this.finalState = string;
 	}

@@ -41,7 +41,7 @@ public class EndPortalBlock extends BlockWithEntity {
 			&& !entity.hasPassengers()
 			&& entity.canUsePortals()
 			&& VoxelShapes.matchesAnywhere(
-				VoxelShapes.cube(entity.getBoundingBox().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
+				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
 				blockState.getOutlineShape(world, blockPos),
 				BooleanBiFunction.AND
 			)) {

@@ -18,14 +18,14 @@ public class WolfCollarFeatureRenderer extends FeatureRenderer<WolfEntity, WolfE
 	public void method_4209(WolfEntity wolfEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if (wolfEntity.isTamed() && !wolfEntity.isInvisible()) {
 			this.bindTexture(SKIN);
-			float[] fs = wolfEntity.method_6713().getColorComponents();
+			float[] fs = wolfEntity.getCollarColor().getColorComponents();
 			GlStateManager.color3f(fs[0], fs[1], fs[2]);
 			this.getModel().method_17132(wolfEntity, f, g, i, j, k, l);
 		}
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 }

@@ -16,7 +16,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.MathHelper;
 
-public class OperationArgumentType implements ArgumentType<OperationArgumentType.Operator> {
+public class OperationArgumentType implements ArgumentType<OperationArgumentType.Operation> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("=", ">", "<");
 	private static final SimpleCommandExceptionType INVALID_OPERATION = new SimpleCommandExceptionType(
 		new TranslatableTextComponent("arguments.operation.invalid")
@@ -29,11 +29,11 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 		return new OperationArgumentType();
 	}
 
-	public static OperationArgumentType.Operator getOperatorArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.getArgument(string, OperationArgumentType.Operator.class);
+	public static OperationArgumentType.Operation getOperation(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return commandContext.getArgument(string, OperationArgumentType.Operation.class);
 	}
 
-	public OperationArgumentType.Operator method_9412(StringReader stringReader) throws CommandSyntaxException {
+	public OperationArgumentType.Operation method_9412(StringReader stringReader) throws CommandSyntaxException {
 		if (!stringReader.canRead()) {
 			throw INVALID_OPERATION.create();
 		} else {
@@ -57,8 +57,8 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 		return EXAMPLES;
 	}
 
-	private static OperationArgumentType.Operator getOperator(String string) throws CommandSyntaxException {
-		return (OperationArgumentType.Operator)(string.equals("><") ? (scoreboardPlayerScore, scoreboardPlayerScore2) -> {
+	private static OperationArgumentType.Operation getOperator(String string) throws CommandSyntaxException {
+		return (OperationArgumentType.Operation)(string.equals("><") ? (scoreboardPlayerScore, scoreboardPlayerScore2) -> {
 			int i = scoreboardPlayerScore.getScore();
 			scoreboardPlayerScore.setScore(scoreboardPlayerScore2.getScore());
 			scoreboardPlayerScore2.setScore(i);
@@ -101,7 +101,7 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 	}
 
 	@FunctionalInterface
-	interface IntOperator extends OperationArgumentType.Operator {
+	interface IntOperator extends OperationArgumentType.Operation {
 		int apply(int i, int j) throws CommandSyntaxException;
 
 		@Override
@@ -111,7 +111,7 @@ public class OperationArgumentType implements ArgumentType<OperationArgumentType
 	}
 
 	@FunctionalInterface
-	public interface Operator {
+	public interface Operation {
 		void apply(ScoreboardPlayerScore scoreboardPlayerScore, ScoreboardPlayerScore scoreboardPlayerScore2) throws CommandSyntaxException;
 	}
 }

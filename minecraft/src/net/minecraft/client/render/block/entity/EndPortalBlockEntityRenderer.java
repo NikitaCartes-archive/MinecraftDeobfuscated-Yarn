@@ -49,7 +49,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 			if (l >= 1) {
 				this.bindTexture(PORTAL_TEX);
 				bl = true;
-				gameRenderer.method_3201(true);
+				gameRenderer.setFogBlack(true);
 			}
 
 			if (l == 1) {
@@ -138,7 +138,7 @@ public class EndPortalBlockEntityRenderer extends BlockEntityRenderer<EndPortalB
 		GlStateManager.disableTexGen(GlStateManager.TexCoord.field_5156);
 		GlStateManager.enableLighting();
 		if (bl) {
-			gameRenderer.method_3201(false);
+			gameRenderer.setFogBlack(false);
 		}
 	}
 

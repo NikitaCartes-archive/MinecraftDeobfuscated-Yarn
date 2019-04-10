@@ -41,7 +41,7 @@ public class EnderCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -86,7 +86,7 @@ public class EnderCrystalEntity extends Entity {
 	}
 
 	@Override
-	public boolean doesCollide() {
+	public boolean collides() {
 		return true;
 	}
 
@@ -97,11 +97,11 @@ public class EnderCrystalEntity extends Entity {
 		} else if (damageSource.getAttacker() instanceof EnderDragonEntity) {
 			return false;
 		} else {
-			if (!this.invalid && !this.world.isClient) {
-				this.invalidate();
+			if (!this.removed && !this.world.isClient) {
+				this.remove();
 				if (!this.world.isClient) {
 					if (!damageSource.isExplosive()) {
-						this.world.createExplosion(null, this.x, this.y, this.z, 6.0F, Explosion.class_4179.field_18687);
+						this.world.createExplosion(null, this.x, this.y, this.z, 6.0F, Explosion.DestructionType.field_18687);
 					}
 
 					this.crystalDestroyed(damageSource);

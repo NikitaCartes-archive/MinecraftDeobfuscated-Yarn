@@ -185,9 +185,14 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						double h = (double)(i - direction.getOffsetX()) + 0.5;
 						double m = (double)(k - direction.getOffsetZ()) + 0.5;
 						BoundingBox boundingBox = new BoundingBox(
-							h - g, (double)j + 0.001, m - g, h + g, (double)this.entity.getHeight() + method_60(this.blockView, blockPos.up()) - 0.002, m + g
+							h - g,
+							method_60(this.blockView, new BlockPos(h, (double)(j + 1), m)) + 0.001,
+							m - g,
+							h + g,
+							(double)this.entity.getHeight() + method_60(this.blockView, blockPos.up()) - 0.002,
+							m + g
 						);
-						if (!this.entity.world.isEntityColliding(this.entity, boundingBox)) {
+						if (!this.entity.world.doesNotCollide(this.entity, boundingBox)) {
 							pathNode = null;
 						}
 					}
@@ -214,7 +219,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					BoundingBox boundingBox2 = new BoundingBox(
 						(double)i - g + 0.5, (double)j + 0.001, (double)k - g + 0.5, (double)i + g + 0.5, (double)((float)j + this.entity.getHeight()), (double)k + g + 0.5
 					);
-					if (!this.entity.world.isEntityColliding(this.entity, boundingBox2)) {
+					if (!this.entity.world.doesNotCollide(this.entity, boundingBox2)) {
 						return null;
 					}
 

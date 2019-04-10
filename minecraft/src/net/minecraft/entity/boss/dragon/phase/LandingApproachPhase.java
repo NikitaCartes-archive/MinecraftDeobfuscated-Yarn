@@ -12,7 +12,7 @@ import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 
 public class LandingApproachPhase extends AbstractPhase {
-	private static final TargetPredicate field_18122 = new TargetPredicate().setBaseMaxDistance(128.0);
+	private static final TargetPredicate PLAYERS_IN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(128.0);
 	private Path field_7047;
 	private Vec3d field_7048;
 
@@ -49,7 +49,9 @@ public class LandingApproachPhase extends AbstractPhase {
 		if (this.field_7047 == null || this.field_7047.isFinished()) {
 			int i = this.dragon.method_6818();
 			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
-			PlayerEntity playerEntity = this.dragon.world.method_18461(field_18122, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+			PlayerEntity playerEntity = this.dragon
+				.world
+				.getClosestPlayer(PLAYERS_IN_RANGE_PREDICATE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 			int j;
 			if (playerEntity != null) {
 				Vec3d vec3d = new Vec3d(playerEntity.x, 0.0, playerEntity.z).normalize();

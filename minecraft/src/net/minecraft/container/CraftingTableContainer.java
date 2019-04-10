@@ -59,7 +59,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 		if (!world.isClient) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)playerEntity;
 			ItemStack itemStack = ItemStack.EMPTY;
-			Optional<CraftingRecipe> optional = world.getServer().getRecipeManager().get(RecipeType.CRAFTING, craftingInventory, world);
+			Optional<CraftingRecipe> optional = world.getServer().getRecipeManager().getFirstMatch(RecipeType.CRAFTING, craftingInventory, world);
 			if (optional.isPresent()) {
 				CraftingRecipe craftingRecipe = (CraftingRecipe)optional.get();
 				if (craftingResultInventory.shouldCraftRecipe(world, serverPlayerEntity, craftingRecipe)) {

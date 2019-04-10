@@ -190,7 +190,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 													r = BlockPos.asLong(j + 16, k + o, m + p);
 											}
 
-											chunkLightProvider.update(q, r, chunkLightProvider.getUpdatedLevel(q, r, 0), true);
+											chunkLightProvider.update(q, r, chunkLightProvider.getPropagatedLevel(q, r, 0), true);
 										}
 									}
 								}
@@ -208,7 +208,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongY(l)) - 1,
 										ChunkSectionPos.fromChunkCoord(ChunkSectionPos.unpackLongZ(l)) + t
 									);
-									chunkLightProvider.update(u, n, chunkLightProvider.getUpdatedLevel(u, n, 0), true);
+									chunkLightProvider.update(u, n, chunkLightProvider.getPropagatedLevel(u, n, 0), true);
 								}
 							}
 						} else {

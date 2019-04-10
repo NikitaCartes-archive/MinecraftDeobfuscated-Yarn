@@ -47,8 +47,8 @@ public class LootTableEntry extends LeafEntry {
 		}
 	}
 
-	public static LeafEntry.Builder<?> method_428(Identifier identifier) {
-		return create((i, j, lootConditions, lootFunctions) -> new LootTableEntry(identifier, i, j, lootConditions, lootFunctions));
+	public static LeafEntry.Builder<?> builder(Identifier identifier) {
+		return builder((i, j, lootConditions, lootFunctions) -> new LootTableEntry(identifier, i, j, lootConditions, lootFunctions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<LootTableEntry> {

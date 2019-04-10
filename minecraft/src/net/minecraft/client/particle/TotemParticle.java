@@ -14,14 +14,14 @@ public class TotemParticle extends AnimatedParticle {
 		this.velocityZ = i;
 		this.scale *= 0.75F;
 		this.maxAge = 60 + this.random.nextInt(12);
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 		if (this.random.nextInt(4) == 0) {
 			this.setColor(0.6F + this.random.nextFloat() * 0.2F, 0.6F + this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.2F);
 		} else {
 			this.setColor(0.1F + this.random.nextFloat() * 0.2F, 0.4F + this.random.nextFloat() * 0.3F, this.random.nextFloat() * 0.2F);
 		}
 
-		this.method_3091(0.6F);
+		this.setResistance(0.6F);
 	}
 
 	@Environment(EnvType.CLIENT)

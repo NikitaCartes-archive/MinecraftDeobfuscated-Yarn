@@ -117,7 +117,7 @@ public class DamageSource {
 		return this;
 	}
 
-	public boolean doesBypassArmor() {
+	public boolean bypassesArmor() {
 		return this.bypassesArmor;
 	}
 

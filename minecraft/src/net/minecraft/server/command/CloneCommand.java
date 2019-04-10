@@ -34,178 +34,178 @@ public class CloneCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("clone")
+			CommandManager.literal("clone")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("begin", BlockPosArgumentType.create())
+					CommandManager.argument("begin", BlockPosArgumentType.create())
 						.then(
-							ServerCommandManager.argument("end", BlockPosArgumentType.create())
+							CommandManager.argument("end", BlockPosArgumentType.create())
 								.then(
-									ServerCommandManager.argument("destination", BlockPosArgumentType.create())
+									CommandManager.argument("destination", BlockPosArgumentType.create())
 										.executes(
 											commandContext -> method_13090(
 													commandContext.getSource(),
-													BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-													BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-													BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
+													BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+													BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+													BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 													cachedBlockPosition -> true,
-													CloneCommand.class_3025.field_13499
+													CloneCommand.Mode.field_13499
 												)
 										)
 										.then(
-											ServerCommandManager.literal("replace")
+											CommandManager.literal("replace")
 												.executes(
 													commandContext -> method_13090(
 															commandContext.getSource(),
-															BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-															BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-															BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 															cachedBlockPosition -> true,
-															CloneCommand.class_3025.field_13499
+															CloneCommand.Mode.field_13499
 														)
 												)
 												.then(
-													ServerCommandManager.literal("force")
+													CommandManager.literal("force")
 														.executes(
 															commandContext -> method_13090(
 																	commandContext.getSource(),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	cachedBlockPosition -> true,
-																	CloneCommand.class_3025.field_13497
+																	CloneCommand.Mode.field_13497
 																)
 														)
 												)
 												.then(
-													ServerCommandManager.literal("move")
+													CommandManager.literal("move")
 														.executes(
 															commandContext -> method_13090(
 																	commandContext.getSource(),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	cachedBlockPosition -> true,
-																	CloneCommand.class_3025.field_13500
+																	CloneCommand.Mode.field_13500
 																)
 														)
 												)
 												.then(
-													ServerCommandManager.literal("normal")
+													CommandManager.literal("normal")
 														.executes(
 															commandContext -> method_13090(
 																	commandContext.getSource(),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	cachedBlockPosition -> true,
-																	CloneCommand.class_3025.field_13499
+																	CloneCommand.Mode.field_13499
 																)
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("masked")
+											CommandManager.literal("masked")
 												.executes(
 													commandContext -> method_13090(
 															commandContext.getSource(),
-															BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-															BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-															BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 															IS_AIR_PREDICATE,
-															CloneCommand.class_3025.field_13499
+															CloneCommand.Mode.field_13499
 														)
 												)
 												.then(
-													ServerCommandManager.literal("force")
+													CommandManager.literal("force")
 														.executes(
 															commandContext -> method_13090(
 																	commandContext.getSource(),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	IS_AIR_PREDICATE,
-																	CloneCommand.class_3025.field_13497
+																	CloneCommand.Mode.field_13497
 																)
 														)
 												)
 												.then(
-													ServerCommandManager.literal("move")
+													CommandManager.literal("move")
 														.executes(
 															commandContext -> method_13090(
 																	commandContext.getSource(),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	IS_AIR_PREDICATE,
-																	CloneCommand.class_3025.field_13500
+																	CloneCommand.Mode.field_13500
 																)
 														)
 												)
 												.then(
-													ServerCommandManager.literal("normal")
+													CommandManager.literal("normal")
 														.executes(
 															commandContext -> method_13090(
 																	commandContext.getSource(),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
 																	IS_AIR_PREDICATE,
-																	CloneCommand.class_3025.field_13499
+																	CloneCommand.Mode.field_13499
 																)
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("filtered")
+											CommandManager.literal("filtered")
 												.then(
-													ServerCommandManager.argument("filter", BlockPredicateArgumentType.create())
+													CommandManager.argument("filter", BlockPredicateArgumentType.create())
 														.executes(
 															commandContext -> method_13090(
 																	commandContext.getSource(),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
-																	BlockPredicateArgumentType.getPredicateArgument(commandContext, "filter"),
-																	CloneCommand.class_3025.field_13499
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
+																	BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
+																	CloneCommand.Mode.field_13499
 																)
 														)
 														.then(
-															ServerCommandManager.literal("force")
+															CommandManager.literal("force")
 																.executes(
 																	commandContext -> method_13090(
 																			commandContext.getSource(),
-																			BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																			BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																			BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
-																			BlockPredicateArgumentType.getPredicateArgument(commandContext, "filter"),
-																			CloneCommand.class_3025.field_13497
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
+																			BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
+																			CloneCommand.Mode.field_13497
 																		)
 																)
 														)
 														.then(
-															ServerCommandManager.literal("move")
+															CommandManager.literal("move")
 																.executes(
 																	commandContext -> method_13090(
 																			commandContext.getSource(),
-																			BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																			BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																			BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
-																			BlockPredicateArgumentType.getPredicateArgument(commandContext, "filter"),
-																			CloneCommand.class_3025.field_13500
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
+																			BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
+																			CloneCommand.Mode.field_13500
 																		)
 																)
 														)
 														.then(
-															ServerCommandManager.literal("normal")
+															CommandManager.literal("normal")
 																.executes(
 																	commandContext -> method_13090(
 																			commandContext.getSource(),
-																			BlockPosArgumentType.getValidPosArgument(commandContext, "begin"),
-																			BlockPosArgumentType.getValidPosArgument(commandContext, "end"),
-																			BlockPosArgumentType.getValidPosArgument(commandContext, "destination"),
-																			BlockPredicateArgumentType.getPredicateArgument(commandContext, "filter"),
-																			CloneCommand.class_3025.field_13499
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
+																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "destination"),
+																			BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter"),
+																			CloneCommand.Mode.field_13499
 																		)
 																)
 														)
@@ -223,12 +223,12 @@ public class CloneCommand {
 		BlockPos blockPos2,
 		BlockPos blockPos3,
 		Predicate<CachedBlockPosition> predicate,
-		CloneCommand.class_3025 arg
+		CloneCommand.Mode mode
 	) throws CommandSyntaxException {
 		MutableIntBoundingBox mutableIntBoundingBox = new MutableIntBoundingBox(blockPos, blockPos2);
 		BlockPos blockPos4 = blockPos3.add(mutableIntBoundingBox.getSize());
 		MutableIntBoundingBox mutableIntBoundingBox2 = new MutableIntBoundingBox(blockPos3, blockPos4);
-		if (!arg.method_13109() && mutableIntBoundingBox2.intersects(mutableIntBoundingBox)) {
+		if (!mode.allowsOverlap() && mutableIntBoundingBox2.intersects(mutableIntBoundingBox)) {
 			throw OVERLAP_EXCEPTION.create();
 		} else {
 			int i = mutableIntBoundingBox.getBlockCountX() * mutableIntBoundingBox.getBlockCountY() * mutableIntBoundingBox.getBlockCountZ();
@@ -237,9 +237,9 @@ public class CloneCommand {
 			} else {
 				ServerWorld serverWorld = serverCommandSource.getWorld();
 				if (serverWorld.isAreaLoaded(blockPos, blockPos2) && serverWorld.isAreaLoaded(blockPos3, blockPos4)) {
-					List<CloneCommand.class_3024> list = Lists.<CloneCommand.class_3024>newArrayList();
-					List<CloneCommand.class_3024> list2 = Lists.<CloneCommand.class_3024>newArrayList();
-					List<CloneCommand.class_3024> list3 = Lists.<CloneCommand.class_3024>newArrayList();
+					List<CloneCommand.BlockInfo> list = Lists.<CloneCommand.BlockInfo>newArrayList();
+					List<CloneCommand.BlockInfo> list2 = Lists.<CloneCommand.BlockInfo>newArrayList();
+					List<CloneCommand.BlockInfo> list3 = Lists.<CloneCommand.BlockInfo>newArrayList();
 					Deque<BlockPos> deque = Lists.<BlockPos>newLinkedList();
 					BlockPos blockPos5 = new BlockPos(
 						mutableIntBoundingBox2.minX - mutableIntBoundingBox.minX,
@@ -258,13 +258,13 @@ public class CloneCommand {
 									BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos6);
 									if (blockEntity != null) {
 										CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
-										list2.add(new CloneCommand.class_3024(blockPos7, blockState, compoundTag));
+										list2.add(new CloneCommand.BlockInfo(blockPos7, blockState, compoundTag));
 										deque.addLast(blockPos6);
 									} else if (!blockState.isFullOpaque(serverWorld, blockPos6) && !Block.isShapeFullCube(blockState.getCollisionShape(serverWorld, blockPos6))) {
-										list3.add(new CloneCommand.class_3024(blockPos7, blockState, null));
+										list3.add(new CloneCommand.BlockInfo(blockPos7, blockState, null));
 										deque.addFirst(blockPos6);
 									} else {
-										list.add(new CloneCommand.class_3024(blockPos7, blockState, null));
+										list.add(new CloneCommand.BlockInfo(blockPos7, blockState, null));
 										deque.addLast(blockPos6);
 									}
 								}
@@ -272,7 +272,7 @@ public class CloneCommand {
 						}
 					}
 
-					if (arg == CloneCommand.class_3025.field_13500) {
+					if (mode == CloneCommand.Mode.field_13500) {
 						for(BlockPos blockPos8 : deque) {
 							BlockEntity blockEntity2 = serverWorld.getBlockEntity(blockPos8);
 							Clearable.clear(blockEntity2);
@@ -284,44 +284,44 @@ public class CloneCommand {
 						}
 					}
 
-					List<CloneCommand.class_3024> list4 = Lists.<CloneCommand.class_3024>newArrayList();
+					List<CloneCommand.BlockInfo> list4 = Lists.<CloneCommand.BlockInfo>newArrayList();
 					list4.addAll(list);
 					list4.addAll(list2);
 					list4.addAll(list3);
-					List<CloneCommand.class_3024> list5 = Lists.reverse(list4);
+					List<CloneCommand.BlockInfo> list5 = Lists.reverse(list4);
 
-					for(CloneCommand.class_3024 lv : list5) {
-						BlockEntity blockEntity3 = serverWorld.getBlockEntity(lv.field_13496);
+					for(CloneCommand.BlockInfo blockInfo : list5) {
+						BlockEntity blockEntity3 = serverWorld.getBlockEntity(blockInfo.pos);
 						Clearable.clear(blockEntity3);
-						serverWorld.setBlockState(lv.field_13496, Blocks.field_10499.getDefaultState(), 2);
+						serverWorld.setBlockState(blockInfo.pos, Blocks.field_10499.getDefaultState(), 2);
 					}
 
 					int l = 0;
 
-					for(CloneCommand.class_3024 lv2 : list4) {
-						if (serverWorld.setBlockState(lv2.field_13496, lv2.field_13495, 2)) {
+					for(CloneCommand.BlockInfo blockInfo2 : list4) {
+						if (serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, 2)) {
 							++l;
 						}
 					}
 
-					for(CloneCommand.class_3024 lv2 : list2) {
-						BlockEntity blockEntity4 = serverWorld.getBlockEntity(lv2.field_13496);
-						if (lv2.field_13494 != null && blockEntity4 != null) {
-							lv2.field_13494.putInt("x", lv2.field_13496.getX());
-							lv2.field_13494.putInt("y", lv2.field_13496.getY());
-							lv2.field_13494.putInt("z", lv2.field_13496.getZ());
-							blockEntity4.fromTag(lv2.field_13494);
+					for(CloneCommand.BlockInfo blockInfo2 : list2) {
+						BlockEntity blockEntity4 = serverWorld.getBlockEntity(blockInfo2.pos);
+						if (blockInfo2.blockEntityTag != null && blockEntity4 != null) {
+							blockInfo2.blockEntityTag.putInt("x", blockInfo2.pos.getX());
+							blockInfo2.blockEntityTag.putInt("y", blockInfo2.pos.getY());
+							blockInfo2.blockEntityTag.putInt("z", blockInfo2.pos.getZ());
+							blockEntity4.fromTag(blockInfo2.blockEntityTag);
 							blockEntity4.markDirty();
 						}
 
-						serverWorld.setBlockState(lv2.field_13496, lv2.field_13495, 2);
+						serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, 2);
 					}
 
-					for(CloneCommand.class_3024 lv2 : list5) {
-						serverWorld.updateNeighbors(lv2.field_13496, lv2.field_13495.getBlock());
+					for(CloneCommand.BlockInfo blockInfo2 : list5) {
+						serverWorld.updateNeighbors(blockInfo2.pos, blockInfo2.state.getBlock());
 					}
 
-					serverWorld.method_14196().method_8666(mutableIntBoundingBox, blockPos5);
+					serverWorld.method_14196().copyScheduledTicks(mutableIntBoundingBox, blockPos5);
 					if (l == 0) {
 						throw FAILED_EXCEPTION.create();
 					} else {
@@ -335,32 +335,32 @@ public class CloneCommand {
 		}
 	}
 
-	static class class_3024 {
-		public final BlockPos field_13496;
-		public final BlockState field_13495;
+	static class BlockInfo {
+		public final BlockPos pos;
+		public final BlockState state;
 		@Nullable
-		public final CompoundTag field_13494;
+		public final CompoundTag blockEntityTag;
 
-		public class_3024(BlockPos blockPos, BlockState blockState, @Nullable CompoundTag compoundTag) {
-			this.field_13496 = blockPos;
-			this.field_13495 = blockState;
-			this.field_13494 = compoundTag;
+		public BlockInfo(BlockPos blockPos, BlockState blockState, @Nullable CompoundTag compoundTag) {
+			this.pos = blockPos;
+			this.state = blockState;
+			this.blockEntityTag = compoundTag;
 		}
 	}
 
-	static enum class_3025 {
+	static enum Mode {
 		field_13497(true),
 		field_13500(true),
 		field_13499(false);
 
-		private final boolean field_13498;
+		private final boolean allowsOverlap;
 
-		private class_3025(boolean bl) {
-			this.field_13498 = bl;
+		private Mode(boolean bl) {
+			this.allowsOverlap = bl;
 		}
 
-		public boolean method_13109() {
-			return this.field_13498;
+		public boolean allowsOverlap() {
+			return this.allowsOverlap;
 		}
 	}
 }

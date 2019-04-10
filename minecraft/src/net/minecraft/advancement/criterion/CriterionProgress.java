@@ -33,18 +33,18 @@ public class CriterionProgress {
 		return "CriterionProgress{obtained=" + (this.obtained == null ? "false" : this.obtained) + '}';
 	}
 
-	public void serialize(PacketByteBuf packetByteBuf) {
+	public void toPacket(PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeBoolean(this.obtained != null);
 		if (this.obtained != null) {
 			packetByteBuf.writeDate(this.obtained);
 		}
 	}
 
-	public JsonElement serialize() {
+	public JsonElement toJson() {
 		return (JsonElement)(this.obtained != null ? new JsonPrimitive(FORMAT.format(this.obtained)) : JsonNull.INSTANCE);
 	}
 
-	public static CriterionProgress deserialize(PacketByteBuf packetByteBuf) {
+	public static CriterionProgress fromPacket(PacketByteBuf packetByteBuf) {
 		CriterionProgress criterionProgress = new CriterionProgress();
 		if (packetByteBuf.readBoolean()) {
 			criterionProgress.obtained = packetByteBuf.readDate();
@@ -53,7 +53,7 @@ public class CriterionProgress {
 		return criterionProgress;
 	}
 
-	public static CriterionProgress create(String string) {
+	public static CriterionProgress obtainedAt(String string) {
 		CriterionProgress criterionProgress = new CriterionProgress();
 
 		try {

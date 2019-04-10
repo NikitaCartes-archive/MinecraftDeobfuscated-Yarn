@@ -31,7 +31,7 @@ public class SwimNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected Vec3d method_6347() {
+	protected Vec3d getPos() {
 		return new Vec3d(this.entity.x, this.entity.y + (double)this.entity.getHeight() * 0.5, this.entity.z);
 	}
 
@@ -65,7 +65,7 @@ public class SwimNavigation extends EntityNavigation {
 	@Override
 	protected void method_6339() {
 		if (this.currentPath != null) {
-			Vec3d vec3d = this.method_6347();
+			Vec3d vec3d = this.getPos();
 			float f = this.entity.getWidth();
 			float g = f > 0.75F ? f / 2.0F : 0.75F - f / 2.0F;
 			Vec3d vec3d2 = this.entity.getVelocity();

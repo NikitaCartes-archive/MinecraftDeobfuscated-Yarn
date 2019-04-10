@@ -15,14 +15,14 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 	public final Cuboid rightLegOverlay;
 	public final Cuboid bodyOverlay;
 	private final Cuboid cape;
-	private final Cuboid mau5Ears;
+	private final Cuboid ears;
 	private final boolean thinArms;
 
 	public PlayerEntityModel(float f, boolean bl) {
 		super(f, 0.0F, 64, 64);
 		this.thinArms = bl;
-		this.mau5Ears = new Cuboid(this, 24, 0);
-		this.mau5Ears.addBox(-3.0F, -6.0F, -1.0F, 6, 6, 1, f);
+		this.ears = new Cuboid(this, 24, 0);
+		this.ears.addBox(-3.0F, -6.0F, -1.0F, 6, 6, 1, f);
 		this.cape = new Cuboid(this, 0, 0);
 		this.cape.setTextureSize(64, 32);
 		this.cape.addBox(-5.0F, 0.0F, -1.0F, 10, 16, 1, f);
@@ -79,7 +79,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 			this.rightArmOverlay.render(k);
 			this.bodyOverlay.render(k);
 		} else {
-			if (livingEntity.isSneaking()) {
+			if (livingEntity.isInSneakingPose()) {
 				GlStateManager.translatef(0.0F, 0.2F, 0.0F);
 			}
 
@@ -93,14 +93,14 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		GlStateManager.popMatrix();
 	}
 
-	public void method_2824(float f) {
-		this.mau5Ears.copyRotation(this.head);
-		this.mau5Ears.rotationPointX = 0.0F;
-		this.mau5Ears.rotationPointY = 0.0F;
-		this.mau5Ears.render(f);
+	public void renderEars(float f) {
+		this.ears.copyRotation(this.head);
+		this.ears.rotationPointX = 0.0F;
+		this.ears.rotationPointY = 0.0F;
+		this.ears.render(f);
 	}
 
-	public void method_2823(float f) {
+	public void renderCape(float f) {
 		this.cape.render(f);
 	}
 
@@ -112,7 +112,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		this.leftArmOverlay.copyRotation(this.armLeft);
 		this.rightArmOverlay.copyRotation(this.armRight);
 		this.bodyOverlay.copyRotation(this.body);
-		if (livingEntity.isSneaking()) {
+		if (livingEntity.isInSneakingPose()) {
 			this.cape.rotationPointY = 2.0F;
 		} else {
 			this.cape.rotationPointY = 0.0F;
@@ -128,7 +128,7 @@ public class PlayerEntityModel<T extends LivingEntity> extends BipedEntityModel<
 		this.rightLegOverlay.visible = bl;
 		this.bodyOverlay.visible = bl;
 		this.cape.visible = bl;
-		this.mau5Ears.visible = bl;
+		this.ears.visible = bl;
 	}
 
 	@Override

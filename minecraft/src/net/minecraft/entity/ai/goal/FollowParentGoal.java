@@ -19,7 +19,7 @@ public class FollowParentGoal extends Goal {
 		if (this.owner.getBreedingAge() >= 0) {
 			return false;
 		} else {
-			List<AnimalEntity> list = this.owner.world.method_18467(this.owner.getClass(), this.owner.getBoundingBox().expand(8.0, 4.0, 8.0));
+			List<AnimalEntity> list = this.owner.world.getEntities(this.owner.getClass(), this.owner.getBoundingBox().expand(8.0, 4.0, 8.0));
 			AnimalEntity animalEntity = null;
 			double d = Double.MAX_VALUE;
 
@@ -48,7 +48,7 @@ public class FollowParentGoal extends Goal {
 	public boolean shouldContinue() {
 		if (this.owner.getBreedingAge() >= 0) {
 			return false;
-		} else if (!this.parent.isValid()) {
+		} else if (!this.parent.isAlive()) {
 			return false;
 		} else {
 			double d = this.owner.squaredDistanceTo(this.parent);
@@ -62,7 +62,7 @@ public class FollowParentGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.parent = null;
 	}
 

@@ -22,7 +22,7 @@ public class SlimeOverlayFeatureRenderer<T extends Entity> extends FeatureRender
 			GlStateManager.enableNormalize();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			this.getModel().method_17081(this.model);
+			this.getModel().copyStateTo(this.model);
 			this.model.render(entity, f, g, i, j, k, l);
 			GlStateManager.disableBlend();
 			GlStateManager.disableNormalize();
@@ -30,7 +30,7 @@ public class SlimeOverlayFeatureRenderer<T extends Entity> extends FeatureRender
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 }

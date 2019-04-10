@@ -32,8 +32,8 @@ public class CatSitOnBlockGoal extends MoveToTargetPosGoal {
 	}
 
 	@Override
-	public void onRemove() {
-		super.onRemove();
+	public void stop() {
+		super.stop();
 		this.cat.setSitting(false);
 	}
 

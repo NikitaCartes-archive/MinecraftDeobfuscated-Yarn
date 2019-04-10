@@ -24,25 +24,25 @@ public class HorseContainer extends Container {
 		this.addSlot(new Slot(inventory, 0, 8, 18) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
-				return itemStack.getItem() == Items.field_8175 && !this.hasStack() && horseBaseEntity.method_6765();
+				return itemStack.getItem() == Items.field_8175 && !this.hasStack() && horseBaseEntity.canBeSaddled();
 			}
 
 			@Environment(EnvType.CLIENT)
 			@Override
 			public boolean doDrawHoveringEffect() {
-				return horseBaseEntity.method_6765();
+				return horseBaseEntity.canBeSaddled();
 			}
 		});
 		this.addSlot(new Slot(inventory, 1, 8, 36) {
 			@Override
 			public boolean canInsert(ItemStack itemStack) {
-				return horseBaseEntity.method_6773(itemStack);
+				return horseBaseEntity.canEquip(itemStack);
 			}
 
 			@Environment(EnvType.CLIENT)
 			@Override
 			public boolean doDrawHoveringEffect() {
-				return horseBaseEntity.method_6735();
+				return horseBaseEntity.canEquip();
 			}
 
 			@Override
@@ -71,7 +71,7 @@ public class HorseContainer extends Container {
 
 	@Override
 	public boolean canUse(PlayerEntity playerEntity) {
-		return this.playerInv.canPlayerUseInv(playerEntity) && this.entity.isValid() && this.entity.distanceTo(playerEntity) < 8.0F;
+		return this.playerInv.canPlayerUseInv(playerEntity) && this.entity.isAlive() && this.entity.distanceTo(playerEntity) < 8.0F;
 	}
 
 	@Override

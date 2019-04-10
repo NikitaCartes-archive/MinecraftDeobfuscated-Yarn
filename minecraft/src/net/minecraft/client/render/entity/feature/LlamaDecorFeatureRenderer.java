@@ -35,7 +35,7 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 	}
 
 	public void method_4191(LlamaEntity llamaEntity, float f, float g, float h, float i, float j, float k, float l) {
-		DyeColor dyeColor = llamaEntity.method_6800();
+		DyeColor dyeColor = llamaEntity.getCarpetColor();
 		if (dyeColor != null) {
 			this.bindTexture(LLAMA_DECOR[dyeColor.getId()]);
 		} else {
@@ -46,12 +46,12 @@ public class LlamaDecorFeatureRenderer extends FeatureRenderer<LlamaEntity, Llam
 			this.bindTexture(TRADER_LLAMA_DECOR);
 		}
 
-		this.getModel().method_17081(this.model);
+		this.getModel().copyStateTo(this.model);
 		this.model.method_17100(llamaEntity, f, g, i, j, k, l);
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

@@ -32,8 +32,8 @@ public class EnderDragonEntityRenderer extends MobEntityRenderer<EnderDragonEnti
 		GlStateManager.rotatef(-i, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(j * 10.0F, 1.0F, 0.0F, 0.0F);
 		GlStateManager.translatef(0.0F, 0.0F, 1.0F);
-		if (enderDragonEntity.deathCounter > 0) {
-			float k = ((float)enderDragonEntity.deathCounter + h - 1.0F) / 20.0F * 1.6F;
+		if (enderDragonEntity.deathTime > 0) {
+			float k = ((float)enderDragonEntity.deathTime + h - 1.0F) / 20.0F * 1.6F;
 			k = MathHelper.sqrt(k);
 			if (k > 1.0F) {
 				k = 1.0F;

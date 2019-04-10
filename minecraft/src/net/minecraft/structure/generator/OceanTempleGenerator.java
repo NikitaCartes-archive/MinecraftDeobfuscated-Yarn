@@ -261,7 +261,7 @@ public class OceanTempleGenerator {
 				DrownedEntity drownedEntity = EntityType.DROWNED.create(iWorld.getWorld());
 				drownedEntity.setPersistent();
 				drownedEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				drownedEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(blockPos), SpawnType.field_16474, null, null);
+				drownedEntity.initialize(iWorld, iWorld.getLocalDifficulty(blockPos), SpawnType.field_16474, null, null);
 				iWorld.spawnEntity(drownedEntity);
 				if (blockPos.getY() > iWorld.getSeaLevel()) {
 					iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);

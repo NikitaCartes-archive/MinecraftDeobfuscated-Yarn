@@ -30,7 +30,7 @@ public class SmokerBlock extends AbstractFurnaceBlock {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof SmokerBlockEntity) {
 			playerEntity.openContainer((NameableContainerProvider)blockEntity);
-			playerEntity.increaseStat(Stats.field_17273);
+			playerEntity.incrementStat(Stats.field_17273);
 		}
 	}
 

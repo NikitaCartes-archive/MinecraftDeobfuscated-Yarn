@@ -29,7 +29,7 @@ public class MatchToolLootCondition implements LootCondition {
 		return itemStack != null && this.predicate.test(itemStack);
 	}
 
-	public static LootCondition.Builder method_945(ItemPredicate.Builder builder) {
+	public static LootCondition.Builder builder(ItemPredicate.Builder builder) {
 		return () -> new MatchToolLootCondition(builder.build());
 	}
 

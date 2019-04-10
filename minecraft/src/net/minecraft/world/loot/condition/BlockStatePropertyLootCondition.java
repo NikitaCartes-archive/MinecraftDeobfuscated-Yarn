@@ -31,10 +31,10 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 	private BlockStatePropertyLootCondition(Block block, Map<Property<?>, Object> map) {
 		this.block = block;
 		this.properties = ImmutableMap.copyOf(map);
-		this.predicate = method_898(block, map);
+		this.predicate = getBlockState(block, map);
 	}
 
-	private static Predicate<BlockState> method_898(Block block, Map<Property<?>, Object> map) {
+	private static Predicate<BlockState> getBlockState(Block block, Map<Property<?>, Object> map) {
 		int i = map.size();
 		if (i == 0) {
 			return blockState -> blockState.getBlock() == block;
@@ -66,12 +66,40 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 		return blockState != null && this.predicate.test(blockState);
 	}
 
-	public static BlockStatePropertyLootCondition.class_213 method_900(Block block) {
-		return new BlockStatePropertyLootCondition.class_213(block);
+	public static BlockStatePropertyLootCondition.Builder builder(Block block) {
+		return new BlockStatePropertyLootCondition.Builder(block);
+	}
+
+	public static class Builder implements LootCondition.Builder {
+		private final Block block;
+		private final Set<Property<?>> availableProperties;
+		private final Map<Property<?>, Object> propertyValues = Maps.<Property<?>, Object>newHashMap();
+
+		public Builder(Block block) {
+			this.block = block;
+			this.availableProperties = Sets.newIdentityHashSet();
+			this.availableProperties.addAll(block.getStateFactory().getProperties());
+		}
+
+		public <T extends Comparable<T>> BlockStatePropertyLootCondition.Builder withBlockStateProperty(Property<T> property, T comparable) {
+			if (!this.availableProperties.contains(property)) {
+				throw new IllegalArgumentException("Block " + Registry.BLOCK.getId(this.block) + " does not have property '" + property + "'");
+			} else if (!property.getValues().contains(comparable)) {
+				throw new IllegalArgumentException("Block " + Registry.BLOCK.getId(this.block) + " property '" + property + "' does not have value '" + comparable + "'");
+			} else {
+				this.propertyValues.put(property, comparable);
+				return this;
+			}
+		}
+
+		@Override
+		public LootCondition build() {
+			return new BlockStatePropertyLootCondition(this.block, this.propertyValues);
+		}
 	}
 
 	public static class Factory extends LootCondition.Factory<BlockStatePropertyLootCondition> {
-		private static <T extends Comparable<T>> String method_908(Property<T> property, Object object) {
+		private static <T extends Comparable<T>> String getPropertyValueString(Property<T> property, Object object) {
 			return property.getValueAsString((T)object);
 		}
 
@@ -84,7 +112,8 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 		) {
 			jsonObject.addProperty("block", Registry.BLOCK.getId(blockStatePropertyLootCondition.block).toString());
 			JsonObject jsonObject2 = new JsonObject();
-			blockStatePropertyLootCondition.properties.forEach((property, object) -> jsonObject2.addProperty(property.getName(), method_908(property, object)));
+			blockStatePropertyLootCondition.properties
+				.forEach((property, object) -> jsonObject2.addProperty(property.getName(), getPropertyValueString(property, object)));
 			jsonObject.add("properties", jsonObject2);
 		}
 
@@ -115,36 +144,6 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 			}
 
 			return new BlockStatePropertyLootCondition(block, map);
-		}
-	}
-
-	public static class class_213 implements LootCondition.Builder {
-		private final Block field_1290;
-		private final Set<Property<?>> field_1289;
-		private final Map<Property<?>, Object> field_1291 = Maps.<Property<?>, Object>newHashMap();
-
-		public class_213(Block block) {
-			this.field_1290 = block;
-			this.field_1289 = Sets.newIdentityHashSet();
-			this.field_1289.addAll(block.getStateFactory().getProperties());
-		}
-
-		public <T extends Comparable<T>> BlockStatePropertyLootCondition.class_213 method_907(Property<T> property, T comparable) {
-			if (!this.field_1289.contains(property)) {
-				throw new IllegalArgumentException("Block " + Registry.BLOCK.getId(this.field_1290) + " does not have property '" + property + "'");
-			} else if (!property.getValues().contains(comparable)) {
-				throw new IllegalArgumentException(
-					"Block " + Registry.BLOCK.getId(this.field_1290) + " property '" + property + "' does not have value '" + comparable + "'"
-				);
-			} else {
-				this.field_1291.put(property, comparable);
-				return this;
-			}
-		}
-
-		@Override
-		public LootCondition build() {
-			return new BlockStatePropertyLootCondition(this.field_1290, this.field_1291);
 		}
 	}
 }

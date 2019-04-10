@@ -15,7 +15,7 @@ public class EmptyMapItem extends MapItem {
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = FilledMapItem.method_8005(world, MathHelper.floor(playerEntity.x), MathHelper.floor(playerEntity.z), (byte)0, true, false);
+		ItemStack itemStack = FilledMapItem.createMap(world, MathHelper.floor(playerEntity.x), MathHelper.floor(playerEntity.z), (byte)0, true, false);
 		ItemStack itemStack2 = playerEntity.getStackInHand(hand);
 		if (!playerEntity.abilities.creativeMode) {
 			itemStack2.subtractAmount(1);

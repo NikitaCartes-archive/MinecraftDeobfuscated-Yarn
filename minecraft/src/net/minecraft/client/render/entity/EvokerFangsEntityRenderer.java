@@ -17,7 +17,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 	}
 
 	public void method_3962(EvokerFangsEntity evokerFangsEntity, double d, double e, double f, float g, float h) {
-		float i = evokerFangsEntity.method_7472(h);
+		float i = evokerFangsEntity.getAnimationProgress(h);
 		if (i != 0.0F) {
 			float j = 2.0F;
 			if (i > 0.9F) {

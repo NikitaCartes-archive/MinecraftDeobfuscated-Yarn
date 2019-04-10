@@ -19,13 +19,13 @@ public class ParrotMoveControl extends MoveControl {
 			double f = this.targetZ - this.entity.z;
 			double g = d * d + e * e + f * f;
 			if (g < 2.5000003E-7F) {
-				this.entity.method_5976(0.0F);
-				this.entity.method_5930(0.0F);
+				this.entity.setUpwardSpeed(0.0F);
+				this.entity.setForwardSpeed(0.0F);
 				return;
 			}
 
 			float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-			this.entity.yaw = this.method_6238(this.entity.yaw, h, 10.0F);
+			this.entity.yaw = this.changeAngle(this.entity.yaw, h, 10.0F);
 			float i;
 			if (this.entity.onGround) {
 				i = (float)(this.speed * this.entity.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
@@ -36,12 +36,12 @@ public class ParrotMoveControl extends MoveControl {
 			this.entity.setMovementSpeed(i);
 			double j = (double)MathHelper.sqrt(d * d + f * f);
 			float k = (float)(-(MathHelper.atan2(e, j) * 180.0F / (float)Math.PI));
-			this.entity.pitch = this.method_6238(this.entity.pitch, k, 10.0F);
-			this.entity.method_5976(e > 0.0 ? i : -i);
+			this.entity.pitch = this.changeAngle(this.entity.pitch, k, 10.0F);
+			this.entity.setUpwardSpeed(e > 0.0 ? i : -i);
 		} else {
 			this.entity.setUnaffectedByGravity(false);
-			this.entity.method_5976(0.0F);
-			this.entity.method_5930(0.0F);
+			this.entity.setUpwardSpeed(0.0F);
+			this.entity.setForwardSpeed(0.0F);
 		}
 	}
 }

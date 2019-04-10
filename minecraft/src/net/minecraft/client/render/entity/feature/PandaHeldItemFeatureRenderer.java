@@ -19,10 +19,10 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 
 	public void method_4194(PandaEntity pandaEntity, float f, float g, float h, float i, float j, float k, float l) {
 		ItemStack itemStack = pandaEntity.getEquippedStack(EquipmentSlot.HAND_MAIN);
-		if (pandaEntity.method_6535() && !itemStack.isEmpty() && !pandaEntity.method_6524()) {
+		if (pandaEntity.isScared() && !itemStack.isEmpty() && !pandaEntity.method_6524()) {
 			float m = -0.6F;
 			float n = 1.4F;
-			if (pandaEntity.method_6527()) {
+			if (pandaEntity.isEating()) {
 				m -= 0.2F * MathHelper.sin(i * 0.6F) + 0.2F;
 				n -= 0.09F * MathHelper.sin(i * 0.6F);
 			}
@@ -35,7 +35,7 @@ public class PandaHeldItemFeatureRenderer extends FeatureRenderer<PandaEntity, P
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

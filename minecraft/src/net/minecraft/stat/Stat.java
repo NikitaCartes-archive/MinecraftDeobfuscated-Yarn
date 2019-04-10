@@ -14,17 +14,17 @@ public class Stat<T> extends ScoreboardCriterion {
 	private final StatType<T> type;
 
 	protected Stat(StatType<T> statType, T object, StatFormatter statFormatter) {
-		super(method_14950(statType, object));
+		super(getName(statType, object));
 		this.type = statType;
 		this.formatter = statFormatter;
 		this.value = object;
 	}
 
-	public static <T> String method_14950(StatType<T> statType, T object) {
-		return method_14952(Registry.STAT_TYPE.getId(statType)) + ":" + method_14952(statType.getRegistry().getId(object));
+	public static <T> String getName(StatType<T> statType, T object) {
+		return getName(Registry.STAT_TYPE.getId(statType)) + ":" + getName(statType.getRegistry().getId(object));
 	}
 
-	private static <T> String method_14952(@Nullable Identifier identifier) {
+	private static <T> String getName(@Nullable Identifier identifier) {
 		return identifier.toString().replace(':', '.');
 	}
 

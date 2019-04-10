@@ -72,7 +72,6 @@ public class CartographyTableContainer extends Container {
 					})).orElse(itemStack);
 					this.inventory.takeInvStack(0, 1);
 					this.inventory.takeInvStack(1, 1);
-					playerInventory.setCursorStack(itemStack2);
 					itemStack2.getItem().onCrafted(itemStack2, playerEntity.world, playerEntity);
 					blockContext.run(
 						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_17484, SoundCategory.field_15245, 1.0F, 1.0F))
@@ -121,7 +120,7 @@ public class CartographyTableContainer extends Container {
 	private void method_17381(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3) {
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 			Item item = itemStack2.getItem();
-			MapState mapState = FilledMapItem.method_7997(itemStack, world);
+			MapState mapState = FilledMapItem.getMapState(itemStack, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
 				if (item == Items.field_8407 && !mapState.locked && mapState.scale < 4) {
@@ -148,6 +147,11 @@ public class CartographyTableContainer extends Container {
 				}
 			}
 		}));
+	}
+
+	@Override
+	public boolean canInsertIntoSlot(ItemStack itemStack, Slot slot) {
+		return false;
 	}
 
 	@Override

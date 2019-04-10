@@ -127,7 +127,7 @@ public class StructurePoolBasedGenerator {
 							poolStructurePiece,
 							new AtomicReference(
 								VoxelShapes.combineAndSimplify(
-									VoxelShapes.cube(boundingBox), VoxelShapes.cube(BoundingBox.method_19316(mutableIntBoundingBox)), BooleanBiFunction.ONLY_FIRST
+									VoxelShapes.cuboid(boundingBox), VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox)), BooleanBiFunction.ONLY_FIRST
 								)
 							),
 							l + 80,
@@ -169,7 +169,7 @@ public class StructurePoolBasedGenerator {
 						atomicReference3 = atomicReference2;
 						n = k;
 						if (atomicReference2.get() == null) {
-							atomicReference2.set(VoxelShapes.cube(BoundingBox.method_19316(mutableIntBoundingBox)));
+							atomicReference2.set(VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox)));
 						}
 					} else {
 						atomicReference3 = atomicReference;
@@ -237,12 +237,10 @@ public class StructurePoolBasedGenerator {
 									}
 
 									if (!VoxelShapes.matchesAnywhere(
-										(VoxelShape)atomicReference3.get(), VoxelShapes.cube(BoundingBox.method_19316(mutableIntBoundingBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND
+										(VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox4).contract(0.25)), BooleanBiFunction.ONLY_SECOND
 									)) {
 										atomicReference3.set(
-											VoxelShapes.combine(
-												(VoxelShape)atomicReference3.get(), VoxelShapes.cube(BoundingBox.method_19316(mutableIntBoundingBox4)), BooleanBiFunction.ONLY_FIRST
-											)
+											VoxelShapes.combine((VoxelShape)atomicReference3.get(), VoxelShapes.cuboid(BoundingBox.from(mutableIntBoundingBox4)), BooleanBiFunction.ONLY_FIRST)
 										);
 										int u = poolStructurePiece.getGroundLevelDelta();
 										int v;

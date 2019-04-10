@@ -27,7 +27,6 @@ import net.minecraft.world.World;
 public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	public WitherSkeletonEntity(EntityType<? extends WitherSkeletonEntity> entityType, World world) {
 		super(entityType, world);
-		this.fireImmune = true;
 		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
 	}
 
@@ -47,7 +46,7 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	SoundEvent method_6998() {
+	SoundEvent getStepSound() {
 		return SoundEvents.field_14955;
 	}
 
@@ -57,8 +56,8 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 		Entity entity = damageSource.getAttacker();
 		if (entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
-			if (creeperEntity.method_7008()) {
-				creeperEntity.method_7002();
+			if (creeperEntity.shouldDropHead()) {
+				creeperEntity.onHeadDropped();
 				this.dropItem(Items.WITHER_SKELETON_SKULL);
 			}
 		}
@@ -70,17 +69,17 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected void method_5984(LocalDifficulty localDifficulty) {
+	protected void updateEnchantments(LocalDifficulty localDifficulty) {
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		EntityData entityData2 = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		EntityData entityData2 = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).setBaseValue(4.0);
-		this.method_6997();
+		this.updateAttackType();
 		return entityData2;
 	}
 
@@ -103,8 +102,8 @@ public class WitherSkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	protected ProjectileEntity method_6996(ItemStack itemStack, float f) {
-		ProjectileEntity projectileEntity = super.method_6996(itemStack, f);
+	protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
+		ProjectileEntity projectileEntity = super.createArrowProjectile(itemStack, f);
 		projectileEntity.setOnFireFor(100);
 		return projectileEntity;
 	}

@@ -46,8 +46,8 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 	public void renderIcon(float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, (float)i / 255.0F);
-		DrawableHelper.drawTexturedRect(2, 2, 8.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
-		DrawableHelper.drawTexturedRect(2, 2, 40.0F, 8.0F, 8, 8, 12, 12, 64.0F, 64.0F);
+		DrawableHelper.blit(2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
+		DrawableHelper.blit(2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
 	}
 
 	@Override

@@ -15,7 +15,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.AvoidSunlightGoal;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
 import net.minecraft.entity.ai.goal.EscapeSunlightGoal;
@@ -24,6 +23,7 @@ import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.passive.IronGolemEntity;
@@ -44,24 +44,24 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public abstract class AbstractSkeletonEntity extends HostileEntity implements RangedAttacker {
-	private final BowAttackGoal<AbstractSkeletonEntity> field_7220 = new BowAttackGoal<>(this, 1.0, 20, 15.0F);
-	private final MeleeAttackGoal field_7221 = new MeleeAttackGoal(this, 1.2, false) {
+	private final BowAttackGoal<AbstractSkeletonEntity> bowAttackGoal = new BowAttackGoal<>(this, 1.0, 20, 15.0F);
+	private final MeleeAttackGoal meleeAttackGoal = new MeleeAttackGoal(this, 1.2, false) {
 		@Override
-		public void onRemove() {
-			super.onRemove();
-			AbstractSkeletonEntity.this.method_19540(false);
+		public void stop() {
+			super.stop();
+			AbstractSkeletonEntity.this.setAttacking(false);
 		}
 
 		@Override
 		public void start() {
 			super.start();
-			AbstractSkeletonEntity.this.method_19540(true);
+			AbstractSkeletonEntity.this.setAttacking(true);
 		}
 	};
 
 	protected AbstractSkeletonEntity(EntityType<? extends AbstractSkeletonEntity> entityType, World world) {
 		super(entityType, world);
-		this.method_6997();
+		this.updateAttackType();
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(6, new LookAroundGoal(this));
-		this.targetSelector.add(1, new AvoidGoal(this));
+		this.targetSelector.add(1, new RevengeGoal(this));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
@@ -86,10 +86,10 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Override
 	protected void playStepSound(BlockPos blockPos, BlockState blockState) {
-		this.playSound(this.method_6998(), 0.15F, 1.0F);
+		this.playSound(this.getStepSound(), 0.15F, 1.0F);
 	}
 
-	abstract SoundEvent method_6998();
+	abstract SoundEvent getStepSound();
 
 	@Override
 	public EntityGroup getGroup() {
@@ -98,14 +98,14 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Override
 	public void updateMovement() {
-		boolean bl = this.method_5972();
+		boolean bl = this.isInDaylight();
 		if (bl) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 			if (!itemStack.isEmpty()) {
 				if (itemStack.hasDurability()) {
 					itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
 					if (itemStack.getDamage() >= itemStack.getDurability()) {
-						this.method_6045(itemStack);
+						this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
 						this.setEquippedStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
 					}
 				}
@@ -122,8 +122,8 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	public void updateRiding() {
-		super.updateRiding();
+	public void tickRiding() {
+		super.tickRiding();
 		if (this.getRiddenEntity() instanceof MobEntityWithAi) {
 			MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)this.getRiddenEntity();
 			this.field_6283 = mobEntityWithAi.field_6283;
@@ -138,13 +138,13 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.initEquipment(localDifficulty);
-		this.method_5984(localDifficulty);
-		this.method_6997();
+		this.updateEnchantments(localDifficulty);
+		this.updateAttackType();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * localDifficulty.getClampedLocalDifficulty());
 		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 			LocalDate localDate = LocalDate.now();
@@ -159,29 +159,29 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		return entityData;
 	}
 
-	public void method_6997() {
+	public void updateAttackType() {
 		if (this.world != null && !this.world.isClient) {
-			this.goalSelector.remove(this.field_7221);
-			this.goalSelector.remove(this.field_7220);
-			ItemStack itemStack = this.getStackInHand(ProjectileUtil.method_18812(this, Items.field_8102));
+			this.goalSelector.remove(this.meleeAttackGoal);
+			this.goalSelector.remove(this.bowAttackGoal);
+			ItemStack itemStack = this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.field_8102));
 			if (itemStack.getItem() == Items.field_8102) {
 				int i = 20;
 				if (this.world.getDifficulty() != Difficulty.HARD) {
 					i = 40;
 				}
 
-				this.field_7220.method_6305(i);
-				this.goalSelector.add(4, this.field_7220);
+				this.bowAttackGoal.setAttackInterval(i);
+				this.goalSelector.add(4, this.bowAttackGoal);
 			} else {
-				this.goalSelector.add(4, this.field_7221);
+				this.goalSelector.add(4, this.meleeAttackGoal);
 			}
 		}
 	}
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ItemStack itemStack = this.method_18808(this.getStackInHand(ProjectileUtil.method_18812(this, Items.field_8102)));
-		ProjectileEntity projectileEntity = this.method_6996(itemStack, f);
+		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.field_8102)));
+		ProjectileEntity projectileEntity = this.createArrowProjectile(itemStack, f);
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
 		double g = livingEntity.z - this.z;
@@ -191,21 +191,21 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 		this.world.spawnEntity(projectileEntity);
 	}
 
-	protected ProjectileEntity method_6996(ItemStack itemStack, float f) {
-		return ProjectileUtil.method_18813(this, itemStack, f);
+	protected ProjectileEntity createArrowProjectile(ItemStack itemStack, float f) {
+		return ProjectileUtil.createArrowProjectile(this, itemStack, f);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
-		this.method_6997();
+		this.updateAttackType();
 	}
 
 	@Override
 	public void setEquippedStack(EquipmentSlot equipmentSlot, ItemStack itemStack) {
 		super.setEquippedStack(equipmentSlot, itemStack);
 		if (!this.world.isClient) {
-			this.method_6997();
+			this.updateAttackType();
 		}
 	}
 

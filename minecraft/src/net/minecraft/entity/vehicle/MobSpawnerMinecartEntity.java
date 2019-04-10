@@ -14,7 +14,7 @@ public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
 		public void method_8273(int i) {
-			MobSpawnerMinecartEntity.this.world.summonParticle(MobSpawnerMinecartEntity.this, (byte)i);
+			MobSpawnerMinecartEntity.this.world.sendEntityStatus(MobSpawnerMinecartEntity.this, (byte)i);
 		}
 
 		@Override
@@ -60,7 +60,7 @@ public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		this.logic.method_8275(b);
 	}
 

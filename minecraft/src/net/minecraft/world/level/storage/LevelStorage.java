@@ -1,7 +1,6 @@
 package net.minecraft.world.level.storage;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,6 +25,7 @@ import java.util.zip.ZipOutputStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
@@ -158,7 +158,7 @@ public class LevelStorage {
 			CompoundTag compoundTag3 = compoundTag2.containsKey("Player", 10) ? compoundTag2.getCompound("Player") : null;
 			compoundTag2.remove("Player");
 			int i = compoundTag2.containsKey("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
-			return new LevelProperties(TagHelper.update(dataFixer, DataFixTypes.LEVEL, compoundTag2, i), dataFixer, i, compoundTag3);
+			return new LevelProperties(TagHelper.update(dataFixer, DataFixTypes.field_19212, compoundTag2, i), dataFixer, i, compoundTag3);
 		} catch (Exception var6) {
 			LOGGER.error("Exception reading {}", file, var6);
 			return null;
@@ -276,7 +276,7 @@ public class LevelStorage {
 			throw new RuntimeException(var18);
 		}
 
-		Path path3 = path2.resolve(WorldNameProvider.transformWorldName(path2, string2));
+		Path path3 = path2.resolve(WorldNameProvider.transformWorldName(path2, string2, ".zip"));
 		final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(path3)));
 		Throwable var7 = null;
 

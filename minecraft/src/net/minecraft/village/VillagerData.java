@@ -64,14 +64,14 @@ public class VillagerData {
 	}
 
 	public static int getLowerLevelExperience(int i) {
-		return isLevelValid(i) ? LEVEL_BASE_EXPERIENCE[i - 1] : 0;
+		return canLevelUp(i) ? LEVEL_BASE_EXPERIENCE[i - 1] : 0;
 	}
 
 	public static int getUpperLevelExperience(int i) {
-		return isLevelValid(i) ? LEVEL_BASE_EXPERIENCE[i] : 0;
+		return canLevelUp(i) ? LEVEL_BASE_EXPERIENCE[i] : 0;
 	}
 
-	public static boolean isLevelValid(int i) {
+	public static boolean canLevelUp(int i) {
 		return i >= 1 && i < 5;
 	}
 }

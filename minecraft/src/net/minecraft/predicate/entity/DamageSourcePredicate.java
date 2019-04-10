@@ -58,7 +58,7 @@ public class DamageSourcePredicate {
 			return false;
 		} else if (this.isExplosion != null && this.isExplosion != damageSource.isExplosive()) {
 			return false;
-		} else if (this.bypassesArmor != null && this.bypassesArmor != damageSource.doesBypassArmor()) {
+		} else if (this.bypassesArmor != null && this.bypassesArmor != damageSource.bypassesArmor()) {
 			return false;
 		} else if (this.bypassesInvulnerability != null && this.bypassesInvulnerability != damageSource.doesDamageToCreative()) {
 			return false;

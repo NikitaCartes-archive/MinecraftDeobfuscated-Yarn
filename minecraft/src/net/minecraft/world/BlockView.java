@@ -88,9 +88,9 @@ public interface BlockView {
 				double m = d - g;
 				double n = e - h;
 				double o = f - i;
-				int p = MathHelper.method_17822(m);
-				int q = MathHelper.method_17822(n);
-				int r = MathHelper.method_17822(o);
+				int p = MathHelper.sign(m);
+				int q = MathHelper.sign(n);
+				int r = MathHelper.sign(o);
 				double s = p == 0 ? Double.MAX_VALUE : (double)p / m;
 				double t = q == 0 ? Double.MAX_VALUE : (double)q / n;
 				double u = r == 0 ? Double.MAX_VALUE : (double)r / o;

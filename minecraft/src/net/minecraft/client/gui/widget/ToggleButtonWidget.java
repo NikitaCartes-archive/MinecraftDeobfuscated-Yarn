@@ -56,24 +56,7 @@ public class ToggleButtonWidget extends AbstractButtonWidget {
 			l += this.hoverVOffset;
 		}
 
-		this.drawTexturedRect(this.x, this.y, k, l, this.width, this.height);
+		this.blit(this.x, this.y, k, l, this.width, this.height);
 		GlStateManager.enableDepthTest();
-	}
-
-	@Override
-	public boolean mouseClicked(double d, double e, int i) {
-		if (this.active && this.visible) {
-			if (i == 0) {
-				boolean bl = this.clicked(d, e);
-				if (bl) {
-					this.playDownSound(MinecraftClient.getInstance().getSoundManager());
-					return true;
-				}
-			}
-
-			return false;
-		} else {
-			return false;
-		}
 	}
 }

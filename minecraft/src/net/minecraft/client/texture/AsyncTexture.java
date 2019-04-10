@@ -28,7 +28,7 @@ public class AsyncTexture extends ResourceTexture {
 		}
 	}
 
-	public CompletableFuture<Void> method_18148() {
+	public CompletableFuture<Void> getLoadCompleteFuture() {
 		return this.future == null ? CompletableFuture.completedFuture(null) : this.future.thenApply(textureData -> null);
 	}
 

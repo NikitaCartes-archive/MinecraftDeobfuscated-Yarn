@@ -34,7 +34,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 		if (!itemStack.isEmpty()) {
 			Item item = itemStack.getItem();
 			GlStateManager.pushMatrix();
-			if (livingEntity.isSneaking()) {
+			if (livingEntity.isInSneakingPose()) {
 				GlStateManager.translatef(0.0F, 0.2F, 0.0F);
 			}
 
@@ -89,7 +89,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

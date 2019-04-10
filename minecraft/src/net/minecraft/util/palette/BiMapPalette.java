@@ -43,7 +43,7 @@ public class BiMapPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public boolean method_19525(T object) {
+	public boolean accepts(T object) {
 		return this.map.getId(object) != -1;
 	}
 

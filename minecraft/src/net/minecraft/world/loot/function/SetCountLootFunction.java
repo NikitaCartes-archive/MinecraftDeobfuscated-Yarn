@@ -11,21 +11,21 @@ import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
-	private final LootTableRange field_1114;
+	private final LootTableRange countRange;
 
 	private SetCountLootFunction(LootCondition[] lootConditions, LootTableRange lootTableRange) {
 		super(lootConditions);
-		this.field_1114 = lootTableRange;
+		this.countRange = lootTableRange;
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		itemStack.setAmount(this.field_1114.next(lootContext.getRandom()));
+		itemStack.setAmount(this.countRange.next(lootContext.getRandom()));
 		return itemStack;
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder(LootTableRange lootTableRange) {
-		return create(lootConditions -> new SetCountLootFunction(lootConditions, lootTableRange));
+		return builder(lootConditions -> new SetCountLootFunction(lootConditions, lootTableRange));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetCountLootFunction> {
@@ -35,7 +35,7 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 
 		public void method_623(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, setCountLootFunction, jsonSerializationContext);
-			jsonObject.add("count", LootTableRanges.serialize(setCountLootFunction.field_1114, jsonSerializationContext));
+			jsonObject.add("count", LootTableRanges.serialize(setCountLootFunction.countRange, jsonSerializationContext));
 		}
 
 		public SetCountLootFunction method_622(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {

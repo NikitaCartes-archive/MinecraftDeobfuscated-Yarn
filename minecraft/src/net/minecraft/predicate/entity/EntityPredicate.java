@@ -81,7 +81,7 @@ public class EntityPredicate {
 		} else if (!this.equipment.test(entity)) {
 			return false;
 		} else {
-			return this.catType == null || entity instanceof CatEntity && ((CatEntity)entity).method_16092().equals(this.catType);
+			return this.catType == null || entity instanceof CatEntity && ((CatEntity)entity).getTexture().equals(this.catType);
 		}
 	}
 

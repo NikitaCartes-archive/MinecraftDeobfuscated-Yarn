@@ -94,8 +94,8 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 				e = 5.0;
 			}
 
-			this.world.createExplosion(this, this.x, this.y, this.z, (float)(4.0 + this.random.nextDouble() * 1.5 * e), Explosion.class_4179.field_18686);
-			this.invalidate();
+			this.world.createExplosion(this, this.x, this.y, this.z, (float)(4.0 + this.random.nextDouble() * 1.5 * e), Explosion.DestructionType.field_18686);
+			this.remove();
 		}
 	}
 
@@ -118,18 +118,18 @@ public class TNTMinecartEntity extends AbstractMinecartEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 10) {
 			this.prime();
 		} else {
-			super.method_5711(b);
+			super.handleStatus(b);
 		}
 	}
 
 	public void prime() {
 		this.fuseTicks = 80;
 		if (!this.world.isClient) {
-			this.world.summonParticle(this, (byte)10);
+			this.world.sendEntityStatus(this, (byte)10);
 			if (!this.isSilent()) {
 				this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_15079, SoundCategory.field_15245, 1.0F, 1.0F);
 			}

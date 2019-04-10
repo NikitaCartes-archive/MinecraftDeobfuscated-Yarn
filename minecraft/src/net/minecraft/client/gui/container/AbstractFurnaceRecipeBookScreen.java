@@ -111,7 +111,7 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookGui {
 	public void drawGhostSlots(int i, int j, boolean bl, float f) {
 		super.drawGhostSlots(i, j, bl, f);
 		if (this.outputSlot != null) {
-			if (!Screen.isControlPressed()) {
+			if (!Screen.hasControlDown()) {
 				this.field_3151 += f;
 			}
 
@@ -119,10 +119,10 @@ public abstract class AbstractFurnaceRecipeBookScreen extends RecipeBookGui {
 			GlStateManager.disableLighting();
 			int k = this.outputSlot.xPosition + i;
 			int l = this.outputSlot.yPosition + j;
-			DrawableHelper.drawRect(k, l, k + 16, l + 16, 822018048);
+			DrawableHelper.fill(k, l, k + 16, l + 16, 822018048);
 			this.client.getItemRenderer().renderGuiItem(this.client.player, this.method_2658().getDefaultStack(), k, l);
 			GlStateManager.depthFunc(516);
-			DrawableHelper.drawRect(k, l, k + 16, l + 16, 822083583);
+			DrawableHelper.fill(k, l, k + 16, l + 16, 822083583);
 			GlStateManager.depthFunc(515);
 			GlStateManager.enableLighting();
 			GuiLighting.disable();

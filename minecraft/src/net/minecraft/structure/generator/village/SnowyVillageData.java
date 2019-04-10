@@ -288,7 +288,9 @@ public class SnowyVillageData {
 					new Identifier("village/snowy/villagers"),
 					new Identifier("empty"),
 					ImmutableList.of(
-						new Pair<>(new SinglePoolElement("village/snowy/villagers/nitwit"), 1), new Pair<>(new SinglePoolElement("village/snowy/villagers/unemployed"), 10)
+						new Pair<>(new SinglePoolElement("village/snowy/villagers/nitwit"), 1),
+						new Pair<>(new SinglePoolElement("village/snowy/villagers/baby"), 1),
+						new Pair<>(new SinglePoolElement("village/snowy/villagers/unemployed"), 10)
 					),
 					StructurePool.Projection.RIGID
 				)

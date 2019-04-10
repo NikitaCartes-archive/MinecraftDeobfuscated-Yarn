@@ -59,7 +59,7 @@ public class SpawnEggItem extends Item {
 				if (blockEntity instanceof MobSpawnerBlockEntity) {
 					MobSpawnerLogic mobSpawnerLogic = ((MobSpawnerBlockEntity)blockEntity).getLogic();
 					EntityType<?> entityType = this.entityTypeFromTag(itemStack.getTag());
-					mobSpawnerLogic.method_8274(entityType);
+					mobSpawnerLogic.setEntityId(entityType);
 					blockEntity.markDirty();
 					world.updateListeners(blockPos, blockState, blockState, 3);
 					itemStack.subtractAmount(1);
@@ -119,7 +119,7 @@ public class SpawnEggItem extends Item {
 		}
 	}
 
-	public boolean method_8018(@Nullable CompoundTag compoundTag, EntityType<?> entityType) {
+	public boolean isOfSameEntityType(@Nullable CompoundTag compoundTag, EntityType<?> entityType) {
 		return Objects.equals(this.entityTypeFromTag(compoundTag), entityType);
 	}
 

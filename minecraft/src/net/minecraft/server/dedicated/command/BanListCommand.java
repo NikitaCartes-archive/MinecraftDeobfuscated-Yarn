@@ -6,7 +6,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import java.util.Collection;
 import net.minecraft.server.PlayerManager;
-import net.minecraft.server.command.ServerCommandManager;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.config.BanEntry;
 import net.minecraft.text.TranslatableTextComponent;
@@ -14,7 +14,7 @@ import net.minecraft.text.TranslatableTextComponent;
 public class BanListCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("banlist")
+			CommandManager.literal("banlist")
 				.requires(
 					serverCommandSource -> (
 								serverCommandSource.getMinecraftServer().getPlayerManager().getUserBanList().isEnabled()
@@ -31,13 +31,13 @@ public class BanListCommand {
 					}
 				)
 				.then(
-					ServerCommandManager.literal("ips")
+					CommandManager.literal("ips")
 						.executes(
 							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getIpBanList().values())
 						)
 				)
 				.then(
-					ServerCommandManager.literal("players")
+					CommandManager.literal("players")
 						.executes(
 							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().values())
 						)

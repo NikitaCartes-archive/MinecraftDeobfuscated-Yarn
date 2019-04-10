@@ -33,9 +33,9 @@ public class DamageParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
@@ -69,7 +69,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 		public Particle method_3013(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h + 1.0, i);
 			damageParticle.setMaxAge(20);
-			damageParticle.method_18140(this.field_17790);
+			damageParticle.setSprite(this.field_17790);
 			return damageParticle;
 		}
 	}
@@ -86,7 +86,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h, i);
 			damageParticle.colorRed *= 0.3F;
 			damageParticle.colorGreen *= 0.8F;
-			damageParticle.method_18140(this.field_17791);
+			damageParticle.setSprite(this.field_17791);
 			return damageParticle;
 		}
 	}
@@ -101,7 +101,7 @@ public class DamageParticle extends SpriteBillboardParticle {
 
 		public Particle method_17580(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			DamageParticle damageParticle = new DamageParticle(world, d, e, f, g, h, i);
-			damageParticle.method_18140(this.field_18291);
+			damageParticle.setSprite(this.field_18291);
 			return damageParticle;
 		}
 	}

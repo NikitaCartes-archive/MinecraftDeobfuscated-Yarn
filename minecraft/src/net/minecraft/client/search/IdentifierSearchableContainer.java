@@ -60,7 +60,7 @@ public class IdentifierSearchableContainer<T> implements SearchableContainer<T> 
 		});
 	}
 
-	protected int method_4796(T object, T object2) {
+	protected int compare(T object, T object2) {
 		return Integer.compare(this.entryIds.getInt(object), this.entryIds.getInt(object2));
 	}
 
@@ -73,7 +73,7 @@ public class IdentifierSearchableContainer<T> implements SearchableContainer<T> 
 			List<T> list = this.byNamespace.findAll(string.substring(0, i).trim());
 			String string2 = string.substring(i + 1).trim();
 			List<T> list2 = this.byPath.findAll(string2);
-			return Lists.<T>newArrayList(new IdentifierSearchableContainer.Iterator<>(list.iterator(), list2.iterator(), this::method_4796));
+			return Lists.<T>newArrayList(new IdentifierSearchableContainer.Iterator<>(list.iterator(), list2.iterator(), this::compare));
 		}
 	}
 

@@ -35,7 +35,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 		super.update();
 		if (this.guardian == null) {
 			ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(this.world);
-			elderGuardianEntity.method_7010();
+			elderGuardianEntity.straightenTail();
 			this.guardian = elderGuardianEntity;
 		}
 	}

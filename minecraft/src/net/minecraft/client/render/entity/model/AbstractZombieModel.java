@@ -14,8 +14,8 @@ public abstract class AbstractZombieModel<T extends HostileEntity> extends Biped
 	public void method_17791(T hostileEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(hostileEntity, f, g, h, i, j, k);
 		boolean bl = this.method_17790(hostileEntity);
-		float l = MathHelper.sin(this.swingProgress * (float) Math.PI);
-		float m = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
+		float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
+		float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 		this.armRight.roll = 0.0F;
 		this.armLeft.roll = 0.0F;
 		this.armRight.yaw = -(0.1F - l * 0.6F);

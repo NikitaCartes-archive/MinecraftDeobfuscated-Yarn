@@ -30,7 +30,7 @@ public class SeagrassBlock extends PlantBlock implements Fertilizable, FluidFill
 
 	@Override
 	protected boolean canPlantOnTop(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), Direction.UP) && blockState.getBlock() != Blocks.field_10092;
+		return Block.isSolidFullSquare(blockState, blockView, blockPos, Direction.UP) && blockState.getBlock() != Blocks.field_10092;
 	}
 
 	@Nullable

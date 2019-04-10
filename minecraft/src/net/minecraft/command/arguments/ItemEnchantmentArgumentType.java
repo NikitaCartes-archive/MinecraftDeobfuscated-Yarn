@@ -19,7 +19,7 @@ import net.minecraft.util.registry.Registry;
 
 public class ItemEnchantmentArgumentType implements ArgumentType<Enchantment> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("unbreaking", "silk_touch");
-	public static final DynamicCommandExceptionType field_9872 = new DynamicCommandExceptionType(
+	public static final DynamicCommandExceptionType UNKNOWN_ENCHANTMENT_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("enchantment.unknown", object)
 	);
 
@@ -27,13 +27,13 @@ public class ItemEnchantmentArgumentType implements ArgumentType<Enchantment> {
 		return new ItemEnchantmentArgumentType();
 	}
 
-	public static Enchantment getEnchantmentArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static Enchantment getEnchantment(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, Enchantment.class);
 	}
 
 	public Enchantment method_9335(StringReader stringReader) throws CommandSyntaxException {
 		Identifier identifier = Identifier.parse(stringReader);
-		return (Enchantment)Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> field_9872.create(identifier));
+		return (Enchantment)Registry.ENCHANTMENT.getOrEmpty(identifier).orElseThrow(() -> UNKNOWN_ENCHANTMENT_EXCEPTION.create(identifier));
 	}
 
 	@Override

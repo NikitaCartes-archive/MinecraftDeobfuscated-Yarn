@@ -8,8 +8,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class LookControl {
 	protected final MobEntity entity;
-	protected float field_6359;
-	protected float field_6358;
+	protected float yawSpeed;
+	protected float pitchSpeed;
 	protected boolean active;
 	protected double lookX;
 	protected double lookY;
@@ -20,29 +20,23 @@ public class LookControl {
 	}
 
 	public void method_19615(Vec3d vec3d) {
-		this.lookAt(vec3d.x, vec3d.y, vec3d.z, (float)this.entity.method_5986(), (float)this.entity.method_5978());
+		this.method_20248(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	public void lookAt(Entity entity, float f, float g) {
-		this.lookX = entity.x;
-		if (entity instanceof LivingEntity) {
-			this.lookY = entity.y + (double)entity.getStandingEyeHeight();
-		} else {
-			this.lookY = (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
-		}
+		this.lookAt(entity.x, getLookingHeightFor(entity), entity.z, f, g);
+	}
 
-		this.lookZ = entity.z;
-		this.field_6359 = f;
-		this.field_6358 = g;
-		this.active = true;
+	public void method_20248(double d, double e, double f) {
+		this.lookAt(d, e, f, (float)this.entity.getLookYawSpeed(), (float)this.entity.getLookPitchSpeed());
 	}
 
 	public void lookAt(double d, double e, double f, float g, float h) {
 		this.lookX = d;
 		this.lookY = e;
 		this.lookZ = f;
-		this.field_6359 = g;
-		this.field_6358 = h;
+		this.yawSpeed = g;
+		this.pitchSpeed = h;
 		this.active = true;
 	}
 
@@ -50,41 +44,15 @@ public class LookControl {
 		this.entity.pitch = 0.0F;
 		if (this.active) {
 			this.active = false;
-			double d = this.lookX - this.entity.x;
-			double e = this.lookY - (this.entity.y + (double)this.entity.getStandingEyeHeight());
-			double f = this.lookZ - this.entity.z;
-			double g = (double)MathHelper.sqrt(d * d + f * f);
-			float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-			float i = (float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI));
-			this.entity.pitch = this.method_6229(this.entity.pitch, i, this.field_6358);
-			this.entity.headYaw = this.method_6229(this.entity.headYaw, h, this.field_6359);
+			this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.getTargetYaw(), this.yawSpeed);
+			this.entity.pitch = this.changeAngle(this.entity.pitch, this.getTargetPitch(), this.pitchSpeed);
 		} else {
-			this.entity.headYaw = this.method_6229(this.entity.headYaw, this.entity.field_6283, 10.0F);
+			this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.entity.field_6283, 10.0F);
 		}
 
-		float j = MathHelper.wrapDegrees(this.entity.headYaw - this.entity.field_6283);
 		if (!this.entity.getNavigation().isIdle()) {
-			if (j < -75.0F) {
-				this.entity.headYaw = this.entity.field_6283 - 75.0F;
-			}
-
-			if (j > 75.0F) {
-				this.entity.headYaw = this.entity.field_6283 + 75.0F;
-			}
+			this.entity.headYaw = MathHelper.method_20306(this.entity.headYaw, this.entity.field_6283, (float)this.entity.method_5986());
 		}
-	}
-
-	protected float method_6229(float f, float g, float h) {
-		float i = MathHelper.wrapDegrees(g - f);
-		if (i > h) {
-			i = h;
-		}
-
-		if (i < -h) {
-			i = -h;
-		}
-
-		return f + i;
 	}
 
 	public boolean isActive() {
@@ -101,5 +69,31 @@ public class LookControl {
 
 	public double getLookZ() {
 		return this.lookZ;
+	}
+
+	protected float getTargetPitch() {
+		double d = this.lookX - this.entity.x;
+		double e = this.lookY - (this.entity.y + (double)this.entity.getStandingEyeHeight());
+		double f = this.lookZ - this.entity.z;
+		double g = (double)MathHelper.sqrt(d * d + f * f);
+		return (float)(-(MathHelper.atan2(e, g) * 180.0F / (float)Math.PI));
+	}
+
+	protected float getTargetYaw() {
+		double d = this.lookX - this.entity.x;
+		double e = this.lookZ - this.entity.z;
+		return (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
+	}
+
+	protected float changeAngle(float f, float g, float h) {
+		float i = MathHelper.subtractAngles(f, g);
+		float j = MathHelper.clamp(i, -h, h);
+		return f + j;
+	}
+
+	private static double getLookingHeightFor(Entity entity) {
+		return entity instanceof LivingEntity
+			? entity.y + (double)entity.getStandingEyeHeight()
+			: (entity.getBoundingBox().minY + entity.getBoundingBox().maxY) / 2.0;
 	}
 }

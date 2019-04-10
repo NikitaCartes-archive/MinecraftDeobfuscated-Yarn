@@ -25,21 +25,21 @@ public class TutorialManager {
 		this.client = minecraftClient;
 	}
 
-	public void method_4909(Input input) {
+	public void onMovement(Input input) {
 		if (this.currentHandler != null) {
-			this.currentHandler.method_4903(input);
+			this.currentHandler.onMovement(input);
 		}
 	}
 
-	public void method_4908(double d, double e) {
+	public void onUpdateMouse(double d, double e) {
 		if (this.currentHandler != null) {
-			this.currentHandler.method_4901(d, e);
+			this.currentHandler.onMouseUpdate(d, e);
 		}
 	}
 
-	public void method_4911(@Nullable ClientWorld clientWorld, @Nullable HitResult hitResult) {
+	public void tick(@Nullable ClientWorld clientWorld, @Nullable HitResult hitResult) {
 		if (this.currentHandler != null && hitResult != null && clientWorld != null) {
-			this.currentHandler.method_4898(clientWorld, hitResult);
+			this.currentHandler.onTarget(clientWorld, hitResult);
 		}
 	}
 

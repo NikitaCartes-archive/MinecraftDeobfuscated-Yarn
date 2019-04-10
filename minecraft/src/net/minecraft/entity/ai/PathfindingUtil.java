@@ -57,7 +57,7 @@ public class PathfindingUtil {
 		Random random = mobEntityWithAi.getRand();
 		boolean bl2;
 		if (mobEntityWithAi.hasWalkTargetRange()) {
-			bl2 = mobEntityWithAi.getWalkTarget().method_19769(mobEntityWithAi.getPos(), (double)(mobEntityWithAi.getWalkTargetRange() + (float)i) + 1.0);
+			bl2 = mobEntityWithAi.getWalkTarget().isWithinDistance(mobEntityWithAi.getPos(), (double)(mobEntityWithAi.getWalkTargetRange() + (float)i) + 1.0);
 		} else {
 			bl2 = false;
 		}

@@ -33,9 +33,9 @@ public class PhantomEyesFeatureRenderer<T extends Entity> extends FeatureRendere
 		GlStateManager.enableLighting();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
-		gameRenderer.method_3201(true);
+		gameRenderer.setFogBlack(true);
 		this.getModel().render(entity, f, g, i, j, k, l);
-		gameRenderer.method_3201(false);
+		gameRenderer.setFogBlack(false);
 		this.applyLightmapCoordinates(entity);
 		GlStateManager.depthMask(true);
 		GlStateManager.disableBlend();
@@ -43,7 +43,7 @@ public class PhantomEyesFeatureRenderer<T extends Entity> extends FeatureRendere
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

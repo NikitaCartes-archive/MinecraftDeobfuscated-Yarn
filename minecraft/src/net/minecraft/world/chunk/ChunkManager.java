@@ -13,21 +13,21 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	@Nullable
 	public WorldChunk getWorldChunk(int i, int j, boolean bl) {
-		return (WorldChunk)this.getChunkSync(i, j, ChunkStatus.FULL, bl);
+		return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL, bl);
 	}
 
 	@Nullable
 	@Override
 	public BlockView getChunk(int i, int j) {
-		return this.getChunkSync(i, j, ChunkStatus.EMPTY, false);
+		return this.getChunk(i, j, ChunkStatus.EMPTY, false);
 	}
 
 	public boolean isChunkLoaded(int i, int j) {
-		return this.getChunkSync(i, j, ChunkStatus.FULL, false) != null;
+		return this.getChunk(i, j, ChunkStatus.FULL, false) != null;
 	}
 
 	@Nullable
-	public abstract Chunk getChunkSync(int i, int j, ChunkStatus chunkStatus, boolean bl);
+	public abstract Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl);
 
 	@Environment(EnvType.CLIENT)
 	public abstract void tick(BooleanSupplier booleanSupplier);
@@ -47,7 +47,7 @@ public abstract class ChunkManager implements ChunkProvider, AutoCloseable {
 	public void setChunkForced(ChunkPos chunkPos, boolean bl) {
 	}
 
-	public boolean isEntityInLoadedChunk(Entity entity) {
+	public boolean shouldTickEntity(Entity entity) {
 		return true;
 	}
 }

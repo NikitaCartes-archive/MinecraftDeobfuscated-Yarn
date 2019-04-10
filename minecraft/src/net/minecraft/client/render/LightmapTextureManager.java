@@ -75,9 +75,9 @@ public class LightmapTextureManager implements AutoCloseable {
 				float h = g * 0.95F + 0.05F;
 				float i = this.client.player.method_3140();
 				float j;
-				if (this.client.player.hasPotionEffect(StatusEffects.field_5925)) {
-					j = this.worldRenderer.method_3174(this.client.player, f);
-				} else if (i > 0.0F && this.client.player.hasPotionEffect(StatusEffects.field_5927)) {
+				if (this.client.player.hasStatusEffect(StatusEffects.field_5925)) {
+					j = this.worldRenderer.getNightVisionStrength(this.client.player, f);
+				} else if (i > 0.0F && this.client.player.hasStatusEffect(StatusEffects.field_5927)) {
 					j = i;
 				} else {
 					j = 0.0F;

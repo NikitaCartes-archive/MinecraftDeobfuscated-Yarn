@@ -40,8 +40,8 @@ public class CopyNameLootFunction extends ConditionalLootFunction {
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> create(CopyNameLootFunction.Source source) {
-		return create(lootConditions -> new CopyNameLootFunction(lootConditions, source));
+	public static ConditionalLootFunction.Builder<?> builder(CopyNameLootFunction.Source source) {
+		return builder(lootConditions -> new CopyNameLootFunction(lootConditions, source));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<CopyNameLootFunction> {

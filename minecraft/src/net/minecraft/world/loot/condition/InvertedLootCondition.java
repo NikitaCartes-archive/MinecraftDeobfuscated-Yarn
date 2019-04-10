@@ -35,7 +35,7 @@ public class InvertedLootCondition implements LootCondition {
 		this.term.check(lootTableReporter, function, set, lootContextType);
 	}
 
-	public static LootCondition.Builder create(LootCondition.Builder builder) {
+	public static LootCondition.Builder builder(LootCondition.Builder builder) {
 		InvertedLootCondition invertedLootCondition = new InvertedLootCondition(builder.build());
 		return () -> invertedLootCondition;
 	}

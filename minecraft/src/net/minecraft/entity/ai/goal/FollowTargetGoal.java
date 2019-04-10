@@ -11,10 +11,10 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BoundingBox;
 
 public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
-	protected final Class<T> field_6643;
+	protected final Class<T> targetClass;
 	protected final int reciprocalChance;
-	protected LivingEntity field_6644;
-	protected TargetPredicate field_6642;
+	protected LivingEntity targetEntity;
+	protected TargetPredicate targetPredicate;
 
 	public FollowTargetGoal(MobEntity mobEntity, Class<T> class_, boolean bl) {
 		this(mobEntity, class_, bl, false);
@@ -26,10 +26,10 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 
 	public FollowTargetGoal(MobEntity mobEntity, Class<T> class_, int i, boolean bl, boolean bl2, @Nullable Predicate<LivingEntity> predicate) {
 		super(mobEntity, bl, bl2);
-		this.field_6643 = class_;
+		this.targetClass = class_;
 		this.reciprocalChance = i;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
-		this.field_6642 = new TargetPredicate().setBaseMaxDistance(this.getFollowRange()).setPredicate(predicate);
+		this.setControls(EnumSet.of(Goal.Control.field_18408));
+		this.targetPredicate = new TargetPredicate().setBaseMaxDistance(this.getFollowRange()).setPredicate(predicate);
 	}
 
 	@Override
@@ -37,8 +37,8 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		if (this.reciprocalChance > 0 && this.entity.getRand().nextInt(this.reciprocalChance) != 0) {
 			return false;
 		} else {
-			this.method_18415();
-			return this.field_6644 != null;
+			this.findClosestTarget();
+			return this.targetEntity != null;
 		}
 	}
 
@@ -46,13 +46,13 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 		return this.entity.getBoundingBox().expand(d, 4.0, d);
 	}
 
-	protected void method_18415() {
-		if (this.field_6643 != PlayerEntity.class && this.field_6643 != ServerPlayerEntity.class) {
-			this.field_6644 = this.entity
+	protected void findClosestTarget() {
+		if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
+			this.targetEntity = this.entity
 				.world
-				.method_18465(
-					this.field_6643,
-					this.field_6642,
+				.getClosestEntity(
+					this.targetClass,
+					this.targetPredicate,
 					this.entity,
 					this.entity.x,
 					this.entity.y + (double)this.entity.getStandingEyeHeight(),
@@ -60,15 +60,15 @@ public class FollowTargetGoal<T extends LivingEntity> extends TrackTargetGoal {
 					this.getSearchBox(this.getFollowRange())
 				);
 		} else {
-			this.field_6644 = this.entity
+			this.targetEntity = this.entity
 				.world
-				.method_18463(this.field_6642, this.entity, this.entity.x, this.entity.y + (double)this.entity.getStandingEyeHeight(), this.entity.z);
+				.getClosestPlayer(this.targetPredicate, this.entity, this.entity.x, this.entity.y + (double)this.entity.getStandingEyeHeight(), this.entity.z);
 		}
 	}
 
 	@Override
 	public void start() {
-		this.entity.setTarget(this.field_6644);
+		this.entity.setTarget(this.targetEntity);
 		super.start();
 	}
 }

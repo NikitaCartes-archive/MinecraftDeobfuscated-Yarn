@@ -31,8 +31,8 @@ public class ItemPredicate {
 	private final Tag<Item> tag;
 	@Nullable
 	private final Item item;
-	private final NumberRange.Integer count;
-	private final NumberRange.Integer durability;
+	private final NumberRange.IntRange field_9641;
+	private final NumberRange.IntRange field_9646;
 	private final EnchantmentPredicate[] enchantments;
 	@Nullable
 	private final Potion potion;
@@ -42,8 +42,8 @@ public class ItemPredicate {
 		this.tag = null;
 		this.item = null;
 		this.potion = null;
-		this.count = NumberRange.Integer.ANY;
-		this.durability = NumberRange.Integer.ANY;
+		this.field_9641 = NumberRange.IntRange.ANY;
+		this.field_9646 = NumberRange.IntRange.ANY;
 		this.enchantments = new EnchantmentPredicate[0];
 		this.nbt = NbtPredicate.ANY;
 	}
@@ -51,16 +51,16 @@ public class ItemPredicate {
 	public ItemPredicate(
 		@Nullable Tag<Item> tag,
 		@Nullable Item item,
-		NumberRange.Integer integer,
-		NumberRange.Integer integer2,
+		NumberRange.IntRange intRange,
+		NumberRange.IntRange intRange2,
 		EnchantmentPredicate[] enchantmentPredicates,
 		@Nullable Potion potion,
 		NbtPredicate nbtPredicate
 	) {
 		this.tag = tag;
 		this.item = item;
-		this.count = integer;
-		this.durability = integer2;
+		this.field_9641 = intRange;
+		this.field_9646 = intRange2;
 		this.enchantments = enchantmentPredicates;
 		this.potion = potion;
 		this.nbt = nbtPredicate;
@@ -73,11 +73,11 @@ public class ItemPredicate {
 			return false;
 		} else if (this.item != null && itemStack.getItem() != this.item) {
 			return false;
-		} else if (!this.count.test(itemStack.getAmount())) {
+		} else if (!this.field_9641.test(itemStack.getAmount())) {
 			return false;
-		} else if (!this.durability.isDummy() && !itemStack.hasDurability()) {
+		} else if (!this.field_9646.isDummy() && !itemStack.hasDurability()) {
 			return false;
-		} else if (!this.durability.test(itemStack.getDurability() - itemStack.getDamage())) {
+		} else if (!this.field_9646.test(itemStack.getDurability() - itemStack.getDamage())) {
 			return false;
 		} else if (!this.nbt.test(itemStack)) {
 			return false;
@@ -98,8 +98,8 @@ public class ItemPredicate {
 	public static ItemPredicate deserialize(@Nullable JsonElement jsonElement) {
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "item");
-			NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("count"));
-			NumberRange.Integer integer2 = NumberRange.Integer.fromJson(jsonObject.get("durability"));
+			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("count"));
+			NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("durability"));
 			if (jsonObject.has("data")) {
 				throw new JsonParseException("Disallowed data tag found");
 			} else {
@@ -126,7 +126,7 @@ public class ItemPredicate {
 					potion = (Potion)Registry.POTION.getOrEmpty(identifier3).orElseThrow(() -> new JsonSyntaxException("Unknown potion '" + identifier3 + "'"));
 				}
 
-				return new ItemPredicate(tag, item, integer, integer2, enchantmentPredicates, potion, nbtPredicate);
+				return new ItemPredicate(tag, item, intRange, intRange2, enchantmentPredicates, potion, nbtPredicate);
 			}
 		} else {
 			return ANY;
@@ -146,8 +146,8 @@ public class ItemPredicate {
 				jsonObject.addProperty("tag", this.tag.getId().toString());
 			}
 
-			jsonObject.add("count", this.count.serialize());
-			jsonObject.add("durability", this.durability.serialize());
+			jsonObject.add("count", this.field_9641.serialize());
+			jsonObject.add("durability", this.field_9646.serialize());
 			jsonObject.add("nbt", this.nbt.serialize());
 			if (this.enchantments.length > 0) {
 				JsonArray jsonArray = new JsonArray();
@@ -188,8 +188,8 @@ public class ItemPredicate {
 		private Item item;
 		@Nullable
 		private Tag<Item> tag;
-		private NumberRange.Integer count = NumberRange.Integer.ANY;
-		private NumberRange.Integer durability = NumberRange.Integer.ANY;
+		private NumberRange.IntRange field_9648 = NumberRange.IntRange.ANY;
+		private NumberRange.IntRange field_9653 = NumberRange.IntRange.ANY;
 		@Nullable
 		private Potion potion;
 		private NbtPredicate nbt = NbtPredicate.ANY;
@@ -211,8 +211,8 @@ public class ItemPredicate {
 			return this;
 		}
 
-		public ItemPredicate.Builder count(NumberRange.Integer integer) {
-			this.count = integer;
+		public ItemPredicate.Builder method_8974(NumberRange.IntRange intRange) {
+			this.field_9648 = intRange;
 			return this;
 		}
 
@@ -223,7 +223,13 @@ public class ItemPredicate {
 
 		public ItemPredicate build() {
 			return new ItemPredicate(
-				this.tag, this.item, this.count, this.durability, (EnchantmentPredicate[])this.enchantments.toArray(new EnchantmentPredicate[0]), this.potion, this.nbt
+				this.tag,
+				this.item,
+				this.field_9648,
+				this.field_9653,
+				(EnchantmentPredicate[])this.enchantments.toArray(new EnchantmentPredicate[0]),
+				this.potion,
+				this.nbt
 			);
 		}
 	}

@@ -33,11 +33,11 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 			GlStateManager.color4f(0.5F, 0.5F, 0.5F, 1.0F);
 			GlStateManager.disableLighting();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
-			this.getModel().method_17081(this.field_4844);
+			this.getModel().copyStateTo(this.field_4844);
 			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
-			gameRenderer.method_3201(true);
+			gameRenderer.setFogBlack(true);
 			this.field_4844.render(creeperEntity, f, g, i, j, k, l);
-			gameRenderer.method_3201(false);
+			gameRenderer.setFogBlack(false);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.loadIdentity();
 			GlStateManager.matrixMode(5888);
@@ -48,7 +48,7 @@ public class CreeperChargeFeatureRenderer extends FeatureRenderer<CreeperEntity,
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

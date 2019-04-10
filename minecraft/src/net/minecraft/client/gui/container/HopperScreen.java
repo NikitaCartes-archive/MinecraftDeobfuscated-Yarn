@@ -16,28 +16,28 @@ public class HopperScreen extends ContainerScreen<HopperContainer> {
 	public HopperScreen(HopperContainer hopperContainer, PlayerInventory playerInventory, TextComponent textComponent) {
 		super(hopperContainer, playerInventory, textComponent);
 		this.passEvents = false;
-		this.height = 133;
+		this.containerHeight = 133;
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
+		this.renderBackground();
 		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+		this.font.draw(this.title.getFormattedText(), 8.0F, 6.0F, 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
-		int k = (this.screenWidth - this.width) / 2;
-		int l = (this.screenHeight - this.height) / 2;
-		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		int k = (this.width - this.containerWidth) / 2;
+		int l = (this.height - this.containerHeight) / 2;
+		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
 	}
 }

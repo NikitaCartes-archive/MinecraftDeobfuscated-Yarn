@@ -6,14 +6,25 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public abstract class Sensor<E extends LivingEntity> {
-	private final int senseInterval = 10;
-	protected long field_18463;
+	private final int senseInterval;
+	protected long lastSenseTime;
 
-	public boolean canSense(ServerWorld serverWorld, E livingEntity) {
-		return serverWorld.getTime() - this.field_18463 >= 10L;
+	public Sensor(int i) {
+		this.senseInterval = i;
 	}
 
-	public abstract void sense(ServerWorld serverWorld, E livingEntity);
+	public Sensor() {
+		this(20);
+	}
+
+	public final void canSense(ServerWorld serverWorld, E livingEntity) {
+		if (serverWorld.getTime() - this.lastSenseTime >= (long)this.senseInterval) {
+			this.lastSenseTime = serverWorld.getTime();
+			this.sense(serverWorld, livingEntity);
+		}
+	}
+
+	protected abstract void sense(ServerWorld serverWorld, E livingEntity);
 
 	public abstract Set<MemoryModuleType<?>> getOutputMemoryModules();
 }

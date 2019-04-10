@@ -3,7 +3,7 @@ package net.minecraft.server.command;
 import net.minecraft.text.TextComponent;
 
 public interface CommandOutput {
-	CommandOutput field_17395 = new CommandOutput() {
+	CommandOutput DUMMY = new CommandOutput() {
 		@Override
 		public void appendCommandFeedback(TextComponent textComponent) {
 		}

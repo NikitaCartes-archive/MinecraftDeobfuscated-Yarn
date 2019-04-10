@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
@@ -27,9 +27,9 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 		return new ColumnPosArgumentType();
 	}
 
-	public static ColumnPosArgumentType.SimpleColumnPos parseSimple(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static ColumnPosArgumentType.ColumnPos getColumnPos(CommandContext<ServerCommandSource> commandContext, String string) {
 		BlockPos blockPos = commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
-		return new ColumnPosArgumentType.SimpleColumnPos(blockPos.getX(), blockPos.getZ());
+		return new ColumnPosArgumentType.ColumnPos(blockPos.getX(), blockPos.getZ());
 	}
 
 	public PosArgument method_9703(StringReader stringReader) throws CommandSyntaxException {
@@ -59,10 +59,10 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 			if (!string.isEmpty() && string.charAt(0) == '^') {
 				collection = Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL);
 			} else {
-				collection = ((CommandSource)commandContext.getSource()).method_17771();
+				collection = ((CommandSource)commandContext.getSource()).getBlockPositionSuggestions();
 			}
 
-			return CommandSource.method_9252(string, collection, suggestionsBuilder, ServerCommandManager.getCommandValidator(this::method_9703));
+			return CommandSource.method_9252(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9703));
 		}
 	}
 
@@ -71,11 +71,11 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 		return EXAMPLES;
 	}
 
-	public static class SimpleColumnPos {
+	public static class ColumnPos {
 		public final int x;
 		public final int z;
 
-		public SimpleColumnPos(int i, int j) {
+		public ColumnPos(int i, int j) {
 			this.x = i;
 			this.z = j;
 		}

@@ -18,7 +18,7 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 		this.colorBlue = h;
 		this.scale = 2.0F * (1.0F - (float)g * 0.5F);
 		this.field_17815 = spriteProvider;
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
@@ -28,13 +28,13 @@ public class ExplosionLargeParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17815);
+			this.setSpriteForAge(this.field_17815);
 		}
 	}
 

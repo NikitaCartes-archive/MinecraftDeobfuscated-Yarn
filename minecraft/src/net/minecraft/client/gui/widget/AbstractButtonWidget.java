@@ -10,7 +10,7 @@ import net.minecraft.client.audio.SoundManager;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.InputListener;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.sound.SoundEvents;
@@ -19,7 +19,7 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class AbstractButtonWidget extends DrawableHelper implements Drawable, InputListener {
+public abstract class AbstractButtonWidget extends DrawableHelper implements Drawable, Element {
 	public static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
 	private static final int NARRATE_DELAY_MOUSE = 750;
 	private static final int NARRATE_DELAY_FOCUS = 200;
@@ -29,7 +29,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	public int y;
 	private String message;
 	private boolean wasHovered;
-	private boolean isHovered;
+	protected boolean isHovered;
 	public boolean active = true;
 	public boolean visible = true;
 	protected float alpha = 1.0F;
@@ -109,8 +109,8 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 			GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 		);
 		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-		this.drawTexturedRect(this.x, this.y, 0, 46 + k * 20, this.width / 2, this.height);
-		this.drawTexturedRect(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
+		this.blit(this.x, this.y, 0, 46 + k * 20, this.width / 2, this.height);
+		this.blit(this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + k * 20, this.width / 2, this.height);
 		this.renderBg(minecraftClient, i, j);
 		int l = 14737632;
 		if (!this.active) {
@@ -119,7 +119,7 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 			l = 16777120;
 		}
 
-		this.drawStringCentered(textRenderer, this.message, this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0F) << 24);
+		this.drawCenteredString(textRenderer, this.message, this.x + this.width / 2, this.y + (this.height - 8) / 2, l | MathHelper.ceil(this.alpha * 255.0F) << 24);
 	}
 
 	protected void renderBg(MinecraftClient minecraftClient, int i, int j) {
@@ -135,8 +135,26 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	}
 
 	@Override
+	public boolean mouseClicked(double d, double e, int i) {
+		if (this.active && this.visible) {
+			if (this.isValidClickButton(i)) {
+				boolean bl = this.clicked(d, e);
+				if (bl) {
+					this.playDownSound(MinecraftClient.getInstance().getSoundManager());
+					this.onClick(d, e);
+					return true;
+				}
+			}
+
+			return false;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
 	public boolean mouseReleased(double d, double e, int i) {
-		if (i == 0) {
+		if (this.isValidClickButton(i)) {
 			this.onRelease(d, e);
 			return true;
 		} else {
@@ -144,9 +162,13 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		}
 	}
 
+	protected boolean isValidClickButton(int i) {
+		return i == 0;
+	}
+
 	@Override
 	public boolean mouseDragged(double d, double e, int i, double f, double g) {
-		if (i == 0) {
+		if (this.isValidClickButton(i)) {
 			this.onDrag(d, e, f, g);
 			return true;
 		} else {
@@ -163,13 +185,13 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	}
 
 	@Override
-	public void onFocusChanged(boolean bl) {
-		this.focused = bl;
-	}
-
-	@Override
-	public boolean isPartOfFocusCycle() {
-		return this.active && this.visible;
+	public boolean changeFocus(boolean bl) {
+		if (this.active && this.visible) {
+			this.focused = !this.focused;
+			return this.focused;
+		} else {
+			return false;
+		}
 	}
 
 	@Override

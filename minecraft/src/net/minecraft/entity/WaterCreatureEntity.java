@@ -3,6 +3,9 @@ package net.minecraft.entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntityWithAi;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.tag.FluidTags;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
@@ -22,8 +25,13 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this);
+	protected boolean method_20344(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
+		return iWorld.getFluidState(blockPos).matches(FluidTags.field_15517);
+	}
+
+	@Override
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this);
 	}
 
 	@Override
@@ -41,8 +49,8 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 		return 1 + this.world.random.nextInt(3);
 	}
 
-	protected void method_6673(int i) {
-		if (this.isValid() && !this.isInsideWaterOrBubbleColumn()) {
+	protected void tickBreath(int i) {
+		if (this.isAlive() && !this.isInsideWaterOrBubbleColumn()) {
 			this.setBreath(i - 1);
 			if (this.getBreath() == -20) {
 				this.setBreath(0);
@@ -57,7 +65,7 @@ public abstract class WaterCreatureEntity extends MobEntityWithAi {
 	public void baseTick() {
 		int i = this.getBreath();
 		super.baseTick();
-		this.method_6673(i);
+		this.tickBreath(i);
 	}
 
 	@Override

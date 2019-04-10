@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public abstract class EntityModel<T extends Entity> extends Model {
-	public float swingProgress;
+	public float handSwingProgress;
 	public boolean isRiding;
 	public boolean isChild = true;
 
@@ -20,8 +20,8 @@ public abstract class EntityModel<T extends Entity> extends Model {
 	public void animateModel(T entity, float f, float g, float h) {
 	}
 
-	public void method_17081(EntityModel<T> entityModel) {
-		entityModel.swingProgress = this.swingProgress;
+	public void copyStateTo(EntityModel<T> entityModel) {
+		entityModel.handSwingProgress = this.handSwingProgress;
 		entityModel.isRiding = this.isRiding;
 		entityModel.isChild = this.isChild;
 	}

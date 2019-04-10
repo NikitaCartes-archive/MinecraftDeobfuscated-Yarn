@@ -39,8 +39,10 @@ public class FireballEntity extends AbstractFireballEntity {
 
 			boolean bl = this.world.getGameRules().getBoolean("mobGriefing");
 			this.world
-				.createExplosion(null, this.x, this.y, this.z, (float)this.explosionPower, bl, bl ? Explosion.class_4179.field_18687 : Explosion.class_4179.field_18685);
-			this.invalidate();
+				.createExplosion(
+					null, this.x, this.y, this.z, (float)this.explosionPower, bl, bl ? Explosion.DestructionType.field_18687 : Explosion.DestructionType.field_18685
+				);
+			this.remove();
 		}
 	}
 

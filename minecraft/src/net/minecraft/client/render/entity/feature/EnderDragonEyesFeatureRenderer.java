@@ -32,9 +32,9 @@ public class EnderDragonEyesFeatureRenderer extends FeatureRenderer<EnderDragonE
 		GlStateManager.enableLighting();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
-		gameRenderer.method_3201(true);
+		gameRenderer.setFogBlack(true);
 		this.getModel().method_17137(enderDragonEntity, f, g, i, j, k, l);
-		gameRenderer.method_3201(false);
+		gameRenderer.setFogBlack(false);
 		this.applyLightmapCoordinates(enderDragonEntity);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlphaTest();
@@ -42,7 +42,7 @@ public class EnderDragonEyesFeatureRenderer extends FeatureRenderer<EnderDragonE
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

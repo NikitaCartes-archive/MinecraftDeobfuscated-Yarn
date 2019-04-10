@@ -14,7 +14,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -23,6 +22,7 @@ import net.minecraft.entity.ai.goal.HorseBondWithPlayerGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -51,7 +51,7 @@ import net.minecraft.world.World;
 
 public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker {
 	private static final TrackedData<Integer> ATTR_STRENGTH = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Integer> field_6995 = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
+	private static final TrackedData<Integer> CARPET_COLOR = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Integer> ATTR_VARIANT = DataTracker.registerData(LlamaEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private boolean field_6999;
 	@Nullable
@@ -72,7 +72,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		this.dataTracker.set(ATTR_STRENGTH, Math.max(1, Math.min(5, i)));
 	}
 
-	private void method_6796() {
+	private void initializeStrength() {
 		int i = this.random.nextFloat() < 0.04F ? 5 : 3;
 		this.setStrength(1 + this.random.nextInt(i));
 	}
@@ -86,8 +86,8 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("Variant", this.getVariant());
 		compoundTag.putInt("Strength", this.getStrength());
-		if (!this.decorationItem.getInvStack(1).isEmpty()) {
-			compoundTag.put("DecorItem", this.decorationItem.getInvStack(1).toTag(new CompoundTag()));
+		if (!this.items.getInvStack(1).isEmpty()) {
+			compoundTag.put("DecorItem", this.items.getInvStack(1).toTag(new CompoundTag()));
 		}
 	}
 
@@ -97,10 +97,10 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		super.readCustomDataFromTag(compoundTag);
 		this.setVariant(compoundTag.getInt("Variant"));
 		if (compoundTag.containsKey("DecorItem", 10)) {
-			this.decorationItem.setInvStack(1, ItemStack.fromTag(compoundTag.getCompound("DecorItem")));
+			this.items.setInvStack(1, ItemStack.fromTag(compoundTag.getCompound("DecorItem")));
 		}
 
-		this.method_6731();
+		this.updateSaddle();
 	}
 
 	@Override
@@ -129,7 +129,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.dataTracker.startTracking(ATTR_STRENGTH, 0);
-		this.dataTracker.startTracking(field_6995, -1);
+		this.dataTracker.startTracking(CARPET_COLOR, -1);
 		this.dataTracker.startTracking(ATTR_VARIANT, 0);
 	}
 
@@ -147,7 +147,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	@Override
-	public void method_5865(Entity entity) {
+	public void updatePassengerPosition(Entity entity) {
 		if (this.hasPassenger(entity)) {
 			float f = MathHelper.cos(this.field_6283 * (float) (Math.PI / 180.0));
 			float g = MathHelper.sin(this.field_6283 * (float) (Math.PI / 180.0));
@@ -162,12 +162,12 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	@Override
-	public boolean method_5956() {
+	public boolean canBeControlledByRider() {
 		return false;
 	}
 
 	@Override
-	protected boolean method_6742(PlayerEntity playerEntity, ItemStack itemStack) {
+	protected boolean receiveFood(PlayerEntity playerEntity, ItemStack itemStack) {
 		int i = 0;
 		int j = 0;
 		float f = 0.0F;
@@ -181,9 +181,9 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 			i = 90;
 			j = 6;
 			f = 10.0F;
-			if (this.isTame() && this.getBreedingAge() == 0 && this.method_6482()) {
+			if (this.isTame() && this.getBreedingAge() == 0 && this.canEat()) {
 				bl = true;
-				this.method_6480(playerEntity);
+				this.lovePlayer(playerEntity);
 			}
 		}
 
@@ -204,16 +204,16 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 					0.0
 				);
 			if (!this.world.isClient) {
-				this.method_5615(i);
+				this.growUp(i);
 			}
 
 			bl = true;
 		}
 
-		if (j > 0 && (bl || !this.isTame()) && this.getTemper() < this.method_6755()) {
+		if (j > 0 && (bl || !this.isTame()) && this.getTemper() < this.getMaxTemper()) {
 			bl = true;
 			if (!this.world.isClient) {
-				this.method_6745(j);
+				this.addTemper(j);
 			}
 		}
 
@@ -228,17 +228,17 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	@Override
-	protected boolean method_6062() {
-		return this.getHealth() <= 0.0F || this.isEating();
+	protected boolean cannotMove() {
+		return this.getHealth() <= 0.0F || this.isEatingGrass();
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
-		this.method_6796();
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.initializeStrength();
 		int i;
 		if (entityData instanceof LlamaEntity.class_1503) {
 			i = ((LlamaEntity.class_1503)entityData).field_7001;
@@ -252,7 +252,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	@Override
-	protected SoundEvent method_6747() {
+	protected SoundEvent getAngrySound() {
 		return SoundEvents.field_14586;
 	}
 
@@ -277,13 +277,13 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	@Override
-	protected void method_6705() {
+	protected void playAddChestSound() {
 		this.playSound(SoundEvents.field_15097, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 
 	@Override
-	public void method_6757() {
-		SoundEvent soundEvent = this.method_6747();
+	public void playAngrySound() {
+		SoundEvent soundEvent = this.getAngrySound();
 		if (soundEvent != null) {
 			this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
 		}
@@ -295,68 +295,68 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	@Override
-	public boolean method_6735() {
+	public boolean canEquip() {
 		return true;
 	}
 
 	@Override
-	public boolean method_6773(ItemStack itemStack) {
+	public boolean canEquip(ItemStack itemStack) {
 		Item item = itemStack.getItem();
 		return ItemTags.field_15542.contains(item);
 	}
 
 	@Override
-	public boolean method_6765() {
+	public boolean canBeSaddled() {
 		return false;
 	}
 
 	@Override
 	public void onInvChange(Inventory inventory) {
-		DyeColor dyeColor = this.method_6800();
+		DyeColor dyeColor = this.getCarpetColor();
 		super.onInvChange(inventory);
-		DyeColor dyeColor2 = this.method_6800();
+		DyeColor dyeColor2 = this.getCarpetColor();
 		if (this.age > 20 && dyeColor2 != null && dyeColor2 != dyeColor) {
 			this.playSound(SoundEvents.field_14554, 0.5F, 1.0F);
 		}
 	}
 
 	@Override
-	protected void method_6731() {
+	protected void updateSaddle() {
 		if (!this.world.isClient) {
-			super.method_6731();
-			this.method_6799(method_6794(this.decorationItem.getInvStack(1)));
+			super.updateSaddle();
+			this.setCarpetColor(getColorFromCarpet(this.items.getInvStack(1)));
 		}
 	}
 
-	private void method_6799(@Nullable DyeColor dyeColor) {
-		this.dataTracker.set(field_6995, dyeColor == null ? -1 : dyeColor.getId());
+	private void setCarpetColor(@Nullable DyeColor dyeColor) {
+		this.dataTracker.set(CARPET_COLOR, dyeColor == null ? -1 : dyeColor.getId());
 	}
 
 	@Nullable
-	private static DyeColor method_6794(ItemStack itemStack) {
+	private static DyeColor getColorFromCarpet(ItemStack itemStack) {
 		Block block = Block.getBlockFromItem(itemStack.getItem());
 		return block instanceof CarpetBlock ? ((CarpetBlock)block).getColor() : null;
 	}
 
 	@Nullable
-	public DyeColor method_6800() {
-		int i = this.dataTracker.get(field_6995);
+	public DyeColor getCarpetColor() {
+		int i = this.dataTracker.get(CARPET_COLOR);
 		return i == -1 ? null : DyeColor.byId(i);
 	}
 
 	@Override
-	public int method_6755() {
+	public int getMaxTemper() {
 		return 30;
 	}
 
 	@Override
 	public boolean canBreedWith(AnimalEntity animalEntity) {
-		return animalEntity != this && animalEntity instanceof LlamaEntity && this.method_6734() && ((LlamaEntity)animalEntity).method_6734();
+		return animalEntity != this && animalEntity instanceof LlamaEntity && this.canBreed() && ((LlamaEntity)animalEntity).canBreed();
 	}
 
 	public LlamaEntity method_6804(PassiveEntity passiveEntity) {
 		LlamaEntity llamaEntity = this.createChild();
-		this.method_6743(passiveEntity, llamaEntity);
+		this.setChildAttributes(passiveEntity, llamaEntity);
 		LlamaEntity llamaEntity2 = (LlamaEntity)passiveEntity;
 		int i = this.random.nextInt(Math.max(this.getStrength(), llamaEntity2.getStrength())) + 1;
 		if (this.random.nextFloat() < 0.03F) {
@@ -449,19 +449,19 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 	}
 
 	@Override
-	protected double method_6148() {
+	protected double getRunFromLeashSpeed() {
 		return 2.0;
 	}
 
 	@Override
-	protected void method_6746() {
+	protected void walkToParent() {
 		if (!this.isFollowing() && this.isChild()) {
-			super.method_6746();
+			super.walkToParent();
 		}
 	}
 
 	@Override
-	public boolean method_6762() {
+	public boolean eatsGrass() {
 		return false;
 	}
 
@@ -489,7 +489,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttacker 
 		}
 	}
 
-	static class class_1504 extends AvoidGoal {
+	static class class_1504 extends RevengeGoal {
 		public class_1504(LlamaEntity llamaEntity) {
 			super(llamaEntity);
 		}

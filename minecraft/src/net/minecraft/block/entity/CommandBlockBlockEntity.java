@@ -51,7 +51,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		}
 
 		@Override
-		public ServerCommandSource method_8303() {
+		public ServerCommandSource markDirty() {
 			return new ServerCommandSource(
 				this,
 				new Vec3d(

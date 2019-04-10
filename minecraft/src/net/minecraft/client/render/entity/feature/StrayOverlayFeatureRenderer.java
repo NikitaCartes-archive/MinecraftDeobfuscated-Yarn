@@ -19,7 +19,7 @@ public class StrayOverlayFeatureRenderer<T extends MobEntity & RangedAttacker, M
 	}
 
 	public void method_4206(T mobEntity, float f, float g, float h, float i, float j, float k, float l) {
-		this.getModel().method_17081(this.model);
+		this.getModel().copyStateTo(this.model);
 		this.model.method_19689(mobEntity, f, g, h);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.bindTexture(SKIN);
@@ -27,7 +27,7 @@ public class StrayOverlayFeatureRenderer<T extends MobEntity & RangedAttacker, M
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 }

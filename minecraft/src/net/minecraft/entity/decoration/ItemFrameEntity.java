@@ -106,7 +106,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	public boolean method_6888() {
-		if (!this.world.method_17892(this)) {
+		if (!this.world.doesNotCollide(this)) {
 			return false;
 		} else {
 			BlockState blockState = this.world.getBlockState(this.blockPos.offset(this.facing.getOpposite()));
@@ -119,6 +119,12 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	@Override
 	public float getBoundingBoxMarginForTargeting() {
 		return 0.0F;
+	}
+
+	@Override
+	public void kill() {
+		this.method_6937(this.getHeldItemStack());
+		super.kill();
 	}
 
 	@Override
@@ -167,7 +173,11 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	public void method_6936(@Nullable Entity entity, boolean bl) {
-		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
+		if (!this.world.getGameRules().getBoolean("doEntityDrops")) {
+			if (entity == null) {
+				this.method_6937(this.getHeldItemStack());
+			}
+		} else {
 			ItemStack itemStack = this.getHeldItemStack();
 			this.setHeldItemStack(ItemStack.EMPTY);
 			if (entity instanceof PlayerEntity) {
@@ -182,18 +192,21 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 				this.dropItem(Items.field_8143);
 			}
 
-			if (!itemStack.isEmpty() && this.random.nextFloat() < this.itemDropChance) {
+			if (!itemStack.isEmpty()) {
 				itemStack = itemStack.copy();
 				this.method_6937(itemStack);
-				this.dropStack(itemStack);
+				if (this.random.nextFloat() < this.itemDropChance) {
+					this.dropStack(itemStack);
+				}
 			}
 		}
 	}
 
 	private void method_6937(ItemStack itemStack) {
 		if (itemStack.getItem() == Items.field_8204) {
-			MapState mapState = FilledMapItem.method_8001(itemStack, this.world);
+			MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.world);
 			mapState.method_104(this.blockPos, this.getEntityId());
+			mapState.setDirty(true);
 		}
 
 		itemStack.setHoldingItemFrame(null);
@@ -225,7 +238,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public boolean method_5758(int i, ItemStack itemStack) {
+	public boolean equip(int i, ItemStack itemStack) {
 		if (i == 0) {
 			this.setHeldItemStack(itemStack);
 			return true;
@@ -279,6 +292,11 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			ItemStack itemStack = ItemStack.fromTag(compoundTag2);
 			if (itemStack.isEmpty()) {
 				field_7131.warn("Unable to load item from: {}", compoundTag2);
+			}
+
+			ItemStack itemStack2 = this.getHeldItemStack();
+			if (!itemStack2.isEmpty() && !ItemStack.areEqual(itemStack, itemStack2)) {
+				this.method_6937(itemStack2);
 			}
 
 			this.setHeldItemStack(itemStack, false);

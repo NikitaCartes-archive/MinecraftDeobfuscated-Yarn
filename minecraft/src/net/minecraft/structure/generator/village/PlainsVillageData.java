@@ -357,7 +357,9 @@ public class PlainsVillageData {
 					new Identifier("village/plains/villagers"),
 					new Identifier("empty"),
 					ImmutableList.of(
-						new Pair<>(new SinglePoolElement("village/plains/villagers/nitwit"), 1), new Pair<>(new SinglePoolElement("village/plains/villagers/unemployed"), 10)
+						new Pair<>(new SinglePoolElement("village/plains/villagers/nitwit"), 1),
+						new Pair<>(new SinglePoolElement("village/plains/villagers/baby"), 1),
+						new Pair<>(new SinglePoolElement("village/plains/villagers/unemployed"), 10)
 					),
 					StructurePool.Projection.RIGID
 				)

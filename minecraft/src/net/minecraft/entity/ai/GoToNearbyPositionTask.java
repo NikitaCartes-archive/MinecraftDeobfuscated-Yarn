@@ -27,10 +27,10 @@ public class GoToNearbyPositionTask extends Task<MobEntityWithAi> {
 	}
 
 	protected boolean method_19607(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi) {
-		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getMemory(this.memoryModuleType);
+		Optional<GlobalPos> optional = mobEntityWithAi.getBrain().getOptionalMemory(this.memoryModuleType);
 		return optional.isPresent()
 			&& Objects.equals(serverWorld.getDimension().getType(), ((GlobalPos)optional.get()).getDimension())
-			&& ((GlobalPos)optional.get()).getPos().method_19769(mobEntityWithAi.getPos(), (double)this.maxDistance);
+			&& ((GlobalPos)optional.get()).getPos().isWithinDistance(mobEntityWithAi.getPos(), (double)this.maxDistance);
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class GoToNearbyPositionTask extends Task<MobEntityWithAi> {
 	protected void method_19608(ServerWorld serverWorld, MobEntityWithAi mobEntityWithAi, long l) {
 		if (l > this.nextRunTime) {
 			Brain<?> brain = mobEntityWithAi.getBrain();
-			Optional<GlobalPos> optional = brain.getMemory(this.memoryModuleType);
+			Optional<GlobalPos> optional = brain.getOptionalMemory(this.memoryModuleType);
 			optional.ifPresent(globalPos -> brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(globalPos.getPos(), 0.4F, this.field_18863)));
 			this.nextRunTime = l + 80L;
 		}

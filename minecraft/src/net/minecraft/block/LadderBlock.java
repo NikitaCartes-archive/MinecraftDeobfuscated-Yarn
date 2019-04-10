@@ -48,8 +48,7 @@ public class LadderBlock extends Block implements Waterloggable {
 
 	private boolean method_10305(BlockView blockView, BlockPos blockPos, Direction direction) {
 		BlockState blockState = blockView.getBlockState(blockPos);
-		boolean bl = method_9581(blockState.getBlock());
-		return !bl && Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction) && !blockState.emitsRedstonePower();
+		return !blockState.emitsRedstonePower() && Block.isSolidFullSquare(blockState, blockView, blockPos, direction);
 	}
 
 	@Override

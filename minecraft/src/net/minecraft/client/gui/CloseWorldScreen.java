@@ -11,14 +11,14 @@ public class CloseWorldScreen extends Screen {
 	}
 
 	@Override
-	public boolean doesEscapeKeyClose() {
+	public boolean shouldCloseOnEsc() {
 		return false;
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawTextureBackground(0);
-		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 70, 16777215);
+		this.renderDirtBackground(0);
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 70, 16777215);
 		super.render(i, j, f);
 	}
 }

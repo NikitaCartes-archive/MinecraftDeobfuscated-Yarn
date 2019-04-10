@@ -25,7 +25,7 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
-	protected boolean method_7216() {
+	protected boolean burnsInDaylight() {
 		return false;
 	}
 
@@ -61,14 +61,14 @@ public class HuskEntity extends ZombieEntity {
 	}
 
 	@Override
-	protected boolean method_7209() {
+	protected boolean canConvertInWater() {
 		return true;
 	}
 
 	@Override
-	protected void method_7218() {
-		this.method_7200(EntityType.ZOMBIE);
-		this.world.playEvent(null, 1041, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+	protected void convertInWater() {
+		this.convertTo(EntityType.ZOMBIE);
+		this.world.playLevelEvent(null, 1041, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
 	}
 
 	@Override

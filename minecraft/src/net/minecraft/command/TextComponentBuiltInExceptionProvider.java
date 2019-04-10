@@ -7,200 +7,220 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import net.minecraft.text.TranslatableTextComponent;
 
 public class TextComponentBuiltInExceptionProvider implements BuiltInExceptionProvider {
-	private static final Dynamic2CommandExceptionType field_9799 = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType DOUBLE_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("argument.double.low", object2, object)
 	);
-	private static final Dynamic2CommandExceptionType field_9788 = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType DOUBLE_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("argument.double.big", object2, object)
 	);
-	private static final Dynamic2CommandExceptionType field_9802 = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType FLOAT_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("argument.float.low", object2, object)
 	);
-	private static final Dynamic2CommandExceptionType field_9795 = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType FLOAT_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("argument.float.big", object2, object)
 	);
-	private static final Dynamic2CommandExceptionType field_9784 = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType INTEGER_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("argument.integer.low", object2, object)
 	);
-	private static final Dynamic2CommandExceptionType field_9793 = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType INTEGER_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("argument.integer.big", object2, object)
 	);
-	private static final Dynamic2CommandExceptionType field_18140 = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType LONG_TOO_LOW_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("argument.long.low", object2, object)
 	);
-	private static final Dynamic2CommandExceptionType field_18141 = new Dynamic2CommandExceptionType(
+	private static final Dynamic2CommandExceptionType LONG_TOO_HIGH_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("argument.long.big", object2, object)
 	);
-	private static final DynamicCommandExceptionType field_9796 = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType EXPECTED_LITERAL_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("argument.literal.incorrect", object)
 	);
-	private static final SimpleCommandExceptionType field_9783 = new SimpleCommandExceptionType(new TranslatableTextComponent("parsing.quote.expected.start"));
-	private static final SimpleCommandExceptionType field_9803 = new SimpleCommandExceptionType(new TranslatableTextComponent("parsing.quote.expected.end"));
-	private static final DynamicCommandExceptionType field_9791 = new DynamicCommandExceptionType(
+	private static final SimpleCommandExceptionType EXPECTED_START_QUOTE_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("parsing.quote.expected.start")
+	);
+	private static final SimpleCommandExceptionType EXPECTED_END_QUOTE_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("parsing.quote.expected.end")
+	);
+	private static final DynamicCommandExceptionType INVALID_ESCAPE_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("parsing.quote.escape", object)
 	);
-	private static final DynamicCommandExceptionType field_9789 = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType INVALID_BOOLEAN_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("parsing.bool.invalid", object)
 	);
-	private static final DynamicCommandExceptionType field_9786 = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType INVALID_INTEGER_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("parsing.int.invalid", object)
 	);
-	private static final SimpleCommandExceptionType field_9801 = new SimpleCommandExceptionType(new TranslatableTextComponent("parsing.int.expected"));
-	private static final DynamicCommandExceptionType field_18142 = new DynamicCommandExceptionType(
+	private static final SimpleCommandExceptionType EXPECTED_INTEGER_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("parsing.int.expected")
+	);
+	private static final DynamicCommandExceptionType INVALID_LONG_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("parsing.long.invalid", object)
 	);
-	private static final SimpleCommandExceptionType field_18143 = new SimpleCommandExceptionType(new TranslatableTextComponent("parsing.long.expected"));
-	private static final DynamicCommandExceptionType field_9800 = new DynamicCommandExceptionType(
+	private static final SimpleCommandExceptionType EXPECTED_LONG_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("parsing.long.expected")
+	);
+	private static final DynamicCommandExceptionType INVALID_DOUBLE_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("parsing.double.invalid", object)
 	);
-	private static final SimpleCommandExceptionType field_9798 = new SimpleCommandExceptionType(new TranslatableTextComponent("parsing.double.expected"));
-	private static final DynamicCommandExceptionType field_9804 = new DynamicCommandExceptionType(
+	private static final SimpleCommandExceptionType EXPECTED_DOUBLE_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("parsing.double.expected")
+	);
+	private static final DynamicCommandExceptionType INVALID_FLOAT_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("parsing.float.invalid", object)
 	);
-	private static final SimpleCommandExceptionType field_9787 = new SimpleCommandExceptionType(new TranslatableTextComponent("parsing.float.expected"));
-	private static final SimpleCommandExceptionType field_9794 = new SimpleCommandExceptionType(new TranslatableTextComponent("parsing.bool.expected"));
-	private static final DynamicCommandExceptionType field_9785 = new DynamicCommandExceptionType(
+	private static final SimpleCommandExceptionType EXPECTED_FLOAT_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("parsing.float.expected")
+	);
+	private static final SimpleCommandExceptionType EXPECTED_BOOLEAN_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("parsing.bool.expected")
+	);
+	private static final DynamicCommandExceptionType EXPECTED_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("parsing.expected", object)
 	);
-	private static final SimpleCommandExceptionType field_9797 = new SimpleCommandExceptionType(new TranslatableTextComponent("command.unknown.command"));
-	private static final SimpleCommandExceptionType field_9792 = new SimpleCommandExceptionType(new TranslatableTextComponent("command.unknown.argument"));
-	private static final SimpleCommandExceptionType field_9782 = new SimpleCommandExceptionType(new TranslatableTextComponent("command.expected.separator"));
-	private static final DynamicCommandExceptionType field_9790 = new DynamicCommandExceptionType(
+	private static final SimpleCommandExceptionType UNKNOWN_COMMAND_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("command.unknown.command")
+	);
+	private static final SimpleCommandExceptionType UNKNOWN_ARGUMENT_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("command.unknown.argument")
+	);
+	private static final SimpleCommandExceptionType EXPECTED_SEPARATOR_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("command.expected.separator")
+	);
+	private static final DynamicCommandExceptionType COMMAND_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("command.exception", object)
 	);
 
 	@Override
 	public Dynamic2CommandExceptionType doubleTooLow() {
-		return field_9799;
+		return DOUBLE_TOO_LOW_EXCEPTION;
 	}
 
 	@Override
 	public Dynamic2CommandExceptionType doubleTooHigh() {
-		return field_9788;
+		return DOUBLE_TOO_HIGH_EXCEPTION;
 	}
 
 	@Override
 	public Dynamic2CommandExceptionType floatTooLow() {
-		return field_9802;
+		return FLOAT_TOO_LOW_EXCEPTION;
 	}
 
 	@Override
 	public Dynamic2CommandExceptionType floatTooHigh() {
-		return field_9795;
+		return FLOAT_TOO_HIGH_EXCEPTION;
 	}
 
 	@Override
 	public Dynamic2CommandExceptionType integerTooLow() {
-		return field_9784;
+		return INTEGER_TOO_LOW_EXCEPTION;
 	}
 
 	@Override
 	public Dynamic2CommandExceptionType integerTooHigh() {
-		return field_9793;
+		return INTEGER_TOO_HIGH_EXCEPTION;
 	}
 
 	@Override
 	public Dynamic2CommandExceptionType longTooLow() {
-		return field_18140;
+		return LONG_TOO_LOW_EXCEPTION;
 	}
 
 	@Override
 	public Dynamic2CommandExceptionType longTooHigh() {
-		return field_18141;
+		return LONG_TOO_HIGH_EXCEPTION;
 	}
 
 	@Override
 	public DynamicCommandExceptionType literalIncorrect() {
-		return field_9796;
+		return EXPECTED_LITERAL_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType readerExpectedStartOfQuote() {
-		return field_9783;
+		return EXPECTED_START_QUOTE_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType readerExpectedEndOfQuote() {
-		return field_9803;
+		return EXPECTED_END_QUOTE_EXCEPTION;
 	}
 
 	@Override
 	public DynamicCommandExceptionType readerInvalidEscape() {
-		return field_9791;
+		return INVALID_ESCAPE_EXCEPTION;
 	}
 
 	@Override
 	public DynamicCommandExceptionType readerInvalidBool() {
-		return field_9789;
+		return INVALID_BOOLEAN_EXCEPTION;
 	}
 
 	@Override
 	public DynamicCommandExceptionType readerInvalidInt() {
-		return field_9786;
+		return INVALID_INTEGER_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType readerExpectedInt() {
-		return field_9801;
+		return EXPECTED_INTEGER_EXCEPTION;
 	}
 
 	@Override
 	public DynamicCommandExceptionType readerInvalidLong() {
-		return field_18142;
+		return INVALID_LONG_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType readerExpectedLong() {
-		return field_18143;
+		return EXPECTED_LONG_EXCEPTION;
 	}
 
 	@Override
 	public DynamicCommandExceptionType readerInvalidDouble() {
-		return field_9800;
+		return INVALID_DOUBLE_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType readerExpectedDouble() {
-		return field_9798;
+		return EXPECTED_DOUBLE_EXCEPTION;
 	}
 
 	@Override
 	public DynamicCommandExceptionType readerInvalidFloat() {
-		return field_9804;
+		return INVALID_FLOAT_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType readerExpectedFloat() {
-		return field_9787;
+		return EXPECTED_FLOAT_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType readerExpectedBool() {
-		return field_9794;
+		return EXPECTED_BOOLEAN_EXCEPTION;
 	}
 
 	@Override
 	public DynamicCommandExceptionType readerExpectedSymbol() {
-		return field_9785;
+		return EXPECTED_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType dispatcherUnknownCommand() {
-		return field_9797;
+		return UNKNOWN_COMMAND_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType dispatcherUnknownArgument() {
-		return field_9792;
+		return UNKNOWN_ARGUMENT_EXCEPTION;
 	}
 
 	@Override
 	public SimpleCommandExceptionType dispatcherExpectedArgumentSeparator() {
-		return field_9782;
+		return EXPECTED_SEPARATOR_EXCEPTION;
 	}
 
 	@Override
 	public DynamicCommandExceptionType dispatcherParseException() {
-		return field_9790;
+		return COMMAND_EXCEPTION;
 	}
 }

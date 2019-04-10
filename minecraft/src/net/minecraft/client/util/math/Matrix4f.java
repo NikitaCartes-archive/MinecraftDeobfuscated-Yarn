@@ -119,7 +119,7 @@ public final class Matrix4f {
 		return matrix4f;
 	}
 
-	public static Matrix4f method_4933(float f, float g, float h, float i) {
+	public static Matrix4f projectionMatrix(float f, float g, float h, float i) {
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.set(0, 0, 2.0F / f);
 		matrix4f.set(1, 1, 2.0F / g);

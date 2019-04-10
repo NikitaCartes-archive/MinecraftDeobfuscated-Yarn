@@ -27,7 +27,7 @@ public final class MissingSprite extends Sprite {
 			}
 		}
 
-		nativeImage.method_4302();
+		nativeImage.untrack();
 		return nativeImage;
 	});
 

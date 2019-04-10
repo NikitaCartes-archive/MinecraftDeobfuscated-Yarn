@@ -35,7 +35,7 @@ public class InfestedBlock extends Block {
 			SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
 			silverfishEntity.setPositionAndAngles((double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, 0.0F, 0.0F);
 			world.spawnEntity(silverfishEntity);
-			silverfishEntity.method_5990();
+			silverfishEntity.playSpawnEffects();
 		}
 	}
 

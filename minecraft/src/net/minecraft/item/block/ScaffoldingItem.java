@@ -3,6 +3,7 @@ package net.minecraft.item.block;
 import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ScaffoldingBlock;
 import net.minecraft.client.network.packet.ChatMessageS2CPacket;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -28,7 +29,7 @@ public class ScaffoldingItem extends BlockItem {
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = this.getBlock();
 		if (blockState.getBlock() != block) {
-			return itemPlacementContext;
+			return ScaffoldingBlock.method_16372(world, blockPos) == 7 ? null : itemPlacementContext;
 		} else {
 			Direction direction;
 			if (itemPlacementContext.isPlayerSneaking()) {
@@ -55,7 +56,7 @@ public class ScaffoldingItem extends BlockItem {
 
 				blockState = world.getBlockState(mutable);
 				if (blockState.getBlock() != this.getBlock()) {
-					if (blockState.method_11587(itemPlacementContext)) {
+					if (blockState.canReplace(itemPlacementContext)) {
 						return ItemPlacementContext.create(itemPlacementContext, mutable, direction);
 					}
 					break;
@@ -69,5 +70,10 @@ public class ScaffoldingItem extends BlockItem {
 
 			return null;
 		}
+	}
+
+	@Override
+	protected boolean method_20360() {
+		return false;
 	}
 }

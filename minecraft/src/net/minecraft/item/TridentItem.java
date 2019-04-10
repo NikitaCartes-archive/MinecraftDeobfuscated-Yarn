@@ -66,7 +66,7 @@ public class TridentItem extends Item {
 				int k = EnchantmentHelper.getRiptide(itemStack);
 				if (k <= 0 || playerEntity.isInsideWaterOrRain()) {
 					if (!world.isClient) {
-						itemStack.applyDamage(1, playerEntity);
+						itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(livingEntity.getActiveHand()));
 						if (k == 0) {
 							TridentEntity tridentEntity = new TridentEntity(world, playerEntity, itemStack);
 							tridentEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 2.5F + (float)k * 0.5F, 1.0F);
@@ -132,14 +132,14 @@ public class TridentItem extends Item {
 
 	@Override
 	public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.applyDamage(1, livingEntity2);
+		itemStack.applyDamage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
 		return true;
 	}
 
 	@Override
 	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if ((double)blockState.getHardness(world, blockPos) != 0.0) {
-			itemStack.applyDamage(2, livingEntity);
+			itemStack.applyDamage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
 		}
 
 		return true;
