@@ -13,21 +13,21 @@ import net.minecraft.text.TranslatableTextComponent;
 public class ListCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("list")
-				.executes(commandContext -> method_13437(commandContext.getSource()))
-				.then(ServerCommandManager.literal("uuids").executes(commandContext -> method_13436(commandContext.getSource())))
+			CommandManager.literal("list")
+				.executes(commandContext -> executeNames(commandContext.getSource()))
+				.then(CommandManager.literal("uuids").executes(commandContext -> executeUuids(commandContext.getSource())))
 		);
 	}
 
-	private static int method_13437(ServerCommandSource serverCommandSource) {
-		return method_13434(serverCommandSource, PlayerEntity::getDisplayName);
+	private static int executeNames(ServerCommandSource serverCommandSource) {
+		return execute(serverCommandSource, PlayerEntity::getDisplayName);
 	}
 
-	private static int method_13436(ServerCommandSource serverCommandSource) {
-		return method_13434(serverCommandSource, PlayerEntity::method_7306);
+	private static int executeUuids(ServerCommandSource serverCommandSource) {
+		return execute(serverCommandSource, PlayerEntity::getNameAndUuid);
 	}
 
-	private static int method_13434(ServerCommandSource serverCommandSource, Function<ServerPlayerEntity, TextComponent> function) {
+	private static int execute(ServerCommandSource serverCommandSource, Function<ServerPlayerEntity, TextComponent> function) {
 		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 		List<ServerPlayerEntity> list = playerManager.getPlayerList();
 		TextComponent textComponent = TextFormatter.join(list, function);

@@ -6,9 +6,9 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class Frustum {
 	public final float[][] sides = new float[6][4];
-	public final float[] field_4498 = new float[16];
-	public final float[] field_4500 = new float[16];
-	public final float[] field_4499 = new float[16];
+	public final float[] projectionMatrix = new float[16];
+	public final float[] modelViewMatrix = new float[16];
+	public final float[] mvpMatrix = new float[16];
 
 	private double getDistanceFromPlane(float[] fs, double d, double e, double f) {
 		return (double)fs[0] * d + (double)fs[1] * e + (double)fs[2] * f + (double)fs[3];

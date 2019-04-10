@@ -23,7 +23,7 @@ public class SkeletonHorseGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.owner.world.method_18458(this.owner.x, this.owner.y, this.owner.z, 10.0);
+		return this.owner.world.isPlayerInRange(this.owner.x, this.owner.y, this.owner.z, 10.0);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class SkeletonHorseGoal extends Goal {
 
 	private HorseBaseEntity method_6810(LocalDifficulty localDifficulty) {
 		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.owner.world);
-		skeletonHorseEntity.prepareEntityData(this.owner.world, localDifficulty, SpawnType.field_16461, null, null);
+		skeletonHorseEntity.initialize(this.owner.world, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonHorseEntity.setPosition(this.owner.x, this.owner.y, this.owner.z);
 		skeletonHorseEntity.field_6008 = 60;
 		skeletonHorseEntity.setPersistent();
@@ -58,7 +58,7 @@ public class SkeletonHorseGoal extends Goal {
 
 	private SkeletonEntity method_6811(LocalDifficulty localDifficulty, HorseBaseEntity horseBaseEntity) {
 		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(horseBaseEntity.world);
-		skeletonEntity.prepareEntityData(horseBaseEntity.world, localDifficulty, SpawnType.field_16461, null, null);
+		skeletonEntity.initialize(horseBaseEntity.world, localDifficulty, SpawnType.field_16461, null, null);
 		skeletonEntity.setPosition(horseBaseEntity.x, horseBaseEntity.y, horseBaseEntity.z);
 		skeletonEntity.field_6008 = 60;
 		skeletonEntity.setPersistent();

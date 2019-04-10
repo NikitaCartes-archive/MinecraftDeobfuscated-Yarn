@@ -30,7 +30,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 		int l = (int)(8.0 / (Math.random() * 0.8 + 0.3));
 		this.maxAge = (int)Math.max((float)l * 2.5F, 1.0F);
 		this.collidesWithWorld = false;
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
@@ -45,24 +45,24 @@ public class CloudParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17862);
+			this.setSpriteForAge(this.field_17862);
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.96F;
 			this.velocityY *= 0.96F;
 			this.velocityZ *= 0.96F;
-			PlayerEntity playerEntity = this.world.method_18459(this.posX, this.posY, this.posZ, 2.0, false);
+			PlayerEntity playerEntity = this.world.getClosestPlayer(this.x, this.y, this.z, 2.0, false);
 			if (playerEntity != null) {
 				BoundingBox boundingBox = playerEntity.getBoundingBox();
-				if (this.posY > boundingBox.minY) {
-					this.posY = this.posY + (boundingBox.minY - this.posY) * 0.2;
+				if (this.y > boundingBox.minY) {
+					this.y = this.y + (boundingBox.minY - this.y) * 0.2;
 					this.velocityY = this.velocityY + (playerEntity.getVelocity().y - this.velocityY) * 0.2;
-					this.setPos(this.posX, this.posY, this.posZ);
+					this.setPos(this.x, this.y, this.z);
 				}
 			}
 

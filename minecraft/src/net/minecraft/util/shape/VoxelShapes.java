@@ -30,7 +30,7 @@ public final class VoxelShapes {
 		voxelSet.set(0, 0, 0, true, true);
 		return new SimpleVoxelShape(voxelSet);
 	});
-	public static final VoxelShape field_17669 = cube(
+	public static final VoxelShape UNBOUNDED = cuboid(
 		Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY
 	);
 	private static final VoxelShape EMPTY = new ArrayVoxelShape(
@@ -45,11 +45,11 @@ public final class VoxelShapes {
 		return FULL_CUBE;
 	}
 
-	public static VoxelShape cube(double d, double e, double f, double g, double h, double i) {
-		return cube(new BoundingBox(d, e, f, g, h, i));
+	public static VoxelShape cuboid(double d, double e, double f, double g, double h, double i) {
+		return cuboid(new BoundingBox(d, e, f, g, h, i));
 	}
 
-	public static VoxelShape cube(BoundingBox boundingBox) {
+	public static VoxelShape cuboid(BoundingBox boundingBox) {
 		int i = findRequiredBitResolution(boundingBox.minX, boundingBox.maxX);
 		int j = findRequiredBitResolution(boundingBox.minY, boundingBox.maxY);
 		int k = findRequiredBitResolution(boundingBox.minZ, boundingBox.maxZ);
@@ -246,14 +246,14 @@ public final class VoxelShapes {
 			Direction.Axis axis2 = axisCycle2.cycle(Direction.Axis.Y);
 			Direction.Axis axis3 = axisCycle2.cycle(Direction.Axis.Z);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			int i = MathHelper.floor(boundingBox.method_1001(axis) - 1.0E-7) - 1;
-			int j = MathHelper.floor(boundingBox.method_990(axis) + 1.0E-7) + 1;
-			int k = MathHelper.floor(boundingBox.method_1001(axis2) - 1.0E-7) - 1;
-			int l = MathHelper.floor(boundingBox.method_990(axis2) + 1.0E-7) + 1;
-			double e = boundingBox.method_1001(axis3) - 1.0E-7;
-			double f = boundingBox.method_990(axis3) + 1.0E-7;
+			int i = MathHelper.floor(boundingBox.getMin(axis) - 1.0E-7) - 1;
+			int j = MathHelper.floor(boundingBox.getMax(axis) + 1.0E-7) + 1;
+			int k = MathHelper.floor(boundingBox.getMin(axis2) - 1.0E-7) - 1;
+			int l = MathHelper.floor(boundingBox.getMax(axis2) + 1.0E-7) + 1;
+			double e = boundingBox.getMin(axis3) - 1.0E-7;
+			double f = boundingBox.getMax(axis3) + 1.0E-7;
 			boolean bl = d > 0.0;
-			int m = bl ? MathHelper.floor(boundingBox.method_990(axis3) - 1.0E-7) - 1 : MathHelper.floor(boundingBox.method_1001(axis3) + 1.0E-7) + 1;
+			int m = bl ? MathHelper.floor(boundingBox.getMax(axis3) - 1.0E-7) - 1 : MathHelper.floor(boundingBox.getMin(axis3) + 1.0E-7) + 1;
 			int n = method_17943(d, e, f);
 			int o = bl ? 1 : -1;
 			int p = Integer.MAX_VALUE;

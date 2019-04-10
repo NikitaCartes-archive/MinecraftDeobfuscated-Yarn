@@ -32,7 +32,7 @@ public class ShapedRecipeJsonFactory {
 	private final int outputCount;
 	private final List<String> pattern = Lists.<String>newArrayList();
 	private final Map<Character, Ingredient> inputs = Maps.<Character, Ingredient>newLinkedHashMap();
-	private final SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.create();
+	private final SimpleAdvancement.Task builder = SimpleAdvancement.Task.create();
 	private String group;
 
 	public ShapedRecipeJsonFactory(ItemProvider itemProvider, int i) {
@@ -155,7 +155,7 @@ public class ShapedRecipeJsonFactory {
 		private final String group;
 		private final List<String> pattern;
 		private final Map<Character, Ingredient> inputs;
-		private final SimpleAdvancement.Builder builder;
+		private final SimpleAdvancement.Task builder;
 		private final Identifier advancementId;
 
 		public ShapedRecipeJsonProvider(
@@ -165,7 +165,7 @@ public class ShapedRecipeJsonFactory {
 			String string,
 			List<String> list,
 			Map<Character, Ingredient> map,
-			SimpleAdvancement.Builder builder,
+			SimpleAdvancement.Task task,
 			Identifier identifier2
 		) {
 			this.recipeId = identifier;
@@ -174,7 +174,7 @@ public class ShapedRecipeJsonFactory {
 			this.group = string;
 			this.pattern = list;
 			this.inputs = map;
-			this.builder = builder;
+			this.builder = task;
 			this.advancementId = identifier2;
 		}
 

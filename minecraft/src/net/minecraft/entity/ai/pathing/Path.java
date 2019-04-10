@@ -1,5 +1,7 @@
 package net.minecraft.entity.ai.pathing;
 
+import com.google.common.collect.Lists;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -8,16 +10,14 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.Vec3d;
 
 public class Path {
-	private final PathNode[] nodes;
+	private final List<PathNode> nodes;
 	private PathNode[] field_57 = new PathNode[0];
 	private PathNode[] field_55 = new PathNode[0];
 	private PathNode field_56;
 	private int currentNodeIndex;
-	private int length;
 
-	public Path(PathNode[] pathNodes) {
-		this.nodes = pathNodes;
-		this.length = pathNodes.length;
+	public Path(List<PathNode> list) {
+		this.nodes = list;
 	}
 
 	public void next() {
@@ -25,32 +25,34 @@ public class Path {
 	}
 
 	public boolean isFinished() {
-		return this.currentNodeIndex >= this.length;
+		return this.currentNodeIndex >= this.nodes.size();
 	}
 
 	@Nullable
 	public PathNode getEnd() {
-		return this.length > 0 ? this.nodes[this.length - 1] : null;
+		return !this.nodes.isEmpty() ? (PathNode)this.nodes.get(this.nodes.size() - 1) : null;
 	}
 
 	public PathNode getNode(int i) {
-		return this.nodes[i];
+		return (PathNode)this.nodes.get(i);
 	}
 
-	public PathNode[] getNodes() {
+	public List<PathNode> getNodes() {
 		return this.nodes;
 	}
 
+	public void setLength(int i) {
+		if (this.nodes.size() > i) {
+			this.nodes.subList(i, this.nodes.size()).clear();
+		}
+	}
+
 	public void setNode(int i, PathNode pathNode) {
-		this.nodes[i] = pathNode;
+		this.nodes.set(i, pathNode);
 	}
 
 	public int getLength() {
-		return this.length;
-	}
-
-	public void setLength(int i) {
-		this.length = i;
+		return this.nodes.size();
 	}
 
 	public int getCurrentNodeIndex() {
@@ -62,9 +64,10 @@ public class Path {
 	}
 
 	public Vec3d getNodePosition(Entity entity, int i) {
-		double d = (double)this.nodes[i].x + (double)((int)(entity.getWidth() + 1.0F)) * 0.5;
-		double e = (double)this.nodes[i].y;
-		double f = (double)this.nodes[i].z + (double)((int)(entity.getWidth() + 1.0F)) * 0.5;
+		PathNode pathNode = (PathNode)this.nodes.get(i);
+		double d = (double)pathNode.x + (double)((int)(entity.getWidth() + 1.0F)) * 0.5;
+		double e = (double)pathNode.y;
+		double f = (double)pathNode.z + (double)((int)(entity.getWidth() + 1.0F)) * 0.5;
 		return new Vec3d(d, e, f);
 	}
 
@@ -73,18 +76,20 @@ public class Path {
 	}
 
 	public Vec3d getCurrentPosition() {
-		PathNode pathNode = this.nodes[this.currentNodeIndex];
+		PathNode pathNode = (PathNode)this.nodes.get(this.currentNodeIndex);
 		return new Vec3d((double)pathNode.x, (double)pathNode.y, (double)pathNode.z);
 	}
 
-	public boolean equalsPath(Path path) {
+	public boolean equalsPath(@Nullable Path path) {
 		if (path == null) {
 			return false;
-		} else if (path.nodes.length != this.nodes.length) {
+		} else if (path.nodes.size() != this.nodes.size()) {
 			return false;
 		} else {
-			for (int i = 0; i < this.nodes.length; i++) {
-				if (this.nodes[i].x != path.nodes[i].x || this.nodes[i].y != path.nodes[i].y || this.nodes[i].z != path.nodes[i].z) {
+			for (int i = 0; i < this.nodes.size(); i++) {
+				PathNode pathNode = (PathNode)this.nodes.get(i);
+				PathNode pathNode2 = (PathNode)path.nodes.get(i);
+				if (pathNode.x != pathNode2.x || pathNode.y != pathNode2.y || pathNode.z != pathNode2.z) {
 					return false;
 				}
 			}
@@ -95,7 +100,7 @@ public class Path {
 
 	public boolean method_19315() {
 		PathNode pathNode = this.getEnd();
-		return pathNode != null && this.method_19313(pathNode.method_19312());
+		return pathNode != null && this.method_19313(pathNode.getPos());
 	}
 
 	public boolean method_19313(Vec3d vec3d) {
@@ -119,36 +124,37 @@ public class Path {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static Path method_34(PacketByteBuf packetByteBuf) {
+	public static Path fromBuffer(PacketByteBuf packetByteBuf) {
 		int i = packetByteBuf.readInt();
-		PathNode pathNode = PathNode.method_28(packetByteBuf);
+		PathNode pathNode = PathNode.fromBuffer(packetByteBuf);
+		List<PathNode> list = Lists.<PathNode>newArrayList();
+		int j = packetByteBuf.readInt();
+
+		for (int k = 0; k < j; k++) {
+			list.add(PathNode.fromBuffer(packetByteBuf));
+		}
+
 		PathNode[] pathNodes = new PathNode[packetByteBuf.readInt()];
 
-		for (int j = 0; j < pathNodes.length; j++) {
-			pathNodes[j] = PathNode.method_28(packetByteBuf);
+		for (int l = 0; l < pathNodes.length; l++) {
+			pathNodes[l] = PathNode.fromBuffer(packetByteBuf);
 		}
 
 		PathNode[] pathNodes2 = new PathNode[packetByteBuf.readInt()];
 
-		for (int k = 0; k < pathNodes2.length; k++) {
-			pathNodes2[k] = PathNode.method_28(packetByteBuf);
+		for (int m = 0; m < pathNodes2.length; m++) {
+			pathNodes2[m] = PathNode.fromBuffer(packetByteBuf);
 		}
 
-		PathNode[] pathNodes3 = new PathNode[packetByteBuf.readInt()];
-
-		for (int l = 0; l < pathNodes3.length; l++) {
-			pathNodes3[l] = PathNode.method_28(packetByteBuf);
-		}
-
-		Path path = new Path(pathNodes);
-		path.field_57 = pathNodes2;
-		path.field_55 = pathNodes3;
+		Path path = new Path(list);
+		path.field_57 = pathNodes;
+		path.field_55 = pathNodes2;
 		path.field_56 = pathNode;
 		path.currentNodeIndex = i;
 		return path;
 	}
 
 	public String toString() {
-		return "Path(length=" + this.length + ")";
+		return "Path(length=" + this.nodes.size() + ")";
 	}
 }

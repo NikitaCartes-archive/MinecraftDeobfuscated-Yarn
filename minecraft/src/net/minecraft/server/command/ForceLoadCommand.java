@@ -29,28 +29,28 @@ public class ForceLoadCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("forceload")
+			CommandManager.literal("forceload")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.literal("add")
+					CommandManager.literal("add")
 						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
-							ServerCommandManager.argument("from", ColumnPosArgumentType.create())
+							CommandManager.argument("from", ColumnPosArgumentType.create())
 								.executes(
-									commandContext -> setForceLoaded(
+									commandContext -> executeChange(
 											commandContext.getSource(),
-											ColumnPosArgumentType.parseSimple(commandContext, "from"),
-											ColumnPosArgumentType.parseSimple(commandContext, "from"),
+											ColumnPosArgumentType.getColumnPos(commandContext, "from"),
+											ColumnPosArgumentType.getColumnPos(commandContext, "from"),
 											true
 										)
 								)
 								.then(
-									ServerCommandManager.argument("to", ColumnPosArgumentType.create())
+									CommandManager.argument("to", ColumnPosArgumentType.create())
 										.executes(
-											commandContext -> setForceLoaded(
+											commandContext -> executeChange(
 													commandContext.getSource(),
-													ColumnPosArgumentType.parseSimple(commandContext, "from"),
-													ColumnPosArgumentType.parseSimple(commandContext, "to"),
+													ColumnPosArgumentType.getColumnPos(commandContext, "from"),
+													ColumnPosArgumentType.getColumnPos(commandContext, "to"),
 													true
 												)
 										)
@@ -58,45 +58,45 @@ public class ForceLoadCommand {
 						)
 				)
 				.then(
-					ServerCommandManager.literal("remove")
+					CommandManager.literal("remove")
 						.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))
 						.then(
-							ServerCommandManager.argument("from", ColumnPosArgumentType.create())
+							CommandManager.argument("from", ColumnPosArgumentType.create())
 								.executes(
-									commandContext -> setForceLoaded(
+									commandContext -> executeChange(
 											commandContext.getSource(),
-											ColumnPosArgumentType.parseSimple(commandContext, "from"),
-											ColumnPosArgumentType.parseSimple(commandContext, "from"),
+											ColumnPosArgumentType.getColumnPos(commandContext, "from"),
+											ColumnPosArgumentType.getColumnPos(commandContext, "from"),
 											false
 										)
 								)
 								.then(
-									ServerCommandManager.argument("to", ColumnPosArgumentType.create())
+									CommandManager.argument("to", ColumnPosArgumentType.create())
 										.executes(
-											commandContext -> setForceLoaded(
+											commandContext -> executeChange(
 													commandContext.getSource(),
-													ColumnPosArgumentType.parseSimple(commandContext, "from"),
-													ColumnPosArgumentType.parseSimple(commandContext, "to"),
+													ColumnPosArgumentType.getColumnPos(commandContext, "from"),
+													ColumnPosArgumentType.getColumnPos(commandContext, "to"),
 													false
 												)
 										)
 								)
 						)
-						.then(ServerCommandManager.literal("all").executes(commandContext -> clearAllForceLoaded(commandContext.getSource())))
+						.then(CommandManager.literal("all").executes(commandContext -> executeRemoveAll(commandContext.getSource())))
 				)
 				.then(
-					ServerCommandManager.literal("query")
-						.executes(commandContext -> method_13373(commandContext.getSource()))
+					CommandManager.literal("query")
+						.executes(commandContext -> executeQuery(commandContext.getSource()))
 						.then(
-							ServerCommandManager.argument("pos", ColumnPosArgumentType.create())
-								.executes(commandContext -> method_13374(commandContext.getSource(), ColumnPosArgumentType.parseSimple(commandContext, "pos")))
+							CommandManager.argument("pos", ColumnPosArgumentType.create())
+								.executes(commandContext -> executeQuery(commandContext.getSource(), ColumnPosArgumentType.getColumnPos(commandContext, "pos")))
 						)
 				)
 		);
 	}
 
-	private static int method_13374(ServerCommandSource serverCommandSource, ColumnPosArgumentType.SimpleColumnPos simpleColumnPos) throws CommandSyntaxException {
-		ChunkPos chunkPos = new ChunkPos(simpleColumnPos.x >> 4, simpleColumnPos.z >> 4);
+	private static int executeQuery(ServerCommandSource serverCommandSource, ColumnPosArgumentType.ColumnPos columnPos) throws CommandSyntaxException {
+		ChunkPos chunkPos = new ChunkPos(columnPos.x >> 4, columnPos.z >> 4);
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
 		boolean bl = serverCommandSource.getMinecraftServer().getWorld(dimensionType).getForcedChunks().contains(chunkPos.toLong());
 		if (bl) {
@@ -107,7 +107,7 @@ public class ForceLoadCommand {
 		}
 	}
 
-	private static int method_13373(ServerCommandSource serverCommandSource) {
+	private static int executeQuery(ServerCommandSource serverCommandSource) {
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
 		LongSet longSet = serverCommandSource.getMinecraftServer().getWorld(dimensionType).getForcedChunks();
 		int i = longSet.size();
@@ -125,7 +125,7 @@ public class ForceLoadCommand {
 		return i;
 	}
 
-	private static int clearAllForceLoaded(ServerCommandSource serverCommandSource) {
+	private static int executeRemoveAll(ServerCommandSource serverCommandSource) {
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
 		ServerWorld serverWorld = serverCommandSource.getMinecraftServer().getWorld(dimensionType);
 		LongSet longSet = serverWorld.getForcedChunks();
@@ -134,16 +134,13 @@ public class ForceLoadCommand {
 		return 0;
 	}
 
-	private static int setForceLoaded(
-		ServerCommandSource serverCommandSource,
-		ColumnPosArgumentType.SimpleColumnPos simpleColumnPos,
-		ColumnPosArgumentType.SimpleColumnPos simpleColumnPos2,
-		boolean bl
+	private static int executeChange(
+		ServerCommandSource serverCommandSource, ColumnPosArgumentType.ColumnPos columnPos, ColumnPosArgumentType.ColumnPos columnPos2, boolean bl
 	) throws CommandSyntaxException {
-		int i = Math.min(simpleColumnPos.x, simpleColumnPos2.x);
-		int j = Math.min(simpleColumnPos.z, simpleColumnPos2.z);
-		int k = Math.max(simpleColumnPos.x, simpleColumnPos2.x);
-		int l = Math.max(simpleColumnPos.z, simpleColumnPos2.z);
+		int i = Math.min(columnPos.x, columnPos2.x);
+		int j = Math.min(columnPos.z, columnPos2.z);
+		int k = Math.max(columnPos.x, columnPos2.x);
+		int l = Math.max(columnPos.z, columnPos2.z);
 		if (i >= -30000000 && j >= -30000000 && k < 30000000 && l < 30000000) {
 			int m = i >> 4;
 			int n = j >> 4;

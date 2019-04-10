@@ -12,10 +12,10 @@ public class EntitySize {
 	}
 
 	public EntitySize scaled(float f) {
-		return this.method_19539(f, f);
+		return this.scaled(f, f);
 	}
 
-	public EntitySize method_19539(float f, float g) {
+	public EntitySize scaled(float f, float g) {
 		return !this.constant && (f != 1.0F || g != 1.0F) ? resizeable(this.width * f, this.height * g) : this;
 	}
 
@@ -25,5 +25,9 @@ public class EntitySize {
 
 	public static EntitySize constant(float f, float g) {
 		return new EntitySize(f, g, true);
+	}
+
+	public String toString() {
+		return "EntityDimensions w=" + this.width + ", h=" + this.height + ", fixed=" + this.constant;
 	}
 }

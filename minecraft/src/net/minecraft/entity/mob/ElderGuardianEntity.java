@@ -23,8 +23,8 @@ public class ElderGuardianEntity extends GuardianEntity {
 	public ElderGuardianEntity(EntityType<? extends ElderGuardianEntity> entityType, World world) {
 		super(entityType, world);
 		this.setPersistent();
-		if (this.field_7289 != null) {
-			this.field_7289.setChance(400);
+		if (this.wanderGoal != null) {
+			this.wanderGoal.setChance(400);
 		}
 	}
 
@@ -42,7 +42,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_7010() {
+	public void straightenTail() {
 		this.tailAngle = 1.0F;
 		this.prevTailAngle = this.tailAngle;
 	}
@@ -63,7 +63,7 @@ public class ElderGuardianEntity extends GuardianEntity {
 	}
 
 	@Override
-	protected SoundEvent method_7062() {
+	protected SoundEvent getFlopSound() {
 		return SoundEvents.field_14939;
 	}
 
@@ -74,15 +74,15 @@ public class ElderGuardianEntity extends GuardianEntity {
 		if ((this.age + this.getEntityId()) % 1200 == 0) {
 			StatusEffect statusEffect = StatusEffects.field_5901;
 			List<ServerPlayerEntity> list = ((ServerWorld)this.world)
-				.method_18766(serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.interactionManager.isSurvivalLike());
+				.getPlayers(serverPlayerEntityx -> this.squaredDistanceTo(serverPlayerEntityx) < 2500.0 && serverPlayerEntityx.interactionManager.isSurvivalLike());
 			int j = 2;
 			int k = 6000;
 			int l = 1200;
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {
-				if (!serverPlayerEntity.hasPotionEffect(statusEffect)
-					|| serverPlayerEntity.getPotionEffect(statusEffect).getAmplifier() < 2
-					|| serverPlayerEntity.getPotionEffect(statusEffect).getDuration() < 1200) {
+				if (!serverPlayerEntity.hasStatusEffect(statusEffect)
+					|| serverPlayerEntity.getStatusEffect(statusEffect).getAmplifier() < 2
+					|| serverPlayerEntity.getStatusEffect(statusEffect).getDuration() < 1200) {
 					serverPlayerEntity.networkHandler.sendPacket(new GameStateChangeS2CPacket(10, 0.0F));
 					serverPlayerEntity.addPotionEffect(new StatusEffectInstance(statusEffect, 6000, 2));
 				}

@@ -17,6 +17,6 @@ public abstract class HorseBaseEntityRenderer<T extends HorseBaseEntity, M exten
 
 	protected void method_3874(T horseBaseEntity, float f) {
 		GlStateManager.scalef(this.field_4641, this.field_4641, this.field_4641);
-		super.method_4042(horseBaseEntity, f);
+		super.scale(horseBaseEntity, f);
 	}
 }

@@ -26,30 +26,30 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 	}
 
 	@Override
-	protected void onInitialized() {
-		super.onInitialized();
-		this.isNarrow = this.screenWidth < 379;
-		this.recipeBookGui.initialize(this.screenWidth, this.screenHeight, this.client, this.isNarrow, this.container);
-		this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
-		this.listeners.add(this.recipeBookGui);
-		this.focusOn(this.recipeBookGui);
-		this.addButton(new RecipeBookButtonWidget(this.left + 5, this.screenHeight / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
+	protected void init() {
+		super.init();
+		this.isNarrow = this.width < 379;
+		this.recipeBookGui.initialize(this.width, this.height, this.minecraft, this.isNarrow, this.container);
+		this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+		this.children.add(this.recipeBookGui);
+		this.method_20085(this.recipeBookGui);
+		this.addButton(new RecipeBookButtonWidget(this.left + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
 			this.recipeBookGui.reset(this.isNarrow);
 			this.recipeBookGui.toggleOpen();
-			this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
-			((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 5, this.screenHeight / 2 - 49);
+			this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+			((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 5, this.height / 2 - 49);
 		}));
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		this.recipeBookGui.update();
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
+		this.renderBackground();
 		if (this.recipeBookGui.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
 			this.recipeBookGui.render(i, j, f);
@@ -61,22 +61,22 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 
 		this.drawMouseoverTooltip(i, j);
 		this.recipeBookGui.drawTooltip(this.left, this.top, i, j);
-		this.focusOn(this.recipeBookGui);
+		this.method_20086(this.recipeBookGui);
 	}
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.title.getFormattedText(), 28.0F, 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+		this.font.draw(this.title.getFormattedText(), 28.0F, 6.0F, 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(BG_TEX);
+		this.minecraft.getTextureManager().bindTexture(BG_TEX);
 		int k = this.left;
-		int l = (this.screenHeight - this.height) / 2;
-		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
+		int l = (this.height - this.containerHeight) / 2;
+		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
 	}
 
 	@Override
@@ -95,8 +95,8 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
-		return this.recipeBookGui.isClickOutsideBounds(d, e, this.left, this.top, this.width, this.height, k) && bl;
+		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
+		return this.recipeBookGui.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
 	}
 
 	@Override
@@ -111,9 +111,9 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 	}
 
 	@Override
-	public void onClosed() {
+	public void removed() {
 		this.recipeBookGui.close();
-		super.onClosed();
+		super.removed();
 	}
 
 	@Override

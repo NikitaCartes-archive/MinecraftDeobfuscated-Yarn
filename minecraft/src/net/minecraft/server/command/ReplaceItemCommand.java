@@ -22,7 +22,7 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
 
 public class ReplaceItemCommand {
-	public static final SimpleCommandExceptionType BLOCK_FAILED_EXCEPTON = new SimpleCommandExceptionType(
+	public static final SimpleCommandExceptionType BLOCK_FAILED_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableTextComponent("commands.replaceitem.block.failed")
 	);
 	public static final DynamicCommandExceptionType SLOT_INAPPLICABLE_EXCEPTION = new DynamicCommandExceptionType(
@@ -34,32 +34,32 @@ public class ReplaceItemCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("replaceitem")
+			CommandManager.literal("replaceitem")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.literal("block")
+					CommandManager.literal("block")
 						.then(
-							ServerCommandManager.argument("pos", BlockPosArgumentType.create())
+							CommandManager.argument("pos", BlockPosArgumentType.create())
 								.then(
-									ServerCommandManager.argument("slot", ItemSlotArgumentType.create())
+									CommandManager.argument("slot", ItemSlotArgumentType.create())
 										.then(
-											ServerCommandManager.argument("item", ItemStackArgumentType.create())
+											CommandManager.argument("item", ItemStackArgumentType.create())
 												.executes(
-													commandContext -> method_13539(
+													commandContext -> executeBlock(
 															commandContext.getSource(),
-															BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-															ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
-															ItemStackArgumentType.getStackArgument(commandContext, "item").method_9781(1, false)
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+															ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
+															ItemStackArgumentType.getItemStackArgument(commandContext, "item").method_9781(1, false)
 														)
 												)
 												.then(
-													ServerCommandManager.argument("count", IntegerArgumentType.integer(1, 64))
+													CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
 														.executes(
-															commandContext -> method_13539(
+															commandContext -> executeBlock(
 																	commandContext.getSource(),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-																	ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
-																	ItemStackArgumentType.getStackArgument(commandContext, "item").method_9781(IntegerArgumentType.getInteger(commandContext, "count"), true)
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+																	ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
+																	ItemStackArgumentType.getItemStackArgument(commandContext, "item").method_9781(IntegerArgumentType.getInteger(commandContext, "count"), true)
 																)
 														)
 												)
@@ -68,29 +68,29 @@ public class ReplaceItemCommand {
 						)
 				)
 				.then(
-					ServerCommandManager.literal("entity")
+					CommandManager.literal("entity")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
+							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									ServerCommandManager.argument("slot", ItemSlotArgumentType.create())
+									CommandManager.argument("slot", ItemSlotArgumentType.create())
 										.then(
-											ServerCommandManager.argument("item", ItemStackArgumentType.create())
+											CommandManager.argument("item", ItemStackArgumentType.create())
 												.executes(
-													commandContext -> method_13537(
+													commandContext -> executeEntity(
 															commandContext.getSource(),
-															EntityArgumentType.method_9317(commandContext, "targets"),
-															ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
-															ItemStackArgumentType.getStackArgument(commandContext, "item").method_9781(1, false)
+															EntityArgumentType.getEntities(commandContext, "targets"),
+															ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
+															ItemStackArgumentType.getItemStackArgument(commandContext, "item").method_9781(1, false)
 														)
 												)
 												.then(
-													ServerCommandManager.argument("count", IntegerArgumentType.integer(1, 64))
+													CommandManager.argument("count", IntegerArgumentType.integer(1, 64))
 														.executes(
-															commandContext -> method_13537(
+															commandContext -> executeEntity(
 																	commandContext.getSource(),
-																	EntityArgumentType.method_9317(commandContext, "targets"),
-																	ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
-																	ItemStackArgumentType.getStackArgument(commandContext, "item").method_9781(IntegerArgumentType.getInteger(commandContext, "count"), true)
+																	EntityArgumentType.getEntities(commandContext, "targets"),
+																	ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
+																	ItemStackArgumentType.getItemStackArgument(commandContext, "item").method_9781(IntegerArgumentType.getInteger(commandContext, "count"), true)
 																)
 														)
 												)
@@ -101,10 +101,10 @@ public class ReplaceItemCommand {
 		);
 	}
 
-	private static int method_13539(ServerCommandSource serverCommandSource, BlockPos blockPos, int i, ItemStack itemStack) throws CommandSyntaxException {
+	private static int executeBlock(ServerCommandSource serverCommandSource, BlockPos blockPos, int i, ItemStack itemStack) throws CommandSyntaxException {
 		BlockEntity blockEntity = serverCommandSource.getWorld().getBlockEntity(blockPos);
 		if (!(blockEntity instanceof Inventory)) {
-			throw BLOCK_FAILED_EXCEPTON.create();
+			throw BLOCK_FAILED_EXCEPTION.create();
 		} else {
 			Inventory inventory = (Inventory)blockEntity;
 			if (i >= 0 && i < inventory.getInvSize()) {
@@ -119,7 +119,7 @@ public class ReplaceItemCommand {
 		}
 	}
 
-	private static int method_13537(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, int i, ItemStack itemStack) throws CommandSyntaxException {
+	private static int executeEntity(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, int i, ItemStack itemStack) throws CommandSyntaxException {
 		List<Entity> list = Lists.<Entity>newArrayListWithCapacity(collection.size());
 
 		for (Entity entity : collection) {
@@ -127,7 +127,7 @@ public class ReplaceItemCommand {
 				((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();
 			}
 
-			if (entity.method_5758(i, itemStack.copy())) {
+			if (entity.equip(i, itemStack.copy())) {
 				list.add(entity);
 				if (entity instanceof ServerPlayerEntity) {
 					((ServerPlayerEntity)entity).playerContainer.sendContentUpdates();

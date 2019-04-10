@@ -15,7 +15,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.menu.DisconnectedScreen;
-import net.minecraft.client.gui.menu.RealmsScreen;
 import net.minecraft.client.network.packet.LoginCompressionS2CPacket;
 import net.minecraft.client.network.packet.LoginDisconnectS2CPacket;
 import net.minecraft.client.network.packet.LoginHelloS2CPacket;
@@ -27,6 +26,7 @@ import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.realms.DisconnectedRealmsScreen;
+import net.minecraft.realms.RealmsScreenProxy;
 import net.minecraft.server.network.packet.LoginKeyC2SPacket;
 import net.minecraft.server.network.packet.LoginQueryResponseC2SPacket;
 import net.minecraft.text.TextComponent;
@@ -102,8 +102,8 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 
 	@Override
 	public void onDisconnected(TextComponent textComponent) {
-		if (this.parentGui != null && this.parentGui instanceof RealmsScreen) {
-			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreen)this.parentGui).getRealmsScreen(), "connect.failed", textComponent).getProxy());
+		if (this.parentGui != null && this.parentGui instanceof RealmsScreenProxy) {
+			this.client.openScreen(new DisconnectedRealmsScreen(((RealmsScreenProxy)this.parentGui).getScreen(), "connect.failed", textComponent).getProxy());
 		} else {
 			this.client.openScreen(new DisconnectedScreen(this.parentGui, "connect.failed", textComponent));
 		}

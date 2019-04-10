@@ -38,7 +38,7 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 
 	public void method_17127(VexEntity vexEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(vexEntity, f, g, h, i, j, k);
-		if (vexEntity.method_7176()) {
+		if (vexEntity.isCharging()) {
 			if (vexEntity.getMainHand() == AbsoluteHand.field_6183) {
 				this.armRight.pitch = 3.7699115F;
 			} else {

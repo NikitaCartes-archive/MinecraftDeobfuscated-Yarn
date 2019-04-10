@@ -67,8 +67,8 @@ public class HorseEntity extends HorseBaseEntity {
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("Variant", this.getVariant());
-		if (!this.decorationItem.getInvStack(1).isEmpty()) {
-			compoundTag.put("ArmorItem", this.decorationItem.getInvStack(1).toTag(new CompoundTag()));
+		if (!this.items.getInvStack(1).isEmpty()) {
+			compoundTag.put("ArmorItem", this.items.getInvStack(1).toTag(new CompoundTag()));
 		}
 	}
 
@@ -87,12 +87,12 @@ public class HorseEntity extends HorseBaseEntity {
 		this.setVariant(compoundTag.getInt("Variant"));
 		if (compoundTag.containsKey("ArmorItem", 10)) {
 			ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("ArmorItem"));
-			if (!itemStack.isEmpty() && this.method_6773(itemStack)) {
-				this.decorationItem.setInvStack(1, itemStack);
+			if (!itemStack.isEmpty() && this.canEquip(itemStack)) {
+				this.items.setInvStack(1, itemStack);
 			}
 		}
 
-		this.method_6731();
+		this.updateSaddle();
 	}
 
 	public void setVariant(int i) {
@@ -137,16 +137,16 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected void method_6731() {
-		super.method_6731();
-		this.setArmorTypeFromStack(this.decorationItem.getInvStack(1));
+	protected void updateSaddle() {
+		super.updateSaddle();
+		this.setArmorTypeFromStack(this.items.getInvStack(1));
 	}
 
 	private void setArmorTypeFromStack(ItemStack itemStack) {
 		this.method_18445(itemStack);
 		if (!this.world.isClient) {
 			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(field_6985);
-			if (this.method_6773(itemStack)) {
+			if (this.canEquip(itemStack)) {
 				int i = ((HorseArmorItem)itemStack.getItem()).method_18455();
 				if (i != 0) {
 					this.getAttributeInstance(EntityAttributes.ARMOR)
@@ -161,14 +161,14 @@ public class HorseEntity extends HorseBaseEntity {
 		ItemStack itemStack = this.getArmorType();
 		super.onInvChange(inventory);
 		ItemStack itemStack2 = this.getArmorType();
-		if (this.age > 20 && this.method_6773(itemStack2) && itemStack != itemStack2) {
+		if (this.age > 20 && this.canEquip(itemStack2) && itemStack != itemStack2) {
 			this.playSound(SoundEvents.field_15141, 0.5F, 1.0F);
 		}
 	}
 
 	@Override
-	protected void method_6761(BlockSoundGroup blockSoundGroup) {
-		super.method_6761(blockSoundGroup);
+	protected void playWalkSound(BlockSoundGroup blockSoundGroup) {
+		super.playWalkSound(blockSoundGroup);
 		if (this.random.nextInt(10) == 0) {
 			this.playSound(SoundEvents.field_14556, blockSoundGroup.getVolume() * 0.6F, blockSoundGroup.getPitch());
 		}
@@ -177,9 +177,9 @@ public class HorseEntity extends HorseBaseEntity {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)this.method_6754());
-		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(this.method_6728());
-		this.getAttributeInstance(ATTR_JUMP_STRENGTH).setBaseValue(this.method_6774());
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus());
+		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(this.getChildMovementSpeedBonus());
+		this.getAttributeInstance(JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
 	}
 
 	@Override
@@ -210,8 +210,8 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected SoundEvent method_6747() {
-		super.method_6747();
+	protected SoundEvent getAngrySound() {
+		super.getAngrySound();
 		return SoundEvents.field_15043;
 	}
 
@@ -224,7 +224,7 @@ public class HorseEntity extends HorseBaseEntity {
 		} else {
 			if (!this.isChild()) {
 				if (this.isTame() && playerEntity.isSneaking()) {
-					this.method_6722(playerEntity);
+					this.openInventory(playerEntity);
 					return true;
 				}
 
@@ -234,7 +234,7 @@ public class HorseEntity extends HorseBaseEntity {
 			}
 
 			if (bl) {
-				if (this.method_6742(playerEntity, itemStack)) {
+				if (this.receiveFood(playerEntity, itemStack)) {
 					if (!playerEntity.abilities.creativeMode) {
 						itemStack.subtractAmount(1);
 					}
@@ -247,13 +247,13 @@ public class HorseEntity extends HorseBaseEntity {
 				}
 
 				if (!this.isTame()) {
-					this.method_6757();
+					this.playAngrySound();
 					return true;
 				}
 
 				boolean bl2 = !this.isChild() && !this.isSaddled() && itemStack.getItem() == Items.field_8175;
-				if (this.method_6773(itemStack) || bl2) {
-					this.method_6722(playerEntity);
+				if (this.canEquip(itemStack) || bl2) {
+					this.openInventory(playerEntity);
 					return true;
 				}
 			}
@@ -261,7 +261,7 @@ public class HorseEntity extends HorseBaseEntity {
 			if (this.isChild()) {
 				return super.interactMob(playerEntity, hand);
 			} else {
-				this.method_6726(playerEntity);
+				this.putPlayerOnBack(playerEntity);
 				return true;
 			}
 		}
@@ -274,7 +274,7 @@ public class HorseEntity extends HorseBaseEntity {
 		} else {
 			return !(animalEntity instanceof DonkeyEntity) && !(animalEntity instanceof HorseEntity)
 				? false
-				: this.method_6734() && ((HorseBaseEntity)animalEntity).method_6734();
+				: this.canBreed() && ((HorseBaseEntity)animalEntity).canBreed();
 		}
 	}
 
@@ -308,26 +308,26 @@ public class HorseEntity extends HorseBaseEntity {
 			((HorseEntity)horseBaseEntity).setVariant(j);
 		}
 
-		this.method_6743(passiveEntity, horseBaseEntity);
+		this.setChildAttributes(passiveEntity, horseBaseEntity);
 		return horseBaseEntity;
 	}
 
 	@Override
-	public boolean method_6735() {
+	public boolean canEquip() {
 		return true;
 	}
 
 	@Override
-	public boolean method_6773(ItemStack itemStack) {
+	public boolean canEquip(ItemStack itemStack) {
 		return itemStack.getItem() instanceof HorseArmorItem;
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		int i;
 		if (entityData instanceof HorseEntity.class_1499) {
 			i = ((HorseEntity.class_1499)entityData).field_6994;

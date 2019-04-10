@@ -23,7 +23,7 @@ public class ItemStackArgumentType implements ArgumentType<ItemStackArgument> {
 		return new ItemStackArgument(itemStringReader.getItem(), itemStringReader.method_9797());
 	}
 
-	public static <S> ItemStackArgument getStackArgument(CommandContext<S> commandContext, String string) {
+	public static <S> ItemStackArgument getItemStackArgument(CommandContext<S> commandContext, String string) {
 		return commandContext.getArgument(string, ItemStackArgument.class);
 	}
 

@@ -37,7 +37,7 @@ public class BannerTexture extends AbstractTexture {
 				NativeImage nativeImage = NativeImage.fromInputStream(resource.getInputStream());
 				NativeImage nativeImage2 = new NativeImage(nativeImage.getWidth(), nativeImage.getHeight(), false);
 			) {
-				nativeImage2.method_4317(nativeImage);
+				nativeImage2.copyFrom(nativeImage);
 
 				for (int i = 0; i < 17 && i < this.patternNames.size() && i < this.dyes.size(); i++) {
 					String string = (String)this.patternNames.get(i);

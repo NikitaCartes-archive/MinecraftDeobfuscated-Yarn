@@ -12,10 +12,10 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.TrackTargetGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -24,6 +24,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -37,7 +38,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
 
 public class VexEntity extends HostileEntity {
-	protected static final TrackedData<Byte> field_7410 = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
+	protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private MobEntity owner;
 	@Nullable
 	private BlockPos bounds;
@@ -46,7 +47,6 @@ public class VexEntity extends HostileEntity {
 
 	public VexEntity(EntityType<? extends VexEntity> entityType, World world) {
 		super(entityType, world);
-		this.fireImmune = true;
 		this.moveControl = new VexEntity.VexMoveControl(this);
 		this.experiencePoints = 3;
 	}
@@ -77,7 +77,7 @@ public class VexEntity extends HostileEntity {
 		this.goalSelector.add(8, new VexEntity.LookAtTargetGoal());
 		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
-		this.targetSelector.add(1, new AvoidGoal(this, IllagerEntity.class).method_6318());
+		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(2, new VexEntity.TrackOwnerTargetGoal(this));
 		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}
@@ -92,7 +92,7 @@ public class VexEntity extends HostileEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_7410, (byte)0);
+		this.dataTracker.startTracking(VEX_FLAGS, (byte)0);
 	}
 
 	@Override
@@ -134,28 +134,28 @@ public class VexEntity extends HostileEntity {
 		this.bounds = blockPos;
 	}
 
-	private boolean method_7184(int i) {
-		int j = this.dataTracker.get(field_7410);
+	private boolean areFlagsSet(int i) {
+		int j = this.dataTracker.get(VEX_FLAGS);
 		return (j & i) != 0;
 	}
 
-	private void method_7189(int i, boolean bl) {
-		int j = this.dataTracker.get(field_7410);
+	private void setVexFlag(int i, boolean bl) {
+		int j = this.dataTracker.get(VEX_FLAGS);
 		if (bl) {
 			j |= i;
 		} else {
 			j &= ~i;
 		}
 
-		this.dataTracker.set(field_7410, (byte)(j & 0xFF));
+		this.dataTracker.set(VEX_FLAGS, (byte)(j & 0xFF));
 	}
 
-	public boolean method_7176() {
-		return this.method_7184(1);
+	public boolean isCharging() {
+		return this.areFlagsSet(1);
 	}
 
-	public void method_7177(boolean bl) {
-		this.method_7189(1, bl);
+	public void setCharging(boolean bl) {
+		this.setVexFlag(1, bl);
 	}
 
 	public void setOwner(MobEntity mobEntity) {
@@ -189,18 +189,18 @@ public class VexEntity extends HostileEntity {
 	}
 
 	@Override
-	public float method_5718() {
+	public float getBrightnessAtEyes() {
 		return 1.0F;
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.initEquipment(localDifficulty);
-		this.method_5984(localDifficulty);
-		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.updateEnchantments(localDifficulty);
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -211,7 +211,7 @@ public class VexEntity extends HostileEntity {
 
 	class ChargeTargetGoal extends Goal {
 		public ChargeTargetGoal() {
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -224,9 +224,9 @@ public class VexEntity extends HostileEntity {
 		@Override
 		public boolean shouldContinue() {
 			return VexEntity.this.getMoveControl().isMoving()
-				&& VexEntity.this.method_7176()
+				&& VexEntity.this.isCharging()
 				&& VexEntity.this.getTarget() != null
-				&& VexEntity.this.getTarget().isValid();
+				&& VexEntity.this.getTarget().isAlive();
 		}
 
 		@Override
@@ -234,13 +234,13 @@ public class VexEntity extends HostileEntity {
 			LivingEntity livingEntity = VexEntity.this.getTarget();
 			Vec3d vec3d = livingEntity.getCameraPosVec(1.0F);
 			VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
-			VexEntity.this.method_7177(true);
+			VexEntity.this.setCharging(true);
 			VexEntity.this.playSound(SoundEvents.field_14898, 1.0F, 1.0F);
 		}
 
 		@Override
-		public void onRemove() {
-			VexEntity.this.method_7177(false);
+		public void stop() {
+			VexEntity.this.setCharging(false);
 		}
 
 		@Override
@@ -248,7 +248,7 @@ public class VexEntity extends HostileEntity {
 			LivingEntity livingEntity = VexEntity.this.getTarget();
 			if (VexEntity.this.getBoundingBox().intersects(livingEntity.getBoundingBox())) {
 				VexEntity.this.attack(livingEntity);
-				VexEntity.this.method_7177(false);
+				VexEntity.this.setCharging(false);
 			} else {
 				double d = VexEntity.this.squaredDistanceTo(livingEntity);
 				if (d < 9.0) {
@@ -261,7 +261,7 @@ public class VexEntity extends HostileEntity {
 
 	class LookAtTargetGoal extends Goal {
 		public LookAtTargetGoal() {
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -295,7 +295,7 @@ public class VexEntity extends HostileEntity {
 	}
 
 	class TrackOwnerTargetGoal extends TrackTargetGoal {
-		private final TargetPredicate field_18132 = new TargetPredicate().includeHidden().ignoreDistanceScalingFactor();
+		private final TargetPredicate TRACK_OWNER_PREDICATE = new TargetPredicate().includeHidden().ignoreDistanceScalingFactor();
 
 		public TrackOwnerTargetGoal(MobEntityWithAi mobEntityWithAi) {
 			super(mobEntityWithAi, false);
@@ -303,7 +303,9 @@ public class VexEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			return VexEntity.this.owner != null && VexEntity.this.owner.getTarget() != null && this.canTrack(VexEntity.this.owner.getTarget(), this.field_18132);
+			return VexEntity.this.owner != null
+				&& VexEntity.this.owner.getTarget() != null
+				&& this.canTrack(VexEntity.this.owner.getTarget(), this.TRACK_OWNER_PREDICATE);
 		}
 
 		@Override

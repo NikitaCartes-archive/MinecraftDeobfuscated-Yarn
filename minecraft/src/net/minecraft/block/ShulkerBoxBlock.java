@@ -92,14 +92,14 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 						.getBoundingBox()
 						.stretch((double)(0.5F * (float)direction.getOffsetX()), (double)(0.5F * (float)direction.getOffsetY()), (double)(0.5F * (float)direction.getOffsetZ()))
 						.shrink((double)direction.getOffsetX(), (double)direction.getOffsetY(), (double)direction.getOffsetZ());
-					bl = world.method_18026(boundingBox.offset(blockPos.offset(direction)));
+					bl = world.doesNotCollide(boundingBox.offset(blockPos.offset(direction)));
 				} else {
 					bl = true;
 				}
 
 				if (bl) {
 					playerEntity.openContainer(shulkerBoxBlockEntity);
-					playerEntity.increaseStat(Stats.field_15418);
+					playerEntity.incrementStat(Stats.field_15418);
 				}
 
 				return true;
@@ -210,7 +210,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
 		return blockEntity instanceof ShulkerBoxBlockEntity
-			? VoxelShapes.cube(((ShulkerBoxBlockEntity)blockEntity).getBoundingBox(blockState))
+			? VoxelShapes.cuboid(((ShulkerBoxBlockEntity)blockEntity).getBoundingBox(blockState))
 			: VoxelShapes.fullCube();
 	}
 

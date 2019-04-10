@@ -54,7 +54,7 @@ public class DragonEggBlock extends FallingBlock {
 					}
 				} else {
 					world.setBlockState(blockPos2, blockState, 2);
-					world.clearBlockState(blockPos);
+					world.clearBlockState(blockPos, false);
 				}
 
 				return;

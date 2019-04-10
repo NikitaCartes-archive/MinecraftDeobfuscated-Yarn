@@ -21,18 +21,20 @@ public class ScheduleCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("schedule")
+			CommandManager.literal("schedule")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.literal("function")
+					CommandManager.literal("function")
 						.then(
-							ServerCommandManager.argument("function", FunctionArgumentType.create())
+							CommandManager.argument("function", FunctionArgumentType.create())
 								.suggests(FunctionCommand.SUGGESTION_PROVIDER)
 								.then(
-									ServerCommandManager.argument("time", TimeArgumentType.create())
+									CommandManager.argument("time", TimeArgumentType.create())
 										.executes(
-											commandContext -> method_13566(
-													commandContext.getSource(), FunctionArgumentType.method_9768(commandContext, "function"), IntegerArgumentType.getInteger(commandContext, "time")
+											commandContext -> execute(
+													commandContext.getSource(),
+													FunctionArgumentType.getFunctionOrTag(commandContext, "function"),
+													IntegerArgumentType.getInteger(commandContext, "time")
 												)
 										)
 								)
@@ -41,7 +43,7 @@ public class ScheduleCommand {
 		);
 	}
 
-	private static int method_13566(ServerCommandSource serverCommandSource, Either<CommandFunction, Tag<CommandFunction>> either, int i) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource serverCommandSource, Either<CommandFunction, Tag<CommandFunction>> either, int i) throws CommandSyntaxException {
 		if (i == 0) {
 			throw SAME_TICK_EXCEPTION.create();
 		} else {

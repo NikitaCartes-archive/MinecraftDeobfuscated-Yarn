@@ -53,13 +53,13 @@ public class CakeBlock extends Block {
 		if (!playerEntity.canConsume(false)) {
 			return false;
 		} else {
-			playerEntity.increaseStat(Stats.field_15369);
+			playerEntity.incrementStat(Stats.field_15369);
 			playerEntity.getHungerManager().add(2, 0.1F);
 			int i = (Integer)blockState.get(BITES);
 			if (i < 6) {
 				iWorld.setBlockState(blockPos, blockState.with(BITES, Integer.valueOf(i + 1)), 3);
 			} else {
-				iWorld.clearBlockState(blockPos);
+				iWorld.clearBlockState(blockPos, false);
 			}
 
 			return true;

@@ -19,7 +19,7 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	) {
 		BlockPos blockPos2 = iWorld.getSpawnPos();
 		int i = 16;
-		double d = blockPos2.squaredDistanceTo(blockPos.add(8, blockPos2.getY(), 8));
+		double d = blockPos2.getSquaredDistance(blockPos.add(8, blockPos2.getY(), 8));
 		if (d > 1024.0) {
 			return true;
 		} else {

@@ -41,54 +41,57 @@ public abstract class AbstractRailBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return method_16361(viewableWorld, blockPos.down());
+		return isSolidMediumSquare(viewableWorld, blockPos.down());
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (!world.isClient) {
 				blockState = this.updateBlockState(world, blockPos, blockState, true);
 				if (this.allowCurves) {
-					blockState.neighborUpdate(world, blockPos, this, blockPos);
+					blockState.neighborUpdate(world, blockPos, this, blockPos, bl);
 				}
 			}
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
 			RailShape railShape = blockState.get(this.getShapeProperty());
-			boolean bl = false;
+			boolean bl2 = false;
 			BlockPos blockPos3 = blockPos.down();
-			if (!method_16361(world, blockPos3)) {
-				bl = true;
+			if (!isSolidMediumSquare(world, blockPos3)) {
+				bl2 = true;
 			}
 
 			BlockPos blockPos4 = blockPos.east();
-			if (railShape == RailShape.field_12667 && !method_16361(world, blockPos4)) {
-				bl = true;
+			if (railShape == RailShape.field_12667 && !isSolidMediumSquare(world, blockPos4)) {
+				bl2 = true;
 			} else {
 				BlockPos blockPos5 = blockPos.west();
-				if (railShape == RailShape.field_12666 && !method_16361(world, blockPos5)) {
-					bl = true;
+				if (railShape == RailShape.field_12666 && !isSolidMediumSquare(world, blockPos5)) {
+					bl2 = true;
 				} else {
 					BlockPos blockPos6 = blockPos.north();
-					if (railShape == RailShape.field_12670 && !method_16361(world, blockPos6)) {
-						bl = true;
+					if (railShape == RailShape.field_12670 && !isSolidMediumSquare(world, blockPos6)) {
+						bl2 = true;
 					} else {
 						BlockPos blockPos7 = blockPos.south();
-						if (railShape == RailShape.field_12668 && !method_16361(world, blockPos7)) {
-							bl = true;
+						if (railShape == RailShape.field_12668 && !isSolidMediumSquare(world, blockPos7)) {
+							bl2 = true;
 						}
 					}
 				}
 			}
 
-			if (bl && !world.isAir(blockPos)) {
-				dropStacks(blockState, world, blockPos);
-				world.clearBlockState(blockPos);
+			if (bl2 && !world.isAir(blockPos)) {
+				if (!bl) {
+					dropStacks(blockState, world, blockPos);
+				}
+
+				world.clearBlockState(blockPos, bl);
 			} else {
 				this.updateBlockState(blockState, world, blockPos, block);
 			}

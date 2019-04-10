@@ -119,11 +119,11 @@ public class CubeMapRenderer {
 		GlStateManager.enableDepthTest();
 	}
 
-	public CompletableFuture<Void> method_18143(TextureManager textureManager, Executor executor) {
+	public CompletableFuture<Void> loadTexturesAsync(TextureManager textureManager, Executor executor) {
 		CompletableFuture<?>[] completableFutures = new CompletableFuture[6];
 
 		for (int i = 0; i < completableFutures.length; i++) {
-			completableFutures[i] = textureManager.method_18168(this.faces[i], executor);
+			completableFutures[i] = textureManager.loadTextureAsync(this.faces[i], executor);
 		}
 
 		return CompletableFuture.allOf(completableFutures);

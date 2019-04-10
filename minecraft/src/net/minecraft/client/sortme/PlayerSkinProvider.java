@@ -95,7 +95,7 @@ public class PlayerSkinProvider {
 		return identifier;
 	}
 
-	public void method_4652(GameProfile gameProfile, PlayerSkinProvider.SkinTextureAvailableCallback skinTextureAvailableCallback, boolean bl) {
+	public void loadSkin(GameProfile gameProfile, PlayerSkinProvider.SkinTextureAvailableCallback skinTextureAvailableCallback, boolean bl) {
 		EXECUTOR_SERVICE.submit(() -> {
 			Map<Type, MinecraftProfileTexture> map = Maps.<Type, MinecraftProfileTexture>newHashMap();
 

@@ -17,9 +17,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 public abstract class SpellcastingIllagerEntity extends IllagerEntity {
-	private static final TrackedData<Byte> field_7373 = DataTracker.registerData(SpellcastingIllagerEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Byte> SPELL = DataTracker.registerData(SpellcastingIllagerEntity.class, TrackedDataHandlerRegistry.BYTE);
 	protected int spellTicks;
-	private SpellcastingIllagerEntity.class_1618 field_7371 = SpellcastingIllagerEntity.class_1618.field_7377;
+	private SpellcastingIllagerEntity.class_1618 spell = SpellcastingIllagerEntity.class_1618.field_7377;
 
 	protected SpellcastingIllagerEntity(EntityType<? extends SpellcastingIllagerEntity> entityType, World world) {
 		super(entityType, world);
@@ -28,7 +28,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_7373, (byte)0);
+		this.dataTracker.startTracking(SPELL, (byte)0);
 	}
 
 	@Override
@@ -45,21 +45,25 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public IllagerEntity.State method_6990() {
-		return this.method_7137() ? IllagerEntity.State.field_7212 : IllagerEntity.State.field_7207;
+	public IllagerEntity.State getState() {
+		if (this.isSpellcasting()) {
+			return IllagerEntity.State.field_7212;
+		} else {
+			return this.isCelebrating() ? IllagerEntity.State.field_19012 : IllagerEntity.State.field_7207;
+		}
 	}
 
-	public boolean method_7137() {
-		return this.world.isClient ? this.dataTracker.get(field_7373) > 0 : this.spellTicks > 0;
+	public boolean isSpellcasting() {
+		return this.world.isClient ? this.dataTracker.get(SPELL) > 0 : this.spellTicks > 0;
 	}
 
-	public void method_7138(SpellcastingIllagerEntity.class_1618 arg) {
-		this.field_7371 = arg;
-		this.dataTracker.set(field_7373, (byte)arg.field_7375);
+	public void setSpell(SpellcastingIllagerEntity.class_1618 arg) {
+		this.spell = arg;
+		this.dataTracker.set(SPELL, (byte)arg.field_7375);
 	}
 
-	protected SpellcastingIllagerEntity.class_1618 method_7140() {
-		return !this.world.isClient ? this.field_7371 : SpellcastingIllagerEntity.class_1618.method_7144(this.dataTracker.get(field_7373));
+	protected SpellcastingIllagerEntity.class_1618 getSpell() {
+		return !this.world.isClient ? this.spell : SpellcastingIllagerEntity.class_1618.method_7144(this.dataTracker.get(SPELL));
 	}
 
 	@Override
@@ -73,8 +77,8 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.world.isClient && this.method_7137()) {
-			SpellcastingIllagerEntity.class_1618 lv = this.method_7140();
+		if (this.world.isClient && this.isSpellcasting()) {
+			SpellcastingIllagerEntity.class_1618 lv = this.getSpell();
 			double d = lv.field_7374[0];
 			double e = lv.field_7374[1];
 			double f = lv.field_7374[2];
@@ -86,11 +90,11 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		}
 	}
 
-	protected int method_7139() {
+	protected int getSpellTicks() {
 		return this.spellTicks;
 	}
 
-	protected abstract SoundEvent method_7142();
+	protected abstract SoundEvent getCastSpellSound();
 
 	public abstract class CastSpellGoal extends Goal {
 		protected int spellCooldown;
@@ -102,17 +106,17 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = SpellcastingIllagerEntity.this.getTarget();
-			if (livingEntity == null || !livingEntity.isValid()) {
+			if (livingEntity == null || !livingEntity.isAlive()) {
 				return false;
 			} else {
-				return SpellcastingIllagerEntity.this.method_7137() ? false : SpellcastingIllagerEntity.this.age >= this.startTime;
+				return SpellcastingIllagerEntity.this.isSpellcasting() ? false : SpellcastingIllagerEntity.this.age >= this.startTime;
 			}
 		}
 
 		@Override
 		public boolean shouldContinue() {
 			LivingEntity livingEntity = SpellcastingIllagerEntity.this.getTarget();
-			return livingEntity != null && livingEntity.isValid() && this.spellCooldown > 0;
+			return livingEntity != null && livingEntity.isAlive() && this.spellCooldown > 0;
 		}
 
 		@Override
@@ -125,7 +129,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 				SpellcastingIllagerEntity.this.playSound(soundEvent, 1.0F, 1.0F);
 			}
 
-			SpellcastingIllagerEntity.this.method_7138(this.method_7147());
+			SpellcastingIllagerEntity.this.setSpell(this.method_7147());
 		}
 
 		@Override
@@ -133,7 +137,7 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 			this.spellCooldown--;
 			if (this.spellCooldown == 0) {
 				this.castSpell();
-				SpellcastingIllagerEntity.this.playSound(SpellcastingIllagerEntity.this.method_7142(), 1.0F, 1.0F);
+				SpellcastingIllagerEntity.this.playSound(SpellcastingIllagerEntity.this.getCastSpellSound(), 1.0F, 1.0F);
 			}
 		}
 
@@ -155,12 +159,12 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 
 	public class LookAtTargetGoal extends Goal {
 		public LookAtTargetGoal() {
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 
 		@Override
 		public boolean canStart() {
-			return SpellcastingIllagerEntity.this.method_7139() > 0;
+			return SpellcastingIllagerEntity.this.getSpellTicks() > 0;
 		}
 
 		@Override
@@ -170,9 +174,9 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 		}
 
 		@Override
-		public void onRemove() {
-			super.onRemove();
-			SpellcastingIllagerEntity.this.method_7138(SpellcastingIllagerEntity.class_1618.field_7377);
+		public void stop() {
+			super.stop();
+			SpellcastingIllagerEntity.this.setSpell(SpellcastingIllagerEntity.class_1618.field_7377);
 		}
 
 		@Override
@@ -180,7 +184,9 @@ public abstract class SpellcastingIllagerEntity extends IllagerEntity {
 			if (SpellcastingIllagerEntity.this.getTarget() != null) {
 				SpellcastingIllagerEntity.this.getLookControl()
 					.lookAt(
-						SpellcastingIllagerEntity.this.getTarget(), (float)SpellcastingIllagerEntity.this.method_5986(), (float)SpellcastingIllagerEntity.this.method_5978()
+						SpellcastingIllagerEntity.this.getTarget(),
+						(float)SpellcastingIllagerEntity.this.method_5986(),
+						(float)SpellcastingIllagerEntity.this.getLookPitchSpeed()
 					);
 			}
 		}

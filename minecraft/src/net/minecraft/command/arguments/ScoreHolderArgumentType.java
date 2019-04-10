@@ -47,19 +47,19 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		this.multiple = bl;
 	}
 
-	public static String getHolderArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return (String)method_9458(commandContext, string).iterator().next();
+	public static String getScoreHolder(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return (String)getScoreHolders(commandContext, string).iterator().next();
 	}
 
-	public static Collection<String> method_9458(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return getHoldersArgument(commandContext, string, Collections::emptyList);
+	public static Collection<String> getScoreHolders(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return getScoreHolders(commandContext, string, Collections::emptyList);
 	}
 
-	public static Collection<String> method_9449(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return getHoldersArgument(commandContext, string, commandContext.getSource().getMinecraftServer().getScoreboard()::getKnownPlayers);
+	public static Collection<String> getScoreboardScoreHolders(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return getScoreHolders(commandContext, string, commandContext.getSource().getMinecraftServer().getScoreboard()::getKnownPlayers);
 	}
 
-	public static Collection<String> getHoldersArgument(CommandContext<ServerCommandSource> commandContext, String string, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
+	public static Collection<String> getScoreHolders(CommandContext<ServerCommandSource> commandContext, String string, Supplier<Collection<String>> supplier) throws CommandSyntaxException {
 		Collection<String> collection = commandContext.<ScoreHolderArgumentType.ScoreHolder>getArgument(string, ScoreHolderArgumentType.ScoreHolder.class)
 			.getNames(commandContext.getSource(), supplier);
 		if (collection.isEmpty()) {
@@ -69,11 +69,11 @@ public class ScoreHolderArgumentType implements ArgumentType<ScoreHolderArgument
 		}
 	}
 
-	public static ScoreHolderArgumentType method_9447() {
+	public static ScoreHolderArgumentType scoreHolder() {
 		return new ScoreHolderArgumentType(false);
 	}
 
-	public static ScoreHolderArgumentType method_9451() {
+	public static ScoreHolderArgumentType scoreHolders() {
 		return new ScoreHolderArgumentType(true);
 	}
 

@@ -79,7 +79,7 @@ public class EntityPredicate {
 		} else if (!this.flags.test(entity)) {
 			return false;
 		} else {
-			return !this.equipment.test(entity) ? false : this.catType == null || entity instanceof CatEntity && ((CatEntity)entity).method_16092().equals(this.catType);
+			return !this.equipment.test(entity) ? false : this.catType == null || entity instanceof CatEntity && ((CatEntity)entity).getTexture().equals(this.catType);
 		}
 	}
 

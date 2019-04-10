@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.particle.ParticleTypes;
@@ -65,7 +66,7 @@ public class MagmaBlock extends Block {
 			);
 			if (world instanceof ServerWorld) {
 				((ServerWorld)world)
-					.method_14199(
+					.spawnParticles(
 						ParticleTypes.field_11237, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.25, (double)blockPos2.getZ() + 0.5, 8, 0.5, 0.25, 0.5, 0.0
 					);
 			}
@@ -78,13 +79,13 @@ public class MagmaBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 	}
 
 	@Override
-	public boolean allowsSpawning(BlockState blockState, Entity entity) {
-		return entity.isFireImmune();
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return entityType.isFireImmune();
 	}
 
 	@Override

@@ -66,7 +66,7 @@ public class GrindstoneContainer extends Container {
 						world.spawnEntity(new ExperienceOrbEntity(world, (double)blockPos.getX(), (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, j));
 					}
 
-					world.playEvent(1042, blockPos, 0);
+					world.method_20290(1042, blockPos, 0);
 				}));
 				GrindstoneContainer.this.craftingInventory.setInvStack(0, ItemStack.EMPTY);
 				GrindstoneContainer.this.craftingInventory.setInvStack(1, ItemStack.EMPTY);
@@ -147,8 +147,8 @@ public class GrindstoneContainer extends Container {
 				int k = item.getDurability() - itemStack2.getDamage();
 				int l = j + k + item.getDurability() * 5 / 100;
 				m = Math.max(item.getDurability() - l, 0);
-				itemStack3 = itemStack;
-				if (!itemStack.hasDurability()) {
+				itemStack3 = this.method_20268(itemStack, itemStack2);
+				if (!itemStack3.hasDurability()) {
 					if (!ItemStack.areEqual(itemStack, itemStack2)) {
 						this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 						this.sendContentUpdates();
@@ -171,11 +171,30 @@ public class GrindstoneContainer extends Container {
 		this.sendContentUpdates();
 	}
 
+	private ItemStack method_20268(ItemStack itemStack, ItemStack itemStack2) {
+		ItemStack itemStack3 = itemStack.copy();
+		Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack2);
+
+		for (Entry<Enchantment, Integer> entry : map.entrySet()) {
+			Enchantment enchantment = (Enchantment)entry.getKey();
+			if (!enchantment.isCursed() || EnchantmentHelper.getLevel(enchantment, itemStack3) == 0) {
+				itemStack3.addEnchantment(enchantment, (Integer)entry.getValue());
+			}
+		}
+
+		return itemStack3;
+	}
+
 	private ItemStack method_16693(ItemStack itemStack, int i, int j) {
 		ItemStack itemStack2 = itemStack.copy();
 		itemStack2.removeSubTag("Enchantments");
 		itemStack2.removeSubTag("StoredEnchantments");
-		itemStack2.setDamage(i);
+		if (i > 0) {
+			itemStack2.setDamage(i);
+		} else {
+			itemStack2.removeSubTag("Damage");
+		}
+
 		itemStack2.setAmount(j);
 		Map<Enchantment, Integer> map = (Map<Enchantment, Integer>)EnchantmentHelper.getEnchantments(itemStack)
 			.entrySet()

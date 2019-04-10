@@ -87,7 +87,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 					GlStateManager.blendFuncSeparate(
 						GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 					);
-					this.method_3570(true);
+					this.disableLightmap(true);
 					if (structureBlockBlockEntity.getMode() == StructureBlockMode.field_12695 || structureBlockBlockEntity.shouldShowBoundingBox()) {
 						this.method_3586(tessellator, bufferBuilder, p, l, q, r, m, s, 255, 223, 127);
 					}
@@ -97,7 +97,7 @@ public class StructureBlockBlockEntityRenderer extends BlockEntityRenderer<Struc
 						this.method_3585(structureBlockBlockEntity, d, e, f, blockPos, tessellator, bufferBuilder, false);
 					}
 
-					this.method_3570(false);
+					this.disableLightmap(false);
 					GlStateManager.lineWidth(1.0F);
 					GlStateManager.enableLighting();
 					GlStateManager.enableTexture();

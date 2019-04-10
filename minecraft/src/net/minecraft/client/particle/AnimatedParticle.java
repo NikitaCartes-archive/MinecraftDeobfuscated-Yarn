@@ -6,9 +6,9 @@ import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
 public class AnimatedParticle extends SpriteBillboardParticle {
-	protected final SpriteProvider field_17866;
-	private final float field_3881;
-	private float field_3879 = 0.91F;
+	protected final SpriteProvider spriteProvider;
+	private final float upwardsAcceleration;
+	private float resistance = 0.91F;
 	private float targetColorRed;
 	private float targetColorGreen;
 	private float targetColorBlue;
@@ -16,8 +16,8 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 
 	protected AnimatedParticle(World world, double d, double e, double f, SpriteProvider spriteProvider, float g) {
 		super(world, d, e, f);
-		this.field_17866 = spriteProvider;
-		this.field_3881 = g;
+		this.spriteProvider = spriteProvider;
+		this.upwardsAcceleration = g;
 	}
 
 	public void setColor(int i) {
@@ -42,13 +42,13 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17866);
+			this.setSpriteForAge(this.spriteProvider);
 			if (this.age > this.maxAge / 2) {
 				this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
 				if (this.changesColor) {
@@ -58,11 +58,11 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 				}
 			}
 
-			this.velocityY = this.velocityY + (double)this.field_3881;
+			this.velocityY = this.velocityY + (double)this.upwardsAcceleration;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX = this.velocityX * (double)this.field_3879;
-			this.velocityY = this.velocityY * (double)this.field_3879;
-			this.velocityZ = this.velocityZ * (double)this.field_3879;
+			this.velocityX = this.velocityX * (double)this.resistance;
+			this.velocityY = this.velocityY * (double)this.resistance;
+			this.velocityZ = this.velocityZ * (double)this.resistance;
 			if (this.onGround) {
 				this.velocityX *= 0.7F;
 				this.velocityZ *= 0.7F;
@@ -75,7 +75,7 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 		return 15728880;
 	}
 
-	protected void method_3091(float f) {
-		this.field_3879 = f;
+	protected void setResistance(float f) {
+		this.resistance = f;
 	}
 }

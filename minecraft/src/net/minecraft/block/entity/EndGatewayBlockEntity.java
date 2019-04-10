@@ -82,7 +82,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		if (bl2) {
 			this.teleportCooldown--;
 		} else if (!this.world.isClient) {
-			List<Entity> list = this.world.method_18467(Entity.class, new BoundingBox(this.getPos()));
+			List<Entity> list = this.world.getEntities(Entity.class, new BoundingBox(this.getPos()));
 			if (!list.isEmpty()) {
 				this.tryTeleportingEntity((Entity)list.get(0));
 			}
@@ -153,7 +153,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 
 			if (this.exitPortalPos != null) {
 				BlockPos blockPos = this.exactTeleport ? this.exitPortalPos : this.findBestPortalExitPos();
-				entity.method_5859((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+				entity.requestTeleport((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
 			}
 
 			this.startTeleportCooldown();
@@ -244,7 +244,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 			if (blockState.getBlock() == Blocks.field_10471
 				&& !Block.isShapeFullCube(worldChunk.getBlockState(blockPos5).getCollisionShape(worldChunk, blockPos5))
 				&& !Block.isShapeFullCube(worldChunk.getBlockState(blockPos6).getCollisionShape(worldChunk, blockPos6))) {
-				double e = blockPos4.squaredDistanceToCenter(0.0, 0.0, 0.0, true);
+				double e = blockPos4.getSquaredDistance(0.0, 0.0, 0.0, true);
 				if (blockPos3 == null || e < d) {
 					blockPos3 = blockPos4;
 					d = e;

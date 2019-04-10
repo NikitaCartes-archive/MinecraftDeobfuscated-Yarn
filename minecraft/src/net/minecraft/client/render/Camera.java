@@ -19,7 +19,7 @@ public class Camera {
 	private boolean ready;
 	private BlockView area;
 	private Entity focusedEntity;
-	private net.minecraft.util.math.Vec3d pos;
+	private net.minecraft.util.math.Vec3d pos = net.minecraft.util.math.Vec3d.ZERO;
 	private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
 	private net.minecraft.util.math.Vec3d field_18714;
 	private net.minecraft.util.math.Vec3d field_18715;
@@ -45,16 +45,12 @@ public class Camera {
 		);
 		if (bl) {
 			if (bl2) {
-				this.addRotation(180.0F, 0.0F);
-				this.addRotation(0.0F, -this.pitch * 2.0F);
+				this.yaw += 180.0F;
+				this.pitch = this.pitch + -this.pitch * 2.0F;
+				this.updateRotation();
 			}
 
 			this.moveBy(-this.method_19318(4.0), 0.0, 0.0);
-			this.method_19319(
-				MathHelper.lerp((double)f, entity.prevX, entity.x),
-				MathHelper.lerp((double)f, entity.prevY, entity.y) + (double)MathHelper.lerp(f, this.field_18722, this.field_18721),
-				MathHelper.lerp((double)f, entity.prevZ, entity.z)
-			);
 		} else if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
 			Direction direction = ((LivingEntity)entity).method_18401();
 			this.setRotation(direction != null ? direction.asRotation() - 180.0F : 0.0F, 0.0F);
@@ -101,27 +97,11 @@ public class Camera {
 		return d;
 	}
 
-	protected void method_19319(double d, double e, double f) {
-		double g = d - this.pos.x;
-		double h = e - this.pos.y;
-		double i = f - this.pos.z;
-		double j = (double)MathHelper.sqrt(g * g + i * i);
-		this.pitch = MathHelper.wrapDegrees((float)(-(MathHelper.atan2(h, j) * 180.0F / (float)Math.PI)));
-		this.yaw = MathHelper.wrapDegrees((float)(MathHelper.atan2(i, g) * 180.0F / (float)Math.PI) - 90.0F);
-		this.updateRotation();
-	}
-
 	protected void moveBy(double d, double e, double f) {
 		double g = this.field_18714.x * d + this.field_18715.x * e + this.field_18716.x * f;
 		double h = this.field_18714.y * d + this.field_18715.y * e + this.field_18716.y * f;
 		double i = this.field_18714.z * d + this.field_18715.z * e + this.field_18716.z * f;
 		this.setPos(new net.minecraft.util.math.Vec3d(this.pos.x + g, this.pos.y + h, this.pos.z + i));
-	}
-
-	protected void addRotation(float f, float g) {
-		this.pitch += g;
-		this.yaw += f;
-		this.updateRotation();
 	}
 
 	protected void updateRotation() {

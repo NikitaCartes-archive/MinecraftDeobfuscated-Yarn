@@ -196,7 +196,7 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, Nameab
 
 		Vec3d vec3d = new Vec3d((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5);
 		return new ServerCommandSource(
-			CommandOutput.field_17395, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, textComponent, this.world.getServer(), playerEntity
+			CommandOutput.DUMMY, vec3d, Vec2f.ZERO, (ServerWorld)this.world, 2, string, textComponent, this.world.getServer(), playerEntity
 		);
 	}
 

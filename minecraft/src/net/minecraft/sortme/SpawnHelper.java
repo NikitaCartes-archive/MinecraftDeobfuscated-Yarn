@@ -7,13 +7,11 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockPlacementEnvironment;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -21,7 +19,6 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
@@ -72,10 +69,10 @@ public final class SpawnHelper {
 								mutable.set(n, k, o);
 								float f = (float)n + 0.5F;
 								float g = (float)o + 0.5F;
-								PlayerEntity playerEntity = world.method_18457((double)f, (double)g, -1.0);
+								PlayerEntity playerEntity = world.getClosestPlayer((double)f, (double)g, -1.0);
 								if (playerEntity == null
 									|| playerEntity.squaredDistanceTo((double)f, (double)k, (double)g) <= 576.0
-									|| blockPos.method_19769(new Vec3d((double)f, (double)k, (double)g), 24.0)) {
+									|| blockPos.isWithinDistance(new Vec3d((double)f, (double)k, (double)g), 24.0)) {
 									break label119;
 								}
 
@@ -93,7 +90,7 @@ public final class SpawnHelper {
 									q = spawnEntry.minGroupSize + world.random.nextInt(1 + spawnEntry.maxGroupSize - spawnEntry.minGroupSize);
 								}
 
-								if (spawnEntry.type.getEntityClass() == EntityCategory.field_17715) {
+								if (spawnEntry.type.getCategory() == EntityCategory.field_17715) {
 									break label119;
 								}
 
@@ -105,7 +102,7 @@ public final class SpawnHelper {
 								SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
 								if (location == null
 									|| !canSpawn(location, world, mutable, entityType)
-									|| !world.method_18026(entityType.createSimpleBoundingBox((double)f, (double)k, (double)g))) {
+									|| !world.doesNotCollide(entityType.createSimpleBoundingBox((double)f, (double)k, (double)g))) {
 									break label119;
 								}
 
@@ -126,11 +123,11 @@ public final class SpawnHelper {
 								if (playerEntity.squaredDistanceTo((double)f, (double)k, (double)g) > 16384.0
 										&& mobEntity.canImmediatelyDespawn(playerEntity.squaredDistanceTo((double)f, (double)k, (double)g))
 									|| !mobEntity.canSpawn(world, SpawnType.field_16459)
-									|| !mobEntity.method_5957(world)) {
+									|| !mobEntity.canSpawn(world)) {
 									break label119;
 								}
 
-								entityData = mobEntity.prepareEntityData(world, world.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.field_16459, entityData, null);
+								entityData = mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.field_16459, entityData, null);
 								i++;
 								r++;
 								world.spawnEntity(mobEntity);
@@ -198,16 +195,10 @@ public final class SpawnHelper {
 				case field_6317:
 				default:
 					BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
-					if (!Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos3, VerticalEntityPosition.minValue()), Direction.UP)
-						&& !SpawnRestriction.canSpawn(entityType, blockState2)) {
-						return false;
-					} else {
-						Block block = blockState2.getBlock();
-						boolean bl = block != Blocks.field_9987 && block != Blocks.field_10499;
-						return bl
-							&& isClearForSpawn(viewableWorld, blockPos, blockState, fluidState)
+					return !blockState2.allowsSpawning(viewableWorld, blockPos3, entityType)
+						? false
+						: isClearForSpawn(viewableWorld, blockPos, blockState, fluidState)
 							&& isClearForSpawn(viewableWorld, blockPos2, viewableWorld.getBlockState(blockPos2), viewableWorld.getFluidState(blockPos2));
-					}
 			}
 		} else {
 			return false;
@@ -238,7 +229,7 @@ public final class SpawnHelper {
 							float f = spawnEntry.type.getWidth();
 							double d = MathHelper.clamp((double)n, (double)k + (double)f, (double)k + 16.0 - (double)f);
 							double e = MathHelper.clamp((double)o, (double)l + (double)f, (double)l + 16.0 - (double)f);
-							if (!iWorld.method_18026(spawnEntry.type.createSimpleBoundingBox(d, (double)blockPos.getY(), e))) {
+							if (!iWorld.doesNotCollide(spawnEntry.type.createSimpleBoundingBox(d, (double)blockPos.getY(), e))) {
 								continue;
 							}
 
@@ -253,8 +244,8 @@ public final class SpawnHelper {
 							entity.setPositionAndAngles(d, (double)blockPos.getY(), e, random.nextFloat() * 360.0F, 0.0F);
 							if (entity instanceof MobEntity) {
 								MobEntity mobEntity = (MobEntity)entity;
-								if (mobEntity.canSpawn(iWorld, SpawnType.field_16472) && mobEntity.method_5957(iWorld)) {
-									entityData = mobEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.field_16472, entityData, null);
+								if (mobEntity.canSpawn(iWorld, SpawnType.field_16472) && mobEntity.canSpawn(iWorld)) {
+									entityData = mobEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(mobEntity)), SpawnType.field_16472, entityData, null);
 									iWorld.spawnEntity(mobEntity);
 									bl = true;
 								}

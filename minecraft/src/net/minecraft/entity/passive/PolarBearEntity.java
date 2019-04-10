@@ -12,13 +12,13 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.FollowParentGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -41,10 +41,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public class PolarBearEntity extends AnimalEntity {
-	private static final TrackedData<Boolean> field_6840 = DataTracker.registerData(PolarBearEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private float field_6838;
-	private float field_6837;
-	private int field_6839;
+	private static final TrackedData<Boolean> WARNING = DataTracker.registerData(PolarBearEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private float lastWarningAnimationProgress;
+	private float warningAnimationProgress;
+	private int warningSoundCooldown;
 
 	public PolarBearEntity(EntityType<? extends PolarBearEntity> entityType, World world) {
 		super(entityType, world);
@@ -64,14 +64,14 @@ public class PolarBearEntity extends AnimalEntity {
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new PolarBearEntity.class_1460());
-		this.goalSelector.add(1, new PolarBearEntity.class_1461());
+		this.goalSelector.add(1, new PolarBearEntity.AttackGoal());
+		this.goalSelector.add(1, new PolarBearEntity.PolarBearEscapeDangerGoal());
 		this.goalSelector.add(4, new FollowParentGoal(this, 1.25));
 		this.goalSelector.add(5, new WanderAroundGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(7, new LookAroundGoal(this));
-		this.targetSelector.add(1, new PolarBearEntity.class_1459());
-		this.targetSelector.add(2, new PolarBearEntity.class_1457());
+		this.targetSelector.add(1, new PolarBearEntity.PolarBearRevengeGoal());
+		this.targetSelector.add(2, new PolarBearEntity.FollowPlayersGoal());
 		this.targetSelector.add(3, new FollowTargetGoal(this, FoxEntity.class, 10, true, true, null));
 	}
 
@@ -117,46 +117,46 @@ public class PolarBearEntity extends AnimalEntity {
 		this.playSound(SoundEvents.field_15036, 0.15F, 1.0F);
 	}
 
-	protected void method_6602() {
-		if (this.field_6839 <= 0) {
+	protected void playWarningSound() {
+		if (this.warningSoundCooldown <= 0) {
 			this.playSound(SoundEvents.field_14937, 1.0F, 1.0F);
-			this.field_6839 = 40;
+			this.warningSoundCooldown = 40;
 		}
 	}
 
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_6840, false);
+		this.dataTracker.startTracking(WARNING, false);
 	}
 
 	@Override
 	public void tick() {
 		super.tick();
 		if (this.world.isClient) {
-			if (this.field_6837 != this.field_6838) {
+			if (this.warningAnimationProgress != this.lastWarningAnimationProgress) {
 				this.refreshSize();
 			}
 
-			this.field_6838 = this.field_6837;
-			if (this.method_6600()) {
-				this.field_6837 = MathHelper.clamp(this.field_6837 + 1.0F, 0.0F, 6.0F);
+			this.lastWarningAnimationProgress = this.warningAnimationProgress;
+			if (this.isWarning()) {
+				this.warningAnimationProgress = MathHelper.clamp(this.warningAnimationProgress + 1.0F, 0.0F, 6.0F);
 			} else {
-				this.field_6837 = MathHelper.clamp(this.field_6837 - 1.0F, 0.0F, 6.0F);
+				this.warningAnimationProgress = MathHelper.clamp(this.warningAnimationProgress - 1.0F, 0.0F, 6.0F);
 			}
 		}
 
-		if (this.field_6839 > 0) {
-			this.field_6839--;
+		if (this.warningSoundCooldown > 0) {
+			this.warningSoundCooldown--;
 		}
 	}
 
 	@Override
 	public EntitySize getSize(EntityPose entityPose) {
-		if (this.field_6837 > 0.0F) {
-			float f = this.field_6837 / 6.0F;
+		if (this.warningAnimationProgress > 0.0F) {
+			float f = this.warningAnimationProgress / 6.0F;
 			float g = 1.0F + f;
-			return super.getSize(entityPose).method_19539(1.0F, g);
+			return super.getSize(entityPose).scaled(1.0F, g);
 		} else {
 			return super.getSize(entityPose);
 		}
@@ -172,39 +172,79 @@ public class PolarBearEntity extends AnimalEntity {
 		return bl;
 	}
 
-	public boolean method_6600() {
-		return this.dataTracker.get(field_6840);
+	public boolean isWarning() {
+		return this.dataTracker.get(WARNING);
 	}
 
-	public void method_6603(boolean bl) {
-		this.dataTracker.set(field_6840, bl);
+	public void setWarning(boolean bl) {
+		this.dataTracker.set(WARNING, bl);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_6601(float f) {
-		return MathHelper.lerp(f, this.field_6838, this.field_6837) / 6.0F;
+	public float getWarningAnimationProgress(float f) {
+		return MathHelper.lerp(f, this.lastWarningAnimationProgress, this.warningAnimationProgress) / 6.0F;
 	}
 
 	@Override
-	protected float method_6120() {
+	protected float getBaseMovementSpeedMultiplier() {
 		return 0.98F;
 	}
 
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		if (entityData instanceof PolarBearEntity.class_1458) {
+		if (entityData instanceof PolarBearEntity.PolarBearEntityData) {
 			this.setBreedingAge(-24000);
 		} else {
-			entityData = new PolarBearEntity.class_1458();
+			entityData = new PolarBearEntity.PolarBearEntityData();
 		}
 
 		return entityData;
 	}
 
-	class class_1457 extends FollowTargetGoal<PlayerEntity> {
-		public class_1457() {
+	class AttackGoal extends MeleeAttackGoal {
+		public AttackGoal() {
+			super(PolarBearEntity.this, 1.25, true);
+		}
+
+		@Override
+		protected void attack(LivingEntity livingEntity, double d) {
+			double e = this.getSquaredMaxAttackDistance(livingEntity);
+			if (d <= e && this.ticksUntilAttack <= 0) {
+				this.ticksUntilAttack = 20;
+				this.entity.attack(livingEntity);
+				PolarBearEntity.this.setWarning(false);
+			} else if (d <= e * 2.0) {
+				if (this.ticksUntilAttack <= 0) {
+					PolarBearEntity.this.setWarning(false);
+					this.ticksUntilAttack = 20;
+				}
+
+				if (this.ticksUntilAttack <= 10) {
+					PolarBearEntity.this.setWarning(true);
+					PolarBearEntity.this.playWarningSound();
+				}
+			} else {
+				this.ticksUntilAttack = 20;
+				PolarBearEntity.this.setWarning(false);
+			}
+		}
+
+		@Override
+		public void stop() {
+			PolarBearEntity.this.setWarning(false);
+			super.stop();
+		}
+
+		@Override
+		protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
+			return (double)(4.0F + livingEntity.getWidth());
+		}
+	}
+
+	class FollowPlayersGoal extends FollowTargetGoal<PlayerEntity> {
+		public FollowPlayersGoal() {
 			super(PolarBearEntity.this, PlayerEntity.class, 20, true, true, null);
 		}
 
@@ -215,14 +255,13 @@ public class PolarBearEntity extends AnimalEntity {
 			} else {
 				if (super.canStart()) {
 					for (PolarBearEntity polarBearEntity : PolarBearEntity.this.world
-						.method_18467(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
+						.getEntities(PolarBearEntity.class, PolarBearEntity.this.getBoundingBox().expand(8.0, 4.0, 8.0))) {
 						if (polarBearEntity.isChild()) {
 							return true;
 						}
 					}
 				}
 
-				PolarBearEntity.this.setTarget(null);
 				return false;
 			}
 		}
@@ -233,13 +272,24 @@ public class PolarBearEntity extends AnimalEntity {
 		}
 	}
 
-	static class class_1458 implements EntityData {
-		private class_1458() {
+	static class PolarBearEntityData implements EntityData {
+		private PolarBearEntityData() {
 		}
 	}
 
-	class class_1459 extends AvoidGoal {
-		public class_1459() {
+	class PolarBearEscapeDangerGoal extends EscapeDangerGoal {
+		public PolarBearEscapeDangerGoal() {
+			super(PolarBearEntity.this, 2.0);
+		}
+
+		@Override
+		public boolean canStart() {
+			return !PolarBearEntity.this.isChild() && !PolarBearEntity.this.isOnFire() ? false : super.canStart();
+		}
+	}
+
+	class PolarBearRevengeGoal extends RevengeGoal {
+		public PolarBearRevengeGoal() {
 			super(PolarBearEntity.this);
 		}
 
@@ -247,67 +297,16 @@ public class PolarBearEntity extends AnimalEntity {
 		public void start() {
 			super.start();
 			if (PolarBearEntity.this.isChild()) {
-				this.method_6317();
-				this.onRemove();
+				this.callSameTypeForRevenge();
+				this.stop();
 			}
 		}
 
 		@Override
-		protected void method_6319(MobEntity mobEntity, LivingEntity livingEntity) {
+		protected void setMobEntityTarget(MobEntity mobEntity, LivingEntity livingEntity) {
 			if (mobEntity instanceof PolarBearEntity && !mobEntity.isChild()) {
-				super.method_6319(mobEntity, livingEntity);
+				super.setMobEntityTarget(mobEntity, livingEntity);
 			}
-		}
-	}
-
-	class class_1460 extends MeleeAttackGoal {
-		public class_1460() {
-			super(PolarBearEntity.this, 1.25, true);
-		}
-
-		@Override
-		protected void method_6288(LivingEntity livingEntity, double d) {
-			double e = this.method_6289(livingEntity);
-			if (d <= e && this.field_6505 <= 0) {
-				this.field_6505 = 20;
-				this.entity.attack(livingEntity);
-				PolarBearEntity.this.method_6603(false);
-			} else if (d <= e * 2.0) {
-				if (this.field_6505 <= 0) {
-					PolarBearEntity.this.method_6603(false);
-					this.field_6505 = 20;
-				}
-
-				if (this.field_6505 <= 10) {
-					PolarBearEntity.this.method_6603(true);
-					PolarBearEntity.this.method_6602();
-				}
-			} else {
-				this.field_6505 = 20;
-				PolarBearEntity.this.method_6603(false);
-			}
-		}
-
-		@Override
-		public void onRemove() {
-			PolarBearEntity.this.method_6603(false);
-			super.onRemove();
-		}
-
-		@Override
-		protected double method_6289(LivingEntity livingEntity) {
-			return (double)(4.0F + livingEntity.getWidth());
-		}
-	}
-
-	class class_1461 extends EscapeDangerGoal {
-		public class_1461() {
-			super(PolarBearEntity.this, 2.0);
-		}
-
-		@Override
-		public boolean canStart() {
-			return !PolarBearEntity.this.isChild() && !PolarBearEntity.this.isOnFire() ? false : super.canStart();
 		}
 	}
 }

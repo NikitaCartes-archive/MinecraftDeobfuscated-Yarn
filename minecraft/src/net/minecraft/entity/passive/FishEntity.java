@@ -117,7 +117,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 	@Override
 	public void travel(Vec3d vec3d) {
-		if (this.method_6034() && this.isInsideWater()) {
+		if (this.canMoveVoluntarily() && this.isInsideWater()) {
 			this.updateVelocity(0.01F, vec3d);
 			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
@@ -146,7 +146,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	@Override
 	protected boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.getItem() == Items.field_8705 && this.isValid()) {
+		if (itemStack.getItem() == Items.field_8705 && this.isAlive()) {
 			this.playSound(SoundEvents.field_14568, 1.0F, 1.0F);
 			itemStack.subtractAmount(1);
 			ItemStack itemStack2 = this.getFishBucketItem();
@@ -161,7 +161,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 				playerEntity.dropItem(itemStack2, false);
 			}
 
-			this.invalidate();
+			this.remove();
 			return true;
 		} else {
 			return super.interactMob(playerEntity, hand);
@@ -208,7 +208,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-				this.fish.yaw = this.method_6238(this.fish.yaw, h, 90.0F);
+				this.fish.yaw = this.changeAngle(this.fish.yaw, h, 90.0F);
 				this.fish.field_6283 = this.fish.yaw;
 				float i = (float)(this.speed * this.fish.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				this.fish.setMovementSpeed(MathHelper.lerp(0.125F, this.fish.getMovementSpeed(), i));

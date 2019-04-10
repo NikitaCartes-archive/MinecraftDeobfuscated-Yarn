@@ -8,11 +8,11 @@ import net.minecraft.util.PacketByteBuf;
 
 public class IdListPalette<T> implements Palette<T> {
 	private final IdList<T> idList;
-	private final T field_12829;
+	private final T fallback;
 
 	public IdListPalette(IdList<T> idList, T object) {
 		this.idList = idList;
-		this.field_12829 = object;
+		this.fallback = object;
 	}
 
 	@Override
@@ -22,14 +22,14 @@ public class IdListPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public boolean method_19525(T object) {
+	public boolean accepts(T object) {
 		return true;
 	}
 
 	@Override
 	public T getByIndex(int i) {
 		T object = this.idList.get(i);
-		return object == null ? this.field_12829 : object;
+		return object == null ? this.fallback : object;
 	}
 
 	@Environment(EnvType.CLIENT)

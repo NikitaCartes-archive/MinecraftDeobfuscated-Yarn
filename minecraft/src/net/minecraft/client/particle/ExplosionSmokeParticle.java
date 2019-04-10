@@ -21,7 +21,7 @@ public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 		this.colorBlue = j;
 		this.scale = 0.1F * (this.random.nextFloat() * this.random.nextFloat() * 6.0F + 1.0F);
 		this.maxAge = (int)(16.0 / ((double)this.random.nextFloat() * 0.8 + 0.2)) + 2;
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
@@ -31,13 +31,13 @@ public class ExplosionSmokeParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17806);
+			this.setSpriteForAge(this.field_17806);
 			this.velocityY += 0.004;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
 			this.velocityX *= 0.9F;

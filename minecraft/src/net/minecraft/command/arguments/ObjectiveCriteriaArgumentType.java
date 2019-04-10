@@ -33,11 +33,11 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 		return new ObjectiveCriteriaArgumentType();
 	}
 
-	public static ScoreboardCriterion getCriteriaArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static ScoreboardCriterion getCriteria(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, ScoreboardCriterion.class);
 	}
 
-	public ScoreboardCriterion method_9403(StringReader stringReader) throws CommandSyntaxException {
+	public ScoreboardCriterion getCriteria(StringReader stringReader) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 
 		while (stringReader.canRead() && stringReader.peek() != ' ') {
@@ -57,7 +57,7 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 
 		for (StatType<?> statType : Registry.STAT_TYPE) {
 			for (Object object : statType.getRegistry()) {
-				String string = this.method_9400(statType, object);
+				String string = this.getStatName(statType, object);
 				list.add(string);
 			}
 		}
@@ -65,8 +65,8 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 		return CommandSource.suggestMatching(list, suggestionsBuilder);
 	}
 
-	public <T> String method_9400(StatType<T> statType, Object object) {
-		return Stat.method_14950(statType, (T)object);
+	public <T> String getStatName(StatType<T> statType, Object object) {
+		return Stat.getName(statType, (T)object);
 	}
 
 	@Override

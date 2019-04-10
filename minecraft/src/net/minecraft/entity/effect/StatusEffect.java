@@ -21,8 +21,8 @@ import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 
 public class StatusEffect {
-	private final Map<EntityAttribute, EntityAttributeModifier> attributes = Maps.<EntityAttribute, EntityAttributeModifier>newHashMap();
-	private final StatusEffectType field_18270;
+	private final Map<EntityAttribute, EntityAttributeModifier> attributeModifiers = Maps.<EntityAttribute, EntityAttributeModifier>newHashMap();
+	private final StatusEffectType type;
 	private final int color;
 	@Nullable
 	private String translationKey;
@@ -37,7 +37,7 @@ public class StatusEffect {
 	}
 
 	protected StatusEffect(StatusEffectType statusEffectType, int i) {
-		this.field_18270 = statusEffectType;
+		this.type = statusEffectType;
 		this.color = i;
 	}
 
@@ -121,27 +121,27 @@ public class StatusEffect {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public StatusEffectType method_18792() {
-		return this.field_18270;
+	public StatusEffectType getType() {
+		return this.type;
 	}
 
 	public int getColor() {
 		return this.color;
 	}
 
-	public StatusEffect method_5566(EntityAttribute entityAttribute, String string, double d, EntityAttributeModifier.Operation operation) {
+	public StatusEffect addAttributeModifier(EntityAttribute entityAttribute, String string, double d, EntityAttributeModifier.Operation operation) {
 		EntityAttributeModifier entityAttributeModifier = new EntityAttributeModifier(UUID.fromString(string), this::getTranslationKey, d, operation);
-		this.attributes.put(entityAttribute, entityAttributeModifier);
+		this.attributeModifiers.put(entityAttribute, entityAttributeModifier);
 		return this;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Map<EntityAttribute, EntityAttributeModifier> method_5565() {
-		return this.attributes;
+	public Map<EntityAttribute, EntityAttributeModifier> getAttributeModifiers() {
+		return this.attributeModifiers;
 	}
 
 	public void method_5562(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
-		for (Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributes.entrySet()) {
+		for (Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
 			EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get((EntityAttribute)entry.getKey());
 			if (entityAttributeInstance != null) {
 				entityAttributeInstance.removeModifier((EntityAttributeModifier)entry.getValue());
@@ -150,7 +150,7 @@ public class StatusEffect {
 	}
 
 	public void method_5555(LivingEntity livingEntity, AbstractEntityAttributeContainer abstractEntityAttributeContainer, int i) {
-		for (Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributes.entrySet()) {
+		for (Entry<EntityAttribute, EntityAttributeModifier> entry : this.attributeModifiers.entrySet()) {
 			EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get((EntityAttribute)entry.getKey());
 			if (entityAttributeInstance != null) {
 				EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
@@ -170,6 +170,6 @@ public class StatusEffect {
 
 	@Environment(EnvType.CLIENT)
 	public boolean method_5573() {
-		return this.field_18270 == StatusEffectType.field_18271;
+		return this.type == StatusEffectType.field_18271;
 	}
 }

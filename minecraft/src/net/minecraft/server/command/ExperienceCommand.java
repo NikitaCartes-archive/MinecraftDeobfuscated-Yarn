@@ -22,41 +22,41 @@ public class ExperienceCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		LiteralCommandNode<ServerCommandSource> literalCommandNode = commandDispatcher.register(
-			ServerCommandManager.literal("experience")
+			CommandManager.literal("experience")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.literal("add")
+					CommandManager.literal("add")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+							CommandManager.argument("targets", EntityArgumentType.players())
 								.then(
-									ServerCommandManager.argument("amount", IntegerArgumentType.integer())
+									CommandManager.argument("amount", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> method_13326(
+											commandContext -> executeAdd(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
 													IntegerArgumentType.getInteger(commandContext, "amount"),
-													ExperienceCommand.class_3055.field_13644
+													ExperienceCommand.Component.field_13644
 												)
 										)
 										.then(
-											ServerCommandManager.literal("points")
+											CommandManager.literal("points")
 												.executes(
-													commandContext -> method_13326(
+													commandContext -> executeAdd(
 															commandContext.getSource(),
-															EntityArgumentType.method_9312(commandContext, "targets"),
+															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.class_3055.field_13644
+															ExperienceCommand.Component.field_13644
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("levels")
+											CommandManager.literal("levels")
 												.executes(
-													commandContext -> method_13326(
+													commandContext -> executeAdd(
 															commandContext.getSource(),
-															EntityArgumentType.method_9312(commandContext, "targets"),
+															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.class_3055.field_13641
+															ExperienceCommand.Component.field_13641
 														)
 												)
 										)
@@ -64,38 +64,38 @@ public class ExperienceCommand {
 						)
 				)
 				.then(
-					ServerCommandManager.literal("set")
+					CommandManager.literal("set")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+							CommandManager.argument("targets", EntityArgumentType.players())
 								.then(
-									ServerCommandManager.argument("amount", IntegerArgumentType.integer(0))
+									CommandManager.argument("amount", IntegerArgumentType.integer(0))
 										.executes(
-											commandContext -> method_13333(
+											commandContext -> executeSet(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
 													IntegerArgumentType.getInteger(commandContext, "amount"),
-													ExperienceCommand.class_3055.field_13644
+													ExperienceCommand.Component.field_13644
 												)
 										)
 										.then(
-											ServerCommandManager.literal("points")
+											CommandManager.literal("points")
 												.executes(
-													commandContext -> method_13333(
+													commandContext -> executeSet(
 															commandContext.getSource(),
-															EntityArgumentType.method_9312(commandContext, "targets"),
+															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.class_3055.field_13644
+															ExperienceCommand.Component.field_13644
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("levels")
+											CommandManager.literal("levels")
 												.executes(
-													commandContext -> method_13333(
+													commandContext -> executeSet(
 															commandContext.getSource(),
-															EntityArgumentType.method_9312(commandContext, "targets"),
+															EntityArgumentType.getPlayers(commandContext, "targets"),
 															IntegerArgumentType.getInteger(commandContext, "amount"),
-															ExperienceCommand.class_3055.field_13641
+															ExperienceCommand.Component.field_13641
 														)
 												)
 										)
@@ -103,22 +103,22 @@ public class ExperienceCommand {
 						)
 				)
 				.then(
-					ServerCommandManager.literal("query")
+					CommandManager.literal("query")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.onePlayer())
+							CommandManager.argument("targets", EntityArgumentType.player())
 								.then(
-									ServerCommandManager.literal("points")
+									CommandManager.literal("points")
 										.executes(
-											commandContext -> method_13328(
-													commandContext.getSource(), EntityArgumentType.getServerPlayerArgument(commandContext, "targets"), ExperienceCommand.class_3055.field_13644
+											commandContext -> executeQuery(
+													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.field_13644
 												)
 										)
 								)
 								.then(
-									ServerCommandManager.literal("levels")
+									CommandManager.literal("levels")
 										.executes(
-											commandContext -> method_13328(
-													commandContext.getSource(), EntityArgumentType.getServerPlayerArgument(commandContext, "targets"), ExperienceCommand.class_3055.field_13641
+											commandContext -> executeQuery(
+													commandContext.getSource(), EntityArgumentType.getPlayer(commandContext, "targets"), ExperienceCommand.Component.field_13641
 												)
 										)
 								)
@@ -126,46 +126,46 @@ public class ExperienceCommand {
 				)
 		);
 		commandDispatcher.register(
-			ServerCommandManager.literal("xp").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).redirect(literalCommandNode)
+			CommandManager.literal("xp").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).redirect(literalCommandNode)
 		);
 	}
 
-	private static int method_13328(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, ExperienceCommand.class_3055 arg) {
-		int i = arg.field_13645.applyAsInt(serverPlayerEntity);
-		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.experience.query." + arg.field_13643, serverPlayerEntity.getDisplayName(), i), false);
+	private static int executeQuery(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, ExperienceCommand.Component component) {
+		int i = component.getter.applyAsInt(serverPlayerEntity);
+		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.experience.query." + component.name, serverPlayerEntity.getDisplayName(), i), false);
 		return i;
 	}
 
-	private static int method_13326(
-		ServerCommandSource serverCommandSource, Collection<? extends ServerPlayerEntity> collection, int i, ExperienceCommand.class_3055 arg
+	private static int executeAdd(
+		ServerCommandSource serverCommandSource, Collection<? extends ServerPlayerEntity> collection, int i, ExperienceCommand.Component component
 	) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			arg.field_13639.accept(serverPlayerEntity, i);
+			component.adder.accept(serverPlayerEntity, i);
 		}
 
 		if (collection.size() == 1) {
 			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent(
-					"commands.experience.add." + arg.field_13643 + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+					"commands.experience.add." + component.name + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.experience.add." + arg.field_13643 + ".success.multiple", i, collection.size()), true
+				new TranslatableTextComponent("commands.experience.add." + component.name + ".success.multiple", i, collection.size()), true
 			);
 		}
 
 		return collection.size();
 	}
 
-	private static int method_13333(
-		ServerCommandSource serverCommandSource, Collection<? extends ServerPlayerEntity> collection, int i, ExperienceCommand.class_3055 arg
+	private static int executeSet(
+		ServerCommandSource serverCommandSource, Collection<? extends ServerPlayerEntity> collection, int i, ExperienceCommand.Component component
 	) throws CommandSyntaxException {
 		int j = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			if (arg.field_13642.test(serverPlayerEntity, i)) {
+			if (component.setter.test(serverPlayerEntity, i)) {
 				j++;
 			}
 		}
@@ -176,13 +176,13 @@ public class ExperienceCommand {
 			if (collection.size() == 1) {
 				serverCommandSource.sendFeedback(
 					new TranslatableTextComponent(
-						"commands.experience.set." + arg.field_13643 + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
+						"commands.experience.set." + component.name + ".success.single", i, ((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 					),
 					true
 				);
 			} else {
 				serverCommandSource.sendFeedback(
-					new TranslatableTextComponent("commands.experience.set." + arg.field_13643 + ".success.multiple", i, collection.size()), true
+					new TranslatableTextComponent("commands.experience.set." + component.name + ".success.multiple", i, collection.size()), true
 				);
 			}
 
@@ -190,35 +190,35 @@ public class ExperienceCommand {
 		}
 	}
 
-	static enum class_3055 {
+	static enum Component {
 		field_13644("points", PlayerEntity::addExperience, (serverPlayerEntity, integer) -> {
-			if (integer >= serverPlayerEntity.method_7349()) {
+			if (integer >= serverPlayerEntity.getNextLevelExperience()) {
 				return false;
 			} else {
-				serverPlayerEntity.method_14228(integer);
+				serverPlayerEntity.setExperiencePoints(integer);
 				return true;
 			}
-		}, serverPlayerEntity -> MathHelper.floor(serverPlayerEntity.experienceBarProgress * (float)serverPlayerEntity.method_7349())),
+		}, serverPlayerEntity -> MathHelper.floor(serverPlayerEntity.experienceLevelProgress * (float)serverPlayerEntity.getNextLevelExperience())),
 		field_13641("levels", ServerPlayerEntity::method_7316, (serverPlayerEntity, integer) -> {
-			serverPlayerEntity.method_14252(integer);
+			serverPlayerEntity.setExperienceLevel(integer);
 			return true;
 		}, serverPlayerEntity -> serverPlayerEntity.experience);
 
-		public final BiConsumer<ServerPlayerEntity, Integer> field_13639;
-		public final BiPredicate<ServerPlayerEntity, Integer> field_13642;
-		public final String field_13643;
-		private final ToIntFunction<ServerPlayerEntity> field_13645;
+		public final BiConsumer<ServerPlayerEntity, Integer> adder;
+		public final BiPredicate<ServerPlayerEntity, Integer> setter;
+		public final String name;
+		private final ToIntFunction<ServerPlayerEntity> getter;
 
-		private class_3055(
+		private Component(
 			String string2,
 			BiConsumer<ServerPlayerEntity, Integer> biConsumer,
 			BiPredicate<ServerPlayerEntity, Integer> biPredicate,
 			ToIntFunction<ServerPlayerEntity> toIntFunction
 		) {
-			this.field_13639 = biConsumer;
-			this.field_13643 = string2;
-			this.field_13642 = biPredicate;
-			this.field_13645 = toIntFunction;
+			this.adder = biConsumer;
+			this.name = string2;
+			this.setter = biPredicate;
+			this.getter = toIntFunction;
 		}
 	}
 }

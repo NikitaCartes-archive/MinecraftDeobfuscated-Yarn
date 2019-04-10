@@ -7,8 +7,8 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.config.WhitelistEntry;
 import net.minecraft.server.config.WhitelistList;
@@ -16,22 +16,30 @@ import net.minecraft.text.TextFormatter;
 import net.minecraft.text.TranslatableTextComponent;
 
 public class WhitelistCommand {
-	private static final SimpleCommandExceptionType field_13767 = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.whitelist.alreadyOn"));
-	private static final SimpleCommandExceptionType field_13770 = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.whitelist.alreadyOff"));
-	private static final SimpleCommandExceptionType field_13768 = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.whitelist.add.failed"));
-	private static final SimpleCommandExceptionType field_13769 = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.whitelist.remove.failed"));
+	private static final SimpleCommandExceptionType ALREADY_ON_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("commands.whitelist.alreadyOn")
+	);
+	private static final SimpleCommandExceptionType ALREADY_OFF_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("commands.whitelist.alreadyOff")
+	);
+	private static final SimpleCommandExceptionType ADD_FAILED_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("commands.whitelist.add.failed")
+	);
+	private static final SimpleCommandExceptionType REMOVE_FAILED_EXCEPTION = new SimpleCommandExceptionType(
+		new TranslatableTextComponent("commands.whitelist.remove.failed")
+	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("whitelist")
+			CommandManager.literal("whitelist")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
-				.then(ServerCommandManager.literal("on").executes(commandContext -> method_13839(commandContext.getSource())))
-				.then(ServerCommandManager.literal("off").executes(commandContext -> method_13837(commandContext.getSource())))
-				.then(ServerCommandManager.literal("list").executes(commandContext -> method_13840(commandContext.getSource())))
+				.then(CommandManager.literal("on").executes(commandContext -> method_13839(commandContext.getSource())))
+				.then(CommandManager.literal("off").executes(commandContext -> method_13837(commandContext.getSource())))
+				.then(CommandManager.literal("list").executes(commandContext -> method_13840(commandContext.getSource())))
 				.then(
-					ServerCommandManager.literal("add")
+					CommandManager.literal("add")
 						.then(
-							ServerCommandManager.argument("targets", GameProfileArgumentType.create())
+							CommandManager.argument("targets", GameProfileArgumentType.create())
 								.suggests(
 									(commandContext, suggestionsBuilder) -> {
 										PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
@@ -48,9 +56,9 @@ public class WhitelistCommand {
 						)
 				)
 				.then(
-					ServerCommandManager.literal("remove")
+					CommandManager.literal("remove")
 						.then(
-							ServerCommandManager.argument("targets", GameProfileArgumentType.create())
+							CommandManager.argument("targets", GameProfileArgumentType.create())
 								.suggests(
 									(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
 											commandContext.getSource().getMinecraftServer().getPlayerManager().getWhitelistedNames(), suggestionsBuilder
@@ -59,7 +67,7 @@ public class WhitelistCommand {
 								.executes(commandContext -> method_13845(commandContext.getSource(), GameProfileArgumentType.getProfileArgument(commandContext, "targets")))
 						)
 				)
-				.then(ServerCommandManager.literal("reload").executes(commandContext -> method_13850(commandContext.getSource())))
+				.then(CommandManager.literal("reload").executes(commandContext -> method_13850(commandContext.getSource())))
 		);
 	}
 
@@ -84,7 +92,7 @@ public class WhitelistCommand {
 		}
 
 		if (i == 0) {
-			throw field_13768.create();
+			throw ADD_FAILED_EXCEPTION.create();
 		} else {
 			return i;
 		}
@@ -104,7 +112,7 @@ public class WhitelistCommand {
 		}
 
 		if (i == 0) {
-			throw field_13769.create();
+			throw REMOVE_FAILED_EXCEPTION.create();
 		} else {
 			serverCommandSource.getMinecraftServer().method_3728(serverCommandSource);
 			return i;
@@ -114,7 +122,7 @@ public class WhitelistCommand {
 	private static int method_13839(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 		if (playerManager.isWhitelistEnabled()) {
-			throw field_13767.create();
+			throw ALREADY_ON_EXCEPTION.create();
 		} else {
 			playerManager.setWhitelistEnabled(true);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.whitelist.enabled"), true);
@@ -126,7 +134,7 @@ public class WhitelistCommand {
 	private static int method_13837(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 		if (!playerManager.isWhitelistEnabled()) {
-			throw field_13770.create();
+			throw ALREADY_OFF_EXCEPTION.create();
 		} else {
 			playerManager.setWhitelistEnabled(false);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.whitelist.disabled"), true);

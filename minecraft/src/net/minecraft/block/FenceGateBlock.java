@@ -137,18 +137,18 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			world.setBlockState(blockPos, blockState, 10);
 		}
 
-		world.playEvent(playerEntity, blockState.get(OPEN) ? 1008 : 1014, blockPos, 0);
+		world.playLevelEvent(playerEntity, blockState.get(OPEN) ? 1008 : 1014, blockPos, 0);
 		return true;
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
-			boolean bl = world.isReceivingRedstonePower(blockPos);
-			if ((Boolean)blockState.get(POWERED) != bl) {
-				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), 2);
-				if ((Boolean)blockState.get(OPEN) != bl) {
-					world.playEvent(null, bl ? 1008 : 1014, blockPos, 0);
+			boolean bl2 = world.isReceivingRedstonePower(blockPos);
+			if ((Boolean)blockState.get(POWERED) != bl2) {
+				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl2)).with(OPEN, Boolean.valueOf(bl2)), 2);
+				if ((Boolean)blockState.get(OPEN) != bl2) {
+					world.playLevelEvent(null, bl2 ? 1008 : 1014, blockPos, 0);
 				}
 			}
 		}

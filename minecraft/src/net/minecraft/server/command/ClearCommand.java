@@ -23,29 +23,29 @@ public class ClearCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("clear")
+			CommandManager.literal("clear")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
-				.executes(commandContext -> method_13077(commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), itemStack -> true, -1))
+				.executes(commandContext -> execute(commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), itemStack -> true, -1))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
-						.executes(commandContext -> method_13077(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), itemStack -> true, -1))
+					CommandManager.argument("targets", EntityArgumentType.players())
+						.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), itemStack -> true, -1))
 						.then(
-							ServerCommandManager.argument("item", ItemPredicateArgumentType.create())
+							CommandManager.argument("item", ItemPredicateArgumentType.create())
 								.executes(
-									commandContext -> method_13077(
+									commandContext -> execute(
 											commandContext.getSource(),
-											EntityArgumentType.method_9312(commandContext, "targets"),
-											ItemPredicateArgumentType.getPredicateArgument(commandContext, "item"),
+											EntityArgumentType.getPlayers(commandContext, "targets"),
+											ItemPredicateArgumentType.getItemPredicate(commandContext, "item"),
 											-1
 										)
 								)
 								.then(
-									ServerCommandManager.argument("maxCount", IntegerArgumentType.integer(0))
+									CommandManager.argument("maxCount", IntegerArgumentType.integer(0))
 										.executes(
-											commandContext -> method_13077(
+											commandContext -> execute(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
-													ItemPredicateArgumentType.getPredicateArgument(commandContext, "item"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
+													ItemPredicateArgumentType.getItemPredicate(commandContext, "item"),
 													IntegerArgumentType.getInteger(commandContext, "maxCount")
 												)
 										)
@@ -55,7 +55,7 @@ public class ClearCommand {
 		);
 	}
 
-	private static int method_13077(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Predicate<ItemStack> predicate, int i) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Predicate<ItemStack> predicate, int i) throws CommandSyntaxException {
 		int j = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {

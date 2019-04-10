@@ -45,7 +45,7 @@ public class CactusBlock extends Block {
 						world.setBlockState(blockPos2, this.getDefaultState());
 						BlockState blockState2 = blockState.with(AGE, Integer.valueOf(0));
 						world.setBlockState(blockPos, blockState2, 4);
-						blockState2.neighborUpdate(world, blockPos2, this, blockPos);
+						blockState2.neighborUpdate(world, blockPos2, this, blockPos, false);
 					} else {
 						world.setBlockState(blockPos, blockState.with(AGE, Integer.valueOf(j + 1)), 4);
 					}

@@ -20,15 +20,12 @@ public class AmbientSoundLoops {
 			this.repeatDelay = 0;
 			this.volume = 1.0F;
 			this.field_18935 = true;
+			this.field_18936 = true;
 		}
 
 		@Override
 		public void tick() {
-			if (!this.player.invalid && this.player.isInWater()) {
-				this.x = (float)this.player.x;
-				this.y = (float)this.player.y;
-				this.z = (float)this.player.z;
-			} else {
+			if (this.player.removed || !this.player.isInWater()) {
 				this.done = true;
 			}
 		}
@@ -46,14 +43,12 @@ public class AmbientSoundLoops {
 			this.repeatDelay = 0;
 			this.volume = 1.0F;
 			this.field_18935 = true;
+			this.field_18936 = true;
 		}
 
 		@Override
 		public void tick() {
-			if (!this.player.invalid && this.transitionTimer >= 0) {
-				this.x = (float)this.player.x;
-				this.y = (float)this.player.y;
-				this.z = (float)this.player.z;
+			if (!this.player.removed && this.transitionTimer >= 0) {
 				if (this.player.isInWater()) {
 					this.transitionTimer++;
 				} else {

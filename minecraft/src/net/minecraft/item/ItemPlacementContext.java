@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -13,19 +14,20 @@ public class ItemPlacementContext extends ItemUsageContext {
 	protected boolean field_7904 = true;
 
 	public ItemPlacementContext(ItemUsageContext itemUsageContext) {
-		this(itemUsageContext.getWorld(), itemUsageContext.getPlayer(), itemUsageContext.getItemStack(), itemUsageContext.hitResult);
+		this(itemUsageContext.getWorld(), itemUsageContext.getPlayer(), itemUsageContext.getHand(), itemUsageContext.getItemStack(), itemUsageContext.hitResult);
 	}
 
-	protected ItemPlacementContext(World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockHitResult blockHitResult) {
-		super(world, playerEntity, itemStack, blockHitResult);
+	protected ItemPlacementContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
+		super(world, playerEntity, hand, itemStack, blockHitResult);
 		this.placedPos = blockHitResult.getBlockPos().offset(blockHitResult.getSide());
-		this.field_7904 = world.getBlockState(blockHitResult.getBlockPos()).method_11587(this);
+		this.field_7904 = world.getBlockState(blockHitResult.getBlockPos()).canReplace(this);
 	}
 
 	public static ItemPlacementContext create(ItemPlacementContext itemPlacementContext, BlockPos blockPos, Direction direction) {
 		return new ItemPlacementContext(
 			itemPlacementContext.getWorld(),
 			itemPlacementContext.getPlayer(),
+			itemPlacementContext.getHand(),
 			itemPlacementContext.getItemStack(),
 			new BlockHitResult(
 				new Vec3d(
@@ -46,7 +48,7 @@ public class ItemPlacementContext extends ItemUsageContext {
 	}
 
 	public boolean canPlace() {
-		return this.field_7904 || this.getWorld().getBlockState(this.getBlockPos()).method_11587(this);
+		return this.field_7904 || this.getWorld().getBlockState(this.getBlockPos()).canReplace(this);
 	}
 
 	public boolean method_7717() {

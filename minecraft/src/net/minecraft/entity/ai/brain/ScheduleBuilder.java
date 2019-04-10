@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-class ScheduleBuilder {
+public class ScheduleBuilder {
 	private final Schedule schedule;
 	private final List<ScheduleBuilder.ActivityEntry> activities = Lists.<ScheduleBuilder.ActivityEntry>newArrayList();
 

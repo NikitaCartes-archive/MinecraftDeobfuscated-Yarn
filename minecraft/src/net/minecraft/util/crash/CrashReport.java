@@ -202,7 +202,7 @@ public class CrashReport {
 	public CrashReportSection addElement(String string, int i) {
 		CrashReportSection crashReportSection = new CrashReportSection(this, string);
 		if (this.hasStackTrace) {
-			int j = crashReportSection.method_579(i);
+			int j = crashReportSection.trimStackTrace(i);
 			StackTraceElement[] stackTraceElements = this.cause.getStackTrace();
 			StackTraceElement stackTraceElement = null;
 			StackTraceElement stackTraceElement2 = null;

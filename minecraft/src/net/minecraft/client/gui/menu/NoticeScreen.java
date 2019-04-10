@@ -30,23 +30,21 @@ public class NoticeScreen extends Screen {
 	}
 
 	@Override
-	protected void onInitialized() {
-		super.onInitialized();
-		this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 6 + 168, 200, 20, this.buttonString, buttonWidget -> this.actionHandler.run())
-		);
+	protected void init() {
+		super.init();
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 6 + 168, 200, 20, this.buttonString, buttonWidget -> this.actionHandler.run()));
 		this.noticeLines.clear();
-		this.noticeLines.addAll(this.fontRenderer.wrapStringToWidthAsList(this.notice.getFormattedText(), this.screenWidth - 50));
+		this.noticeLines.addAll(this.font.wrapStringToWidthAsList(this.notice.getFormattedText(), this.width - 50));
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 70, 16777215);
+		this.renderBackground();
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 70, 16777215);
 		int k = 90;
 
 		for (String string : this.noticeLines) {
-			this.drawStringCentered(this.fontRenderer, string, this.screenWidth / 2, k, 16777215);
+			this.drawCenteredString(this.font, string, this.width / 2, k, 16777215);
 			k += 9;
 		}
 
@@ -54,8 +52,8 @@ public class NoticeScreen extends Screen {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		if (--this.field_2347 == 0) {
 			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
 				abstractButtonWidget.active = true;

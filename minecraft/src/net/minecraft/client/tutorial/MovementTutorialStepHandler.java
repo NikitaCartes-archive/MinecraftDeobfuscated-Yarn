@@ -21,15 +21,15 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	private static final TextComponent LOOK_TITLE = new TranslatableTextComponent("tutorial.look.title");
 	private static final TextComponent LOOK_DESCRIPTION = new TranslatableTextComponent("tutorial.look.description");
 	private final TutorialManager manager;
-	private TutorialToast field_5622;
-	private TutorialToast field_5623;
+	private TutorialToast moveToast;
+	private TutorialToast lookAroundToast;
 	private int ticks;
-	private int field_5615;
-	private int field_5627;
-	private boolean field_5620;
-	private boolean field_5619;
-	private int field_5626 = -1;
-	private int field_5625 = -1;
+	private int movedTicks;
+	private int lookedAroundTicks;
+	private boolean movedLastTick;
+	private boolean lookedAroundLastTick;
+	private int moveAroundCompletionTicks = -1;
+	private int lookAroundCompletionTicks = -1;
 
 	public MovementTutorialStepHandler(TutorialManager tutorialManager) {
 		this.manager = tutorialManager;
@@ -38,35 +38,35 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.field_5620) {
-			this.field_5615++;
-			this.field_5620 = false;
+		if (this.movedLastTick) {
+			this.movedTicks++;
+			this.movedLastTick = false;
 		}
 
-		if (this.field_5619) {
-			this.field_5627++;
-			this.field_5619 = false;
+		if (this.lookedAroundLastTick) {
+			this.lookedAroundTicks++;
+			this.lookedAroundLastTick = false;
 		}
 
-		if (this.field_5626 == -1 && this.field_5615 > 40) {
-			if (this.field_5622 != null) {
-				this.field_5622.hide();
-				this.field_5622 = null;
+		if (this.moveAroundCompletionTicks == -1 && this.movedTicks > 40) {
+			if (this.moveToast != null) {
+				this.moveToast.hide();
+				this.moveToast = null;
 			}
 
-			this.field_5626 = this.ticks;
+			this.moveAroundCompletionTicks = this.ticks;
 		}
 
-		if (this.field_5625 == -1 && this.field_5627 > 40) {
-			if (this.field_5623 != null) {
-				this.field_5623.hide();
-				this.field_5623 = null;
+		if (this.lookAroundCompletionTicks == -1 && this.lookedAroundTicks > 40) {
+			if (this.lookAroundToast != null) {
+				this.lookAroundToast.hide();
+				this.lookAroundToast = null;
 			}
 
-			this.field_5625 = this.ticks;
+			this.lookAroundCompletionTicks = this.ticks;
 		}
 
-		if (this.field_5626 != -1 && this.field_5625 != -1) {
+		if (this.moveAroundCompletionTicks != -1 && this.lookAroundCompletionTicks != -1) {
 			if (this.manager.getGameMode() == GameMode.field_9215) {
 				this.manager.setStep(TutorialStep.FIND_TREE);
 			} else {
@@ -74,49 +74,52 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 			}
 		}
 
-		if (this.field_5622 != null) {
-			this.field_5622.method_1992((float)this.field_5615 / 40.0F);
+		if (this.moveToast != null) {
+			this.moveToast.setProgress((float)this.movedTicks / 40.0F);
 		}
 
-		if (this.field_5623 != null) {
-			this.field_5623.method_1992((float)this.field_5627 / 40.0F);
+		if (this.lookAroundToast != null) {
+			this.lookAroundToast.setProgress((float)this.lookedAroundTicks / 40.0F);
 		}
 
 		if (this.ticks >= 100) {
-			if (this.field_5626 == -1 && this.field_5622 == null) {
-				this.field_5622 = new TutorialToast(TutorialToast.Type.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
-				this.manager.getClient().getToastManager().add(this.field_5622);
-			} else if (this.field_5626 != -1 && this.ticks - this.field_5626 >= 20 && this.field_5625 == -1 && this.field_5623 == null) {
-				this.field_5623 = new TutorialToast(TutorialToast.Type.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
-				this.manager.getClient().getToastManager().add(this.field_5623);
+			if (this.moveAroundCompletionTicks == -1 && this.moveToast == null) {
+				this.moveToast = new TutorialToast(TutorialToast.Type.field_2230, MOVE_TITLE, MOVE_DESCRIPTION, true);
+				this.manager.getClient().getToastManager().add(this.moveToast);
+			} else if (this.moveAroundCompletionTicks != -1
+				&& this.ticks - this.moveAroundCompletionTicks >= 20
+				&& this.lookAroundCompletionTicks == -1
+				&& this.lookAroundToast == null) {
+				this.lookAroundToast = new TutorialToast(TutorialToast.Type.field_2237, LOOK_TITLE, LOOK_DESCRIPTION, true);
+				this.manager.getClient().getToastManager().add(this.lookAroundToast);
 			}
 		}
 	}
 
 	@Override
 	public void destroy() {
-		if (this.field_5622 != null) {
-			this.field_5622.hide();
-			this.field_5622 = null;
+		if (this.moveToast != null) {
+			this.moveToast.hide();
+			this.moveToast = null;
 		}
 
-		if (this.field_5623 != null) {
-			this.field_5623.hide();
-			this.field_5623 = null;
+		if (this.lookAroundToast != null) {
+			this.lookAroundToast.hide();
+			this.lookAroundToast = null;
 		}
 	}
 
 	@Override
-	public void method_4903(Input input) {
+	public void onMovement(Input input) {
 		if (input.pressingForward || input.pressingBack || input.pressingLeft || input.pressingRight || input.jumping) {
-			this.field_5620 = true;
+			this.movedLastTick = true;
 		}
 	}
 
 	@Override
-	public void method_4901(double d, double e) {
+	public void onMouseUpdate(double d, double e) {
 		if (Math.abs(d) > 0.01 || Math.abs(e) > 0.01) {
-			this.field_5619 = true;
+			this.lookedAroundLastTick = true;
 		}
 	}
 }

@@ -32,13 +32,13 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 
 	@Override
 	public void updateMovement() {
-		this.method_6119();
-		this.method_16827();
+		this.tickHandSwing();
+		this.updateDespawnCounter();
 		super.updateMovement();
 	}
 
-	protected void method_16827() {
-		float f = this.method_5718();
+	protected void updateDespawnCounter() {
+		float f = this.getBrightnessAtEyes();
 		if (f > 0.5F) {
 			this.despawnCounter += 2;
 		}
@@ -48,7 +48,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	public void tick() {
 		super.tick();
 		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-			this.invalidate();
+			this.remove();
 		}
 	}
 
@@ -113,15 +113,15 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 		return true;
 	}
 
-	public boolean method_7076(PlayerEntity playerEntity) {
+	public boolean isAngryAt(PlayerEntity playerEntity) {
 		return true;
 	}
 
 	@Override
-	public ItemStack method_18808(ItemStack itemStack) {
+	public ItemStack getArrowType(ItemStack itemStack) {
 		if (itemStack.getItem() instanceof BaseBowItem) {
-			Predicate<ItemStack> predicate = ((BaseBowItem)itemStack.getItem()).method_19268();
-			ItemStack itemStack2 = BaseBowItem.method_18815(this, predicate);
+			Predicate<ItemStack> predicate = ((BaseBowItem)itemStack.getItem()).method_20310();
+			ItemStack itemStack2 = BaseBowItem.getItemHeld(this, predicate);
 			return itemStack2.isEmpty() ? new ItemStack(Items.field_8107) : itemStack2;
 		} else {
 			return ItemStack.EMPTY;

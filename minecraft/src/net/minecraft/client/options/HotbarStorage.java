@@ -1,11 +1,11 @@
 package net.minecraft.client.options;
 
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import java.io.File;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.TagHelper;
@@ -40,7 +40,7 @@ public class HotbarStorage {
 				compoundTag.putInt("DataVersion", 1343);
 			}
 
-			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.HOTBAR, compoundTag, compoundTag.getInt("DataVersion"));
+			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.field_19215, compoundTag, compoundTag.getInt("DataVersion"));
 
 			for (int i = 0; i < 9; i++) {
 				this.entries[i].fromListTag(compoundTag.getList(String.valueOf(i), 10));

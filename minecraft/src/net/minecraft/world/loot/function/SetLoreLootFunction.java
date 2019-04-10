@@ -42,13 +42,13 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		ListTag listTag = this.method_15964(itemStack, !this.lore.isEmpty());
+		ListTag listTag = this.getLoreTag(itemStack, !this.lore.isEmpty());
 		if (listTag != null) {
 			if (this.replace) {
 				listTag.clear();
 			}
 
-			UnaryOperator<TextComponent> unaryOperator = SetNameLootFunction.method_16190(lootContext, this.entity);
+			UnaryOperator<TextComponent> unaryOperator = SetNameLootFunction.applySourceEntity(lootContext, this.entity);
 			this.lore.stream().map(unaryOperator).map(TextComponent.Serializer::toJsonString).map(StringTag::new).forEach(listTag::add);
 		}
 
@@ -56,7 +56,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	}
 
 	@Nullable
-	private ListTag method_15964(ItemStack itemStack, boolean bl) {
+	private ListTag getLoreTag(ItemStack itemStack, boolean bl) {
 		CompoundTag compoundTag;
 		if (itemStack.hasTag()) {
 			compoundTag = itemStack.getTag();

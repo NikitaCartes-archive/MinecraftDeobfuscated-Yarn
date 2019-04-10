@@ -17,22 +17,22 @@ public class SpongeBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			this.update(world, blockPos);
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		this.update(world, blockPos);
-		super.neighborUpdate(blockState, world, blockPos, block, blockPos2);
+		super.neighborUpdate(blockState, world, blockPos, block, blockPos2, bl);
 	}
 
 	protected void update(World world, BlockPos blockPos) {
 		if (this.absorbWater(world, blockPos)) {
 			world.setBlockState(blockPos, Blocks.field_10562.getDefaultState(), 2);
-			world.playEvent(2001, blockPos, Block.getRawIdFromState(Blocks.field_10382.getDefaultState()));
+			world.method_20290(2001, blockPos, Block.getRawIdFromState(Blocks.field_10382.getDefaultState()));
 		}
 	}
 

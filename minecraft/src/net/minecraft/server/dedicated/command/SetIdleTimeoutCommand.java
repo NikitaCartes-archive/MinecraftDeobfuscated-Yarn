@@ -2,17 +2,17 @@ package net.minecraft.server.dedicated.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import net.minecraft.server.command.ServerCommandManager;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableTextComponent;
 
 public class SetIdleTimeoutCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("setidletimeout")
+			CommandManager.literal("setidletimeout")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(
-					ServerCommandManager.argument("minutes", IntegerArgumentType.integer(0))
+					CommandManager.argument("minutes", IntegerArgumentType.integer(0))
 						.executes(commandContext -> method_13630(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "minutes")))
 				)
 		);

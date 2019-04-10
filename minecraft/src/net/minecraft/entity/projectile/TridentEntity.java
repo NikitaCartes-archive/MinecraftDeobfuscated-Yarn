@@ -26,7 +26,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class TridentEntity extends ProjectileEntity {
-	private static final TrackedData<Byte> field_7647 = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
+	private static final TrackedData<Byte> LOYALTY = DataTracker.registerData(TridentEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private ItemStack tridentStack = new ItemStack(Items.field_8547);
 	private boolean dealtDamage;
 	public int field_7649;
@@ -38,7 +38,7 @@ public class TridentEntity extends ProjectileEntity {
 	public TridentEntity(World world, LivingEntity livingEntity, ItemStack itemStack) {
 		super(EntityType.TRIDENT, livingEntity, world);
 		this.tridentStack = itemStack.copy();
-		this.dataTracker.set(field_7647, (byte)EnchantmentHelper.getLoyalty(itemStack));
+		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -49,24 +49,24 @@ public class TridentEntity extends ProjectileEntity {
 	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
-		this.dataTracker.startTracking(field_7647, (byte)0);
+		this.dataTracker.startTracking(LOYALTY, (byte)0);
 	}
 
 	@Override
 	public void tick() {
-		if (this.field_7576 > 4) {
+		if (this.inGroundTime > 4) {
 			this.dealtDamage = true;
 		}
 
 		Entity entity = this.getOwner();
 		if ((this.dealtDamage || this.isNoClip()) && entity != null) {
-			int i = this.dataTracker.get(field_7647);
-			if (i > 0 && !this.method_7493()) {
+			int i = this.dataTracker.get(LOYALTY);
+			if (i > 0 && !this.isOwnerAlive()) {
 				if (!this.world.isClient && this.pickupType == ProjectileEntity.PickupType.PICKUP) {
 					this.dropStack(this.asItemStack(), 0.1F);
 				}
 
-				this.invalidate();
+				this.remove();
 			} else if (i > 0) {
 				this.setNoClip(true);
 				Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y + (double)entity.getStandingEyeHeight() - this.y, entity.z - this.z);
@@ -88,9 +88,9 @@ public class TridentEntity extends ProjectileEntity {
 		super.tick();
 	}
 
-	private boolean method_7493() {
+	private boolean isOwnerAlive() {
 		Entity entity = this.getOwner();
-		return entity == null || !entity.isValid() ? false : !(entity instanceof ServerPlayerEntity) || !((ServerPlayerEntity)entity).isSpectator();
+		return entity == null || !entity.isAlive() ? false : !(entity instanceof ServerPlayerEntity) || !entity.isSpectator();
 	}
 
 	@Override
@@ -100,12 +100,12 @@ public class TridentEntity extends ProjectileEntity {
 
 	@Nullable
 	@Override
-	protected EntityHitResult method_7434(Vec3d vec3d, Vec3d vec3d2) {
-		return this.dealtDamage ? null : super.method_7434(vec3d, vec3d2);
+	protected EntityHitResult getEntityCollision(Vec3d vec3d, Vec3d vec3d2) {
+		return this.dealtDamage ? null : super.getEntityCollision(vec3d, vec3d2);
 	}
 
 	@Override
-	protected void method_7454(EntityHitResult entityHitResult) {
+	protected void onEntityHit(EntityHitResult entityHitResult) {
 		Entity entity = entityHitResult.getEntity();
 		float f = 8.0F;
 		if (entity instanceof LivingEntity) {
@@ -166,7 +166,7 @@ public class TridentEntity extends ProjectileEntity {
 		}
 
 		this.dealtDamage = compoundTag.getBoolean("DealtDamage");
-		this.dataTracker.set(field_7647, (byte)EnchantmentHelper.getLoyalty(this.tridentStack));
+		this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(this.tridentStack));
 	}
 
 	@Override
@@ -177,15 +177,15 @@ public class TridentEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void method_7446() {
-		int i = this.dataTracker.get(field_7647);
+	protected void age() {
+		int i = this.dataTracker.get(LOYALTY);
 		if (this.pickupType != ProjectileEntity.PickupType.PICKUP || i <= 0) {
-			super.method_7446();
+			super.age();
 		}
 	}
 
 	@Override
-	protected float method_7436() {
+	protected float getDragInWater() {
 		return 0.99F;
 	}
 

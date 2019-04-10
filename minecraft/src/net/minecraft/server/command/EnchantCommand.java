@@ -33,27 +33,27 @@ public class EnchantCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("enchant")
+			CommandManager.literal("enchant")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
+					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							ServerCommandManager.argument("enchantment", ItemEnchantmentArgumentType.create())
+							CommandManager.argument("enchantment", ItemEnchantmentArgumentType.create())
 								.executes(
-									commandContext -> method_13241(
+									commandContext -> execute(
 											commandContext.getSource(),
-											EntityArgumentType.method_9317(commandContext, "targets"),
-											ItemEnchantmentArgumentType.getEnchantmentArgument(commandContext, "enchantment"),
+											EntityArgumentType.getEntities(commandContext, "targets"),
+											ItemEnchantmentArgumentType.getEnchantment(commandContext, "enchantment"),
 											1
 										)
 								)
 								.then(
-									ServerCommandManager.argument("level", IntegerArgumentType.integer(0))
+									CommandManager.argument("level", IntegerArgumentType.integer(0))
 										.executes(
-											commandContext -> method_13241(
+											commandContext -> execute(
 													commandContext.getSource(),
-													EntityArgumentType.method_9317(commandContext, "targets"),
-													ItemEnchantmentArgumentType.getEnchantmentArgument(commandContext, "enchantment"),
+													EntityArgumentType.getEntities(commandContext, "targets"),
+													ItemEnchantmentArgumentType.getEnchantment(commandContext, "enchantment"),
 													IntegerArgumentType.getInteger(commandContext, "level")
 												)
 										)
@@ -63,7 +63,7 @@ public class EnchantCommand {
 		);
 	}
 
-	private static int method_13241(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, Enchantment enchantment, int i) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, Enchantment enchantment, int i) throws CommandSyntaxException {
 		if (i > enchantment.getMaximumLevel()) {
 			throw FAILED_LEVEL_EXCEPTION.create(i, enchantment.getMaximumLevel());
 		} else {

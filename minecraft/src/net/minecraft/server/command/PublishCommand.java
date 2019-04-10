@@ -10,25 +10,25 @@ import net.minecraft.text.TranslatableTextComponent;
 
 public class PublishCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.publish.failed"));
-	private static final DynamicCommandExceptionType ALREADYPUBLISHED_EXCEPTION = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType ALREADY_PUBLISHED_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("commands.publish.alreadyPublished", object)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("publish")
+			CommandManager.literal("publish")
 				.requires(serverCommandSource -> serverCommandSource.getMinecraftServer().isSinglePlayer() && serverCommandSource.hasPermissionLevel(4))
-				.executes(commandContext -> method_13509(commandContext.getSource(), NetworkUtils.findLocalPort()))
+				.executes(commandContext -> execute(commandContext.getSource(), NetworkUtils.findLocalPort()))
 				.then(
-					ServerCommandManager.argument("port", IntegerArgumentType.integer(0, 65535))
-						.executes(commandContext -> method_13509(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "port")))
+					CommandManager.argument("port", IntegerArgumentType.integer(0, 65535))
+						.executes(commandContext -> execute(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "port")))
 				)
 		);
 	}
 
-	private static int method_13509(ServerCommandSource serverCommandSource, int i) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource serverCommandSource, int i) throws CommandSyntaxException {
 		if (serverCommandSource.getMinecraftServer().isRemote()) {
-			throw ALREADYPUBLISHED_EXCEPTION.create(serverCommandSource.getMinecraftServer().getServerPort());
+			throw ALREADY_PUBLISHED_EXCEPTION.create(serverCommandSource.getMinecraftServer().getServerPort());
 		} else if (!serverCommandSource.getMinecraftServer().openToLan(serverCommandSource.getMinecraftServer().getDefaultGameMode(), false, i)) {
 			throw FAILED_EXCEPTION.create();
 		} else {

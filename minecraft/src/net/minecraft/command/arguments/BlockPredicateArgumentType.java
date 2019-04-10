@@ -28,7 +28,7 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TagHelper;
 
-public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateArgumentType.BlockPredicateFactory> {
+public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateArgumentType.BlockPredicate> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
 	private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("arguments.block.tag.unknown", object)
@@ -38,13 +38,13 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		return new BlockPredicateArgumentType();
 	}
 
-	public BlockPredicateArgumentType.BlockPredicateFactory method_9642(StringReader stringReader) throws CommandSyntaxException {
+	public BlockPredicateArgumentType.BlockPredicate method_9642(StringReader stringReader) throws CommandSyntaxException {
 		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
 		if (blockArgumentParser.getBlockState() != null) {
-			BlockPredicateArgumentType.BlockStatePredicate blockStatePredicate = new BlockPredicateArgumentType.BlockStatePredicate(
+			BlockPredicateArgumentType.StatePredicate statePredicate = new BlockPredicateArgumentType.StatePredicate(
 				blockArgumentParser.getBlockState(), blockArgumentParser.method_9692().keySet(), blockArgumentParser.getNbtData()
 			);
-			return tagManager -> blockStatePredicate;
+			return tagManager -> statePredicate;
 		} else {
 			Identifier identifier = blockArgumentParser.method_9664();
 			return tagManager -> {
@@ -58,8 +58,8 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		}
 	}
 
-	public static Predicate<CachedBlockPosition> getPredicateArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<BlockPredicateArgumentType.BlockPredicateFactory>getArgument(string, BlockPredicateArgumentType.BlockPredicateFactory.class)
+	public static Predicate<CachedBlockPosition> getBlockPredicate(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return commandContext.<BlockPredicateArgumentType.BlockPredicate>getArgument(string, BlockPredicateArgumentType.BlockPredicate.class)
 			.create(commandContext.getSource().getMinecraftServer().getTagManager());
 	}
 
@@ -82,20 +82,20 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		return EXAMPLES;
 	}
 
-	public interface BlockPredicateFactory {
+	public interface BlockPredicate {
 		Predicate<CachedBlockPosition> create(TagManager tagManager) throws CommandSyntaxException;
 	}
 
-	static class BlockStatePredicate implements Predicate<CachedBlockPosition> {
+	static class StatePredicate implements Predicate<CachedBlockPosition> {
 		private final BlockState state;
 		private final Set<Property<?>> properties;
 		@Nullable
-		private final CompoundTag compound;
+		private final CompoundTag nbt;
 
-		public BlockStatePredicate(BlockState blockState, Set<Property<?>> set, @Nullable CompoundTag compoundTag) {
+		public StatePredicate(BlockState blockState, Set<Property<?>> set, @Nullable CompoundTag compoundTag) {
 			this.state = blockState;
 			this.properties = set;
-			this.compound = compoundTag;
+			this.nbt = compoundTag;
 		}
 
 		public boolean method_9648(CachedBlockPosition cachedBlockPosition) {
@@ -109,11 +109,11 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 					}
 				}
 
-				if (this.compound == null) {
+				if (this.nbt == null) {
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && TagHelper.areTagsEqual(this.compound, blockEntity.toTag(new CompoundTag()), true);
+					return blockEntity != null && TagHelper.areTagsEqual(this.nbt, blockEntity.toTag(new CompoundTag()), true);
 				}
 			}
 		}
@@ -122,13 +122,13 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 	static class TagPredicate implements Predicate<CachedBlockPosition> {
 		private final Tag<Block> tag;
 		@Nullable
-		private final CompoundTag compound;
+		private final CompoundTag nbt;
 		private final Map<String, String> properties;
 
 		private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable CompoundTag compoundTag) {
 			this.tag = tag;
 			this.properties = map;
-			this.compound = compoundTag;
+			this.nbt = compoundTag;
 		}
 
 		public boolean method_9649(CachedBlockPosition cachedBlockPosition) {
@@ -152,11 +152,11 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 					}
 				}
 
-				if (this.compound == null) {
+				if (this.nbt == null) {
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && TagHelper.areTagsEqual(this.compound, blockEntity.toTag(new CompoundTag()), true);
+					return blockEntity != null && TagHelper.areTagsEqual(this.nbt, blockEntity.toTag(new CompoundTag()), true);
 				}
 			}
 		}

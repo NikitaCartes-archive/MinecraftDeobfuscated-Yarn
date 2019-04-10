@@ -4,7 +4,6 @@ import java.util.Random;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -50,8 +49,7 @@ public abstract class AbstractPressurePlateBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP) || blockState2.getBlock().matches(BlockTags.field_16584);
+		return isSolidMediumSquare(viewableWorld, blockPos2) || isSolidSmallSquare(viewableWorld, blockPos2, Direction.UP);
 	}
 
 	@Override

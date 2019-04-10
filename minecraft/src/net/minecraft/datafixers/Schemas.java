@@ -91,6 +91,7 @@ import net.minecraft.datafixers.fixes.OptionsForceVBOFix;
 import net.minecraft.datafixers.fixes.OptionsKeyLwjgl3Fix;
 import net.minecraft.datafixers.fixes.OptionsKeyTranslationFix;
 import net.minecraft.datafixers.fixes.OptionsLowerCaseLanguageFix;
+import net.minecraft.datafixers.fixes.PointOfInterestReorganizationFix;
 import net.minecraft.datafixers.fixes.RecipeFix;
 import net.minecraft.datafixers.fixes.RecipeRenamingFix;
 import net.minecraft.datafixers.fixes.SavedDataVillageCropFix;
@@ -494,5 +495,7 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new FixChoiceTypes(schema90, "Added Fox", TypeReferences.ENTITY));
 		Schema schema91 = dataFixerBuilder.addSchema(1936, identNormalize);
 		dataFixerBuilder.addFixer(new OptionsAddTextBackgroundFix(schema91, false));
+		Schema schema92 = dataFixerBuilder.addSchema(1946, identNormalize);
+		dataFixerBuilder.addFixer(new PointOfInterestReorganizationFix(schema92, false));
 	}
 }

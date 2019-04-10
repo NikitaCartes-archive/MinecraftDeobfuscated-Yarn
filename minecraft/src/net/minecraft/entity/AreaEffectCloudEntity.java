@@ -54,7 +54,6 @@ public class AreaEffectCloudEntity extends Entity {
 	public AreaEffectCloudEntity(EntityType<? extends AreaEffectCloudEntity> entityType, World world) {
 		super(entityType, world);
 		this.noClip = true;
-		this.fireImmune = true;
 		this.setRadius(3.0F);
 	}
 
@@ -105,7 +104,7 @@ public class AreaEffectCloudEntity extends Entity {
 		}
 	}
 
-	public void setPotionEffect(StatusEffectInstance statusEffectInstance) {
+	public void addEffect(StatusEffectInstance statusEffectInstance) {
 		this.effects.add(statusEffectInstance);
 		if (!this.customColor) {
 			this.updateColor();
@@ -133,7 +132,7 @@ public class AreaEffectCloudEntity extends Entity {
 		this.getDataTracker().set(WAITING, bl);
 	}
 
-	public boolean method_5611() {
+	public boolean isWaiting() {
 		return this.getDataTracker().get(WAITING);
 	}
 
@@ -148,7 +147,7 @@ public class AreaEffectCloudEntity extends Entity {
 	@Override
 	public void tick() {
 		super.tick();
-		boolean bl = this.method_5611();
+		boolean bl = this.isWaiting();
 		float f = this.getRadius();
 		if (this.world.isClient) {
 			ParticleParameters particleParameters = this.getParticleType();
@@ -218,7 +217,7 @@ public class AreaEffectCloudEntity extends Entity {
 			}
 		} else {
 			if (this.age >= this.waitTime + this.duration) {
-				this.invalidate();
+				this.remove();
 				return;
 			}
 
@@ -234,7 +233,7 @@ public class AreaEffectCloudEntity extends Entity {
 			if (this.radiusGrowth != 0.0F) {
 				f += this.radiusGrowth;
 				if (f < 0.5F) {
-					this.invalidate();
+					this.remove();
 					return;
 				}
 
@@ -269,7 +268,7 @@ public class AreaEffectCloudEntity extends Entity {
 				if (list.isEmpty()) {
 					this.affectedEntities.clear();
 				} else {
-					List<LivingEntity> list2 = this.world.method_18467(LivingEntity.class, this.getBoundingBox());
+					List<LivingEntity> list2 = this.world.getEntities(LivingEntity.class, this.getBoundingBox());
 					if (!list2.isEmpty()) {
 						for (LivingEntity livingEntity : list2) {
 							if (!this.affectedEntities.containsKey(livingEntity) && livingEntity.method_6086()) {
@@ -290,7 +289,7 @@ public class AreaEffectCloudEntity extends Entity {
 									if (this.radiusOnUse != 0.0F) {
 										f += this.radiusOnUse;
 										if (f < 0.5F) {
-											this.invalidate();
+											this.remove();
 											return;
 										}
 
@@ -300,7 +299,7 @@ public class AreaEffectCloudEntity extends Entity {
 									if (this.durationOnUse != 0) {
 										this.duration = this.duration + this.durationOnUse;
 										if (this.duration <= 0) {
-											this.invalidate();
+											this.remove();
 											return;
 										}
 									}
@@ -376,7 +375,7 @@ public class AreaEffectCloudEntity extends Entity {
 			for (int i = 0; i < listTag.size(); i++) {
 				StatusEffectInstance statusEffectInstance = StatusEffectInstance.deserialize(listTag.getCompoundTag(i));
 				if (statusEffectInstance != null) {
-					this.setPotionEffect(statusEffectInstance);
+					this.addEffect(statusEffectInstance);
 				}
 			}
 		}

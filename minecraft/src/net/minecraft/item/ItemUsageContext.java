@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -10,16 +11,18 @@ import net.minecraft.world.World;
 
 public class ItemUsageContext {
 	protected final PlayerEntity player;
+	protected final Hand hand;
 	protected final BlockHitResult hitResult;
 	protected final World world;
 	protected final ItemStack stack;
 
-	public ItemUsageContext(PlayerEntity playerEntity, ItemStack itemStack, BlockHitResult blockHitResult) {
-		this(playerEntity.world, playerEntity, itemStack, blockHitResult);
+	public ItemUsageContext(PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
+		this(playerEntity.world, playerEntity, hand, playerEntity.getStackInHand(hand), blockHitResult);
 	}
 
-	protected ItemUsageContext(World world, @Nullable PlayerEntity playerEntity, ItemStack itemStack, BlockHitResult blockHitResult) {
+	protected ItemUsageContext(World world, @Nullable PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
 		this.player = playerEntity;
+		this.hand = hand;
 		this.hitResult = blockHitResult;
 		this.stack = itemStack;
 		this.world = world;
@@ -48,6 +51,10 @@ public class ItemUsageContext {
 	@Nullable
 	public PlayerEntity getPlayer() {
 		return this.player;
+	}
+
+	public Hand getHand() {
+		return this.hand;
 	}
 
 	public World getWorld() {

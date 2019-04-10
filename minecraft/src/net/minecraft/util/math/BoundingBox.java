@@ -38,12 +38,11 @@ public class BoundingBox {
 		this((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), (double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BoundingBox(Vec3d vec3d, Vec3d vec3d2) {
 		this(vec3d.x, vec3d.y, vec3d.z, vec3d2.x, vec3d2.y, vec3d2.z);
 	}
 
-	public static BoundingBox method_19316(MutableIntBoundingBox mutableIntBoundingBox) {
+	public static BoundingBox from(MutableIntBoundingBox mutableIntBoundingBox) {
 		return new BoundingBox(
 			(double)mutableIntBoundingBox.minX,
 			(double)mutableIntBoundingBox.minY,
@@ -54,11 +53,11 @@ public class BoundingBox {
 		);
 	}
 
-	public double method_1001(Direction.Axis axis) {
+	public double getMin(Direction.Axis axis) {
 		return axis.choose(this.minX, this.minY, this.minZ);
 	}
 
-	public double method_990(Direction.Axis axis) {
+	public double getMax(Direction.Axis axis) {
 		return axis.choose(this.maxX, this.maxY, this.maxZ);
 	}
 
@@ -126,7 +125,7 @@ public class BoundingBox {
 		return new BoundingBox(g, h, i, j, k, l);
 	}
 
-	public BoundingBox method_18804(Vec3d vec3d) {
+	public BoundingBox stretch(Vec3d vec3d) {
 		return this.stretch(vec3d.x, vec3d.y, vec3d.z);
 	}
 
@@ -281,7 +280,7 @@ public class BoundingBox {
 	}
 
 	@Nullable
-	public static BlockHitResult method_1010(Iterable<BoundingBox> iterable, Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos) {
+	public static BlockHitResult rayTrace(Iterable<BoundingBox> iterable, Vec3d vec3d, Vec3d vec3d2, BlockPos blockPos) {
 		double[] ds = new double[]{1.0};
 		Direction direction = null;
 		double d = vec3d2.x - vec3d.x;
@@ -390,7 +389,7 @@ public class BoundingBox {
 	}
 
 	public String toString() {
-		return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + " -> " + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
+		return "box[" + this.minX + ", " + this.minY + ", " + this.minZ + "] -> [" + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
 	}
 
 	@Environment(EnvType.CLIENT)

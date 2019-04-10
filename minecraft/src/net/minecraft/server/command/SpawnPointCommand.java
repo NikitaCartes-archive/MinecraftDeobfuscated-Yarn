@@ -12,25 +12,25 @@ import net.minecraft.util.math.BlockPos;
 public class SpawnPointCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("spawnpoint")
+			CommandManager.literal("spawnpoint")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.executes(
-					commandContext -> method_13645(
+					commandContext -> execute(
 							commandContext.getSource(), Collections.singleton(commandContext.getSource().getPlayer()), new BlockPos(commandContext.getSource().getPosition())
 						)
 				)
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(
-							commandContext -> method_13645(
-									commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), new BlockPos(commandContext.getSource().getPosition())
+							commandContext -> execute(
+									commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new BlockPos(commandContext.getSource().getPosition())
 								)
 						)
 						.then(
-							ServerCommandManager.argument("pos", BlockPosArgumentType.create())
+							CommandManager.argument("pos", BlockPosArgumentType.create())
 								.executes(
-									commandContext -> method_13645(
-											commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), BlockPosArgumentType.getPosArgument(commandContext, "pos")
+									commandContext -> execute(
+											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), BlockPosArgumentType.getBlockPos(commandContext, "pos")
 										)
 								)
 						)
@@ -38,7 +38,7 @@ public class SpawnPointCommand {
 		);
 	}
 
-	private static int method_13645(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, BlockPos blockPos) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, BlockPos blockPos) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.setPlayerSpawn(blockPos, true);
 		}

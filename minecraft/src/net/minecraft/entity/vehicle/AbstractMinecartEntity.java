@@ -100,7 +100,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -132,7 +132,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		if (this.world.isClient || this.invalid) {
+		if (this.world.isClient || this.removed) {
 			return true;
 		} else if (this.isInvulnerableTo(damageSource)) {
 			return false;
@@ -145,7 +145,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 			if (bl || this.method_7521() > 40.0F) {
 				this.removeAllPassengers();
 				if (bl && !this.hasCustomName()) {
-					this.invalidate();
+					this.remove();
 				} else {
 					this.dropItems(damageSource);
 				}
@@ -156,7 +156,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	public void dropItems(DamageSource damageSource) {
-		this.invalidate();
+		this.remove();
 		if (this.world.getGameRules().getBoolean("doEntityDrops")) {
 			ItemStack itemStack = new ItemStack(Items.field_8045);
 			if (this.hasCustomName()) {
@@ -176,8 +176,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	public boolean doesCollide() {
-		return !this.invalid;
+	public boolean collides() {
+		return !this.removed;
 	}
 
 	@Override
@@ -276,7 +276,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 					}
 				}
 			} else {
-				for (Entity entity2 : this.world.getVisibleEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F))) {
+				for (Entity entity2 : this.world.getEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F))) {
 					if (!this.hasPassenger(entity2) && entity2.isPushable() && entity2 instanceof AbstractMinecartEntity) {
 						entity2.pushAwayFrom(this);
 					}
@@ -341,6 +341,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 				this.y++;
 		}
 
+		vec3d2 = this.getVelocity();
 		int[][] is = field_7664[railShape.getId()];
 		double e = (double)(is[1][0] - is[0][0]);
 		double f = (double)(is[1][2] - is[0][2]);
@@ -352,58 +353,54 @@ public abstract class AbstractMinecartEntity extends Entity {
 		}
 
 		double i = Math.min(2.0, Math.sqrt(squaredHorizontalLength(vec3d2)));
-		vec3d2 = new Vec3d(e / g * i, vec3d2.y, f / g * i);
+		vec3d2 = new Vec3d(i * e / g, vec3d2.y, i * f / g);
 		this.setVelocity(vec3d2);
 		Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
 		if (entity instanceof PlayerEntity) {
-			double j = (double)((PlayerEntity)entity).movementInputForward;
-			if (j > 0.0) {
-				double k = -Math.sin((double)(entity.yaw * (float) (Math.PI / 180.0)));
-				double l = Math.cos((double)(entity.yaw * (float) (Math.PI / 180.0)));
-				Vec3d vec3d3 = this.getVelocity();
-				double m = squaredHorizontalLength(vec3d3);
-				if (m < 0.01) {
-					this.setVelocity(vec3d3.add(k * 0.1, 0.0, l * 0.1));
-					bl2 = false;
-				}
+			Vec3d vec3d3 = entity.getVelocity();
+			double j = squaredHorizontalLength(vec3d3);
+			double k = squaredHorizontalLength(this.getVelocity());
+			if (j > 1.0E-4 && k < 0.01) {
+				this.setVelocity(this.getVelocity().add(vec3d3.x * 0.1, 0.0, vec3d3.z * 0.1));
+				bl2 = false;
 			}
 		}
 
 		if (bl2) {
-			double j = Math.sqrt(squaredHorizontalLength(this.getVelocity()));
-			if (j < 0.03) {
+			double l = Math.sqrt(squaredHorizontalLength(this.getVelocity()));
+			if (l < 0.03) {
 				this.setVelocity(Vec3d.ZERO);
 			} else {
 				this.setVelocity(this.getVelocity().multiply(0.5, 0.0, 0.5));
 			}
 		}
 
-		double j = (double)blockPos.getX() + 0.5 + (double)is[0][0] * 0.5;
-		double k = (double)blockPos.getZ() + 0.5 + (double)is[0][2] * 0.5;
-		double l = (double)blockPos.getX() + 0.5 + (double)is[1][0] * 0.5;
-		double n = (double)blockPos.getZ() + 0.5 + (double)is[1][2] * 0.5;
-		e = l - j;
-		f = n - k;
-		double o;
+		double l = (double)blockPos.getX() + 0.5 + (double)is[0][0] * 0.5;
+		double m = (double)blockPos.getZ() + 0.5 + (double)is[0][2] * 0.5;
+		double n = (double)blockPos.getX() + 0.5 + (double)is[1][0] * 0.5;
+		double o = (double)blockPos.getZ() + 0.5 + (double)is[1][2] * 0.5;
+		e = n - l;
+		f = o - m;
+		double p;
 		if (e == 0.0) {
 			this.x = (double)blockPos.getX() + 0.5;
-			o = this.z - (double)blockPos.getZ();
+			p = this.z - (double)blockPos.getZ();
 		} else if (f == 0.0) {
 			this.z = (double)blockPos.getZ() + 0.5;
-			o = this.x - (double)blockPos.getX();
+			p = this.x - (double)blockPos.getX();
 		} else {
-			double p = this.x - j;
-			double q = this.z - k;
-			o = (p * e + q * f) * 2.0;
+			double q = this.x - l;
+			double r = this.z - m;
+			p = (q * e + r * f) * 2.0;
 		}
 
-		this.x = j + e * o;
-		this.z = k + f * o;
+		this.x = l + e * p;
+		this.z = m + f * p;
 		this.setPosition(this.x, this.y, this.z);
-		double p = this.hasPassengers() ? 0.75 : 1.0;
-		double q = this.method_7504();
+		double q = this.hasPassengers() ? 0.75 : 1.0;
+		double r = this.method_7504();
 		vec3d2 = this.getVelocity();
-		this.move(MovementType.field_6308, new Vec3d(MathHelper.clamp(p * vec3d2.x, -q, q), 0.0, MathHelper.clamp(p * vec3d2.z, -q, q)));
+		this.move(MovementType.field_6308, new Vec3d(MathHelper.clamp(q * vec3d2.x, -r, r), 0.0, MathHelper.clamp(q * vec3d2.z, -r, r)));
 		if (is[0][1] != 0 && MathHelper.floor(this.x) - blockPos.getX() == is[0][0] && MathHelper.floor(this.z) - blockPos.getZ() == is[0][2]) {
 			this.setPosition(this.x, this.y + (double)is[0][1], this.z);
 		} else if (is[1][1] != 0 && MathHelper.floor(this.x) - blockPos.getX() == is[1][0] && MathHelper.floor(this.z) - blockPos.getZ() == is[1][2]) {
@@ -413,39 +410,39 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.method_7525();
 		Vec3d vec3d4 = this.method_7508(this.x, this.y, this.z);
 		if (vec3d4 != null && vec3d != null) {
-			double r = (vec3d.y - vec3d4.y) * 0.05;
+			double s = (vec3d.y - vec3d4.y) * 0.05;
 			Vec3d vec3d5 = this.getVelocity();
-			double s = Math.sqrt(squaredHorizontalLength(vec3d5));
-			if (s > 0.0) {
-				this.setVelocity(vec3d5.multiply((s + r) / s, 1.0, (s + r) / s));
+			double t = Math.sqrt(squaredHorizontalLength(vec3d5));
+			if (t > 0.0) {
+				this.setVelocity(vec3d5.multiply((t + s) / t, 1.0, (t + s) / t));
 			}
 
 			this.setPosition(this.x, vec3d4.y, this.z);
 		}
 
-		int t = MathHelper.floor(this.x);
-		int u = MathHelper.floor(this.z);
-		if (t != blockPos.getX() || u != blockPos.getZ()) {
+		int u = MathHelper.floor(this.x);
+		int v = MathHelper.floor(this.z);
+		if (u != blockPos.getX() || v != blockPos.getZ()) {
 			Vec3d vec3d5 = this.getVelocity();
-			double s = Math.sqrt(squaredHorizontalLength(vec3d5));
-			this.setVelocity(s * (double)(t - blockPos.getX()), vec3d5.y, s * (double)(u - blockPos.getZ()));
+			double t = Math.sqrt(squaredHorizontalLength(vec3d5));
+			this.setVelocity(t * (double)(u - blockPos.getX()), vec3d5.y, t * (double)(v - blockPos.getZ()));
 		}
 
 		if (bl) {
 			Vec3d vec3d5 = this.getVelocity();
-			double s = Math.sqrt(squaredHorizontalLength(vec3d5));
-			if (s > 0.01) {
-				double v = 0.06;
-				this.setVelocity(vec3d5.add(vec3d5.x / s * 0.06, 0.0, vec3d5.z / s * 0.06));
+			double t = Math.sqrt(squaredHorizontalLength(vec3d5));
+			if (t > 0.01) {
+				double w = 0.06;
+				this.setVelocity(vec3d5.add(vec3d5.x / t * 0.06, 0.0, vec3d5.z / t * 0.06));
 			} else {
 				Vec3d vec3d6 = this.getVelocity();
-				double w = vec3d6.x;
-				double x = vec3d6.z;
+				double x = vec3d6.x;
+				double y = vec3d6.z;
 				if (railShape == RailShape.field_12674) {
 					if (this.method_18803(blockPos.west())) {
-						w = 0.02;
+						x = 0.02;
 					} else if (this.method_18803(blockPos.east())) {
-						w = -0.02;
+						x = -0.02;
 					}
 				} else {
 					if (railShape != RailShape.field_12665) {
@@ -453,13 +450,13 @@ public abstract class AbstractMinecartEntity extends Entity {
 					}
 
 					if (this.method_18803(blockPos.north())) {
-						x = 0.02;
+						y = 0.02;
 					} else if (this.method_18803(blockPos.south())) {
-						x = -0.02;
+						y = -0.02;
 					}
 				}
 
-				this.setVelocity(w, vec3d6.y, x);
+				this.setVelocity(x, vec3d6.y, y);
 			}
 		}
 	}
@@ -563,7 +560,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public BoundingBox method_5830() {
+	public BoundingBox getVisibilityBoundingBox() {
 		BoundingBox boundingBox = this.getBoundingBox();
 		return this.hasCustomBlock() ? boundingBox.expand((double)Math.abs(this.getBlockOffset()) / 16.0) : boundingBox;
 	}

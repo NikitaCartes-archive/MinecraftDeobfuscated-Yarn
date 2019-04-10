@@ -38,7 +38,7 @@ public class RandomChanceWithLootingLootCondition implements LootCondition {
 		return lootContext.getRandom().nextFloat() < this.chance + (float)i * this.lootingMultiplier;
 	}
 
-	public static LootCondition.Builder method_953(float f, float g) {
+	public static LootCondition.Builder builder(float f, float g) {
 		return () -> new RandomChanceWithLootingLootCondition(f, g);
 	}
 

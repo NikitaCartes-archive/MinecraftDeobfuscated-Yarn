@@ -10,41 +10,41 @@ import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
 public class BooleanGameOption extends GameOption {
-	private final Predicate<GameOptions> field_18158;
-	private final BiConsumer<GameOptions, Boolean> field_18159;
+	private final Predicate<GameOptions> getter;
+	private final BiConsumer<GameOptions, Boolean> setter;
 
 	public BooleanGameOption(String string, Predicate<GameOptions> predicate, BiConsumer<GameOptions, Boolean> biConsumer) {
 		super(string);
-		this.field_18158 = predicate;
-		this.field_18159 = biConsumer;
+		this.getter = predicate;
+		this.setter = biConsumer;
 	}
 
-	public void method_18492(GameOptions gameOptions, String string) {
-		this.method_18493(gameOptions, "true".equals(string));
+	public void set(GameOptions gameOptions, String string) {
+		this.set(gameOptions, "true".equals(string));
 	}
 
-	public void method_18491(GameOptions gameOptions) {
-		this.method_18493(gameOptions, !this.method_18494(gameOptions));
+	public void set(GameOptions gameOptions) {
+		this.set(gameOptions, !this.get(gameOptions));
 		gameOptions.write();
 	}
 
-	private void method_18493(GameOptions gameOptions, boolean bl) {
-		this.field_18159.accept(gameOptions, bl);
+	private void set(GameOptions gameOptions, boolean bl) {
+		this.setter.accept(gameOptions, bl);
 	}
 
-	public boolean method_18494(GameOptions gameOptions) {
-		return this.field_18158.test(gameOptions);
+	public boolean get(GameOptions gameOptions) {
+		return this.getter.test(gameOptions);
 	}
 
 	@Override
 	public AbstractButtonWidget createOptionButton(GameOptions gameOptions, int i, int j, int k) {
-		return new OptionButtonWidget(i, j, k, 20, this, this.method_18495(gameOptions), buttonWidget -> {
-			this.method_18491(gameOptions);
-			buttonWidget.setMessage(this.method_18495(gameOptions));
+		return new OptionButtonWidget(i, j, k, 20, this, this.getDisplayString(gameOptions), buttonWidget -> {
+			this.set(gameOptions);
+			buttonWidget.setMessage(this.getDisplayString(gameOptions));
 		});
 	}
 
-	public String method_18495(GameOptions gameOptions) {
-		return this.method_18518() + I18n.translate(this.method_18494(gameOptions) ? "options.on" : "options.off");
+	public String getDisplayString(GameOptions gameOptions) {
+		return this.getDisplayPrefix() + I18n.translate(this.get(gameOptions) ? "options.on" : "options.off");
 	}
 }

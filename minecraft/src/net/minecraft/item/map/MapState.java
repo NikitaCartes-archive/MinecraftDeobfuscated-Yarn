@@ -43,16 +43,16 @@ public class MapState extends PersistentState {
 		super(string);
 	}
 
-	public void method_105(int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
+	public void init(int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
 		this.scale = (byte)k;
-		this.method_106((double)i, (double)j, this.scale);
+		this.calculateCenter((double)i, (double)j, this.scale);
 		this.dimension = dimensionType;
 		this.showIcons = bl;
 		this.unlimitedTracking = bl2;
 		this.markDirty();
 	}
 
-	public void method_106(double d, double e, int i) {
+	public void calculateCenter(double d, double e, int i) {
 		int j = 128 * (1 << i);
 		int k = MathHelper.floor((d + 64.0) / (double)j);
 		int l = MathHelper.floor((e + 64.0) / (double)j);
@@ -151,14 +151,14 @@ public class MapState extends PersistentState {
 			this.field_112.add(lv);
 		}
 
-		if (!playerEntity.inventory.containsStack(itemStack)) {
+		if (!playerEntity.inventory.contains(itemStack)) {
 			this.icons.remove(playerEntity.getName().getString());
 		}
 
 		for (int i = 0; i < this.field_112.size(); i++) {
 			MapState.class_23 lv2 = (MapState.class_23)this.field_112.get(i);
 			String string = lv2.field_125.getName().getString();
-			if (!lv2.field_125.invalid && (lv2.field_125.inventory.containsStack(itemStack) || itemStack.isHeldInItemFrame())) {
+			if (!lv2.field_125.removed && (lv2.field_125.inventory.contains(itemStack) || itemStack.isHeldInItemFrame())) {
 				if (!itemStack.isHeldInItemFrame() && lv2.field_125.dimension == this.dimension && this.showIcons) {
 					this.method_107(MapIcon.Type.field_91, lv2.field_125.world, string, lv2.field_125.x, lv2.field_125.z, (double)lv2.field_125.yaw, null);
 				}
@@ -211,7 +211,7 @@ public class MapState extends PersistentState {
 		}
 	}
 
-	public static void method_110(ItemStack itemStack, BlockPos blockPos, String string, MapIcon.Type type) {
+	public static void addDecorationsTag(ItemStack itemStack, BlockPos blockPos, String string, MapIcon.Type type) {
 		ListTag listTag;
 		if (itemStack.hasTag() && itemStack.getTag().containsKey("Decorations", 9)) {
 			listTag = itemStack.getTag().getList("Decorations", 10);
@@ -386,7 +386,7 @@ public class MapState extends PersistentState {
 			if (this.field_130) {
 				this.field_130 = false;
 				return new MapUpdateS2CPacket(
-					FilledMapItem.method_8003(itemStack),
+					FilledMapItem.getMapId(itemStack),
 					MapState.this.scale,
 					MapState.this.showIcons,
 					MapState.this.locked,
@@ -400,7 +400,7 @@ public class MapState extends PersistentState {
 			} else {
 				return this.field_124++ % 5 == 0
 					? new MapUpdateS2CPacket(
-						FilledMapItem.method_8003(itemStack),
+						FilledMapItem.getMapId(itemStack),
 						MapState.this.scale,
 						MapState.this.showIcons,
 						MapState.this.locked,

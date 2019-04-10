@@ -66,9 +66,9 @@ public class DispenserBlock extends BlockWithEntity {
 			if (blockEntity instanceof DispenserBlockEntity) {
 				playerEntity.openContainer((DispenserBlockEntity)blockEntity);
 				if (blockEntity instanceof DropperBlockEntity) {
-					playerEntity.increaseStat(Stats.field_15367);
+					playerEntity.incrementStat(Stats.field_15367);
 				} else {
-					playerEntity.increaseStat(Stats.field_15371);
+					playerEntity.incrementStat(Stats.field_15371);
 				}
 			}
 
@@ -81,7 +81,7 @@ public class DispenserBlock extends BlockWithEntity {
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.playEvent(1001, blockPos, 0);
+			world.method_20290(1001, blockPos, 0);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
 			DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);
@@ -96,13 +96,13 @@ public class DispenserBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
-		boolean bl2 = (Boolean)blockState.get(TRIGGERED);
-		if (bl && !bl2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+		boolean bl2 = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
+		boolean bl3 = (Boolean)blockState.get(TRIGGERED);
+		if (bl2 && !bl3) {
 			world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 			world.setBlockState(blockPos, blockState.with(TRIGGERED, Boolean.valueOf(true)), 4);
-		} else if (!bl && bl2) {
+		} else if (!bl2 && bl3) {
 			world.setBlockState(blockPos, blockState.with(TRIGGERED, Boolean.valueOf(false)), 4);
 		}
 	}

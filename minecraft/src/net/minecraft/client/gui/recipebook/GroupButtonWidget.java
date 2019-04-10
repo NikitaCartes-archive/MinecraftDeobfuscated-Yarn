@@ -70,7 +70,7 @@ public class GroupButtonWidget extends ToggleButtonWidget {
 		}
 
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.drawTexturedRect(m, this.y, k, l, this.width, this.height);
+		this.blit(m, this.y, k, l, this.width, this.height);
 		GlStateManager.enableDepthTest();
 		GuiLighting.enableForItems();
 		GlStateManager.disableLighting();

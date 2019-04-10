@@ -23,19 +23,19 @@ import net.minecraft.util.math.Vec3d;
 
 public class EntitySelector {
 	private final int count;
-	private final boolean includesEntities;
-	private final boolean field_10829;
+	private final boolean includeNonPlayers;
+	private final boolean localWorldOnly;
 	private final Predicate<Entity> basePredicate;
-	private final NumberRange.Float distance;
+	private final NumberRange.FloatRange distance;
 	private final Function<Vec3d, Vec3d> positionOffset;
 	@Nullable
 	private final BoundingBox box;
 	private final BiConsumer<Vec3d, List<? extends Entity>> sorter;
-	private final boolean field_10828;
+	private final boolean senderOnly;
 	@Nullable
 	private final String playerName;
 	@Nullable
-	private final UUID entityId;
+	private final UUID uuid;
 	@Nullable
 	private final EntityType<?> type;
 	private final boolean checkPermissions;
@@ -45,7 +45,7 @@ public class EntitySelector {
 		boolean bl,
 		boolean bl2,
 		Predicate<Entity> predicate,
-		NumberRange.Float float_,
+		NumberRange.FloatRange floatRange,
 		Function<Vec3d, Vec3d> function,
 		@Nullable BoundingBox boundingBox,
 		BiConsumer<Vec3d, List<? extends Entity>> biConsumer,
@@ -56,16 +56,16 @@ public class EntitySelector {
 		boolean bl4
 	) {
 		this.count = i;
-		this.includesEntities = bl;
-		this.field_10829 = bl2;
+		this.includeNonPlayers = bl;
+		this.localWorldOnly = bl2;
 		this.basePredicate = predicate;
-		this.distance = float_;
+		this.distance = floatRange;
 		this.positionOffset = function;
 		this.box = boundingBox;
 		this.sorter = biConsumer;
-		this.field_10828 = bl3;
+		this.senderOnly = bl3;
 		this.playerName = string;
-		this.entityId = uUID;
+		this.uuid = uUID;
 		this.type = entityType;
 		this.checkPermissions = bl4;
 	}
@@ -74,16 +74,16 @@ public class EntitySelector {
 		return this.count;
 	}
 
-	public boolean includesEntities() {
-		return this.includesEntities;
+	public boolean includesNonPlayers() {
+		return this.includeNonPlayers;
 	}
 
-	public boolean method_9820() {
-		return this.field_10828;
+	public boolean isSenderOnly() {
+		return this.senderOnly;
 	}
 
-	public boolean method_9821() {
-		return this.field_10829;
+	public boolean isLocalWorldOnly() {
+		return this.localWorldOnly;
 	}
 
 	private void check(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
@@ -106,14 +106,14 @@ public class EntitySelector {
 
 	public List<? extends Entity> getEntities(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		this.check(serverCommandSource);
-		if (!this.includesEntities) {
+		if (!this.includeNonPlayers) {
 			return this.getPlayers(serverCommandSource);
 		} else if (this.playerName != null) {
 			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
 			return (List<? extends Entity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.newArrayList(serverPlayerEntity));
-		} else if (this.entityId != null) {
+		} else if (this.uuid != null) {
 			for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
-				Entity entity = serverWorld.getEntity(this.entityId);
+				Entity entity = serverWorld.getEntity(this.uuid);
 				if (entity != null) {
 					return Lists.newArrayList(entity);
 				}
@@ -123,17 +123,17 @@ public class EntitySelector {
 		} else {
 			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.getPosition());
 			Predicate<Entity> predicate = this.getPositionPredicate(vec3d);
-			if (this.field_10828) {
+			if (this.senderOnly) {
 				return (List<? extends Entity>)(serverCommandSource.getEntity() != null && predicate.test(serverCommandSource.getEntity())
 					? Lists.newArrayList(serverCommandSource.getEntity())
 					: Collections.emptyList());
 			} else {
 				List<Entity> list = Lists.<Entity>newArrayList();
-				if (this.method_9821()) {
-					this.method_9823(list, serverCommandSource.getWorld(), vec3d, predicate);
+				if (this.isLocalWorldOnly()) {
+					this.appendEntitiesFromWorld(list, serverCommandSource.getWorld(), vec3d, predicate);
 				} else {
 					for (ServerWorld serverWorld2 : serverCommandSource.getMinecraftServer().getWorlds()) {
-						this.method_9823(list, serverWorld2, vec3d, predicate);
+						this.appendEntitiesFromWorld(list, serverWorld2, vec3d, predicate);
 					}
 				}
 
@@ -142,11 +142,11 @@ public class EntitySelector {
 		}
 	}
 
-	private void method_9823(List<Entity> list, ServerWorld serverWorld, Vec3d vec3d, Predicate<Entity> predicate) {
+	private void appendEntitiesFromWorld(List<Entity> list, ServerWorld serverWorld, Vec3d vec3d, Predicate<Entity> predicate) {
 		if (this.box != null) {
-			list.addAll(serverWorld.method_18023(this.type, this.box.offset(vec3d), predicate));
+			list.addAll(serverWorld.getEntities(this.type, this.box.offset(vec3d), predicate));
 		} else {
-			list.addAll(serverWorld.method_18198(this.type, predicate));
+			list.addAll(serverWorld.getEntities(this.type, predicate));
 		}
 	}
 
@@ -165,13 +165,13 @@ public class EntitySelector {
 		if (this.playerName != null) {
 			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.playerName);
 			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
-		} else if (this.entityId != null) {
-			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.entityId);
+		} else if (this.uuid != null) {
+			ServerPlayerEntity serverPlayerEntity = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayer(this.uuid);
 			return (List<ServerPlayerEntity>)(serverPlayerEntity == null ? Collections.emptyList() : Lists.<ServerPlayerEntity>newArrayList(serverPlayerEntity));
 		} else {
 			Vec3d vec3d = (Vec3d)this.positionOffset.apply(serverCommandSource.getPosition());
 			Predicate<Entity> predicate = this.getPositionPredicate(vec3d);
-			if (this.field_10828) {
+			if (this.senderOnly) {
 				if (serverCommandSource.getEntity() instanceof ServerPlayerEntity) {
 					ServerPlayerEntity serverPlayerEntity2 = (ServerPlayerEntity)serverCommandSource.getEntity();
 					if (predicate.test(serverPlayerEntity2)) {
@@ -182,8 +182,8 @@ public class EntitySelector {
 				return Collections.emptyList();
 			} else {
 				List<ServerPlayerEntity> list;
-				if (this.method_9821()) {
-					list = serverCommandSource.getWorld().method_18766(predicate::test);
+				if (this.isLocalWorldOnly()) {
+					list = serverCommandSource.getWorld().getPlayers(predicate::test);
 				} else {
 					list = Lists.<ServerPlayerEntity>newArrayList();
 

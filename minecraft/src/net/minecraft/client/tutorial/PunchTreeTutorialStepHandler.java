@@ -36,7 +36,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 			if (this.ticks == 1) {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
-					if (clientPlayerEntity.inventory.method_7382(ItemTags.field_15539)) {
+					if (clientPlayerEntity.inventory.contains(ItemTags.field_15539)) {
 						this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 						return;
 					}
@@ -68,14 +68,14 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 		boolean bl = blockState.matches(BlockTags.field_15475);
 		if (bl && f > 0.0F) {
 			if (this.field_5637 != null) {
-				this.field_5637.method_1992(f);
+				this.field_5637.setProgress(f);
 			}
 
 			if (f >= 1.0F) {
 				this.manager.setStep(TutorialStep.OPEN_INVENTORY);
 			}
 		} else if (this.field_5637 != null) {
-			this.field_5637.method_1992(0.0F);
+			this.field_5637.setProgress(0.0F);
 		} else if (bl) {
 			this.field_5635++;
 		}

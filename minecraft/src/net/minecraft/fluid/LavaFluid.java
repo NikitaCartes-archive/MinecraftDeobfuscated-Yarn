@@ -184,17 +184,8 @@ public abstract class LavaFluid extends BaseFluid {
 		return i;
 	}
 
-	protected void method_15818(IWorld iWorld, BlockPos blockPos) {
-		double d = (double)blockPos.getX();
-		double e = (double)blockPos.getY();
-		double f = (double)blockPos.getZ();
-		iWorld.playSound(
-			null, blockPos, SoundEvents.field_15112, SoundCategory.field_15245, 0.5F, 2.6F + (iWorld.getRandom().nextFloat() - iWorld.getRandom().nextFloat()) * 0.8F
-		);
-
-		for (int i = 0; i < 8; i++) {
-			iWorld.addParticle(ParticleTypes.field_11237, d + Math.random(), e + 1.2, f + Math.random(), 0.0, 0.0, 0.0);
-		}
+	private void method_15818(IWorld iWorld, BlockPos blockPos) {
+		iWorld.method_20290(1501, blockPos, 0);
 	}
 
 	@Override

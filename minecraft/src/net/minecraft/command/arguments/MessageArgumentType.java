@@ -22,7 +22,7 @@ public class MessageArgumentType implements ArgumentType<MessageArgumentType.Mes
 		return new MessageArgumentType();
 	}
 
-	public static TextComponent getMessageArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static TextComponent getMessage(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<MessageArgumentType.MessageFormat>getArgument(string, MessageArgumentType.MessageFormat.class)
 			.format(commandContext.getSource(), commandContext.getSource().hasPermissionLevel(2));
 	}

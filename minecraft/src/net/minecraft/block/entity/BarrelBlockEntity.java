@@ -2,6 +2,7 @@ package net.minecraft.block.entity;
 
 import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.container.Container;
 import net.minecraft.container.GenericContainer;
 import net.minecraft.entity.player.PlayerEntity;
@@ -15,14 +16,12 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.Tickable;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 
-public class BarrelBlockEntity extends LootableContainerBlockEntity implements Tickable {
+public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	private DefaultedList<ItemStack> inventory = DefaultedList.create(27, ItemStack.EMPTY);
 	private int viewerCount;
-	private int ticksOpen;
 
 	private BarrelBlockEntity(BlockEntityType<?> blockEntityType) {
 		super(blockEntityType);
@@ -123,6 +122,40 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 			}
 
 			this.viewerCount++;
+			BlockState blockState = this.getCachedState();
+			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
+			if (!bl) {
+				this.playSound(blockState, SoundEvents.field_17604);
+				this.method_18318(blockState, true);
+			}
+
+			this.method_20363();
+		}
+	}
+
+	private void method_20363() {
+		this.world.getBlockTickScheduler().schedule(this.getPos(), this.getCachedState().getBlock(), 5);
+	}
+
+	public void method_20362() {
+		int i = this.pos.getX();
+		int j = this.pos.getY();
+		int k = this.pos.getZ();
+		this.viewerCount = ChestBlockEntity.recalculateViewerCountIfNecessary(this.world, this, i, j, k);
+		if (this.viewerCount > 0) {
+			this.method_20363();
+		} else {
+			BlockState blockState = this.getCachedState();
+			if (blockState.getBlock() != Blocks.field_16328) {
+				this.invalidate();
+				return;
+			}
+
+			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
+			if (bl) {
+				this.playSound(blockState, SoundEvents.field_17603);
+				this.method_18318(blockState, false);
+			}
 		}
 	}
 
@@ -130,24 +163,6 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity implements T
 	public void onInvClose(PlayerEntity playerEntity) {
 		if (!playerEntity.isSpectator()) {
 			this.viewerCount--;
-		}
-	}
-
-	@Override
-	public void tick() {
-		if (!this.world.isClient) {
-			int i = this.pos.getX();
-			int j = this.pos.getY();
-			int k = this.pos.getZ();
-			this.ticksOpen++;
-			this.viewerCount = ChestBlockEntity.recalculateViewerCountIfNecessary(this.world, this, this.ticksOpen, i, j, k, this.viewerCount);
-			BlockState blockState = this.getCachedState();
-			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
-			boolean bl2 = this.viewerCount > 0;
-			if (bl2 != bl) {
-				this.playSound(blockState, bl2 ? SoundEvents.field_17604 : SoundEvents.field_17603);
-				this.method_18318(blockState, bl2);
-			}
 		}
 	}
 

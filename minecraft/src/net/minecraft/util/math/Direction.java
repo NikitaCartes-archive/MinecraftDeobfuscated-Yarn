@@ -377,7 +377,7 @@ public enum Direction implements StringRepresentable {
 			return direction != null && direction.getAxis() == this;
 		}
 
-		public Direction.Type method_10180() {
+		public Direction.Type getType() {
 			switch (this) {
 				case X:
 				case Z:
@@ -437,7 +437,7 @@ public enum Direction implements StringRepresentable {
 		}
 
 		public boolean method_10182(@Nullable Direction direction) {
-			return direction != null && direction.getAxis().method_10180() == this;
+			return direction != null && direction.getAxis().getType() == this;
 		}
 
 		public Iterator<Direction> iterator() {

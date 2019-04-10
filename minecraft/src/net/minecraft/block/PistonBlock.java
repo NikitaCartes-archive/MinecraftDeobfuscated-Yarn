@@ -85,14 +85,14 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
 			this.method_11483(world, blockPos, blockState);
 		}
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			if (!world.isClient && world.getBlockEntity(blockPos) == null) {
 				this.method_11483(world, blockPos, blockState);
@@ -213,13 +213,13 @@ public class PistonBlock extends FacingBlock {
 						|| blockState2.isAir()
 						|| !isMovable(blockState2, world, blockPos2, direction.getOpposite(), false, direction)
 						|| blockState2.getPistonBehavior() != PistonBehavior.field_15974 && block != Blocks.field_10560 && block != Blocks.field_10615) {
-						world.clearBlockState(blockPos.offset(direction));
+						world.clearBlockState(blockPos.offset(direction), false);
 					} else {
 						this.move(world, blockPos, direction, false);
 					}
 				}
 			} else {
-				world.clearBlockState(blockPos.offset(direction));
+				world.clearBlockState(blockPos.offset(direction), false);
 			}
 
 			world.playSound(null, blockPos, SoundEvents.field_15228, SoundCategory.field_15245, 0.5F, world.random.nextFloat() * 0.15F + 0.6F);

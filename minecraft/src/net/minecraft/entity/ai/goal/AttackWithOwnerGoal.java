@@ -13,7 +13,7 @@ public class AttackWithOwnerGoal extends TrackTargetGoal {
 	public AttackWithOwnerGoal(TameableEntity tameableEntity) {
 		super(tameableEntity, false);
 		this.owner = tameableEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18408));
+		this.setControls(EnumSet.of(Goal.Control.field_18408));
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class AttackWithOwnerGoal extends TrackTargetGoal {
 			} else {
 				this.attacking = livingEntity.getAttacking();
 				int i = livingEntity.getLastAttackTime();
-				return i != this.lastAttackTime && this.canTrack(this.attacking, TargetPredicate.DEFAULT) && this.owner.method_6178(this.attacking, livingEntity);
+				return i != this.lastAttackTime && this.canTrack(this.attacking, TargetPredicate.DEFAULT) && this.owner.canAttackWithOwner(this.attacking, livingEntity);
 			}
 		}
 	}

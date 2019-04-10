@@ -74,8 +74,8 @@ public class BeaconContainer extends Container {
 	}
 
 	@Override
-	public void setProperty(int i, int j) {
-		super.setProperty(i, j);
+	public void setProperties(int i, int j) {
+		super.setProperties(i, j);
 		this.sendContentUpdates();
 	}
 
@@ -125,7 +125,7 @@ public class BeaconContainer extends Container {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17373() {
+	public int getProperties() {
 		return this.propertyDelegate.get(0);
 	}
 
@@ -141,7 +141,7 @@ public class BeaconContainer extends Container {
 		return StatusEffect.byRawId(this.propertyDelegate.get(2));
 	}
 
-	public void method_17372(int i, int j) {
+	public void setEffects(int i, int j) {
 		if (this.paymentSlot.hasStack()) {
 			this.propertyDelegate.set(1, i);
 			this.propertyDelegate.set(2, j);

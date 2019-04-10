@@ -32,7 +32,7 @@ public class ObjectiveArgumentType implements ArgumentType<String> {
 		return new ObjectiveArgumentType();
 	}
 
-	public static ScoreboardObjective getObjectiveArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static ScoreboardObjective getObjective(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		String string2 = commandContext.getArgument(string, String.class);
 		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
 		ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string2);
@@ -43,8 +43,8 @@ public class ObjectiveArgumentType implements ArgumentType<String> {
 		}
 	}
 
-	public static ScoreboardObjective getWritableObjectiveArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		ScoreboardObjective scoreboardObjective = getObjectiveArgument(commandContext, string);
+	public static ScoreboardObjective getWritableObjective(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		ScoreboardObjective scoreboardObjective = getObjective(commandContext, string);
 		if (scoreboardObjective.getCriterion().isReadOnly()) {
 			throw READONLY_OBJECTIVE_EXCEPTION.create(scoreboardObjective.getName());
 		} else {
@@ -52,7 +52,7 @@ public class ObjectiveArgumentType implements ArgumentType<String> {
 		}
 	}
 
-	public String method_9396(StringReader stringReader) throws CommandSyntaxException {
+	public String readName(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
 		if (string.length() > 16) {
 			throw LONG_NAME_EXCEPTION.create(16);

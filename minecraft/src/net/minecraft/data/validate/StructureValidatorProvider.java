@@ -1,7 +1,6 @@
 package net.minecraft.data.validate;
 
 import com.google.common.base.Charsets;
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +11,7 @@ import java.util.stream.Stream;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
@@ -152,7 +152,7 @@ public class StructureValidatorProvider implements DataProvider {
 
 	private static CompoundTag method_16878(DataFixer dataFixer, CompoundTag compoundTag) {
 		Structure structure = new Structure();
-		structure.fromTag(TagHelper.update(dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
+		structure.fromTag(TagHelper.update(dataFixer, DataFixTypes.field_19217, compoundTag, compoundTag.getInt("DataVersion")));
 		return structure.toTag(new CompoundTag());
 	}
 

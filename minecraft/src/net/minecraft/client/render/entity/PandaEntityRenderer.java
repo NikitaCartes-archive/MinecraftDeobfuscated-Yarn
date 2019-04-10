@@ -37,8 +37,8 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 
 	protected void method_4085(PandaEntity pandaEntity, float f, float g, float h) {
 		super.setupTransforms(pandaEntity, f, g, h);
-		if (pandaEntity.field_6767 > 0) {
-			int i = pandaEntity.field_6767;
+		if (pandaEntity.playingTicks > 0) {
+			int i = pandaEntity.playingTicks;
 			int j = i + 1;
 			float k = 7.0F;
 			float l = pandaEntity.isChild() ? 0.3F : 0.8F;
@@ -74,7 +74,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 			GlStateManager.rotatef(0.0F, 1.0F, 0.0F, 0.0F);
 		}
 
-		float q = pandaEntity.method_6534(h);
+		float q = pandaEntity.getScaredAnimationProgress(h);
 		if (q > 0.0F) {
 			GlStateManager.translatef(0.0F, 0.8F * q, 0.0F);
 			GlStateManager.rotatef(MathHelper.lerp(q, pandaEntity.pitch, pandaEntity.pitch + 90.0F), 1.0F, 0.0F, 0.0F);
@@ -88,7 +88,7 @@ public class PandaEntityRenderer extends MobEntityRenderer<PandaEntity, PandaEnt
 			}
 		}
 
-		float r = pandaEntity.method_6555(h);
+		float r = pandaEntity.getLieOnBackAnimationProgress(h);
 		if (r > 0.0F) {
 			float k = pandaEntity.isChild() ? 0.5F : 1.3F;
 			GlStateManager.translatef(0.0F, k * r, 0.0F);

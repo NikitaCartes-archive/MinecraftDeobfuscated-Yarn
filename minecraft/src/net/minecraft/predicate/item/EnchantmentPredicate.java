@@ -16,16 +16,16 @@ import net.minecraft.util.registry.Registry;
 public class EnchantmentPredicate {
 	public static final EnchantmentPredicate ANY = new EnchantmentPredicate();
 	private final Enchantment enchantment;
-	private final NumberRange.Integer levels;
+	private final NumberRange.IntRange field_9570;
 
 	public EnchantmentPredicate() {
 		this.enchantment = null;
-		this.levels = NumberRange.Integer.ANY;
+		this.field_9570 = NumberRange.IntRange.ANY;
 	}
 
-	public EnchantmentPredicate(@Nullable Enchantment enchantment, NumberRange.Integer integer) {
+	public EnchantmentPredicate(@Nullable Enchantment enchantment, NumberRange.IntRange intRange) {
 		this.enchantment = enchantment;
-		this.levels = integer;
+		this.field_9570 = intRange;
 	}
 
 	public boolean test(Map<Enchantment, Integer> map) {
@@ -35,12 +35,12 @@ public class EnchantmentPredicate {
 			}
 
 			int i = (Integer)map.get(this.enchantment);
-			if (this.levels != null && !this.levels.test(i)) {
+			if (this.field_9570 != null && !this.field_9570.test(i)) {
 				return false;
 			}
-		} else if (this.levels != null) {
+		} else if (this.field_9570 != null) {
 			for (Integer integer : map.values()) {
-				if (this.levels.test(integer)) {
+				if (this.field_9570.test(integer)) {
 					return true;
 				}
 			}
@@ -60,7 +60,7 @@ public class EnchantmentPredicate {
 				jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(this.enchantment).toString());
 			}
 
-			jsonObject.add("levels", this.levels.serialize());
+			jsonObject.add("levels", this.field_9570.serialize());
 			return jsonObject;
 		}
 	}
@@ -76,8 +76,8 @@ public class EnchantmentPredicate {
 					.orElseThrow(() -> new JsonSyntaxException("Unknown enchantment '" + identifier + "'"));
 			}
 
-			NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("levels"));
-			return new EnchantmentPredicate(enchantment, integer);
+			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("levels"));
+			return new EnchantmentPredicate(enchantment, intRange);
 		} else {
 			return ANY;
 		}

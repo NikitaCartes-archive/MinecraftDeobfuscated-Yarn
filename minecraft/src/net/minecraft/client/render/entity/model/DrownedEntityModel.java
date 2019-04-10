@@ -30,7 +30,7 @@ public class DrownedEntityModel<T extends ZombieEntity> extends ZombieEntityMode
 		this.armPoseRight = BipedEntityModel.ArmPose.field_3409;
 		this.armPoseLeft = BipedEntityModel.ArmPose.field_3409;
 		ItemStack itemStack = zombieEntity.getStackInHand(Hand.MAIN);
-		if (itemStack.getItem() == Items.field_8547 && zombieEntity.method_6510()) {
+		if (itemStack.getItem() == Items.field_8547 && zombieEntity.isAttacking()) {
 			if (zombieEntity.getMainHand() == AbsoluteHand.field_6183) {
 				this.armPoseRight = BipedEntityModel.ArmPose.field_3407;
 			} else {

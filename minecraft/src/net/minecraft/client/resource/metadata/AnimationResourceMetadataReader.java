@@ -27,7 +27,7 @@ public class AnimationResourceMetadataReader implements ResourceMetadataReader<A
 
 				for (int j = 0; j < jsonArray.size(); j++) {
 					JsonElement jsonElement = jsonArray.get(j);
-					AnimationFrameResourceMetadata animationFrameResourceMetadata = this.method_4693(j, jsonElement);
+					AnimationFrameResourceMetadata animationFrameResourceMetadata = this.readFrameMetadata(j, jsonElement);
 					if (animationFrameResourceMetadata != null) {
 						list.add(animationFrameResourceMetadata);
 					}
@@ -51,7 +51,7 @@ public class AnimationResourceMetadataReader implements ResourceMetadataReader<A
 		return new AnimationResourceMetadata(list, k, jx, i, bl);
 	}
 
-	private AnimationFrameResourceMetadata method_4693(int i, JsonElement jsonElement) {
+	private AnimationFrameResourceMetadata readFrameMetadata(int i, JsonElement jsonElement) {
 		if (jsonElement.isJsonPrimitive()) {
 			return new AnimationFrameResourceMetadata(JsonHelper.asInt(jsonElement, "frames[" + i + "]"));
 		} else if (jsonElement.isJsonObject()) {

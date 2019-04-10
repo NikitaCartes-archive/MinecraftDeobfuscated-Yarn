@@ -31,7 +31,7 @@ public enum EnderDragonSpawnState {
 		public void run(ServerWorld serverWorld, EnderDragonFight enderDragonFight, List<EnderCrystalEntity> list, int i, BlockPos blockPos) {
 			if (i < 100) {
 				if (i == 0 || i == 50 || i == 51 || i == 52 || i >= 95) {
-					serverWorld.playEvent(3001, new BlockPos(0, 128, 0), 0);
+					serverWorld.method_20290(3001, new BlockPos(0, 128, 0), 0);
 				}
 			} else {
 				enderDragonFight.setSpawnState(CREATE_SPIKES);
@@ -60,7 +60,7 @@ public enum EnderDragonSpawnState {
 							new BlockPos(spike.getCenterX() - 10, spike.getHeight() - 10, spike.getCenterZ() - 10),
 							new BlockPos(spike.getCenterX() + 10, spike.getHeight() + 10, spike.getCenterZ() + 10)
 						)) {
-							serverWorld.clearBlockState(blockPos2);
+							serverWorld.clearBlockState(blockPos2, false);
 						}
 
 						serverWorld.createExplosion(
@@ -69,7 +69,7 @@ public enum EnderDragonSpawnState {
 							(double)spike.getHeight(),
 							(double)((float)spike.getCenterZ() + 0.5F),
 							5.0F,
-							Explosion.class_4179.field_18687
+							Explosion.DestructionType.field_18687
 						);
 						EndSpikeFeatureConfig endSpikeFeatureConfig = new EndSpikeFeatureConfig(true, ImmutableList.of(spike), new BlockPos(0, 128, 0));
 						Feature.field_13522
@@ -96,17 +96,19 @@ public enum EnderDragonSpawnState {
 
 				for (EnderCrystalEntity enderCrystalEntity : list) {
 					enderCrystalEntity.setBeamTarget(null);
-					serverWorld.createExplosion(enderCrystalEntity, enderCrystalEntity.x, enderCrystalEntity.y, enderCrystalEntity.z, 6.0F, Explosion.class_4179.field_18685);
-					enderCrystalEntity.invalidate();
+					serverWorld.createExplosion(
+						enderCrystalEntity, enderCrystalEntity.x, enderCrystalEntity.y, enderCrystalEntity.z, 6.0F, Explosion.DestructionType.field_18685
+					);
+					enderCrystalEntity.remove();
 				}
 			} else if (i >= 80) {
-				serverWorld.playEvent(3001, new BlockPos(0, 128, 0), 0);
+				serverWorld.method_20290(3001, new BlockPos(0, 128, 0), 0);
 			} else if (i == 0) {
 				for (EnderCrystalEntity enderCrystalEntity : list) {
 					enderCrystalEntity.setBeamTarget(new BlockPos(0, 128, 0));
 				}
 			} else if (i < 5) {
-				serverWorld.playEvent(3001, new BlockPos(0, 128, 0), 0);
+				serverWorld.method_20290(3001, new BlockPos(0, 128, 0), 0);
 			}
 		}
 	},

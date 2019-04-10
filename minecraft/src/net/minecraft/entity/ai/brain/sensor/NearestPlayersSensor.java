@@ -14,8 +14,7 @@ import net.minecraft.server.world.ServerWorld;
 
 public class NearestPlayersSensor extends Sensor<LivingEntity> {
 	@Override
-	public void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
-		this.field_18463 = serverWorld.getTime();
+	protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
 		List<PlayerEntity> list = (List<PlayerEntity>)serverWorld.getPlayers()
 			.stream()
 			.filter(EntityPredicates.EXCEPT_SPECTATOR)

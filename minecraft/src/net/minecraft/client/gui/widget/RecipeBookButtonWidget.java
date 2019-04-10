@@ -11,13 +11,27 @@ public class RecipeBookButtonWidget extends ButtonWidget {
 	private final Identifier texture;
 	private final int u;
 	private final int v;
+	private final int field_19079;
 	private final int hoverVOffset;
+	private final int field_19080;
 
-	public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, ButtonWidget.class_4241 arg) {
-		super(i, j, k, l, "", arg);
+	public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, ButtonWidget.PressAction pressAction) {
+		this(i, j, k, l, m, n, o, identifier, 256, 256, pressAction);
+	}
+
+	public RecipeBookButtonWidget(int i, int j, int k, int l, int m, int n, int o, Identifier identifier, int p, int q, ButtonWidget.PressAction pressAction) {
+		this(i, j, k, l, m, n, o, identifier, p, q, pressAction, "");
+	}
+
+	public RecipeBookButtonWidget(
+		int i, int j, int k, int l, int m, int n, int o, Identifier identifier, int p, int q, ButtonWidget.PressAction pressAction, String string
+	) {
+		super(i, j, k, l, string, pressAction);
+		this.hoverVOffset = p;
+		this.field_19080 = q;
 		this.u = m;
 		this.v = n;
-		this.hoverVOffset = o;
+		this.field_19079 = o;
 		this.texture = identifier;
 	}
 
@@ -33,10 +47,10 @@ public class RecipeBookButtonWidget extends ButtonWidget {
 		GlStateManager.disableDepthTest();
 		int k = this.v;
 		if (this.isHovered()) {
-			k += this.hoverVOffset;
+			k += this.field_19079;
 		}
 
-		this.drawTexturedRect(this.x, this.y, this.u, k, this.width, this.height);
+		blit(this.x, this.y, (float)this.u, (float)k, this.width, this.height, this.hoverVOffset, this.field_19080);
 		GlStateManager.enableDepthTest();
 	}
 }

@@ -22,9 +22,9 @@ public class WeightedList<U> {
 		this.entries.add(new WeightedList.Entry(object, i));
 	}
 
-	public void method_19029() {
-		this.entries.forEach(entry -> entry.method_19034(this.random.nextFloat()));
-		this.entries.sort(Comparator.comparingDouble(WeightedList.Entry::method_19033));
+	public void shuffle() {
+		this.entries.forEach(entry -> entry.setShuffledOrder(this.random.nextFloat()));
+		this.entries.sort(Comparator.comparingDouble(WeightedList.Entry::getShuffledOrder));
 	}
 
 	public Stream<? extends U> stream() {
@@ -38,19 +38,19 @@ public class WeightedList<U> {
 	class Entry<T> {
 		private final T field_18400;
 		private final int weight;
-		private double field_18402;
+		private double shuffledOrder;
 
 		private Entry(T object, int i) {
 			this.weight = i;
 			this.field_18400 = object;
 		}
 
-		public double method_19033() {
-			return this.field_18402;
+		public double getShuffledOrder() {
+			return this.shuffledOrder;
 		}
 
-		public void method_19034(float f) {
-			this.field_18402 = -Math.pow((double)f, (double)(1.0F / (float)this.weight));
+		public void setShuffledOrder(float f) {
+			this.shuffledOrder = -Math.pow((double)f, (double)(1.0F / (float)this.weight));
 		}
 
 		public T getElement() {

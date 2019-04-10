@@ -82,27 +82,27 @@ public class ChunkSectionPos extends Vec3i {
 		return this.getZ();
 	}
 
-	public int method_19527() {
+	public int getMinX() {
 		return this.getChunkX() << 4;
 	}
 
-	public int method_19528() {
+	public int getMinY() {
 		return this.getChunkY() << 4;
 	}
 
-	public int method_19529() {
+	public int getMinZ() {
 		return this.getChunkZ() << 4;
 	}
 
-	public int method_19530() {
+	public int getMaxX() {
 		return (this.getChunkX() << 4) + 15;
 	}
 
-	public int method_19531() {
+	public int getMaxY() {
 		return (this.getChunkY() << 4) + 15;
 	}
 
-	public int method_19532() {
+	public int getMaxZ() {
 		return (this.getChunkZ() << 4) + 15;
 	}
 
@@ -115,14 +115,14 @@ public class ChunkSectionPos extends Vec3i {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public BlockPos method_19767() {
+	public BlockPos getMinPos() {
 		return new BlockPos(fromChunkCoord(this.getChunkX()), fromChunkCoord(this.getChunkY()), fromChunkCoord(this.getChunkZ()));
 	}
 
 	@Environment(EnvType.CLIENT)
-	public BlockPos method_19768() {
+	public BlockPos getCenterPos() {
 		int i = 8;
-		return this.method_19767().add(8, 8, 8);
+		return this.getMinPos().add(8, 8, 8);
 	}
 
 	public ChunkPos toChunkPos() {
@@ -140,9 +140,7 @@ public class ChunkSectionPos extends Vec3i {
 		return asLong(this.getChunkX(), this.getChunkY(), this.getChunkZ());
 	}
 
-	public Stream<BlockPos> method_19533() {
-		return BlockPos.getBlocksInCuboid(
-			this.method_19527(), this.method_19528(), this.method_19529(), this.method_19530(), this.method_19531(), this.method_19532()
-		);
+	public Stream<BlockPos> streamBoxPositions() {
+		return BlockPos.streamBoxPositions(this.getMinX(), this.getMinY(), this.getMinZ(), this.getMaxX(), this.getMaxY(), this.getMaxZ());
 	}
 }

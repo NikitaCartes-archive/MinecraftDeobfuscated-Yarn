@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.Vec3d;
@@ -23,10 +23,10 @@ public class Vec3ArgumentType implements ArgumentType<PosArgument> {
 		new TranslatableTextComponent("argument.pos3d.incomplete")
 	);
 	public static final SimpleCommandExceptionType MIXED_COORDINATE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("argument.pos.mixed"));
-	private final boolean field_10756;
+	private final boolean centerIntegers;
 
 	public Vec3ArgumentType(boolean bl) {
-		this.field_10756 = bl;
+		this.centerIntegers = bl;
 	}
 
 	public static Vec3ArgumentType create() {
@@ -37,7 +37,7 @@ public class Vec3ArgumentType implements ArgumentType<PosArgument> {
 		return new Vec3ArgumentType(bl);
 	}
 
-	public static Vec3d getVec3Argument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Vec3d getVec3(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsolutePos(commandContext.getSource());
 	}
 
@@ -48,7 +48,7 @@ public class Vec3ArgumentType implements ArgumentType<PosArgument> {
 	public PosArgument method_9738(StringReader stringReader) throws CommandSyntaxException {
 		return (PosArgument)(stringReader.canRead() && stringReader.peek() == '^'
 			? LookingPosArgument.parse(stringReader)
-			: DefaultPosArgument.parse(stringReader, this.field_10756));
+			: DefaultPosArgument.parse(stringReader, this.centerIntegers));
 	}
 
 	@Override
@@ -61,10 +61,10 @@ public class Vec3ArgumentType implements ArgumentType<PosArgument> {
 			if (!string.isEmpty() && string.charAt(0) == '^') {
 				collection = Collections.singleton(CommandSource.RelativePosition.ZERO_LOCAL);
 			} else {
-				collection = ((CommandSource)commandContext.getSource()).method_17772();
+				collection = ((CommandSource)commandContext.getSource()).getPositionSuggestions();
 			}
 
-			return CommandSource.method_9260(string, collection, suggestionsBuilder, ServerCommandManager.getCommandValidator(this::method_9738));
+			return CommandSource.method_9260(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9738));
 		}
 	}
 

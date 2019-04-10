@@ -118,14 +118,14 @@ public abstract class VoxelSet {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void forEachEdge(VoxelSet.BoxConsumer boxConsumer, boolean bl) {
-		this.forEachEdge(boxConsumer, AxisCycle.NONE, bl);
-		this.forEachEdge(boxConsumer, AxisCycle.NEXT, bl);
-		this.forEachEdge(boxConsumer, AxisCycle.PREVIOUS, bl);
+	public void forEachEdge(VoxelSet.class_253 arg, boolean bl) {
+		this.forEachEdge(arg, AxisCycle.NONE, bl);
+		this.forEachEdge(arg, AxisCycle.NEXT, bl);
+		this.forEachEdge(arg, AxisCycle.PREVIOUS, bl);
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void forEachEdge(VoxelSet.BoxConsumer boxConsumer, AxisCycle axisCycle, boolean bl) {
+	private void forEachEdge(VoxelSet.class_253 arg, AxisCycle axisCycle, boolean bl) {
 		AxisCycle axisCycle2 = axisCycle.opposite();
 		int i = this.getSize(axisCycle2.cycle(Direction.Axis.X));
 		int j = this.getSize(axisCycle2.cycle(Direction.Axis.Y));
@@ -154,7 +154,7 @@ public abstract class VoxelSet {
 								n = o;
 							}
 						} else {
-							boxConsumer.consume(
+							arg.consume(
 								axisCycle2.choose(l, m, o, Direction.Axis.X),
 								axisCycle2.choose(l, m, o, Direction.Axis.Y),
 								axisCycle2.choose(l, m, o, Direction.Axis.Z),
@@ -164,7 +164,7 @@ public abstract class VoxelSet {
 							);
 						}
 					} else if (n != -1) {
-						boxConsumer.consume(
+						arg.consume(
 							axisCycle2.choose(l, m, n, Direction.Axis.X),
 							axisCycle2.choose(l, m, n, Direction.Axis.Y),
 							axisCycle2.choose(l, m, n, Direction.Axis.Z),
@@ -205,7 +205,7 @@ public abstract class VoxelSet {
 		return true;
 	}
 
-	public void forEachBox(VoxelSet.BoxConsumer boxConsumer, boolean bl) {
+	public void forEachBox(VoxelSet.class_253 arg, boolean bl) {
 		VoxelSet voxelSet = new BitSetVoxelSet(this);
 
 		for (int i = 0; i <= this.xSize; i++) {
@@ -219,7 +219,7 @@ public abstract class VoxelSet {
 								k = l;
 							}
 						} else {
-							boxConsumer.consume(i, j, l, i + 1, j + 1, l + 1);
+							arg.consume(i, j, l, i + 1, j + 1, l + 1);
 						}
 					} else if (k != -1) {
 						int m = i;
@@ -254,7 +254,7 @@ public abstract class VoxelSet {
 							p++;
 						}
 
-						boxConsumer.consume(m, o, k, n + 1, p + 1, l);
+						arg.consume(m, o, k, n + 1, p + 1, l);
 						k = -1;
 					}
 				}
@@ -304,11 +304,11 @@ public abstract class VoxelSet {
 		}
 	}
 
-	public interface BoxConsumer {
-		void consume(int i, int j, int k, int l, int m, int n);
-	}
-
 	public interface class_252 {
 		void consume(Direction direction, int i, int j, int k);
+	}
+
+	public interface class_253 {
+		void consume(int i, int j, int k, int l, int m, int n);
 	}
 }

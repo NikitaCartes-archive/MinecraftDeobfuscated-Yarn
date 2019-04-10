@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.advancement.AdvancementManager;
-import net.minecraft.advancement.AdvancementPosition;
+import net.minecraft.advancement.AdvancementPositioner;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.resource.Resource;
@@ -31,12 +31,10 @@ import org.apache.logging.log4j.Logger;
 public class ServerAdvancementLoader implements SynchronousResourceReloadListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
-		.registerTypeHierarchyAdapter(
-			SimpleAdvancement.Builder.class, (JsonDeserializer<SimpleAdvancement.Builder>)(jsonElement, type, jsonDeserializationContext) -> {
-				JsonObject jsonObject = JsonHelper.asObject(jsonElement, "advancement");
-				return SimpleAdvancement.Builder.deserialize(jsonObject, jsonDeserializationContext);
-			}
-		)
+		.registerTypeHierarchyAdapter(SimpleAdvancement.Task.class, (JsonDeserializer<SimpleAdvancement.Task>)(jsonElement, type, jsonDeserializationContext) -> {
+			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "advancement");
+			return SimpleAdvancement.Task.fromJson(jsonObject, jsonDeserializationContext);
+		})
 		.registerTypeAdapter(AdvancementRewards.class, new AdvancementRewards.Deserializer())
 		.registerTypeHierarchyAdapter(TextComponent.class, new TextComponent.Serializer())
 		.registerTypeHierarchyAdapter(Style.class, new Style.Serializer())
@@ -47,8 +45,8 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 	public static final int FILE_EXTENSION_LENGTH = ".json".length();
 	private boolean errored;
 
-	private Map<Identifier, SimpleAdvancement.Builder> scanAdvancements(ResourceManager resourceManager) {
-		Map<Identifier, SimpleAdvancement.Builder> map = Maps.<Identifier, SimpleAdvancement.Builder>newHashMap();
+	private Map<Identifier, SimpleAdvancement.Task> scanAdvancements(ResourceManager resourceManager) {
+		Map<Identifier, SimpleAdvancement.Task> map = Maps.<Identifier, SimpleAdvancement.Task>newHashMap();
 
 		for (Identifier identifier : resourceManager.findResources("advancements", stringx -> stringx.endsWith(".json"))) {
 			String string = identifier.getPath();
@@ -59,13 +57,13 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 				Throwable var8 = null;
 
 				try {
-					SimpleAdvancement.Builder builder = JsonHelper.deserialize(
-						GSON, IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8), SimpleAdvancement.Builder.class
+					SimpleAdvancement.Task task = JsonHelper.deserialize(
+						GSON, IOUtils.toString(resource.getInputStream(), StandardCharsets.UTF_8), SimpleAdvancement.Task.class
 					);
-					if (builder == null) {
+					if (task == null) {
 						LOGGER.error("Couldn't load custom advancement {} from {} as it's empty or null", identifier2, identifier);
 					} else {
-						map.put(identifier2, builder);
+						map.put(identifier2, task);
 					}
 				} catch (Throwable var19) {
 					var8 = var19;
@@ -108,12 +106,12 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 	public void apply(ResourceManager resourceManager) {
 		this.errored = false;
 		MANAGER.clear();
-		Map<Identifier, SimpleAdvancement.Builder> map = this.scanAdvancements(resourceManager);
+		Map<Identifier, SimpleAdvancement.Task> map = this.scanAdvancements(resourceManager);
 		MANAGER.load(map);
 
 		for (SimpleAdvancement simpleAdvancement : MANAGER.getRoots()) {
 			if (simpleAdvancement.getDisplay() != null) {
-				AdvancementPosition.arrangeForRoot(simpleAdvancement);
+				AdvancementPositioner.arrangeForTree(simpleAdvancement);
 			}
 		}
 	}

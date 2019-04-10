@@ -30,7 +30,7 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends Featu
 		CompoundTag compoundTag = bl ? playerEntity.getShoulderEntityLeft() : playerEntity.getShoulderEntityRight();
 		EntityType.get(compoundTag.getString("id")).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
 			GlStateManager.pushMatrix();
-			GlStateManager.translatef(bl ? 0.4F : -0.4F, playerEntity.isSneaking() ? -1.3F : -1.5F, 0.0F);
+			GlStateManager.translatef(bl ? 0.4F : -0.4F, playerEntity.isInSneakingPose() ? -1.3F : -1.5F, 0.0F);
 			this.bindTexture(ParrotEntityRenderer.TEXTURES[compoundTag.getInt("Variant")]);
 			this.field_17154.method_17106(f, g, i, j, k, playerEntity.age);
 			GlStateManager.popMatrix();
@@ -38,7 +38,7 @@ public class ShoulderParrotFeatureRenderer<T extends PlayerEntity> extends Featu
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

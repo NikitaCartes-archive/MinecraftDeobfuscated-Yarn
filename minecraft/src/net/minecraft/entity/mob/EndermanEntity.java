@@ -15,12 +15,12 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -60,9 +60,9 @@ public class EndermanEntity extends HostileEntity {
 		EndermanEntity.class, TrackedDataHandlerRegistry.OPTIONAL_BLOCK_STATE
 	);
 	private static final TrackedData<Boolean> ANGRY = DataTracker.registerData(EndermanEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final Predicate<LivingEntity> field_18126 = livingEntity -> livingEntity instanceof EndermiteEntity
-			&& ((EndermiteEntity)livingEntity).method_7023();
-	private int field_7253;
+	private static final Predicate<LivingEntity> PLAYER_ENDERMITE_PREDICATE = livingEntity -> livingEntity instanceof EndermiteEntity
+			&& ((EndermiteEntity)livingEntity).isPlayerSpawned();
+	private int lastAngrySoundAge;
 	private int ageWhenTargetSet;
 
 	public EndermanEntity(EntityType<? extends EndermanEntity> entityType, World world) {
@@ -74,16 +74,16 @@ public class EndermanEntity extends HostileEntity {
 	@Override
 	protected void initGoals() {
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(1, new EndermanEntity.class_4159(this));
+		this.goalSelector.add(1, new EndermanEntity.ChasePlayerGoal(this));
 		this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0, false));
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0, 0.0F));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.goalSelector.add(10, new EndermanEntity.PlaceBlockGoal(this));
 		this.goalSelector.add(11, new EndermanEntity.PickUpBlockGoal(this));
-		this.targetSelector.add(1, new EndermanEntity.class_1562(this));
-		this.targetSelector.add(2, new AvoidGoal(this));
-		this.targetSelector.add(3, new FollowTargetGoal(this, EndermiteEntity.class, 10, true, false, field_18126));
+		this.targetSelector.add(1, new EndermanEntity.TeleportTowardsPlayerGoal(this));
+		this.targetSelector.add(2, new RevengeGoal(this));
+		this.targetSelector.add(3, new FollowTargetGoal(this, EndermiteEntity.class, 10, true, false, PLAYER_ENDERMITE_PREDICATE));
 	}
 
 	@Override
@@ -119,9 +119,9 @@ public class EndermanEntity extends HostileEntity {
 		this.dataTracker.startTracking(ANGRY, false);
 	}
 
-	public void method_7030() {
-		if (this.age >= this.field_7253 + 400) {
-			this.field_7253 = this.age;
+	public void playAngrySound() {
+		if (this.age >= this.lastAngrySoundAge + 400) {
+			this.lastAngrySoundAge = this.age;
 			if (!this.isSilent()) {
 				this.world.playSound(this.x, this.y + (double)this.getStandingEyeHeight(), this.z, SoundEvents.field_14967, this.getSoundCategory(), 2.5F, 1.0F, false);
 			}
@@ -131,7 +131,7 @@ public class EndermanEntity extends HostileEntity {
 	@Override
 	public void onTrackedDataSet(TrackedData<?> trackedData) {
 		if (ANGRY.equals(trackedData) && this.isAngry() && this.world.isClient) {
-			this.method_7030();
+			this.playAngrySound();
 		}
 
 		super.onTrackedDataSet(trackedData);
@@ -160,7 +160,7 @@ public class EndermanEntity extends HostileEntity {
 		this.setCarriedBlock(blockState);
 	}
 
-	private boolean method_7026(PlayerEntity playerEntity) {
+	private boolean isPlayerStaring(PlayerEntity playerEntity) {
 		ItemStack itemStack = playerEntity.inventory.armor.get(3);
 		if (itemStack.getItem() == Blocks.field_10147.getItem()) {
 			return false;
@@ -200,7 +200,7 @@ public class EndermanEntity extends HostileEntity {
 			}
 		}
 
-		this.field_6282 = false;
+		this.jumping = false;
 		super.updateMovement();
 	}
 
@@ -211,24 +211,24 @@ public class EndermanEntity extends HostileEntity {
 		}
 
 		if (this.world.isDaylight() && this.age >= this.ageWhenTargetSet + 600) {
-			float f = this.method_5718();
+			float f = this.getBrightnessAtEyes();
 			if (f > 0.5F && this.world.isSkyVisible(new BlockPos(this)) && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F) {
 				this.setTarget(null);
-				this.method_7029();
+				this.teleportRandomly();
 			}
 		}
 
 		super.mobTick();
 	}
 
-	protected boolean method_7029() {
+	protected boolean teleportRandomly() {
 		double d = this.x + (this.random.nextDouble() - 0.5) * 64.0;
 		double e = this.y + (double)(this.random.nextInt(64) - 32);
 		double f = this.z + (this.random.nextDouble() - 0.5) * 64.0;
-		return this.method_7024(d, e, f);
+		return this.teleport(d, e, f);
 	}
 
-	protected boolean method_7025(Entity entity) {
+	protected boolean teleportTo(Entity entity) {
 		Vec3d vec3d = new Vec3d(
 			this.x - entity.x, this.getBoundingBox().minY + (double)(this.getHeight() / 2.0F) - entity.y + (double)entity.getStandingEyeHeight(), this.z - entity.z
 		);
@@ -237,11 +237,11 @@ public class EndermanEntity extends HostileEntity {
 		double e = this.x + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.x * 16.0;
 		double f = this.y + (double)(this.random.nextInt(16) - 8) - vec3d.y * 16.0;
 		double g = this.z + (this.random.nextDouble() - 0.5) * 8.0 - vec3d.z * 16.0;
-		return this.method_7024(e, f, g);
+		return this.teleport(e, f, g);
 	}
 
-	private boolean method_7024(double d, double e, double f) {
-		boolean bl = this.method_6082(d, e, f, true);
+	private boolean teleport(double d, double e, double f) {
+		boolean bl = this.teleport(d, e, f, true);
 		if (bl) {
 			this.world.playSound(null, this.prevX, this.prevY, this.prevZ, SoundEvents.field_14879, this.getSoundCategory(), 1.0F, 1.0F);
 			this.playSound(SoundEvents.field_14879, 1.0F, 1.0F);
@@ -289,14 +289,14 @@ public class EndermanEntity extends HostileEntity {
 			return false;
 		} else if (!(damageSource instanceof ProjectileDamageSource) && damageSource != DamageSource.FIREWORKS) {
 			boolean bl = super.damage(damageSource, f);
-			if (damageSource.doesBypassArmor() && this.random.nextInt(10) != 0) {
-				this.method_7029();
+			if (damageSource.bypassesArmor() && this.random.nextInt(10) != 0) {
+				this.teleportRandomly();
 			}
 
 			return bl;
 		} else {
 			for (int i = 0; i < 64; i++) {
-				if (this.method_7029()) {
+				if (this.teleportRandomly()) {
 					return true;
 				}
 			}
@@ -307,6 +307,31 @@ public class EndermanEntity extends HostileEntity {
 
 	public boolean isAngry() {
 		return this.dataTracker.get(ANGRY);
+	}
+
+	static class ChasePlayerGoal extends Goal {
+		private final EndermanEntity endermanEntity;
+
+		public ChasePlayerGoal(EndermanEntity endermanEntity) {
+			this.endermanEntity = endermanEntity;
+			this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
+		}
+
+		@Override
+		public boolean canStart() {
+			LivingEntity livingEntity = this.endermanEntity.getTarget();
+			if (!(livingEntity instanceof PlayerEntity)) {
+				return false;
+			} else {
+				double d = livingEntity.squaredDistanceTo(this.endermanEntity);
+				return d > 256.0 ? false : this.endermanEntity.isPlayerStaring((PlayerEntity)livingEntity);
+			}
+		}
+
+		@Override
+		public void start() {
+			this.endermanEntity.getNavigation().stop();
+		}
 	}
 
 	static class PickUpBlockGoal extends Goal {
@@ -343,7 +368,7 @@ public class EndermanEntity extends HostileEntity {
 			boolean bl = blockHitResult.getType() != HitResult.Type.NONE && blockHitResult.getBlockPos().equals(blockPos);
 			if (block.matches(BlockTags.field_15460) && bl) {
 				this.owner.setCarriedBlock(blockState);
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 			}
 		}
 	}
@@ -392,102 +417,79 @@ public class EndermanEntity extends HostileEntity {
 		}
 	}
 
-	static class class_1562 extends FollowTargetGoal<PlayerEntity> {
-		private final EndermanEntity field_7260;
-		private PlayerEntity field_7259;
-		private int field_7262;
-		private int field_7261;
-		private final TargetPredicate field_18127;
-		private final TargetPredicate field_18876 = new TargetPredicate().includeHidden();
+	static class TeleportTowardsPlayerGoal extends FollowTargetGoal<PlayerEntity> {
+		private final EndermanEntity endermanEntity;
+		private PlayerEntity targetPlayer;
+		private int lookAtPlayerWarmup;
+		private int ticksSinceUnseenTeleport;
+		private final TargetPredicate staringPlayerPredicate;
+		private final TargetPredicate validTargetPredicate = new TargetPredicate().includeHidden();
 
-		public class_1562(EndermanEntity endermanEntity) {
+		public TeleportTowardsPlayerGoal(EndermanEntity endermanEntity) {
 			super(endermanEntity, PlayerEntity.class, false);
-			this.field_7260 = endermanEntity;
-			this.field_18127 = new TargetPredicate()
+			this.endermanEntity = endermanEntity;
+			this.staringPlayerPredicate = new TargetPredicate()
 				.setBaseMaxDistance(this.getFollowRange())
-				.setPredicate(livingEntity -> endermanEntity.method_7026((PlayerEntity)livingEntity));
+				.setPredicate(livingEntity -> endermanEntity.isPlayerStaring((PlayerEntity)livingEntity));
 		}
 
 		@Override
 		public boolean canStart() {
-			this.field_7259 = this.field_7260.world.method_18462(this.field_18127, this.field_7260);
-			return this.field_7259 != null;
+			this.targetPlayer = this.endermanEntity.world.getClosestPlayer(this.staringPlayerPredicate, this.endermanEntity);
+			return this.targetPlayer != null;
 		}
 
 		@Override
 		public void start() {
-			this.field_7262 = 5;
-			this.field_7261 = 0;
+			this.lookAtPlayerWarmup = 5;
+			this.ticksSinceUnseenTeleport = 0;
 		}
 
 		@Override
-		public void onRemove() {
-			this.field_7259 = null;
-			super.onRemove();
+		public void stop() {
+			this.targetPlayer = null;
+			super.stop();
 		}
 
 		@Override
 		public boolean shouldContinue() {
-			if (this.field_7259 != null) {
-				if (!this.field_7260.method_7026(this.field_7259)) {
+			if (this.targetPlayer != null) {
+				if (!this.endermanEntity.isPlayerStaring(this.targetPlayer)) {
 					return false;
 				} else {
-					this.field_7260.method_5951(this.field_7259, 10.0F, 10.0F);
+					this.endermanEntity.lookAtEntity(this.targetPlayer, 10.0F, 10.0F);
 					return true;
 				}
 			} else {
-				return this.field_6644 != null && this.field_18876.test(this.field_7260, this.field_6644) ? true : super.shouldContinue();
+				return this.targetEntity != null && this.validTargetPredicate.test(this.endermanEntity, this.targetEntity) ? true : super.shouldContinue();
 			}
 		}
 
 		@Override
 		public void tick() {
-			if (this.field_7259 != null) {
-				if (--this.field_7262 <= 0) {
-					this.field_6644 = this.field_7259;
-					this.field_7259 = null;
+			if (this.targetPlayer != null) {
+				if (--this.lookAtPlayerWarmup <= 0) {
+					this.targetEntity = this.targetPlayer;
+					this.targetPlayer = null;
 					super.start();
 				}
 			} else {
-				if (this.field_6644 != null) {
-					if (this.field_7260.method_7026((PlayerEntity)this.field_6644)) {
-						if (this.field_6644.squaredDistanceTo(this.field_7260) < 16.0) {
-							this.field_7260.method_7029();
+				if (this.targetEntity != null && !this.endermanEntity.hasVehicle()) {
+					if (this.endermanEntity.isPlayerStaring((PlayerEntity)this.targetEntity)) {
+						if (this.targetEntity.squaredDistanceTo(this.endermanEntity) < 16.0) {
+							this.endermanEntity.teleportRandomly();
 						}
 
-						this.field_7261 = 0;
-					} else if (this.field_6644.squaredDistanceTo(this.field_7260) > 256.0 && this.field_7261++ >= 30 && this.field_7260.method_7025(this.field_6644)) {
-						this.field_7261 = 0;
+						this.ticksSinceUnseenTeleport = 0;
+					} else if (this.targetEntity.squaredDistanceTo(this.endermanEntity) > 256.0
+						&& this.ticksSinceUnseenTeleport++ >= 30
+						&& this.endermanEntity.teleportTo(this.targetEntity)) {
+						this.ticksSinceUnseenTeleport = 0;
 					}
 				}
 
 				super.tick();
 			}
-		}
-	}
-
-	static class class_4159 extends Goal {
-		private final EndermanEntity field_18524;
-
-		public class_4159(EndermanEntity endermanEntity) {
-			this.field_18524 = endermanEntity;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
-		}
-
-		@Override
-		public boolean canStart() {
-			LivingEntity livingEntity = this.field_18524.getTarget();
-			if (!(livingEntity instanceof PlayerEntity)) {
-				return false;
-			} else {
-				double d = livingEntity.squaredDistanceTo(this.field_18524);
-				return d > 256.0 ? false : this.field_18524.method_7026((PlayerEntity)livingEntity);
-			}
-		}
-
-		@Override
-		public void start() {
-			this.field_18524.getNavigation().stop();
 		}
 	}
 }

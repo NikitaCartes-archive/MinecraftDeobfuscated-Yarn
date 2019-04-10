@@ -1,5 +1,6 @@
 package net.minecraft.block.entity;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import java.util.Arrays;
 import java.util.List;
@@ -12,8 +13,7 @@ import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.StainedGlassBlock;
-import net.minecraft.block.StainedGlassPaneBlock;
+import net.minecraft.client.block.ColoredBlock;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.container.BeaconContainer;
 import net.minecraft.container.BlockContext;
@@ -33,10 +33,10 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
+import net.minecraft.world.gen.Heightmap;
 
 public class BeaconBlockEntity extends BlockEntity implements NameableContainerProvider, Tickable {
 	public static final StatusEffect[][] EFFECTS_BY_LEVEL = new StatusEffect[][]{
@@ -46,18 +46,15 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		{StatusEffects.field_5924}
 	};
 	private static final Set<StatusEffect> EFFECTS = (Set<StatusEffect>)Arrays.stream(EFFECTS_BY_LEVEL).flatMap(Arrays::stream).collect(Collectors.toSet());
-	private final List<BeaconBlockEntity.BeamSegment> beamSegments = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
-	@Environment(EnvType.CLIENT)
-	private long lastBeamTextureOffsetUpdateTime;
-	@Environment(EnvType.CLIENT)
-	private float beamTextureOffset;
-	private boolean active;
-	private boolean lastActive;
-	private int levels = -1;
+	private List<BeaconBlockEntity.BeamSegment> beamSegments = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
+	private List<BeaconBlockEntity.BeamSegment> field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
+	private int level = 0;
+	private int field_19179 = -1;
 	@Nullable
 	private StatusEffect primary;
 	@Nullable
 	private StatusEffect secondary;
+	@Nullable
 	private TextComponent customName;
 	private ContainerLock lock = ContainerLock.NONE;
 	private final PropertyDelegate propertyDelegate = new PropertyDelegate() {
@@ -65,7 +62,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		public int get(int i) {
 			switch (i) {
 				case 0:
-					return BeaconBlockEntity.this.levels;
+					return BeaconBlockEntity.this.level;
 				case 1:
 					return StatusEffect.getRawId(BeaconBlockEntity.this.primary);
 				case 2:
@@ -79,17 +76,17 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		public void set(int i, int j) {
 			switch (i) {
 				case 0:
-					BeaconBlockEntity.this.levels = j;
+					BeaconBlockEntity.this.level = j;
 					break;
 				case 1:
+					if (!BeaconBlockEntity.this.world.isClient && !BeaconBlockEntity.this.beamSegments.isEmpty()) {
+						BeaconBlockEntity.this.playSound(SoundEvents.field_14891);
+					}
+
 					BeaconBlockEntity.this.primary = BeaconBlockEntity.getPotionEffectById(j);
 					break;
 				case 2:
 					BeaconBlockEntity.this.secondary = BeaconBlockEntity.getPotionEffectById(j);
-			}
-
-			if (!BeaconBlockEntity.this.world.isClient && i == 1 && BeaconBlockEntity.this.active) {
-				BeaconBlockEntity.this.playSound(SoundEvents.field_14891);
 			}
 		}
 
@@ -105,52 +102,127 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 	@Override
 	public void tick() {
-		if (this.world.getTime() % 80L == 0L) {
-			this.update();
-			if (this.active) {
-				this.playSound(SoundEvents.field_15045);
+		int i = this.pos.getX();
+		int j = this.pos.getY();
+		int k = this.pos.getZ();
+		BlockPos blockPos;
+		if (this.field_19179 < j) {
+			blockPos = this.pos;
+			this.field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
+			this.field_19179 = blockPos.getY() - 1;
+		} else {
+			blockPos = new BlockPos(i, this.field_19179 + 1, k);
+		}
+
+		BeaconBlockEntity.BeamSegment beamSegment = this.field_19178.isEmpty()
+			? null
+			: (BeaconBlockEntity.BeamSegment)this.field_19178.get(this.field_19178.size() - 1);
+		int l = this.world.getTop(Heightmap.Type.WORLD_SURFACE, i, k);
+
+		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
+			BlockState blockState = this.world.getBlockState(blockPos);
+			Block block = blockState.getBlock();
+			if (block instanceof ColoredBlock) {
+				float[] fs = ((ColoredBlock)block).getColor().getColorComponents();
+				if (blockPos.getY() <= j + 1) {
+					beamSegment = new BeaconBlockEntity.BeamSegment(fs);
+					this.field_19178.add(beamSegment);
+				} else if (Arrays.equals(fs, beamSegment.color)) {
+					beamSegment.increaseHeight();
+				} else {
+					beamSegment = new BeaconBlockEntity.BeamSegment(
+						new float[]{(beamSegment.color[0] + fs[0]) / 2.0F, (beamSegment.color[1] + fs[1]) / 2.0F, (beamSegment.color[2] + fs[2]) / 2.0F}
+					);
+					this.field_19178.add(beamSegment);
+				}
+			} else {
+				if (blockState.getLightSubtracted(this.world, blockPos) >= 15 && block != Blocks.field_9987) {
+					this.field_19178.clear();
+					this.field_19179 = l;
+					break;
+				}
+
+				beamSegment.increaseHeight();
+			}
+
+			blockPos = blockPos.up();
+			this.field_19179++;
+		}
+
+		if (this.field_19179 >= l) {
+			this.field_19179 = -1;
+			int m = this.level;
+			boolean bl = this.level > 0 && !this.beamSegments.isEmpty();
+			this.beamSegments = this.field_19178;
+			if (!this.beamSegments.isEmpty() && this.world.getTime() % 80L == 0L) {
+				this.method_20293(i, j, k);
+			}
+
+			if (!this.world.isClient) {
+				if (m < this.level) {
+					for (ServerPlayerEntity serverPlayerEntity : this.world
+						.getEntities(ServerPlayerEntity.class, new BoundingBox((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
+						Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
+					}
+				}
+
+				boolean bl2 = this.level > 0 && !this.beamSegments.isEmpty();
+				if (bl != bl2) {
+					this.playSound(bl2 ? SoundEvents.field_14703 : SoundEvents.field_15176);
+				}
 			}
 		}
 
-		if (!this.world.isClient && this.active != this.lastActive) {
-			this.lastActive = this.active;
-			this.playSound(this.active ? SoundEvents.field_14703 : SoundEvents.field_15176);
-		}
-	}
-
-	public void update() {
-		if (this.world != null) {
-			this.updateBeamColors();
+		if (this.world.getTime() % 80L == 0L && this.level > 0 && !this.beamSegments.isEmpty()) {
 			this.applyPlayerEffects();
+			this.playSound(SoundEvents.field_15045);
 		}
 	}
 
-	public void playSound(SoundEvent soundEvent) {
-		this.world.playSound(null, this.pos, soundEvent, SoundCategory.field_15245, 1.0F, 1.0F);
+	private void method_20293(int i, int j, int k) {
+		this.level = 0;
+
+		for (int l = 1; l <= 4; this.level = l++) {
+			int m = j - l;
+			if (m < 0) {
+				break;
+			}
+
+			boolean bl = true;
+
+			for (int n = i - l; n <= i + l && bl; n++) {
+				for (int o = k - l; o <= k + l; o++) {
+					Block block = this.world.getBlockState(new BlockPos(n, m, o)).getBlock();
+					if (block != Blocks.field_10234 && block != Blocks.field_10205 && block != Blocks.field_10201 && block != Blocks.field_10085) {
+						bl = false;
+						break;
+					}
+				}
+			}
+
+			if (!bl) {
+				break;
+			}
+		}
 	}
 
 	private void applyPlayerEffects() {
-		if (this.active && this.levels > 0 && !this.world.isClient && this.primary != null) {
-			double d = (double)(this.levels * 10 + 10);
+		if (!this.world.isClient && this.primary != null) {
+			double d = (double)(this.level * 10 + 10);
 			int i = 0;
-			if (this.levels >= 4 && this.primary == this.secondary) {
+			if (this.level >= 4 && this.primary == this.secondary) {
 				i = 1;
 			}
 
-			int j = (9 + this.levels * 2) * 20;
-			int k = this.pos.getX();
-			int l = this.pos.getY();
-			int m = this.pos.getZ();
-			BoundingBox boundingBox = new BoundingBox((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
-				.expand(d)
-				.stretch(0.0, (double)this.world.getHeight(), 0.0);
-			List<PlayerEntity> list = this.world.method_18467(PlayerEntity.class, boundingBox);
+			int j = (9 + this.level * 2) * 20;
+			BoundingBox boundingBox = new BoundingBox(this.pos).expand(d).stretch(0.0, (double)this.world.getHeight(), 0.0);
+			List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, boundingBox);
 
 			for (PlayerEntity playerEntity : list) {
 				playerEntity.addPotionEffect(new StatusEffectInstance(this.primary, j, i, true, true));
 			}
 
-			if (this.levels >= 4 && this.primary != this.secondary && this.secondary != null) {
+			if (this.level >= 4 && this.primary != this.secondary && this.secondary != null) {
 				for (PlayerEntity playerEntity : list) {
 					playerEntity.addPotionEffect(new StatusEffectInstance(this.secondary, j, 0, true, true));
 				}
@@ -158,121 +230,17 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		}
 	}
 
-	private void updateBeamColors() {
-		int i = this.pos.getX();
-		int j = this.pos.getY();
-		int k = this.pos.getZ();
-		int l = this.levels;
-		this.levels = 0;
-		this.beamSegments.clear();
-		this.active = true;
-		BeaconBlockEntity.BeamSegment beamSegment = new BeaconBlockEntity.BeamSegment(DyeColor.field_7952.getColorComponents());
-		this.beamSegments.add(beamSegment);
-		boolean bl = true;
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-
-		for (int m = j + 1; m < 256; m++) {
-			BlockState blockState = this.world.getBlockState(mutable.set(i, m, k));
-			Block block = blockState.getBlock();
-			float[] fs;
-			if (block instanceof StainedGlassBlock) {
-				fs = ((StainedGlassBlock)block).getColor().getColorComponents();
-			} else {
-				if (!(block instanceof StainedGlassPaneBlock)) {
-					if (blockState.getLightSubtracted(this.world, mutable) >= 15 && block != Blocks.field_9987) {
-						this.active = false;
-						this.beamSegments.clear();
-						break;
-					}
-
-					beamSegment.increaseHeight();
-					continue;
-				}
-
-				fs = ((StainedGlassPaneBlock)block).getColor().getColorComponents();
-			}
-
-			if (!bl) {
-				fs = new float[]{(beamSegment.getColor()[0] + fs[0]) / 2.0F, (beamSegment.getColor()[1] + fs[1]) / 2.0F, (beamSegment.getColor()[2] + fs[2]) / 2.0F};
-			}
-
-			if (Arrays.equals(fs, beamSegment.getColor())) {
-				beamSegment.increaseHeight();
-			} else {
-				beamSegment = new BeaconBlockEntity.BeamSegment(fs);
-				this.beamSegments.add(beamSegment);
-			}
-
-			bl = false;
-		}
-
-		if (this.active) {
-			for (int m = 1; m <= 4; this.levels = m++) {
-				int n = j - m;
-				if (n < 0) {
-					break;
-				}
-
-				boolean bl2 = true;
-
-				for (int o = i - m; o <= i + m && bl2; o++) {
-					for (int p = k - m; p <= k + m; p++) {
-						Block block2 = this.world.getBlockState(new BlockPos(o, n, p)).getBlock();
-						if (block2 != Blocks.field_10234 && block2 != Blocks.field_10205 && block2 != Blocks.field_10201 && block2 != Blocks.field_10085) {
-							bl2 = false;
-							break;
-						}
-					}
-				}
-
-				if (!bl2) {
-					break;
-				}
-			}
-
-			if (this.levels == 0) {
-				this.active = false;
-			}
-		}
-
-		if (!this.world.isClient && l < this.levels) {
-			for (ServerPlayerEntity serverPlayerEntity : this.world
-				.method_18467(ServerPlayerEntity.class, new BoundingBox((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0))) {
-				Criterions.CONSTRUCT_BEACON.handle(serverPlayerEntity, this);
-			}
-		}
+	public void playSound(SoundEvent soundEvent) {
+		this.world.playSound(null, this.pos, soundEvent, SoundCategory.field_15245, 1.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public List<BeaconBlockEntity.BeamSegment> getBeamSegments() {
-		return this.beamSegments;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public float getBeamTextureOffset() {
-		if (!this.active) {
-			return 0.0F;
-		} else {
-			int i = (int)(this.world.getTime() - this.lastBeamTextureOffsetUpdateTime);
-			this.lastBeamTextureOffsetUpdateTime = this.world.getTime();
-			if (i > 1) {
-				this.beamTextureOffset -= (float)i / 40.0F;
-				if (this.beamTextureOffset < 0.0F) {
-					this.beamTextureOffset = 0.0F;
-				}
-			}
-
-			this.beamTextureOffset += 0.025F;
-			if (this.beamTextureOffset > 1.0F) {
-				this.beamTextureOffset = 1.0F;
-			}
-
-			return this.beamTextureOffset;
-		}
+		return (List<BeaconBlockEntity.BeamSegment>)(this.level == 0 ? ImmutableList.of() : this.beamSegments);
 	}
 
 	public int getLevel() {
-		return this.levels;
+		return this.level;
 	}
 
 	@Nullable
@@ -303,7 +271,6 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		super.fromTag(compoundTag);
 		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
 		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
-		this.levels = compoundTag.getInt("Levels");
 		if (compoundTag.containsKey("CustomName", 8)) {
 			this.customName = TextComponent.Serializer.fromJsonString(compoundTag.getString("CustomName"));
 		}
@@ -316,7 +283,6 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 		super.toTag(compoundTag);
 		compoundTag.putInt("Primary", StatusEffect.getRawId(this.primary));
 		compoundTag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
-		compoundTag.putInt("Levels", this.levels);
 		if (this.customName != null) {
 			compoundTag.putString("CustomName", TextComponent.Serializer.toJsonString(this.customName));
 		}
@@ -327,16 +293,6 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 
 	public void setCustomName(@Nullable TextComponent textComponent) {
 		this.customName = textComponent;
-	}
-
-	@Override
-	public boolean onBlockAction(int i, int j) {
-		if (i == 1) {
-			this.update();
-			return true;
-		} else {
-			return super.onBlockAction(i, j);
-		}
 	}
 
 	@Nullable
@@ -365,6 +321,7 @@ public class BeaconBlockEntity extends BlockEntity implements NameableContainerP
 			this.height++;
 		}
 
+		@Environment(EnvType.CLIENT)
 		public float[] getColor() {
 			return this.color;
 		}

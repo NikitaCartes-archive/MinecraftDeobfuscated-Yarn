@@ -9,12 +9,11 @@ import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -23,6 +22,7 @@ import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -53,7 +53,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
 		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
-		this.targetSelector.add(1, new AvoidGoal(this, IllagerEntity.class).method_6318());
+		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false).setMaxTimeWithoutVisibility(300));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, false));
@@ -75,6 +75,11 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
+	}
+
+	@Override
+	public SoundEvent getCelebratingSound() {
+		return SoundEvents.field_19147;
 	}
 
 	@Override
@@ -104,7 +109,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			return this.isTeammate(((VexEntity)entity).getOwner());
 		} else {
 			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
+				? this.method_5781() == null && entity.method_5781() == null
 				: false;
 		}
 	}
@@ -134,7 +139,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 	}
 
 	@Override
-	protected SoundEvent method_7142() {
+	protected SoundEvent getCastSpellSound() {
 		return SoundEvents.field_14858;
 	}
 
@@ -188,15 +193,11 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 
 			do {
 				BlockPos blockPos2 = blockPos.down();
-				if (!Block.isFaceFullSquare(
-						EvokerEntity.this.world.getBlockState(blockPos).getCollisionShape(EvokerEntity.this.world, blockPos, VerticalEntityPosition.minValue()), Direction.UP
-					)
-					&& Block.isFaceFullSquare(
-						EvokerEntity.this.world.getBlockState(blockPos2).getCollisionShape(EvokerEntity.this.world, blockPos2, VerticalEntityPosition.minValue()), Direction.UP
-					)) {
+				BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos2);
+				if (Block.isSolidFullSquare(blockState, EvokerEntity.this.world, blockPos2, Direction.UP)) {
 					if (!EvokerEntity.this.world.isAir(blockPos)) {
-						BlockState blockState = EvokerEntity.this.world.getBlockState(blockPos);
-						VoxelShape voxelShape = blockState.getCollisionShape(EvokerEntity.this.world, blockPos);
+						BlockState blockState2 = EvokerEntity.this.world.getBlockState(blockPos);
+						VoxelShape voxelShape = blockState2.getCollisionShape(EvokerEntity.this.world, blockPos);
 						if (!voxelShape.isEmpty()) {
 							j = voxelShape.getMaximum(Direction.Axis.Y);
 						}
@@ -232,16 +233,17 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		@Override
 		public void tick() {
 			if (EvokerEntity.this.getTarget() != null) {
-				EvokerEntity.this.getLookControl().lookAt(EvokerEntity.this.getTarget(), (float)EvokerEntity.this.method_5986(), (float)EvokerEntity.this.method_5978());
+				EvokerEntity.this.getLookControl()
+					.lookAt(EvokerEntity.this.getTarget(), (float)EvokerEntity.this.method_5986(), (float)EvokerEntity.this.getLookPitchSpeed());
 			} else if (EvokerEntity.this.getWololoTarget() != null) {
 				EvokerEntity.this.getLookControl()
-					.lookAt(EvokerEntity.this.getWololoTarget(), (float)EvokerEntity.this.method_5986(), (float)EvokerEntity.this.method_5978());
+					.lookAt(EvokerEntity.this.getWololoTarget(), (float)EvokerEntity.this.method_5986(), (float)EvokerEntity.this.getLookPitchSpeed());
 			}
 		}
 	}
 
 	class SummonVexGoal extends SpellcastingIllagerEntity.CastSpellGoal {
-		private final TargetPredicate field_18129 = new TargetPredicate()
+		private final TargetPredicate closeVexPredicate = new TargetPredicate()
 			.setBaseMaxDistance(16.0)
 			.includeHidden()
 			.ignoreDistanceScalingFactor()
@@ -256,7 +258,9 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 			if (!super.canStart()) {
 				return false;
 			} else {
-				int i = EvokerEntity.this.world.method_18466(VexEntity.class, this.field_18129, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0)).size();
+				int i = EvokerEntity.this.world
+					.getTargets(VexEntity.class, this.closeVexPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0))
+					.size();
 				return EvokerEntity.this.random.nextInt(8) + 1 > i;
 			}
 		}
@@ -277,7 +281,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				BlockPos blockPos = new BlockPos(EvokerEntity.this).add(-2 + EvokerEntity.this.random.nextInt(5), 1, -2 + EvokerEntity.this.random.nextInt(5));
 				VexEntity vexEntity = EntityType.VEX.create(EvokerEntity.this.world);
 				vexEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				vexEntity.prepareEntityData(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.field_16471, null, null);
+				vexEntity.initialize(EvokerEntity.this.world, EvokerEntity.this.world.getLocalDifficulty(blockPos), SpawnType.field_16471, null, null);
 				vexEntity.setOwner(EvokerEntity.this);
 				vexEntity.setBounds(blockPos);
 				vexEntity.setLifeTicks(20 * (30 + EvokerEntity.this.random.nextInt(90)));
@@ -306,7 +310,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		public boolean canStart() {
 			if (EvokerEntity.this.getTarget() != null) {
 				return false;
-			} else if (EvokerEntity.this.method_7137()) {
+			} else if (EvokerEntity.this.isSpellcasting()) {
 				return false;
 			} else if (EvokerEntity.this.age < this.startTime) {
 				return false;
@@ -314,7 +318,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 				return false;
 			} else {
 				List<SheepEntity> list = EvokerEntity.this.world
-					.method_18466(SheepEntity.class, this.purpleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
+					.getTargets(SheepEntity.class, this.purpleSheepPredicate, EvokerEntity.this, EvokerEntity.this.getBoundingBox().expand(16.0, 4.0, 16.0));
 				if (list.isEmpty()) {
 					return false;
 				} else {
@@ -330,15 +334,15 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		}
 
 		@Override
-		public void onRemove() {
-			super.onRemove();
+		public void stop() {
+			super.stop();
 			EvokerEntity.this.setWololoTarget(null);
 		}
 
 		@Override
 		protected void castSpell() {
 			SheepEntity sheepEntity = EvokerEntity.this.getWololoTarget();
-			if (sheepEntity != null && sheepEntity.isValid()) {
+			if (sheepEntity != null && sheepEntity.isAlive()) {
 				sheepEntity.setColor(DyeColor.field_7964);
 			}
 		}

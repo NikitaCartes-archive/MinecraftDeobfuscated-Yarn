@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 public class SimpleTrader implements Trader {
 	private final TraderInventory traderInventory;
 	private final PlayerEntity player;
-	private TraderRecipeList recipeList = new TraderRecipeList();
+	private TraderOfferList recipeList = new TraderOfferList();
 	private int experience;
 
 	public SimpleTrader(PlayerEntity playerEntity) {
@@ -29,19 +29,19 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public TraderRecipeList getRecipes() {
+	public TraderOfferList getOffers() {
 		return this.recipeList;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setServerRecipes(@Nullable TraderRecipeList traderRecipeList) {
-		this.recipeList = traderRecipeList;
+	public void setOffersFromServer(@Nullable TraderOfferList traderOfferList) {
+		this.recipeList = traderOfferList;
 	}
 
 	@Override
-	public void useRecipe(TraderRecipe traderRecipe) {
-		traderRecipe.use();
+	public void trade(TradeOffer tradeOffer) {
+		tradeOffer.use();
 	}
 
 	@Override
@@ -59,12 +59,12 @@ public class SimpleTrader implements Trader {
 	}
 
 	@Override
-	public void setExperience(int i) {
+	public void setExperienceFromServer(int i) {
 		this.experience = i;
 	}
 
 	@Override
-	public boolean method_19270() {
+	public boolean isLevelledTrader() {
 		return true;
 	}
 }

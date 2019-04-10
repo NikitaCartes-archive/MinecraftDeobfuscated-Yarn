@@ -84,7 +84,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 						int p = l * 10 - signBlockEntity.text.length * 5;
 						if (signBlockEntity.isCaretVisible()) {
 							if (signBlockEntity.getSelectionStart() < string.length()) {
-								DrawableHelper.drawRect(o, p - 1, o + 1, p + 9, 0xFF000000 | k);
+								DrawableHelper.fill(o, p - 1, o + 1, p + 9, 0xFF000000 | k);
 							} else {
 								textRenderer.draw("_", (float)o, (float)p, k);
 							}

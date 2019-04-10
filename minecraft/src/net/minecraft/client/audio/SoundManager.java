@@ -176,8 +176,8 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 		this.soundSystem.close();
 	}
 
-	public void tick() {
-		this.soundSystem.tick();
+	public void tick(boolean bl) {
+		this.soundSystem.method_20185(bl);
 	}
 
 	public void playAll() {
@@ -210,6 +210,10 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 
 	public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
 		this.soundSystem.stopSounds(identifier, soundCategory);
+	}
+
+	public String method_20305() {
+		return this.soundSystem.method_20304();
 	}
 
 	@Environment(EnvType.CLIENT)

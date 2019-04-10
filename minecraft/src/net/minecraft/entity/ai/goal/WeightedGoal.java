@@ -6,14 +6,14 @@ import javax.annotation.Nullable;
 public class WeightedGoal extends Goal {
 	private final Goal goal;
 	private final int weight;
-	private boolean field_18418;
+	private boolean running;
 
 	public WeightedGoal(int i, Goal goal) {
 		this.weight = i;
 		this.goal = goal;
 	}
 
-	public boolean method_19055(WeightedGoal weightedGoal) {
+	public boolean canBeReplacedBy(WeightedGoal weightedGoal) {
 		return this.canStop() && weightedGoal.getWeight() < this.getWeight();
 	}
 
@@ -34,17 +34,17 @@ public class WeightedGoal extends Goal {
 
 	@Override
 	public void start() {
-		if (!this.field_18418) {
-			this.field_18418 = true;
+		if (!this.running) {
+			this.running = true;
 			this.goal.start();
 		}
 	}
 
 	@Override
-	public void onRemove() {
-		if (this.field_18418) {
-			this.field_18418 = false;
-			this.goal.onRemove();
+	public void stop() {
+		if (this.running) {
+			this.running = false;
+			this.goal.stop();
 		}
 	}
 
@@ -54,17 +54,17 @@ public class WeightedGoal extends Goal {
 	}
 
 	@Override
-	public void setControlBits(EnumSet<Goal.class_4134> enumSet) {
-		this.goal.setControlBits(enumSet);
+	public void setControls(EnumSet<Goal.Control> enumSet) {
+		this.goal.setControls(enumSet);
 	}
 
 	@Override
-	public EnumSet<Goal.class_4134> getControlBits() {
-		return this.goal.getControlBits();
+	public EnumSet<Goal.Control> getControls() {
+		return this.goal.getControls();
 	}
 
-	public boolean method_19056() {
-		return this.field_18418;
+	public boolean isRunning() {
+		return this.running;
 	}
 
 	public int getWeight() {

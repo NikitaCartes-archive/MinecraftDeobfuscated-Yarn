@@ -41,7 +41,7 @@ public class ForestRockFeature extends Feature<BoulderFeatureConfig> {
 				float f = (float)(k + l + m) * 0.333F + 0.5F;
 
 				for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-k, -l, -m), blockPos.add(k, l, m))) {
-					if (blockPos2.squaredDistanceTo(blockPos) <= (double)(f * f)) {
+					if (blockPos2.getSquaredDistance(blockPos) <= (double)(f * f)) {
 						iWorld.setBlockState(blockPos2, boulderFeatureConfig.state, 4);
 					}
 				}

@@ -17,7 +17,7 @@ public class FishingParticle extends SpriteBillboardParticle {
 		this.velocityZ *= 0.3F;
 		this.setBoundingBoxSpacing(0.01F, 0.01F);
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 		this.gravityStrength = 0.0F;
 		this.velocityX = g;
 		this.velocityY = h;
@@ -31,9 +31,9 @@ public class FishingParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		int i = 60 - this.maxAge;
 		if (this.maxAge-- <= 0) {
 			this.markDead();

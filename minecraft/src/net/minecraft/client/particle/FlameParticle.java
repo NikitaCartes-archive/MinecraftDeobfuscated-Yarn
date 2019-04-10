@@ -13,9 +13,9 @@ public class FlameParticle extends SpriteBillboardParticle {
 		this.velocityX = this.velocityX * 0.01F + g;
 		this.velocityY = this.velocityY * 0.01F + h;
 		this.velocityZ = this.velocityZ * 0.01F + i;
-		this.posX = this.posX + (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.05F);
-		this.posY = this.posY + (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.05F);
-		this.posZ = this.posZ + (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.05F);
+		this.x = this.x + (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.05F);
+		this.y = this.y + (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.05F);
+		this.z = this.z + (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.05F);
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2)) + 4;
 	}
 
@@ -53,9 +53,9 @@ public class FlameParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
@@ -80,7 +80,7 @@ public class FlameParticle extends SpriteBillboardParticle {
 
 		public Particle method_3036(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			FlameParticle flameParticle = new FlameParticle(world, d, e, f, g, h, i);
-			flameParticle.method_18140(this.field_17812);
+			flameParticle.setSprite(this.field_17812);
 			return flameParticle;
 		}
 	}

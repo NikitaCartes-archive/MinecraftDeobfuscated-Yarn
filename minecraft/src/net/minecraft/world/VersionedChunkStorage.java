@@ -1,12 +1,12 @@
 package net.minecraft.world;
 
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.chunk.ChunkPos;
@@ -27,7 +27,7 @@ public class VersionedChunkStorage extends RegionBasedStorage {
 		int i = getDataVersion(compoundTag);
 		int j = 1493;
 		if (i < 1493) {
-			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.CHUNK, compoundTag, i, 1493);
+			compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.field_19214, compoundTag, i, 1493);
 			if (compoundTag.getCompound("Level").getBoolean("hasLegacyStructureData")) {
 				if (this.featureUpdater == null) {
 					this.featureUpdater = FeatureUpdater.create(dimensionType, (PersistentStateManager)supplier.get());
@@ -37,7 +37,7 @@ public class VersionedChunkStorage extends RegionBasedStorage {
 			}
 		}
 
-		compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.CHUNK, compoundTag, Math.max(1493, i));
+		compoundTag = TagHelper.update(this.dataFixer, DataFixTypes.field_19214, compoundTag, Math.max(1493, i));
 		if (i < SharedConstants.getGameVersion().getWorldVersion()) {
 			compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 		}

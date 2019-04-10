@@ -28,5 +28,5 @@ public abstract class FeatureRenderer<T extends Entity, M extends EntityModel<T>
 
 	public abstract void render(T entity, float f, float g, float h, float i, float j, float k, float l);
 
-	public abstract boolean method_4200();
+	public abstract boolean hasHurtOverlay();
 }

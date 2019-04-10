@@ -38,7 +38,7 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 	public static final int PREFIX_LENGTH = "recipes/".length();
 	public static final int SUFFIX_LENGTH = ".json".length();
 	private final Map<RecipeType<?>, Map<Identifier, Recipe<?>>> recipeMap = SystemUtil.consume(
-		Maps.<RecipeType<?>, Map<Identifier, Recipe<?>>>newHashMap(), RecipeManager::method_17719
+		Maps.<RecipeType<?>, Map<Identifier, Recipe<?>>>newHashMap(), RecipeManager::clear
 	);
 	private boolean hadErrors;
 
@@ -46,7 +46,7 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 	public void apply(ResourceManager resourceManager) {
 		Gson gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 		this.hadErrors = false;
-		method_17719(this.recipeMap);
+		clear(this.recipeMap);
 
 		for (Identifier identifier : resourceManager.findResources("recipes", stringx -> stringx.endsWith(".json"))) {
 			String string = identifier.getPath();
@@ -100,25 +100,25 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> Optional<T> get(RecipeType<T> recipeType, C inventory, World world) {
-		return this.method_17717(recipeType).values().stream().flatMap(recipe -> SystemUtil.method_17815(recipeType.get(recipe, world, inventory))).findFirst();
+	public <C extends Inventory, T extends Recipe<C>> Optional<T> getFirstMatch(RecipeType<T> recipeType, C inventory, World world) {
+		return this.getAllForType(recipeType).values().stream().flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory))).findFirst();
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> List<T> method_17877(RecipeType<T> recipeType, C inventory, World world) {
-		return (List<T>)this.method_17717(recipeType)
+	public <C extends Inventory, T extends Recipe<C>> List<T> getAllMatches(RecipeType<T> recipeType, C inventory, World world) {
+		return (List<T>)this.getAllForType(recipeType)
 			.values()
 			.stream()
-			.flatMap(recipe -> SystemUtil.method_17815(recipeType.get(recipe, world, inventory)))
+			.flatMap(recipe -> SystemUtil.stream(recipeType.get(recipe, world, inventory)))
 			.sorted(Comparator.comparing(recipe -> recipe.getOutput().getTranslationKey()))
 			.collect(Collectors.toList());
 	}
 
-	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> method_17717(RecipeType<T> recipeType) {
+	private <C extends Inventory, T extends Recipe<C>> Map<Identifier, Recipe<C>> getAllForType(RecipeType<T> recipeType) {
 		return (Map<Identifier, Recipe<C>>)this.recipeMap.getOrDefault(recipeType, Maps.newHashMap());
 	}
 
-	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> method_8128(RecipeType<T> recipeType, C inventory, World world) {
-		Optional<T> optional = this.get(recipeType, inventory, world);
+	public <C extends Inventory, T extends Recipe<C>> DefaultedList<ItemStack> getRemainingStacks(RecipeType<T> recipeType, C inventory, World world) {
+		Optional<T> optional = this.getFirstMatch(recipeType, inventory, world);
 		if (optional.isPresent()) {
 			return ((Recipe)optional.get()).getRemainingStacks(inventory);
 		} else {
@@ -146,7 +146,7 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 
 	@Environment(EnvType.CLIENT)
 	public void clear() {
-		method_17719(this.recipeMap);
+		clear(this.recipeMap);
 	}
 
 	public static Recipe<?> deserialize(Identifier identifier, JsonObject jsonObject) {
@@ -157,7 +157,7 @@ public class RecipeManager implements SynchronousResourceReloadListener {
 			.read(identifier, jsonObject);
 	}
 
-	private static void method_17719(Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map) {
+	private static void clear(Map<RecipeType<?>, Map<Identifier, Recipe<?>>> map) {
 		map.clear();
 
 		for (RecipeType<?> recipeType : Registry.RECIPE_TYPE) {

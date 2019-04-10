@@ -11,10 +11,10 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -30,7 +30,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class SilverfishEntity extends HostileEntity {
-	private static final TargetPredicate field_18131 = new TargetPredicate().setBaseMaxDistance(5.0).ignoreDistanceScalingFactor();
+	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(5.0).ignoreDistanceScalingFactor();
 	private SilverfishEntity.class_1616 field_7366;
 
 	public SilverfishEntity(EntityType<? extends SilverfishEntity> entityType, World world) {
@@ -44,7 +44,7 @@ public class SilverfishEntity extends HostileEntity {
 		this.goalSelector.add(3, this.field_7366);
 		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
 		this.goalSelector.add(5, new SilverfishEntity.class_1615(this));
-		this.targetSelector.add(1, new AvoidGoal(this).method_6318());
+		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}
 
@@ -67,7 +67,7 @@ public class SilverfishEntity extends HostileEntity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -129,7 +129,7 @@ public class SilverfishEntity extends HostileEntity {
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		if (super.canSpawn(iWorld, spawnType)) {
-			PlayerEntity playerEntity = this.world.method_18462(field_18131, this);
+			PlayerEntity playerEntity = this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this);
 			return playerEntity == null;
 		} else {
 			return false;
@@ -147,7 +147,7 @@ public class SilverfishEntity extends HostileEntity {
 
 		public class_1615(SilverfishEntity silverfishEntity) {
 			super(silverfishEntity, 1.0, 10);
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -188,8 +188,8 @@ public class SilverfishEntity extends HostileEntity {
 				BlockState blockState = iWorld.getBlockState(blockPos);
 				if (InfestedBlock.hasRegularBlock(blockState)) {
 					iWorld.setBlockState(blockPos, InfestedBlock.getRegularBlock(blockState.getBlock()), 3);
-					this.owner.method_5990();
-					this.owner.invalidate();
+					this.owner.playSpawnEffects();
+					this.owner.remove();
 				}
 			}
 		}

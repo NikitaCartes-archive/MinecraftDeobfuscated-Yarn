@@ -3,6 +3,7 @@ package net.minecraft.block.entity;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -26,6 +27,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -403,6 +405,10 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.loadStructure(true);
 	}
 
+	private static Random method_20048(long l) {
+		return l == 0L ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(l);
+	}
+
 	public boolean loadStructure(boolean bl) {
 		if (this.mode == StructureBlockMode.field_12697 && !this.world.isClient && this.structureName != null) {
 			BlockPos blockPos = this.getPos();
@@ -442,7 +448,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 						.setIgnoreEntities(this.ignoreEntities)
 						.setChunkPosition(null);
 					if (this.integrity < 1.0F) {
-						structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F))).setSeed(this.seed);
+						structurePlacementData.clearProcessors()
+							.addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F)))
+							.setRandom(method_20048(this.seed));
 					}
 
 					structure.place(this.world, blockPos2, structurePlacementData);

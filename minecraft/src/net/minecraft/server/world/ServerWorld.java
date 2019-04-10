@@ -60,7 +60,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.player.ChunkTicketType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaidManager;
@@ -97,7 +96,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
-import net.minecraft.village.VillageManager;
+import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.IdCountsState;
@@ -135,9 +134,9 @@ public class ServerWorld extends World {
 	private final List<Entity> globalEntities = Lists.<Entity>newArrayList();
 	private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectOpenHashMap<>();
 	private final Map<UUID, Entity> entitiesByUuid = Maps.<UUID, Entity>newHashMap();
-	private final Queue<Entity> field_18260 = Queues.<Entity>newArrayDeque();
+	private final Queue<Entity> entitiesToLoad = Queues.<Entity>newArrayDeque();
 	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
-	boolean field_18264;
+	boolean ticking;
 	private final MinecraftServer server;
 	private final WorldSaveHandler worldSaveHandler;
 	public boolean savingDisabled;
@@ -145,14 +144,14 @@ public class ServerWorld extends World {
 	private int idleTimeout;
 	private final PortalForcer portalForcer;
 	private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<>(
-		this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, this::method_14189
+		this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, Registry.BLOCK::get, this::tickBlock
 	);
 	private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<>(
-		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this::method_14171
+		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, Registry.FLUID::get, this::tickFluid
 	);
-	private final Set<EntityNavigation> field_18262 = Sets.<EntityNavigation>newHashSet();
+	private final Set<EntityNavigation> entityNavigations = Sets.<EntityNavigation>newHashSet();
 	protected final RaidManager raidManager;
-	protected final VillageManager villageManager = new VillageManager(this);
+	protected final ZombieSiegeManager siegeManager = new ZombieSiegeManager(this);
 	private final ObjectLinkedOpenHashSet<BlockAction> pendingBlockActions = new ObjectLinkedOpenHashSet<>();
 	private boolean insideTick;
 	@Nullable
@@ -199,11 +198,11 @@ public class ServerWorld extends World {
 		this.wanderingTraderManager = this.dimension.getType() == DimensionType.field_13072 ? new WanderingTraderManager(this) : null;
 	}
 
-	public void method_18765(BooleanSupplier booleanSupplier) {
+	public void tick(BooleanSupplier booleanSupplier) {
 		Profiler profiler = this.getProfiler();
 		this.insideTick = true;
 		profiler.push("world border");
-		this.getWorldBorder().update();
+		this.getWorldBorder().tick();
 		profiler.swap("weather");
 		boolean bl = this.isRaining();
 		if (this.dimension.hasSkyLight()) {
@@ -314,7 +313,7 @@ public class ServerWorld extends World {
 		}
 
 		profiler.swap("village");
-		this.villageManager.tick();
+		this.siegeManager.tick();
 		profiler.swap("portalForcer");
 		this.portalForcer.tick(this.getTime());
 		profiler.swap("raid");
@@ -342,13 +341,13 @@ public class ServerWorld extends World {
 					entityx.age++;
 					entityx.tick();
 				}, entity);
-				if (entity.invalid) {
+				if (entity.removed) {
 					this.globalEntities.remove(j--);
 				}
 			}
 
 			profiler.swap("regular");
-			this.field_18264 = true;
+			this.ticking = true;
 			ObjectIterator<Entry<Entity>> objectIterator = this.entitiesById.int2ObjectEntrySet().iterator();
 
 			while (objectIterator.hasNext()) {
@@ -356,15 +355,15 @@ public class ServerWorld extends World {
 				Entity entity2 = (Entity)entry.getValue();
 				Entity entity3 = entity2.getRiddenEntity();
 				if (!this.server.shouldSpawnAnimals() && (entity2 instanceof AnimalEntity || entity2 instanceof WaterCreatureEntity)) {
-					entity2.invalidate();
+					entity2.remove();
 				}
 
 				if (!this.server.shouldSpawnNpcs() && entity2 instanceof Npc) {
-					entity2.invalidate();
+					entity2.remove();
 				}
 
 				if (entity3 != null) {
-					if (!entity3.invalid && entity3.hasPassenger(entity2)) {
+					if (!entity3.removed && entity3.hasPassenger(entity2)) {
 						continue;
 					}
 
@@ -372,30 +371,30 @@ public class ServerWorld extends World {
 				}
 
 				profiler.push("tick");
-				if (!entity2.invalid && !(entity2 instanceof EnderDragonPart)) {
-					this.tickEntity(this::method_18762, entity2);
+				if (!entity2.removed && !(entity2 instanceof EnderDragonPart)) {
+					this.tickEntity(this::tickEntity, entity2);
 				}
 
 				profiler.pop();
 				profiler.push("remove");
-				if (entity2.invalid) {
-					this.method_18780(entity2);
+				if (entity2.removed) {
+					this.removeEntityFromChunk(entity2);
 					objectIterator.remove();
-					this.method_18772(entity2);
+					this.unloadEntity(entity2);
 				}
 
 				profiler.pop();
 			}
 
-			this.field_18264 = false;
+			this.ticking = false;
 
 			Entity entity;
-			while ((entity = (Entity)this.field_18260.poll()) != null) {
-				this.method_18778(entity);
+			while ((entity = (Entity)this.entitiesToLoad.poll()) != null) {
+				this.loadEntityUnchecked(entity);
 			}
 
 			profiler.pop();
-			this.method_18471();
+			this.tickBlockEntities();
 		}
 
 		profiler.pop();
@@ -475,7 +474,7 @@ public class ServerWorld extends World {
 		BlockPos blockPos2 = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos);
 		BoundingBox boundingBox = new BoundingBox(blockPos2, new BlockPos(blockPos2.getX(), this.getHeight(), blockPos2.getZ())).expand(3.0);
 		List<LivingEntity> list = this.getEntities(
-			LivingEntity.class, boundingBox, livingEntity -> livingEntity != null && livingEntity.isValid() && this.isSkyVisible(livingEntity.getBlockPos())
+			LivingEntity.class, boundingBox, livingEntity -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos())
 		);
 		if (!list.isEmpty()) {
 			return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getBlockPos();
@@ -548,22 +547,22 @@ public class ServerWorld extends World {
 		this.idleTimeout = 0;
 	}
 
-	private void method_14171(ScheduledTick<Fluid> scheduledTick) {
+	private void tickFluid(ScheduledTick<Fluid> scheduledTick) {
 		FluidState fluidState = this.getFluidState(scheduledTick.pos);
 		if (fluidState.getFluid() == scheduledTick.getObject()) {
 			fluidState.onScheduledTick(this, scheduledTick.pos);
 		}
 	}
 
-	private void method_14189(ScheduledTick<Block> scheduledTick) {
+	private void tickBlock(ScheduledTick<Block> scheduledTick) {
 		BlockState blockState = this.getBlockState(scheduledTick.pos);
 		if (blockState.getBlock() == scheduledTick.getObject()) {
 			blockState.scheduledTick(this, scheduledTick.pos, this.random);
 		}
 	}
 
-	public void method_18762(Entity entity) {
-		if (entity instanceof PlayerEntity || this.method_14178().isEntityInLoadedChunk(entity)) {
+	public void tickEntity(Entity entity) {
+		if (entity instanceof PlayerEntity || this.method_14178().shouldTickEntity(entity)) {
 			entity.prevRenderX = entity.x;
 			entity.prevRenderY = entity.y;
 			entity.prevRenderZ = entity.z;
@@ -586,9 +585,9 @@ public class ServerWorld extends World {
 	}
 
 	public void method_18763(Entity entity, Entity entity2) {
-		if (entity2.invalid || entity2.getRiddenEntity() != entity) {
+		if (entity2.removed || entity2.getRiddenEntity() != entity) {
 			entity2.stopRiding();
-		} else if (entity2 instanceof PlayerEntity || this.method_14178().isEntityInLoadedChunk(entity2)) {
+		} else if (entity2 instanceof PlayerEntity || this.method_14178().shouldTickEntity(entity2)) {
 			entity2.prevRenderX = entity2.x;
 			entity2.prevRenderY = entity2.y;
 			entity2.prevRenderZ = entity2.z;
@@ -596,7 +595,7 @@ public class ServerWorld extends World {
 			entity2.prevPitch = entity2.pitch;
 			if (entity2.field_6016) {
 				entity2.age++;
-				entity2.updateRiding();
+				entity2.tickRiding();
 			}
 
 			this.method_18767(entity2);
@@ -731,12 +730,14 @@ public class ServerWorld extends World {
 		this.method_14178().getPersistentStateManager().save();
 	}
 
-	public List<Entity> method_18198(@Nullable EntityType<?> entityType, Predicate<? super Entity> predicate) {
+	public List<Entity> getEntities(@Nullable EntityType<?> entityType, Predicate<? super Entity> predicate) {
 		List<Entity> list = Lists.<Entity>newArrayList();
 		ServerChunkManager serverChunkManager = this.method_14178();
 
 		for (Entity entity : this.entitiesById.values()) {
-			if ((entityType == null || entity.getType() == entityType) && serverChunkManager.isEntityInLoadedChunk(entity) && predicate.test(entity)) {
+			if ((entityType == null || entity.getType() == entityType)
+				&& serverChunkManager.isChunkLoaded(MathHelper.floor(entity.x) >> 4, MathHelper.floor(entity.z) >> 4)
+				&& predicate.test(entity)) {
 				list.add(entity);
 			}
 		}
@@ -744,11 +745,11 @@ public class ServerWorld extends World {
 		return list;
 	}
 
-	public List<EnderDragonEntity> method_18776() {
+	public List<EnderDragonEntity> getAliveEnderDragons() {
 		List<EnderDragonEntity> list = Lists.<EnderDragonEntity>newArrayList();
 
 		for (Entity entity : this.entitiesById.values()) {
-			if (entity instanceof EnderDragonEntity && entity.isValid()) {
+			if (entity instanceof EnderDragonEntity && entity.isAlive()) {
 				list.add((EnderDragonEntity)entity);
 			}
 		}
@@ -756,7 +757,7 @@ public class ServerWorld extends World {
 		return list;
 	}
 
-	public List<ServerPlayerEntity> method_18766(Predicate<? super ServerPlayerEntity> predicate) {
+	public List<ServerPlayerEntity> getPlayers(Predicate<? super ServerPlayerEntity> predicate) {
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
@@ -769,17 +770,17 @@ public class ServerWorld extends World {
 	}
 
 	@Nullable
-	public ServerPlayerEntity method_18779() {
-		List<ServerPlayerEntity> list = this.method_18766(LivingEntity::isValid);
+	public ServerPlayerEntity getRandomAlivePlayer() {
+		List<ServerPlayerEntity> list = this.getPlayers(LivingEntity::isAlive);
 		return list.isEmpty() ? null : (ServerPlayerEntity)list.get(this.random.nextInt(list.size()));
 	}
 
-	public Object2IntMap<EntityCategory> method_18219() {
+	public Object2IntMap<EntityCategory> getMobCountsByCategory() {
 		Object2IntMap<EntityCategory> object2IntMap = new Object2IntOpenHashMap<>();
 
 		for (Entity entity : this.entitiesById.values()) {
 			if (!(entity instanceof MobEntity) || !((MobEntity)entity).isPersistent()) {
-				EntityCategory entityCategory = entity.getType().getEntityClass();
+				EntityCategory entityCategory = entity.getType().getCategory();
 				if (entityCategory != EntityCategory.field_17715) {
 					object2IntMap.computeInt(entityCategory, (entityCategoryx, integer) -> 1 + (integer == null ? 0 : integer));
 				}
@@ -791,11 +792,11 @@ public class ServerWorld extends World {
 
 	@Override
 	public boolean spawnEntity(Entity entity) {
-		return this.method_14175(entity);
+		return this.addEntity(entity);
 	}
 
 	public boolean method_18768(Entity entity) {
-		return this.method_14175(entity);
+		return this.addEntity(entity);
 	}
 
 	public void method_18769(Entity entity) {
@@ -807,29 +808,29 @@ public class ServerWorld extends World {
 	}
 
 	public void method_18207(ServerPlayerEntity serverPlayerEntity) {
-		this.method_18771(serverPlayerEntity);
+		this.addPlayer(serverPlayerEntity);
 		this.method_18767(serverPlayerEntity);
 	}
 
 	public void method_18211(ServerPlayerEntity serverPlayerEntity) {
-		this.method_18771(serverPlayerEntity);
+		this.addPlayer(serverPlayerEntity);
 		this.method_18767(serverPlayerEntity);
 	}
 
 	public void method_18213(ServerPlayerEntity serverPlayerEntity) {
-		this.method_18771(serverPlayerEntity);
+		this.addPlayer(serverPlayerEntity);
 	}
 
 	public void method_18215(ServerPlayerEntity serverPlayerEntity) {
-		this.method_18771(serverPlayerEntity);
+		this.addPlayer(serverPlayerEntity);
 	}
 
-	private void method_18771(ServerPlayerEntity serverPlayerEntity) {
+	private void addPlayer(ServerPlayerEntity serverPlayerEntity) {
 		Entity entity = (Entity)this.entitiesByUuid.get(serverPlayerEntity.getUuid());
 		if (entity != null) {
 			LOGGER.warn("Force-added player with duplicate UUID {}", serverPlayerEntity.getUuid().toString());
-			entity.method_18375();
-			this.method_18770((ServerPlayerEntity)entity);
+			entity.detach();
+			this.removePlayer((ServerPlayerEntity)entity);
 		}
 
 		this.players.add(serverPlayerEntity);
@@ -839,14 +840,14 @@ public class ServerWorld extends World {
 			chunk.addEntity(serverPlayerEntity);
 		}
 
-		this.method_18778(serverPlayerEntity);
+		this.loadEntityUnchecked(serverPlayerEntity);
 	}
 
-	private boolean method_14175(Entity entity) {
-		if (entity.invalid) {
+	private boolean addEntity(Entity entity) {
+		if (entity.removed) {
 			LOGGER.warn("Tried to add entity {} but it was marked as removed already", EntityType.getId(entity.getType()));
 			return false;
-		} else if (this.method_18777(entity)) {
+		} else if (this.checkUuid(entity)) {
 			return false;
 		} else {
 			Chunk chunk = this.getChunk(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, entity.teleporting);
@@ -854,19 +855,19 @@ public class ServerWorld extends World {
 				return false;
 			} else {
 				chunk.addEntity(entity);
-				this.method_18778(entity);
+				this.loadEntityUnchecked(entity);
 				return true;
 			}
 		}
 	}
 
-	public void method_18214(Entity entity) {
-		if (!this.method_18777(entity)) {
-			this.method_18778(entity);
+	public void loadEntity(Entity entity) {
+		if (!this.checkUuid(entity)) {
+			this.loadEntityUnchecked(entity);
 		}
 	}
 
-	private boolean method_18777(Entity entity) {
+	private boolean checkUuid(Entity entity) {
 		Entity entity2 = (Entity)this.entitiesByUuid.get(entity.getUuid());
 		if (entity2 == null) {
 			return false;
@@ -876,34 +877,34 @@ public class ServerWorld extends World {
 		}
 	}
 
-	public void method_18764(WorldChunk worldChunk) {
-		this.field_18139.addAll(worldChunk.getBlockEntityMap().values());
+	public void unloadEntities(WorldChunk worldChunk) {
+		this.unloadedBlockEntities.addAll(worldChunk.getBlockEntities().values());
 		TypeFilterableList[] var2 = worldChunk.getEntitySectionArray();
 		int var3 = var2.length;
 
 		for (int var4 = 0; var4 < var3; var4++) {
 			for (Entity entity : var2[var4]) {
 				if (!(entity instanceof ServerPlayerEntity)) {
-					if (this.field_18264) {
+					if (this.ticking) {
 						throw new IllegalStateException("Removing entity while ticking!");
 					}
 
 					this.entitiesById.remove(entity.getEntityId());
-					this.method_18772(entity);
+					this.unloadEntity(entity);
 				}
 			}
 		}
 	}
 
-	public void method_18772(Entity entity) {
+	public void unloadEntity(Entity entity) {
 		if (entity instanceof EnderDragonEntity) {
 			for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).method_5690()) {
-				enderDragonPart.invalidate();
+				enderDragonPart.remove();
 			}
 		}
 
 		this.entitiesByUuid.remove(entity.getUuid());
-		this.method_14178().method_18753(entity);
+		this.method_14178().unloadEntity(entity);
 		if (entity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 			this.players.remove(serverPlayerEntity);
@@ -911,13 +912,13 @@ public class ServerWorld extends World {
 
 		this.method_14170().resetEntityScore(entity);
 		if (entity instanceof MobEntity) {
-			this.field_18262.remove(((MobEntity)entity).getNavigation());
+			this.entityNavigations.remove(((MobEntity)entity).getNavigation());
 		}
 	}
 
-	private void method_18778(Entity entity) {
-		if (this.field_18264) {
-			this.field_18260.add(entity);
+	private void loadEntityUnchecked(Entity entity) {
+		if (this.ticking) {
+			this.entitiesToLoad.add(entity);
 		} else {
 			this.entitiesById.put(entity.getEntityId(), entity);
 			if (entity instanceof EnderDragonEntity) {
@@ -927,34 +928,34 @@ public class ServerWorld extends World {
 			}
 
 			this.entitiesByUuid.put(entity.getUuid(), entity);
-			this.method_14178().method_18755(entity);
+			this.method_14178().loadEntity(entity);
 			if (entity instanceof MobEntity) {
-				this.field_18262.add(((MobEntity)entity).getNavigation());
+				this.entityNavigations.add(((MobEntity)entity).getNavigation());
 			}
 		}
 	}
 
-	public void method_18774(Entity entity) {
-		if (this.field_18264) {
+	public void removeEntity(Entity entity) {
+		if (this.ticking) {
 			throw new IllegalStateException("Removing entity while ticking!");
 		} else {
-			this.method_18780(entity);
+			this.removeEntityFromChunk(entity);
 			this.entitiesById.remove(entity.getEntityId());
-			this.method_18772(entity);
+			this.unloadEntity(entity);
 		}
 	}
 
-	private void method_18780(Entity entity) {
+	private void removeEntityFromChunk(Entity entity) {
 		Chunk chunk = this.getChunk(entity.chunkX, entity.chunkZ, ChunkStatus.FULL, false);
 		if (chunk instanceof WorldChunk) {
 			((WorldChunk)chunk).remove(entity);
 		}
 	}
 
-	public void method_18770(ServerPlayerEntity serverPlayerEntity) {
-		serverPlayerEntity.invalidate();
+	public void removePlayer(ServerPlayerEntity serverPlayerEntity) {
+		serverPlayerEntity.remove();
 		this.updatePlayersSleeping();
-		this.method_18774(serverPlayerEntity);
+		this.removeEntity(serverPlayerEntity);
 	}
 
 	public void addLightning(LightningEntity lightningEntity) {
@@ -1010,7 +1011,7 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void playEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
+	public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 		this.server
 			.getPlayerManager()
 			.sendToAround(
@@ -1030,7 +1031,7 @@ public class ServerWorld extends World {
 		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
 		VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos);
 		if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
-			for (EntityNavigation entityNavigation : this.field_18262) {
+			for (EntityNavigation entityNavigation : this.entityNavigations) {
 				if (!entityNavigation.shouldRecalculatePath()) {
 					entityNavigation.method_18053(blockPos);
 				}
@@ -1039,8 +1040,8 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void summonParticle(Entity entity, byte b) {
-		this.method_14178().method_18751(entity, new EntityStatusS2CPacket(entity, b));
+	public void sendEntityStatus(Entity entity, byte b) {
+		this.method_14178().sendToNearbyPlayers(entity, new EntityStatusS2CPacket(entity, b));
 	}
 
 	public ServerChunkManager method_14178() {
@@ -1048,24 +1049,24 @@ public class ServerWorld extends World {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public CompletableFuture<WorldChunk> getChunkSyncIfServerThread(int i, int j, boolean bl) {
+	public CompletableFuture<WorldChunk> getChunkFutureSyncOnMainThread(int i, int j, boolean bl) {
 		return this.method_14178()
-			.getChunkSyncIfServerThread(i, j, ChunkStatus.FULL, bl)
+			.getChunkFutureSyncOnMainThread(i, j, ChunkStatus.FULL, bl)
 			.thenApply(either -> either.map(chunk -> (WorldChunk)chunk, unloaded -> null));
 	}
 
 	@Override
 	public Explosion createExplosion(
-		@Nullable Entity entity, DamageSource damageSource, double d, double e, double f, float g, boolean bl, Explosion.class_4179 arg
+		@Nullable Entity entity, DamageSource damageSource, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType
 	) {
-		Explosion explosion = new Explosion(this, entity, d, e, f, g, bl, arg);
+		Explosion explosion = new Explosion(this, entity, d, e, f, g, bl, destructionType);
 		if (damageSource != null) {
 			explosion.setDamageSource(damageSource);
 		}
 
 		explosion.collectBlocksAndDamageEntities();
 		explosion.affectWorld(false);
-		if (arg == Explosion.class_4179.field_18685) {
+		if (destructionType == Explosion.DestructionType.field_18685) {
 			explosion.clearAffectedBlocks();
 		}
 
@@ -1138,7 +1139,7 @@ public class ServerWorld extends World {
 		return this.worldSaveHandler.getStructureManager();
 	}
 
-	public <T extends ParticleParameters> int method_14199(T particleParameters, double d, double e, double f, int i, double g, double h, double j, double k) {
+	public <T extends ParticleParameters> int spawnParticles(T particleParameters, double d, double e, double f, int i, double g, double h, double j, double k) {
 		ParticleS2CPacket particleS2CPacket = new ParticleS2CPacket(
 			particleParameters, false, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i
 		);
@@ -1146,7 +1147,7 @@ public class ServerWorld extends World {
 
 		for (int m = 0; m < this.players.size(); m++) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(m);
-			if (this.method_14191(serverPlayerEntity, false, d, e, f, particleS2CPacket)) {
+			if (this.sendToPlayerIfNearby(serverPlayerEntity, false, d, e, f, particleS2CPacket)) {
 				l++;
 			}
 		}
@@ -1154,19 +1155,19 @@ public class ServerWorld extends World {
 		return l;
 	}
 
-	public <T extends ParticleParameters> boolean method_14166(
+	public <T extends ParticleParameters> boolean spawnParticles(
 		ServerPlayerEntity serverPlayerEntity, T particleParameters, boolean bl, double d, double e, double f, int i, double g, double h, double j, double k
 	) {
 		Packet<?> packet = new ParticleS2CPacket(particleParameters, bl, (float)d, (float)e, (float)f, (float)g, (float)h, (float)j, (float)k, i);
-		return this.method_14191(serverPlayerEntity, bl, d, e, f, packet);
+		return this.sendToPlayerIfNearby(serverPlayerEntity, bl, d, e, f, packet);
 	}
 
-	private boolean method_14191(ServerPlayerEntity serverPlayerEntity, boolean bl, double d, double e, double f, Packet<?> packet) {
+	private boolean sendToPlayerIfNearby(ServerPlayerEntity serverPlayerEntity, boolean bl, double d, double e, double f, Packet<?> packet) {
 		if (serverPlayerEntity.getServerWorld() != this) {
 			return false;
 		} else {
 			BlockPos blockPos = serverPlayerEntity.getBlockPos();
-			if (blockPos.method_19769(new Vec3d(d, e, f), bl ? 512.0 : 32.0)) {
+			if (blockPos.isWithinDistance(new Vec3d(d, e, f), bl ? 512.0 : 32.0)) {
 				serverPlayerEntity.networkHandler.sendPacket(packet);
 				return true;
 			} else {
@@ -1286,10 +1287,10 @@ public class ServerWorld extends World {
 	}
 
 	@Override
-	public void method_19282(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+	public void onBlockChanged(BlockPos blockPos, BlockState blockState, BlockState blockState2) {
 		BlockPos blockPos2 = blockPos.toImmutable();
-		Optional<PointOfInterestType> optional = PointOfInterestType.method_19516(blockState);
-		Optional<PointOfInterestType> optional2 = PointOfInterestType.method_19516(blockState2);
+		Optional<PointOfInterestType> optional = PointOfInterestType.from(blockState);
+		Optional<PointOfInterestType> optional2 = PointOfInterestType.from(blockState2);
 		if (!Objects.equals(optional, optional2)) {
 			optional.ifPresent(pointOfInterestType -> this.getServer().execute(() -> {
 					this.getPointOfInterestStorage().remove(blockPos2);
@@ -1306,16 +1307,16 @@ public class ServerWorld extends World {
 		return this.method_14178().getPointOfInterestStorage();
 	}
 
-	public boolean method_19500(BlockPos blockPos) {
-		return this.method_19497(blockPos, 1);
+	public boolean isNearOccupiedPointOfInterest(BlockPos blockPos) {
+		return this.isNearOccupiedPointOfInterest(blockPos, 1);
 	}
 
-	public boolean method_19497(BlockPos blockPos, int i) {
-		return i > 4 ? false : this.method_19498(ChunkSectionPos.from(blockPos)) <= i;
+	public boolean isNearOccupiedPointOfInterest(BlockPos blockPos, int i) {
+		return i > 4 ? false : this.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)) <= i;
 	}
 
-	public int method_19498(ChunkSectionPos chunkSectionPos) {
-		return this.getPointOfInterestStorage().getLevel(chunkSectionPos);
+	public int getOccupiedPointOfInterestDistance(ChunkSectionPos chunkSectionPos) {
+		return this.getPointOfInterestStorage().getDistanceFromNearestOccupied(chunkSectionPos);
 	}
 
 	public RaidManager getRaidManager() {

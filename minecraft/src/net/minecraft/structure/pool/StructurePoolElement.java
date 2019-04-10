@@ -15,7 +15,7 @@ import net.minecraft.world.IWorld;
 
 public abstract class StructurePoolElement {
 	@Nullable
-	private volatile StructurePool.Projection projection = null;
+	private volatile StructurePool.Projection projection;
 
 	protected StructurePoolElement(StructurePool.Projection projection) {
 		this.projection = projection;

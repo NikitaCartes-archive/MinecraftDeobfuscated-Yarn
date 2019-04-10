@@ -110,7 +110,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 
 	protected void method_4064(T abstractMinecartEntity, float f, BlockState blockState) {
 		GlStateManager.pushMatrix();
-		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, abstractMinecartEntity.method_5718());
+		MinecraftClient.getInstance().getBlockRenderManager().renderDynamic(blockState, abstractMinecartEntity.getBrightnessAtEyes());
 		GlStateManager.popMatrix();
 	}
 }

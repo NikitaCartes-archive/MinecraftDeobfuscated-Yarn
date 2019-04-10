@@ -95,7 +95,7 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends EntityModel<T> 
 
 	public void method_17085(T horseBaseEntity, float f, float g, float h, float i, float j, float k) {
 		boolean bl = horseBaseEntity.isChild();
-		float l = horseBaseEntity.method_17825();
+		float l = horseBaseEntity.getScaleFactor();
 		boolean bl2 = horseBaseEntity.isSaddled();
 		boolean bl3 = horseBaseEntity.hasPassengers();
 
@@ -158,10 +158,10 @@ public class HorseEntityModel<T extends HorseBaseEntity> extends EntityModel<T> 
 			m += MathHelper.cos(f * 0.4F) * 0.15F * g;
 		}
 
-		float n = horseBaseEntity.method_6739(h);
-		float o = horseBaseEntity.method_6767(h);
+		float n = horseBaseEntity.getEatingGrassAnimationProgress(h);
+		float o = horseBaseEntity.getAngryAnimationProgress(h);
 		float p = 1.0F - o;
-		float q = horseBaseEntity.method_6772(h);
+		float q = horseBaseEntity.getEatingAnimationProgress(h);
 		boolean bl = horseBaseEntity.field_6957 != 0;
 		float r = (float)horseBaseEntity.age + h;
 		this.field_3307.rotationPointY = 4.0F;

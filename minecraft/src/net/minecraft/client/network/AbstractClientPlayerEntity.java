@@ -12,17 +12,19 @@ import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BoundingBox;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractClientPlayerEntity extends PlayerEntity {
-	private ScoreboardEntry field_3901;
+	private PlayerListEntry cachedScoreboardEntry;
 	public float field_3900;
 	public float field_3899;
 	public float field_3898;
@@ -35,53 +37,53 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 
 	@Override
 	public boolean isSpectator() {
-		ScoreboardEntry scoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().method_2871(this.getGameProfile().getId());
-		return scoreboardEntry != null && scoreboardEntry.getGameMode() == GameMode.field_9219;
+		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntry(this.getGameProfile().getId());
+		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9219;
 	}
 
 	@Override
 	public boolean isCreative() {
-		ScoreboardEntry scoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().method_2871(this.getGameProfile().getId());
-		return scoreboardEntry != null && scoreboardEntry.getGameMode() == GameMode.field_9220;
+		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntry(this.getGameProfile().getId());
+		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9220;
 	}
 
-	public boolean method_3125() {
-		return this.method_3123() != null;
+	public boolean hasScoreboardEntry() {
+		return this.getScoreboardEntry() != null;
 	}
 
 	@Nullable
-	protected ScoreboardEntry method_3123() {
-		if (this.field_3901 == null) {
-			this.field_3901 = MinecraftClient.getInstance().getNetworkHandler().method_2871(this.getUuid());
+	protected PlayerListEntry getScoreboardEntry() {
+		if (this.cachedScoreboardEntry == null) {
+			this.cachedScoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntry(this.getUuid());
 		}
 
-		return this.field_3901;
+		return this.cachedScoreboardEntry;
 	}
 
-	public boolean method_3127() {
-		ScoreboardEntry scoreboardEntry = this.method_3123();
-		return scoreboardEntry != null && scoreboardEntry.isSkinTextureLoaded();
+	public boolean hasSkinTexture() {
+		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+		return playerListEntry != null && playerListEntry.hasSkinTexture();
 	}
 
-	public Identifier method_3117() {
-		ScoreboardEntry scoreboardEntry = this.method_3123();
-		return scoreboardEntry == null ? DefaultSkinHelper.getTexture(this.getUuid()) : scoreboardEntry.getSkinTexture();
+	public Identifier getSkinTexture() {
+		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+		return playerListEntry == null ? DefaultSkinHelper.getTexture(this.getUuid()) : playerListEntry.getSkinTexture();
 	}
 
 	@Nullable
 	public Identifier method_3119() {
-		ScoreboardEntry scoreboardEntry = this.method_3123();
-		return scoreboardEntry == null ? null : scoreboardEntry.getCapeTexture();
+		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+		return playerListEntry == null ? null : playerListEntry.getCapeTexture();
 	}
 
 	public boolean method_3126() {
-		return this.method_3123() != null;
+		return this.getScoreboardEntry() != null;
 	}
 
 	@Nullable
 	public Identifier method_3122() {
-		ScoreboardEntry scoreboardEntry = this.method_3123();
-		return scoreboardEntry == null ? null : scoreboardEntry.getElytraTexture();
+		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+		return playerListEntry == null ? null : playerListEntry.getElytraTexture();
 	}
 
 	public static PlayerSkinTexture loadSkin(Identifier identifier, String string) {
@@ -105,8 +107,8 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	}
 
 	public String method_3121() {
-		ScoreboardEntry scoreboardEntry = this.method_3123();
-		return scoreboardEntry == null ? DefaultSkinHelper.getModel(this.getUuid()) : scoreboardEntry.method_2977();
+		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+		return playerListEntry == null ? DefaultSkinHelper.getModel(this.getUuid()) : playerListEntry.getModel();
 	}
 
 	public float method_3118() {
@@ -134,5 +136,12 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		}
 
 		return f;
+	}
+
+	@Override
+	protected boolean wouldPoseNotCollide(EntityPose entityPose) {
+		BoundingBox boundingBox = this.method_20343(entityPose);
+		BoundingBox boundingBox2 = boundingBox.contract(0.1, 0.0, 0.1);
+		return this.world.doesNotCollide(this, boundingBox2);
 	}
 }

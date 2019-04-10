@@ -69,7 +69,7 @@ public class ScreenshotUtils {
 		NativeImage nativeImage = new NativeImage(i, j, false);
 		if (GLX.isUsingFBOs()) {
 			GlStateManager.bindTexture(glFramebuffer.colorAttachment);
-			nativeImage.method_4327(0, true);
+			nativeImage.loadFromTextureImage(0, true);
 		} else {
 			nativeImage.method_4306(true);
 		}

@@ -22,7 +22,7 @@ import net.minecraft.world.level.LevelProperties;
 public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWorld {
 	long getSeed();
 
-	default float method_8391() {
+	default float getMoonSize() {
 		return Dimension.MOON_PHASE_TO_SIZE[this.getDimension().getMoonPhase(this.getLevelProperties().getTimeOfDay())];
 	}
 
@@ -66,13 +66,19 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 
 	void addParticle(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i);
 
-	@Override
-	default Stream<VoxelShape> getCollidingEntityBoundingBoxesForEntity(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
-		return EntityView.super.getCollidingEntityBoundingBoxesForEntity(entity, voxelShape, set);
+	void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j);
+
+	default void method_20290(int i, BlockPos blockPos, int j) {
+		this.playLevelEvent(null, i, blockPos, j);
 	}
 
 	@Override
-	default boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
-		return EntityView.super.method_8611(entity, voxelShape);
+	default Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+		return EntityView.super.getCollisionShapes(entity, voxelShape, set);
+	}
+
+	@Override
+	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
+		return EntityView.super.intersectsEntities(entity, voxelShape);
 	}
 }

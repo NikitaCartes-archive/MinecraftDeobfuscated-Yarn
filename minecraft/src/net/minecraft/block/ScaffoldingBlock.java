@@ -16,6 +16,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class ScaffoldingBlock extends Block implements Waterloggable {
@@ -67,7 +68,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		World world = itemPlacementContext.getWorld();
-		int i = this.method_16372(world, blockPos);
+		int i = method_16372(world, blockPos);
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(world.getFluidState(blockPos).getFluid() == Fluids.WATER))
 			.with(DISTANCE, Integer.valueOf(i))
@@ -75,7 +76,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (!world.isClient) {
 			world.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
@@ -98,7 +99,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		int i = this.method_16372(world, blockPos);
+		int i = method_16372(world, blockPos);
 		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.method_16373(world, blockPos, i)));
 		if ((Integer)blockState2.get(DISTANCE) == 7) {
 			if ((Integer)blockState.get(DISTANCE) == 7) {
@@ -113,6 +114,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		} else if (blockState != blockState2) {
 			world.setBlockState(blockPos, blockState2, 3);
 		}
+	}
+
+	@Override
+	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
+		return method_16372(viewableWorld, blockPos) < 7;
 	}
 
 	@Override
@@ -135,19 +141,19 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		return i > 0 && blockView.getBlockState(blockPos.down()).getBlock() != this;
 	}
 
-	private int method_16372(BlockView blockView, BlockPos blockPos) {
+	public static int method_16372(BlockView blockView, BlockPos blockPos) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.DOWN);
 		BlockState blockState = blockView.getBlockState(mutable);
 		int i = 7;
-		if (blockState.getBlock() == this) {
+		if (blockState.getBlock() == Blocks.field_16492) {
 			i = (Integer)blockState.get(DISTANCE);
-		} else if (Block.isFaceFullSquare(blockState.getCollisionShape(blockView, mutable), Direction.UP)) {
+		} else if (Block.isSolidFullSquare(blockState, blockView, mutable, Direction.UP)) {
 			return 0;
 		}
 
 		for (Direction direction : Direction.Type.HORIZONTAL) {
 			BlockState blockState2 = blockView.getBlockState(mutable.set(blockPos).setOffset(direction));
-			if (blockState2.getBlock() == this) {
+			if (blockState2.getBlock() == Blocks.field_16492) {
 				i = Math.min(i, (Integer)blockState2.get(DISTANCE) + 1);
 				if (i == 1) {
 					break;

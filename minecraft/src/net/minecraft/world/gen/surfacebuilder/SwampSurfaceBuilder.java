@@ -4,7 +4,6 @@ import com.mojang.datafixers.Dynamic;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -39,9 +38,6 @@ public class SwampSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 				if (!chunk.getBlockState(mutable).isAir()) {
 					if (p == 62 && chunk.getBlockState(mutable).getBlock() != blockState2.getBlock()) {
 						chunk.setBlockState(mutable, blockState2, false);
-						if (e < 0.12) {
-							chunk.setBlockState(mutable.setOffset(0, 1, 0), Blocks.field_10588.getDefaultState(), false);
-						}
 					}
 					break;
 				}

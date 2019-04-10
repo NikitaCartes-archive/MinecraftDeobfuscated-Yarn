@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.DirectResourceIndex;
 import net.minecraft.client.resource.ResourceIndex;
-import net.minecraft.util.Session;
+import net.minecraft.client.util.Session;
 
 @Environment(EnvType.CLIENT)
 public class RunArgs {

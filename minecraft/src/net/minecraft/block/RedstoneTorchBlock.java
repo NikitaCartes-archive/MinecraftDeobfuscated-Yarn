@@ -8,9 +8,6 @@ import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.particle.DustParticleParameters;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -35,7 +32,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		for (Direction direction : Direction.values()) {
 			world.updateNeighborsAlways(blockPos.offset(direction), this);
 		}
@@ -75,17 +72,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 			if (bl) {
 				world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(false)), 3);
 				if (method_10489(world, blockPos, true)) {
-					world.playSound(
-						null, blockPos, SoundEvents.field_14909, SoundCategory.field_15245, 0.5F, 2.6F + (world.random.nextFloat() - world.random.nextFloat()) * 0.8F
-					);
-
-					for (int i = 0; i < 5; i++) {
-						double d = (double)blockPos.getX() + random.nextDouble() * 0.6 + 0.2;
-						double e = (double)blockPos.getY() + random.nextDouble() * 0.6 + 0.2;
-						double f = (double)blockPos.getZ() + random.nextDouble() * 0.6 + 0.2;
-						world.addParticle(ParticleTypes.field_11251, d, e, f, 0.0, 0.0, 0.0);
-					}
-
+					world.method_20290(1502, blockPos, 0);
 					world.getBlockTickScheduler().schedule(blockPos, world.getBlockState(blockPos).getBlock(), 160);
 				}
 			}
@@ -95,7 +82,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if ((Boolean)blockState.get(LIT) == this.method_10488(world, blockPos, blockState) && !world.getBlockTickScheduler().isTicking(blockPos, this)) {
 			world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 		}

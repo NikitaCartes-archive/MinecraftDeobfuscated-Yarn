@@ -51,7 +51,6 @@ import net.minecraft.client.network.packet.DifficultyS2CPacket;
 import net.minecraft.client.network.packet.WorldTimeUpdateS2CPacket;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.entity.boss.BossBarManager;
-import net.minecraft.entity.player.ChunkTicketType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.DefaultResourcePackCreator;
@@ -65,8 +64,8 @@ import net.minecraft.resource.ResourceType;
 import net.minecraft.scoreboard.ScoreboardState;
 import net.minecraft.scoreboard.ScoreboardSynchronizer;
 import net.minecraft.scoreboard.ServerScoreboard;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandOutput;
-import net.minecraft.server.command.ServerCommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.config.OperatorEntry;
 import net.minecraft.server.config.WhitelistList;
@@ -75,6 +74,7 @@ import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.SecondaryServerWorld;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerWorld;
@@ -99,7 +99,6 @@ import net.minecraft.util.profiler.DisableableProfiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.snooper.Snooper;
 import net.minecraft.util.snooper.SnooperListener;
-import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameMode;
@@ -123,7 +122,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final File USER_CACHE_FILE = new File("usercache.json");
-	public static final LevelInfo field_17704 = new LevelInfo((long)"North Carolina".hashCode(), GameMode.field_9215, true, false, LevelGeneratorType.DEFAULT)
+	public static final LevelInfo WORLD_INFO = new LevelInfo((long)"North Carolina".hashCode(), GameMode.field_9215, true, false, LevelGeneratorType.DEFAULT)
 		.setBonusChest();
 	private final LevelStorage levelStorage;
 	private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
@@ -189,7 +188,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	private final ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = new ResourcePackContainerManager<>(ResourcePackContainer::new);
 	@Nullable
 	private FileResourcePackCreator field_4553;
-	private final ServerCommandManager commandManager;
+	private final CommandManager commandManager;
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final TagManager tagManager = new TagManager();
 	private final ServerScoreboard scoreboard = new ServerScoreboard(this);
@@ -200,6 +199,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	private final MetricsData metricsData = new MetricsData();
 	private boolean field_4570;
 	private boolean forceWorldUpgrade;
+	private boolean field_19237;
 	private float tickTime;
 	private final Executor workerExecutor;
 	@Nullable
@@ -209,7 +209,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		File file,
 		Proxy proxy,
 		DataFixer dataFixer,
-		ServerCommandManager serverCommandManager,
+		CommandManager commandManager,
 		YggdrasilAuthenticationService yggdrasilAuthenticationService,
 		MinecraftSessionService minecraftSessionService,
 		GameProfileRepository gameProfileRepository,
@@ -219,7 +219,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	) {
 		super("Server");
 		this.field_4599 = proxy;
-		this.commandManager = serverCommandManager;
+		this.commandManager = commandManager;
 		this.authService = yggdrasilAuthenticationService;
 		this.sessionService = minecraftSessionService;
 		this.gameProfileRepo = gameProfileRepository;
@@ -234,7 +234,6 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		this.dataManager.registerListener(this.lootManager);
 		this.dataManager.registerListener(this.commandFunctionManager);
 		this.dataManager.registerListener(this.advancementManager);
-		this.dataManager.registerListener(PointOfInterestType::method_19515);
 		this.workerExecutor = SystemUtil.getServerWorkerExecutor();
 		this.levelName = string;
 	}
@@ -286,7 +285,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 			LOGGER.info("Forcing world upgrade!");
 			LevelProperties levelProperties = this.getLevelStorage().getLevelProperties(this.getLevelName());
 			if (levelProperties != null) {
-				WorldUpdater worldUpdater = new WorldUpdater(this.getLevelName(), this.getLevelStorage(), levelProperties);
+				WorldUpdater worldUpdater = new WorldUpdater(this.getLevelName(), this.getLevelStorage(), levelProperties, this.field_19237);
 				TextComponent textComponent = null;
 
 				while (!worldUpdater.isDone()) {
@@ -328,7 +327,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		LevelInfo levelInfo;
 		if (levelProperties == null) {
 			if (this.isDemo()) {
-				levelInfo = field_17704;
+				levelInfo = WORLD_INFO;
 			} else {
 				levelInfo = new LevelInfo(l, this.getDefaultGameMode(), this.shouldGenerateStructures(), this.isHardcore(), levelGeneratorType);
 				levelInfo.setGeneratorOptions(jsonElement);
@@ -354,7 +353,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		WorldSaveHandler worldSaveHandler, LevelProperties levelProperties, LevelInfo levelInfo, WorldGenerationProgressListener worldGenerationProgressListener
 	) {
 		if (this.isDemo()) {
-			levelProperties.loadLevelInfo(field_17704);
+			levelProperties.loadLevelInfo(WORLD_INFO);
 		}
 
 		ServerWorld serverWorld = new ServerWorld(
@@ -443,7 +442,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		BlockPos blockPos = serverWorld.getSpawnPos();
 		worldGenerationProgressListener.start(new ChunkPos(blockPos));
 		ServerChunkManager serverChunkManager = serverWorld.method_14178();
-		serverChunkManager.method_17293().method_17304(500);
+		serverChunkManager.method_17293().setTaskBatchSize(500);
 		this.timeReference = SystemUtil.getMeasuringTimeMs();
 		serverChunkManager.addTicket(ChunkTicketType.START, new ChunkPos(blockPos), 11, net.minecraft.util.Void.INSTANCE);
 
@@ -472,7 +471,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		this.timeReference += 100L;
 		this.method_16208();
 		worldGenerationProgressListener.stop();
-		serverChunkManager.method_17293().method_17304(5);
+		serverChunkManager.method_17293().setTaskBatchSize(5);
 	}
 
 	protected void method_3861(String string, WorldSaveHandler worldSaveHandler) {
@@ -678,7 +677,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		} else {
 			if (this.shouldKeepTicking()) {
 				for (ServerWorld serverWorld : this.getWorlds()) {
-					if (serverWorld.method_14178().method_19492()) {
+					if (serverWorld.method_14178().executeQueuedTasks()) {
 						return true;
 					}
 				}
@@ -752,10 +751,12 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		}
 
 		if (this.ticks % 900 == 0) {
+			LOGGER.debug("Autosave started");
 			this.profiler.push("save");
 			this.playerManager.saveAllPlayerData();
 			this.save(true, false, false);
 			this.profiler.pop();
+			LOGGER.debug("Autosave finished");
 		}
 
 		this.profiler.push("snooper");
@@ -799,7 +800,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 				this.profiler.push("tick");
 
 				try {
-					serverWorld.method_18765(booleanSupplier);
+					serverWorld.tick(booleanSupplier);
 				} catch (Throwable var8) {
 					CrashReport crashReport = CrashReport.create(var8, "Exception ticking world");
 					serverWorld.addDetailsToCrashReport(crashReport);
@@ -842,17 +843,18 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		OptionSpec<Void> optionSpec3 = optionParser.accepts("demo");
 		OptionSpec<Void> optionSpec4 = optionParser.accepts("bonusChest");
 		OptionSpec<Void> optionSpec5 = optionParser.accepts("forceUpgrade");
-		OptionSpec<Void> optionSpec6 = optionParser.accepts("help").forHelp();
-		OptionSpec<String> optionSpec7 = optionParser.accepts("singleplayer").withRequiredArg();
-		OptionSpec<String> optionSpec8 = optionParser.accepts("universe").withRequiredArg().defaultsTo(".");
-		OptionSpec<String> optionSpec9 = optionParser.accepts("world").withRequiredArg();
-		OptionSpec<Integer> optionSpec10 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(-1);
-		OptionSpec<String> optionSpec11 = optionParser.accepts("serverId").withRequiredArg();
-		OptionSpec<String> optionSpec12 = optionParser.nonOptions();
+		OptionSpec<Void> optionSpec6 = optionParser.accepts("eraseCache");
+		OptionSpec<Void> optionSpec7 = optionParser.accepts("help").forHelp();
+		OptionSpec<String> optionSpec8 = optionParser.accepts("singleplayer").withRequiredArg();
+		OptionSpec<String> optionSpec9 = optionParser.accepts("universe").withRequiredArg().defaultsTo(".");
+		OptionSpec<String> optionSpec10 = optionParser.accepts("world").withRequiredArg();
+		OptionSpec<Integer> optionSpec11 = optionParser.accepts("port").withRequiredArg().<Integer>ofType(Integer.class).defaultsTo(-1);
+		OptionSpec<String> optionSpec12 = optionParser.accepts("serverId").withRequiredArg();
+		OptionSpec<String> optionSpec13 = optionParser.nonOptions();
 
 		try {
 			OptionSet optionSet = optionParser.parse(strings);
-			if (optionSet.has(optionSpec6)) {
+			if (optionSet.has(optionSpec7)) {
 				optionParser.printHelpOn(System.err);
 				return;
 			}
@@ -874,12 +876,12 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 
 			Bootstrap.initialize();
 			Bootstrap.logMissingTranslations();
-			String string = optionSet.valueOf(optionSpec8);
+			String string = optionSet.valueOf(optionSpec9);
 			YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(Proxy.NO_PROXY, UUID.randomUUID().toString());
 			MinecraftSessionService minecraftSessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
 			GameProfileRepository gameProfileRepository = yggdrasilAuthenticationService.createProfileRepository();
 			UserCache userCache = new UserCache(gameProfileRepository, new File(string, USER_CACHE_FILE.getName()));
-			String string2 = (String)Optional.ofNullable(optionSet.valueOf(optionSpec9)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
+			String string2 = (String)Optional.ofNullable(optionSet.valueOf(optionSpec10)).orElse(serverPropertiesLoader.getPropertiesHandler().levelName);
 			final MinecraftDedicatedServer minecraftDedicatedServer = new MinecraftDedicatedServer(
 				new File(string),
 				serverPropertiesLoader,
@@ -891,13 +893,14 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 				WorldGenerationProgressLogger::new,
 				string2
 			);
-			minecraftDedicatedServer.setUserName(optionSet.valueOf(optionSpec7));
-			minecraftDedicatedServer.setServerPort(optionSet.valueOf(optionSpec10));
+			minecraftDedicatedServer.setUserName(optionSet.valueOf(optionSpec8));
+			minecraftDedicatedServer.setServerPort(optionSet.valueOf(optionSpec11));
 			minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
 			minecraftDedicatedServer.setBonusChest(optionSet.has(optionSpec4));
 			minecraftDedicatedServer.setForceWorldUpgrade(optionSet.has(optionSpec5));
-			minecraftDedicatedServer.method_17819(optionSet.valueOf(optionSpec11));
-			boolean bl = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec12).contains("nogui");
+			minecraftDedicatedServer.method_20383(optionSet.has(optionSpec6));
+			minecraftDedicatedServer.method_17819(optionSet.valueOf(optionSpec12));
+			boolean bl = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec13).contains("nogui");
 			if (bl && !GraphicsEnvironment.isHeadless()) {
 				minecraftDedicatedServer.createGui();
 			}
@@ -910,8 +913,8 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 			};
 			thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 			Runtime.getRuntime().addShutdownHook(thread);
-		} catch (Exception var28) {
-			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var28);
+		} catch (Exception var29) {
+			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var29);
 		}
 	}
 
@@ -921,6 +924,10 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 
 	protected void setForceWorldUpgrade(boolean bl) {
 		this.forceWorldUpgrade = bl;
+	}
+
+	protected void method_20383(boolean bl) {
+		this.field_19237 = bl;
 	}
 
 	public void start() {
@@ -1432,11 +1439,11 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		return this.dataManager;
 	}
 
-	public ResourcePackContainerManager<ResourcePackContainer> method_3836() {
+	public ResourcePackContainerManager<ResourcePackContainer> getResourcePackContainerManager() {
 		return this.resourcePackContainerManager;
 	}
 
-	public ServerCommandManager getCommandManager() {
+	public CommandManager getCommandManager() {
 		return this.commandManager;
 	}
 

@@ -11,8 +11,6 @@ import it.unimi.dsi.fastutil.ints.Int2ShortOpenHashMap;
 import java.util.Collections;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.Criterions;
@@ -326,7 +324,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					return;
 				}
 
-				boolean bl = serverWorld.isEntityColliding(entity, entity.getBoundingBox().contract(0.0625));
+				boolean bl = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
 				l = g - this.updatedRiddenX;
 				m = h - this.updatedRiddenY - 1.0E-6;
 				n = i - this.updatedRiddenZ;
@@ -346,14 +344,14 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 
 				entity.setPositionAnglesAndUpdate(g, h, i, j, k);
-				boolean bl3 = serverWorld.isEntityColliding(entity, entity.getBoundingBox().contract(0.0625));
+				boolean bl3 = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
 				if (bl && (bl2 || !bl3)) {
 					entity.setPositionAnglesAndUpdate(d, e, f, j, k);
 					this.client.sendPacket(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
-				this.player.getServerWorld().method_14178().addOrRemovePlayer(this.player);
+				this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
 				this.player.method_7282(this.player.x - d, this.player.y - e, this.player.z - f);
 				this.ridingEntity = m >= -0.03125
 					&& !this.server.isFlightEnabled()
@@ -552,7 +550,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void onUpdateBeacon(UpdateBeaconC2SPacket updateBeaconC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateBeaconC2SPacket, this, this.player.getServerWorld());
 		if (this.player.container instanceof BeaconContainer) {
-			((BeaconContainer)this.player.container).method_17372(updateBeaconC2SPacket.getPrimaryEffectId(), updateBeaconC2SPacket.getSecondaryEffectId());
+			((BeaconContainer)this.player.container).setEffects(updateBeaconC2SPacket.getPrimaryEffectId(), updateBeaconC2SPacket.getSecondaryEffectId());
 		}
 	}
 
@@ -611,7 +609,6 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
 	public void onJigsawUpdate(UpdateJigsawC2SPacket updateJigsawC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateJigsawC2SPacket, this, this.player.getServerWorld());
@@ -636,7 +633,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		int i = selectVillagerTradeC2SPacket.method_12431();
 		Container container = this.player.container;
 		if (container instanceof MerchantContainer) {
-			((MerchantContainer)container).setRecipeIndex(i);
+			MerchantContainer merchantContainer = (MerchantContainer)container;
+			merchantContainer.setRecipeIndex(i);
+			merchantContainer.switchTo(i);
 		}
 	}
 
@@ -712,7 +711,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				if (this.requestedTeleportPos != null) {
 					if (this.ticks - this.teleportRequestTick > 20) {
 						this.teleportRequestTick = this.ticks;
-						this.teleportRequest(this.requestedTeleportPos.x, this.requestedTeleportPos.y, this.requestedTeleportPos.z, this.player.yaw, this.player.pitch);
+						this.requestTeleport(this.requestedTeleportPos.x, this.requestedTeleportPos.y, this.requestedTeleportPos.z, this.player.yaw, this.player.pitch);
 					}
 				} else {
 					this.teleportRequestTick = this.ticks;
@@ -721,7 +720,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							.setPositionAnglesAndUpdate(
 								this.player.x, this.player.y, this.player.z, playerMoveServerMessage.getYaw(this.player.yaw), playerMoveServerMessage.getPitch(this.player.pitch)
 							);
-						this.player.getServerWorld().method_14178().addOrRemovePlayer(this.player);
+						this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
 					} else {
 						double d = this.player.x;
 						double e = this.player.y;
@@ -739,7 +738,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 						double q = m * m + n * n + o * o;
 						if (this.player.isSleeping()) {
 							if (q > 1.0) {
-								this.teleportRequest(
+								this.requestTeleport(
 									this.player.x, this.player.y, this.player.z, playerMoveServerMessage.getYaw(this.player.yaw), playerMoveServerMessage.getPitch(this.player.pitch)
 								);
 							}
@@ -756,12 +755,12 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								float s = this.player.isFallFlying() ? 300.0F : 100.0F;
 								if (q - p > (double)(s * (float)r) && !this.method_19507()) {
 									LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), m, n, o);
-									this.teleportRequest(this.player.x, this.player.y, this.player.z, this.player.yaw, this.player.pitch);
+									this.requestTeleport(this.player.x, this.player.y, this.player.z, this.player.yaw, this.player.pitch);
 									return;
 								}
 							}
 
-							boolean bl = serverWorld.isEntityColliding(this.player, this.player.getBoundingBox().contract(0.0625));
+							boolean bl = serverWorld.doesNotCollide(this.player, this.player.getBoundingBox().contract(0.0625));
 							m = h - this.updatedX;
 							n = i - this.updatedY;
 							o = j - this.updatedZ;
@@ -792,9 +791,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							this.player.setPositionAnglesAndUpdate(h, i, j, k, l);
 							this.player.method_7282(this.player.x - d, this.player.y - e, this.player.z - f);
 							if (!this.player.noClip && !this.player.isSleeping()) {
-								boolean bl3 = serverWorld.isEntityColliding(this.player, this.player.getBoundingBox().contract(0.0625));
+								boolean bl3 = serverWorld.doesNotCollide(this.player, this.player.getBoundingBox().contract(0.0625));
 								if (bl && (bl2 || !bl3)) {
-									this.teleportRequest(d, e, f, k, l);
+									this.requestTeleport(d, e, f, k, l);
 									return;
 								}
 							}
@@ -803,11 +802,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 								&& this.player.interactionManager.getGameMode() != GameMode.field_9219
 								&& !this.server.isFlightEnabled()
 								&& !this.player.abilities.allowFlying
-								&& !this.player.hasPotionEffect(StatusEffects.field_5902)
+								&& !this.player.hasStatusEffect(StatusEffects.field_5902)
 								&& !this.player.isFallFlying()
 								&& !serverWorld.isAreaNotEmpty(this.player.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0));
 							this.player.onGround = playerMoveServerMessage.isOnGround();
-							this.player.getServerWorld().method_14178().addOrRemovePlayer(this.player);
+							this.player.getServerWorld().method_14178().updateCameraPosition(this.player);
 							this.player.method_14207(this.player.y - g, playerMoveServerMessage.isOnGround());
 							this.updatedX = this.player.x;
 							this.updatedY = this.player.y;
@@ -819,7 +818,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 	}
 
-	public void teleportRequest(double d, double e, double f, float g, float h) {
+	public void requestTeleport(double d, double e, double f, float g, float h) {
 		this.teleportRequest(d, e, f, g, h, Collections.emptySet());
 	}
 
@@ -951,7 +950,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			for (ServerWorld serverWorld : this.server.getWorlds()) {
 				Entity entity = spectatorTeleportC2SPacket.getTarget(serverWorld);
 				if (entity != null) {
-					this.player.method_14251(serverWorld, entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
+					this.player.teleport(serverWorld, entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
 					return;
 				}
 			}
@@ -1106,7 +1105,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				break;
 			case field_12988:
 				if (this.player.getRiddenEntity() instanceof HorseBaseEntity) {
-					((HorseBaseEntity)this.player.getRiddenEntity()).method_6722(this.player);
+					((HorseBaseEntity)this.player.getRiddenEntity()).openInventory(this.player);
 				}
 				break;
 			case field_12982:
@@ -1166,14 +1165,14 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			case field_12774:
 				if (this.player.notInAnyWorld) {
 					this.player.notInAnyWorld = false;
-					this.player = this.server.getPlayerManager().method_14556(this.player, DimensionType.field_13072, true);
+					this.player = this.server.getPlayerManager().respawnPlayer(this.player, DimensionType.field_13072, true);
 					Criterions.CHANGED_DIMENSION.handle(this.player, DimensionType.field_13078, DimensionType.field_13072);
 				} else {
 					if (this.player.getHealth() > 0.0F) {
 						return;
 					}
 
-					this.player = this.server.getPlayerManager().method_14556(this.player, DimensionType.field_13072, false);
+					this.player = this.server.getPlayerManager().respawnPlayer(this.player, DimensionType.field_13072, false);
 					if (this.server.isHardcore()) {
 						this.player.setGameMode(GameMode.field_9219);
 						this.player.getServerWorld().getGameRules().put("spectatorsGenerateChunks", "false", this.server);
@@ -1181,7 +1180,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 				break;
 			case field_12775:
-				this.player.method_14248().method_14910(this.player);
+				this.player.getStatHandler().method_14910(this.player);
 		}
 	}
 

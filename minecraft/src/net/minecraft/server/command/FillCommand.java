@@ -13,10 +13,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.command.arguments.BlockArgument;
-import net.minecraft.command.arguments.BlockArgumentType;
 import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.BlockPredicateArgumentType;
+import net.minecraft.command.arguments.BlockStateArgument;
+import net.minecraft.command.arguments.BlockStateArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Clearable;
@@ -27,110 +27,110 @@ public class FillCommand {
 	private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("commands.fill.toobig", object, object2)
 	);
-	private static final BlockArgument field_13648 = new BlockArgument(Blocks.field_10124.getDefaultState(), Collections.emptySet(), null);
+	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.field_10124.getDefaultState(), Collections.emptySet(), null);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.fill.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("fill")
+			CommandManager.literal("fill")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("from", BlockPosArgumentType.create())
+					CommandManager.argument("from", BlockPosArgumentType.create())
 						.then(
-							ServerCommandManager.argument("to", BlockPosArgumentType.create())
+							CommandManager.argument("to", BlockPosArgumentType.create())
 								.then(
-									ServerCommandManager.argument("block", BlockArgumentType.create())
+									CommandManager.argument("block", BlockStateArgumentType.create())
 										.executes(
-											commandContext -> method_13354(
+											commandContext -> execute(
 													commandContext.getSource(),
 													new MutableIntBoundingBox(
-														BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
+														BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")
 													),
-													BlockArgumentType.getBlockArgument(commandContext, "block"),
-													FillCommand.class_3058.field_13655,
+													BlockStateArgumentType.getBlockState(commandContext, "block"),
+													FillCommand.Mode.field_13655,
 													null
 												)
 										)
 										.then(
-											ServerCommandManager.literal("replace")
+											CommandManager.literal("replace")
 												.executes(
-													commandContext -> method_13354(
+													commandContext -> execute(
 															commandContext.getSource(),
 															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
+																BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")
 															),
-															BlockArgumentType.getBlockArgument(commandContext, "block"),
-															FillCommand.class_3058.field_13655,
+															BlockStateArgumentType.getBlockState(commandContext, "block"),
+															FillCommand.Mode.field_13655,
 															null
 														)
 												)
 												.then(
-													ServerCommandManager.argument("filter", BlockPredicateArgumentType.create())
+													CommandManager.argument("filter", BlockPredicateArgumentType.create())
 														.executes(
-															commandContext -> method_13354(
+															commandContext -> execute(
 																	commandContext.getSource(),
 																	new MutableIntBoundingBox(
-																		BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
+																		BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")
 																	),
-																	BlockArgumentType.getBlockArgument(commandContext, "block"),
-																	FillCommand.class_3058.field_13655,
-																	BlockPredicateArgumentType.getPredicateArgument(commandContext, "filter")
+																	BlockStateArgumentType.getBlockState(commandContext, "block"),
+																	FillCommand.Mode.field_13655,
+																	BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter")
 																)
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("keep")
+											CommandManager.literal("keep")
 												.executes(
-													commandContext -> method_13354(
+													commandContext -> execute(
 															commandContext.getSource(),
 															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
+																BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")
 															),
-															BlockArgumentType.getBlockArgument(commandContext, "block"),
-															FillCommand.class_3058.field_13655,
+															BlockStateArgumentType.getBlockState(commandContext, "block"),
+															FillCommand.Mode.field_13655,
 															cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("outline")
+											CommandManager.literal("outline")
 												.executes(
-													commandContext -> method_13354(
+													commandContext -> execute(
 															commandContext.getSource(),
 															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
+																BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")
 															),
-															BlockArgumentType.getBlockArgument(commandContext, "block"),
-															FillCommand.class_3058.field_13652,
+															BlockStateArgumentType.getBlockState(commandContext, "block"),
+															FillCommand.Mode.field_13652,
 															null
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("hollow")
+											CommandManager.literal("hollow")
 												.executes(
-													commandContext -> method_13354(
+													commandContext -> execute(
 															commandContext.getSource(),
 															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
+																BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")
 															),
-															BlockArgumentType.getBlockArgument(commandContext, "block"),
-															FillCommand.class_3058.field_13656,
+															BlockStateArgumentType.getBlockState(commandContext, "block"),
+															FillCommand.Mode.field_13656,
 															null
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("destroy")
+											CommandManager.literal("destroy")
 												.executes(
-													commandContext -> method_13354(
+													commandContext -> execute(
 															commandContext.getSource(),
 															new MutableIntBoundingBox(
-																BlockPosArgumentType.getValidPosArgument(commandContext, "from"), BlockPosArgumentType.getValidPosArgument(commandContext, "to")
+																BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")
 															),
-															BlockArgumentType.getBlockArgument(commandContext, "block"),
-															FillCommand.class_3058.field_13651,
+															BlockStateArgumentType.getBlockState(commandContext, "block"),
+															FillCommand.Mode.field_13651,
 															null
 														)
 												)
@@ -141,11 +141,11 @@ public class FillCommand {
 		);
 	}
 
-	private static int method_13354(
+	private static int execute(
 		ServerCommandSource serverCommandSource,
 		MutableIntBoundingBox mutableIntBoundingBox,
-		BlockArgument blockArgument,
-		FillCommand.class_3058 arg,
+		BlockStateArgument blockStateArgument,
+		FillCommand.Mode mode,
 		@Nullable Predicate<CachedBlockPosition> predicate
 	) throws CommandSyntaxException {
 		int i = mutableIntBoundingBox.getBlockCountX() * mutableIntBoundingBox.getBlockCountY() * mutableIntBoundingBox.getBlockCountZ();
@@ -165,11 +165,11 @@ public class FillCommand {
 				mutableIntBoundingBox.maxZ
 			)) {
 				if (predicate == null || predicate.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
-					BlockArgument blockArgument2 = arg.field_13654.filter(mutableIntBoundingBox, blockPos, blockArgument, serverWorld);
-					if (blockArgument2 != null) {
+					BlockStateArgument blockStateArgument2 = mode.field_13654.filter(mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld);
+					if (blockStateArgument2 != null) {
 						BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 						Clearable.clear(blockEntity);
-						if (blockArgument2.setBlockState(serverWorld, blockPos, 2)) {
+						if (blockStateArgument2.setBlockState(serverWorld, blockPos, 2)) {
 							list.add(blockPos.toImmutable());
 							j++;
 						}
@@ -191,37 +191,37 @@ public class FillCommand {
 		}
 	}
 
-	static enum class_3058 {
-		field_13655((mutableIntBoundingBox, blockPos, blockArgument, serverWorld) -> blockArgument),
+	static enum Mode {
+		field_13655((mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld) -> blockStateArgument),
 		field_13652(
-			(mutableIntBoundingBox, blockPos, blockArgument, serverWorld) -> blockPos.getX() != mutableIntBoundingBox.minX
+			(mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld) -> blockPos.getX() != mutableIntBoundingBox.minX
 						&& blockPos.getX() != mutableIntBoundingBox.maxX
 						&& blockPos.getY() != mutableIntBoundingBox.minY
 						&& blockPos.getY() != mutableIntBoundingBox.maxY
 						&& blockPos.getZ() != mutableIntBoundingBox.minZ
 						&& blockPos.getZ() != mutableIntBoundingBox.maxZ
 					? null
-					: blockArgument
+					: blockStateArgument
 		),
 		field_13656(
-			(mutableIntBoundingBox, blockPos, blockArgument, serverWorld) -> blockPos.getX() != mutableIntBoundingBox.minX
+			(mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld) -> blockPos.getX() != mutableIntBoundingBox.minX
 						&& blockPos.getX() != mutableIntBoundingBox.maxX
 						&& blockPos.getY() != mutableIntBoundingBox.minY
 						&& blockPos.getY() != mutableIntBoundingBox.maxY
 						&& blockPos.getZ() != mutableIntBoundingBox.minZ
 						&& blockPos.getZ() != mutableIntBoundingBox.maxZ
-					? FillCommand.field_13648
-					: blockArgument
+					? FillCommand.AIR_BLOCK_ARGUMENT
+					: blockStateArgument
 		),
-		field_13651((mutableIntBoundingBox, blockPos, blockArgument, serverWorld) -> {
+		field_13651((mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld) -> {
 			serverWorld.breakBlock(blockPos, true);
-			return blockArgument;
+			return blockStateArgument;
 		});
 
-		public final SetBlockCommand.class_3120 field_13654;
+		public final SetBlockCommand.Filter field_13654;
 
-		private class_3058(SetBlockCommand.class_3120 arg) {
-			this.field_13654 = arg;
+		private Mode(SetBlockCommand.Filter filter) {
+			this.field_13654 = filter;
 		}
 	}
 }

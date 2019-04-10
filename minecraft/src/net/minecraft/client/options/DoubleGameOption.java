@@ -11,12 +11,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DoubleGameOption extends GameOption {
-	private final float field_18204;
-	private final double field_18205;
-	private double field_18206;
-	private final Function<GameOptions, Double> field_18207;
-	private final BiConsumer<GameOptions, Double> field_18208;
-	private final BiFunction<GameOptions, DoubleGameOption, String> field_18209;
+	private final float interval;
+	private final double min;
+	private double max;
+	private final Function<GameOptions, Double> getter;
+	private final BiConsumer<GameOptions, Double> setter;
+	private final BiFunction<GameOptions, DoubleGameOption, String> displayStringGetter;
 
 	public DoubleGameOption(
 		String string,
@@ -28,12 +28,12 @@ public class DoubleGameOption extends GameOption {
 		BiFunction<GameOptions, DoubleGameOption, String> biFunction
 	) {
 		super(string);
-		this.field_18205 = d;
-		this.field_18206 = e;
-		this.field_18204 = f;
-		this.field_18207 = function;
-		this.field_18208 = biConsumer;
-		this.field_18209 = biFunction;
+		this.min = d;
+		this.max = e;
+		this.interval = f;
+		this.getter = function;
+		this.setter = biConsumer;
+		this.displayStringGetter = biFunction;
 	}
 
 	@Override
@@ -42,42 +42,42 @@ public class DoubleGameOption extends GameOption {
 	}
 
 	public double method_18611(double d) {
-		return MathHelper.clamp((this.method_18618(d) - this.field_18205) / (this.field_18206 - this.field_18205), 0.0, 1.0);
+		return MathHelper.clamp((this.method_18618(d) - this.min) / (this.max - this.min), 0.0, 1.0);
 	}
 
 	public double method_18616(double d) {
-		return this.method_18618(MathHelper.lerp(MathHelper.clamp(d, 0.0, 1.0), this.field_18205, this.field_18206));
+		return this.method_18618(MathHelper.lerp(MathHelper.clamp(d, 0.0, 1.0), this.min, this.max));
 	}
 
 	private double method_18618(double d) {
-		if (this.field_18204 > 0.0F) {
-			d = (double)(this.field_18204 * (float)Math.round(d / (double)this.field_18204));
+		if (this.interval > 0.0F) {
+			d = (double)(this.interval * (float)Math.round(d / (double)this.interval));
 		}
 
-		return MathHelper.clamp(d, this.field_18205, this.field_18206);
+		return MathHelper.clamp(d, this.min, this.max);
 	}
 
-	public double method_18615() {
-		return this.field_18205;
+	public double getMin() {
+		return this.min;
 	}
 
-	public double method_18617() {
-		return this.field_18206;
+	public double getMax() {
+		return this.max;
 	}
 
-	public void method_18612(float f) {
-		this.field_18206 = (double)f;
+	public void setMax(float f) {
+		this.max = (double)f;
 	}
 
-	public void method_18614(GameOptions gameOptions, double d) {
-		this.field_18208.accept(gameOptions, d);
+	public void set(GameOptions gameOptions, double d) {
+		this.setter.accept(gameOptions, d);
 	}
 
-	public double method_18613(GameOptions gameOptions) {
-		return (Double)this.field_18207.apply(gameOptions);
+	public double get(GameOptions gameOptions) {
+		return (Double)this.getter.apply(gameOptions);
 	}
 
-	public String method_18619(GameOptions gameOptions) {
-		return (String)this.field_18209.apply(gameOptions, this);
+	public String getDisplayString(GameOptions gameOptions) {
+		return (String)this.displayStringGetter.apply(gameOptions, this);
 	}
 }

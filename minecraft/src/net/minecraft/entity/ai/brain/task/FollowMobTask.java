@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
+import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.Brain;
@@ -13,11 +15,19 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public class FollowMobTask extends Task<LivingEntity> {
-	private final EntityType<?> mobType;
+	private final Predicate<LivingEntity> mobType;
 	private final float maxDistanceSquared;
 
+	public FollowMobTask(EntityCategory entityCategory, float f) {
+		this(livingEntity -> entityCategory.equals(livingEntity.getType().getCategory()), f);
+	}
+
 	public FollowMobTask(EntityType<?> entityType, float f) {
-		this.mobType = entityType;
+		this(livingEntity -> entityType.equals(livingEntity.getType()), f);
+	}
+
+	public FollowMobTask(Predicate<LivingEntity> predicate, float f) {
+		this.mobType = predicate;
 		this.maxDistanceSquared = f * f;
 	}
 
@@ -30,18 +40,16 @@ public class FollowMobTask extends Task<LivingEntity> {
 
 	@Override
 	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		return ((List)livingEntity.getBrain().getMemory(MemoryModuleType.field_18442).get())
-			.stream()
-			.anyMatch(livingEntityx -> this.mobType.equals(livingEntityx.getType()));
+		return ((List)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18442).get()).stream().anyMatch(this.mobType);
 	}
 
 	@Override
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		Brain<?> brain = livingEntity.getBrain();
-		brain.getMemory(MemoryModuleType.field_18442)
+		brain.getOptionalMemory(MemoryModuleType.field_18442)
 			.ifPresent(
 				list -> list.stream()
-						.filter(livingEntityxx -> this.mobType.equals(livingEntityxx.getType()))
+						.filter(this.mobType)
 						.filter(livingEntity2 -> livingEntity2.squaredDistanceTo(livingEntity) <= (double)this.maxDistanceSquared)
 						.findFirst()
 						.ifPresent(livingEntityxx -> brain.putMemory(MemoryModuleType.field_18446, new EntityPosWrapper(livingEntityxx)))

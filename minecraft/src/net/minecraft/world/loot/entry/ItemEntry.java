@@ -28,7 +28,7 @@ public class ItemEntry extends LeafEntry {
 	}
 
 	public static LeafEntry.Builder<?> builder(ItemProvider itemProvider) {
-		return create((i, j, lootConditions, lootFunctions) -> new ItemEntry(itemProvider.getItem(), i, j, lootConditions, lootFunctions));
+		return builder((i, j, lootConditions, lootFunctions) -> new ItemEntry(itemProvider.getItem(), i, j, lootConditions, lootFunctions));
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<ItemEntry> {

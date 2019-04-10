@@ -51,7 +51,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.verticalStripBitmask = this.method_11529(new PacketByteBuf(this.method_11527()), worldChunk, i);
 		this.blockEntityList = Lists.<CompoundTag>newArrayList();
 
-		for (Entry<BlockPos, BlockEntity> entryx : worldChunk.getBlockEntityMap().entrySet()) {
+		for (Entry<BlockPos, BlockEntity> entryx : worldChunk.getBlockEntities().entrySet()) {
 			BlockPos blockPos = (BlockPos)entryx.getKey();
 			BlockEntity blockEntity = (BlockEntity)entryx.getValue();
 			int j = blockPos.getY() >> 4;

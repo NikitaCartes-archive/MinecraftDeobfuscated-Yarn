@@ -26,7 +26,7 @@ public class EntityTrackingSoundInstance extends MovingSoundInstance {
 
 	@Override
 	public void tick() {
-		if (this.entity.invalid) {
+		if (this.entity.removed) {
 			this.done = true;
 		} else {
 			this.x = (float)this.entity.x;

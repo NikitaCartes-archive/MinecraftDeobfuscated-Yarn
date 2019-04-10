@@ -19,7 +19,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 	}
 
 	protected void method_3900(CreeperEntity creeperEntity, float f) {
-		float g = creeperEntity.method_7003(f);
+		float g = creeperEntity.getClientFuseTime(f);
 		float h = 1.0F + MathHelper.sin(g * 100.0F) * g * 0.01F;
 		g = MathHelper.clamp(g, 0.0F, 1.0F);
 		g *= g;
@@ -30,7 +30,7 @@ public class CreeperEntityRenderer extends MobEntityRenderer<CreeperEntity, Cree
 	}
 
 	protected int method_3898(CreeperEntity creeperEntity, float f, float g) {
-		float h = creeperEntity.method_7003(g);
+		float h = creeperEntity.getClientFuseTime(g);
 		if ((int)(h * 10.0F) % 2 == 0) {
 			return 0;
 		} else {

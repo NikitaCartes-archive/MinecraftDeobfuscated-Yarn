@@ -25,8 +25,8 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_506(BoundedIntUnaryOperator boundedIntUnaryOperator) {
-		return create(lootConditions -> new LimitCountLootFunction(lootConditions, boundedIntUnaryOperator));
+	public static ConditionalLootFunction.Builder<?> builder(BoundedIntUnaryOperator boundedIntUnaryOperator) {
+		return builder(lootConditions -> new LimitCountLootFunction(lootConditions, boundedIntUnaryOperator));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<LimitCountLootFunction> {

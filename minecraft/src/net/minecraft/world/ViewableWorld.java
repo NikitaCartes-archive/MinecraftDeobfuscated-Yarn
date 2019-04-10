@@ -57,6 +57,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 	@Nullable
 	Chunk getChunk(int i, int j, ChunkStatus chunkStatus, boolean bl);
 
+	@Deprecated
 	boolean isChunkLoaded(int i, int j);
 
 	BlockPos getTopPosition(Heightmap.Type type, BlockPos blockPos);
@@ -71,7 +72,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 
 	WorldBorder getWorldBorder();
 
-	boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape);
+	boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape);
 
 	int getEmittedStrongRedstonePower(BlockPos blockPos, Direction direction);
 
@@ -91,37 +92,41 @@ public interface ViewableWorld extends ExtendedBlockView {
 		return this.getChunk(i, j, chunkStatus, true);
 	}
 
-	default boolean method_8628(BlockState blockState, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
+	default ChunkStatus getLeastChunkStatusForCollisionCalculation() {
+		return ChunkStatus.EMPTY;
+	}
+
+	default boolean canPlace(BlockState blockState, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos, verticalEntityPosition);
-		return voxelShape.isEmpty() || this.method_8611(null, voxelShape.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
+		return voxelShape.isEmpty() || this.intersectsEntities(null, voxelShape.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ()));
 	}
 
-	default boolean method_8606(Entity entity) {
-		return this.method_8611(entity, VoxelShapes.cube(entity.getBoundingBox()));
+	default boolean intersectsEntities(Entity entity) {
+		return this.intersectsEntities(entity, VoxelShapes.cuboid(entity.getBoundingBox()));
 	}
 
-	default boolean method_18026(BoundingBox boundingBox) {
-		return this.getCollidingBoundingBoxesForEntity(null, boundingBox, Collections.emptySet()).allMatch(VoxelShape::isEmpty);
+	default boolean doesNotCollide(BoundingBox boundingBox) {
+		return this.getCollisionShapes(null, boundingBox, Collections.emptySet()).allMatch(VoxelShape::isEmpty);
 	}
 
-	default boolean method_17892(Entity entity) {
-		return this.getCollidingBoundingBoxesForEntity(entity, entity.getBoundingBox(), Collections.emptySet()).allMatch(VoxelShape::isEmpty);
+	default boolean doesNotCollide(Entity entity) {
+		return this.getCollisionShapes(entity, entity.getBoundingBox(), Collections.emptySet()).allMatch(VoxelShape::isEmpty);
 	}
 
-	default boolean isEntityColliding(Entity entity, BoundingBox boundingBox) {
-		return this.getCollidingBoundingBoxesForEntity(entity, boundingBox, Collections.emptySet()).allMatch(VoxelShape::isEmpty);
+	default boolean doesNotCollide(Entity entity, BoundingBox boundingBox) {
+		return this.getCollisionShapes(entity, boundingBox, Collections.emptySet()).allMatch(VoxelShape::isEmpty);
 	}
 
-	default boolean isEntityColliding(Entity entity, BoundingBox boundingBox, Set<Entity> set) {
-		return this.getCollidingBoundingBoxesForEntity(entity, boundingBox, set).allMatch(VoxelShape::isEmpty);
+	default boolean doesNotCollide(Entity entity, BoundingBox boundingBox, Set<Entity> set) {
+		return this.getCollisionShapes(entity, boundingBox, set).allMatch(VoxelShape::isEmpty);
 	}
 
-	default Stream<VoxelShape> getCollidingEntityBoundingBoxesForEntity(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
+	default Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, VoxelShape voxelShape, Set<Entity> set) {
 		return Stream.empty();
 	}
 
-	default Stream<VoxelShape> getCollidingBoundingBoxesForEntity(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
-		VoxelShape voxelShape = VoxelShapes.cube(boundingBox);
+	default Stream<VoxelShape> getCollisionShapes(@Nullable Entity entity, BoundingBox boundingBox, Set<Entity> set) {
+		VoxelShape voxelShape = VoxelShapes.cuboid(boundingBox);
 		Stream<VoxelShape> stream;
 		VerticalEntityPosition verticalEntityPosition;
 		if (entity == null) {
@@ -130,12 +135,12 @@ public interface ViewableWorld extends ExtendedBlockView {
 		} else {
 			verticalEntityPosition = VerticalEntityPosition.fromEntity(entity);
 			VoxelShape voxelShape2 = this.getWorldBorder().asVoxelShape();
-			boolean bl = VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cube(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
-			boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cube(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
+			boolean bl = VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(entity.getBoundingBox().contract(1.0E-7)), BooleanBiFunction.AND);
+			boolean bl2 = VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(entity.getBoundingBox().expand(1.0E-7)), BooleanBiFunction.AND);
 			if (!bl && bl2) {
-				stream = Stream.concat(Stream.of(voxelShape2), this.getCollidingEntityBoundingBoxesForEntity(entity, voxelShape, set));
+				stream = Stream.concat(Stream.of(voxelShape2), this.getCollisionShapes(entity, voxelShape, set));
 			} else {
-				stream = this.getCollidingEntityBoundingBoxesForEntity(entity, voxelShape, set);
+				stream = this.getCollisionShapes(entity, voxelShape, set);
 			}
 		}
 
@@ -148,8 +153,8 @@ public interface ViewableWorld extends ExtendedBlockView {
 		VoxelSet voxelSet = new BitSetVoxelSet(j - i, l - k, n - m);
 		Predicate<VoxelShape> predicate = voxelShape2x -> !voxelShape2x.isEmpty() && VoxelShapes.matchesAnywhere(voxelShape, voxelShape2x, BooleanBiFunction.AND);
 		AtomicReference<ChunkPos> atomicReference = new AtomicReference(new ChunkPos(i >> 4, m >> 4));
-		AtomicReference<Chunk> atomicReference2 = new AtomicReference(this.getChunk(i >> 4, m >> 4, ChunkStatus.EMPTY, false));
-		Stream<VoxelShape> stream2 = BlockPos.getBlocksInCuboid(i, k, m, j - 1, l - 1, n - 1).map(blockPos -> {
+		AtomicReference<Chunk> atomicReference2 = new AtomicReference(this.getChunk(i >> 4, m >> 4, this.getLeastChunkStatusForCollisionCalculation(), false));
+		Stream<VoxelShape> stream2 = BlockPos.streamBoxPositions(i, k, m, j - 1, l - 1, n - 1).map(blockPos -> {
 			int o = blockPos.getX();
 			int p = blockPos.getY();
 			int q = blockPos.getZ();
@@ -166,7 +171,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 				if (chunkPos.x == r && chunkPos.z == s) {
 					chunk = (Chunk)atomicReference2.get();
 				} else {
-					chunk = this.getChunk(r, s, ChunkStatus.EMPTY, false);
+					chunk = this.getChunk(r, s, this.getLeastChunkStatusForCollisionCalculation(), false);
 					atomicReference.set(new ChunkPos(r, s));
 					atomicReference2.set(chunk);
 				}
@@ -194,7 +199,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 		return this.getFluidState(blockPos).matches(FluidTags.field_15517);
 	}
 
-	default boolean isInFluid(BoundingBox boundingBox) {
+	default boolean intersectsFluid(BoundingBox boundingBox) {
 		int i = MathHelper.floor(boundingBox.minX);
 		int j = MathHelper.ceil(boundingBox.maxX);
 		int k = MathHelper.floor(boundingBox.minY);
@@ -223,44 +228,22 @@ public interface ViewableWorld extends ExtendedBlockView {
 	}
 
 	default int method_8603(BlockPos blockPos, int i) {
-		if (blockPos.getX() < -30000000 || blockPos.getZ() < -30000000 || blockPos.getX() >= 30000000 || blockPos.getZ() >= 30000000) {
-			return 15;
-		} else if (this.getBlockState(blockPos).usesNeighborLightValues(this, blockPos)) {
-			int j = this.getLightLevel(blockPos.up(), i);
-			int k = this.getLightLevel(blockPos.east(), i);
-			int l = this.getLightLevel(blockPos.west(), i);
-			int m = this.getLightLevel(blockPos.south(), i);
-			int n = this.getLightLevel(blockPos.north(), i);
-			if (k > j) {
-				j = k;
-			}
-
-			if (l > j) {
-				j = l;
-			}
-
-			if (m > j) {
-				j = m;
-			}
-
-			if (n > j) {
-				j = n;
-			}
-
-			return j;
-		} else {
-			return this.getLightLevel(blockPos, i);
-		}
+		return blockPos.getX() >= -30000000 && blockPos.getZ() >= -30000000 && blockPos.getX() < 30000000 && blockPos.getZ() < 30000000
+			? this.getLightLevel(blockPos, i)
+			: 15;
 	}
 
+	@Deprecated
 	default boolean isBlockLoaded(BlockPos blockPos) {
 		return this.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4);
 	}
 
+	@Deprecated
 	default boolean isAreaLoaded(BlockPos blockPos, BlockPos blockPos2) {
 		return this.isAreaLoaded(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos2.getX(), blockPos2.getY(), blockPos2.getZ());
 	}
 
+	@Deprecated
 	default boolean isAreaLoaded(int i, int j, int k, int l, int m, int n) {
 		if (m >= 0 && j < 256) {
 			i >>= 4;

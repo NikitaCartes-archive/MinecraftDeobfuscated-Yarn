@@ -58,9 +58,9 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 
 	public ItemDurabilityChangedCriterion.Conditions method_8962(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
-		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("durability"));
-		NumberRange.Integer integer2 = NumberRange.Integer.fromJson(jsonObject.get("delta"));
-		return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, integer, integer2);
+		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("durability"));
+		NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("delta"));
+		return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, intRange, intRange2);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
@@ -72,25 +72,25 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate item;
-		private final NumberRange.Integer durability;
-		private final NumberRange.Integer delta;
+		private final NumberRange.IntRange field_9638;
+		private final NumberRange.IntRange field_9639;
 
-		public Conditions(ItemPredicate itemPredicate, NumberRange.Integer integer, NumberRange.Integer integer2) {
+		public Conditions(ItemPredicate itemPredicate, NumberRange.IntRange intRange, NumberRange.IntRange intRange2) {
 			super(ItemDurabilityChangedCriterion.ID);
 			this.item = itemPredicate;
-			this.durability = integer;
-			this.delta = integer2;
+			this.field_9638 = intRange;
+			this.field_9639 = intRange2;
 		}
 
-		public static ItemDurabilityChangedCriterion.Conditions method_8967(ItemPredicate itemPredicate, NumberRange.Integer integer) {
-			return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, integer, NumberRange.Integer.ANY);
+		public static ItemDurabilityChangedCriterion.Conditions method_8967(ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
+			return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, intRange, NumberRange.IntRange.ANY);
 		}
 
 		public boolean matches(ItemStack itemStack, int i) {
 			if (!this.item.test(itemStack)) {
 				return false;
 			} else {
-				return !this.durability.test(itemStack.getDurability() - i) ? false : this.delta.test(itemStack.getDamage() - i);
+				return !this.field_9638.test(itemStack.getDurability() - i) ? false : this.field_9639.test(itemStack.getDamage() - i);
 			}
 		}
 
@@ -98,8 +98,8 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("item", this.item.serialize());
-			jsonObject.add("durability", this.durability.serialize());
-			jsonObject.add("delta", this.delta.serialize());
+			jsonObject.add("durability", this.field_9638.serialize());
+			jsonObject.add("delta", this.field_9639.serialize());
 			return jsonObject;
 		}
 	}

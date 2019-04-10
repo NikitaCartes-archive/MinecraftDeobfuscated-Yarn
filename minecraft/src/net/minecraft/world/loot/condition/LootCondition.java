@@ -15,11 +15,11 @@ public interface LootCondition extends ParameterConsumer, Predicate<LootContext>
 		LootCondition build();
 
 		default LootCondition.Builder invert() {
-			return InvertedLootCondition.create(this);
+			return InvertedLootCondition.builder(this);
 		}
 
-		default AlternativeLootCondition.Builder or(LootCondition.Builder builder) {
-			return AlternativeLootCondition.or(this, builder);
+		default AlternativeLootCondition.Builder withCondition(LootCondition.Builder builder) {
+			return AlternativeLootCondition.builder(this, builder);
 		}
 	}
 

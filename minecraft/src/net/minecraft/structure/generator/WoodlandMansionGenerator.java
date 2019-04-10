@@ -10,8 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.mob.EvokerEntity;
-import net.minecraft.entity.mob.VindicatorEntity;
+import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
@@ -98,18 +97,23 @@ public class WoodlandMansionGenerator {
 				}
 
 				this.addChest(iWorld, mutableIntBoundingBox, random, blockPos, LootTables.CHEST_WOODLAND_MANSION, blockState);
-			} else if ("Mage".equals(string)) {
-				EvokerEntity evokerEntity = EntityType.EVOKER.create(iWorld.getWorld());
-				evokerEntity.setPersistent();
-				evokerEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				iWorld.spawnEntity(evokerEntity);
-				iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
-			} else if ("Warrior".equals(string)) {
-				VindicatorEntity vindicatorEntity = EntityType.VINDICATOR.create(iWorld.getWorld());
-				vindicatorEntity.setPersistent();
-				vindicatorEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
-				vindicatorEntity.prepareEntityData(iWorld, iWorld.getLocalDifficulty(new BlockPos(vindicatorEntity)), SpawnType.field_16474, null, null);
-				iWorld.spawnEntity(vindicatorEntity);
+			} else {
+				IllagerEntity illagerEntity;
+				switch (string) {
+					case "Mage":
+						illagerEntity = EntityType.EVOKER.create(iWorld.getWorld());
+						break;
+					case "Warrior":
+						illagerEntity = EntityType.VINDICATOR.create(iWorld.getWorld());
+						break;
+					default:
+						return;
+				}
+
+				illagerEntity.setPersistent();
+				illagerEntity.setPositionAndAngles(blockPos, 0.0F, 0.0F);
+				illagerEntity.initialize(iWorld, iWorld.getLocalDifficulty(new BlockPos(illagerEntity)), SpawnType.field_16474, null, null);
+				iWorld.spawnEntity(illagerEntity);
 				iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
 			}
 		}
@@ -879,7 +883,7 @@ public class WoodlandMansionGenerator {
 
 			BlockPos blockPos2 = Structure.method_15162(new BlockPos(1, 0, 0), Mirror.NONE, rotation2, 7, 7);
 			rotation2 = rotation2.method_10501(rotation);
-			blockPos2 = blockPos2.method_10070(rotation);
+			blockPos2 = blockPos2.rotate(rotation);
 			BlockPos blockPos3 = blockPos.add(blockPos2.getX(), 0, blockPos2.getZ());
 			list.add(new WoodlandMansionGenerator.Piece(this.field_15444, string, blockPos3, rotation2));
 		}

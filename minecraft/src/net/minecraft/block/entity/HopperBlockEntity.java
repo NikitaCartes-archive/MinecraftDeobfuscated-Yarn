@@ -233,7 +233,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		ItemStack itemStack2 = transfer(null, inventory, itemStack, null);
 		if (itemStack2.isEmpty()) {
 			bl = true;
-			itemEntity.invalidate();
+			itemEntity.remove();
 		} else {
 			itemEntity.setStack(itemStack2);
 		}
@@ -353,7 +353,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 			if (blockEntity instanceof Inventory) {
 				inventory = (Inventory)blockEntity;
 				if (inventory instanceof ChestBlockEntity && block instanceof ChestBlock) {
-					inventory = ChestBlock.method_17458(blockState, world, blockPos, true);
+					inventory = ChestBlock.getInventory(blockState, world, blockPos, true);
 				}
 			}
 		}
@@ -421,7 +421,7 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		if (entity instanceof ItemEntity) {
 			BlockPos blockPos = this.getPos();
 			if (VoxelShapes.matchesAnywhere(
-				VoxelShapes.cube(entity.getBoundingBox().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
+				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
 				this.getInputAreaShape(),
 				BooleanBiFunction.AND
 			)) {

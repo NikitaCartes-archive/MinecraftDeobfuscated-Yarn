@@ -101,11 +101,11 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 		return identifier;
 	}
 
-	public CompletableFuture<Void> method_18168(Identifier identifier, Executor executor) {
+	public CompletableFuture<Void> loadTextureAsync(Identifier identifier, Executor executor) {
 		if (!this.textures.containsKey(identifier)) {
 			AsyncTexture asyncTexture = new AsyncTexture(this.resourceContainer, identifier, executor);
 			this.textures.put(identifier, asyncTexture);
-			return asyncTexture.method_18148().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), MinecraftClient.getInstance());
+			return asyncTexture.getLoadCompleteFuture().thenRunAsync(() -> this.registerTexture(identifier, asyncTexture), MinecraftClient.getInstance());
 		} else {
 			return CompletableFuture.completedFuture(null);
 		}
@@ -126,10 +126,10 @@ public class TextureManager implements TextureTickListener, ResourceReloadListen
 	}
 
 	@Override
-	public CompletableFuture<Void> apply(
+	public CompletableFuture<Void> reload(
 		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
 	) {
-		return CompletableFuture.allOf(MainMenuScreen.method_18105(this, executor), this.method_18168(AbstractButtonWidget.WIDGETS_LOCATION, executor))
+		return CompletableFuture.allOf(MainMenuScreen.method_18105(this, executor), this.loadTextureAsync(AbstractButtonWidget.WIDGETS_LOCATION, executor))
 			.thenCompose(helper::waitForAll)
 			.thenAcceptAsync(void_ -> {
 				MissingSprite.getMissingSpriteTexture();

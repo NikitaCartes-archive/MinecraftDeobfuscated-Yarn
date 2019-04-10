@@ -6,20 +6,30 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.Proxy;
+import java.time.Duration;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.MainMenuScreen;
+import net.minecraft.client.resource.language.I18n;
+import net.minecraft.client.util.NarratorManager;
+import net.minecraft.client.util.Session;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.util.Session;
+import net.minecraft.sortme.ChatMessageType;
+import net.minecraft.text.StringTextComponent;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class Realms {
+	private static final RepeatedNarrator REPEATED_NARRATOR = new RepeatedNarrator(Duration.ofSeconds(5L));
+
 	public static boolean isTouchScreen() {
 		return MinecraftClient.getInstance().options.touchscreen;
 	}
@@ -128,5 +138,52 @@ public class Realms {
 				var3.printStackTrace();
 			}
 		}
+	}
+
+	public static void openUri(String string) {
+		SystemUtil.getOperatingSystem().open(string);
+	}
+
+	public static void setClipboard(String string) {
+		MinecraftClient.getInstance().keyboard.setClipboard(string);
+	}
+
+	public static String getMinecraftVersionString() {
+		return SharedConstants.getGameVersion().getName();
+	}
+
+	public static Identifier resourceLocation(String string) {
+		return new Identifier(string);
+	}
+
+	public static String getLocalizedString(String string, Object... objects) {
+		return I18n.translate(string, objects);
+	}
+
+	public static void bind(String string) {
+		Identifier identifier = new Identifier(string);
+		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
+	}
+
+	public static void narrateNow(String string) {
+		NarratorManager narratorManager = NarratorManager.INSTANCE;
+		narratorManager.clear();
+		narratorManager.onChatMessage(ChatMessageType.field_11735, new StringTextComponent(fixNarrationNewlines(string)));
+	}
+
+	private static String fixNarrationNewlines(String string) {
+		return string.replace("\\n", System.lineSeparator());
+	}
+
+	public static void narrateNow(String... strings) {
+		narrateNow(Arrays.asList(strings));
+	}
+
+	public static void narrateNow(Iterable<String> iterable) {
+		narrateNow(String.join(System.lineSeparator(), iterable));
+	}
+
+	public static void narrateRepeatedly(String string) {
+		REPEATED_NARRATOR.narrate(fixNarrationNewlines(string));
 	}
 }

@@ -28,7 +28,7 @@ public class ScoreboardSlotArgumentType implements ArgumentType<Integer> {
 		return new ScoreboardSlotArgumentType();
 	}
 
-	public static int getScorebordSlotArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static int getScorebordSlot(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.<Integer>getArgument(string, Integer.class);
 	}
 

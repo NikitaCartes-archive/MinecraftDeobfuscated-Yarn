@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.fluid.Fluid;
@@ -11,6 +12,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
+import net.minecraft.world.World;
 
 public class KelpPlantBlock extends Block implements FluidFillable {
 	private final KelpBlock kelpBlock;
@@ -31,22 +33,31 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 	}
 
 	@Override
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		if (!blockState.canPlaceAt(world, blockPos)) {
+			world.breakBlock(blockPos, true);
+		}
+
+		super.onScheduledTick(blockState, world, blockPos, random);
+	}
+
+	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
-		} else {
-			if (direction == Direction.UP) {
-				Block block = blockState2.getBlock();
-				if (block != this && block != this.kelpBlock) {
-					return this.kelpBlock.getPlacementState(iWorld);
-				}
-			}
-
-			iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
-			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		if (direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)) {
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
+
+		if (direction == Direction.UP) {
+			Block block = blockState2.getBlock();
+			if (block != this && block != this.kelpBlock) {
+				return this.kelpBlock.getPlacementState(iWorld);
+			}
+		}
+
+		iWorld.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(iWorld));
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override
@@ -54,7 +65,7 @@ public class KelpPlantBlock extends Block implements FluidFillable {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 		Block block = blockState2.getBlock();
-		return block != Blocks.field_10092 && (block == this || Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP));
+		return block != Blocks.field_10092 && (block == this || Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP));
 	}
 
 	@Environment(EnvType.CLIENT)

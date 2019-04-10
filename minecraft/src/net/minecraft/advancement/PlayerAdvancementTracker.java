@@ -12,7 +12,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.internal.Streams;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
 import java.io.File;
@@ -38,6 +37,7 @@ import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.network.packet.AdvancementUpdateS2CPacket;
 import net.minecraft.client.network.packet.SelectAdvancementTabS2CPacket;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
@@ -49,7 +49,7 @@ public class PlayerAdvancementTracker {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
 		.registerTypeAdapter(AdvancementProgress.class, new AdvancementProgress.Serializer())
-		.registerTypeAdapter(Identifier.class, new Identifier.DeSerializer())
+		.registerTypeAdapter(Identifier.class, new Identifier.Serializer())
 		.setPrettyPrinting()
 		.create();
 	private static final TypeToken<Map<Identifier, AdvancementProgress>> JSON_TYPE = new TypeToken<Map<Identifier, AdvancementProgress>>() {
@@ -138,7 +138,7 @@ public class PlayerAdvancementTracker {
 
 					dynamic = this.server
 						.getDataFixer()
-						.update(DataFixTypes.ADVANCEMENTS, dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
+						.update(DataFixTypes.field_19220.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
 					dynamic = dynamic.remove("DataVersion");
 					Map<Identifier, AdvancementProgress> map = GSON.getAdapter(JSON_TYPE).fromJsonTree(dynamic.getValue());
 					if (map == null) {

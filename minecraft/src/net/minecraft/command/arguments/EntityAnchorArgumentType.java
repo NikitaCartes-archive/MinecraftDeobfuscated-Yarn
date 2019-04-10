@@ -27,7 +27,7 @@ public class EntityAnchorArgumentType implements ArgumentType<EntityAnchorArgume
 		object -> new TranslatableTextComponent("argument.anchor.invalid", object)
 	);
 
-	public static EntityAnchorArgumentType.EntityAnchor getAnchorArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static EntityAnchorArgumentType.EntityAnchor getEntityAnchor(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, EntityAnchorArgumentType.EntityAnchor.class);
 	}
 

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DedicatedPlayerManager extends PlayerManager {
-	private static final Logger field_13804 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public DedicatedPlayerManager(MinecraftDedicatedServer minecraftDedicatedServer) {
 		super(minecraftDedicatedServer, minecraftDedicatedServer.getProperties().maxPlayers);
@@ -58,7 +58,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		try {
 			this.getIpBanList().save();
 		} catch (IOException var2) {
-			field_13804.warn("Failed to save ip banlist: ", (Throwable)var2);
+			LOGGER.warn("Failed to save ip banlist: ", (Throwable)var2);
 		}
 	}
 
@@ -66,7 +66,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		try {
 			this.getUserBanList().save();
 		} catch (IOException var2) {
-			field_13804.warn("Failed to save user banlist: ", (Throwable)var2);
+			LOGGER.warn("Failed to save user banlist: ", (Throwable)var2);
 		}
 	}
 
@@ -74,7 +74,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		try {
 			this.getIpBanList().load();
 		} catch (IOException var2) {
-			field_13804.warn("Failed to load ip banlist: ", (Throwable)var2);
+			LOGGER.warn("Failed to load ip banlist: ", (Throwable)var2);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		try {
 			this.getUserBanList().load();
 		} catch (IOException var2) {
-			field_13804.warn("Failed to load user banlist: ", (Throwable)var2);
+			LOGGER.warn("Failed to load user banlist: ", (Throwable)var2);
 		}
 	}
 
@@ -90,7 +90,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		try {
 			this.getOpList().load();
 		} catch (Exception var2) {
-			field_13804.warn("Failed to load operators list: ", (Throwable)var2);
+			LOGGER.warn("Failed to load operators list: ", (Throwable)var2);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		try {
 			this.getOpList().save();
 		} catch (Exception var2) {
-			field_13804.warn("Failed to save operators list: ", (Throwable)var2);
+			LOGGER.warn("Failed to save operators list: ", (Throwable)var2);
 		}
 	}
 
@@ -106,7 +106,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		try {
 			this.getWhitelist().load();
 		} catch (Exception var2) {
-			field_13804.warn("Failed to load white-list: ", (Throwable)var2);
+			LOGGER.warn("Failed to load white-list: ", (Throwable)var2);
 		}
 	}
 
@@ -114,7 +114,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 		try {
 			this.getWhitelist().save();
 		} catch (Exception var2) {
-			field_13804.warn("Failed to save white-list: ", (Throwable)var2);
+			LOGGER.warn("Failed to save white-list: ", (Throwable)var2);
 		}
 	}
 

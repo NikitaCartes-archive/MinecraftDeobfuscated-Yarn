@@ -17,12 +17,12 @@ public interface Trader {
 	@Nullable
 	PlayerEntity getCurrentCustomer();
 
-	TraderRecipeList getRecipes();
+	TraderOfferList getOffers();
 
 	@Environment(EnvType.CLIENT)
-	void setServerRecipes(@Nullable TraderRecipeList traderRecipeList);
+	void setOffersFromServer(@Nullable TraderOfferList traderOfferList);
 
-	void useRecipe(TraderRecipe traderRecipe);
+	void trade(TradeOffer tradeOffer);
 
 	void onSellingItem(ItemStack itemStack);
 
@@ -30,18 +30,18 @@ public interface Trader {
 
 	int getExperience();
 
-	void setExperience(int i);
+	void setExperienceFromServer(int i);
 
-	boolean method_19270();
+	boolean isLevelledTrader();
 
-	default void sendRecipes(PlayerEntity playerEntity, TextComponent textComponent, int i) {
+	default void sendOffers(PlayerEntity playerEntity, TextComponent textComponent, int i) {
 		OptionalInt optionalInt = playerEntity.openContainer(
 			new ClientDummyContainerProvider((ix, playerInventory, playerEntityx) -> new MerchantContainer(ix, playerInventory, this), textComponent)
 		);
 		if (optionalInt.isPresent()) {
-			TraderRecipeList traderRecipeList = this.getRecipes();
-			if (!traderRecipeList.isEmpty()) {
-				playerEntity.sendVillagerRecipes(optionalInt.getAsInt(), traderRecipeList, i, this.getExperience(), this.method_19270());
+			TraderOfferList traderOfferList = this.getOffers();
+			if (!traderOfferList.isEmpty()) {
+				playerEntity.sendTradeOffers(optionalInt.getAsInt(), traderOfferList, i, this.getExperience(), this.isLevelledTrader());
 			}
 		}
 	}

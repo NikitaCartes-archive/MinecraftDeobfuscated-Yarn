@@ -23,7 +23,7 @@ public class SpellParticle extends SpriteBillboardParticle {
 		this.scale *= 0.75F;
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.collidesWithWorld = false;
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
@@ -33,16 +33,16 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17870);
+			this.setSpriteForAge(this.field_17870);
 			this.velocityY += 0.004;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.posY == this.prevPosY) {
+			if (this.y == this.prevPosY) {
 				this.velocityX *= 1.1;
 				this.velocityZ *= 1.1;
 			}

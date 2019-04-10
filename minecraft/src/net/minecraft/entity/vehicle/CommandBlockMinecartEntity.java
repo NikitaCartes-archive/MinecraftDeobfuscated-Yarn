@@ -126,7 +126,7 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		}
 
 		@Override
-		public ServerCommandSource method_8303() {
+		public ServerCommandSource markDirty() {
 			return new ServerCommandSource(
 				this,
 				new Vec3d(CommandBlockMinecartEntity.this.x, CommandBlockMinecartEntity.this.y, CommandBlockMinecartEntity.this.z),

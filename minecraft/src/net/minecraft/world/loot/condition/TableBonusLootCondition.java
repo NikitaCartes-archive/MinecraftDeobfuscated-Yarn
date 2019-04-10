@@ -37,7 +37,7 @@ public class TableBonusLootCondition implements LootCondition {
 		return lootContext.getRandom().nextFloat() < f;
 	}
 
-	public static LootCondition.Builder method_800(Enchantment enchantment, float... fs) {
+	public static LootCondition.Builder builder(Enchantment enchantment, float... fs) {
 		return () -> new TableBonusLootCondition(enchantment, fs);
 	}
 

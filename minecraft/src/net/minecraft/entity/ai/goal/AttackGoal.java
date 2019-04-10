@@ -14,7 +14,7 @@ public class AttackGoal extends Goal {
 	public AttackGoal(MobEntity mobEntity) {
 		this.mob = mobEntity;
 		this.world = mobEntity.world;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class AttackGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		if (!this.target.isValid()) {
+		if (!this.target.isAlive()) {
 			return false;
 		} else {
 			return this.mob.squaredDistanceTo(this.target) > 225.0 ? false : !this.mob.getNavigation().isIdle() || this.canStart();
@@ -38,7 +38,7 @@ public class AttackGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.target = null;
 		this.mob.getNavigation().stop();
 	}

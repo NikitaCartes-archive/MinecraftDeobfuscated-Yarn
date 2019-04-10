@@ -184,12 +184,12 @@ public class ParrotEntityModel extends EntityModel<ParrotEntity> {
 	}
 
 	private static ParrotEntityModel.class_585 method_17107(ParrotEntity parrotEntity) {
-		if (parrotEntity.method_6582()) {
+		if (parrotEntity.getSongPlaying()) {
 			return ParrotEntityModel.class_585.field_3463;
 		} else if (parrotEntity.isSitting()) {
 			return ParrotEntityModel.class_585.field_3466;
 		} else {
-			return parrotEntity.method_6581() ? ParrotEntityModel.class_585.field_3462 : ParrotEntityModel.class_585.field_3465;
+			return parrotEntity.isInAir() ? ParrotEntityModel.class_585.field_3462 : ParrotEntityModel.class_585.field_3465;
 		}
 	}
 

@@ -16,6 +16,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
@@ -72,8 +73,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().getMaterial(this);
 	}
 
-	public boolean allowsSpawning(Entity entity) {
-		return this.getBlock().allowsSpawning(this, entity);
+	public boolean allowsSpawning(BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return this.getBlock().allowsSpawning(this, blockView, blockPos, entityType);
 	}
 
 	public boolean isTranslucent(BlockView blockView, BlockPos blockPos) {
@@ -105,10 +106,6 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 
 	public boolean isAir() {
 		return this.getBlock().isAir(this);
-	}
-
-	public boolean usesNeighborLightValues(BlockView blockView, BlockPos blockPos) {
-		return this.getBlock().usesNeighborLightValues(this, blockView, blockPos);
 	}
 
 	public MaterialColor getTopMaterialColor(BlockView blockView, BlockPos blockPos) {
@@ -227,8 +224,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().onBlockAction(this, world, blockPos, i, j);
 	}
 
-	public void neighborUpdate(World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		this.getBlock().neighborUpdate(this, world, blockPos, block, blockPos2);
+	public void neighborUpdate(World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+		this.getBlock().neighborUpdate(this, world, blockPos, block, blockPos2, bl);
 	}
 
 	public void updateNeighborStates(IWorld iWorld, BlockPos blockPos, int i) {
@@ -239,8 +236,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		this.getBlock().method_9517(this, iWorld, blockPos, i);
 	}
 
-	public void onBlockAdded(World world, BlockPos blockPos, BlockState blockState) {
-		this.getBlock().onBlockAdded(this, world, blockPos, blockState);
+	public void onBlockAdded(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
+		this.getBlock().onBlockAdded(this, world, blockPos, blockState, bl);
 	}
 
 	public void onBlockRemoved(World world, BlockPos blockPos, BlockState blockState, boolean bl) {
@@ -287,7 +284,7 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().canPlaceAtSide(this, blockView, blockPos, blockPlacementEnvironment);
 	}
 
-	public boolean method_11587(ItemPlacementContext itemPlacementContext) {
+	public boolean canReplace(ItemPlacementContext itemPlacementContext) {
 		return this.getBlock().canReplace(this, itemPlacementContext);
 	}
 

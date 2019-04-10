@@ -8,13 +8,13 @@ public class SwimGoal extends Goal {
 
 	public SwimGoal(MobEntity mobEntity) {
 		this.entityMob = mobEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407));
+		this.setControls(EnumSet.of(Goal.Control.field_18407));
 		mobEntity.getNavigation().setCanSwim(true);
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.entityMob.isInsideWater() && this.entityMob.method_5861() > 0.4 || this.entityMob.isTouchingLava();
+		return this.entityMob.isInWater() || this.entityMob.isTouchingLava();
 	}
 
 	@Override

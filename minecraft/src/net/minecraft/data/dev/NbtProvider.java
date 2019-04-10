@@ -44,7 +44,7 @@ public class NbtProvider implements DataProvider {
 		try {
 			CompoundTag compoundTag = NbtIo.readCompressed(Files.newInputStream(path));
 			TextComponent textComponent = compoundTag.toTextComponent("    ", 0);
-			String string2 = textComponent.getString();
+			String string2 = textComponent.getString() + "\n";
 			Path path3 = path2.resolve(string + ".snbt");
 			Files.createDirectories(path3.getParent());
 			BufferedWriter bufferedWriter = Files.newBufferedWriter(path3);

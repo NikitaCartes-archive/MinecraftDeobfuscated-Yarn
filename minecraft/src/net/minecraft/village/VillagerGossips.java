@@ -95,7 +95,7 @@ public class VillagerGossips {
 	public void deserialize(Dynamic<?> dynamic) {
 		dynamic.asStream()
 			.map(VillagerGossips.GossipEntry::deserialize)
-			.flatMap(SystemUtil::method_17815)
+			.flatMap(SystemUtil::stream)
 			.forEach(gossipEntry -> this.getReputationFor(gossipEntry.target).associatedGossip.put(gossipEntry.type, gossipEntry.value));
 	}
 
@@ -128,7 +128,7 @@ public class VillagerGossips {
 		}
 
 		public <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps) {
-			return SystemUtil.method_19482(
+			return SystemUtil.writeUuid(
 				"Target",
 				this.target,
 				new Dynamic<>(
@@ -147,7 +147,7 @@ public class VillagerGossips {
 				.asString()
 				.map(VillageGossipType::byKey)
 				.flatMap(
-					villageGossipType -> SystemUtil.method_19481("Target", dynamic)
+					villageGossipType -> SystemUtil.readUuid("Target", dynamic)
 							.flatMap(uUID -> dynamic.get("Value").asNumber().map(number -> new VillagerGossips.GossipEntry(uUID, villageGossipType, number.intValue())))
 				);
 		}

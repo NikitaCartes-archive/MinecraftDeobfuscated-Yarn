@@ -18,7 +18,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 	}
 
 	@Override
-	protected int getUpdatedLevel(long l, long m, int i) {
+	protected int getPropagatedLevel(long l, long m, int i) {
 		if (m == Long.MAX_VALUE) {
 			return 15;
 		} else {
@@ -96,7 +96,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 	protected int getMergedLevel(long l, long m, int i) {
 		int j = i;
 		if (Long.MAX_VALUE != m) {
-			int k = this.getUpdatedLevel(Long.MAX_VALUE, l, 0);
+			int k = this.getPropagatedLevel(Long.MAX_VALUE, l, 0);
 			if (i > k) {
 				j = k;
 			}
@@ -121,7 +121,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 
 			if (chunkNibbleArray2 != null) {
 				if (o != m) {
-					int q = this.getUpdatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
+					int q = this.getPropagatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
 					if (j > q) {
 						j = q;
 					}
@@ -139,7 +139,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 				if (o != m) {
 					int r;
 					if (chunkNibbleArray3 != null) {
-						r = this.getUpdatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray3, o));
+						r = this.getPropagatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray3, o));
 					} else {
 						r = this.lightStorage.method_15566(p) ? 15 : 0;
 					}
@@ -159,18 +159,18 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 	}
 
 	@Override
-	protected void update(long l) {
+	protected void fullyUpdate(long l) {
 		this.lightStorage.updateAll();
 		long m = ChunkSectionPos.toChunkLong(l);
 		if (this.lightStorage.hasChunk(m)) {
-			super.update(l);
+			super.fullyUpdate(l);
 		} else {
 			for (l = BlockPos.removeChunkSectionLocalY(l); !this.lightStorage.hasChunk(m) && !this.lightStorage.method_15568(m); l = BlockPos.add(l, 0, 16, 0)) {
 				m = ChunkSectionPos.offsetPacked(m, Direction.UP);
 			}
 
 			if (this.lightStorage.hasChunk(m)) {
-				super.update(l);
+				super.fullyUpdate(l);
 			}
 		}
 	}

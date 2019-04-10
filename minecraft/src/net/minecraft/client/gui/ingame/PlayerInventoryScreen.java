@@ -33,31 +33,31 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 	}
 
 	@Override
-	public void update() {
-		if (this.client.interactionManager.hasCreativeInventory()) {
-			this.client.openScreen(new CreativePlayerInventoryScreen(this.client.player));
+	public void tick() {
+		if (this.minecraft.interactionManager.hasCreativeInventory()) {
+			this.minecraft.openScreen(new CreativePlayerInventoryScreen(this.minecraft.player));
 		} else {
 			this.recipeBook.update();
 		}
 	}
 
 	@Override
-	protected void onInitialized() {
-		if (this.client.interactionManager.hasCreativeInventory()) {
-			this.client.openScreen(new CreativePlayerInventoryScreen(this.client.player));
+	protected void init() {
+		if (this.minecraft.interactionManager.hasCreativeInventory()) {
+			this.minecraft.openScreen(new CreativePlayerInventoryScreen(this.minecraft.player));
 		} else {
-			super.onInitialized();
-			this.isNarrow = this.screenWidth < 379;
-			this.recipeBook.initialize(this.screenWidth, this.screenHeight, this.client, this.isNarrow, this.container);
+			super.init();
+			this.isNarrow = this.width < 379;
+			this.recipeBook.initialize(this.width, this.height, this.minecraft, this.isNarrow, this.container);
 			this.isOpen = true;
-			this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
-			this.listeners.add(this.recipeBook);
-			this.focusOn(this.recipeBook);
-			this.addButton(new RecipeBookButtonWidget(this.left + 104, this.screenHeight / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
+			this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+			this.children.add(this.recipeBook);
+			this.method_20085(this.recipeBook);
+			this.addButton(new RecipeBookButtonWidget(this.left + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
 				this.recipeBook.reset(this.isNarrow);
 				this.recipeBook.toggleOpen();
-				this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.screenWidth, this.width);
-				((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 104, this.screenHeight / 2 - 22);
+				this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
+				((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 104, this.height / 2 - 22);
 				this.isMouseDown = true;
 			}));
 		}
@@ -65,12 +65,12 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.title.getFormattedText(), 97.0F, 8.0F, 4210752);
+		this.font.draw(this.title.getFormattedText(), 97.0F, 8.0F, 4210752);
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
+		this.renderBackground();
 		this.offsetGuiForEffects = !this.recipeBook.isOpen();
 		if (this.recipeBook.isOpen() && this.isNarrow) {
 			this.drawBackground(f, i, j);
@@ -85,17 +85,17 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 		this.recipeBook.drawTooltip(this.left, this.top, i, j);
 		this.mouseX = (float)i;
 		this.mouseY = (float)j;
-		this.focusOn(this.recipeBook);
+		this.method_20086(this.recipeBook);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 		int k = this.left;
 		int l = this.top;
-		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
-		drawEntity(k + 51, l + 75, 30, (float)(k + 51) - this.mouseX, (float)(l + 75 - 50) - this.mouseY, this.client.player);
+		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
+		drawEntity(k + 51, l + 75, 30, (float)(k + 51) - this.mouseX, (float)(l + 75 - 50) - this.mouseY, this.minecraft.player);
 	}
 
 	public static void drawEntity(int i, int j, int k, float f, float g, LivingEntity livingEntity) {
@@ -163,8 +163,8 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
-		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.width, this.height, k) && bl;
+		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
+		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
 	}
 
 	@Override
@@ -179,12 +179,12 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 	}
 
 	@Override
-	public void onClosed() {
+	public void removed() {
 		if (this.isOpen) {
 			this.recipeBook.close();
 		}
 
-		super.onClosed();
+		super.removed();
 	}
 
 	@Override

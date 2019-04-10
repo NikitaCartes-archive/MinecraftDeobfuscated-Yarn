@@ -16,7 +16,7 @@ public class RenderTickCounter {
 		this.prevTimeMillis = l;
 	}
 
-	public void method_1658(long l) {
+	public void beginRenderTick(long l) {
 		this.lastFrameDuration = (float)(l - this.prevTimeMillis) / this.timeScale;
 		this.prevTimeMillis = l;
 		this.tickDelta = this.tickDelta + this.lastFrameDuration;

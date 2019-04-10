@@ -1,5 +1,6 @@
 package net.minecraft.entity;
 
+import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.packet.ExperienceOrbSpawnS2CPacket;
@@ -39,7 +40,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -86,14 +87,14 @@ public class ExperienceOrbEntity extends Entity {
 			this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 		}
 
-		if (!this.world.method_18026(this.getBoundingBox())) {
-			this.method_5632(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+		if (!this.world.doesNotCollide(this.getBoundingBox())) {
+			this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
 		}
 
 		double d = 8.0;
 		if (this.field_6160 < this.field_6165 - 20 + this.getEntityId() % 100) {
 			if (this.target == null || this.target.squaredDistanceTo(this) > 64.0) {
-				this.target = this.world.method_18460(this, 8.0);
+				this.target = this.world.getClosestPlayer(this, 8.0);
 			}
 
 			this.field_6160 = this.field_6165;
@@ -126,7 +127,7 @@ public class ExperienceOrbEntity extends Entity {
 		this.field_6165++;
 		this.xpAge++;
 		if (this.xpAge >= 6000) {
-			this.invalidate();
+			this.remove();
 		}
 	}
 
@@ -152,7 +153,7 @@ public class ExperienceOrbEntity extends Entity {
 			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - f);
 			if (this.health <= 0) {
-				this.invalidate();
+				this.remove();
 			}
 
 			return false;
@@ -178,19 +179,22 @@ public class ExperienceOrbEntity extends Entity {
 		if (!this.world.isClient) {
 			if (this.field_6163 == 0 && playerEntity.field_7504 == 0) {
 				playerEntity.field_7504 = 2;
-				playerEntity.pickUpEntity(this, 1);
-				ItemStack itemStack = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.field_9101, playerEntity);
-				if (!itemStack.isEmpty() && itemStack.isDamaged()) {
-					int i = Math.min(this.method_5917(this.amount), itemStack.getDamage());
-					this.amount = this.amount - this.method_5922(i);
-					itemStack.setDamage(itemStack.getDamage() - i);
+				playerEntity.sendPickup(this, 1);
+				Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.field_9101, playerEntity);
+				if (entry != null) {
+					ItemStack itemStack = (ItemStack)entry.getValue();
+					if (!itemStack.isEmpty() && itemStack.isDamaged()) {
+						int i = Math.min(this.method_5917(this.amount), itemStack.getDamage());
+						this.amount = this.amount - this.method_5922(i);
+						itemStack.setDamage(itemStack.getDamage() - i);
+					}
 				}
 
 				if (this.amount > 0) {
 					playerEntity.addExperience(this.amount);
 				}
 
-				this.invalidate();
+				this.remove();
 			}
 		}
 	}
@@ -257,7 +261,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	public boolean method_5732() {
+	public boolean canPlayerAttack() {
 		return false;
 	}
 

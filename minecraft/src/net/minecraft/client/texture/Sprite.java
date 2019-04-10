@@ -26,7 +26,7 @@ public class Sprite {
 	protected final int height;
 	protected NativeImage[] images;
 	@Nullable
-	protected int[] field_5265;
+	protected int[] frameOffsets;
 	@Nullable
 	protected int[] field_5264;
 	protected NativeImage[] interpolatedImages;
@@ -55,10 +55,10 @@ public class Sprite {
 	protected Sprite(Identifier identifier, PngFile pngFile, @Nullable AnimationResourceMetadata animationResourceMetadata) {
 		this.id = identifier;
 		if (animationResourceMetadata != null) {
-			Pair<Integer, Integer> pair = method_18341(animationResourceMetadata.getWidth(), animationResourceMetadata.getHeight(), pngFile.width, pngFile.height);
+			Pair<Integer, Integer> pair = getDimensions(animationResourceMetadata.getWidth(), animationResourceMetadata.getHeight(), pngFile.width, pngFile.height);
 			this.width = pair.getFirst();
 			this.height = pair.getSecond();
-			if (!method_18340(pngFile.width, this.width) || !method_18340(pngFile.height, this.height)) {
+			if (!isDivisibleBy(pngFile.width, this.width) || !isDivisibleBy(pngFile.height, this.height)) {
 				throw new IllegalArgumentException(
 					String.format("Image size %s,%s is not multiply of frame size %s,%s", this.width, this.height, pngFile.width, pngFile.height)
 				);
@@ -71,7 +71,7 @@ public class Sprite {
 		this.animationMetadata = animationResourceMetadata;
 	}
 
-	private static Pair<Integer, Integer> method_18341(int i, int j, int k, int l) {
+	private static Pair<Integer, Integer> getDimensions(int i, int j, int k, int l) {
 		if (i != -1) {
 			return j != -1 ? Pair.of(i, j) : Pair.of(i, l);
 		} else if (j != -1) {
@@ -82,7 +82,7 @@ public class Sprite {
 		}
 	}
 
-	private static boolean method_18340(int i, int j) {
+	private static boolean isDivisibleBy(int i, int j) {
 		return i / j * j == i;
 	}
 
@@ -196,11 +196,11 @@ public class Sprite {
 		return srgbLinearMap[i & 0xFF];
 	}
 
-	private void method_4573(int i) {
+	private void upload(int i) {
 		int j = 0;
 		int k = 0;
-		if (this.field_5265 != null) {
-			j = this.field_5265[i] * this.width;
+		if (this.frameOffsets != null) {
+			j = this.frameOffsets[i] * this.width;
 			k = this.field_5264[i] * this.height;
 		}
 
@@ -274,12 +274,12 @@ public class Sprite {
 		this.ticks++;
 		if (this.ticks >= this.animationMetadata.getFrameTime(this.framePos)) {
 			int i = this.animationMetadata.getFrameIndex(this.framePos);
-			int j = this.animationMetadata.getFrameCount() == 0 ? this.method_4592() : this.animationMetadata.getFrameCount();
+			int j = this.animationMetadata.getFrameCount() == 0 ? this.getFrameCount() : this.animationMetadata.getFrameCount();
 			this.framePos = (this.framePos + 1) % j;
 			this.ticks = 0;
 			int k = this.animationMetadata.getFrameIndex(this.framePos);
-			if (i != k && k >= 0 && k < this.method_4592()) {
-				this.method_4573(k);
+			if (i != k && k >= 0 && k < this.getFrameCount()) {
+				this.upload(k);
 			}
 		} else if (this.animationMetadata.shouldInterpolate()) {
 			this.interpolateFrames();
@@ -289,9 +289,9 @@ public class Sprite {
 	private void interpolateFrames() {
 		double d = 1.0 - (double)this.ticks / (double)this.animationMetadata.getFrameTime(this.framePos);
 		int i = this.animationMetadata.getFrameIndex(this.framePos);
-		int j = this.animationMetadata.getFrameCount() == 0 ? this.method_4592() : this.animationMetadata.getFrameCount();
+		int j = this.animationMetadata.getFrameCount() == 0 ? this.getFrameCount() : this.animationMetadata.getFrameCount();
 		int k = this.animationMetadata.getFrameIndex((this.framePos + 1) % j);
-		if (i != k && k >= 0 && k < this.method_4592()) {
+		if (i != k && k >= 0 && k < this.getFrameCount()) {
 			if (this.interpolatedImages == null || this.interpolatedImages.length != this.images.length) {
 				if (this.interpolatedImages != null) {
 					for (NativeImage nativeImage : this.interpolatedImages) {
@@ -313,8 +313,8 @@ public class Sprite {
 
 				for (int o = 0; o < n; o++) {
 					for (int p = 0; p < m; p++) {
-						int q = this.method_4589(i, l, p, o);
-						int r = this.method_4589(k, l, p, o);
+						int q = this.getFramePixel(i, l, p, o);
+						int r = this.getFramePixel(k, l, p, o);
 						int s = this.lerp(d, q >> 16 & 0xFF, r >> 16 & 0xFF);
 						int t = this.lerp(d, q >> 8 & 0xFF, r >> 8 & 0xFF);
 						int u = this.lerp(d, q & 0xFF, r & 0xFF);
@@ -331,8 +331,8 @@ public class Sprite {
 		return (int)(d * (double)i + (1.0 - d) * (double)j);
 	}
 
-	public int method_4592() {
-		return this.field_5265 == null ? 0 : this.field_5265.length;
+	public int getFrameCount() {
+		return this.frameOffsets == null ? 0 : this.frameOffsets.length;
 	}
 
 	public void load(Resource resource, int i) throws IOException {
@@ -355,9 +355,9 @@ public class Sprite {
 
 		if (this.animationMetadata != null && this.animationMetadata.getFrameCount() > 0) {
 			int l = (Integer)this.animationMetadata.getFrameIndexSet().stream().max(Integer::compareTo).get() + 1;
-			this.field_5265 = new int[l];
+			this.frameOffsets = new int[l];
 			this.field_5264 = new int[l];
-			Arrays.fill(this.field_5265, -1);
+			Arrays.fill(this.frameOffsets, -1);
 			Arrays.fill(this.field_5264, -1);
 
 			for (int m : this.animationMetadata.getFrameIndexSet()) {
@@ -367,19 +367,19 @@ public class Sprite {
 
 				int n = m / j;
 				int o = m % j;
-				this.field_5265[m] = o;
+				this.frameOffsets[m] = o;
 				this.field_5264[m] = n;
 			}
 		} else {
 			List<AnimationFrameResourceMetadata> list = Lists.<AnimationFrameResourceMetadata>newArrayList();
 			int p = j * k;
-			this.field_5265 = new int[p];
+			this.frameOffsets = new int[p];
 			this.field_5264 = new int[p];
 
 			for (int m = 0; m < k; m++) {
 				for (int n = 0; n < j; n++) {
 					int o = m * j + n;
-					this.field_5265[o] = n;
+					this.frameOffsets[o] = n;
 					this.field_5264[o] = m;
 					list.add(new AnimationFrameResourceMetadata(o, -1));
 				}
@@ -445,7 +445,7 @@ public class Sprite {
 	}
 
 	public String toString() {
-		int i = this.field_5265 == null ? 0 : this.field_5265.length;
+		int i = this.frameOffsets == null ? 0 : this.frameOffsets.length;
 		return "TextureAtlasSprite{name='"
 			+ this.id
 			+ '\''
@@ -470,15 +470,15 @@ public class Sprite {
 			+ '}';
 	}
 
-	private int method_4589(int i, int j, int k, int l) {
-		return this.images[j].getPixelRGBA(k + (this.field_5265[i] * this.width >> j), l + (this.field_5264[i] * this.height >> j));
+	private int getFramePixel(int i, int j, int k, int l) {
+		return this.images[j].getPixelRGBA(k + (this.frameOffsets[i] * this.width >> j), l + (this.field_5264[i] * this.height >> j));
 	}
 
 	public boolean method_4583(int i, int j, int k) {
-		return (this.images[0].getPixelRGBA(j + this.field_5265[i] * this.width, k + this.field_5264[i] * this.height) >> 24 & 0xFF) == 0;
+		return (this.images[0].getPixelRGBA(j + this.frameOffsets[i] * this.width, k + this.field_5264[i] * this.height) >> 24 & 0xFF) == 0;
 	}
 
-	public void method_4584() {
-		this.method_4573(0);
+	public void upload() {
+		this.upload(0);
 	}
 }

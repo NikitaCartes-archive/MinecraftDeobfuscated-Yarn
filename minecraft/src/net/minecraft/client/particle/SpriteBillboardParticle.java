@@ -41,11 +41,11 @@ public abstract class SpriteBillboardParticle extends BillboardParticle {
 		return this.sprite.getMaxV();
 	}
 
-	public void method_18140(SpriteProvider spriteProvider) {
+	public void setSprite(SpriteProvider spriteProvider) {
 		this.setSprite(spriteProvider.getSprite(this.random));
 	}
 
-	public void method_18142(SpriteProvider spriteProvider) {
+	public void setSpriteForAge(SpriteProvider spriteProvider) {
 		this.setSprite(spriteProvider.getSprite(this.age, this.maxAge));
 	}
 }

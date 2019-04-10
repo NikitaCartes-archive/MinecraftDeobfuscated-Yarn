@@ -36,7 +36,7 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 		} else {
 			return !(animalEntity instanceof DonkeyEntity) && !(animalEntity instanceof HorseEntity)
 				? false
-				: this.method_6734() && ((HorseBaseEntity)animalEntity).method_6734();
+				: this.canBreed() && ((HorseBaseEntity)animalEntity).canBreed();
 		}
 	}
 
@@ -44,7 +44,7 @@ public class DonkeyEntity extends AbstractDonkeyEntity {
 	public PassiveEntity createChild(PassiveEntity passiveEntity) {
 		EntityType<? extends HorseBaseEntity> entityType = passiveEntity instanceof HorseEntity ? EntityType.MULE : EntityType.DONKEY;
 		HorseBaseEntity horseBaseEntity = entityType.create(this.world);
-		this.method_6743(passiveEntity, horseBaseEntity);
+		this.setChildAttributes(passiveEntity, horseBaseEntity);
 		return horseBaseEntity;
 	}
 }

@@ -36,9 +36,9 @@ public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityM
 		GLX.glMultiTexCoord2f(GLX.GL_TEXTURE1, (float)n, (float)o);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
-		gameRenderer.method_3201(true);
+		gameRenderer.setFogBlack(true);
 		this.getModel().render(entity, f, g, i, j, k, l);
-		gameRenderer.method_3201(false);
+		gameRenderer.setFogBlack(false);
 		m = entity.getLightmapCoordinates();
 		n = m % 65536;
 		o = m / 65536;
@@ -50,7 +50,7 @@ public class SpiderEyesFeatureRenderer<T extends Entity, M extends SpiderEntityM
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

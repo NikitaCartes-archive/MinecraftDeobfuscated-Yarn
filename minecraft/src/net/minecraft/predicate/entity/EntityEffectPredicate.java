@@ -39,12 +39,12 @@ public class EntityEffectPredicate {
 		if (this == EMPTY) {
 			return true;
 		} else {
-			return entity instanceof LivingEntity ? this.test(((LivingEntity)entity).method_6088()) : false;
+			return entity instanceof LivingEntity ? this.test(((LivingEntity)entity).getActiveStatusEffects()) : false;
 		}
 	}
 
 	public boolean test(LivingEntity livingEntity) {
-		return this == EMPTY ? true : this.test(livingEntity.method_6088());
+		return this == EMPTY ? true : this.test(livingEntity.getActiveStatusEffects());
 	}
 
 	public boolean test(Map<StatusEffect, StatusEffectInstance> map) {
@@ -99,22 +99,22 @@ public class EntityEffectPredicate {
 	}
 
 	public static class EffectData {
-		private final NumberRange.Integer amplifier;
-		private final NumberRange.Integer duration;
+		private final NumberRange.IntRange amplifier;
+		private final NumberRange.IntRange duration;
 		@Nullable
 		private final Boolean ambient;
 		@Nullable
 		private final Boolean visible;
 
-		public EffectData(NumberRange.Integer integer, NumberRange.Integer integer2, @Nullable Boolean boolean_, @Nullable Boolean boolean2) {
-			this.amplifier = integer;
-			this.duration = integer2;
+		public EffectData(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, @Nullable Boolean boolean_, @Nullable Boolean boolean2) {
+			this.amplifier = intRange;
+			this.duration = intRange2;
 			this.ambient = boolean_;
 			this.visible = boolean2;
 		}
 
 		public EffectData() {
-			this(NumberRange.Integer.ANY, NumberRange.Integer.ANY, null, null);
+			this(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, null, null);
 		}
 
 		public boolean test(@Nullable StatusEffectInstance statusEffectInstance) {
@@ -141,11 +141,11 @@ public class EntityEffectPredicate {
 		}
 
 		public static EntityEffectPredicate.EffectData deserialize(JsonObject jsonObject) {
-			NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("amplifier"));
-			NumberRange.Integer integer2 = NumberRange.Integer.fromJson(jsonObject.get("duration"));
+			NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("amplifier"));
+			NumberRange.IntRange intRange2 = NumberRange.IntRange.fromJson(jsonObject.get("duration"));
 			Boolean boolean_ = jsonObject.has("ambient") ? JsonHelper.getBoolean(jsonObject, "ambient") : null;
 			Boolean boolean2 = jsonObject.has("visible") ? JsonHelper.getBoolean(jsonObject, "visible") : null;
-			return new EntityEffectPredicate.EffectData(integer, integer2, boolean_, boolean2);
+			return new EntityEffectPredicate.EffectData(intRange, intRange2, boolean_, boolean2);
 		}
 	}
 }

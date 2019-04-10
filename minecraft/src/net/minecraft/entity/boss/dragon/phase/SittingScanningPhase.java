@@ -7,19 +7,21 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class SittingScanningPhase extends AbstractSittingPhase {
-	private static final TargetPredicate field_18123 = new TargetPredicate().setBaseMaxDistance(150.0);
-	private final TargetPredicate field_18124;
+	private static final TargetPredicate PLAYER_WITHIN_RANGE_PREDICATE = new TargetPredicate().setBaseMaxDistance(150.0);
+	private final TargetPredicate CLOSE_PLAYER_PREDICATE;
 	private int field_7050;
 
 	public SittingScanningPhase(EnderDragonEntity enderDragonEntity) {
 		super(enderDragonEntity);
-		this.field_18124 = new TargetPredicate().setBaseMaxDistance(20.0).setPredicate(livingEntity -> Math.abs(livingEntity.y - enderDragonEntity.y) <= 10.0);
+		this.CLOSE_PLAYER_PREDICATE = new TargetPredicate()
+			.setBaseMaxDistance(20.0)
+			.setPredicate(livingEntity -> Math.abs(livingEntity.y - enderDragonEntity.y) <= 10.0);
 	}
 
 	@Override
 	public void method_6855() {
 		this.field_7050++;
-		LivingEntity livingEntity = this.dragon.world.method_18463(this.field_18124, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
+		LivingEntity livingEntity = this.dragon.world.getClosestPlayer(this.CLOSE_PLAYER_PREDICATE, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
 		if (livingEntity != null) {
 			if (this.field_7050 > 25) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_ATTACKING);
@@ -47,7 +49,7 @@ public class SittingScanningPhase extends AbstractSittingPhase {
 				}
 			}
 		} else if (this.field_7050 >= 100) {
-			livingEntity = this.dragon.world.method_18463(field_18123, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
+			livingEntity = this.dragon.world.getClosestPlayer(PLAYER_WITHIN_RANGE_PREDICATE, this.dragon, this.dragon.x, this.dragon.y, this.dragon.z);
 			this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
 			if (livingEntity != null) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);

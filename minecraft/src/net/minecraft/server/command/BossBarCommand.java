@@ -60,151 +60,149 @@ public class BossBarCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("bossbar")
+			CommandManager.literal("bossbar")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.literal("add")
+					CommandManager.literal("add")
 						.then(
-							ServerCommandManager.argument("id", IdentifierArgumentType.create())
+							CommandManager.argument("id", IdentifierArgumentType.create())
 								.then(
-									ServerCommandManager.argument("name", ComponentArgumentType.create())
+									CommandManager.argument("name", ComponentArgumentType.create())
 										.executes(
 											commandContext -> addBossBar(
-													commandContext.getSource(),
-													IdentifierArgumentType.getIdentifierArgument(commandContext, "id"),
-													ComponentArgumentType.getComponentArgument(commandContext, "name")
+													commandContext.getSource(), IdentifierArgumentType.getIdentifier(commandContext, "id"), ComponentArgumentType.getComponent(commandContext, "name")
 												)
 										)
 								)
 						)
 				)
 				.then(
-					ServerCommandManager.literal("remove")
+					CommandManager.literal("remove")
 						.then(
-							ServerCommandManager.argument("id", IdentifierArgumentType.create())
+							CommandManager.argument("id", IdentifierArgumentType.create())
 								.suggests(suggestionProvider)
 								.executes(commandContext -> removeBossBar(commandContext.getSource(), createBossBar(commandContext)))
 						)
 				)
-				.then(ServerCommandManager.literal("list").executes(commandContext -> listBossBars(commandContext.getSource())))
+				.then(CommandManager.literal("list").executes(commandContext -> listBossBars(commandContext.getSource())))
 				.then(
-					ServerCommandManager.literal("set")
+					CommandManager.literal("set")
 						.then(
-							ServerCommandManager.argument("id", IdentifierArgumentType.create())
+							CommandManager.argument("id", IdentifierArgumentType.create())
 								.suggests(suggestionProvider)
 								.then(
-									ServerCommandManager.literal("name")
+									CommandManager.literal("name")
 										.then(
-											ServerCommandManager.argument("name", ComponentArgumentType.create())
+											CommandManager.argument("name", ComponentArgumentType.create())
 												.executes(
-													commandContext -> setName(
-															commandContext.getSource(), createBossBar(commandContext), ComponentArgumentType.getComponentArgument(commandContext, "name")
-														)
+													commandContext -> setName(commandContext.getSource(), createBossBar(commandContext), ComponentArgumentType.getComponent(commandContext, "name"))
 												)
 										)
 								)
 								.then(
-									ServerCommandManager.literal("color")
+									CommandManager.literal("color")
 										.then(
-											ServerCommandManager.literal("pink")
+											CommandManager.literal("pink")
 												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5788))
 										)
 										.then(
-											ServerCommandManager.literal("blue")
+											CommandManager.literal("blue")
 												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5780))
 										)
 										.then(
-											ServerCommandManager.literal("red")
+											CommandManager.literal("red")
 												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5784))
 										)
 										.then(
-											ServerCommandManager.literal("green")
+											CommandManager.literal("green")
 												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5785))
 										)
 										.then(
-											ServerCommandManager.literal("yellow")
+											CommandManager.literal("yellow")
 												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5782))
 										)
 										.then(
-											ServerCommandManager.literal("purple")
+											CommandManager.literal("purple")
 												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5783))
 										)
 										.then(
-											ServerCommandManager.literal("white")
+											CommandManager.literal("white")
 												.executes(commandContext -> setColor(commandContext.getSource(), createBossBar(commandContext), BossBar.Color.field_5786))
 										)
 								)
 								.then(
-									ServerCommandManager.literal("style")
+									CommandManager.literal("style")
 										.then(
-											ServerCommandManager.literal("progress")
+											CommandManager.literal("progress")
 												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5795))
 										)
 										.then(
-											ServerCommandManager.literal("notched_6")
+											CommandManager.literal("notched_6")
 												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5796))
 										)
 										.then(
-											ServerCommandManager.literal("notched_10")
+											CommandManager.literal("notched_10")
 												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5791))
 										)
 										.then(
-											ServerCommandManager.literal("notched_12")
+											CommandManager.literal("notched_12")
 												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5793))
 										)
 										.then(
-											ServerCommandManager.literal("notched_20")
+											CommandManager.literal("notched_20")
 												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5790))
 										)
 								)
 								.then(
-									ServerCommandManager.literal("value")
+									CommandManager.literal("value")
 										.then(
-											ServerCommandManager.argument("value", IntegerArgumentType.integer(0))
+											CommandManager.argument("value", IntegerArgumentType.integer(0))
 												.executes(
 													commandContext -> setValue(commandContext.getSource(), createBossBar(commandContext), IntegerArgumentType.getInteger(commandContext, "value"))
 												)
 										)
 								)
 								.then(
-									ServerCommandManager.literal("max")
+									CommandManager.literal("max")
 										.then(
-											ServerCommandManager.argument("max", IntegerArgumentType.integer(1))
+											CommandManager.argument("max", IntegerArgumentType.integer(1))
 												.executes(
 													commandContext -> setMaxValue(commandContext.getSource(), createBossBar(commandContext), IntegerArgumentType.getInteger(commandContext, "max"))
 												)
 										)
 								)
 								.then(
-									ServerCommandManager.literal("visible")
+									CommandManager.literal("visible")
 										.then(
-											ServerCommandManager.argument("visible", BoolArgumentType.bool())
+											CommandManager.argument("visible", BoolArgumentType.bool())
 												.executes(
 													commandContext -> setVisible(commandContext.getSource(), createBossBar(commandContext), BoolArgumentType.getBool(commandContext, "visible"))
 												)
 										)
 								)
 								.then(
-									ServerCommandManager.literal("players")
+									CommandManager.literal("players")
 										.executes(commandContext -> setPlayers(commandContext.getSource(), createBossBar(commandContext), Collections.emptyList()))
 										.then(
-											ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+											CommandManager.argument("targets", EntityArgumentType.players())
 												.executes(
-													commandContext -> setPlayers(commandContext.getSource(), createBossBar(commandContext), EntityArgumentType.method_9310(commandContext, "targets"))
+													commandContext -> setPlayers(
+															commandContext.getSource(), createBossBar(commandContext), EntityArgumentType.getOptionalPlayers(commandContext, "targets")
+														)
 												)
 										)
 								)
 						)
 				)
 				.then(
-					ServerCommandManager.literal("get")
+					CommandManager.literal("get")
 						.then(
-							ServerCommandManager.argument("id", IdentifierArgumentType.create())
+							CommandManager.argument("id", IdentifierArgumentType.create())
 								.suggests(suggestionProvider)
-								.then(ServerCommandManager.literal("value").executes(commandContext -> getValue(commandContext.getSource(), createBossBar(commandContext))))
-								.then(ServerCommandManager.literal("max").executes(commandContext -> getMaxValue(commandContext.getSource(), createBossBar(commandContext))))
-								.then(ServerCommandManager.literal("visible").executes(commandContext -> isVisible(commandContext.getSource(), createBossBar(commandContext))))
-								.then(ServerCommandManager.literal("players").executes(commandContext -> getPlayers(commandContext.getSource(), createBossBar(commandContext))))
+								.then(CommandManager.literal("value").executes(commandContext -> getValue(commandContext.getSource(), createBossBar(commandContext))))
+								.then(CommandManager.literal("max").executes(commandContext -> getMaxValue(commandContext.getSource(), createBossBar(commandContext))))
+								.then(CommandManager.literal("visible").executes(commandContext -> isVisible(commandContext.getSource(), createBossBar(commandContext))))
+								.then(CommandManager.literal("players").executes(commandContext -> getPlayers(commandContext.getSource(), createBossBar(commandContext))))
 						)
 				)
 		);
@@ -379,7 +377,7 @@ public class BossBarCommand {
 	}
 
 	public static CommandBossBar createBossBar(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
-		Identifier identifier = IdentifierArgumentType.getIdentifierArgument(commandContext, "id");
+		Identifier identifier = IdentifierArgumentType.getIdentifier(commandContext, "id");
 		CommandBossBar commandBossBar = commandContext.getSource().getMinecraftServer().getBossBarManager().get(identifier);
 		if (commandBossBar == null) {
 			throw UNKNOWN_EXCEPTION.create(identifier.toString());

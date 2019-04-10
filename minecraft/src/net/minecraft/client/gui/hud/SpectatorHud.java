@@ -47,17 +47,17 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 				this.spectatorMenu.close();
 			} else {
 				int i = this.client.window.getScaledWidth() / 2;
-				float h = this.zOffset;
-				this.zOffset = -90.0F;
-				float j = (float)this.client.window.getScaledHeight() - 22.0F * g;
+				int j = this.blitOffset;
+				this.blitOffset = -90;
+				int k = MathHelper.floor((float)this.client.window.getScaledHeight() - 22.0F * g);
 				SpectatorMenuState spectatorMenuState = this.spectatorMenu.getCurrentState();
-				this.drawSpectatorMenu(g, i, j, spectatorMenuState);
-				this.zOffset = h;
+				this.drawSpectatorMenu(g, i, k, spectatorMenuState);
+				this.blitOffset = j;
 			}
 		}
 	}
 
-	protected void drawSpectatorMenu(float f, int i, float g, SpectatorMenuState spectatorMenuState) {
+	protected void drawSpectatorMenu(float f, int i, int j, SpectatorMenuState spectatorMenuState) {
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.enableBlend();
 		GlStateManager.blendFuncSeparate(
@@ -65,15 +65,15 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 		);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, f);
 		this.client.getTextureManager().bindTexture(WIDGETS_TEX);
-		this.drawTexturedRect((float)(i - 91), g, 0, 0, 182, 22);
+		this.blit(i - 91, j, 0, 0, 182, 22);
 		if (spectatorMenuState.getSelectedSlot() >= 0) {
-			this.drawTexturedRect((float)(i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20), g - 1.0F, 0, 22, 24, 22);
+			this.blit(i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
 		}
 
 		GuiLighting.enableForItems();
 
-		for (int j = 0; j < 9; j++) {
-			this.drawSpectatorCommand(j, this.client.window.getScaledWidth() / 2 - 90 + j * 20 + 2, g + 3.0F, f, spectatorMenuState.getCommand(j));
+		for (int k = 0; k < 9; k++) {
+			this.drawSpectatorCommand(k, this.client.window.getScaledWidth() / 2 - 90 + k * 20 + 2, (float)(j + 3), f, spectatorMenuState.getCommand(k));
 		}
 
 		GuiLighting.disable();

@@ -31,48 +31,47 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	protected void onInitialized() {
+	protected void init() {
 		this.ticksSinceDeath = 0;
 		String string;
 		String string2;
 		if (this.field_18974) {
 			string = I18n.translate("deathScreen.spectate");
-			string2 = I18n.translate("deathScreen." + (this.client.isInSingleplayer() ? "deleteWorld" : "leaveServer"));
+			string2 = I18n.translate("deathScreen." + (this.minecraft.isInSingleplayer() ? "deleteWorld" : "leaveServer"));
 		} else {
 			string = I18n.translate("deathScreen.respawn");
 			string2 = I18n.translate("deathScreen.titleScreen");
 		}
 
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 72, 200, 20, string, buttonWidgetx -> {
-			this.client.player.requestRespawn();
-			this.client.openScreen(null);
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 72, 200, 20, string, buttonWidgetx -> {
+			this.minecraft.player.requestRespawn();
+			this.minecraft.openScreen(null);
 		}));
 		ButtonWidget buttonWidget = this.addButton(
 			new ButtonWidget(
-				this.screenWidth / 2 - 100,
-				this.screenHeight / 4 + 96,
+				this.width / 2 - 100,
+				this.height / 4 + 96,
 				200,
 				20,
 				string2,
 				buttonWidgetx -> {
 					if (this.field_18974) {
-						this.client.openScreen(new MainMenuScreen());
+						this.minecraft.openScreen(new MainMenuScreen());
 					} else {
 						YesNoScreen yesNoScreen = new YesNoScreen(
-							this,
+							this::method_20373,
 							new TranslatableTextComponent("deathScreen.quit.confirm"),
 							new StringTextComponent(""),
 							I18n.translate("deathScreen.titleScreen"),
-							I18n.translate("deathScreen.respawn"),
-							0
+							I18n.translate("deathScreen.respawn")
 						);
-						this.client.openScreen(yesNoScreen);
+						this.minecraft.openScreen(yesNoScreen);
 						yesNoScreen.disableButtons(20);
 					}
 				}
 			)
 		);
-		if (!this.field_18974 && this.client.getSession() == null) {
+		if (!this.field_18974 && this.minecraft.getSession() == null) {
 			buttonWidget.active = false;
 		}
 
@@ -82,45 +81,42 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	public boolean doesEscapeKeyClose() {
+	public boolean shouldCloseOnEsc() {
 		return false;
 	}
 
-	@Override
-	public void confirmResult(boolean bl, int i) {
-		if (i == 31102009) {
-			super.confirmResult(bl, i);
-		} else if (bl) {
-			if (this.client.world != null) {
-				this.client.world.disconnect();
+	private void method_20373(boolean bl) {
+		if (bl) {
+			if (this.minecraft.world != null) {
+				this.minecraft.world.disconnect();
 			}
 
-			this.client.method_18096(new CloseWorldScreen(new TranslatableTextComponent("menu.savingLevel")));
-			this.client.openScreen(new MainMenuScreen());
+			this.minecraft.disconnect(new CloseWorldScreen(new TranslatableTextComponent("menu.savingLevel")));
+			this.minecraft.openScreen(new MainMenuScreen());
 		} else {
-			this.client.player.requestRespawn();
-			this.client.openScreen(null);
+			this.minecraft.player.requestRespawn();
+			this.minecraft.openScreen(null);
 		}
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawGradientRect(0, 0, this.screenWidth, this.screenHeight, 1615855616, -1602211792);
+		this.fillGradient(0, 0, this.width, this.height, 1615855616, -1602211792);
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef(2.0F, 2.0F, 2.0F);
-		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2 / 2, 30, 16777215);
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2 / 2, 30, 16777215);
 		GlStateManager.popMatrix();
 		if (this.message != null) {
-			this.drawStringCentered(this.fontRenderer, this.message.getFormattedText(), this.screenWidth / 2, 85, 16777215);
+			this.drawCenteredString(this.font, this.message.getFormattedText(), this.width / 2, 85, 16777215);
 		}
 
-		this.drawStringCentered(
-			this.fontRenderer, I18n.translate("deathScreen.score") + ": " + TextFormat.field_1054 + this.client.player.getScore(), this.screenWidth / 2, 100, 16777215
+		this.drawCenteredString(
+			this.font, I18n.translate("deathScreen.score") + ": " + TextFormat.field_1054 + this.minecraft.player.getScore(), this.width / 2, 100, 16777215
 		);
 		if (this.message != null && j > 85 && j < 85 + 9) {
 			TextComponent textComponent = this.method_2164(i);
 			if (textComponent != null && textComponent.getStyle().getHoverEvent() != null) {
-				this.drawTextComponentHover(textComponent, i, j);
+				this.renderComponentHoverEffect(textComponent, i, j);
 			}
 		}
 
@@ -132,13 +128,13 @@ public class DeathScreen extends Screen {
 		if (this.message == null) {
 			return null;
 		} else {
-			int j = this.client.textRenderer.getStringWidth(this.message.getFormattedText());
-			int k = this.screenWidth / 2 - j / 2;
-			int l = this.screenWidth / 2 + j / 2;
+			int j = this.minecraft.textRenderer.getStringWidth(this.message.getFormattedText());
+			int k = this.width / 2 - j / 2;
+			int l = this.width / 2 + j / 2;
 			int m = k;
 			if (i >= k && i <= l) {
 				for (TextComponent textComponent : this.message) {
-					m += this.client.textRenderer.getStringWidth(TextComponentUtil.method_1849(textComponent.getText(), false));
+					m += this.minecraft.textRenderer.getStringWidth(TextComponentUtil.method_1849(textComponent.getText(), false));
 					if (m > i) {
 						return textComponent;
 					}
@@ -158,7 +154,7 @@ public class DeathScreen extends Screen {
 			if (textComponent != null
 				&& textComponent.getStyle().getClickEvent() != null
 				&& textComponent.getStyle().getClickEvent().getAction() == ClickEvent.Action.OPEN_URL) {
-				this.handleTextComponentClick(textComponent);
+				this.handleComponentClicked(textComponent);
 				return false;
 			}
 		}
@@ -172,8 +168,8 @@ public class DeathScreen extends Screen {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		this.ticksSinceDeath++;
 		if (this.ticksSinceDeath == 20) {
 			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {

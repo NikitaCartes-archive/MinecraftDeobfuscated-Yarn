@@ -48,7 +48,7 @@ public abstract class CombinedEntry extends LootEntry {
 	public static <T extends CombinedEntry> CombinedEntry.Serializer<T> createSerializer(Identifier identifier, Class<T> class_, CombinedEntry.Factory<T> factory) {
 		return new CombinedEntry.Serializer<T>(identifier, class_) {
 			@Override
-			protected T method_398(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootEntry[] lootEntrys, LootCondition[] lootConditions) {
+			protected T fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootEntry[] lootEntrys, LootCondition[] lootConditions) {
 				return factory.create(lootEntrys, lootConditions);
 			}
 		};
@@ -70,10 +70,10 @@ public abstract class CombinedEntry extends LootEntry {
 
 		public final T method_396(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootEntry[] lootEntrys = JsonHelper.deserialize(jsonObject, "children", jsonDeserializationContext, LootEntry[].class);
-			return this.method_398(jsonObject, jsonDeserializationContext, lootEntrys, lootConditions);
+			return this.fromJson(jsonObject, jsonDeserializationContext, lootEntrys, lootConditions);
 		}
 
-		protected abstract T method_398(
+		protected abstract T fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootEntry[] lootEntrys, LootCondition[] lootConditions
 		);
 	}

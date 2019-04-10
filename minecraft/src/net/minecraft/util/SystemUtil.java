@@ -14,9 +14,6 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.time.Instant;
@@ -38,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -58,9 +54,6 @@ public class SystemUtil {
 	private static final ExecutorService SERVER_WORKER_EXECUTOR = createServerWorkerExecutor();
 	public static LongSupplier nanoTimeSupplier = System::nanoTime;
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Pattern ILLEGAL_FILE_NAME_PATTERN = Pattern.compile(
-		".*\\.|(?:CON|PRN|AUX|NUL|COM1|COM2|COM3|COM4|COM5|COM6|COM7|COM8|COM9|LPT1|LPT2|LPT3|LPT4|LPT5|LPT6|LPT7|LPT8|LPT9)(?:\\..*)?", 2
-	);
 
 	public static <K, V> Collector<Entry<? extends K, ? extends V>, ?, Map<K, V>> toMap() {
 		return Collectors.toMap(Entry::getKey, Entry::getValue);
@@ -134,7 +127,7 @@ public class SystemUtil {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static <T> CompletableFuture<T> method_19483(Throwable throwable) {
+	public static <T> CompletableFuture<T> completeExceptionally(Throwable throwable) {
 		CompletableFuture<T> completableFuture = new CompletableFuture();
 		completableFuture.completeExceptionally(throwable);
 		return completableFuture;
@@ -162,32 +155,7 @@ public class SystemUtil {
 		return runtimeMXBean.getInputArguments().stream().filter(string -> string.startsWith("-X"));
 	}
 
-	public static boolean isPathNormalized(Path path) {
-		Path path2 = path.normalize();
-		return path2.equals(path);
-	}
-
-	public static boolean isPathLegal(Path path) {
-		for (Path path2 : path) {
-			if (ILLEGAL_FILE_NAME_PATTERN.matcher(path2.toString()).matches()) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	public static Path method_662(Path path, String string, String string2) {
-		String string3 = string + string2;
-		Path path2 = Paths.get(string3);
-		if (path2.endsWith(string2)) {
-			throw new InvalidPathException(string3, "empty resource name");
-		} else {
-			return path.resolve(path2);
-		}
-	}
-
-	public static <T> T method_660(Iterable<T> iterable, @Nullable T object) {
+	public static <T> T next(Iterable<T> iterable, @Nullable T object) {
 		Iterator<T> iterator = iterable.iterator();
 		T object2 = (T)iterator.next();
 		if (object != null) {
@@ -207,7 +175,7 @@ public class SystemUtil {
 		return object2;
 	}
 
-	public static <T> T method_645(Iterable<T> iterable, @Nullable T object) {
+	public static <T> T previous(Iterable<T> iterable, @Nullable T object) {
 		Iterator<T> iterator = iterable.iterator();
 		T object2 = null;
 
@@ -257,11 +225,11 @@ public class SystemUtil {
 		return CompletableFuture.allOf(completableFutures).applyToEither(completableFuture, void_ -> list2);
 	}
 
-	public static <T> Stream<T> method_17815(Optional<? extends T> optional) {
+	public static <T> Stream<T> stream(Optional<? extends T> optional) {
 		return DataFixUtils.orElseGet(optional.map(Stream::of), Stream::empty);
 	}
 
-	public static <T> Optional<T> method_17974(Optional<T> optional, Consumer<T> consumer, Runnable runnable) {
+	public static <T> Optional<T> ifPresentOrElse(Optional<T> optional, Consumer<T> consumer, Runnable runnable) {
 		if (optional.isPresent()) {
 			consumer.accept(optional.get());
 		} else {
@@ -275,13 +243,13 @@ public class SystemUtil {
 		return runnable;
 	}
 
-	public static Optional<UUID> method_19481(String string, Dynamic<?> dynamic) {
+	public static Optional<UUID> readUuid(String string, Dynamic<?> dynamic) {
 		return dynamic.get(string + "Most")
 			.asNumber()
 			.flatMap(number -> dynamic.get(string + "Least").asNumber().map(number2 -> new UUID(number.longValue(), number2.longValue())));
 	}
 
-	public static <T> Dynamic<T> method_19482(String string, UUID uUID, Dynamic<T> dynamic) {
+	public static <T> Dynamic<T> writeUuid(String string, UUID uUID, Dynamic<T> dynamic) {
 		return dynamic.set(string + "Most", dynamic.createLong(uUID.getMostSignificantBits()))
 			.set(string + "Least", dynamic.createLong(uUID.getLeastSignificantBits()));
 	}

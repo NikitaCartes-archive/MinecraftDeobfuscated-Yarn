@@ -8,12 +8,7 @@ import net.minecraft.server.world.ServerWorld;
 
 public class DummySensor extends Sensor<LivingEntity> {
 	@Override
-	public boolean canSense(ServerWorld serverWorld, LivingEntity livingEntity) {
-		return false;
-	}
-
-	@Override
-	public void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
+	protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
 	}
 
 	@Override

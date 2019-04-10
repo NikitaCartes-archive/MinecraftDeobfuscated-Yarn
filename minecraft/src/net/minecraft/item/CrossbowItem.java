@@ -66,18 +66,23 @@ public class CrossbowItem extends BaseBowItem {
 	}
 
 	@Override
-	public Predicate<ItemStack> method_19268() {
-		return field_18282;
+	public Predicate<ItemStack> method_20310() {
+		return IS_CROSSBOW_PROJECTILE;
+	}
+
+	@Override
+	public Predicate<ItemStack> getProjectilePredicate() {
+		return IS_BOW_PROJECTILE;
 	}
 
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (isCharged(itemStack)) {
-			shootAllProjectiles(world, playerEntity, itemStack, 3.15F, 1.0F);
+			shootAllProjectiles(world, playerEntity, hand, itemStack, method_20309(itemStack), 1.0F);
 			setCharged(itemStack, false);
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
-		} else if (!playerEntity.method_18808(itemStack).isEmpty()) {
+		} else if (!playerEntity.getArrowType(itemStack).isEmpty()) {
 			if (!isCharged(itemStack)) {
 				this.field_7937 = false;
 				this.field_7936 = false;
@@ -108,7 +113,7 @@ public class CrossbowItem extends BaseBowItem {
 		int i = EnchantmentHelper.getLevel(Enchantments.field_9108, itemStack);
 		int j = i == 0 ? 1 : 3;
 		boolean bl = livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.creativeMode;
-		ItemStack itemStack2 = livingEntity.method_18808(itemStack);
+		ItemStack itemStack2 = livingEntity.getArrowType(itemStack);
 		ItemStack itemStack3 = itemStack2.copy();
 
 		for (int k = 0; k < j; k++) {
@@ -194,7 +199,9 @@ public class CrossbowItem extends BaseBowItem {
 		return getChargedProjectiles(itemStack).stream().anyMatch(itemStackx -> itemStackx.getItem() == item);
 	}
 
-	private static void shoot(World world, LivingEntity livingEntity, ItemStack itemStack, ItemStack itemStack2, float f, boolean bl, float g, float h, float i) {
+	private static void shoot(
+		World world, LivingEntity livingEntity, Hand hand, ItemStack itemStack, ItemStack itemStack2, float f, boolean bl, float g, float h, float i
+	) {
 		if (!world.isClient) {
 			boolean bl2 = itemStack2.getItem() == Items.field_8639;
 			Projectile projectile;
@@ -211,9 +218,9 @@ public class CrossbowItem extends BaseBowItem {
 
 			if (livingEntity instanceof CrossbowUser) {
 				CrossbowUser crossbowUser = (CrossbowUser)livingEntity;
-				crossbowUser.method_18811(crossbowUser.getTarget(), itemStack, projectile, i);
+				crossbowUser.shoot(crossbowUser.getTarget(), itemStack, projectile, i);
 			} else {
-				Vec3d vec3d = livingEntity.method_18864(1.0F);
+				Vec3d vec3d = livingEntity.getOppositeRotationVector(1.0F);
 				Quaternion quaternion = new Quaternion(new Vector3f(vec3d), i, true);
 				Vec3d vec3d2 = livingEntity.getRotationVec(1.0F);
 				Vector3f vector3f = new Vector3f(vec3d2);
@@ -221,7 +228,7 @@ public class CrossbowItem extends BaseBowItem {
 				projectile.setVelocity((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z(), g, h);
 			}
 
-			itemStack.applyDamage(bl2 ? 3 : 1, livingEntity);
+			itemStack.applyDamage(bl2 ? 3 : 1, livingEntity, livingEntityx -> livingEntityx.sendToolBreakStatus(hand));
 			world.spawnEntity((Entity)projectile);
 			world.playSound(null, livingEntity.x, livingEntity.y, livingEntity.z, SoundEvents.field_15187, SoundCategory.field_15248, 1.0F, f);
 		}
@@ -229,7 +236,7 @@ public class CrossbowItem extends BaseBowItem {
 
 	private static ProjectileEntity method_18814(World world, LivingEntity livingEntity, ItemStack itemStack, ItemStack itemStack2) {
 		ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.field_8107);
-		ProjectileEntity projectileEntity = arrowItem.createEntityArrow(world, itemStack2, livingEntity);
+		ProjectileEntity projectileEntity = arrowItem.createProjectile(world, itemStack2, livingEntity);
 		if (livingEntity instanceof PlayerEntity) {
 			projectileEntity.setCritical(true);
 		}
@@ -238,13 +245,13 @@ public class CrossbowItem extends BaseBowItem {
 		projectileEntity.setShotFromCrossbow(true);
 		int i = EnchantmentHelper.getLevel(Enchantments.field_9132, itemStack);
 		if (i > 0) {
-			projectileEntity.setFlagByte((byte)i);
+			projectileEntity.setPierceLevel((byte)i);
 		}
 
 		return projectileEntity;
 	}
 
-	public static void shootAllProjectiles(World world, LivingEntity livingEntity, ItemStack itemStack, float f, float g) {
+	public static void shootAllProjectiles(World world, LivingEntity livingEntity, Hand hand, ItemStack itemStack, float f, float g) {
 		List<ItemStack> list = getChargedProjectiles(itemStack);
 		float[] fs = method_7780(livingEntity.getRand());
 
@@ -253,11 +260,11 @@ public class CrossbowItem extends BaseBowItem {
 			boolean bl = livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).abilities.creativeMode;
 			if (!itemStack2.isEmpty()) {
 				if (i == 0) {
-					shoot(world, livingEntity, itemStack, itemStack2, fs[i], bl, f, g, 0.0F);
+					shoot(world, livingEntity, hand, itemStack, itemStack2, fs[i], bl, f, g, 0.0F);
 				} else if (i == 1) {
-					shoot(world, livingEntity, itemStack, itemStack2, fs[i], bl, f, g, -10.0F);
+					shoot(world, livingEntity, hand, itemStack, itemStack2, fs[i], bl, f, g, -10.0F);
 				} else if (i == 2) {
-					shoot(world, livingEntity, itemStack, itemStack2, fs[i], bl, f, g, 10.0F);
+					shoot(world, livingEntity, hand, itemStack, itemStack2, fs[i], bl, f, g, 10.0F);
 				}
 			}
 		}
@@ -352,20 +359,25 @@ public class CrossbowItem extends BaseBowItem {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
-		if (isCharged(itemStack)) {
-			ItemStack itemStack2 = (ItemStack)getChargedProjectiles(itemStack).get(0);
+		List<ItemStack> list2 = getChargedProjectiles(itemStack);
+		if (isCharged(itemStack) && !list2.isEmpty()) {
+			ItemStack itemStack2 = (ItemStack)list2.get(0);
 			list.add(new TranslatableTextComponent("item.minecraft.crossbow.projectile").append(" ").append(itemStack2.toTextComponent()));
 			if (tooltipContext.isAdvanced() && itemStack2.getItem() == Items.field_8639) {
-				List<TextComponent> list2 = Lists.<TextComponent>newArrayList();
-				Items.field_8639.buildTooltip(itemStack2, world, list2, tooltipContext);
-				if (!list2.isEmpty()) {
-					for (int i = 0; i < list2.size(); i++) {
-						list2.set(i, new StringTextComponent("  ").append((TextComponent)list2.get(i)).applyFormat(TextFormat.field_1080));
+				List<TextComponent> list3 = Lists.<TextComponent>newArrayList();
+				Items.field_8639.buildTooltip(itemStack2, world, list3, tooltipContext);
+				if (!list3.isEmpty()) {
+					for (int i = 0; i < list3.size(); i++) {
+						list3.set(i, new StringTextComponent("  ").append((TextComponent)list3.get(i)).applyFormat(TextFormat.field_1080));
 					}
 
-					list.addAll(list2);
+					list.addAll(list3);
 				}
 			}
 		}
+	}
+
+	private static float method_20309(ItemStack itemStack) {
+		return itemStack.getItem() == Items.field_8399 && hasProjectile(itemStack, Items.field_8639) ? 1.6F : 3.15F;
 	}
 }

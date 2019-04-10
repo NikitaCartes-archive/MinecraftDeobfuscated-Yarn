@@ -13,7 +13,7 @@ public class WanderAroundGoal extends Goal {
 	protected double targetZ;
 	protected final double speed;
 	protected int chance;
-	protected boolean field_6565;
+	protected boolean ignoringChance;
 
 	public WanderAroundGoal(MobEntityWithAi mobEntityWithAi, double d) {
 		this(mobEntityWithAi, d, 120);
@@ -23,7 +23,7 @@ public class WanderAroundGoal extends Goal {
 		this.owner = mobEntityWithAi;
 		this.speed = d;
 		this.chance = i;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
@@ -31,7 +31,7 @@ public class WanderAroundGoal extends Goal {
 		if (this.owner.hasPassengers()) {
 			return false;
 		} else {
-			if (!this.field_6565) {
+			if (!this.ignoringChance) {
 				if (this.owner.getDespawnCounter() >= 100) {
 					return false;
 				}
@@ -48,7 +48,7 @@ public class WanderAroundGoal extends Goal {
 				this.targetX = vec3d.x;
 				this.targetY = vec3d.y;
 				this.targetZ = vec3d.z;
-				this.field_6565 = false;
+				this.ignoringChance = false;
 				return true;
 			}
 		}
@@ -69,8 +69,8 @@ public class WanderAroundGoal extends Goal {
 		this.owner.getNavigation().startMovingTo(this.targetX, this.targetY, this.targetZ, this.speed);
 	}
 
-	public void method_6304() {
-		this.field_6565 = true;
+	public void ignoreChanceOnce() {
+		this.ignoringChance = true;
 	}
 
 	public void setChance(int i) {

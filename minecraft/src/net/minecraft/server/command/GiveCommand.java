@@ -17,27 +17,27 @@ import net.minecraft.text.TranslatableTextComponent;
 public class GiveCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("give")
+			CommandManager.literal("give")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							ServerCommandManager.argument("item", ItemStackArgumentType.create())
+							CommandManager.argument("item", ItemStackArgumentType.create())
 								.executes(
-									commandContext -> method_13401(
+									commandContext -> execute(
 											commandContext.getSource(),
-											ItemStackArgumentType.getStackArgument(commandContext, "item"),
-											EntityArgumentType.method_9312(commandContext, "targets"),
+											ItemStackArgumentType.getItemStackArgument(commandContext, "item"),
+											EntityArgumentType.getPlayers(commandContext, "targets"),
 											1
 										)
 								)
 								.then(
-									ServerCommandManager.argument("count", IntegerArgumentType.integer(1))
+									CommandManager.argument("count", IntegerArgumentType.integer(1))
 										.executes(
-											commandContext -> method_13401(
+											commandContext -> execute(
 													commandContext.getSource(),
-													ItemStackArgumentType.getStackArgument(commandContext, "item"),
-													EntityArgumentType.method_9312(commandContext, "targets"),
+													ItemStackArgumentType.getItemStackArgument(commandContext, "item"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
 													IntegerArgumentType.getInteger(commandContext, "count")
 												)
 										)
@@ -47,7 +47,7 @@ public class GiveCommand {
 		);
 	}
 
-	private static int method_13401(ServerCommandSource serverCommandSource, ItemStackArgument itemStackArgument, Collection<ServerPlayerEntity> collection, int i) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource serverCommandSource, ItemStackArgument itemStackArgument, Collection<ServerPlayerEntity> collection, int i) throws CommandSyntaxException {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			int j = i;
 

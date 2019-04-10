@@ -41,7 +41,7 @@ public class EntityScoresLootCondition implements LootCondition {
 			Scoreboard scoreboard = entity.world.getScoreboard();
 
 			for (Entry<String, UniformLootTableRange> entry : this.scores.entrySet()) {
-				if (!this.method_865(entity, scoreboard, (String)entry.getKey(), (UniformLootTableRange)entry.getValue())) {
+				if (!this.entityScoreIsInRange(entity, scoreboard, (String)entry.getKey(), (UniformLootTableRange)entry.getValue())) {
 					return false;
 				}
 			}
@@ -50,7 +50,7 @@ public class EntityScoresLootCondition implements LootCondition {
 		}
 	}
 
-	protected boolean method_865(Entity entity, Scoreboard scoreboard, String string, UniformLootTableRange uniformLootTableRange) {
+	protected boolean entityScoreIsInRange(Entity entity, Scoreboard scoreboard, String string, UniformLootTableRange uniformLootTableRange) {
 		ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string);
 		if (scoreboardObjective == null) {
 			return false;

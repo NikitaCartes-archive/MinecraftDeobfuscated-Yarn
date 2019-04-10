@@ -48,7 +48,7 @@ public class ChatHud extends DrawableHelper {
 				GlStateManager.translatef(2.0F, 8.0F, 0.0F);
 				GlStateManager.scaled(d, d, 1.0);
 				double e = this.client.options.chatOpacity * 0.9F + 0.1F;
-				double f = this.client.options.field_18726;
+				double f = this.client.options.textBackgroundOpacity;
 				int m = 0;
 
 				for (int n = 0; n + this.field_2066 < this.visibleMessages.size() && n < j; n++) {
@@ -63,7 +63,7 @@ public class ChatHud extends DrawableHelper {
 							if (p > 3) {
 								int r = 0;
 								int s = -n * 9;
-								drawRect(-2, s - 9, 0 + l + 4, s, q << 24);
+								fill(-2, s - 9, 0 + l + 4, s, q << 24);
 								String string = chatHudLine.getContents().getFormattedText();
 								GlStateManager.enableBlend();
 								this.client.textRenderer.drawWithShadow(string, 0.0F, (float)(s - 8), 16777215 + (p << 24));
@@ -84,8 +84,8 @@ public class ChatHud extends DrawableHelper {
 					if (t != o) {
 						int p = u > 0 ? 170 : 96;
 						int q = this.field_2067 ? 13382451 : 3355562;
-						drawRect(0, -u, 2, -u - v, q + (p << 24));
-						drawRect(2, -u, 1, -u - v, 13421772 + (p << 24));
+						fill(0, -u, 2, -u - v, q + (p << 24));
+						fill(2, -u, 1, -u - v, 13421772 + (p << 24));
 					}
 				}
 

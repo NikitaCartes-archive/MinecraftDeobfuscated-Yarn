@@ -134,12 +134,12 @@ public class FishHookEntity extends Entity {
 	public void tick() {
 		super.tick();
 		if (this.owner == null) {
-			this.invalidate();
+			this.remove();
 		} else if (this.world.isClient || !this.method_6959()) {
 			if (this.field_7176) {
 				this.field_7167++;
 				if (this.field_7167 >= 1200) {
-					this.invalidate();
+					this.remove();
 					return;
 				}
 			}
@@ -177,7 +177,7 @@ public class FishHookEntity extends Entity {
 			} else {
 				if (this.state == FishHookEntity.State.field_7178) {
 					if (this.hookedEntity != null) {
-						if (this.hookedEntity.invalid) {
+						if (this.hookedEntity.removed) {
 							this.hookedEntity = null;
 							this.state = FishHookEntity.State.field_7180;
 						} else {
@@ -222,10 +222,10 @@ public class FishHookEntity extends Entity {
 		ItemStack itemStack2 = this.owner.getOffHandStack();
 		boolean bl = itemStack.getItem() == Items.field_8378;
 		boolean bl2 = itemStack2.getItem() == Items.field_8378;
-		if (!this.owner.invalid && this.owner.isValid() && (bl || bl2) && !(this.squaredDistanceTo(this.owner) > 1024.0)) {
+		if (!this.owner.removed && this.owner.isAlive() && (bl || bl2) && !(this.squaredDistanceTo(this.owner) > 1024.0)) {
 			return false;
 		} else {
-			this.invalidate();
+			this.remove();
 			return true;
 		}
 	}
@@ -257,10 +257,10 @@ public class FishHookEntity extends Entity {
 	}
 
 	private void method_6958() {
-		HitResult hitResult = ProjectileUtil.method_18074(
+		HitResult hitResult = ProjectileUtil.getCollision(
 			this,
-			this.getBoundingBox().method_18804(this.getVelocity()).expand(1.0),
-			entity -> !entity.isSpectator() && (entity.doesCollide() || entity instanceof ItemEntity) && (entity != this.owner || this.field_7166 >= 5),
+			this.getBoundingBox().stretch(this.getVelocity()).expand(1.0),
+			entity -> !entity.isSpectator() && (entity.collides() || entity instanceof ItemEntity) && (entity != this.owner || this.field_7166 >= 5),
 			RayTraceContext.ShapeType.field_17558,
 			true
 		);
@@ -311,23 +311,23 @@ public class FishHookEntity extends Entity {
 				Block block = serverWorld.getBlockState(new BlockPos(d, e - 1.0, j)).getBlock();
 				if (block == Blocks.field_10382) {
 					if (this.random.nextFloat() < 0.15F) {
-						serverWorld.method_14199(ParticleTypes.field_11247, d, e - 0.1F, j, 1, (double)g, 0.1, (double)h, 0.0);
+						serverWorld.spawnParticles(ParticleTypes.field_11247, d, e - 0.1F, j, 1, (double)g, 0.1, (double)h, 0.0);
 					}
 
 					float k = g * 0.04F;
 					float l = h * 0.04F;
-					serverWorld.method_14199(ParticleTypes.field_11244, d, e, j, 0, (double)l, 0.01, (double)(-k), 1.0);
-					serverWorld.method_14199(ParticleTypes.field_11244, d, e, j, 0, (double)(-l), 0.01, (double)k, 1.0);
+					serverWorld.spawnParticles(ParticleTypes.field_11244, d, e, j, 0, (double)l, 0.01, (double)(-k), 1.0);
+					serverWorld.spawnParticles(ParticleTypes.field_11244, d, e, j, 0, (double)(-l), 0.01, (double)k, 1.0);
 				}
 			} else {
 				Vec3d vec3d = this.getVelocity();
 				this.setVelocity(vec3d.x, (double)(-0.4F * MathHelper.nextFloat(this.random, 0.6F, 1.0F)), vec3d.z);
 				this.playSound(SoundEvents.field_14660, 0.25F, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 				double m = this.getBoundingBox().minY + 0.5;
-				serverWorld.method_14199(
+				serverWorld.spawnParticles(
 					ParticleTypes.field_11247, this.x, m, this.z, (int)(1.0F + this.getWidth() * 20.0F), (double)this.getWidth(), 0.0, (double)this.getWidth(), 0.2F
 				);
-				serverWorld.method_14199(
+				serverWorld.spawnParticles(
 					ParticleTypes.field_11244, this.x, m, this.z, (int)(1.0F + this.getWidth() * 20.0F), (double)this.getWidth(), 0.0, (double)this.getWidth(), 0.2F
 				);
 				this.field_7173 = MathHelper.nextInt(this.random, 20, 40);
@@ -351,7 +351,7 @@ public class FishHookEntity extends Entity {
 				double j = this.z + (double)(MathHelper.cos(g) * h * 0.1F);
 				Block block = serverWorld.getBlockState(new BlockPos((int)d, (int)e - 1, (int)j)).getBlock();
 				if (block == Blocks.field_10382) {
-					serverWorld.method_14199(ParticleTypes.field_11202, d, e, j, 2 + this.random.nextInt(2), 0.1F, 0.0, 0.1F, 0.0);
+					serverWorld.spawnParticles(ParticleTypes.field_11202, d, e, j, 2 + this.random.nextInt(2), 0.1F, 0.0, 0.1F, 0.0);
 				}
 			}
 
@@ -379,7 +379,7 @@ public class FishHookEntity extends Entity {
 			if (this.hookedEntity != null) {
 				this.method_6954();
 				Criterions.FISHING_ROD_HOOKED.method_8939((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
-				this.world.summonParticle(this, (byte)31);
+				this.world.sendEntityStatus(this, (byte)31);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.field_7173 > 0) {
 				LootContext.Builder builder = new LootContext.Builder((ServerWorld)this.world)
@@ -401,7 +401,7 @@ public class FishHookEntity extends Entity {
 					this.world.spawnEntity(itemEntity);
 					this.owner.world.spawnEntity(new ExperienceOrbEntity(this.owner.world, this.owner.x, this.owner.y + 0.5, this.owner.z + 0.5, this.random.nextInt(6) + 1));
 					if (itemStack2.getItem().matches(ItemTags.field_15527)) {
-						this.owner.method_7339(Stats.field_15391, 1);
+						this.owner.increaseStat(Stats.field_15391, 1);
 					}
 				}
 
@@ -412,7 +412,7 @@ public class FishHookEntity extends Entity {
 				i = 2;
 			}
 
-			this.invalidate();
+			this.remove();
 			return i;
 		} else {
 			return 0;
@@ -421,12 +421,12 @@ public class FishHookEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
-		if (b == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).method_7340()) {
+	public void handleStatus(byte b) {
+		if (b == 31 && this.world.isClient && this.hookedEntity instanceof PlayerEntity && ((PlayerEntity)this.hookedEntity).isMainPlayer()) {
 			this.method_6954();
 		}
 
-		super.method_5711(b);
+		super.handleStatus(b);
 	}
 
 	protected void method_6954() {
@@ -437,13 +437,13 @@ public class FishHookEntity extends Entity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
 	@Override
-	public void invalidate() {
-		super.invalidate();
+	public void remove() {
+		super.remove();
 		if (this.owner != null) {
 			this.owner.fishHook = null;
 		}

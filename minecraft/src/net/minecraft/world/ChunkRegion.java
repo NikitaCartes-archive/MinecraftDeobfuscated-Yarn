@@ -95,7 +95,7 @@ public class ChunkRegion implements IWorld {
 			int k = i - chunkPos.x;
 			int l = j - chunkPos.z;
 			chunk = (Chunk)this.chunks.get(k + l * this.width);
-			if (chunk.getStatus().isAfter(chunkStatus)) {
+			if (chunk.getStatus().isAtLeast(chunkStatus)) {
 				return chunk;
 			}
 		} else {
@@ -136,7 +136,7 @@ public class ChunkRegion implements IWorld {
 
 	@Nullable
 	@Override
-	public PlayerEntity method_8604(double d, double e, double f, double g, Predicate<Entity> predicate) {
+	public PlayerEntity getClosestPlayer(double d, double e, double f, double g, Predicate<Entity> predicate) {
 		return null;
 	}
 
@@ -220,7 +220,7 @@ public class ChunkRegion implements IWorld {
 		Chunk chunk = this.getChunk(blockPos);
 		BlockState blockState2 = chunk.setBlockState(blockPos, blockState, false);
 		if (blockState2 != null) {
-			this.world.method_19282(blockPos, blockState2, blockState);
+			this.world.onBlockChanged(blockPos, blockState2, blockState);
 		}
 
 		Block block = blockState.getBlock();
@@ -259,7 +259,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public boolean clearBlockState(BlockPos blockPos) {
+	public boolean clearBlockState(BlockPos blockPos, boolean bl) {
 		return this.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
 	}
 
@@ -269,7 +269,7 @@ public class ChunkRegion implements IWorld {
 	}
 
 	@Override
-	public boolean method_8611(@Nullable Entity entity, VoxelShape voxelShape) {
+	public boolean intersectsEntities(@Nullable Entity entity, VoxelShape voxelShape) {
 		return true;
 	}
 
@@ -298,7 +298,7 @@ public class ChunkRegion implements IWorld {
 		if (!this.isChunkLoaded(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
 			throw new RuntimeException("We are asking a region for a chunk out of bound");
 		} else {
-			return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.method_8391());
+			return new LocalDifficulty(this.world.getDifficulty(), this.world.getTimeOfDay(), 0L, this.world.getMoonSize());
 		}
 	}
 
@@ -347,6 +347,10 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public void addParticle(ParticleParameters particleParameters, double d, double e, double f, double g, double h, double i) {
+	}
+
+	@Override
+	public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 	}
 
 	@Override

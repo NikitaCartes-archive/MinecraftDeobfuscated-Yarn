@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.authlib.GameProfile;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.Dynamic;
-import com.mojang.datafixers.DSL.TypeReference;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -14,6 +13,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -238,11 +238,11 @@ public final class TagHelper {
 		return property.getValueAsString((T)comparable);
 	}
 
-	public static CompoundTag update(DataFixer dataFixer, TypeReference typeReference, CompoundTag compoundTag, int i) {
-		return update(dataFixer, typeReference, compoundTag, i, SharedConstants.getGameVersion().getWorldVersion());
+	public static CompoundTag update(DataFixer dataFixer, DataFixTypes dataFixTypes, CompoundTag compoundTag, int i) {
+		return update(dataFixer, dataFixTypes, compoundTag, i, SharedConstants.getGameVersion().getWorldVersion());
 	}
 
-	public static CompoundTag update(DataFixer dataFixer, TypeReference typeReference, CompoundTag compoundTag, int i, int j) {
-		return (CompoundTag)dataFixer.update(typeReference, new Dynamic<>(NbtOps.INSTANCE, compoundTag), i, j).getValue();
+	public static CompoundTag update(DataFixer dataFixer, DataFixTypes dataFixTypes, CompoundTag compoundTag, int i, int j) {
+		return (CompoundTag)dataFixer.update(dataFixTypes.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, compoundTag), i, j).getValue();
 	}
 }

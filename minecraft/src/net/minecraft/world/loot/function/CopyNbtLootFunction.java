@@ -32,17 +32,17 @@ import net.minecraft.world.loot.context.LootContextParameters;
 
 public class CopyNbtLootFunction extends ConditionalLootFunction {
 	private final CopyNbtLootFunction.Source source;
-	private final List<CopyNbtLootFunction.class_3839> field_17014;
+	private final List<CopyNbtLootFunction.Operation> operations;
 	private static final Function<Entity, Tag> ENTITY_TAG_GETTER = NbtPredicate::entityToTag;
 	private static final Function<BlockEntity, Tag> BLOCK_ENTITY_TAG_GETTER = blockEntity -> blockEntity.toTag(new CompoundTag());
 
-	private CopyNbtLootFunction(LootCondition[] lootConditions, CopyNbtLootFunction.Source source, List<CopyNbtLootFunction.class_3839> list) {
+	private CopyNbtLootFunction(LootCondition[] lootConditions, CopyNbtLootFunction.Source source, List<CopyNbtLootFunction.Operation> list) {
 		super(lootConditions);
 		this.source = source;
-		this.field_17014 = ImmutableList.copyOf(list);
+		this.operations = ImmutableList.copyOf(list);
 	}
 
-	private static NbtPathArgumentType.class_2209 method_16853(String string) {
+	private static NbtPathArgumentType.NbtPath method_16853(String string) {
 		try {
 			return new NbtPathArgumentType().method_9362(new StringReader(string));
 		} catch (CommandSyntaxException var2) {
@@ -59,14 +59,41 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
 		Tag tag = (Tag)this.source.getter.apply(lootContext);
 		if (tag != null) {
-			this.field_17014.forEach(arg -> arg.method_16860(itemStack::getOrCreateTag, tag));
+			this.operations.forEach(operation -> operation.execute(itemStack::getOrCreateTag, tag));
 		}
 
 		return itemStack;
 	}
 
-	public static CopyNbtLootFunction.class_3838 method_16848(CopyNbtLootFunction.Source source) {
-		return new CopyNbtLootFunction.class_3838(source);
+	public static CopyNbtLootFunction.Builder builder(CopyNbtLootFunction.Source source) {
+		return new CopyNbtLootFunction.Builder(source);
+	}
+
+	public static class Builder extends ConditionalLootFunction.Builder<CopyNbtLootFunction.Builder> {
+		private final CopyNbtLootFunction.Source source;
+		private final List<CopyNbtLootFunction.Operation> operations = Lists.<CopyNbtLootFunction.Operation>newArrayList();
+
+		private Builder(CopyNbtLootFunction.Source source) {
+			this.source = source;
+		}
+
+		public CopyNbtLootFunction.Builder withOperation(String string, String string2, CopyNbtLootFunction.Operator operator) {
+			this.operations.add(new CopyNbtLootFunction.Operation(string, string2, operator));
+			return this;
+		}
+
+		public CopyNbtLootFunction.Builder withOperation(String string, String string2) {
+			return this.withOperation(string, string2, CopyNbtLootFunction.Operator.REPLACE);
+		}
+
+		protected CopyNbtLootFunction.Builder method_16855() {
+			return this;
+		}
+
+		@Override
+		public LootFunction build() {
+			return new CopyNbtLootFunction(this.getConditions(), this.source, this.operations);
+		}
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<CopyNbtLootFunction> {
@@ -78,34 +105,75 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			super.method_529(jsonObject, copyNbtLootFunction, jsonSerializationContext);
 			jsonObject.addProperty("source", copyNbtLootFunction.source.name);
 			JsonArray jsonArray = new JsonArray();
-			copyNbtLootFunction.field_17014.stream().map(CopyNbtLootFunction.class_3839::method_16858).forEach(jsonArray::add);
+			copyNbtLootFunction.operations.stream().map(CopyNbtLootFunction.Operation::toJson).forEach(jsonArray::add);
 			jsonObject.add("ops", jsonArray);
 		}
 
 		public CopyNbtLootFunction method_16871(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			CopyNbtLootFunction.Source source = CopyNbtLootFunction.Source.get(JsonHelper.getString(jsonObject, "source"));
-			List<CopyNbtLootFunction.class_3839> list = Lists.<CopyNbtLootFunction.class_3839>newArrayList();
+			List<CopyNbtLootFunction.Operation> list = Lists.<CopyNbtLootFunction.Operation>newArrayList();
 
 			for (JsonElement jsonElement : JsonHelper.getArray(jsonObject, "ops")) {
 				JsonObject jsonObject2 = JsonHelper.asObject(jsonElement, "op");
-				list.add(CopyNbtLootFunction.class_3839.method_16859(jsonObject2));
+				list.add(CopyNbtLootFunction.Operation.fromJson(jsonObject2));
 			}
 
 			return new CopyNbtLootFunction(lootConditions, source, list);
 		}
 	}
 
-	public static enum MergeStrategy {
+	static class Operation {
+		private final String sourcePath;
+		private final NbtPathArgumentType.NbtPath field_17020;
+		private final String targetPath;
+		private final NbtPathArgumentType.NbtPath field_17022;
+		private final CopyNbtLootFunction.Operator operator;
+
+		private Operation(String string, String string2, CopyNbtLootFunction.Operator operator) {
+			this.sourcePath = string;
+			this.field_17020 = CopyNbtLootFunction.method_16853(string);
+			this.targetPath = string2;
+			this.field_17022 = CopyNbtLootFunction.method_16853(string2);
+			this.operator = operator;
+		}
+
+		public void execute(Supplier<Tag> supplier, Tag tag) {
+			try {
+				List<Tag> list = this.field_17020.get(tag);
+				if (!list.isEmpty()) {
+					this.operator.method_16864((Tag)supplier.get(), this.field_17022, list);
+				}
+			} catch (CommandSyntaxException var4) {
+			}
+		}
+
+		public JsonObject toJson() {
+			JsonObject jsonObject = new JsonObject();
+			jsonObject.addProperty("source", this.sourcePath);
+			jsonObject.addProperty("target", this.targetPath);
+			jsonObject.addProperty("op", this.operator.name);
+			return jsonObject;
+		}
+
+		public static CopyNbtLootFunction.Operation fromJson(JsonObject jsonObject) {
+			String string = JsonHelper.getString(jsonObject, "source");
+			String string2 = JsonHelper.getString(jsonObject, "target");
+			CopyNbtLootFunction.Operator operator = CopyNbtLootFunction.Operator.get(JsonHelper.getString(jsonObject, "op"));
+			return new CopyNbtLootFunction.Operation(string, string2, operator);
+		}
+	}
+
+	public static enum Operator {
 		REPLACE("replace") {
 			@Override
-			public void merge(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
-				arg.method_9368(tag, Iterables.getLast(list)::copy);
+			public void method_16864(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
+				nbtPath.method_9368(tag, Iterables.getLast(list)::copy);
 			}
 		},
 		APPEND("append") {
 			@Override
-			public void merge(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
-				List<Tag> list2 = arg.method_9367(tag, ListTag::new);
+			public void method_16864(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
+				List<Tag> list2 = nbtPath.method_9367(tag, ListTag::new);
 				list2.forEach(tagx -> {
 					if (tagx instanceof ListTag) {
 						list.forEach(tag2 -> ((ListTag)tagx).add(tag2.copy()));
@@ -115,8 +183,8 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		},
 		MERGE("merge") {
 			@Override
-			public void merge(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException {
-				List<Tag> list2 = arg.method_9367(tag, CompoundTag::new);
+			public void method_16864(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
+				List<Tag> list2 = nbtPath.method_9367(tag, CompoundTag::new);
 				list2.forEach(tagx -> {
 					if (tagx instanceof CompoundTag) {
 						list.forEach(tag2 -> {
@@ -131,16 +199,16 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		private final String name;
 
-		public abstract void merge(Tag tag, NbtPathArgumentType.class_2209 arg, List<Tag> list) throws CommandSyntaxException;
+		public abstract void method_16864(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException;
 
-		private MergeStrategy(String string2) {
+		private Operator(String string2) {
 			this.name = string2;
 		}
 
-		public static CopyNbtLootFunction.MergeStrategy get(String string) {
-			for (CopyNbtLootFunction.MergeStrategy mergeStrategy : values()) {
-				if (mergeStrategy.name.equals(string)) {
-					return mergeStrategy;
+		public static CopyNbtLootFunction.Operator get(String string) {
+			for (CopyNbtLootFunction.Operator operator : values()) {
+				if (operator.name.equals(string)) {
+					return operator;
 				}
 			}
 
@@ -175,74 +243,6 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 			}
 
 			throw new IllegalArgumentException("Invalid tag source " + string);
-		}
-	}
-
-	public static class class_3838 extends ConditionalLootFunction.Builder<CopyNbtLootFunction.class_3838> {
-		private final CopyNbtLootFunction.Source field_17017;
-		private final List<CopyNbtLootFunction.class_3839> field_17018 = Lists.<CopyNbtLootFunction.class_3839>newArrayList();
-
-		private class_3838(CopyNbtLootFunction.Source source) {
-			this.field_17017 = source;
-		}
-
-		public CopyNbtLootFunction.class_3838 method_16857(String string, String string2, CopyNbtLootFunction.MergeStrategy mergeStrategy) {
-			this.field_17018.add(new CopyNbtLootFunction.class_3839(string, string2, mergeStrategy));
-			return this;
-		}
-
-		public CopyNbtLootFunction.class_3838 method_16856(String string, String string2) {
-			return this.method_16857(string, string2, CopyNbtLootFunction.MergeStrategy.REPLACE);
-		}
-
-		protected CopyNbtLootFunction.class_3838 method_16855() {
-			return this;
-		}
-
-		@Override
-		public LootFunction build() {
-			return new CopyNbtLootFunction(this.getConditions(), this.field_17017, this.field_17018);
-		}
-	}
-
-	static class class_3839 {
-		private final String field_17019;
-		private final NbtPathArgumentType.class_2209 field_17020;
-		private final String field_17021;
-		private final NbtPathArgumentType.class_2209 field_17022;
-		private final CopyNbtLootFunction.MergeStrategy field_17023;
-
-		private class_3839(String string, String string2, CopyNbtLootFunction.MergeStrategy mergeStrategy) {
-			this.field_17019 = string;
-			this.field_17020 = CopyNbtLootFunction.method_16853(string);
-			this.field_17021 = string2;
-			this.field_17022 = CopyNbtLootFunction.method_16853(string2);
-			this.field_17023 = mergeStrategy;
-		}
-
-		public void method_16860(Supplier<Tag> supplier, Tag tag) {
-			try {
-				List<Tag> list = this.field_17020.method_9366(tag);
-				if (!list.isEmpty()) {
-					this.field_17023.merge((Tag)supplier.get(), this.field_17022, list);
-				}
-			} catch (CommandSyntaxException var4) {
-			}
-		}
-
-		public JsonObject method_16858() {
-			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("source", this.field_17019);
-			jsonObject.addProperty("target", this.field_17021);
-			jsonObject.addProperty("op", this.field_17023.name);
-			return jsonObject;
-		}
-
-		public static CopyNbtLootFunction.class_3839 method_16859(JsonObject jsonObject) {
-			String string = JsonHelper.getString(jsonObject, "source");
-			String string2 = JsonHelper.getString(jsonObject, "target");
-			CopyNbtLootFunction.MergeStrategy mergeStrategy = CopyNbtLootFunction.MergeStrategy.get(JsonHelper.getString(jsonObject, "op"));
-			return new CopyNbtLootFunction.class_3839(string, string2, mergeStrategy);
 		}
 	}
 }

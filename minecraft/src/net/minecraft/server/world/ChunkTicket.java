@@ -1,7 +1,6 @@
 package net.minecraft.server.world;
 
 import java.util.Objects;
-import net.minecraft.entity.player.ChunkTicketType;
 
 final class ChunkTicket<T> implements Comparable<ChunkTicket<?>> {
 	private final ChunkTicketType<T> type;

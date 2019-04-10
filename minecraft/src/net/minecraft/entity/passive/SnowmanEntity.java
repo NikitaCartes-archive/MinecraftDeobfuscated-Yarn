@@ -133,7 +133,7 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868 && this.hasPumpkin() && !this.world.isClient) {
 			this.setHasPumpkin(false);
-			itemStack.applyDamage(1, playerEntity);
+			itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 		}
 
 		return super.interactMob(playerEntity, hand);

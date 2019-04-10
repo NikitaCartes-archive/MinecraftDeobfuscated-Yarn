@@ -54,18 +54,18 @@ public class SelectionManager {
 
 	public boolean handleSpecialKey(int i) {
 		String string = (String)this.stringSupplier.get();
-		if (Screen.isSelectAllShortcutPressed(i)) {
+		if (Screen.isSelectAll(i)) {
 			this.selectionEnd = 0;
 			this.selectionStart = string.length();
 			return true;
-		} else if (Screen.isCopyShortcutPressed(i)) {
+		} else if (Screen.isCopy(i)) {
 			this.client.keyboard.setClipboard(this.getSelectedText());
 			return true;
-		} else if (Screen.isPasteShortcutPressed(i)) {
+		} else if (Screen.isPaste(i)) {
 			this.insert(SharedConstants.stripInvalidChars(TextFormat.stripFormatting(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
 			this.selectionEnd = this.selectionStart;
 			return true;
-		} else if (Screen.isCutShortcutPressed(i)) {
+		} else if (Screen.isCut(i)) {
 			this.client.keyboard.setClipboard(this.getSelectedText());
 			this.deleteSelectedText();
 			return true;
@@ -94,40 +94,40 @@ public class SelectionManager {
 			return true;
 		} else if (i == 263) {
 			int j = this.fontRenderer.isRightToLeft() ? 1 : -1;
-			if (Screen.isControlPressed()) {
+			if (Screen.hasControlDown()) {
 				this.selectionStart = this.fontRenderer.findWordEdge(string, j, this.selectionStart, true);
 			} else {
 				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + j));
 			}
 
-			if (!Screen.isShiftPressed()) {
+			if (!Screen.hasShiftDown()) {
 				this.selectionEnd = this.selectionStart;
 			}
 
 			return true;
 		} else if (i == 262) {
 			int jx = this.fontRenderer.isRightToLeft() ? -1 : 1;
-			if (Screen.isControlPressed()) {
+			if (Screen.hasControlDown()) {
 				this.selectionStart = this.fontRenderer.findWordEdge(string, jx, this.selectionStart, true);
 			} else {
 				this.selectionStart = Math.max(0, Math.min(string.length(), this.selectionStart + jx));
 			}
 
-			if (!Screen.isShiftPressed()) {
+			if (!Screen.hasShiftDown()) {
 				this.selectionEnd = this.selectionStart;
 			}
 
 			return true;
 		} else if (i == 268) {
 			this.selectionStart = 0;
-			if (!Screen.isShiftPressed()) {
+			if (!Screen.hasShiftDown()) {
 				this.selectionEnd = this.selectionStart;
 			}
 
 			return true;
 		} else if (i == 269) {
 			this.selectionStart = ((String)this.stringSupplier.get()).length();
-			if (!Screen.isShiftPressed()) {
+			if (!Screen.hasShiftDown()) {
 				this.selectionEnd = this.selectionStart;
 			}
 

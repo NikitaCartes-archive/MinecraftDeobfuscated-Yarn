@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.GuiSlotUpdateS2CPacket;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ArmorItem;
@@ -329,7 +330,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 	}
 
-	public void method_7398(World world, ItemStack itemStack) {
+	public void offerOrDrop(World world, ItemStack itemStack) {
 		if (!world.isClient) {
 			while (!itemStack.isEmpty()) {
 				int i = this.getOccupiedSlotWithRoomForStack(itemStack);
@@ -531,7 +532,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		return this.armor.get(i);
 	}
 
-	public void method_7375(float f) {
+	public void damageArmor(float f) {
 		if (!(f <= 0.0F)) {
 			f /= 4.0F;
 			if (f < 1.0F) {
@@ -541,7 +542,8 @@ public class PlayerInventory implements Inventory, Nameable {
 			for (int i = 0; i < this.armor.size(); i++) {
 				ItemStack itemStack = this.armor.get(i);
 				if (itemStack.getItem() instanceof ArmorItem) {
-					itemStack.applyDamage((int)f, this.player);
+					int j = i;
+					itemStack.applyDamage((int)f, this.player, playerEntity -> playerEntity.sendEquipmentBreakStatus(EquipmentSlot.method_20234(EquipmentSlot.Type.ARMOR, j)));
 				}
 			}
 		}
@@ -579,10 +581,10 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.player.invalid ? false : !(playerEntity.squaredDistanceTo(this.player) > 64.0);
+		return this.player.removed ? false : !(playerEntity.squaredDistanceTo(this.player) > 64.0);
 	}
 
-	public boolean containsStack(ItemStack itemStack) {
+	public boolean contains(ItemStack itemStack) {
 		for (List<ItemStack> list : this.combinedInventory) {
 			for (ItemStack itemStack2 : list) {
 				if (!itemStack2.isEmpty() && itemStack2.isEqualIgnoreTags(itemStack)) {
@@ -595,7 +597,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_7382(Tag<Item> tag) {
+	public boolean contains(Tag<Item> tag) {
 		for (List<ItemStack> list : this.combinedInventory) {
 			for (ItemStack itemStack : list) {
 				if (!itemStack.isEmpty() && tag.contains(itemStack.getItem())) {

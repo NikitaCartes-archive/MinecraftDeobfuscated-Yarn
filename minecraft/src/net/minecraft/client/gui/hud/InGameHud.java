@@ -47,7 +47,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.scoreboard.ScoreboardTeam;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.StringTextComponent;
@@ -149,8 +149,8 @@ public class InGameHud extends DrawableHelper {
 			this.renderPumpkinOverlay();
 		}
 
-		if (!this.client.player.hasPotionEffect(StatusEffects.field_5916)) {
-			float g = MathHelper.lerp(f, this.client.player.field_3911, this.client.player.field_3929);
+		if (!this.client.player.hasStatusEffect(StatusEffects.field_5916)) {
+			float g = MathHelper.lerp(f, this.client.player.lastNauseaStrength, this.client.player.nextNauseaStrength);
 			if (g > 0.0F) {
 				this.renderPortalOverlay(g);
 			}
@@ -164,7 +164,7 @@ public class InGameHud extends DrawableHelper {
 
 		if (!this.client.options.hudHidden) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(ICONS);
+			this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
 			GlStateManager.enableBlend();
 			GlStateManager.enableAlphaTest();
 			this.renderCrosshair();
@@ -175,7 +175,7 @@ public class InGameHud extends DrawableHelper {
 			this.bossBarHud.draw();
 			this.client.getProfiler().pop();
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(ICONS);
+			this.client.getTextureManager().bindTexture(GUI_ICONS_LOCATION);
 			if (this.client.interactionManager.hasStatusBars()) {
 				this.renderStatusBars();
 			}
@@ -207,7 +207,7 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			int j = (int)(220.0F * h) << 24 | 1052704;
-			drawRect(0, 0, this.scaledWidth, this.scaledHeight, j);
+			fill(0, 0, this.scaledWidth, this.scaledHeight, j);
 			GlStateManager.enableAlphaTest();
 			GlStateManager.enableDepthTest();
 			this.client.getProfiler().pop();
@@ -301,9 +301,9 @@ public class InGameHud extends DrawableHelper {
 			this.subtitlesHud.draw();
 			Scoreboard scoreboard = this.client.world.getScoreboard();
 			ScoreboardObjective scoreboardObjective = null;
-			ScoreboardTeam scoreboardTeam = scoreboard.getPlayerTeam(this.client.player.getEntityName());
-			if (scoreboardTeam != null) {
-				int l = scoreboardTeam.getColor().getId();
+			Team team = scoreboard.getPlayerTeam(this.client.player.getEntityName());
+			if (team != null) {
+				int l = team.getColor().getId();
 				if (l >= 0) {
 					scoreboardObjective = scoreboard.getObjectiveForSlot(3 + l);
 				}
@@ -341,10 +341,10 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	private void method_19346(TextRenderer textRenderer, int i, int j) {
-		int k = this.client.options.method_19345(0.0F);
+		int k = this.client.options.getTextBackgroundColor(0.0F);
 		if (k != 0) {
 			int l = -j / 2;
-			drawRect(l - 2, i - 2, l + j + 2, i + 9 + 2, k);
+			fill(l - 2, i - 2, l + j + 2, i + 9 + 2, k);
 		}
 	}
 
@@ -354,7 +354,7 @@ public class InGameHud extends DrawableHelper {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.field_9219 || this.shouldRenderSpectatorCrosshair(this.client.hitResult)) {
 				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
 					GlStateManager.pushMatrix();
-					GlStateManager.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), this.zOffset);
+					GlStateManager.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.blitOffset);
 					Camera camera = this.client.gameRenderer.getCamera();
 					GlStateManager.rotatef(camera.getPitch(), -1.0F, 0.0F, 0.0F);
 					GlStateManager.rotatef(camera.getYaw(), 0.0F, 1.0F, 0.0F);
@@ -369,23 +369,23 @@ public class InGameHud extends DrawableHelper {
 						GlStateManager.DestFactor.ZERO
 					);
 					int i = 15;
-					this.drawTexturedRect((float)this.scaledWidth / 2.0F - 7.5F, (float)this.scaledHeight / 2.0F - 7.5F, 0, 0, 15, 15);
+					this.blit((this.scaledWidth - 15) / 2, (this.scaledHeight - 15) / 2, 0, 0, 15, 15);
 					if (this.client.options.attackIndicator == AttackIndicator.field_18152) {
 						float f = this.client.player.method_7261(0.0F);
 						boolean bl = false;
 						if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 1.0F) {
 							bl = this.client.player.method_7279() > 5.0F;
-							bl &= this.client.targetedEntity.isValid();
+							bl &= this.client.targetedEntity.isAlive();
 						}
 
 						int j = this.scaledHeight / 2 - 7 + 16;
 						int k = this.scaledWidth / 2 - 8;
 						if (bl) {
-							this.drawTexturedRect(k, j, 68, 94, 16, 16);
+							this.blit(k, j, 68, 94, 16, 16);
 						} else if (f < 1.0F) {
 							int l = (int)(f * 17.0F);
-							this.drawTexturedRect(k, j, 36, 94, 16, 4);
-							this.drawTexturedRect(k, j, 52, 94, l, 4);
+							this.blit(k, j, 36, 94, 16, 4);
+							this.blit(k, j, 52, 94, l, 4);
 						}
 					}
 				}
@@ -408,12 +408,12 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	protected void renderStatusEffectOverlay() {
-		Collection<StatusEffectInstance> collection = this.client.player.getPotionEffects();
+		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
 		if (!collection.isEmpty()) {
 			GlStateManager.enableBlend();
 			int i = 0;
 			int j = 0;
-			StatusEffectSpriteManager statusEffectSpriteManager = this.client.method_18505();
+			StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
 			List<Runnable> list = Lists.<Runnable>newArrayListWithExpectedSize(collection.size());
 			this.client.getTextureManager().bindTexture(ContainerScreen.BACKGROUND_TEXTURE);
 
@@ -438,9 +438,9 @@ public class InGameHud extends DrawableHelper {
 					GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 					float f = 1.0F;
 					if (statusEffectInstance.isAmbient()) {
-						this.drawTexturedRect(k, l, 165, 166, 24, 24);
+						this.blit(k, l, 165, 166, 24, 24);
 					} else {
-						this.drawTexturedRect(k, l, 141, 166, 24, 24);
+						this.blit(k, l, 141, 166, 24, 24);
 						if (statusEffectInstance.getDuration() <= 200) {
 							int m = 10 - statusEffectInstance.getDuration() / 20;
 							f = MathHelper.clamp((float)statusEffectInstance.getDuration() / 10.0F / 5.0F * 0.5F, 0.0F, 0.5F)
@@ -454,7 +454,7 @@ public class InGameHud extends DrawableHelper {
 					float g = f;
 					list.add((Runnable)() -> {
 						GlStateManager.color4f(1.0F, 1.0F, 1.0F, g);
-						this.drawTexturedRect(n + 3, o + 3, sprite, 18, 18);
+						blit(n + 3, o + 3, this.blitOffset, 18, 18, sprite);
 					});
 				}
 			}
@@ -472,21 +472,21 @@ public class InGameHud extends DrawableHelper {
 			ItemStack itemStack = playerEntity.getOffHandStack();
 			AbsoluteHand absoluteHand = playerEntity.getMainHand().getOpposite();
 			int i = this.scaledWidth / 2;
-			float g = this.zOffset;
-			int j = 182;
-			int k = 91;
-			this.zOffset = -90.0F;
-			this.drawTexturedRect(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
-			this.drawTexturedRect(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
+			int j = this.blitOffset;
+			int k = 182;
+			int l = 91;
+			this.blitOffset = -90;
+			this.blit(i - 91, this.scaledHeight - 22, 0, 0, 182, 22);
+			this.blit(i - 91 - 1 + playerEntity.inventory.selectedSlot * 20, this.scaledHeight - 22 - 1, 0, 22, 24, 22);
 			if (!itemStack.isEmpty()) {
 				if (absoluteHand == AbsoluteHand.field_6182) {
-					this.drawTexturedRect(i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
+					this.blit(i - 91 - 29, this.scaledHeight - 23, 24, 22, 29, 24);
 				} else {
-					this.drawTexturedRect(i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
+					this.blit(i + 91, this.scaledHeight - 23, 53, 22, 29, 24);
 				}
 			}
 
-			this.zOffset = g;
+			this.blitOffset = j;
 			GlStateManager.enableRescaleNormal();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
@@ -494,35 +494,35 @@ public class InGameHud extends DrawableHelper {
 			);
 			GuiLighting.enableForItems();
 
-			for (int l = 0; l < 9; l++) {
-				int m = i - 90 + l * 20 + 2;
-				int n = this.scaledHeight - 16 - 3;
-				this.renderHotbarItem(m, n, f, playerEntity, playerEntity.inventory.main.get(l));
+			for (int m = 0; m < 9; m++) {
+				int n = i - 90 + m * 20 + 2;
+				int o = this.scaledHeight - 16 - 3;
+				this.renderHotbarItem(n, o, f, playerEntity, playerEntity.inventory.main.get(m));
 			}
 
 			if (!itemStack.isEmpty()) {
-				int l = this.scaledHeight - 16 - 3;
+				int m = this.scaledHeight - 16 - 3;
 				if (absoluteHand == AbsoluteHand.field_6182) {
-					this.renderHotbarItem(i - 91 - 26, l, f, playerEntity, itemStack);
+					this.renderHotbarItem(i - 91 - 26, m, f, playerEntity, itemStack);
 				} else {
-					this.renderHotbarItem(i + 91 + 10, l, f, playerEntity, itemStack);
+					this.renderHotbarItem(i + 91 + 10, m, f, playerEntity, itemStack);
 				}
 			}
 
 			if (this.client.options.attackIndicator == AttackIndicator.field_18153) {
-				float h = this.client.player.method_7261(0.0F);
-				if (h < 1.0F) {
-					int m = this.scaledHeight - 20;
-					int n = i + 91 + 6;
+				float g = this.client.player.method_7261(0.0F);
+				if (g < 1.0F) {
+					int n = this.scaledHeight - 20;
+					int o = i + 91 + 6;
 					if (absoluteHand == AbsoluteHand.field_6183) {
-						n = i - 91 - 22;
+						o = i - 91 - 22;
 					}
 
-					this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
-					int o = (int)(h * 19.0F);
+					this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+					int p = (int)(g * 19.0F);
 					GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-					this.drawTexturedRect(n, m, 0, 94, 18, 18);
-					this.drawTexturedRect(n, m + 18 - o, 18, 112 - o, 18, o);
+					this.blit(o, n, 0, 94, 18, 18);
+					this.blit(o, n + 18 - p, 18, 112 - p, 18, p);
 				}
 			}
 
@@ -534,14 +534,14 @@ public class InGameHud extends DrawableHelper {
 
 	public void renderMountJumpBar(int i) {
 		this.client.getProfiler().push("jumpBar");
-		this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
+		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
 		float f = this.client.player.method_3151();
 		int j = 182;
 		int k = (int)(f * 183.0F);
 		int l = this.scaledHeight - 32 + 3;
-		this.drawTexturedRect(i, l, 0, 84, 182, 5);
+		this.blit(i, l, 0, 84, 182, 5);
 		if (k > 0) {
-			this.drawTexturedRect(i, l, 0, 89, k, 5);
+			this.blit(i, l, 0, 89, k, 5);
 		}
 
 		this.client.getProfiler().pop();
@@ -549,15 +549,15 @@ public class InGameHud extends DrawableHelper {
 
 	public void renderExperienceBar(int i) {
 		this.client.getProfiler().push("expBar");
-		this.client.getTextureManager().bindTexture(DrawableHelper.ICONS);
-		int j = this.client.player.method_7349();
+		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_LOCATION);
+		int j = this.client.player.getNextLevelExperience();
 		if (j > 0) {
 			int k = 182;
-			int l = (int)(this.client.player.experienceBarProgress * 183.0F);
+			int l = (int)(this.client.player.experienceLevelProgress * 183.0F);
 			int m = this.scaledHeight - 32 + 3;
-			this.drawTexturedRect(i, m, 0, 64, 182, 5);
+			this.blit(i, m, 0, 64, 182, 5);
 			if (l > 0) {
-				this.drawTexturedRect(i, m, 0, 69, l, 5);
+				this.blit(i, m, 0, 69, l, 5);
 			}
 		}
 
@@ -602,7 +602,7 @@ public class InGameHud extends DrawableHelper {
 				GlStateManager.blendFuncSeparate(
 					GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO
 				);
-				drawRect(i - 2, j - 2, i + this.getFontRenderer().getStringWidth(string) + 2, j + 9 + 2, this.client.options.method_19344(0));
+				fill(i - 2, j - 2, i + this.getFontRenderer().getStringWidth(string) + 2, j + 9 + 2, this.client.options.getTextBackgroundColor(0));
 				this.getFontRenderer().drawWithShadow(string, (float)i, (float)j, 16777215 + (k << 24));
 				GlStateManager.disableBlend();
 				GlStateManager.popMatrix();
@@ -643,8 +643,8 @@ public class InGameHud extends DrawableHelper {
 		int j = i;
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
-			ScoreboardTeam scoreboardTeam = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-			String string2 = ScoreboardTeam.modifyText(scoreboardTeam, new StringTextComponent(scoreboardPlayerScore.getPlayerName())).getFormattedText()
+			Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
+			String string2 = Team.method_1142(team, new StringTextComponent(scoreboardPlayerScore.getPlayerName())).getFormattedText()
 				+ ": "
 				+ TextFormat.field_1061
 				+ scoreboardPlayerScore.getScore();
@@ -656,22 +656,22 @@ public class InGameHud extends DrawableHelper {
 		int m = 3;
 		int n = this.scaledWidth - j - 3;
 		int o = 0;
-		int p = this.client.options.method_19345(0.3F);
-		int q = this.client.options.method_19345(0.4F);
+		int p = this.client.options.getTextBackgroundColor(0.3F);
+		int q = this.client.options.getTextBackgroundColor(0.4F);
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore2 : collection) {
 			o++;
-			ScoreboardTeam scoreboardTeam2 = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
-			String string3 = ScoreboardTeam.modifyText(scoreboardTeam2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
+			Team team2 = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
+			String string3 = Team.method_1142(team2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
 			String string4 = TextFormat.field_1061 + "" + scoreboardPlayerScore2.getScore();
 			int s = l - o * 9;
 			int t = this.scaledWidth - 3 + 2;
-			drawRect(n - 2, s, t, s + 9, p);
+			fill(n - 2, s, t, s + 9, p);
 			this.getFontRenderer().draw(string3, (float)n, (float)s, 553648127);
 			this.getFontRenderer().draw(string4, (float)(t - this.getFontRenderer().getStringWidth(string4)), (float)s, 553648127);
 			if (o == collection.size()) {
-				drawRect(n - 2, s - 9 - 1, t, s - 1, q);
-				drawRect(n - 2, s - 1, t, s, p);
+				fill(n - 2, s - 9 - 1, t, s - 1, q);
+				fill(n - 2, s - 1, t, s, p);
 				this.getFontRenderer().draw(string, (float)(n + j / 2 - i / 2), (float)(s - 9), 553648127);
 			}
 		}
@@ -698,7 +698,7 @@ public class InGameHud extends DrawableHelper {
 	}
 
 	private int method_1744(LivingEntity livingEntity) {
-		if (livingEntity != null && livingEntity.method_5709()) {
+		if (livingEntity != null && livingEntity.isLiving()) {
 			float f = livingEntity.getHealthMaximum();
 			int i = (int)(f + 0.5F) / 2;
 			if (i > 30) {
@@ -751,9 +751,9 @@ public class InGameHud extends DrawableHelper {
 			int s = o - (q - 1) * r - 10;
 			int t = o - 10;
 			int u = p;
-			int v = playerEntity.method_6096();
+			int v = playerEntity.getArmor();
 			int w = -1;
-			if (playerEntity.hasPotionEffect(StatusEffects.field_5924)) {
+			if (playerEntity.hasStatusEffect(StatusEffects.field_5924)) {
 				w = this.ticks % MathHelper.ceil(f + 5.0F);
 			}
 
@@ -763,15 +763,15 @@ public class InGameHud extends DrawableHelper {
 				if (v > 0) {
 					int y = m + x * 8;
 					if (x * 2 + 1 < v) {
-						this.drawTexturedRect(y, s, 34, 9, 9, 9);
+						this.blit(y, s, 34, 9, 9, 9);
 					}
 
 					if (x * 2 + 1 == v) {
-						this.drawTexturedRect(y, s, 25, 9, 9, 9);
+						this.blit(y, s, 25, 9, 9, 9);
 					}
 
 					if (x * 2 + 1 > v) {
-						this.drawTexturedRect(y, s, 16, 9, 9, 9);
+						this.blit(y, s, 16, 9, 9, 9);
 					}
 				}
 			}
@@ -780,9 +780,9 @@ public class InGameHud extends DrawableHelper {
 
 			for (int xx = MathHelper.ceil((f + (float)p) / 2.0F) - 1; xx >= 0; xx--) {
 				int yx = 16;
-				if (playerEntity.hasPotionEffect(StatusEffects.field_5899)) {
+				if (playerEntity.hasStatusEffect(StatusEffects.field_5899)) {
 					yx += 36;
-				} else if (playerEntity.hasPotionEffect(StatusEffects.field_5920)) {
+				} else if (playerEntity.hasStatusEffect(StatusEffects.field_5920)) {
 					yx += 72;
 				}
 
@@ -807,32 +807,32 @@ public class InGameHud extends DrawableHelper {
 					ad = 5;
 				}
 
-				this.drawTexturedRect(ab, ac, 16 + z * 9, 9 * ad, 9, 9);
+				this.blit(ab, ac, 16 + z * 9, 9 * ad, 9, 9);
 				if (bl) {
 					if (xx * 2 + 1 < j) {
-						this.drawTexturedRect(ab, ac, yx + 54, 9 * ad, 9, 9);
+						this.blit(ab, ac, yx + 54, 9 * ad, 9, 9);
 					}
 
 					if (xx * 2 + 1 == j) {
-						this.drawTexturedRect(ab, ac, yx + 63, 9 * ad, 9, 9);
+						this.blit(ab, ac, yx + 63, 9 * ad, 9, 9);
 					}
 				}
 
 				if (u > 0) {
 					if (u == p && p % 2 == 1) {
-						this.drawTexturedRect(ab, ac, yx + 153, 9 * ad, 9, 9);
+						this.blit(ab, ac, yx + 153, 9 * ad, 9, 9);
 						u--;
 					} else {
-						this.drawTexturedRect(ab, ac, yx + 144, 9 * ad, 9, 9);
+						this.blit(ab, ac, yx + 144, 9 * ad, 9, 9);
 						u -= 2;
 					}
 				} else {
 					if (xx * 2 + 1 < i) {
-						this.drawTexturedRect(ab, ac, yx + 36, 9 * ad, 9, 9);
+						this.blit(ab, ac, yx + 36, 9 * ad, 9, 9);
 					}
 
 					if (xx * 2 + 1 == i) {
-						this.drawTexturedRect(ab, ac, yx + 45, 9 * ad, 9, 9);
+						this.blit(ab, ac, yx + 45, 9 * ad, 9, 9);
 					}
 				}
 			}
@@ -846,7 +846,7 @@ public class InGameHud extends DrawableHelper {
 					int aax = o;
 					int abx = 16;
 					int acx = 0;
-					if (playerEntity.hasPotionEffect(StatusEffects.field_5903)) {
+					if (playerEntity.hasStatusEffect(StatusEffects.field_5903)) {
 						abx += 36;
 						acx = 13;
 					}
@@ -856,13 +856,13 @@ public class InGameHud extends DrawableHelper {
 					}
 
 					int adx = n - zx * 8 - 9;
-					this.drawTexturedRect(adx, aax, 16 + acx * 9, 27, 9, 9);
+					this.blit(adx, aax, 16 + acx * 9, 27, 9, 9);
 					if (zx * 2 + 1 < k) {
-						this.drawTexturedRect(adx, aax, abx + 36, 27, 9, 9);
+						this.blit(adx, aax, abx + 36, 27, 9, 9);
 					}
 
 					if (zx * 2 + 1 == k) {
-						this.drawTexturedRect(adx, aax, abx + 45, 27, 9, 9);
+						this.blit(adx, aax, abx + 45, 27, 9, 9);
 					}
 				}
 
@@ -880,9 +880,9 @@ public class InGameHud extends DrawableHelper {
 
 				for (int ae = 0; ae < acxx + adxx; ae++) {
 					if (ae < acxx) {
-						this.drawTexturedRect(n - ae * 8 - 9, t, 16, 18, 9, 9);
+						this.blit(n - ae * 8 - 9, t, 16, 18, 9, 9);
 					} else {
-						this.drawTexturedRect(n - ae * 8 - 9, t, 25, 18, 9, 9);
+						this.blit(n - ae * 8 - 9, t, 25, 18, 9, 9);
 					}
 				}
 			}
@@ -911,13 +911,13 @@ public class InGameHud extends DrawableHelper {
 						int q = 52;
 						int r = 0;
 						int s = l - p * 8 - 9;
-						this.drawTexturedRect(s, m, 52 + r * 9, 9, 9, 9);
+						this.blit(s, m, 52 + r * 9, 9, 9, 9);
 						if (p * 2 + 1 + n < j) {
-							this.drawTexturedRect(s, m, 88, 9, 9, 9);
+							this.blit(s, m, 88, 9, 9, 9);
 						}
 
 						if (p * 2 + 1 + n == j) {
-							this.drawTexturedRect(s, m, 97, 9, 9, 9);
+							this.blit(s, m, 97, 9, 9, 9);
 						}
 					}
 
@@ -952,7 +952,7 @@ public class InGameHud extends DrawableHelper {
 
 	private void method_1731(Entity entity) {
 		if (entity != null) {
-			float f = MathHelper.clamp(1.0F - entity.method_5718(), 0.0F, 1.0F);
+			float f = MathHelper.clamp(1.0F - entity.getBrightnessAtEyes(), 0.0F, 1.0F);
 			this.field_2013 = (float)((double)this.field_2013 + (double)(f - this.field_2013) * 0.01);
 		}
 	}

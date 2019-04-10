@@ -262,7 +262,7 @@ public class UpgradeData {
 					Direction direction2 = blockState.get(ChestBlock.FACING);
 					if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
 						ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.field_12574 : ChestType.field_12571;
-						iWorld.setBlockState(blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.method_11824()), 18);
+						iWorld.setBlockState(blockPos2, blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), 18);
 						if (direction2 == Direction.NORTH || direction2 == Direction.EAST) {
 							BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 							BlockEntity blockEntity2 = iWorld.getBlockEntity(blockPos2);

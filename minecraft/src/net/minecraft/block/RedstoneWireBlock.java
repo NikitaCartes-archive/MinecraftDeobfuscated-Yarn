@@ -166,7 +166,7 @@ public class RedstoneWireBlock extends Block {
 		BlockPos blockPos3 = blockPos.up();
 		BlockState blockState2 = blockView.getBlockState(blockPos3);
 		if (!blockState2.isSimpleFullBlock(blockView, blockPos3)) {
-			boolean bl = Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.UP) || blockState.getBlock() == Blocks.field_10312;
+			boolean bl = Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.UP) || blockState.getBlock() == Blocks.field_10312;
 			if (bl && method_10484(blockView.getBlockState(blockPos2.up()))) {
 				if (isShapeFullCube(blockState.getCollisionShape(blockView, blockPos2))) {
 					return WireConnection.field_12686;
@@ -186,7 +186,7 @@ public class RedstoneWireBlock extends Block {
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		return Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), Direction.UP) || blockState2.getBlock() == Blocks.field_10312;
+		return Block.isSolidFullSquare(blockState2, viewableWorld, blockPos2, Direction.UP) || blockState2.getBlock() == Blocks.field_10312;
 	}
 
 	private BlockState method_10485(World world, BlockPos blockPos, BlockState blockState) {
@@ -254,7 +254,7 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock() && !world.isClient) {
 			this.method_10485(world, blockPos, blockState);
 
@@ -314,13 +314,13 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
 			if (blockState.canPlaceAt(world, blockPos)) {
 				this.method_10485(world, blockPos, blockState);
 			} else {
 				dropStacks(blockState, world, blockPos);
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 			}
 		}
 	}

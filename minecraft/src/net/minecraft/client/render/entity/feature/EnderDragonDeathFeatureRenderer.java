@@ -70,7 +70,7 @@ public class EnderDragonDeathFeatureRenderer extends FeatureRenderer<EnderDragon
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

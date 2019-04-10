@@ -17,17 +17,17 @@ public class FunctionCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("function")
+			CommandManager.literal("function")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("name", FunctionArgumentType.create())
+					CommandManager.argument("name", FunctionArgumentType.create())
 						.suggests(SUGGESTION_PROVIDER)
-						.executes(commandContext -> method_13381(commandContext.getSource(), FunctionArgumentType.method_9769(commandContext, "name")))
+						.executes(commandContext -> execute(commandContext.getSource(), FunctionArgumentType.getFunctions(commandContext, "name")))
 				)
 		);
 	}
 
-	private static int method_13381(ServerCommandSource serverCommandSource, Collection<CommandFunction> collection) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<CommandFunction> collection) {
 		int i = 0;
 
 		for (CommandFunction commandFunction : collection) {

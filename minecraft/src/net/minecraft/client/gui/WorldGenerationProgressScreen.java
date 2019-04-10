@@ -4,7 +4,9 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
+import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.ChunkStatus;
@@ -12,6 +14,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 @Environment(EnvType.CLIENT)
 public class WorldGenerationProgressScreen extends Screen {
 	private final WorldGenerationProgressTracker progressProvider;
+	private long field_19101 = -1L;
 	private static final Object2IntMap<ChunkStatus> STATUS_TO_COLOR = SystemUtil.consume(new Object2IntOpenHashMap<>(), object2IntOpenHashMap -> {
 		object2IntOpenHashMap.defaultReturnValue(0);
 		object2IntOpenHashMap.put(ChunkStatus.EMPTY, 5526612);
@@ -35,18 +38,30 @@ public class WorldGenerationProgressScreen extends Screen {
 	}
 
 	@Override
-	public boolean doesEscapeKeyClose() {
+	public boolean shouldCloseOnEsc() {
 		return false;
 	}
 
 	@Override
+	public void removed() {
+		NarratorManager.INSTANCE.method_19788(I18n.translate("narrator.loading.done"));
+	}
+
+	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		int k = this.screenWidth / 2;
-		int l = this.screenHeight / 2;
-		int m = 30;
-		drawChunkMap(this.progressProvider, k, l + 30, 2, 0);
-		this.drawStringCentered(this.fontRenderer, MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100) + "%", k, l - 9 / 2 - 30, 16777215);
+		this.renderBackground();
+		String string = MathHelper.clamp(this.progressProvider.getProgressPercentage(), 0, 100) + "%";
+		long l = SystemUtil.getMeasuringTimeMs();
+		if (l - this.field_19101 > 2000L) {
+			this.field_19101 = l;
+			NarratorManager.INSTANCE.method_19788(new TranslatableTextComponent("narrator.loading", string).getString());
+		}
+
+		int k = this.width / 2;
+		int m = this.height / 2;
+		int n = 30;
+		drawChunkMap(this.progressProvider, k, m + 30, 2, 0);
+		this.drawCenteredString(this.font, string, k, m - 9 / 2 - 30, 16777215);
 	}
 
 	public static void drawChunkMap(WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {
@@ -60,10 +75,10 @@ public class WorldGenerationProgressScreen extends Screen {
 		int t = o / 2 + 1;
 		int u = -16772609;
 		if (l != 0) {
-			drawRect(i - t, j - t, i - t + 1, j + t, -16772609);
-			drawRect(i + t - 1, j - t, i + t, j + t, -16772609);
-			drawRect(i - t, j - t, i + t, j - t + 1, -16772609);
-			drawRect(i - t, j + t - 1, i + t, j + t, -16772609);
+			fill(i - t, j - t, i - t + 1, j + t, -16772609);
+			fill(i + t - 1, j - t, i + t, j + t, -16772609);
+			fill(i - t, j - t, i + t, j - t + 1, -16772609);
+			fill(i - t, j + t - 1, i + t, j + t, -16772609);
 		}
 
 		for (int v = 0; v < p; v++) {
@@ -71,7 +86,7 @@ public class WorldGenerationProgressScreen extends Screen {
 				ChunkStatus chunkStatus = worldGenerationProgressTracker.getChunkStatus(v, w);
 				int x = r + v * m;
 				int y = s + w * m;
-				drawRect(x, y, x + k, y + k, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
+				fill(x, y, x + k, y + k, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
 			}
 		}
 	}

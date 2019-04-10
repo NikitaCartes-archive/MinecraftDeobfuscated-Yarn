@@ -43,8 +43,8 @@ public class ServerPlayerInteractionManager {
 	public void setGameMode(GameMode gameMode) {
 		this.gameMode = gameMode;
 		gameMode.setAbilitites(this.player.abilities);
-		this.player.method_7355();
-		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Type.UPDATE_GAMEMODE, this.player));
+		this.player.sendAbilitiesUpdate();
+		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAMEMODE, this.player));
 		this.world.updatePlayersSleeping();
 	}
 
@@ -180,7 +180,7 @@ public class ServerPlayerInteractionManager {
 	private boolean destroyBlock(BlockPos blockPos) {
 		BlockState blockState = this.world.getBlockState(blockPos);
 		blockState.getBlock().onBreak(this.world, blockPos, blockState, this.player);
-		boolean bl = this.world.clearBlockState(blockPos);
+		boolean bl = this.world.clearBlockState(blockPos, false);
 		if (bl) {
 			blockState.getBlock().onBroken(this.world, blockPos, blockState);
 		}
@@ -286,7 +286,7 @@ public class ServerPlayerInteractionManager {
 			if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
 				return ActionResult.field_5812;
 			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
-				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, playerEntity.getStackInHand(hand), blockHitResult);
+				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, hand, blockHitResult);
 				if (this.isCreative()) {
 					int i = itemStack.getAmount();
 					ActionResult actionResult = itemStack.useOnBlock(itemUsageContext);

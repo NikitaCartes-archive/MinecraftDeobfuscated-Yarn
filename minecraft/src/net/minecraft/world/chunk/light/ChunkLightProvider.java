@@ -27,8 +27,8 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	private final BlockPos.Mutable srcMutablePos = new BlockPos.Mutable();
 	private final BlockPos.Mutable destMutablePos = new BlockPos.Mutable();
 	private final BlockPos.Mutable mutablePosGetLightBlockedBetween = new BlockPos.Mutable();
-	private long[] field_17397 = new long[2];
-	private BlockView[] field_17398 = new BlockView[2];
+	private final long[] field_17397 = new long[2];
+	private final BlockView[] field_17398 = new BlockView[2];
 
 	public ChunkLightProvider(ChunkProvider chunkProvider, LightType lightType, S lightStorage) {
 		super(16, 256, 8192);
@@ -39,10 +39,10 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	@Override
-	protected void update(long l) {
+	protected void fullyUpdate(long l) {
 		this.lightStorage.updateAll();
 		if (this.lightStorage.hasChunk(ChunkSectionPos.toChunkLong(l))) {
-			super.update(l);
+			super.fullyUpdate(l);
 		}
 	}
 
@@ -110,21 +110,27 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 							return 16;
 						} else {
 							BlockState blockState2 = blockView3.getBlockState(this.srcMutablePos);
-							boolean bl = blockState2.isFullBoundsCubeForCulling() && blockState2.method_16386();
-							boolean bl2 = blockState.isFullBoundsCubeForCulling() && blockState.method_16386();
-							if (!bl && !bl2) {
-								return o;
-							} else {
-								VoxelShape voxelShape = bl ? blockState2.method_11615(blockView2, this.srcMutablePos) : VoxelShapes.empty();
-								VoxelShape voxelShape2 = bl2 ? blockState.method_11615(blockView2, this.destMutablePos) : VoxelShapes.empty();
-								return VoxelShapes.method_1080(voxelShape, voxelShape2, direction) ? 16 : o;
-							}
+							return method_20049(blockView2, blockState2, this.srcMutablePos, blockState, this.destMutablePos, direction, o);
 						}
 					}
 				}
 			}
 		} else {
 			return 0;
+		}
+	}
+
+	public static int method_20049(
+		BlockView blockView, BlockState blockState, BlockPos blockPos, BlockState blockState2, BlockPos blockPos2, Direction direction, int i
+	) {
+		boolean bl = blockState.isFullBoundsCubeForCulling() && blockState.method_16386();
+		boolean bl2 = blockState2.isFullBoundsCubeForCulling() && blockState2.method_16386();
+		if (!bl && !bl2) {
+			return i;
+		} else {
+			VoxelShape voxelShape = bl ? blockState.method_11615(blockView, blockPos) : VoxelShapes.empty();
+			VoxelShape voxelShape2 = bl2 ? blockState2.method_11615(blockView, blockPos2) : VoxelShapes.empty();
+			return VoxelShapes.method_1080(voxelShape, voxelShape2, direction) ? 16 : i;
 		}
 	}
 
@@ -158,7 +164,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	@Override
-	protected int getUpdatedLevel(long l, long m, int i) {
+	protected int getPropagatedLevel(long l, long m, int i) {
 		return 0;
 	}
 
@@ -214,10 +220,10 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	public void queueLightCheck(BlockPos blockPos) {
 		long l = blockPos.asLong();
-		this.update(l);
+		this.fullyUpdate(l);
 
 		for (Direction direction : DIRECTIONS) {
-			this.update(BlockPos.offset(l, direction));
+			this.fullyUpdate(BlockPos.offset(l, direction));
 		}
 	}
 
@@ -225,7 +231,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	@Override
-	public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
+	public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
 		this.lightStorage.scheduleChunkLightUpdate(chunkSectionPos.asLong(), bl);
 	}
 

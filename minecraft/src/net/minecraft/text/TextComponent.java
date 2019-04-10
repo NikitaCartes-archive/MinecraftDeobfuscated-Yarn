@@ -76,7 +76,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 				String string3 = textComponent.getStyle().getFormatString();
 				if (!string3.equals(string)) {
 					if (!string.isEmpty()) {
-						stringBuilder.append(TextFormat.field_1070);
+						stringBuilder.append(TextFormat.color);
 					}
 
 					stringBuilder.append(string3);
@@ -88,7 +88,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 		}
 
 		if (!string.isEmpty()) {
-			stringBuilder.append(TextFormat.field_1070);
+			stringBuilder.append(TextFormat.color);
 		}
 
 		return stringBuilder.toString();

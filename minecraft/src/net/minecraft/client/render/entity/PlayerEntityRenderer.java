@@ -49,9 +49,9 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	public void method_4215(AbstractClientPlayerEntity abstractClientPlayerEntity, double d, double e, double f, float g, float h) {
-		if (!abstractClientPlayerEntity.method_7340() || this.renderManager.field_4686.getFocusedEntity() == abstractClientPlayerEntity) {
+		if (!abstractClientPlayerEntity.isMainPlayer() || this.renderManager.camera.getFocusedEntity() == abstractClientPlayerEntity) {
 			double i = e;
-			if (abstractClientPlayerEntity.isSneaking()) {
+			if (abstractClientPlayerEntity.isInSneakingPose()) {
 				i = e - 0.125;
 			}
 
@@ -78,7 +78,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			playerEntityModel.rightLegOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_LEG);
 			playerEntityModel.leftArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.LEFT_ARM);
 			playerEntityModel.rightArmOverlay.visible = abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.RIGHT_ARM);
-			playerEntityModel.isSneaking = abstractClientPlayerEntity.isSneaking();
+			playerEntityModel.isSneaking = abstractClientPlayerEntity.isInSneakingPose();
 			BipedEntityModel.ArmPose armPose = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.MAIN);
 			BipedEntityModel.ArmPose armPose2 = this.method_4210(abstractClientPlayerEntity, itemStack, itemStack2, Hand.OFF);
 			if (abstractClientPlayerEntity.getMainHand() == AbsoluteHand.field_6183) {
@@ -126,7 +126,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 	}
 
 	public Identifier method_4216(AbstractClientPlayerEntity abstractClientPlayerEntity) {
-		return abstractClientPlayerEntity.method_3117();
+		return abstractClientPlayerEntity.getSkinTexture();
 	}
 
 	protected void method_4217(AbstractClientPlayerEntity abstractClientPlayerEntity, float f) {
@@ -140,14 +140,12 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(2);
 			if (scoreboardObjective != null) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(abstractClientPlayerEntity.getEntityName(), scoreboardObjective);
-				this.renderEntityLabel(
-					abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().getFormattedText(), d, e, f, 64
-				);
+				this.renderLabel(abstractClientPlayerEntity, scoreboardPlayerScore.getScore() + " " + scoreboardObjective.getDisplayName().getFormattedText(), d, e, f, 64);
 				e += (double)(9.0F * 1.15F * 0.025F);
 			}
 		}
 
-		super.method_3930(abstractClientPlayerEntity, d, e, f, string, g);
+		super.renderLabel(abstractClientPlayerEntity, d, e, f, string, g);
 	}
 
 	public void method_4220(AbstractClientPlayerEntity abstractClientPlayerEntity) {
@@ -157,7 +155,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		PlayerEntityModel<AbstractClientPlayerEntity> playerEntityModel = this.getModel();
 		this.setModelPose(abstractClientPlayerEntity);
 		GlStateManager.enableBlend();
-		playerEntityModel.swingProgress = 0.0F;
+		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.isSneaking = false;
 		playerEntityModel.field_3396 = 0.0F;
 		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
@@ -176,7 +174,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		this.setModelPose(abstractClientPlayerEntity);
 		GlStateManager.enableBlend();
 		playerEntityModel.isSneaking = false;
-		playerEntityModel.swingProgress = 0.0F;
+		playerEntityModel.handSwingProgress = 0.0F;
 		playerEntityModel.field_3396 = 0.0F;
 		playerEntityModel.method_17087(abstractClientPlayerEntity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0625F);
 		playerEntityModel.armLeft.pitch = 0.0F;
@@ -208,7 +206,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		} else if (i > 0.0F) {
 			super.setupTransforms(abstractClientPlayerEntity, f, g, h);
 			GlStateManager.rotatef(MathHelper.lerp(i, abstractClientPlayerEntity.pitch, -90.0F - abstractClientPlayerEntity.pitch), 1.0F, 0.0F, 0.0F);
-			if (abstractClientPlayerEntity.isSwimming()) {
+			if (abstractClientPlayerEntity.isInSwimmingPose()) {
 				GlStateManager.translatef(0.0F, -1.0F, 0.3F);
 			}
 		} else {

@@ -1,20 +1,16 @@
 package net.minecraft.realms;
 
-import com.mojang.util.UUIDTypeAdapter;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class RealmsScreen extends RealmsGuiEventListener {
+public abstract class RealmsScreen extends RealmsGuiEventListener implements RealmsConfirmResultListener {
 	public static final int SKIN_HEAD_U = 8;
 	public static final int SKIN_HEAD_V = 8;
 	public static final int SKIN_HEAD_WIDTH = 8;
@@ -28,9 +24,9 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	private MinecraftClient minecraft;
 	public int width;
 	public int height;
-	private final net.minecraft.client.gui.menu.RealmsScreen proxy = new net.minecraft.client.gui.menu.RealmsScreen(this);
+	private final RealmsScreenProxy proxy = new RealmsScreenProxy(this);
 
-	public net.minecraft.client.gui.menu.RealmsScreen getProxy() {
+	public RealmsScreenProxy getProxy() {
 		return this.proxy;
 	}
 
@@ -42,7 +38,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public void drawCenteredString(String string, int i, int j, int k) {
-		this.proxy.drawStringCentered(string, i, j, k);
+		this.proxy.drawCenteredString(string, i, j, k);
 	}
 
 	public int draw(String string, int i, int j, int k, boolean bl) {
@@ -58,23 +54,23 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public void blit(int i, int j, int k, int l, int m, int n) {
-		this.proxy.drawTexturedRect(i, j, k, l, m, n);
+		this.proxy.blit(i, j, k, l, m, n);
 	}
 
-	public static void blit(int i, int j, float f, float g, int k, int l, int m, int n, float h, float o) {
-		DrawableHelper.drawTexturedRect(i, j, f, g, k, l, m, n, h, o);
+	public static void blit(int i, int j, float f, float g, int k, int l, int m, int n, int o, int p) {
+		DrawableHelper.blit(i, j, m, n, f, g, k, l, o, p);
 	}
 
-	public static void blit(int i, int j, float f, float g, int k, int l, float h, float m) {
-		DrawableHelper.drawTexturedRect(i, j, f, g, k, l, h, m);
+	public static void blit(int i, int j, float f, float g, int k, int l, int m, int n) {
+		DrawableHelper.blit(i, j, f, g, k, l, m, n);
 	}
 
 	public void fillGradient(int i, int j, int k, int l, int m, int n) {
-		this.proxy.drawGradientRect(i, j, k, l, m, n);
+		this.proxy.fillGradient(i, j, k, l, m, n);
 	}
 
 	public void renderBackground() {
-		this.proxy.drawBackground();
+		this.proxy.renderBackground();
 	}
 
 	public boolean isPauseScreen() {
@@ -82,71 +78,67 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public void renderBackground(int i) {
-		this.proxy.drawBackground(i);
+		this.proxy.renderBackground(i);
 	}
 
 	public void render(int i, int j, float f) {
-		for (int k = 0; k < this.proxy.getButtons().size(); k++) {
-			((RealmsAbstractButton)this.proxy.getButtons().get(k)).render(i, j, f);
+		for (int k = 0; k < this.proxy.buttons().size(); k++) {
+			((AbstractRealmsButton)this.proxy.buttons().get(k)).render(i, j, f);
 		}
 	}
 
 	public void renderTooltip(ItemStack itemStack, int i, int j) {
-		this.proxy.drawStackTooltip(itemStack, i, j);
+		this.proxy.renderTooltip(itemStack, i, j);
 	}
 
 	public void renderTooltip(String string, int i, int j) {
-		this.proxy.drawTooltip(string, i, j);
+		this.proxy.renderTooltip(string, i, j);
 	}
 
 	public void renderTooltip(List<String> list, int i, int j) {
-		this.proxy.drawTooltip(list, i, j);
-	}
-
-	public static void bindFace(String string, String string2) {
-		Identifier identifier = AbstractClientPlayerEntity.getSkinId(string2);
-		if (identifier == null) {
-			identifier = DefaultSkinHelper.getTexture(UUIDTypeAdapter.fromString(string));
-		}
-
-		AbstractClientPlayerEntity.loadSkin(identifier, string2);
-		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
+		this.proxy.renderTooltip(list, i, j);
 	}
 
 	public static void bind(String string) {
-		Identifier identifier = new Identifier(string);
-		MinecraftClient.getInstance().getTextureManager().bindTexture(identifier);
+		Realms.bind(string);
 	}
 
 	public void tick() {
+		this.tickButtons();
+	}
+
+	protected void tickButtons() {
+		for (AbstractRealmsButton<?> abstractRealmsButton : this.buttons()) {
+			abstractRealmsButton.tick();
+		}
 	}
 
 	public int width() {
-		return this.proxy.screenWidth;
+		return this.proxy.width;
 	}
 
 	public int height() {
-		return this.proxy.screenHeight;
+		return this.proxy.height;
 	}
 
 	public int fontLineHeight() {
-		return this.proxy.getFontHeight();
+		return this.proxy.fontLineHeight();
 	}
 
 	public int fontWidth(String string) {
-		return this.proxy.getStringWidth(string);
+		return this.proxy.fontWidth(string);
 	}
 
 	public void fontDrawShadow(String string, int i, int j, int k) {
-		this.proxy.drawString(string, i, j, k);
+		this.proxy.fontDrawShadow(string, i, j, k);
 	}
 
 	public List<String> fontSplit(String string, int i) {
-		return this.proxy.wrapStringToList(string, i);
+		return this.proxy.fontSplit(string, i);
 	}
 
 	public void childrenClear() {
-		this.proxy.clearListeners();
+		this.proxy.childrenClear();
 	}
 
 	public void addWidget(RealmsGuiEventListener realmsGuiEventListener) {
@@ -158,38 +150,39 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 	}
 
 	public boolean hasWidget(RealmsGuiEventListener realmsGuiEventListener) {
-		return this.proxy.containsWidget(realmsGuiEventListener);
+		return this.proxy.hasWidget(realmsGuiEventListener);
 	}
 
-	public void buttonsAdd(RealmsAbstractButton<?> realmsAbstractButton) {
-		this.proxy.addButton(realmsAbstractButton);
+	public void buttonsAdd(AbstractRealmsButton<?> abstractRealmsButton) {
+		this.proxy.buttonsAdd(abstractRealmsButton);
 	}
 
-	public List<RealmsAbstractButton<?>> buttons() {
-		return this.proxy.getButtons();
+	public List<AbstractRealmsButton<?>> buttons() {
+		return this.proxy.buttons();
 	}
 
 	protected void buttonsClear() {
-		this.proxy.clearWidgets();
+		this.proxy.buttonsClear();
 	}
 
 	protected void focusOn(RealmsGuiEventListener realmsGuiEventListener) {
-		this.proxy.focusOn(realmsGuiEventListener.getProxy());
+		this.proxy.method_20086(realmsGuiEventListener.getProxy());
 	}
 
 	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {
 		return new RealmsEditBox(i, j, k, l, m);
 	}
 
+	@Override
 	public void confirmResult(boolean bl, int i) {
 	}
 
 	public static String getLocalizedString(String string) {
-		return I18n.translate(string);
+		return Realms.getLocalizedString(string);
 	}
 
 	public static String getLocalizedString(String string, Object... objects) {
-		return I18n.translate(string, objects);
+		return Realms.getLocalizedString(string, objects);
 	}
 
 	public List<String> getLocalizedStringWithLineWidth(String string, int i) {
@@ -213,5 +206,13 @@ public abstract class RealmsScreen extends RealmsGuiEventListener {
 
 	protected boolean isKeyDown(int i) {
 		return InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), i);
+	}
+
+	protected void narrateLabels() {
+		this.getProxy().narrateLabels();
+	}
+
+	public boolean isFocused(RealmsGuiEventListener realmsGuiEventListener) {
+		return this.getProxy().getFocused() == realmsGuiEventListener.getProxy();
 	}
 }

@@ -32,7 +32,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 				AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
 				if (abstractClientPlayerEntity.method_3126() && abstractClientPlayerEntity.method_3122() != null) {
 					this.bindTexture(abstractClientPlayerEntity.method_3122());
-				} else if (abstractClientPlayerEntity.method_3125()
+				} else if (abstractClientPlayerEntity.hasScoreboardEntry()
 					&& abstractClientPlayerEntity.method_3119() != null
 					&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)) {
 					this.bindTexture(abstractClientPlayerEntity.method_3119());
@@ -57,7 +57,7 @@ public class ElytraFeatureRenderer<T extends LivingEntity, M extends EntityModel
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

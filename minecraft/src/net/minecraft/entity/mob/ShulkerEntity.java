@@ -20,11 +20,11 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.control.BodyControl;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -71,14 +71,13 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		super(entityType, world);
 		this.field_6220 = 180.0F;
 		this.field_6283 = 180.0F;
-		this.fireImmune = true;
 		this.field_7345 = null;
 		this.experiencePoints = 5;
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.field_6283 = 180.0F;
@@ -87,7 +86,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		this.prevYaw = 180.0F;
 		this.headYaw = 180.0F;
 		this.prevHeadYaw = 180.0F;
-		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -96,13 +95,13 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		this.goalSelector.add(4, new ShulkerEntity.ShootBulletGoal());
 		this.goalSelector.add(7, new ShulkerEntity.PeekGoal());
 		this.goalSelector.add(8, new LookAroundGoal(this));
-		this.targetSelector.add(1, new AvoidGoal(this).method_6318());
+		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(2, new ShulkerEntity.SearchForPlayerGoal(this));
 		this.targetSelector.add(3, new ShulkerEntity.SearchForTargetGoal(this));
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -282,7 +281,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			);
 			double g = d - e;
 			if (g > 0.0) {
-				List<Entity> list = this.world.getVisibleEntities(this, this.getBoundingBox());
+				List<Entity> list = this.world.getEntities(this, this.getBoundingBox());
 				if (!list.isEmpty()) {
 					for (Entity entity : list) {
 						if (!(entity instanceof ShulkerEntity) && !entity.noClip) {
@@ -320,7 +319,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	protected boolean method_7127() {
-		if (!this.isAiDisabled() && this.isValid()) {
+		if (!this.isAiDisabled() && this.isAlive()) {
 			BlockPos blockPos = new BlockPos(this);
 
 			for (int i = 0; i < 5; i++) {
@@ -328,7 +327,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 				if (blockPos2.getY() > 0
 					&& this.world.isAir(blockPos2)
 					&& this.world.getWorldBorder().contains(blockPos2)
-					&& this.world.isEntityColliding(this, new BoundingBox(blockPos2))) {
+					&& this.world.doesNotCollide(this, new BoundingBox(blockPos2))) {
 					boolean bl = false;
 
 					for (Direction direction : Direction.values()) {
@@ -423,7 +422,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	@Nullable
 	@Override
 	public BoundingBox method_5827() {
-		return this.isValid() ? this.getBoundingBox() : null;
+		return this.isAlive() ? this.getBoundingBox() : null;
 	}
 
 	public Direction getAttachedFace() {
@@ -478,7 +477,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public int method_5978() {
+	public int getLookPitchSpeed() {
 		return 180;
 	}
 
@@ -531,7 +530,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 
 		@Override
-		public void onRemove() {
+		public void stop() {
 			if (ShulkerEntity.this.getTarget() == null) {
 				ShulkerEntity.this.setPeekAmount(0);
 			}
@@ -571,7 +570,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return this.entity.getScoreboardTeam() == null ? false : super.canStart();
+			return this.entity.method_5781() == null ? false : super.canStart();
 		}
 
 		@Override
@@ -589,13 +588,13 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		private int counter;
 
 		public ShootBulletGoal() {
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = ShulkerEntity.this.getTarget();
-			return livingEntity != null && livingEntity.isValid() ? ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL : false;
+			return livingEntity != null && livingEntity.isAlive() ? ShulkerEntity.this.world.getDifficulty() != Difficulty.PEACEFUL : false;
 		}
 
 		@Override
@@ -605,7 +604,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		}
 
 		@Override
-		public void onRemove() {
+		public void stop() {
 			ShulkerEntity.this.setPeekAmount(0);
 		}
 
@@ -633,8 +632,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	class ShulkerBodyControl extends BodyControl {
-		public ShulkerBodyControl(LivingEntity livingEntity) {
-			super(livingEntity);
+		public ShulkerBodyControl(MobEntity mobEntity) {
+			super(mobEntity);
 		}
 
 		@Override

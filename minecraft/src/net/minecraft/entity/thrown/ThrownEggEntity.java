@@ -29,14 +29,14 @@ public class ThrownEggEntity extends ThrownItemEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 3) {
 			double d = 0.08;
 
 			for (int i = 0; i < 8; i++) {
 				this.world
 					.addParticle(
-						new ItemStackParticleParameters(ParticleTypes.field_11218, this.getItem()),
+						new ItemStackParticleParameters(ParticleTypes.field_11218, this.getStack()),
 						this.x,
 						this.y,
 						this.z,
@@ -69,13 +69,13 @@ public class ThrownEggEntity extends ThrownItemEntity {
 				}
 			}
 
-			this.world.summonParticle(this, (byte)3);
-			this.invalidate();
+			this.world.sendEntityStatus(this, (byte)3);
+			this.remove();
 		}
 	}
 
 	@Override
-	protected Item method_16942() {
+	protected Item getDefaultItem() {
 		return Items.field_8803;
 	}
 }

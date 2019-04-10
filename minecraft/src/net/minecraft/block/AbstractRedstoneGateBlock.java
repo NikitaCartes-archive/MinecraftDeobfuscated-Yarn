@@ -31,7 +31,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return method_16361(viewableWorld, blockPos.down());
+		return isSolidMediumSquare(viewableWorld, blockPos.down());
 	}
 
 	@Override
@@ -65,13 +65,13 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (blockState.canPlaceAt(world, blockPos)) {
 			this.method_9998(world, blockPos, blockState);
 		} else {
 			BlockEntity blockEntity = this.hasBlockEntity() ? world.getBlockEntity(blockPos) : null;
 			dropStacks(blockState, world, blockPos, blockEntity);
-			world.clearBlockState(blockPos);
+			world.clearBlockState(blockPos, false);
 
 			for (Direction direction : Direction.values()) {
 				world.updateNeighborsAlways(blockPos.offset(direction), this);
@@ -157,7 +157,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		this.method_9997(world, blockPos, blockState);
 	}
 

@@ -11,7 +11,7 @@ public class LookAroundGoal extends Goal {
 
 	public LookAroundGoal(MobEntity mobEntity) {
 		this.owner = mobEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
@@ -35,14 +35,6 @@ public class LookAroundGoal extends Goal {
 	@Override
 	public void tick() {
 		this.lookTime--;
-		this.owner
-			.getLookControl()
-			.lookAt(
-				this.owner.x + this.deltaX,
-				this.owner.y + (double)this.owner.getStandingEyeHeight(),
-				this.owner.z + this.deltaZ,
-				(float)this.owner.method_5986(),
-				(float)this.owner.method_5978()
-			);
+		this.owner.getLookControl().method_20248(this.owner.x + this.deltaX, this.owner.y + (double)this.owner.getStandingEyeHeight(), this.owner.z + this.deltaZ);
 	}
 }

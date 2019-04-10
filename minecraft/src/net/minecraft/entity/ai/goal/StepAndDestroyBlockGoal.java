@@ -32,24 +32,27 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 	public boolean canStart() {
 		if (!this.owner.world.getGameRules().getBoolean("mobGriefing")) {
 			return false;
+		} else if (this.cooldown > 0) {
+			this.cooldown--;
+			return false;
+		} else if (this.hasAvailableTarget()) {
+			this.cooldown = 20;
+			return true;
 		} else {
-			return this.owner.getRand().nextInt(20) != 0 ? false : super.canStart();
+			this.cooldown = this.getInterval(this.owner);
+			return false;
 		}
 	}
 
-	@Override
-	protected int getInterval(MobEntityWithAi mobEntityWithAi) {
-		return 0;
+	private boolean hasAvailableTarget() {
+		return this.targetPos != null && this.owner.world.isBlockLoaded(this.targetPos) && this.isTargetPos(this.owner.world, this.targetPos)
+			? true
+			: this.findTargetPos();
 	}
 
 	@Override
-	public boolean shouldContinue() {
-		return super.shouldContinue();
-	}
-
-	@Override
-	public void onRemove() {
-		super.onRemove();
+	public void stop() {
+		super.stop();
 		this.owner.fallDistance = 1.0F;
 	}
 
@@ -79,7 +82,7 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 				if (!world.isClient) {
 					double d = 0.08;
 					((ServerWorld)world)
-						.method_14199(
+						.spawnParticles(
 							new ItemStackParticleParameters(ParticleTypes.field_11218, new ItemStack(Items.field_8803)),
 							(double)blockPos2.getX() + 0.5,
 							(double)blockPos2.getY() + 0.7,
@@ -102,17 +105,17 @@ public class StepAndDestroyBlockGoal extends MoveToTargetPosGoal {
 			}
 
 			if (this.counter > 60) {
-				world.clearBlockState(blockPos2);
+				world.clearBlockState(blockPos2, false);
 				if (!world.isClient) {
 					for (int i = 0; i < 20; i++) {
 						double d = random.nextGaussian() * 0.02;
 						double e = random.nextGaussian() * 0.02;
 						double f = random.nextGaussian() * 0.02;
 						((ServerWorld)world)
-							.method_14199(ParticleTypes.field_11203, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5, 1, d, e, f, 0.15F);
+							.spawnParticles(ParticleTypes.field_11203, (double)blockPos2.getX() + 0.5, (double)blockPos2.getY(), (double)blockPos2.getZ() + 0.5, 1, d, e, f, 0.15F);
 					}
 
-					this.onDestroyBlock(world, this.targetPos);
+					this.onDestroyBlock(world, blockPos2);
 				}
 			}
 

@@ -14,23 +14,46 @@ import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 
 public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
-	private final LootTableRange field_1026;
+	private final LootTableRange range;
 	private final boolean treasureEnchantmentsAllowed;
 
 	private EnchantWithLevelsLootFunction(LootCondition[] lootConditions, LootTableRange lootTableRange, boolean bl) {
 		super(lootConditions);
-		this.field_1026 = lootTableRange;
+		this.range = lootTableRange;
 		this.treasureEnchantmentsAllowed = bl;
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
 		Random random = lootContext.getRandom();
-		return EnchantmentHelper.enchant(random, itemStack, this.field_1026.next(random), this.treasureEnchantmentsAllowed);
+		return EnchantmentHelper.enchant(random, itemStack, this.range.next(random), this.treasureEnchantmentsAllowed);
 	}
 
-	public static EnchantWithLevelsLootFunction.class_107 method_481(LootTableRange lootTableRange) {
-		return new EnchantWithLevelsLootFunction.class_107(lootTableRange);
+	public static EnchantWithLevelsLootFunction.Builder builder(LootTableRange lootTableRange) {
+		return new EnchantWithLevelsLootFunction.Builder(lootTableRange);
+	}
+
+	public static class Builder extends ConditionalLootFunction.Builder<EnchantWithLevelsLootFunction.Builder> {
+		private final LootTableRange range;
+		private boolean treasureEnchantmentsAllowed;
+
+		public Builder(LootTableRange lootTableRange) {
+			this.range = lootTableRange;
+		}
+
+		protected EnchantWithLevelsLootFunction.Builder method_483() {
+			return this;
+		}
+
+		public EnchantWithLevelsLootFunction.Builder allowTreasureEnchantments() {
+			this.treasureEnchantmentsAllowed = true;
+			return this;
+		}
+
+		@Override
+		public LootFunction build() {
+			return new EnchantWithLevelsLootFunction(this.getConditions(), this.range, this.treasureEnchantmentsAllowed);
+		}
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<EnchantWithLevelsLootFunction> {
@@ -40,7 +63,7 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 
 		public void method_485(JsonObject jsonObject, EnchantWithLevelsLootFunction enchantWithLevelsLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, enchantWithLevelsLootFunction, jsonSerializationContext);
-			jsonObject.add("levels", LootTableRanges.serialize(enchantWithLevelsLootFunction.field_1026, jsonSerializationContext));
+			jsonObject.add("levels", LootTableRanges.serialize(enchantWithLevelsLootFunction.range, jsonSerializationContext));
 			jsonObject.addProperty("treasure", enchantWithLevelsLootFunction.treasureEnchantmentsAllowed);
 		}
 
@@ -48,29 +71,6 @@ public class EnchantWithLevelsLootFunction extends ConditionalLootFunction {
 			LootTableRange lootTableRange = LootTableRanges.deserialize(jsonObject.get("levels"), jsonDeserializationContext);
 			boolean bl = JsonHelper.getBoolean(jsonObject, "treasure", false);
 			return new EnchantWithLevelsLootFunction(lootConditions, lootTableRange, bl);
-		}
-	}
-
-	public static class class_107 extends ConditionalLootFunction.Builder<EnchantWithLevelsLootFunction.class_107> {
-		private final LootTableRange field_1028;
-		private boolean field_1029;
-
-		public class_107(LootTableRange lootTableRange) {
-			this.field_1028 = lootTableRange;
-		}
-
-		protected EnchantWithLevelsLootFunction.class_107 method_483() {
-			return this;
-		}
-
-		public EnchantWithLevelsLootFunction.class_107 method_484() {
-			this.field_1029 = true;
-			return this;
-		}
-
-		@Override
-		public LootFunction build() {
-			return new EnchantWithLevelsLootFunction(this.getConditions(), this.field_1028, this.field_1029);
 		}
 	}
 }

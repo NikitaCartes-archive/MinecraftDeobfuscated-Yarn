@@ -111,7 +111,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 		if (!voxelShape.isEmpty()) {
 			List<BoundingBox> list = voxelShape.getBoundingBoxes();
 			BoundingBox boundingBox = this.method_11500(this.method_11509(list));
-			List<Entity> list2 = this.world.getVisibleEntities(null, this.method_11502(boundingBox, direction, d).union(boundingBox));
+			List<Entity> list2 = this.world.getEntities(null, this.method_11502(boundingBox, direction, d).union(boundingBox));
 			if (!list2.isEmpty()) {
 				boolean bl = this.pushedBlock.getBlock() == Blocks.field_10030;
 

@@ -19,7 +19,7 @@ public class EatGrassGoal extends Goal {
 	public EatGrassGoal(MobEntity mobEntity) {
 		this.owner = mobEntity;
 		this.world = mobEntity.world;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406, Goal.class_4134.field_18407));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406, Goal.Control.field_18407));
 	}
 
 	@Override
@@ -35,12 +35,12 @@ public class EatGrassGoal extends Goal {
 	@Override
 	public void start() {
 		this.timer = 40;
-		this.world.summonParticle(this.owner, (byte)10);
+		this.world.sendEntityStatus(this.owner, (byte)10);
 		this.owner.getNavigation().stop();
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.timer = 0;
 	}
 
@@ -63,16 +63,16 @@ public class EatGrassGoal extends Goal {
 					this.world.breakBlock(blockPos, false);
 				}
 
-				this.owner.method_5983();
+				this.owner.onEatingGrass();
 			} else {
 				BlockPos blockPos2 = blockPos.down();
 				if (this.world.getBlockState(blockPos2).getBlock() == Blocks.field_10219) {
 					if (this.world.getGameRules().getBoolean("mobGriefing")) {
-						this.world.playEvent(2001, blockPos2, Block.getRawIdFromState(Blocks.field_10219.getDefaultState()));
+						this.world.method_20290(2001, blockPos2, Block.getRawIdFromState(Blocks.field_10219.getDefaultState()));
 						this.world.setBlockState(blockPos2, Blocks.field_10566.getDefaultState(), 2);
 					}
 
-					this.owner.method_5983();
+					this.owner.onEatingGrass();
 				}
 			}
 		}

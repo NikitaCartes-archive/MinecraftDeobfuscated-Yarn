@@ -62,7 +62,7 @@ public class ShulkerSomethingFeatureRenderer extends FeatureRenderer<ShulkerEnti
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

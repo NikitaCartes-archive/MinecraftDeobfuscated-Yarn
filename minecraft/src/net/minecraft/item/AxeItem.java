@@ -96,7 +96,7 @@ public class AxeItem extends MiningToolItem {
 			if (!world.isClient) {
 				world.setBlockState(blockPos, block.getDefaultState().with(PillarBlock.AXIS, blockState.get(PillarBlock.AXIS)), 11);
 				if (playerEntity != null) {
-					itemUsageContext.getItemStack().applyDamage(1, playerEntity);
+					itemUsageContext.getItemStack().applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 				}
 			}
 

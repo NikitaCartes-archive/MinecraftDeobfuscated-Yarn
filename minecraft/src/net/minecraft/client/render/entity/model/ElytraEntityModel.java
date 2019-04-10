@@ -52,7 +52,7 @@ public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
 
 			l = p * (float) (Math.PI / 9) + (1.0F - p) * l;
 			m = p * (float) (-Math.PI / 2) + (1.0F - p) * m;
-		} else if (livingEntity.isSneaking()) {
+		} else if (livingEntity.isInSneakingPose()) {
 			l = (float) (Math.PI * 2.0 / 9.0);
 			m = (float) (-Math.PI / 4);
 			n = 3.0F;

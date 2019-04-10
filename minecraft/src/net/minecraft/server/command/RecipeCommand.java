@@ -22,29 +22,29 @@ public class RecipeCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("recipe")
+			CommandManager.literal("recipe")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.literal("give")
+					CommandManager.literal("give")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+							CommandManager.argument("targets", EntityArgumentType.players())
 								.then(
-									ServerCommandManager.argument("recipe", IdentifierArgumentType.create())
+									CommandManager.argument("recipe", IdentifierArgumentType.create())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
 											commandContext -> give(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
 													Collections.singleton(IdentifierArgumentType.getRecipeArgument(commandContext, "recipe"))
 												)
 										)
 								)
 								.then(
-									ServerCommandManager.literal("*")
+									CommandManager.literal("*")
 										.executes(
 											commandContext -> give(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
 													commandContext.getSource().getMinecraftServer().getRecipeManager().values()
 												)
 										)
@@ -52,26 +52,26 @@ public class RecipeCommand {
 						)
 				)
 				.then(
-					ServerCommandManager.literal("take")
+					CommandManager.literal("take")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+							CommandManager.argument("targets", EntityArgumentType.players())
 								.then(
-									ServerCommandManager.argument("recipe", IdentifierArgumentType.create())
+									CommandManager.argument("recipe", IdentifierArgumentType.create())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
 											commandContext -> take(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
 													Collections.singleton(IdentifierArgumentType.getRecipeArgument(commandContext, "recipe"))
 												)
 										)
 								)
 								.then(
-									ServerCommandManager.literal("*")
+									CommandManager.literal("*")
 										.executes(
 											commandContext -> take(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
 													commandContext.getSource().getMinecraftServer().getRecipeManager().values()
 												)
 										)

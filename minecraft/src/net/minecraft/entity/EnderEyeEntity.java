@@ -53,7 +53,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public ItemStack getItem() {
+	public ItemStack getStack() {
 		ItemStack itemStack = this.method_16935();
 		return itemStack.isEmpty() ? new ItemStack(Items.field_8449) : itemStack;
 	}
@@ -181,11 +181,11 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 			this.useCount++;
 			if (this.useCount > 80 && !this.world.isClient) {
 				this.playSound(SoundEvents.field_15210, 1.0F, 1.0F);
-				this.invalidate();
+				this.remove();
 				if (this.field_7621) {
-					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.getItem()));
+					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.getStack()));
 				} else {
-					this.world.playEvent(2003, new BlockPos(this), 0);
+					this.world.method_20290(2003, new BlockPos(this), 0);
 				}
 			}
 		}
@@ -206,7 +206,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public float method_5718() {
+	public float getBrightnessAtEyes() {
 		return 1.0F;
 	}
 
@@ -217,7 +217,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 	}
 
 	@Override
-	public boolean method_5732() {
+	public boolean canPlayerAttack() {
 		return false;
 	}
 

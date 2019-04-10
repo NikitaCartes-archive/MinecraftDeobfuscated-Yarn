@@ -7,8 +7,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.scoreboard.AbstractScoreboardTeam;
-import net.minecraft.scoreboard.ScoreboardTeam;
+import net.minecraft.scoreboard.AbstractTeam;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
@@ -19,9 +19,9 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	private TextComponent field_12603 = new StringTextComponent("");
 	private TextComponent field_12601 = new StringTextComponent("");
 	private TextComponent field_12597 = new StringTextComponent("");
-	private String nameTagVisibilityRule = AbstractScoreboardTeam.VisibilityRule.ALWAYS.field_1445;
-	private String collisionRule = AbstractScoreboardTeam.CollisionRule.field_1437.field_1436;
-	private TextFormat field_12598 = TextFormat.field_1070;
+	private String nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS.name;
+	private String collisionRule = AbstractTeam.CollisionRule.ALWAYS.name;
+	private TextFormat field_12598 = TextFormat.color;
 	private final Collection<String> playerList = Lists.<String>newArrayList();
 	private int mode;
 	private int flags;
@@ -29,30 +29,30 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	public TeamS2CPacket() {
 	}
 
-	public TeamS2CPacket(ScoreboardTeam scoreboardTeam, int i) {
-		this.teamName = scoreboardTeam.getName();
+	public TeamS2CPacket(Team team, int i) {
+		this.teamName = team.getName();
 		this.mode = i;
 		if (i == 0 || i == 2) {
-			this.field_12603 = scoreboardTeam.getDisplayName();
-			this.flags = scoreboardTeam.getFriendlyFlagsBitwise();
-			this.nameTagVisibilityRule = scoreboardTeam.getNameTagVisibilityRule().field_1445;
-			this.collisionRule = scoreboardTeam.getCollisionRule().field_1436;
-			this.field_12598 = scoreboardTeam.getColor();
-			this.field_12601 = scoreboardTeam.getPrefix();
-			this.field_12597 = scoreboardTeam.getSuffix();
+			this.field_12603 = team.getDisplayName();
+			this.flags = team.getFriendlyFlagsBitwise();
+			this.nameTagVisibilityRule = team.getNameTagVisibilityRule().name;
+			this.collisionRule = team.getCollisionRule().name;
+			this.field_12598 = team.getColor();
+			this.field_12601 = team.getPrefix();
+			this.field_12597 = team.getSuffix();
 		}
 
 		if (i == 0) {
-			this.playerList.addAll(scoreboardTeam.getPlayerList());
+			this.playerList.addAll(team.getPlayerList());
 		}
 	}
 
-	public TeamS2CPacket(ScoreboardTeam scoreboardTeam, Collection<String> collection, int i) {
+	public TeamS2CPacket(Team team, Collection<String> collection, int i) {
 		if (i != 3 && i != 4) {
 			throw new IllegalArgumentException("Method must be join or leave for player constructor");
 		} else if (collection != null && !collection.isEmpty()) {
 			this.mode = i;
-			this.teamName = scoreboardTeam.getName();
+			this.teamName = team.getName();
 			this.playerList.addAll(collection);
 		} else {
 			throw new IllegalArgumentException("Players cannot be null/empty");

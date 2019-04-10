@@ -9,35 +9,35 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 
 public class TemptGoal extends Goal {
-	private static final TargetPredicate field_18090 = new TargetPredicate()
+	private static final TargetPredicate TEMPTING_ENTITY_PREDICATE = new TargetPredicate()
 		.setBaseMaxDistance(10.0)
 		.includeInvulnerable()
 		.includeTeammates()
 		.ignoreEntityTargetRules()
 		.includeHidden();
-	protected final MobEntityWithAi field_6616;
-	private final double field_6615;
-	private double field_6614;
-	private double field_6611;
-	private double field_6621;
-	private double field_6619;
-	private double field_6618;
-	protected PlayerEntity field_6617;
-	private int field_6612;
-	private boolean field_6613;
-	private final Ingredient field_6622;
-	private final boolean field_6620;
+	protected final MobEntityWithAi owner;
+	private final double speed;
+	private double lastPlayerX;
+	private double lastPlayerY;
+	private double lastPlayerZ;
+	private double lastPlayerPitch;
+	private double lastPlayerYaw;
+	protected PlayerEntity closestPlayer;
+	private int cooldown;
+	private boolean active;
+	private final Ingredient temptItem;
+	private final boolean canBeScared;
 
 	public TemptGoal(MobEntityWithAi mobEntityWithAi, double d, Ingredient ingredient, boolean bl) {
 		this(mobEntityWithAi, d, bl, ingredient);
 	}
 
 	public TemptGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl, Ingredient ingredient) {
-		this.field_6616 = mobEntityWithAi;
-		this.field_6615 = d;
-		this.field_6622 = ingredient;
-		this.field_6620 = bl;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.owner = mobEntityWithAi;
+		this.speed = d;
+		this.temptItem = ingredient;
+		this.canBeScared = bl;
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		if (!(mobEntityWithAi.getNavigation() instanceof MobNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for TemptGoal");
 		}
@@ -45,74 +45,74 @@ public class TemptGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (this.field_6612 > 0) {
-			this.field_6612--;
+		if (this.cooldown > 0) {
+			this.cooldown--;
 			return false;
 		} else {
-			this.field_6617 = this.field_6616.world.method_18462(field_18090, this.field_6616);
-			return this.field_6617 == null ? false : this.method_6312(this.field_6617.getMainHandStack()) || this.method_6312(this.field_6617.getOffHandStack());
+			this.closestPlayer = this.owner.world.getClosestPlayer(TEMPTING_ENTITY_PREDICATE, this.owner);
+			return this.closestPlayer == null ? false : this.isTempedBy(this.closestPlayer.getMainHandStack()) || this.isTempedBy(this.closestPlayer.getOffHandStack());
 		}
 	}
 
-	protected boolean method_6312(ItemStack itemStack) {
-		return this.field_6622.method_8093(itemStack);
+	protected boolean isTempedBy(ItemStack itemStack) {
+		return this.temptItem.method_8093(itemStack);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		if (this.method_16081()) {
-			if (this.field_6616.squaredDistanceTo(this.field_6617) < 36.0) {
-				if (this.field_6617.squaredDistanceTo(this.field_6614, this.field_6611, this.field_6621) > 0.010000000000000002) {
+		if (this.canBeScared()) {
+			if (this.owner.squaredDistanceTo(this.closestPlayer) < 36.0) {
+				if (this.closestPlayer.squaredDistanceTo(this.lastPlayerX, this.lastPlayerY, this.lastPlayerZ) > 0.010000000000000002) {
 					return false;
 				}
 
-				if (Math.abs((double)this.field_6617.pitch - this.field_6619) > 5.0 || Math.abs((double)this.field_6617.yaw - this.field_6618) > 5.0) {
+				if (Math.abs((double)this.closestPlayer.pitch - this.lastPlayerPitch) > 5.0 || Math.abs((double)this.closestPlayer.yaw - this.lastPlayerYaw) > 5.0) {
 					return false;
 				}
 			} else {
-				this.field_6614 = this.field_6617.x;
-				this.field_6611 = this.field_6617.y;
-				this.field_6621 = this.field_6617.z;
+				this.lastPlayerX = this.closestPlayer.x;
+				this.lastPlayerY = this.closestPlayer.y;
+				this.lastPlayerZ = this.closestPlayer.z;
 			}
 
-			this.field_6619 = (double)this.field_6617.pitch;
-			this.field_6618 = (double)this.field_6617.yaw;
+			this.lastPlayerPitch = (double)this.closestPlayer.pitch;
+			this.lastPlayerYaw = (double)this.closestPlayer.yaw;
 		}
 
 		return this.canStart();
 	}
 
-	protected boolean method_16081() {
-		return this.field_6620;
+	protected boolean canBeScared() {
+		return this.canBeScared;
 	}
 
 	@Override
 	public void start() {
-		this.field_6614 = this.field_6617.x;
-		this.field_6611 = this.field_6617.y;
-		this.field_6621 = this.field_6617.z;
-		this.field_6613 = true;
+		this.lastPlayerX = this.closestPlayer.x;
+		this.lastPlayerY = this.closestPlayer.y;
+		this.lastPlayerZ = this.closestPlayer.z;
+		this.active = true;
 	}
 
 	@Override
-	public void onRemove() {
-		this.field_6617 = null;
-		this.field_6616.getNavigation().stop();
-		this.field_6612 = 100;
-		this.field_6613 = false;
+	public void stop() {
+		this.closestPlayer = null;
+		this.owner.getNavigation().stop();
+		this.cooldown = 100;
+		this.active = false;
 	}
 
 	@Override
 	public void tick() {
-		this.field_6616.getLookControl().lookAt(this.field_6617, (float)(this.field_6616.method_5986() + 20), (float)this.field_6616.method_5978());
-		if (this.field_6616.squaredDistanceTo(this.field_6617) < 6.25) {
-			this.field_6616.getNavigation().stop();
+		this.owner.getLookControl().lookAt(this.closestPlayer, (float)(this.owner.method_5986() + 20), (float)this.owner.getLookPitchSpeed());
+		if (this.owner.squaredDistanceTo(this.closestPlayer) < 6.25) {
+			this.owner.getNavigation().stop();
 		} else {
-			this.field_6616.getNavigation().startMovingTo(this.field_6617, this.field_6615);
+			this.owner.getNavigation().startMovingTo(this.closestPlayer, this.speed);
 		}
 	}
 
-	public boolean method_6313() {
-		return this.field_6613;
+	public boolean isActive() {
+		return this.active;
 	}
 }

@@ -30,7 +30,7 @@ import net.minecraft.item.Items;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
-import net.minecraft.server.command.ServerCommandManager;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.config.ServerConfigHandler;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
@@ -82,7 +82,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			file,
 			Proxy.NO_PROXY,
 			dataFixer,
-			new ServerCommandManager(true),
+			new CommandManager(true),
 			yggdrasilAuthenticationService,
 			minecraftSessionService,
 			gameProfileRepository,

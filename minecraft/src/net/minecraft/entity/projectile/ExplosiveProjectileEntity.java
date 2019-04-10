@@ -22,8 +22,8 @@ import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends Entity {
 	public LivingEntity owner;
-	private int field_7603;
-	private int field_7602;
+	private int life;
+	private int ticks;
 	public double posX;
 	public double posY;
 	public double posZ;
@@ -79,14 +79,14 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 
 	@Override
 	public void tick() {
-		if (this.world.isClient || (this.owner == null || !this.owner.invalid) && this.world.isBlockLoaded(new BlockPos(this))) {
+		if (this.world.isClient || (this.owner == null || !this.owner.removed) && this.world.isBlockLoaded(new BlockPos(this))) {
 			super.tick();
-			if (this.method_7468()) {
+			if (this.isBurning()) {
 				this.setOnFireFor(1);
 			}
 
-			this.field_7602++;
-			HitResult hitResult = ProjectileUtil.method_18076(this, true, this.field_7602 >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
+			this.ticks++;
+			HitResult hitResult = ProjectileUtil.getCollision(this, true, this.ticks >= 25, this.owner, RayTraceContext.ShapeType.field_17558);
 			if (hitResult.getType() != HitResult.Type.NONE) {
 				this.onCollision(hitResult);
 			}
@@ -96,7 +96,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.y = this.y + vec3d.y;
 			this.z = this.z + vec3d.z;
 			ProjectileUtil.method_7484(this, 0.2F);
-			float f = this.method_7466();
+			float f = this.getDrag();
 			if (this.isInsideWater()) {
 				for (int i = 0; i < 4; i++) {
 					float g = 0.25F;
@@ -110,11 +110,11 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			this.world.addParticle(this.getParticleType(), this.x, this.y + 0.5, this.z, 0.0, 0.0, 0.0);
 			this.setPosition(this.x, this.y, this.z);
 		} else {
-			this.invalidate();
+			this.remove();
 		}
 	}
 
-	protected boolean method_7468() {
+	protected boolean isBurning() {
 		return true;
 	}
 
@@ -122,7 +122,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		return ParticleTypes.field_11251;
 	}
 
-	protected float method_7466() {
+	protected float getDrag() {
 		return 0.95F;
 	}
 
@@ -133,7 +133,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		Vec3d vec3d = this.getVelocity();
 		compoundTag.put("direction", this.toListTag(new double[]{vec3d.x, vec3d.y, vec3d.z}));
 		compoundTag.put("power", this.toListTag(new double[]{this.posX, this.posY, this.posZ}));
-		compoundTag.putInt("life", this.field_7603);
+		compoundTag.putInt("life", this.life);
 	}
 
 	@Override
@@ -147,17 +147,17 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 			}
 		}
 
-		this.field_7603 = compoundTag.getInt("life");
+		this.life = compoundTag.getInt("life");
 		if (compoundTag.containsKey("direction", 9) && compoundTag.getList("direction", 6).size() == 3) {
 			ListTag listTag = compoundTag.getList("direction", 6);
 			this.setVelocity(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
 		} else {
-			this.invalidate();
+			this.remove();
 		}
 	}
 
 	@Override
-	public boolean doesCollide() {
+	public boolean collides() {
 		return true;
 	}
 
@@ -173,7 +173,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 		} else {
 			this.scheduleVelocityUpdate();
 			if (damageSource.getAttacker() != null) {
-				Vec3d vec3d = damageSource.getAttacker().method_5720();
+				Vec3d vec3d = damageSource.getAttacker().getRotationVector();
 				this.setVelocity(vec3d);
 				this.posX = vec3d.x * 0.1;
 				this.posY = vec3d.y * 0.1;
@@ -190,7 +190,7 @@ public abstract class ExplosiveProjectileEntity extends Entity {
 	}
 
 	@Override
-	public float method_5718() {
+	public float getBrightnessAtEyes() {
 		return 1.0F;
 	}
 

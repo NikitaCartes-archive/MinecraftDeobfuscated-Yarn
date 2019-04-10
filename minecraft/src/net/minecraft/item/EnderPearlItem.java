@@ -28,7 +28,7 @@ public class EnderPearlItem extends Item {
 		playerEntity.getItemCooldownManager().set(this, 20);
 		if (!world.isClient) {
 			ThrownEnderpearlEntity thrownEnderpearlEntity = new ThrownEnderpearlEntity(world, playerEntity);
-			thrownEnderpearlEntity.method_16940(itemStack);
+			thrownEnderpearlEntity.setItem(itemStack);
 			thrownEnderpearlEntity.method_19207(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(thrownEnderpearlEntity);
 		}

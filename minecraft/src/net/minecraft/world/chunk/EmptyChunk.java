@@ -10,6 +10,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.fluid.FluidState;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
@@ -30,6 +32,17 @@ public class EmptyChunk extends WorldChunk {
 	@Override
 	public BlockState getBlockState(BlockPos blockPos) {
 		return Blocks.field_10243.getDefaultState();
+	}
+
+	@Nullable
+	@Override
+	public BlockState setBlockState(BlockPos blockPos, BlockState blockState, boolean bl) {
+		return null;
+	}
+
+	@Override
+	public FluidState getFluidState(BlockPos blockPos) {
+		return Fluids.EMPTY.getDefaultState();
 	}
 
 	@Nullable

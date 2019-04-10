@@ -66,7 +66,7 @@ public class WorldChunk implements Chunk {
 	private final World world;
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
 	private final UpgradeData upgradeData;
-	private final Map<BlockPos, BlockEntity> blockEntityMap = Maps.<BlockPos, BlockEntity>newHashMap();
+	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
 	private final TypeFilterableList<Entity>[] entitySections;
 	private final Map<String, StructureStart> structureStarts = Maps.<String, StructureStart>newHashMap();
 	private final Map<String, LongSet> structureReferences = Maps.<String, LongSet>newHashMap();
@@ -106,7 +106,7 @@ public class WorldChunk implements Chunk {
 		this.upgradeData = upgradeData;
 
 		for (Heightmap.Type type : Heightmap.Type.values()) {
-			if (type.method_16136()) {
+			if (ChunkStatus.FULL.isSurfaceGenerated().contains(type)) {
 				this.heightmaps.put(type, new Heightmap(this, type));
 			}
 		}
@@ -163,7 +163,7 @@ public class WorldChunk implements Chunk {
 		this.setStructureReferences(protoChunk.getStructureReferences());
 
 		for (Entry<Heightmap.Type, Heightmap> entry : protoChunk.getHeightmaps()) {
-			if (((Heightmap.Type)entry.getKey()).method_16136()) {
+			if (ChunkStatus.FULL.isSurfaceGenerated().contains(entry.getKey())) {
 				this.getHeightmap((Heightmap.Type)entry.getKey()).setTo(((Heightmap)entry.getValue()).asLongArray());
 			}
 		}
@@ -180,7 +180,7 @@ public class WorldChunk implements Chunk {
 	@Override
 	public Set<BlockPos> getBlockEntityPositions() {
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet(this.pendingBlockEntityTags.keySet());
-		set.addAll(this.blockEntityMap.keySet());
+		set.addAll(this.blockEntities.keySet());
 		return set;
 	}
 
@@ -276,7 +276,7 @@ public class WorldChunk implements Chunk {
 			((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(i, j, k, blockState);
 			boolean bl3 = chunkSection.isEmpty();
 			if (bl2 != bl3) {
-				this.world.getChunkManager().getLightingProvider().scheduleChunkLightUpdate(blockPos, bl3);
+				this.world.getChunkManager().getLightingProvider().updateSectionStatus(blockPos, bl3);
 			}
 
 			if (!this.world.isClient) {
@@ -296,7 +296,7 @@ public class WorldChunk implements Chunk {
 				}
 
 				if (!this.world.isClient) {
-					blockState.onBlockAdded(this.world, blockPos, blockState2);
+					blockState.onBlockAdded(this.world, blockPos, blockState2, bl);
 				}
 
 				if (block instanceof BlockEntityProvider) {
@@ -321,11 +321,6 @@ public class WorldChunk implements Chunk {
 		return this.world.getChunkManager().getLightingProvider();
 	}
 
-	@Override
-	public int getLuminance(BlockPos blockPos) {
-		return this.getBlockState(blockPos).getLuminance();
-	}
-
 	public int getLightLevel(BlockPos blockPos, int i) {
 		return this.getLightLevel(blockPos, i, this.world.getDimension().hasSkyLight());
 	}
@@ -337,7 +332,7 @@ public class WorldChunk implements Chunk {
 		int j = MathHelper.floor(entity.z / 16.0);
 		if (i != this.pos.x || j != this.pos.z) {
 			LOGGER.warn("Wrong location! ({}, {}) should be ({}, {}), {}", i, j, this.pos.x, this.pos.z, entity);
-			entity.invalidate();
+			entity.removed = true;
 		}
 
 		int k = MathHelper.floor(entity.y / 16.0);
@@ -397,7 +392,7 @@ public class WorldChunk implements Chunk {
 
 	@Nullable
 	public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
-		BlockEntity blockEntity = (BlockEntity)this.blockEntityMap.get(blockPos);
+		BlockEntity blockEntity = (BlockEntity)this.blockEntities.get(blockPos);
 		if (blockEntity == null) {
 			CompoundTag compoundTag = (CompoundTag)this.pendingBlockEntityTags.remove(blockPos);
 			if (compoundTag != null) {
@@ -414,7 +409,7 @@ public class WorldChunk implements Chunk {
 				this.world.setBlockEntity(blockPos, blockEntity);
 			}
 		} else if (blockEntity.isInvalid()) {
-			this.blockEntityMap.remove(blockPos);
+			this.blockEntities.remove(blockPos);
 			return null;
 		}
 
@@ -433,12 +428,12 @@ public class WorldChunk implements Chunk {
 		blockEntity.setWorld(this.world);
 		blockEntity.setPos(blockPos);
 		if (this.getBlockState(blockPos).getBlock() instanceof BlockEntityProvider) {
-			if (this.blockEntityMap.containsKey(blockPos)) {
-				((BlockEntity)this.blockEntityMap.get(blockPos)).invalidate();
+			if (this.blockEntities.containsKey(blockPos)) {
+				((BlockEntity)this.blockEntities.get(blockPos)).invalidate();
 			}
 
 			blockEntity.validate();
-			this.blockEntityMap.put(blockPos.toImmutable(), blockEntity);
+			this.blockEntities.put(blockPos.toImmutable(), blockEntity);
 		}
 	}
 
@@ -450,7 +445,7 @@ public class WorldChunk implements Chunk {
 	@Override
 	public void removeBlockEntity(BlockPos blockPos) {
 		if (this.loadedToWorld || this.world.isClient()) {
-			BlockEntity blockEntity = (BlockEntity)this.blockEntityMap.remove(blockPos);
+			BlockEntity blockEntity = (BlockEntity)this.blockEntities.remove(blockPos);
 			if (blockEntity != null) {
 				blockEntity.invalidate();
 			}
@@ -495,7 +490,7 @@ public class WorldChunk implements Chunk {
 		}
 	}
 
-	public void method_18029(@Nullable EntityType<?> entityType, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
+	public void appendEntities(@Nullable EntityType<?> entityType, BoundingBox boundingBox, List<Entity> list, Predicate<? super Entity> predicate) {
 		int i = MathHelper.floor((boundingBox.minY - 2.0) / 16.0);
 		int j = MathHelper.floor((boundingBox.maxY + 2.0) / 16.0);
 		i = MathHelper.clamp(i, 0, this.entitySections.length - 1);
@@ -537,7 +532,7 @@ public class WorldChunk implements Chunk {
 	@Environment(EnvType.CLIENT)
 	public void loadFromPacket(PacketByteBuf packetByteBuf, CompoundTag compoundTag, int i, boolean bl) {
 		Predicate<BlockPos> predicate = bl ? blockPos -> true : blockPos -> (i & 1 << (blockPos.getY() >> 4)) != 0;
-		Sets.newHashSet(this.blockEntityMap.keySet()).stream().filter(predicate).forEach(this.world::removeBlockEntity);
+		Sets.newHashSet(this.blockEntities.keySet()).stream().filter(predicate).forEach(this.world::removeBlockEntity);
 
 		for (int j = 0; j < this.sections.length; j++) {
 			ChunkSection chunkSection = this.sections[j];
@@ -568,7 +563,7 @@ public class WorldChunk implements Chunk {
 			}
 		}
 
-		for (BlockEntity blockEntity : this.blockEntityMap.values()) {
+		for (BlockEntity blockEntity : this.blockEntities.values()) {
 			blockEntity.resetBlock();
 		}
 	}
@@ -591,8 +586,8 @@ public class WorldChunk implements Chunk {
 		return Collections.unmodifiableSet(this.heightmaps.entrySet());
 	}
 
-	public Map<BlockPos, BlockEntity> getBlockEntityMap() {
-		return this.blockEntityMap;
+	public Map<BlockPos, BlockEntity> getBlockEntities() {
+		return this.blockEntities;
 	}
 
 	public TypeFilterableList<Entity>[] getEntitySectionArray() {

@@ -69,7 +69,7 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxMo
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

@@ -21,7 +21,7 @@ public class WorkingScreen extends Screen implements ProgressListener {
 	}
 
 	@Override
-	public boolean doesEscapeKeyClose() {
+	public boolean shouldCloseOnEsc() {
 		return false;
 	}
 
@@ -55,14 +55,14 @@ public class WorkingScreen extends Screen implements ProgressListener {
 	@Override
 	public void render(int i, int j, float f) {
 		if (this.done) {
-			if (!this.client.isConnectedToRealms()) {
-				this.client.openScreen(null);
+			if (!this.minecraft.isConnectedToRealms()) {
+				this.minecraft.openScreen(null);
 			}
 		} else {
-			this.drawBackground();
-			this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 70, 16777215);
+			this.renderBackground();
+			this.drawCenteredString(this.font, this.title, this.width / 2, 70, 16777215);
 			if (!Objects.equals(this.task, "") && this.progress != 0) {
-				this.drawStringCentered(this.fontRenderer, this.task + " " + this.progress + "%", this.screenWidth / 2, 90, 16777215);
+				this.drawCenteredString(this.font, this.task + " " + this.progress + "%", this.width / 2, 90, 16777215);
 			}
 
 			super.render(i, j, f);

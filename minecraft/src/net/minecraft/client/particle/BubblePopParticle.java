@@ -17,20 +17,20 @@ public class BubblePopParticle extends SpriteBillboardParticle {
 		this.velocityX = g;
 		this.velocityY = h;
 		this.velocityZ = i;
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
 			this.velocityY = this.velocityY - (double)this.gravityStrength;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			this.method_18142(this.field_17787);
+			this.setSpriteForAge(this.field_17787);
 		}
 	}
 

@@ -81,7 +81,7 @@ public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEn
 	public void method_17114(T polarBearEntity, float f, float g, float h, float i, float j, float k) {
 		super.setAngles(polarBearEntity, f, g, h, i, j, k);
 		float l = h - (float)polarBearEntity.age;
-		float m = polarBearEntity.method_6601(l);
+		float m = polarBearEntity.getWarningAnimationProgress(l);
 		m *= m;
 		float n = 1.0F - m;
 		this.body.pitch = (float) (Math.PI / 2) - m * (float) Math.PI * 0.35F;
@@ -92,8 +92,14 @@ public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEn
 		this.leg4.rotationPointY = this.leg3.rotationPointY;
 		this.leg4.rotationPointZ = this.leg3.rotationPointZ;
 		this.leg4.pitch -= m * (float) Math.PI * 0.45F;
-		this.head.rotationPointY = 10.0F * n - 12.0F * m;
-		this.head.rotationPointZ = -16.0F * n - 3.0F * m;
+		if (this.isChild) {
+			this.head.rotationPointY = 10.0F * n - 9.0F * m;
+			this.head.rotationPointZ = -16.0F * n - 7.0F * m;
+		} else {
+			this.head.rotationPointY = 10.0F * n - 14.0F * m;
+			this.head.rotationPointZ = -16.0F * n - 3.0F * m;
+		}
+
 		this.head.pitch += m * (float) Math.PI * 0.15F;
 	}
 }

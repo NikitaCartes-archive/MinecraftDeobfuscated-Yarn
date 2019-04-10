@@ -1,7 +1,7 @@
 package net.minecraft.util;
 
-public abstract class GameTaskQueue<R extends Runnable> extends ThreadTaskQueue<R> {
-	private int field_18320 = 0;
+public abstract class GameTaskQueue<R extends Runnable> extends ThreadExecutor<R> {
+	private int field_18320;
 
 	public GameTaskQueue(String string) {
 		super(string);

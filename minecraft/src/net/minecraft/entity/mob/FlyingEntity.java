@@ -18,7 +18,7 @@ public abstract class FlyingEntity extends MobEntity {
 	}
 
 	@Override
-	protected void method_5623(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+	protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
 	}
 
 	@Override
@@ -48,7 +48,7 @@ public abstract class FlyingEntity extends MobEntity {
 			this.setVelocity(this.getVelocity().multiply((double)f));
 		}
 
-		this.field_6211 = this.field_6225;
+		this.lastLimbDistance = this.limbDistance;
 		double d = this.x - this.prevX;
 		double e = this.z - this.prevZ;
 		float h = MathHelper.sqrt(d * d + e * e) * 4.0F;
@@ -56,12 +56,12 @@ public abstract class FlyingEntity extends MobEntity {
 			h = 1.0F;
 		}
 
-		this.field_6225 = this.field_6225 + (h - this.field_6225) * 0.4F;
-		this.field_6249 = this.field_6249 + this.field_6225;
+		this.limbDistance = this.limbDistance + (h - this.limbDistance) * 0.4F;
+		this.limbAngle = this.limbAngle + this.limbDistance;
 	}
 
 	@Override
-	public boolean canClimb() {
+	public boolean isClimbing() {
 		return false;
 	}
 }

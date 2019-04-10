@@ -12,6 +12,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.lang.reflect.Type;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.text.TranslatableTextComponent;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,9 +25,9 @@ public class Identifier implements Comparable<Identifier> {
 	protected Identifier(String[] strings) {
 		this.namespace = StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0];
 		this.path = strings[1];
-		if (!this.namespace.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 46)) {
+		if (!isValidNamespace(this.namespace)) {
 			throw new InvalidIdentifierException("Non [a-z0-9_.-] character in namespace of location: " + this.namespace + ':' + this.path);
-		} else if (!this.path.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 47 || i == 46)) {
+		} else if (!isValidPath(this.path)) {
 			throw new InvalidIdentifierException("Non [a-z0-9/._-] character in path of location: " + this.namespace + ':' + this.path);
 		}
 	}
@@ -121,7 +123,21 @@ public class Identifier implements Comparable<Identifier> {
 		return c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c == '_' || c == ':' || c == '/' || c == '.' || c == '-';
 	}
 
-	public static class DeSerializer implements JsonDeserializer<Identifier>, JsonSerializer<Identifier> {
+	private static boolean isValidPath(String string) {
+		return string.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 47 || i == 46);
+	}
+
+	private static boolean isValidNamespace(String string) {
+		return string.chars().allMatch(i -> i == 95 || i == 45 || i >= 97 && i <= 122 || i >= 48 && i <= 57 || i == 46);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static boolean isValidIdentifier(String string) {
+		String[] strings = split(string, ':');
+		return isValidNamespace(StringUtils.isEmpty(strings[0]) ? "minecraft" : strings[0]) && isValidPath(strings[1]);
+	}
+
+	public static class Serializer implements JsonDeserializer<Identifier>, JsonSerializer<Identifier> {
 		public Identifier method_12840(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			return new Identifier(JsonHelper.asString(jsonElement, "location"));
 		}

@@ -18,7 +18,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 		super(entityRenderDispatcher, new EvilVillagerEntityModel<>(0.0F, 0.0F, 64, 64), 0.5F);
 		this.addFeature(new HeldItemFeatureRenderer<IllusionerEntity, EvilVillagerEntityModel<IllusionerEntity>>(this) {
 			public void method_17149(IllusionerEntity illusionerEntity, float f, float g, float h, float i, float j, float k, float l) {
-				if (illusionerEntity.method_7137() || illusionerEntity.method_6510()) {
+				if (illusionerEntity.isSpellcasting() || illusionerEntity.isAttacking()) {
 					super.method_17162(illusionerEntity, f, g, h, i, j, k, l);
 				}
 			}
@@ -33,7 +33,7 @@ public class IllusionerEntityRenderer extends IllagerEntityRenderer<IllusionerEn
 	public void method_3991(IllusionerEntity illusionerEntity, double d, double e, double f, float g, float h) {
 		if (illusionerEntity.isInvisible()) {
 			Vec3d[] vec3ds = illusionerEntity.method_7065(h);
-			float i = this.method_4045(illusionerEntity, h);
+			float i = this.getAge(illusionerEntity, h);
 
 			for (int j = 0; j < vec3ds.length; j++) {
 				super.method_4072(

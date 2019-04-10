@@ -15,7 +15,7 @@ public class LookAtEntityGoal extends Goal {
 	private int lookTime;
 	private final float chance;
 	protected final Class<? extends LivingEntity> targetType;
-	protected final TargetPredicate field_18087;
+	protected final TargetPredicate targetPredicate;
 
 	public LookAtEntityGoal(MobEntity mobEntity, Class<? extends LivingEntity> class_, float f) {
 		this(mobEntity, class_, f, 0.02F);
@@ -26,16 +26,16 @@ public class LookAtEntityGoal extends Goal {
 		this.targetType = class_;
 		this.range = f;
 		this.chance = g;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.field_18406));
 		if (class_ == PlayerEntity.class) {
-			this.field_18087 = new TargetPredicate()
+			this.targetPredicate = new TargetPredicate()
 				.setBaseMaxDistance((double)f)
 				.includeTeammates()
 				.includeInvulnerable()
 				.ignoreEntityTargetRules()
-				.setPredicate(livingEntity -> EntityPredicates.method_5913(mobEntity).test(livingEntity));
+				.setPredicate(livingEntity -> EntityPredicates.getBottommostEntity(mobEntity).test(livingEntity));
 		} else {
-			this.field_18087 = new TargetPredicate().setBaseMaxDistance((double)f).includeTeammates().includeInvulnerable().ignoreEntityTargetRules();
+			this.targetPredicate = new TargetPredicate().setBaseMaxDistance((double)f).includeTeammates().includeInvulnerable().ignoreEntityTargetRules();
 		}
 	}
 
@@ -51,13 +51,13 @@ public class LookAtEntityGoal extends Goal {
 			if (this.targetType == PlayerEntity.class) {
 				this.target = this.owner
 					.world
-					.method_18463(this.field_18087, this.owner, this.owner.x, this.owner.y + (double)this.owner.getStandingEyeHeight(), this.owner.z);
+					.getClosestPlayer(this.targetPredicate, this.owner, this.owner.x, this.owner.y + (double)this.owner.getStandingEyeHeight(), this.owner.z);
 			} else {
 				this.target = this.owner
 					.world
-					.method_18465(
+					.getClosestEntity(
 						this.targetType,
-						this.field_18087,
+						this.targetPredicate,
 						this.owner,
 						this.owner.x,
 						this.owner.y + (double)this.owner.getStandingEyeHeight(),
@@ -72,7 +72,7 @@ public class LookAtEntityGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		if (!this.target.isValid()) {
+		if (!this.target.isAlive()) {
 			return false;
 		} else {
 			return this.owner.squaredDistanceTo(this.target) > (double)(this.range * this.range) ? false : this.lookTime > 0;
@@ -85,17 +85,13 @@ public class LookAtEntityGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.target = null;
 	}
 
 	@Override
 	public void tick() {
-		this.owner
-			.getLookControl()
-			.lookAt(
-				this.target.x, this.target.y + (double)this.target.getStandingEyeHeight(), this.target.z, (float)this.owner.method_5986(), (float)this.owner.method_5978()
-			);
+		this.owner.getLookControl().method_20248(this.target.x, this.target.y + (double)this.target.getStandingEyeHeight(), this.target.z);
 		this.lookTime--;
 	}
 }

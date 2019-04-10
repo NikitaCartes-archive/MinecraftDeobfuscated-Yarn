@@ -66,7 +66,7 @@ public class StuckArrowsFeatureRenderer<T extends LivingEntity, M extends Entity
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

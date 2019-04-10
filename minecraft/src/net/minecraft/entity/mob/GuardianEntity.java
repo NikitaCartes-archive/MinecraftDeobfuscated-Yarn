@@ -53,7 +53,7 @@ public class GuardianEntity extends HostileEntity {
 	private LivingEntity cachedBeamTarget;
 	private int beamTicks;
 	private boolean flopping;
-	protected WanderAroundGoal field_7289;
+	protected WanderAroundGoal wanderGoal;
 
 	public GuardianEntity(EntityType<? extends GuardianEntity> entityType, World world) {
 		super(entityType, world);
@@ -66,15 +66,15 @@ public class GuardianEntity extends HostileEntity {
 	@Override
 	protected void initGoals() {
 		GoToWalkTargetGoal goToWalkTargetGoal = new GoToWalkTargetGoal(this, 1.0);
-		this.field_7289 = new WanderAroundGoal(this, 1.0, 80);
+		this.wanderGoal = new WanderAroundGoal(this, 1.0, 80);
 		this.goalSelector.add(4, new GuardianEntity.FireBeamGoal(this));
 		this.goalSelector.add(5, goToWalkTargetGoal);
-		this.goalSelector.add(7, this.field_7289);
+		this.goalSelector.add(7, this.wanderGoal);
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, GuardianEntity.class, 12.0F, 0.01F));
 		this.goalSelector.add(9, new LookAroundGoal(this));
-		this.field_7289.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
-		goToWalkTargetGoal.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.wanderGoal.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
+		goToWalkTargetGoal.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		this.targetSelector.add(1, new FollowTargetGoal(this, LivingEntity.class, 10, true, false, new GuardianEntity.GuardianTargetPredicate(this)));
 	}
 
@@ -180,7 +180,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -198,14 +198,14 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public void updateMovement() {
-		if (this.isValid()) {
+		if (this.isAlive()) {
 			if (this.world.isClient) {
 				this.prevSpikesExtension = this.spikesExtension;
 				if (!this.isInsideWater()) {
 					this.spikesExtensionRate = 2.0F;
 					Vec3d vec3d = this.getVelocity();
 					if (vec3d.y > 0.0 && this.flopping && !this.isSilent()) {
-						this.world.playSound(this.x, this.y, this.z, this.method_7062(), this.getSoundCategory(), 1.0F, 1.0F, false);
+						this.world.playSound(this.x, this.y, this.z, this.getFlopSound(), this.getSoundCategory(), 1.0F, 1.0F, false);
 					}
 
 					this.flopping = vec3d.y < 0.0 && this.world.doesBlockHaveSolidTopSurface(new BlockPos(this).down(), this);
@@ -292,7 +292,7 @@ public class GuardianEntity extends HostileEntity {
 		super.updateMovement();
 	}
 
-	protected SoundEvent method_7062() {
+	protected SoundEvent getFlopSound() {
 		return SoundEvents.field_14584;
 	}
 
@@ -316,13 +316,18 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this);
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this);
 	}
 
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		return (this.random.nextInt(20) == 0 || !iWorld.method_8626(new BlockPos(this))) && super.canSpawn(iWorld, spawnType);
+	}
+
+	@Override
+	protected boolean method_20344(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
+		return iWorld.getFluidState(blockPos).matches(FluidTags.field_15517);
 	}
 
 	@Override
@@ -334,21 +339,21 @@ public class GuardianEntity extends HostileEntity {
 			}
 		}
 
-		if (this.field_7289 != null) {
-			this.field_7289.method_6304();
+		if (this.wanderGoal != null) {
+			this.wanderGoal.ignoreChanceOnce();
 		}
 
 		return super.damage(damageSource, f);
 	}
 
 	@Override
-	public int method_5978() {
+	public int getLookPitchSpeed() {
 		return 180;
 	}
 
 	@Override
 	public void travel(Vec3d vec3d) {
-		if (this.method_6034() && this.isInsideWater()) {
+		if (this.canMoveVoluntarily() && this.isInsideWater()) {
 			this.updateVelocity(0.1F, vec3d);
 			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
@@ -368,13 +373,13 @@ public class GuardianEntity extends HostileEntity {
 		public FireBeamGoal(GuardianEntity guardianEntity) {
 			this.owner = guardianEntity;
 			this.elderOwner = guardianEntity instanceof ElderGuardianEntity;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = this.owner.getTarget();
-			return livingEntity != null && livingEntity.isValid();
+			return livingEntity != null && livingEntity.isAlive();
 		}
 
 		@Override
@@ -391,10 +396,10 @@ public class GuardianEntity extends HostileEntity {
 		}
 
 		@Override
-		public void onRemove() {
+		public void stop() {
 			this.owner.setBeamTarget(0);
 			this.owner.setTarget(null);
-			this.owner.field_7289.method_6304();
+			this.owner.wanderGoal.ignoreChanceOnce();
 		}
 
 		@Override
@@ -408,7 +413,7 @@ public class GuardianEntity extends HostileEntity {
 				this.beamTicks++;
 				if (this.beamTicks == 0) {
 					this.owner.setBeamTarget(this.owner.getTarget().getEntityId());
-					this.owner.world.summonParticle(this.owner, (byte)21);
+					this.owner.world.sendEntityStatus(this.owner, (byte)21);
 				} else if (this.beamTicks >= this.owner.getWarmupTime()) {
 					float f = 1.0F;
 					if (this.owner.world.getDifficulty() == Difficulty.HARD) {
@@ -446,7 +451,7 @@ public class GuardianEntity extends HostileEntity {
 				double f = vec3d.y / d;
 				double g = vec3d.z / d;
 				float h = (float)(MathHelper.atan2(vec3d.z, vec3d.x) * 180.0F / (float)Math.PI) - 90.0F;
-				this.guardian.yaw = this.method_6238(this.guardian.yaw, h, 90.0F);
+				this.guardian.yaw = this.changeAngle(this.guardian.yaw, h, 90.0F);
 				this.guardian.field_6283 = this.guardian.yaw;
 				float i = (float)(this.speed * this.guardian.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				float j = MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i);

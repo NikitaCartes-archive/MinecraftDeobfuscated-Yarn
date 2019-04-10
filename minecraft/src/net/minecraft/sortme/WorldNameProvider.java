@@ -1,54 +1,29 @@
 package net.minecraft.sortme;
 
-import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.Set;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
 
-@Environment(EnvType.CLIENT)
 public class WorldNameProvider {
-	private static final Set<String> RESERVED_WINDOWS_NAMES = ImmutableSet.of(
-		"CON",
-		"COM",
-		"PRN",
-		"AUX",
-		"CLOCK$",
-		"NUL",
-		"COM1",
-		"COM2",
-		"COM3",
-		"COM4",
-		"COM5",
-		"COM6",
-		"COM7",
-		"COM8",
-		"COM9",
-		"LPT1",
-		"LPT2",
-		"LPT3",
-		"LPT4",
-		"LPT5",
-		"LPT6",
-		"LPT7",
-		"LPT8",
-		"LPT9"
-	);
 	private static final Pattern field_18956 = Pattern.compile("(<name>.*) \\((<count>\\d*)\\)", 66);
+	private static final Pattern RESERVED_WINDOWS_NAMES = Pattern.compile(".*\\.|(?:COM|CLOCK\\$|CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\\..*)?", 2);
 
-	public static String transformWorldName(Path path, String string) throws IOException {
+	@Environment(EnvType.CLIENT)
+	public static String transformWorldName(Path path, String string, String string2) throws IOException {
 		for (char c : SharedConstants.INVALID_CHARS_LEVEL_NAME) {
 			string = string.replace(c, '_');
 		}
 
 		string = string.replaceAll("[./\"]", "_");
-		if (RESERVED_WINDOWS_NAMES.contains(string.toUpperCase())) {
+		if (RESERVED_WINDOWS_NAMES.matcher(string).matches()) {
 			string = "_" + string + "_";
 		}
 
@@ -59,31 +34,57 @@ public class WorldNameProvider {
 			i = Integer.parseInt(matcher.group("count"));
 		}
 
-		if (string.length() > 255) {
-			string = string.substring(0, 255);
+		if (string.length() > 255 - string2.length()) {
+			string = string.substring(0, 255 - string2.length());
 		}
 
 		while (true) {
-			String string2 = string;
+			String string3 = string;
 			if (i != 0) {
-				String string3 = " (" + i + ")";
-				int j = 255 - string3.length();
+				String string4 = " (" + i + ")";
+				int j = 255 - string4.length();
 				if (string.length() > j) {
-					string2 = string.substring(0, j);
+					string3 = string.substring(0, j);
 				}
 
-				string2 = string2 + string3;
+				string3 = string3 + string4;
 			}
 
-			Path path2 = path.resolve(string2);
+			string3 = string3 + string2;
+			Path path2 = path.resolve(string3);
 
 			try {
 				Path path3 = Files.createDirectory(path2);
 				Files.deleteIfExists(path3);
 				return path.relativize(path3).toString();
-			} catch (FileAlreadyExistsException var7) {
+			} catch (FileAlreadyExistsException var8) {
 				i++;
 			}
+		}
+	}
+
+	public static boolean method_20200(Path path) {
+		Path path2 = path.normalize();
+		return path2.equals(path);
+	}
+
+	public static boolean method_20201(Path path) {
+		for (Path path2 : path) {
+			if (RESERVED_WINDOWS_NAMES.matcher(path2.toString()).matches()) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static Path method_20202(Path path, String string, String string2) {
+		String string3 = string + string2;
+		Path path2 = Paths.get(string3);
+		if (path2.endsWith(string2)) {
+			throw new InvalidPathException(string3, "empty resource name");
+		} else {
+			return path.resolve(path2);
 		}
 	}
 }

@@ -1,6 +1,8 @@
 package net.minecraft.entity.ai.pathing;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.entity.mob.MobEntity;
@@ -11,26 +13,26 @@ public class PathNodeNavigator {
 	private final Set<PathNode> field_59 = Sets.<PathNode>newHashSet();
 	private final PathNode[] field_60 = new PathNode[32];
 	private final int field_18708;
-	private PathNodeMaker field_61;
+	private PathNodeMaker pathNodeMaker;
 
 	public PathNodeNavigator(PathNodeMaker pathNodeMaker, int i) {
-		this.field_61 = pathNodeMaker;
+		this.pathNodeMaker = pathNodeMaker;
 		this.field_18708 = i;
 	}
 
 	@Nullable
 	public Path pathfind(BlockView blockView, MobEntity mobEntity, double d, double e, double f, float g) {
 		this.minHeap.clear();
-		this.field_61.init(blockView, mobEntity);
-		PathNode pathNode = this.field_61.getStart();
-		PathNode pathNode2 = this.field_61.getPathNode(d, e, f);
-		Path path = this.method_54(pathNode, pathNode2, g);
-		this.field_61.clear();
+		this.pathNodeMaker.init(blockView, mobEntity);
+		PathNode pathNode = this.pathNodeMaker.getStart();
+		PathNode pathNode2 = this.pathNodeMaker.getPathNode(d, e, f);
+		Path path = this.pathfind(pathNode, pathNode2, g);
+		this.pathNodeMaker.clear();
 		return path;
 	}
 
 	@Nullable
-	private Path method_54(PathNode pathNode, PathNode pathNode2, float f) {
+	private Path pathfind(PathNode pathNode, PathNode pathNode2, float f) {
 		pathNode.field_36 = 0.0F;
 		pathNode.field_34 = pathNode.manhattanDistance(pathNode2);
 		pathNode.heapWeight = pathNode.field_34;
@@ -56,7 +58,7 @@ public class PathNodeNavigator {
 			}
 
 			pathNode4.field_42 = true;
-			int j = this.field_61.getPathNodes(this.field_60, pathNode4, pathNode2, f);
+			int j = this.pathNodeMaker.getPathNodes(this.field_60, pathNode4, pathNode2, f);
 
 			for (int k = 0; k < j; k++) {
 				PathNode pathNode5 = this.field_60[k];
@@ -78,25 +80,19 @@ public class PathNodeNavigator {
 			}
 		}
 
-		return pathNode3 == pathNode ? null : this.method_55(pathNode, pathNode3);
+		return pathNode3 == pathNode ? null : this.method_55(pathNode3);
 	}
 
-	private Path method_55(PathNode pathNode, PathNode pathNode2) {
-		int i = 1;
+	private Path method_55(PathNode pathNode) {
+		List<PathNode> list = Lists.<PathNode>newArrayList();
+		PathNode pathNode2 = pathNode;
+		list.add(0, pathNode);
 
-		for (PathNode pathNode3 = pathNode2; pathNode3.field_35 != null; pathNode3 = pathNode3.field_35) {
-			i++;
+		while (pathNode2.field_35 != null) {
+			pathNode2 = pathNode2.field_35;
+			list.add(0, pathNode2);
 		}
 
-		PathNode[] pathNodes = new PathNode[i];
-		PathNode var7 = pathNode2;
-		i--;
-
-		for (pathNodes[i] = pathNode2; var7.field_35 != null; pathNodes[i] = var7) {
-			var7 = var7.field_35;
-			i--;
-		}
-
-		return new Path(pathNodes);
+		return new Path(list);
 	}
 }

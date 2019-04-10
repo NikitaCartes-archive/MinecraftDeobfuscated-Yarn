@@ -34,8 +34,8 @@ public abstract class MobEntityWithAi extends MobEntity {
 	}
 
 	@Override
-	protected void method_5995() {
-		super.method_5995();
+	protected void updateLeash() {
+		super.updateLeash();
 		Entity entity = this.getHoldingEntity();
 		if (entity != null && entity.world == this.world) {
 			this.setWalkTarget(new BlockPos((int)entity.x, (int)entity.y, (int)entity.z), 5);
@@ -48,28 +48,28 @@ public abstract class MobEntityWithAi extends MobEntity {
 				return;
 			}
 
-			this.method_6142(f);
+			this.updateForLeashLength(f);
 			if (f > 10.0F) {
 				this.detachLeash(true, true);
-				this.goalSelector.addBits(Goal.class_4134.field_18405);
+				this.goalSelector.disableControl(Goal.Control.field_18405);
 			} else if (f > 6.0F) {
 				double d = (entity.x - this.x) / (double)f;
 				double e = (entity.y - this.y) / (double)f;
 				double g = (entity.z - this.z) / (double)f;
 				this.setVelocity(this.getVelocity().add(Math.copySign(d * d * 0.4, d), Math.copySign(e * e * 0.4, e), Math.copySign(g * g * 0.4, g)));
 			} else {
-				this.goalSelector.removeBits(Goal.class_4134.field_18405);
+				this.goalSelector.enableControl(Goal.Control.field_18405);
 				float h = 2.0F;
 				Vec3d vec3d = new Vec3d(entity.x - this.x, entity.y - this.y, entity.z - this.z).normalize().multiply((double)Math.max(f - 2.0F, 0.0F));
-				this.getNavigation().startMovingTo(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z, this.method_6148());
+				this.getNavigation().startMovingTo(this.x + vec3d.x, this.y + vec3d.y, this.z + vec3d.z, this.getRunFromLeashSpeed());
 			}
 		}
 	}
 
-	protected double method_6148() {
+	protected double getRunFromLeashSpeed() {
 		return 1.0;
 	}
 
-	protected void method_6142(float f) {
+	protected void updateForLeashLength(float f) {
 	}
 }

@@ -8,7 +8,6 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.internal.Streams;
 import com.google.gson.stream.JsonReader;
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -21,6 +20,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.network.packet.StatisticsS2CPacket;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -88,20 +88,20 @@ public class ServerStatHandler extends StatHandler {
 						compoundTag.putInt("DataVersion", 1343);
 					}
 
-					compoundTag = TagHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"));
+					compoundTag = TagHelper.update(dataFixer, DataFixTypes.field_19218, compoundTag, compoundTag.getInt("DataVersion"));
 					if (compoundTag.containsKey("stats", 10)) {
 						CompoundTag compoundTag2 = compoundTag.getCompound("stats");
 
 						for (String string2 : compoundTag2.getKeys()) {
 							if (compoundTag2.containsKey(string2, 10)) {
-								SystemUtil.method_17974(
+								SystemUtil.ifPresentOrElse(
 									Registry.STAT_TYPE.getOrEmpty(new Identifier(string2)),
 									statType -> {
 										CompoundTag compoundTag2x = compoundTag2.getCompound(string2);
 
 										for (String string2x : compoundTag2x.getKeys()) {
 											if (compoundTag2x.containsKey(string2x, 99)) {
-												SystemUtil.method_17974(
+												SystemUtil.ifPresentOrElse(
 													this.method_14905(statType, string2x),
 													stat -> this.statMap.put(stat, compoundTag2x.getInt(string2x)),
 													() -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string2x)

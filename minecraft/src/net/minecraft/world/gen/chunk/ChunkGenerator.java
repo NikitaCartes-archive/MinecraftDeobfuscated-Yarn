@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityCategory;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -52,8 +53,8 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 		return chunk.getBiome(BlockPos.ORIGIN);
 	}
 
-	protected Biome getDecorationBiome(ChunkRegion chunkRegion, int i, int j) {
-		return chunkRegion.getChunk(i + 1, j + 1).getBiomeArray()[0];
+	protected Biome getDecorationBiome(ChunkRegion chunkRegion, BlockPos blockPos) {
+		return this.biomeSource.getBiome(blockPos);
 	}
 
 	public void carve(Chunk chunk, GenerationStep.Carver carver) {
@@ -93,7 +94,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 		int k = i * 16;
 		int l = j * 16;
 		BlockPos blockPos = new BlockPos(k, 0, l);
-		Biome biome = this.getDecorationBiome(chunkRegion, i, j);
+		Biome biome = this.getDecorationBiome(chunkRegion, blockPos.add(8, 8, 8));
 		ChunkRandom chunkRandom = new ChunkRandom();
 		long m = chunkRandom.setSeed(chunkRegion.getSeed(), k, l);
 
@@ -113,7 +114,7 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 
 	public abstract int getSpawnHeight();
 
-	public void spawnEntities(World world, boolean bl, boolean bl2) {
+	public void spawnEntities(ServerWorld serverWorld, boolean bl, boolean bl2) {
 	}
 
 	public boolean hasStructure(Biome biome, StructureFeature<? extends FeatureConfig> structureFeature) {

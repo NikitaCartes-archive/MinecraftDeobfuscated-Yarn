@@ -41,7 +41,9 @@ public class JigsawReplacementStructureProcessor extends StructureProcessor {
 				throw new RuntimeException(var10);
 			}
 
-			return new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockArgumentParser.getBlockState(), null);
+			return blockArgumentParser.getBlockState().getBlock() == Blocks.field_10369
+				? null
+				: new Structure.StructureBlockInfo(structureBlockInfo2.pos, blockArgumentParser.getBlockState(), null);
 		}
 	}
 

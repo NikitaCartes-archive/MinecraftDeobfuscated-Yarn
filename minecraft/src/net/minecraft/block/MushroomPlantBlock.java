@@ -72,7 +72,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 	}
 
 	public boolean trySpawningBigMushroom(IWorld iWorld, BlockPos blockPos, BlockState blockState, Random random) {
-		iWorld.clearBlockState(blockPos);
+		iWorld.clearBlockState(blockPos, false);
 		Feature<DefaultFeatureConfig> feature = null;
 		if (this == Blocks.field_10251) {
 			feature = Feature.field_13531;

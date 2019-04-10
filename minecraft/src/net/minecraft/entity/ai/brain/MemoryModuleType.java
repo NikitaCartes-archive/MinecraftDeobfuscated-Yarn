@@ -11,6 +11,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.GlobalPos;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 
 public class MemoryModuleType<U> {
@@ -21,6 +22,7 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<List<GlobalPos>> field_18873 = register("secondary_job_site", Optional.empty());
 	public static final MemoryModuleType<List<LivingEntity>> field_18441 = register("mobs", Optional.empty());
 	public static final MemoryModuleType<List<LivingEntity>> field_18442 = register("visible_mobs", Optional.empty());
+	public static final MemoryModuleType<List<LivingEntity>> field_19006 = register("visible_villager_babies", Optional.empty());
 	public static final MemoryModuleType<List<PlayerEntity>> field_18443 = register("nearest_players", Optional.empty());
 	public static final MemoryModuleType<PlayerEntity> field_18444 = register("nearest_visible_player", Optional.empty());
 	public static final MemoryModuleType<WalkTarget> field_18445 = register("walk_target", Optional.empty());
@@ -29,10 +31,13 @@ public class MemoryModuleType<U> {
 	public static final MemoryModuleType<VillagerEntity> field_18448 = register("breed_target", Optional.empty());
 	public static final MemoryModuleType<Path> field_18449 = register("path", Optional.empty());
 	public static final MemoryModuleType<List<GlobalPos>> field_18450 = register("interactable_doors", Optional.empty());
+	public static final MemoryModuleType<BlockPos> field_19007 = register("nearest_bed", Optional.empty());
 	public static final MemoryModuleType<DamageSource> field_18451 = register("hurt_by", Optional.empty());
 	public static final MemoryModuleType<LivingEntity> field_18452 = register("hurt_by_entity", Optional.empty());
 	public static final MemoryModuleType<LivingEntity> field_18453 = register("nearest_hostile", Optional.empty());
 	public static final MemoryModuleType<VillagerEntity.GolemSpawnCondition> field_18874 = register("golem_spawn_conditions", Optional.empty());
+	public static final MemoryModuleType<GlobalPos> field_19008 = register("hiding_place", Optional.empty());
+	public static final MemoryModuleType<Long> field_19009 = register("heard_bell_time", Optional.empty());
 	private final Optional<Function<Dynamic<?>, U>> factory;
 
 	private MemoryModuleType(Optional<Function<Dynamic<?>, U>> optional) {

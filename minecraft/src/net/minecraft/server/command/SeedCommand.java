@@ -11,7 +11,7 @@ import net.minecraft.text.event.ClickEvent;
 public class SeedCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("seed")
+			CommandManager.literal("seed")
 				.requires(serverCommandSource -> serverCommandSource.getMinecraftServer().isSinglePlayer() || serverCommandSource.hasPermissionLevel(2))
 				.executes(
 					commandContext -> {

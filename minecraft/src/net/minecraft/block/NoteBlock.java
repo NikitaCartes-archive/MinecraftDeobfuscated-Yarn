@@ -46,14 +46,14 @@ public class NoteBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
-		boolean bl = world.isReceivingRedstonePower(blockPos);
-		if (bl != (Boolean)blockState.get(POWERED)) {
-			if (bl) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
+		boolean bl2 = world.isReceivingRedstonePower(blockPos);
+		if (bl2 != (Boolean)blockState.get(POWERED)) {
+			if (bl2) {
 				this.playNote(world, blockPos);
 			}
 
-			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl)), 3);
+			world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl2)), 3);
 		}
 	}
 
@@ -71,7 +71,7 @@ public class NoteBlock extends Block {
 			blockState = blockState.method_11572(NOTE);
 			world.setBlockState(blockPos, blockState, 3);
 			this.playNote(world, blockPos);
-			playerEntity.increaseStat(Stats.field_15393);
+			playerEntity.incrementStat(Stats.field_15393);
 			return true;
 		}
 	}
@@ -80,7 +80,7 @@ public class NoteBlock extends Block {
 	public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
 		if (!world.isClient) {
 			this.playNote(world, blockPos);
-			playerEntity.increaseStat(Stats.field_15385);
+			playerEntity.incrementStat(Stats.field_15385);
 		}
 	}
 

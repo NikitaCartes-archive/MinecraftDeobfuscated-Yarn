@@ -28,7 +28,7 @@ public class ParticleArgumentType implements ArgumentType<ParticleParameters> {
 		return new ParticleArgumentType();
 	}
 
-	public static ParticleParameters getParticleArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static ParticleParameters getParticle(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, ParticleParameters.class);
 	}
 

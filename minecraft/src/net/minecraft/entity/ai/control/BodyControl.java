@@ -1,55 +1,61 @@
 package net.minecraft.entity.ai.control;
 
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.MathHelper;
 
 public class BodyControl {
-	private final LivingEntity entity;
+	private final MobEntity entity;
 	private int field_6355;
 	private float field_6354;
 
-	public BodyControl(LivingEntity livingEntity) {
-		this.entity = livingEntity;
+	public BodyControl(MobEntity mobEntity) {
+		this.entity = mobEntity;
 	}
 
 	public void method_6224() {
-		double d = this.entity.x - this.entity.prevX;
-		double e = this.entity.z - this.entity.prevZ;
-		if (d * d + e * e > 2.5000003E-7F) {
+		if (this.method_20247()) {
 			this.entity.field_6283 = this.entity.yaw;
-			this.entity.headYaw = this.method_6223(this.entity.field_6283, this.entity.headYaw, (float)((MobEntity)this.entity).method_5986());
+			this.method_20244();
 			this.field_6354 = this.entity.headYaw;
 			this.field_6355 = 0;
 		} else {
-			if (this.entity.getPassengerList().isEmpty() || !(this.entity.getPassengerList().get(0) instanceof MobEntity)) {
-				float f = 75.0F;
+			if (this.method_20246()) {
 				if (Math.abs(this.entity.headYaw - this.field_6354) > 15.0F) {
 					this.field_6355 = 0;
 					this.field_6354 = this.entity.headYaw;
+					this.method_20243();
 				} else {
 					this.field_6355++;
-					int i = 10;
 					if (this.field_6355 > 10) {
-						f = Math.max(1.0F - (float)(this.field_6355 - 10) / 10.0F, 0.0F) * (float)((MobEntity)this.entity).method_5986();
+						this.method_20245();
 					}
 				}
-
-				this.entity.field_6283 = this.method_6223(this.entity.headYaw, this.entity.field_6283, f);
 			}
 		}
 	}
 
-	private float method_6223(float f, float g, float h) {
-		float i = MathHelper.wrapDegrees(f - g);
-		if (i < -h) {
-			i = -h;
-		}
+	private void method_20243() {
+		this.entity.field_6283 = MathHelper.method_20306(this.entity.field_6283, this.entity.headYaw, (float)this.entity.method_5986());
+	}
 
-		if (i >= h) {
-			i = h;
-		}
+	private void method_20244() {
+		this.entity.headYaw = MathHelper.method_20306(this.entity.headYaw, this.entity.field_6283, (float)this.entity.method_5986());
+	}
 
-		return f - i;
+	private void method_20245() {
+		int i = this.field_6355 - 10;
+		float f = MathHelper.clamp((float)i / 10.0F, 0.0F, 1.0F);
+		float g = (float)this.entity.method_5986() * (1.0F - f);
+		this.entity.field_6283 = MathHelper.method_20306(this.entity.field_6283, this.entity.headYaw, g);
+	}
+
+	private boolean method_20246() {
+		return this.entity.getPassengerList().isEmpty() || !(this.entity.getPassengerList().get(0) instanceof MobEntity);
+	}
+
+	private boolean method_20247() {
+		double d = this.entity.x - this.entity.prevX;
+		double e = this.entity.z - this.entity.prevZ;
+		return d * d + e * e > 2.5000003E-7F;
 	}
 }

@@ -58,7 +58,7 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeDouble(this.z);
 		packetByteBuf.writeByte(this.yaw);
 		packetByteBuf.writeByte(this.pitch);
-		this.dataTracker.serializePacket(packetByteBuf);
+		this.dataTracker.toPacketByteBuf(packetByteBuf);
 	}
 
 	public void method_11235(ClientPlayPacketListener clientPlayPacketListener) {

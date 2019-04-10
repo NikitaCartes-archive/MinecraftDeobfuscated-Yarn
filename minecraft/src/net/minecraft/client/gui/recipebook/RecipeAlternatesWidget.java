@@ -10,7 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.InputListener;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.recipe.book.RecipeResultCollection;
 import net.minecraft.client.render.GuiLighting;
@@ -24,7 +24,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, InputListener {
+public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, Element {
 	private static final Identifier BG_TEX = new Identifier("textures/gui/recipe_book.png");
 	private final List<RecipeAlternatesWidget.AlternateButtonWidget> alternateButtons = Lists.<RecipeAlternatesWidget.AlternateButtonWidget>newArrayList();
 	private boolean visible;
@@ -89,6 +89,11 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 		this.lastClickedRecipe = null;
 	}
 
+	@Override
+	public boolean changeFocus(boolean bl) {
+		return false;
+	}
+
 	public RecipeResultCollection getResults() {
 		return this.resultCollection;
 	}
@@ -148,33 +153,33 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 	}
 
 	private void method_2618(int i, int j, int k, int l, int m, int n) {
-		this.drawTexturedRect(this.buttonX, this.buttonY, m, n, l, l);
-		this.drawTexturedRect(this.buttonX + l * 2 + i * k, this.buttonY, m + k + l, n, l, l);
-		this.drawTexturedRect(this.buttonX, this.buttonY + l * 2 + j * k, m, n + k + l, l, l);
-		this.drawTexturedRect(this.buttonX + l * 2 + i * k, this.buttonY + l * 2 + j * k, m + k + l, n + k + l, l, l);
+		this.blit(this.buttonX, this.buttonY, m, n, l, l);
+		this.blit(this.buttonX + l * 2 + i * k, this.buttonY, m + k + l, n, l, l);
+		this.blit(this.buttonX, this.buttonY + l * 2 + j * k, m, n + k + l, l, l);
+		this.blit(this.buttonX + l * 2 + i * k, this.buttonY + l * 2 + j * k, m + k + l, n + k + l, l, l);
 
 		for (int o = 0; o < i; o++) {
-			this.drawTexturedRect(this.buttonX + l + o * k, this.buttonY, m + l, n, k, l);
-			this.drawTexturedRect(this.buttonX + l + (o + 1) * k, this.buttonY, m + l, n, l, l);
+			this.blit(this.buttonX + l + o * k, this.buttonY, m + l, n, k, l);
+			this.blit(this.buttonX + l + (o + 1) * k, this.buttonY, m + l, n, l, l);
 
 			for (int p = 0; p < j; p++) {
 				if (o == 0) {
-					this.drawTexturedRect(this.buttonX, this.buttonY + l + p * k, m, n + l, l, k);
-					this.drawTexturedRect(this.buttonX, this.buttonY + l + (p + 1) * k, m, n + l, l, l);
+					this.blit(this.buttonX, this.buttonY + l + p * k, m, n + l, l, k);
+					this.blit(this.buttonX, this.buttonY + l + (p + 1) * k, m, n + l, l, l);
 				}
 
-				this.drawTexturedRect(this.buttonX + l + o * k, this.buttonY + l + p * k, m + l, n + l, k, k);
-				this.drawTexturedRect(this.buttonX + l + (o + 1) * k, this.buttonY + l + p * k, m + l, n + l, l, k);
-				this.drawTexturedRect(this.buttonX + l + o * k, this.buttonY + l + (p + 1) * k, m + l, n + l, k, l);
-				this.drawTexturedRect(this.buttonX + l + (o + 1) * k - 1, this.buttonY + l + (p + 1) * k - 1, m + l, n + l, l + 1, l + 1);
+				this.blit(this.buttonX + l + o * k, this.buttonY + l + p * k, m + l, n + l, k, k);
+				this.blit(this.buttonX + l + (o + 1) * k, this.buttonY + l + p * k, m + l, n + l, l, k);
+				this.blit(this.buttonX + l + o * k, this.buttonY + l + (p + 1) * k, m + l, n + l, k, l);
+				this.blit(this.buttonX + l + (o + 1) * k - 1, this.buttonY + l + (p + 1) * k - 1, m + l, n + l, l + 1, l + 1);
 				if (o == i - 1) {
-					this.drawTexturedRect(this.buttonX + l * 2 + i * k, this.buttonY + l + p * k, m + k + l, n + l, l, k);
-					this.drawTexturedRect(this.buttonX + l * 2 + i * k, this.buttonY + l + (p + 1) * k, m + k + l, n + l, l, l);
+					this.blit(this.buttonX + l * 2 + i * k, this.buttonY + l + p * k, m + k + l, n + l, l, k);
+					this.blit(this.buttonX + l * 2 + i * k, this.buttonY + l + (p + 1) * k, m + k + l, n + l, l, l);
 				}
 			}
 
-			this.drawTexturedRect(this.buttonX + l + o * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, k, l);
-			this.drawTexturedRect(this.buttonX + l + (o + 1) * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, l, l);
+			this.blit(this.buttonX + l + o * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, k, l);
+			this.blit(this.buttonX + l + (o + 1) * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, l, l);
 		}
 	}
 
@@ -228,7 +233,7 @@ public class RecipeAlternatesWidget extends DrawableHelper implements Drawable, 
 				l += 26;
 			}
 
-			this.drawTexturedRect(this.x, this.y, k, l, this.width, this.height);
+			this.blit(this.x, this.y, k, l, this.width, this.height);
 
 			for (RecipeAlternatesWidget.AlternateButtonWidget.InputSlot inputSlot : this.slots) {
 				GlStateManager.pushMatrix();

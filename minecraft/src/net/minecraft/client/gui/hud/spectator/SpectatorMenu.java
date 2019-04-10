@@ -135,9 +135,9 @@ public class SpectatorMenu {
 		public void renderIcon(float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
 			if (this.direction < 0) {
-				DrawableHelper.drawTexturedRect(0, 0, 144.0F, 0.0F, 16, 16, 256.0F, 256.0F);
+				DrawableHelper.blit(0, 0, 144.0F, 0.0F, 16, 16, 256, 256);
 			} else {
-				DrawableHelper.drawTexturedRect(0, 0, 160.0F, 0.0F, 16, 16, 256.0F, 256.0F);
+				DrawableHelper.blit(0, 0, 160.0F, 0.0F, 16, 16, 256, 256);
 			}
 		}
 
@@ -165,7 +165,7 @@ public class SpectatorMenu {
 		@Override
 		public void renderIcon(float f, int i) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-			DrawableHelper.drawTexturedRect(0, 0, 128.0F, 0.0F, 16, 16, 256.0F, 256.0F);
+			DrawableHelper.blit(0, 0, 128.0F, 0.0F, 16, 16, 256, 256);
 		}
 
 		@Override

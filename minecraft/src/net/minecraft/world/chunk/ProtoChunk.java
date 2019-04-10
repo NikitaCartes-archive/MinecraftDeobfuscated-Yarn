@@ -43,7 +43,7 @@ public class ProtoChunk implements Chunk {
 	private boolean shouldSave;
 	private Biome[] biomeArray;
 	@Nullable
-	private LightingProvider lightingProvider;
+	private volatile LightingProvider lightingProvider;
 	private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
 	private volatile ChunkStatus status = ChunkStatus.EMPTY;
 	private final Map<BlockPos, BlockEntity> blockEntities = Maps.<BlockPos, BlockEntity>newHashMap();
@@ -116,11 +116,6 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public int getLuminance(BlockPos blockPos) {
-		return this.lightingProvider == null ? 0 : this.getBlockState(blockPos).getLuminance();
-	}
-
-	@Override
 	public Stream<BlockPos> getLightSourcesStream() {
 		return this.lightSources.stream();
 	}
@@ -159,60 +154,38 @@ public class ProtoChunk implements Chunk {
 
 				ChunkSection chunkSection = this.getSection(j >> 4);
 				BlockState blockState2 = chunkSection.setBlockState(i & 15, j & 15, k & 15, blockState);
-				if (!this.getStatus().isSurfaceGenerated()) {
-					Heightmap heightmap = (Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR_WG);
-					Heightmap heightmap2 = (Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE_WG);
-					if (heightmap == null || heightmap2 == null) {
-						EnumSet<Heightmap.Type> enumSet = EnumSet.noneOf(Heightmap.Type.class);
-						if (heightmap == null) {
-							enumSet.add(Heightmap.Type.OCEAN_FLOOR_WG);
+				if (this.status.isAtLeast(ChunkStatus.FEATURES)
+					&& blockState != blockState2
+					&& (
+						blockState.getLightSubtracted(this, blockPos) != blockState2.getLightSubtracted(this, blockPos)
+							|| blockState.getLuminance() != blockState2.getLuminance()
+							|| blockState.method_16386()
+							|| blockState2.method_16386()
+					)) {
+					LightingProvider lightingProvider = this.getLightingProvider();
+					lightingProvider.enqueueLightUpdate(blockPos);
+				}
+
+				EnumSet<Heightmap.Type> enumSet = this.getStatus().isSurfaceGenerated();
+				EnumSet<Heightmap.Type> enumSet2 = null;
+
+				for (Heightmap.Type type : enumSet) {
+					Heightmap heightmap = (Heightmap)this.heightmaps.get(type);
+					if (heightmap == null) {
+						if (enumSet2 == null) {
+							enumSet2 = EnumSet.noneOf(Heightmap.Type.class);
 						}
 
-						if (heightmap2 == null) {
-							enumSet.add(Heightmap.Type.WORLD_SURFACE_WG);
-						}
-
-						Heightmap.populateHeightmaps(this, enumSet);
-						heightmap = (Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR_WG);
-						heightmap2 = (Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE_WG);
+						enumSet2.add(type);
 					}
+				}
 
-					heightmap.trackUpdate(i & 15, j, k & 15, blockState);
-					heightmap2.trackUpdate(i & 15, j, k & 15, blockState);
-				} else {
-					Heightmap heightmap = (Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING);
-					Heightmap heightmap2 = (Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES);
-					Heightmap heightmap3 = (Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR);
-					Heightmap heightmap4 = (Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE);
-					if (heightmap == null || heightmap2 == null || heightmap3 == null || heightmap4 == null) {
-						EnumSet<Heightmap.Type> enumSet2 = EnumSet.noneOf(Heightmap.Type.class);
-						if (heightmap == null) {
-							enumSet2.add(Heightmap.Type.MOTION_BLOCKING);
-						}
+				if (enumSet2 != null) {
+					Heightmap.populateHeightmaps(this, enumSet2);
+				}
 
-						if (heightmap2 == null) {
-							enumSet2.add(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES);
-						}
-
-						if (heightmap3 == null) {
-							enumSet2.add(Heightmap.Type.OCEAN_FLOOR);
-						}
-
-						if (heightmap4 == null) {
-							enumSet2.add(Heightmap.Type.WORLD_SURFACE);
-						}
-
-						Heightmap.populateHeightmaps(this, enumSet2);
-						heightmap = (Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING);
-						heightmap2 = (Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES);
-						heightmap3 = (Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR);
-						heightmap4 = (Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE);
-					}
-
-					heightmap.trackUpdate(i & 15, j, k & 15, blockState);
-					heightmap2.trackUpdate(i & 15, j, k & 15, blockState);
-					heightmap3.trackUpdate(i & 15, j, k & 15, blockState);
-					heightmap4.trackUpdate(i & 15, j, k & 15, blockState);
+				for (Heightmap.Type typex : enumSet) {
+					((Heightmap)this.heightmaps.get(typex)).trackUpdate(i & 15, j, k & 15, blockState);
 				}
 
 				return blockState2;

@@ -24,8 +24,8 @@ public class WolfEntityRenderer extends MobEntityRenderer<WolfEntity, WolfEntity
 	}
 
 	public void method_4166(WolfEntity wolfEntity, double d, double e, double f, float g, float h) {
-		if (wolfEntity.method_6711()) {
-			float i = wolfEntity.method_5718() * wolfEntity.method_6707(h);
+		if (wolfEntity.isWet()) {
+			float i = wolfEntity.getBrightnessAtEyes() * wolfEntity.getWetBrightnessMultiplier(h);
 			GlStateManager.color3f(i, i, i);
 		}
 

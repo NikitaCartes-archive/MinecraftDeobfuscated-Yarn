@@ -51,7 +51,7 @@ public class HoeItem extends ToolItem {
 				if (!world.isClient) {
 					world.setBlockState(blockPos, blockState, 11);
 					if (playerEntity != null) {
-						itemUsageContext.getItemStack().applyDamage(1, playerEntity);
+						itemUsageContext.getItemStack().applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(itemUsageContext.getHand()));
 					}
 				}
 
@@ -64,7 +64,7 @@ public class HoeItem extends ToolItem {
 
 	@Override
 	public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.applyDamage(1, livingEntity2);
+		itemStack.applyDamage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
 		return true;
 	}
 

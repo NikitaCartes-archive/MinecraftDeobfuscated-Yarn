@@ -31,7 +31,7 @@ public class FollowOwnerGoal extends Goal {
 		this.field_6446 = tameableEntity.getNavigation();
 		this.minDistance = f;
 		this.field_6450 = g;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		if (!(tameableEntity.getNavigation() instanceof MobNavigation) && !(tameableEntity.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowOwnerGoal");
 		}
@@ -67,7 +67,7 @@ public class FollowOwnerGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.owner = null;
 		this.field_6446.stop();
 		this.caller.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6447);
@@ -75,7 +75,7 @@ public class FollowOwnerGoal extends Goal {
 
 	@Override
 	public void tick() {
-		this.caller.getLookControl().lookAt(this.owner, 10.0F, (float)this.caller.method_5978());
+		this.caller.getLookControl().lookAt(this.owner, 10.0F, (float)this.caller.getLookPitchSpeed());
 		if (!this.caller.isSitting()) {
 			if (--this.field_6443 <= 0) {
 				this.field_6443 = 10;
@@ -104,9 +104,6 @@ public class FollowOwnerGoal extends Goal {
 
 	protected boolean method_6263(BlockPos blockPos) {
 		BlockState blockState = this.world.getBlockState(blockPos);
-		return blockState.hasSolidTopSurface(this.world, blockPos, this.caller)
-			&& blockState.allowsSpawning(this.caller)
-			&& this.world.isAir(blockPos.up())
-			&& this.world.isAir(blockPos.up(2));
+		return blockState.allowsSpawning(this.world, blockPos, this.caller.getType()) && this.world.isAir(blockPos.up()) && this.world.isAir(blockPos.up(2));
 	}
 }

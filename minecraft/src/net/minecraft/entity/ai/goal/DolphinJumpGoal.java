@@ -68,7 +68,7 @@ public class DolphinJumpGoal extends DiveJumpingGoal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.dolphin.pitch = 0.0F;
 	}
 

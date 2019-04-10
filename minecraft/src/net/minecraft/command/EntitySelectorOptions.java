@@ -23,7 +23,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.scoreboard.AbstractScoreboardTeam;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
@@ -80,7 +80,7 @@ public class EntitySelectorOptions {
 		if (options.isEmpty()) {
 			putOption("name", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
-				boolean bl = entitySelectorReader.method_9892();
+				boolean bl = entitySelectorReader.readNegationCharacter();
 				String string = entitySelectorReader.getReader().readString();
 				if (entitySelectorReader.method_9844() && !bl) {
 					entitySelectorReader.getReader().setCursor(i);
@@ -97,50 +97,50 @@ public class EntitySelectorOptions {
 			}, entitySelectorReader -> !entitySelectorReader.method_9912(), new TranslatableTextComponent("argument.entity.options.name.description"));
 			putOption("distance", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
-				NumberRange.Float float_ = NumberRange.Float.method_9049(entitySelectorReader.getReader());
-				if ((float_.getMin() == null || !((Float)float_.getMin() < 0.0F)) && (float_.getMax() == null || !((Float)float_.getMax() < 0.0F))) {
-					entitySelectorReader.method_9870(float_);
-					entitySelectorReader.method_9852();
+				NumberRange.FloatRange floatRange = NumberRange.FloatRange.parse(entitySelectorReader.getReader());
+				if ((floatRange.getMin() == null || !((Float)floatRange.getMin() < 0.0F)) && (floatRange.getMax() == null || !((Float)floatRange.getMax() < 0.0F))) {
+					entitySelectorReader.setDistance(floatRange);
+					entitySelectorReader.setLocalWorldOnly();
 				} else {
 					entitySelectorReader.getReader().setCursor(i);
 					throw NEGATIVE_DISTANCE_EXCEPTION.createWithContext(entitySelectorReader.getReader());
 				}
-			}, entitySelectorReader -> entitySelectorReader.method_9873().isDummy(), new TranslatableTextComponent("argument.entity.options.distance.description"));
+			}, entitySelectorReader -> entitySelectorReader.getDistance().isDummy(), new TranslatableTextComponent("argument.entity.options.distance.description"));
 			putOption("level", entitySelectorReader -> {
 				int i = entitySelectorReader.getReader().getCursor();
-				NumberRange.Integer integer = NumberRange.Integer.method_9060(entitySelectorReader.getReader());
-				if ((integer.getMin() == null || (Integer)integer.getMin() >= 0) && (integer.getMax() == null || (Integer)integer.getMax() >= 0)) {
-					entitySelectorReader.method_9846(integer);
-					entitySelectorReader.method_9841(false);
+				NumberRange.IntRange intRange = NumberRange.IntRange.parse(entitySelectorReader.getReader());
+				if ((intRange.getMin() == null || (Integer)intRange.getMin() >= 0) && (intRange.getMax() == null || (Integer)intRange.getMax() >= 0)) {
+					entitySelectorReader.setExperienceRange(intRange);
+					entitySelectorReader.setIncludingNonPlayer(false);
 				} else {
 					entitySelectorReader.getReader().setCursor(i);
 					throw NEGATIVE_LEVEL_EXCEPTION.createWithContext(entitySelectorReader.getReader());
 				}
-			}, entitySelectorReader -> entitySelectorReader.method_9895().isDummy(), new TranslatableTextComponent("argument.entity.options.level.description"));
+			}, entitySelectorReader -> entitySelectorReader.getExperienceRange().isDummy(), new TranslatableTextComponent("argument.entity.options.level.description"));
 			putOption("x", entitySelectorReader -> {
-				entitySelectorReader.method_9852();
-				entitySelectorReader.method_9850(entitySelectorReader.getReader().readDouble());
-			}, entitySelectorReader -> entitySelectorReader.method_9902() == null, new TranslatableTextComponent("argument.entity.options.x.description"));
+				entitySelectorReader.setLocalWorldOnly();
+				entitySelectorReader.setOffsetX(entitySelectorReader.getReader().readDouble());
+			}, entitySelectorReader -> entitySelectorReader.getOffsetX() == null, new TranslatableTextComponent("argument.entity.options.x.description"));
 			putOption("y", entitySelectorReader -> {
-				entitySelectorReader.method_9852();
-				entitySelectorReader.method_9864(entitySelectorReader.getReader().readDouble());
-			}, entitySelectorReader -> entitySelectorReader.method_9884() == null, new TranslatableTextComponent("argument.entity.options.y.description"));
+				entitySelectorReader.setLocalWorldOnly();
+				entitySelectorReader.setOffsetY(entitySelectorReader.getReader().readDouble());
+			}, entitySelectorReader -> entitySelectorReader.getOffsetY() == null, new TranslatableTextComponent("argument.entity.options.y.description"));
 			putOption("z", entitySelectorReader -> {
-				entitySelectorReader.method_9852();
-				entitySelectorReader.method_9879(entitySelectorReader.getReader().readDouble());
-			}, entitySelectorReader -> entitySelectorReader.method_9868() == null, new TranslatableTextComponent("argument.entity.options.z.description"));
+				entitySelectorReader.setLocalWorldOnly();
+				entitySelectorReader.setOffsetZ(entitySelectorReader.getReader().readDouble());
+			}, entitySelectorReader -> entitySelectorReader.getOffsetZ() == null, new TranslatableTextComponent("argument.entity.options.z.description"));
 			putOption("dx", entitySelectorReader -> {
-				entitySelectorReader.method_9852();
-				entitySelectorReader.method_9891(entitySelectorReader.getReader().readDouble());
-			}, entitySelectorReader -> entitySelectorReader.method_9851() == null, new TranslatableTextComponent("argument.entity.options.dx.description"));
+				entitySelectorReader.setLocalWorldOnly();
+				entitySelectorReader.setBoxX(entitySelectorReader.getReader().readDouble());
+			}, entitySelectorReader -> entitySelectorReader.getBoxX() == null, new TranslatableTextComponent("argument.entity.options.dx.description"));
 			putOption("dy", entitySelectorReader -> {
-				entitySelectorReader.method_9852();
-				entitySelectorReader.method_9905(entitySelectorReader.getReader().readDouble());
-			}, entitySelectorReader -> entitySelectorReader.method_9840() == null, new TranslatableTextComponent("argument.entity.options.dy.description"));
+				entitySelectorReader.setLocalWorldOnly();
+				entitySelectorReader.setBoxY(entitySelectorReader.getReader().readDouble());
+			}, entitySelectorReader -> entitySelectorReader.getBoxY() == null, new TranslatableTextComponent("argument.entity.options.dy.description"));
 			putOption("dz", entitySelectorReader -> {
-				entitySelectorReader.method_9852();
-				entitySelectorReader.method_9918(entitySelectorReader.getReader().readDouble());
-			}, entitySelectorReader -> entitySelectorReader.method_9907() == null, new TranslatableTextComponent("argument.entity.options.dz.description"));
+				entitySelectorReader.setLocalWorldOnly();
+				entitySelectorReader.setBoxZ(entitySelectorReader.getReader().readDouble());
+			}, entitySelectorReader -> entitySelectorReader.getBoxZ() == null, new TranslatableTextComponent("argument.entity.options.dz.description"));
 			putOption(
 				"x_rotation",
 				entitySelectorReader -> entitySelectorReader.setPitchRange(FloatRange.parse(entitySelectorReader.getReader(), true, MathHelper::wrapDegrees)),
@@ -162,11 +162,11 @@ public class EntitySelectorOptions {
 						entitySelectorReader.getReader().setCursor(i);
 						throw TOO_SMALL_LEVEL_EXCEPTION.createWithContext(entitySelectorReader.getReader());
 					} else {
-						entitySelectorReader.method_9900(j);
+						entitySelectorReader.setCount(j);
 						entitySelectorReader.method_9877(true);
 					}
 				},
-				entitySelectorReader -> !entitySelectorReader.method_9885() && !entitySelectorReader.method_9866(),
+				entitySelectorReader -> !entitySelectorReader.isSenderOnly() && !entitySelectorReader.method_9866(),
 				new TranslatableTextComponent("argument.entity.options.limit.description")
 			);
 			putOption(
@@ -196,10 +196,10 @@ public class EntitySelectorOptions {
 							throw IRREVERSIBLE_SORT_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
 					}
 
-					entitySelectorReader.setOrdering(biConsumer);
+					entitySelectorReader.setSorter(biConsumer);
 					entitySelectorReader.method_9887(true);
 				},
-				entitySelectorReader -> !entitySelectorReader.method_9885() && !entitySelectorReader.method_9889(),
+				entitySelectorReader -> !entitySelectorReader.isSenderOnly() && !entitySelectorReader.method_9889(),
 				new TranslatableTextComponent("argument.entity.options.sort.description")
 			);
 			putOption("gamemode", entitySelectorReader -> {
@@ -231,7 +231,7 @@ public class EntitySelectorOptions {
 					return suggestionsBuilder.buildFuture();
 				});
 				int i = entitySelectorReader.getReader().getCursor();
-				boolean bl = entitySelectorReader.method_9892();
+				boolean bl = entitySelectorReader.readNegationCharacter();
 				if (entitySelectorReader.method_9837() && !bl) {
 					entitySelectorReader.getReader().setCursor(i);
 					throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), "gamemode");
@@ -242,7 +242,7 @@ public class EntitySelectorOptions {
 						entitySelectorReader.getReader().setCursor(i);
 						throw INVALID_MODE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
 					} else {
-						entitySelectorReader.method_9841(false);
+						entitySelectorReader.setIncludingNonPlayer(false);
 						entitySelectorReader.setPredicate(entity -> {
 							if (!(entity instanceof ServerPlayerEntity)) {
 								return false;
@@ -260,14 +260,14 @@ public class EntitySelectorOptions {
 				}
 			}, entitySelectorReader -> !entitySelectorReader.method_9839(), new TranslatableTextComponent("argument.entity.options.gamemode.description"));
 			putOption("team", entitySelectorReader -> {
-				boolean bl = entitySelectorReader.method_9892();
+				boolean bl = entitySelectorReader.readNegationCharacter();
 				String string = entitySelectorReader.getReader().readUnquotedString();
 				entitySelectorReader.setPredicate(entity -> {
 					if (!(entity instanceof LivingEntity)) {
 						return false;
 					} else {
-						AbstractScoreboardTeam abstractScoreboardTeam = entity.getScoreboardTeam();
-						String string2 = abstractScoreboardTeam == null ? "" : abstractScoreboardTeam.getName();
+						AbstractTeam abstractTeam = entity.method_5781();
+						String string2 = abstractTeam == null ? "" : abstractTeam.getName();
 						return string2.equals(string) != bl;
 					}
 				});
@@ -289,7 +289,7 @@ public class EntitySelectorOptions {
 					return suggestionsBuilder.buildFuture();
 				});
 				int i = entitySelectorReader.getReader().getCursor();
-				boolean bl = entitySelectorReader.method_9892();
+				boolean bl = entitySelectorReader.readNegationCharacter();
 				if (entitySelectorReader.method_9910() && !bl) {
 					entitySelectorReader.getReader().setCursor(i);
 					throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), "type");
@@ -298,7 +298,7 @@ public class EntitySelectorOptions {
 						entitySelectorReader.method_9860();
 					}
 
-					if (entitySelectorReader.method_9915()) {
+					if (entitySelectorReader.readTagCharacter()) {
 						Identifier identifier = Identifier.parse(entitySelectorReader.getReader());
 						Tag<EntityType<?>> tag = EntityTags.getContainer().get(identifier);
 						if (tag == null) {
@@ -314,7 +314,7 @@ public class EntitySelectorOptions {
 							return INVALID_TYPE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), identifier.toString());
 						});
 						if (Objects.equals(EntityType.PLAYER, entityType) && !bl) {
-							entitySelectorReader.method_9841(false);
+							entitySelectorReader.setIncludingNonPlayer(false);
 						}
 
 						entitySelectorReader.setPredicate(entity -> Objects.equals(entityType, entity.getType()) != bl);
@@ -327,7 +327,7 @@ public class EntitySelectorOptions {
 			putOption(
 				"tag",
 				entitySelectorReader -> {
-					boolean bl = entitySelectorReader.method_9892();
+					boolean bl = entitySelectorReader.readNegationCharacter();
 					String string = entitySelectorReader.getReader().readUnquotedString();
 					entitySelectorReader.setPredicate(
 						entity -> "".equals(string) ? entity.getScoreboardTags().isEmpty() != bl : entity.getScoreboardTags().contains(string) != bl
@@ -337,7 +337,7 @@ public class EntitySelectorOptions {
 				new TranslatableTextComponent("argument.entity.options.tag.description")
 			);
 			putOption("nbt", entitySelectorReader -> {
-				boolean bl = entitySelectorReader.method_9892();
+				boolean bl = entitySelectorReader.readNegationCharacter();
 				CompoundTag compoundTag = new JsonLikeTagParser(entitySelectorReader.getReader()).parseCompoundTag();
 				entitySelectorReader.setPredicate(entity -> {
 					CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
@@ -353,7 +353,7 @@ public class EntitySelectorOptions {
 			}, entitySelectorReader -> true, new TranslatableTextComponent("argument.entity.options.nbt.description"));
 			putOption("scores", entitySelectorReader -> {
 				StringReader stringReader = entitySelectorReader.getReader();
-				Map<String, NumberRange.Integer> map = Maps.<String, NumberRange.Integer>newHashMap();
+				Map<String, NumberRange.IntRange> map = Maps.<String, NumberRange.IntRange>newHashMap();
 				stringReader.expect('{');
 				stringReader.skipWhitespace();
 
@@ -363,8 +363,8 @@ public class EntitySelectorOptions {
 					stringReader.skipWhitespace();
 					stringReader.expect('=');
 					stringReader.skipWhitespace();
-					NumberRange.Integer integer = NumberRange.Integer.method_9060(stringReader);
-					map.put(string, integer);
+					NumberRange.IntRange intRange = NumberRange.IntRange.parse(stringReader);
+					map.put(string, intRange);
 					stringReader.skipWhitespace();
 					if (stringReader.canRead() && stringReader.peek() == ',') {
 						stringReader.skip();
@@ -377,7 +377,7 @@ public class EntitySelectorOptions {
 						Scoreboard scoreboard = entity.getServer().getScoreboard();
 						String stringx = entity.getEntityName();
 
-						for (Entry<String, NumberRange.Integer> entry : map.entrySet()) {
+						for (Entry<String, NumberRange.IntRange> entry : map.entrySet()) {
 							ScoreboardObjective scoreboardObjective = scoreboard.method_1170((String)entry.getKey());
 							if (scoreboardObjective == null) {
 								return false;
@@ -389,7 +389,7 @@ public class EntitySelectorOptions {
 
 							ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(stringx, scoreboardObjective);
 							int i = scoreboardPlayerScore.getScore();
-							if (!((NumberRange.Integer)entry.getValue()).test(i)) {
+							if (!((NumberRange.IntRange)entry.getValue()).test(i)) {
 								return false;
 							}
 						}
@@ -476,7 +476,7 @@ public class EntitySelectorOptions {
 							return true;
 						}
 					});
-					entitySelectorReader.method_9841(false);
+					entitySelectorReader.setIncludingNonPlayer(false);
 				}
 
 				entitySelectorReader.method_9906(true);

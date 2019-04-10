@@ -17,7 +17,7 @@ public class HorseBondWithPlayerGoal extends Goal {
 	public HorseBondWithPlayerGoal(HorseBaseEntity horseBaseEntity, double d) {
 		this.owner = horseBaseEntity;
 		this.speed = d;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
@@ -57,18 +57,18 @@ public class HorseBondWithPlayerGoal extends Goal {
 
 			if (entity instanceof PlayerEntity) {
 				int i = this.owner.getTemper();
-				int j = this.owner.method_6755();
+				int j = this.owner.getMaxTemper();
 				if (j > 0 && this.owner.getRand().nextInt(j) < i) {
-					this.owner.method_6752((PlayerEntity)entity);
+					this.owner.bondWithPlayer((PlayerEntity)entity);
 					return;
 				}
 
-				this.owner.method_6745(5);
+				this.owner.addTemper(5);
 			}
 
 			this.owner.removeAllPassengers();
-			this.owner.method_6757();
-			this.owner.world.summonParticle(this.owner, (byte)6);
+			this.owner.playAngrySound();
+			this.owner.world.sendEntityStatus(this.owner, (byte)6);
 		}
 	}
 }

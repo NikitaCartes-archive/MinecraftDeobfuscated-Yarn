@@ -85,7 +85,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 	};
 
 	public void method_10338(Consumer<SimpleAdvancement> consumer) {
-		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Task.create()
 			.display(
 				Blocks.field_10359,
 				new TranslatableTextComponent("advancements.husbandry.root.title"),
@@ -98,7 +98,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criterion("consumed_item", ConsumeItemCriterion.Conditions.any())
 			.build(consumer, "husbandry/root");
-		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement)
 			.display(
 				Items.field_8861,
@@ -117,7 +117,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			.criterion("beetroots", PlacedBlockCriterion.Conditions.block(Blocks.field_10341))
 			.criterion("nether_wart", PlacedBlockCriterion.Conditions.block(Blocks.field_9974))
 			.build(consumer, "husbandry/plant_seed");
-		SimpleAdvancement simpleAdvancement3 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement3 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement)
 			.display(
 				Items.field_8861,
@@ -132,7 +132,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			.criteriaMerger(CriteriaMerger.OR)
 			.criterion("bred", BredAnimalsCriterion.Conditions.any())
 			.build(consumer, "husbandry/breed_an_animal");
-		SimpleAdvancement simpleAdvancement4 = this.method_10341(SimpleAdvancement.Builder.create())
+		SimpleAdvancement simpleAdvancement4 = this.method_10341(SimpleAdvancement.Task.create())
 			.parent(simpleAdvancement2)
 			.display(
 				Items.field_8279,
@@ -146,7 +146,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.build(consumer, "husbandry/balanced_diet");
-		SimpleAdvancement simpleAdvancement5 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement5 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement2)
 			.display(
 				Items.field_8527,
@@ -161,10 +161,10 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.criterion(
 				"broke_hoe",
-				ItemDurabilityChangedCriterion.Conditions.method_8967(ItemPredicate.Builder.create().item(Items.field_8527).build(), NumberRange.Integer.exactly(0))
+				ItemDurabilityChangedCriterion.Conditions.method_8967(ItemPredicate.Builder.create().item(Items.field_8527).build(), NumberRange.IntRange.exactly(0))
 			)
 			.build(consumer, "husbandry/break_diamond_hoe");
-		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement)
 			.display(
 				Items.field_8719,
@@ -178,7 +178,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criterion("tamed_animal", TameAnimalCriterion.Conditions.any())
 			.build(consumer, "husbandry/tame_an_animal");
-		SimpleAdvancement simpleAdvancement7 = this.method_10342(SimpleAdvancement.Builder.create())
+		SimpleAdvancement simpleAdvancement7 = this.method_10342(SimpleAdvancement.Task.create())
 			.parent(simpleAdvancement3)
 			.display(
 				Items.field_8071,
@@ -192,7 +192,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.build(consumer, "husbandry/bred_all_animals");
-		SimpleAdvancement simpleAdvancement8 = this.method_10339(SimpleAdvancement.Builder.create())
+		SimpleAdvancement simpleAdvancement8 = this.method_10339(SimpleAdvancement.Task.create())
 			.parent(simpleAdvancement)
 			.criteriaMerger(CriteriaMerger.OR)
 			.display(
@@ -206,7 +206,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 				false
 			)
 			.build(consumer, "husbandry/fishy_business");
-		SimpleAdvancement simpleAdvancement9 = this.method_10340(SimpleAdvancement.Builder.create())
+		SimpleAdvancement simpleAdvancement9 = this.method_10340(SimpleAdvancement.Task.create())
 			.parent(simpleAdvancement8)
 			.criteriaMerger(CriteriaMerger.OR)
 			.display(
@@ -220,7 +220,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 				false
 			)
 			.build(consumer, "husbandry/tactical_fishing");
-		SimpleAdvancement simpleAdvancement10 = this.method_16118(SimpleAdvancement.Builder.create())
+		SimpleAdvancement simpleAdvancement10 = this.method_16118(SimpleAdvancement.Task.create())
 			.parent(simpleAdvancement6)
 			.display(
 				Items.field_8429,
@@ -236,48 +236,48 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			.build(consumer, "husbandry/complete_catalogue");
 	}
 
-	private SimpleAdvancement.Builder method_10341(SimpleAdvancement.Builder builder) {
+	private SimpleAdvancement.Task method_10341(SimpleAdvancement.Task task) {
 		for (Item item : field_11298) {
-			builder.criterion(Registry.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
+			task.criterion(Registry.ITEM.getId(item).getPath(), ConsumeItemCriterion.Conditions.item(item));
 		}
 
-		return builder;
+		return task;
 	}
 
-	private SimpleAdvancement.Builder method_10342(SimpleAdvancement.Builder builder) {
+	private SimpleAdvancement.Task method_10342(SimpleAdvancement.Task task) {
 		for (EntityType<?> entityType : field_11296) {
-			builder.criterion(EntityType.getId(entityType).toString(), BredAnimalsCriterion.Conditions.method_861(EntityPredicate.Builder.create().type(entityType)));
+			task.criterion(EntityType.getId(entityType).toString(), BredAnimalsCriterion.Conditions.method_861(EntityPredicate.Builder.create().type(entityType)));
 		}
 
-		return builder;
+		return task;
 	}
 
-	private SimpleAdvancement.Builder method_10340(SimpleAdvancement.Builder builder) {
+	private SimpleAdvancement.Task method_10340(SimpleAdvancement.Task task) {
 		for (Item item : field_11297) {
-			builder.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().item(item).build()));
+			task.criterion(Registry.ITEM.getId(item).getPath(), FilledBucketCriterion.Conditions.create(ItemPredicate.Builder.create().item(item).build()));
 		}
 
-		return builder;
+		return task;
 	}
 
-	private SimpleAdvancement.Builder method_10339(SimpleAdvancement.Builder builder) {
+	private SimpleAdvancement.Task method_10339(SimpleAdvancement.Task task) {
 		for (Item item : field_11295) {
-			builder.criterion(
+			task.criterion(
 				Registry.ITEM.getId(item).getPath(),
 				FishingRodHookedCriterion.Conditions.create(ItemPredicate.ANY, EntityPredicate.ANY, ItemPredicate.Builder.create().item(item).build())
 			);
 		}
 
-		return builder;
+		return task;
 	}
 
-	private SimpleAdvancement.Builder method_16118(SimpleAdvancement.Builder builder) {
-		CatEntity.field_16283
+	private SimpleAdvancement.Task method_16118(SimpleAdvancement.Task task) {
+		CatEntity.TEXTURES
 			.forEach(
-				(integer, identifier) -> builder.criterion(
+				(integer, identifier) -> task.criterion(
 						identifier.getPath(), TameAnimalCriterion.Conditions.method_16114(EntityPredicate.Builder.create().type(identifier).build())
 					)
 			);
-		return builder;
+		return task;
 	}
 }

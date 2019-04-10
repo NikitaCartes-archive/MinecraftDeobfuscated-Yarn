@@ -10,7 +10,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public class MathHelper {
 	public static final float SQUARE_ROOT_OF_TWO = sqrt(2.0F);
-	private static final float[] sinTable = SystemUtil.consume(new float[65536], fs -> {
+	private static final float[] SINE_TABLE = SystemUtil.consume(new float[65536], fs -> {
 		for (int ix = 0; ix < fs.length; ix++) {
 			fs[ix] = (float)Math.sin((double)ix * Math.PI * 2.0 / 65536.0);
 		}
@@ -20,15 +20,15 @@ public class MathHelper {
 		0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6, 11, 5, 10, 9
 	};
 	private static final double SMALLEST_FRACTION_FREE_DOUBLE = Double.longBitsToDouble(4805340802404319232L);
-	private static final double[] asinTable = new double[257];
-	private static final double[] cosTable = new double[257];
+	private static final double[] ARCSINE_TABLE = new double[257];
+	private static final double[] COSINE_TABLE = new double[257];
 
 	public static float sin(float f) {
-		return sinTable[(int)(f * 10430.378F) & 65535];
+		return SINE_TABLE[(int)(f * 10430.378F) & 65535];
 	}
 
 	public static float cos(float f) {
-		return sinTable[(int)(f * 10430.378F + 16384.0F) & 65535];
+		return SINE_TABLE[(int)(f * 10430.378F + 16384.0F) & 65535];
 	}
 
 	public static float sqrt(float f) {
@@ -65,11 +65,11 @@ public class MathHelper {
 	}
 
 	public static float abs(float f) {
-		return f >= 0.0F ? f : -f;
+		return Math.abs(f);
 	}
 
 	public static int abs(int i) {
-		return i >= 0 ? i : -i;
+		return Math.abs(i);
 	}
 
 	public static int ceil(float f) {
@@ -106,7 +106,7 @@ public class MathHelper {
 		}
 	}
 
-	public static double lerpClamped(double d, double e, double f) {
+	public static double clampedLerp(double d, double e, double f) {
 		if (f < 0.0) {
 			return d;
 		} else {
@@ -154,7 +154,11 @@ public class MathHelper {
 
 	@Environment(EnvType.CLIENT)
 	public static boolean equalsApproximate(float f, float g) {
-		return abs(g - f) < 1.0E-5F;
+		return Math.abs(g - f) < 1.0E-5F;
+	}
+
+	public static boolean method_20390(double d, double e) {
+		return Math.abs(e - d) < 1.0E-5F;
 	}
 
 	public static int floorMod(int i, int j) {
@@ -171,54 +175,58 @@ public class MathHelper {
 		return (d % e + e) % e;
 	}
 
+	@Environment(EnvType.CLIENT)
+	public static int wrapDegrees(int i) {
+		int j = i % 360;
+		if (j >= 180) {
+			j -= 360;
+		}
+
+		if (j < -180) {
+			j += 360;
+		}
+
+		return j;
+	}
+
 	public static float wrapDegrees(float f) {
-		f %= 360.0F;
-		if (f >= 180.0F) {
-			f -= 360.0F;
+		float g = f % 360.0F;
+		if (g >= 180.0F) {
+			g -= 360.0F;
 		}
 
-		if (f < -180.0F) {
-			f += 360.0F;
+		if (g < -180.0F) {
+			g += 360.0F;
 		}
 
-		return f;
+		return g;
 	}
 
 	public static double wrapDegrees(double d) {
-		d %= 360.0;
-		if (d >= 180.0) {
-			d -= 360.0;
+		double e = d % 360.0;
+		if (e >= 180.0) {
+			e -= 360.0;
 		}
 
-		if (d < -180.0) {
-			d += 360.0;
+		if (e < -180.0) {
+			e += 360.0;
 		}
 
-		return d;
+		return e;
 	}
 
-	@Environment(EnvType.CLIENT)
-	public static int wrapDegrees(int i) {
-		i %= 360;
-		if (i >= 180) {
-			i -= 360;
-		}
-
-		if (i < -180) {
-			i += 360;
-		}
-
-		return i;
+	public static float subtractAngles(float f, float g) {
+		return wrapDegrees(g - f);
 	}
 
-	public static float method_15381(float f, float g) {
-		float h = wrapDegrees(f - g);
-		return h < 180.0F ? h : h - 360.0F;
+	public static float angleBetween(float f, float g) {
+		return abs(subtractAngles(f, g));
 	}
 
-	public static float method_15356(float f, float g) {
-		float h = wrapDegrees(f - g);
-		return h < 180.0F ? abs(h) : abs(h - 360.0F);
+	public static float method_20306(float f, float g, float h) {
+		float i = subtractAngles(f, g);
+		float j = clamp(i, -h, h);
+		return g - j;
 	}
 
 	public static float method_15348(float f, float g, float h) {
@@ -227,7 +235,7 @@ public class MathHelper {
 	}
 
 	public static float method_15388(float f, float g, float h) {
-		float i = method_15381(g, f);
+		float i = subtractAngles(f, g);
 		return method_15348(f, f + i, h);
 	}
 
@@ -342,7 +350,7 @@ public class MathHelper {
 		return randomUuid(RANDOM);
 	}
 
-	public static double method_15370(double d, double e, double f) {
+	public static double minusDiv(double d, double e, double f) {
 		return (d - e) / (f - e);
 	}
 
@@ -373,8 +381,8 @@ public class MathHelper {
 			d *= g;
 			double h = SMALLEST_FRACTION_FREE_DOUBLE + d;
 			int i = (int)Double.doubleToRawLongBits(h);
-			double j = asinTable[i];
-			double k = cosTable[i];
+			double j = ARCSINE_TABLE[i];
+			double k = COSINE_TABLE[i];
 			double l = h - SMALLEST_FRACTION_FREE_DOUBLE;
 			double m = d * k - e * l;
 			double n = (6.0 + m * m) * m * 0.16666666666666666;
@@ -462,7 +470,7 @@ public class MathHelper {
 		return i ^ i >>> 16;
 	}
 
-	public static int method_15360(int i, int j, IntPredicate intPredicate) {
+	public static int binarySearch(int i, int j, IntPredicate intPredicate) {
 		int k = j - i;
 
 		while (k > 0) {
@@ -499,7 +507,7 @@ public class MathHelper {
 		return d * d * d * (d * (d * 6.0 - 15.0) + 10.0);
 	}
 
-	public static int method_17822(double d) {
+	public static int sign(double d) {
 		if (d == 0.0) {
 			return 0;
 		} else {
@@ -516,8 +524,8 @@ public class MathHelper {
 		for (int i = 0; i < 257; i++) {
 			double d = (double)i / 256.0;
 			double e = Math.asin(d);
-			cosTable[i] = Math.cos(e);
-			asinTable[i] = e;
+			COSINE_TABLE[i] = Math.cos(e);
+			ARCSINE_TABLE[i] = e;
 		}
 	}
 }

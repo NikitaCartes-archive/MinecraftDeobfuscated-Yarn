@@ -4,13 +4,21 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)
 public class LockButtonWidget extends ButtonWidget {
 	private boolean locked;
 
-	public LockButtonWidget(int i, int j, ButtonWidget.class_4241 arg) {
-		super(i, j, 20, 20, "", arg);
+	public LockButtonWidget(int i, int j, ButtonWidget.PressAction pressAction) {
+		super(i, j, 20, 20, I18n.translate("narrator.button.difficulty_lock"), pressAction);
+	}
+
+	@Override
+	protected String getNarrationMessage() {
+		return super.getNarrationMessage()
+			+ ". "
+			+ (this.isLocked() ? I18n.translate("narrator.button.difficulty_lock.locked") : I18n.translate("narrator.button.difficulty_lock.unlocked"));
 	}
 
 	public boolean isLocked() {
@@ -34,7 +42,7 @@ public class LockButtonWidget extends ButtonWidget {
 			iconLocation = this.locked ? LockButtonWidget.IconLocation.LOCKED : LockButtonWidget.IconLocation.UNLOCKED;
 		}
 
-		this.drawTexturedRect(this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
+		this.blit(this.x, this.y, iconLocation.getU(), iconLocation.getV(), this.width, this.height);
 	}
 
 	@Environment(EnvType.CLIENT)

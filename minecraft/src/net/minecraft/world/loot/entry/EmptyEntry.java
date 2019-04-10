@@ -19,7 +19,7 @@ public class EmptyEntry extends LeafEntry {
 	}
 
 	public static LeafEntry.Builder<?> Serializer() {
-		return create(EmptyEntry::new);
+		return builder(EmptyEntry::new);
 	}
 
 	public static class Serializer extends LeafEntry.Serializer<EmptyEntry> {

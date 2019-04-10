@@ -89,7 +89,9 @@ public class BambooBlock extends Block implements Fertilizable {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((Integer)blockState.get(STAGE) == 0) {
+		if (!blockState.canPlaceAt(world, blockPos)) {
+			world.breakBlock(blockPos, true);
+		} else if ((Integer)blockState.get(STAGE) == 0) {
 			if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
 				int i = this.method_9386(world, blockPos) + 1;
 				if (i < 16) {
@@ -109,14 +111,14 @@ public class BambooBlock extends Block implements Fertilizable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
-		} else {
-			if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10211 && (Integer)blockState2.get(AGE) > (Integer)blockState.get(AGE)) {
-				iWorld.setBlockState(blockPos, blockState.method_11572(AGE), 2);
-			}
-
-			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
 		}
+
+		if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10211 && (Integer)blockState2.get(AGE) > (Integer)blockState.get(AGE)) {
+			iWorld.setBlockState(blockPos, blockState.method_11572(AGE), 2);
+		}
+
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

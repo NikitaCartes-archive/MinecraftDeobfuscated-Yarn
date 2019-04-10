@@ -144,7 +144,7 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ChunkSectionPos method_19456() {
+	public ChunkSectionPos readChunkSectionPos() {
 		return ChunkSectionPos.from(this.readLong());
 	}
 
@@ -289,7 +289,7 @@ public class PacketByteBuf extends ByteBuf {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String method_19772() {
+	public String readString() {
 		return this.readString(32767);
 	}
 
@@ -343,7 +343,7 @@ public class PacketByteBuf extends ByteBuf {
 		return this;
 	}
 
-	public BlockHitResult method_17814() {
+	public BlockHitResult readBlockHitResult() {
 		BlockPos blockPos = this.readBlockPos();
 		Direction direction = this.readEnumConstant(Direction.class);
 		float f = this.readFloat();
@@ -355,7 +355,7 @@ public class PacketByteBuf extends ByteBuf {
 		);
 	}
 
-	public void method_17813(BlockHitResult blockHitResult) {
+	public void writeBlockHitResult(BlockHitResult blockHitResult) {
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		this.writeBlockPos(blockPos);
 		this.writeEnumConstant(blockHitResult.getSide());

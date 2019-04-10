@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 		itf = FlyingItemEntity.class
 	)})
 public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity implements FlyingItemEntity {
-	private static final TrackedData<ItemStack> stack = DataTracker.registerData(AbstractFireballEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(AbstractFireballEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
 	public AbstractFireballEntity(EntityType<? extends AbstractFireballEntity> entityType, World world) {
 		super(entityType, world);
@@ -37,30 +37,30 @@ public abstract class AbstractFireballEntity extends ExplosiveProjectileEntity i
 
 	public void method_16936(ItemStack itemStack) {
 		if (itemStack.getItem() != Items.field_8814 || itemStack.hasTag()) {
-			this.getDataTracker().set(stack, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
+			this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
 		}
 	}
 
-	protected ItemStack method_16938() {
-		return this.getDataTracker().get(stack);
+	protected ItemStack getItem() {
+		return this.getDataTracker().get(ITEM);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getItem() {
-		ItemStack itemStack = this.method_16938();
+	public ItemStack getStack() {
+		ItemStack itemStack = this.getItem();
 		return itemStack.isEmpty() ? new ItemStack(Items.field_8814) : itemStack;
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(stack, ItemStack.EMPTY);
+		this.getDataTracker().startTracking(ITEM, ItemStack.EMPTY);
 	}
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		ItemStack itemStack = this.method_16938();
+		ItemStack itemStack = this.getItem();
 		if (!itemStack.isEmpty()) {
 			compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
 		}

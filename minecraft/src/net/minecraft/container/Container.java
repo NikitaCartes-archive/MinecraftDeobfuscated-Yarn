@@ -411,13 +411,13 @@ public abstract class Container {
 	}
 
 	protected void dropInventory(PlayerEntity playerEntity, World world, Inventory inventory) {
-		if (!playerEntity.isValid() || playerEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity)playerEntity).method_14239()) {
+		if (!playerEntity.isAlive() || playerEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity)playerEntity).method_14239()) {
 			for (int i = 0; i < inventory.getInvSize(); i++) {
 				playerEntity.dropItem(inventory.removeInvStack(i), false);
 			}
 		} else {
 			for (int i = 0; i < inventory.getInvSize(); i++) {
-				playerEntity.inventory.method_7398(world, inventory.removeInvStack(i));
+				playerEntity.inventory.offerOrDrop(world, inventory.removeInvStack(i));
 			}
 		}
 	}
@@ -437,7 +437,7 @@ public abstract class Container {
 		}
 	}
 
-	public void setProperty(int i, int j) {
+	public void setProperties(int i, int j) {
 		((Property)this.properties.get(i)).set(j);
 	}
 

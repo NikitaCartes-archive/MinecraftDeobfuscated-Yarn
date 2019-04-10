@@ -403,17 +403,21 @@ public class BlockModelRenderer {
 			BlockModelRenderer.NeighborData neighborData = BlockModelRenderer.NeighborData.getData(direction);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 			mutable.set(blockPos2).setOffset(neighborData.faces[0]);
-			int i = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
-			float f = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+			BlockState blockState2 = extendedBlockView.getBlockState(mutable);
+			int i = BlockModelRenderer.method_3371(blockState2, extendedBlockView, mutable);
+			float f = blockState2.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
 			mutable.set(blockPos2).setOffset(neighborData.faces[1]);
-			int j = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
-			float g = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+			BlockState blockState3 = extendedBlockView.getBlockState(mutable);
+			int j = BlockModelRenderer.method_3371(blockState3, extendedBlockView, mutable);
+			float g = blockState3.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
 			mutable.set(blockPos2).setOffset(neighborData.faces[2]);
-			int k = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
-			float h = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+			BlockState blockState4 = extendedBlockView.getBlockState(mutable);
+			int k = BlockModelRenderer.method_3371(blockState4, extendedBlockView, mutable);
+			float h = blockState4.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
 			mutable.set(blockPos2).setOffset(neighborData.faces[3]);
-			int l = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
-			float m = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+			BlockState blockState5 = extendedBlockView.getBlockState(mutable);
+			int l = BlockModelRenderer.method_3371(blockState5, extendedBlockView, mutable);
+			float m = blockState5.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
 			mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(direction);
 			boolean bl = extendedBlockView.getBlockState(mutable).getLightSubtracted(extendedBlockView, mutable) == 0;
 			mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(direction);
@@ -429,8 +433,9 @@ public class BlockModelRenderer {
 				o = i;
 			} else {
 				mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[2]);
-				n = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-				o = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
+				BlockState blockState6 = extendedBlockView.getBlockState(mutable);
+				n = blockState6.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+				o = BlockModelRenderer.method_3371(blockState6, extendedBlockView, mutable);
 			}
 
 			float p;
@@ -440,36 +445,40 @@ public class BlockModelRenderer {
 				q = i;
 			} else {
 				mutable.set(blockPos2).setOffset(neighborData.faces[0]).setOffset(neighborData.faces[3]);
-				p = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-				q = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
+				BlockState blockState6 = extendedBlockView.getBlockState(mutable);
+				p = blockState6.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+				q = BlockModelRenderer.method_3371(blockState6, extendedBlockView, mutable);
 			}
 
 			float r;
 			int s;
 			if (!bl3 && !bl2) {
-				r = g;
-				s = j;
+				r = f;
+				s = i;
 			} else {
 				mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[2]);
-				r = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-				s = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
+				BlockState blockState6 = extendedBlockView.getBlockState(mutable);
+				r = blockState6.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+				s = BlockModelRenderer.method_3371(blockState6, extendedBlockView, mutable);
 			}
 
 			float t;
 			int u;
 			if (!bl4 && !bl2) {
-				t = g;
-				u = j;
+				t = f;
+				u = i;
 			} else {
 				mutable.set(blockPos2).setOffset(neighborData.faces[1]).setOffset(neighborData.faces[3]);
-				t = extendedBlockView.getBlockState(mutable).getAmbientOcclusionLightLevel(extendedBlockView, mutable);
-				u = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
+				BlockState blockState6 = extendedBlockView.getBlockState(mutable);
+				t = blockState6.getAmbientOcclusionLightLevel(extendedBlockView, mutable);
+				u = BlockModelRenderer.method_3371(blockState6, extendedBlockView, mutable);
 			}
 
 			int v = BlockModelRenderer.method_3371(blockState, extendedBlockView, blockPos);
 			mutable.set(blockPos).setOffset(direction);
-			if (bitSet.get(0) || !extendedBlockView.getBlockState(mutable).isFullOpaque(extendedBlockView, mutable)) {
-				v = BlockModelRenderer.method_3371(blockState, extendedBlockView, mutable);
+			BlockState blockState7 = extendedBlockView.getBlockState(mutable);
+			if (bitSet.get(0) || !blockState7.isFullOpaque(extendedBlockView, mutable)) {
+				v = BlockModelRenderer.method_3371(blockState7, extendedBlockView, mutable);
 			}
 
 			float w = bitSet.get(0)

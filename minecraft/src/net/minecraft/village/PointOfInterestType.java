@@ -1,13 +1,11 @@
 package net.minecraft.village;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,72 +13,93 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BedPart;
-import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.BlockTags;
-import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 
 public class PointOfInterestType {
-	public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> ((Set)Registry.VILLAGER_PROFESSION
+	private static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> ((Set)Registry.VILLAGER_PROFESSION
 				.stream()
 				.map(VillagerProfession::getWorkStation)
 				.collect(Collectors.toSet()))
 			.contains(pointOfInterestType);
 	public static final Predicate<PointOfInterestType> ALWAYS_TRUE = pointOfInterestType -> true;
-	public static final PointOfInterestType field_18502 = register("unemployed", BlockTags.field_18830, 1, null, IS_USED_BY_PROFESSION);
-	public static final PointOfInterestType field_18503 = register("armorer", BlockTags.field_18831, 1, SoundEvents.field_18826);
-	public static final PointOfInterestType field_18504 = register("butcher", BlockTags.field_18832, 1, SoundEvents.field_18827);
-	public static final PointOfInterestType field_18505 = register("cartographer", BlockTags.field_18833, 1, SoundEvents.field_18828);
-	public static final PointOfInterestType field_18506 = register("cleric", BlockTags.field_18834, 1, SoundEvents.field_18829);
-	public static final PointOfInterestType field_18507 = register("farmer", BlockTags.field_18835, 1, SoundEvents.field_18817);
-	public static final PointOfInterestType field_18508 = register("fisherman", BlockTags.field_18836, 1, SoundEvents.field_18818);
-	public static final PointOfInterestType field_18509 = register("fletcher", BlockTags.field_18837, 1, SoundEvents.field_18819);
-	public static final PointOfInterestType field_18510 = register("leatherworker", BlockTags.field_18838, 1, SoundEvents.field_18820);
-	public static final PointOfInterestType field_18511 = register("librarian", BlockTags.field_18839, 1, SoundEvents.field_18821);
-	public static final PointOfInterestType field_18512 = register("mason", BlockTags.field_18840, 1, SoundEvents.field_18822);
-	public static final PointOfInterestType field_18513 = register("nitwit", BlockTags.field_18841, 1, null);
-	public static final PointOfInterestType field_18514 = register("shepherd", BlockTags.field_18842, 1, SoundEvents.field_18823);
-	public static final PointOfInterestType field_18515 = register("toolsmith", BlockTags.field_18843, 1, SoundEvents.field_18824);
-	public static final PointOfInterestType field_18516 = register("weaponsmith", BlockTags.field_18844, 1, SoundEvents.field_18825);
-	public static final PointOfInterestType field_18517 = register("home", BlockTags.field_16443, 1, null);
-	public static final PointOfInterestType field_18518 = register("meeting", BlockTags.field_18846, 32, null);
-	private static final Map<BlockState, PointOfInterestType> field_18849 = Maps.<BlockState, PointOfInterestType>newHashMap();
+	private static final Set<BlockState> BED_STATES = (Set<BlockState>)ImmutableList.of(
+			Blocks.field_10069,
+			Blocks.field_10461,
+			Blocks.field_10527,
+			Blocks.field_10288,
+			Blocks.field_10109,
+			Blocks.field_10141,
+			Blocks.field_10561,
+			Blocks.field_10621,
+			Blocks.field_10326,
+			Blocks.field_10180,
+			Blocks.field_10230,
+			Blocks.field_10410,
+			Blocks.field_10610,
+			Blocks.field_10019,
+			Blocks.field_10120,
+			Blocks.field_10356
+		)
+		.stream()
+		.flatMap(block -> block.getStateFactory().getStates().stream())
+		.filter(blockState -> blockState.get(BedBlock.PART) == BedPart.field_12560)
+		.collect(ImmutableSet.toImmutableSet());
+	private static final Map<BlockState, PointOfInterestType> BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE = Maps.<BlockState, PointOfInterestType>newHashMap();
+	public static final PointOfInterestType field_18502 = register("unemployed", ImmutableSet.of(), 1, null, IS_USED_BY_PROFESSION);
+	public static final PointOfInterestType field_18503 = register("armorer", getAllStatesOf(Blocks.field_16333), 1, SoundEvents.field_18826);
+	public static final PointOfInterestType field_18504 = register("butcher", getAllStatesOf(Blocks.field_16334), 1, SoundEvents.field_18827);
+	public static final PointOfInterestType field_18505 = register("cartographer", getAllStatesOf(Blocks.field_16336), 1, SoundEvents.field_18828);
+	public static final PointOfInterestType field_18506 = register("cleric", getAllStatesOf(Blocks.field_10333), 1, SoundEvents.field_18829);
+	public static final PointOfInterestType field_18507 = register("farmer", getAllStatesOf(Blocks.field_17563), 1, SoundEvents.field_18817);
+	public static final PointOfInterestType field_18508 = register("fisherman", getAllStatesOf(Blocks.field_16328), 1, SoundEvents.field_18818);
+	public static final PointOfInterestType field_18509 = register("fletcher", getAllStatesOf(Blocks.field_16331), 1, SoundEvents.field_18819);
+	public static final PointOfInterestType field_18510 = register("leatherworker", getAllStatesOf(Blocks.field_10593), 1, SoundEvents.field_18820);
+	public static final PointOfInterestType field_18511 = register("librarian", getAllStatesOf(Blocks.field_16330), 1, SoundEvents.field_18821);
+	public static final PointOfInterestType field_18512 = register("mason", getAllStatesOf(Blocks.field_16335), 1, SoundEvents.field_18822);
+	public static final PointOfInterestType field_18513 = register("nitwit", ImmutableSet.of(), 1, null);
+	public static final PointOfInterestType field_18514 = register("shepherd", getAllStatesOf(Blocks.field_10083), 1, SoundEvents.field_18823);
+	public static final PointOfInterestType field_18515 = register("toolsmith", getAllStatesOf(Blocks.field_16329), 1, SoundEvents.field_18824);
+	public static final PointOfInterestType field_18516 = register("weaponsmith", getAllStatesOf(Blocks.field_16337), 1, SoundEvents.field_18825);
+	public static final PointOfInterestType field_18517 = register("home", BED_STATES, 1, null);
+	public static final PointOfInterestType field_18518 = register("meeting", getAllStatesOf(Blocks.field_16332), 32, null);
 	private final String id;
-	private final Tag<Block> blockTag;
-	private final Set<BlockState> field_18850 = Sets.<BlockState>newHashSet();
+	private final Set<BlockState> workStationStates;
 	private final int ticketCount;
 	@Nullable
 	private final SoundEvent sound;
-	private final Predicate<PointOfInterestType> completedCondition;
+	private final Predicate<PointOfInterestType> completionCondition;
 
-	private PointOfInterestType(String string, Tag<Block> tag, int i, @Nullable SoundEvent soundEvent, Predicate<PointOfInterestType> predicate) {
-		this.id = string;
-		this.blockTag = tag;
-		this.ticketCount = i;
-		this.sound = soundEvent;
-		this.completedCondition = predicate;
+	private static Set<BlockState> getAllStatesOf(Block block) {
+		return ImmutableSet.copyOf(block.getStateFactory().getStates());
 	}
 
-	private PointOfInterestType(String string, Tag<Block> tag, int i, @Nullable SoundEvent soundEvent) {
+	private PointOfInterestType(String string, Set<BlockState> set, int i, @Nullable SoundEvent soundEvent, Predicate<PointOfInterestType> predicate) {
 		this.id = string;
-		this.blockTag = tag;
+		this.workStationStates = ImmutableSet.copyOf(set);
 		this.ticketCount = i;
 		this.sound = soundEvent;
-		this.completedCondition = pointOfInterestType -> pointOfInterestType == this;
+		this.completionCondition = predicate;
+	}
+
+	private PointOfInterestType(String string, Set<BlockState> set, int i, @Nullable SoundEvent soundEvent) {
+		this.id = string;
+		this.workStationStates = ImmutableSet.copyOf(set);
+		this.ticketCount = i;
+		this.sound = soundEvent;
+		this.completionCondition = pointOfInterestType -> pointOfInterestType == this;
 	}
 
 	public int getTicketCount() {
 		return this.ticketCount;
 	}
 
-	public Predicate<PointOfInterestType> getCompletedCondition() {
-		return this.completedCondition;
+	public Predicate<PointOfInterestType> getCompletionCondition() {
+		return this.completionCondition;
 	}
 
 	public String toString() {
@@ -92,56 +111,31 @@ public class PointOfInterestType {
 		return this.sound;
 	}
 
-	private static PointOfInterestType register(String string, Tag<Block> tag, int i, @Nullable SoundEvent soundEvent) {
-		return Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, tag, i, soundEvent));
+	private static PointOfInterestType register(String string, Set<BlockState> set, int i, @Nullable SoundEvent soundEvent) {
+		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, set, i, soundEvent)));
 	}
 
-	private static PointOfInterestType register(String string, Tag<Block> tag, int i, @Nullable SoundEvent soundEvent, Predicate<PointOfInterestType> predicate) {
-		return Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, tag, i, soundEvent, predicate));
-	}
-
-	public static Optional<PointOfInterestType> method_19516(BlockState blockState) {
-		return Optional.ofNullable(field_18849.get(blockState));
-	}
-
-	private static boolean method_19517(BlockState blockState) {
-		return !blockState.matches(BlockTags.field_16443) || blockState.get(BedBlock.PART) != BedPart.field_12557;
-	}
-
-	public static Stream<BlockState> method_19518() {
-		return field_18849.keySet().stream();
-	}
-
-	public static CompletableFuture<Void> method_19515(
-		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
+	private static PointOfInterestType register(
+		String string, Set<BlockState> set, int i, @Nullable SoundEvent soundEvent, Predicate<PointOfInterestType> predicate
 	) {
-		return helper.waitForAll(net.minecraft.util.Void.INSTANCE)
-			.thenRunAsync(
-				() -> {
-					field_18849.clear();
-					Registry.POINT_OF_INTEREST_TYPE.forEach(pointOfInterestType -> pointOfInterestType.field_18850.clear());
-					Registry.BLOCK
-						.stream()
-						.filter(block -> block.matches(BlockTags.field_18847))
-						.forEach(
-							block -> {
-								List<PointOfInterestType> list = (List<PointOfInterestType>)Registry.POINT_OF_INTEREST_TYPE
-									.stream()
-									.filter(pointOfInterestTypex -> pointOfInterestTypex.blockTag.contains(block))
-									.collect(Collectors.toList());
-								if (list.size() > 1) {
-									throw new IllegalStateException(String.format("%s is defined in too many tags", block));
-								} else {
-									PointOfInterestType pointOfInterestType = (PointOfInterestType)list.get(0);
-									block.getStateFactory().getStates().stream().filter(PointOfInterestType::method_19517).forEach(blockState -> {
-										pointOfInterestType.field_18850.add(blockState);
-										field_18849.put(blockState, pointOfInterestType);
-									});
-								}
-							}
-						);
-				},
-				executor2
-			);
+		return setup(Registry.POINT_OF_INTEREST_TYPE.add(new Identifier(string), new PointOfInterestType(string, set, i, soundEvent, predicate)));
+	}
+
+	private static PointOfInterestType setup(PointOfInterestType pointOfInterestType) {
+		pointOfInterestType.workStationStates.forEach(blockState -> {
+			PointOfInterestType pointOfInterestType2 = (PointOfInterestType)BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put(blockState, pointOfInterestType);
+			if (pointOfInterestType2 != null) {
+				throw new IllegalStateException(String.format("%s is defined in too many tags", blockState));
+			}
+		});
+		return pointOfInterestType;
+	}
+
+	public static Optional<PointOfInterestType> from(BlockState blockState) {
+		return Optional.ofNullable(BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.get(blockState));
+	}
+
+	public static Stream<BlockState> getAllAssociatedStates() {
+		return BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.keySet().stream();
 	}
 }

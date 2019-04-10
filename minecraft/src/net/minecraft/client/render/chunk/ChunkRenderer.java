@@ -2,8 +2,6 @@ package net.minecraft.client.render.chunk;
 
 import com.google.common.collect.Sets;
 import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
-import java.nio.FloatBuffer;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -26,7 +24,6 @@ import net.minecraft.client.render.block.BlockModelRenderer;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
-import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.client.world.SafeWorldView;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.util.SystemUtil;
@@ -43,14 +40,13 @@ public class ChunkRenderer {
 	public static int chunkUpdateCount;
 	public ChunkRenderData chunkRenderData = ChunkRenderData.EMPTY;
 	private final ReentrantLock chunkRenderLock = new ReentrantLock();
-	private final ReentrantLock field_4470 = new ReentrantLock();
+	private final ReentrantLock chunkRenderDataLock = new ReentrantLock();
 	private ChunkRenderTask chunkRenderDataTask;
 	private final Set<BlockEntity> blockEntities = Sets.<BlockEntity>newHashSet();
-	private final FloatBuffer transformationMatrix = GlAllocationUtils.allocateFloatBuffer(16);
 	private final GlBuffer[] buffers = new GlBuffer[BlockRenderLayer.values().length];
 	public BoundingBox boundingBox;
 	private int field_4471 = -1;
-	private boolean field_4464 = true;
+	private boolean renderScheduled = true;
 	private final BlockPos.Mutable origin = new BlockPos.Mutable(-1, -1, -1);
 	private final BlockPos.Mutable[] field_4472 = SystemUtil.consume(new BlockPos.Mutable[6], mutables -> {
 		for (int ix = 0; ix < mutables.length; ix++) {
@@ -79,7 +75,7 @@ public class ChunkRenderer {
 		int i = 16;
 		int j = 8;
 		int k = 24;
-		if (!(blockPos2.add(8, 8, 8).squaredDistanceTo(blockPos) > 576.0)) {
+		if (!(blockPos2.add(8, 8, 8).getSquaredDistance(blockPos) > 576.0)) {
 			return true;
 		} else {
 			World world = this.getWorld();
@@ -113,8 +109,6 @@ public class ChunkRenderer {
 			for (Direction direction : Direction.values()) {
 				this.field_4472[direction.ordinal()].set(this.origin).setOffset(direction, 16);
 			}
-
-			this.updateTransformationMatrix();
 		}
 	}
 
@@ -225,7 +219,7 @@ public class ChunkRenderer {
 				set3.removeAll(set);
 				this.blockEntities.clear();
 				this.blockEntities.addAll(set);
-				this.renderer.method_3245(set3, set2);
+				this.renderer.updateBlockEntities(set3, set2);
 			} finally {
 				this.chunkRenderLock.unlock();
 			}
@@ -314,38 +308,24 @@ public class ChunkRenderer {
 		bufferBuilder.end();
 	}
 
-	private void updateTransformationMatrix() {
-		GlStateManager.pushMatrix();
-		GlStateManager.loadIdentity();
-		float f = 1.000001F;
-		GlStateManager.translatef(-8.0F, -8.0F, -8.0F);
-		GlStateManager.scalef(1.000001F, 1.000001F, 1.000001F);
-		GlStateManager.translatef(8.0F, 8.0F, 8.0F);
-		GlStateManager.getMatrix(2982, this.transformationMatrix);
-		GlStateManager.popMatrix();
-	}
-
-	public void multiplyMatrix() {
-		GlStateManager.multMatrix(this.transformationMatrix);
-	}
-
 	public ChunkRenderData getChunkRenderData() {
 		return this.chunkRenderData;
 	}
 
-	public void method_3665(ChunkRenderData chunkRenderData) {
-		this.field_4470.lock();
+	public void setChunkRenderData(ChunkRenderData chunkRenderData) {
+		this.chunkRenderDataLock.lock();
 
 		try {
 			this.chunkRenderData = chunkRenderData;
 		} finally {
-			this.field_4470.unlock();
+			this.chunkRenderDataLock.unlock();
 		}
 	}
 
 	public void clear() {
 		this.cancel();
 		this.chunkRenderData = ChunkRenderData.EMPTY;
+		this.renderScheduled = true;
 	}
 
 	public void delete() {
@@ -364,25 +344,25 @@ public class ChunkRenderer {
 	}
 
 	public void scheduleRender(boolean bl) {
-		if (this.field_4464) {
+		if (this.renderScheduled) {
 			bl |= this.field_4463;
 		}
 
-		this.field_4464 = true;
+		this.renderScheduled = true;
 		this.field_4463 = bl;
 	}
 
 	public void method_3662() {
-		this.field_4464 = false;
+		this.renderScheduled = false;
 		this.field_4463 = false;
 	}
 
 	public boolean method_3672() {
-		return this.field_4464;
+		return this.renderScheduled;
 	}
 
 	public boolean method_3661() {
-		return this.field_4464 && this.field_4463;
+		return this.renderScheduled && this.field_4463;
 	}
 
 	public BlockPos method_3676(Direction direction) {

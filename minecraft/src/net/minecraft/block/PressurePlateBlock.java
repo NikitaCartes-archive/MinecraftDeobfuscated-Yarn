@@ -57,10 +57,10 @@ public class PressurePlateBlock extends AbstractPressurePlateBlock {
 		List<? extends Entity> list;
 		switch (this.type) {
 			case WOOD:
-				list = world.getVisibleEntities(null, boundingBox);
+				list = world.getEntities(null, boundingBox);
 				break;
 			case STONE:
-				list = world.method_18467(LivingEntity.class, boundingBox);
+				list = world.getEntities(LivingEntity.class, boundingBox);
 				break;
 			default:
 				return 0;

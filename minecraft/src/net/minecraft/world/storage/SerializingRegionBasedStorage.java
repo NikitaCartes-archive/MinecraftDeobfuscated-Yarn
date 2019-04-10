@@ -1,16 +1,24 @@
 package net.minecraft.world.storage;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.Dynamic;
+import com.mojang.datafixers.OptionalDynamic;
+import com.mojang.datafixers.types.DynamicOps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.SharedConstants;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -27,32 +35,23 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> extend
 	private final LongLinkedOpenHashSet unsavedElements = new LongLinkedOpenHashSet();
 	private final BiFunction<Runnable, Dynamic<?>, R> deserializer;
 	private final Function<Runnable, R> factory;
+	private final DataFixer dataFixer;
+	private final DataFixTypes dataFixType;
 
-	public SerializingRegionBasedStorage(File file, BiFunction<Runnable, Dynamic<?>, R> biFunction, Function<Runnable, R> function) {
+	public SerializingRegionBasedStorage(
+		File file, BiFunction<Runnable, Dynamic<?>, R> biFunction, Function<Runnable, R> function, DataFixer dataFixer, DataFixTypes dataFixTypes
+	) {
 		super(file);
 		this.deserializer = biFunction;
 		this.factory = function;
+		this.dataFixer = dataFixer;
+		this.dataFixType = dataFixTypes;
 	}
 
 	protected void tick(BooleanSupplier booleanSupplier) {
 		while (!this.unsavedElements.isEmpty() && booleanSupplier.getAsBoolean()) {
 			ChunkPos chunkPos = ChunkSectionPos.from(this.unsavedElements.firstLong()).toChunkPos();
-			CompoundTag compoundTag = new CompoundTag();
-
-			for (int i = 0; i < 16; i++) {
-				long l = ChunkSectionPos.from(chunkPos, i).asLong();
-				this.unsavedElements.remove(l);
-				Optional<R> optional = this.loadedElements.get(l);
-				if (optional != null && optional.isPresent()) {
-					compoundTag.put(Integer.toString(i), ((DynamicSerializable)optional.get()).serialize(NbtOps.INSTANCE));
-				}
-			}
-
-			try {
-				this.setTagAt(chunkPos, compoundTag);
-			} catch (IOException var8) {
-				LOGGER.error("Error writing data to disk", (Throwable)var8);
-			}
+			this.method_20370(chunkPos);
 		}
 	}
 
@@ -99,25 +98,78 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> extend
 	private void loadDataAt(ChunkPos chunkPos) {
 		try {
 			CompoundTag compoundTag = this.getTagAt(chunkPos);
-
-			for (int i = 0; i < 16; i++) {
-				long l = ChunkSectionPos.from(chunkPos, i).asLong();
-				this.loadedElements.put(l, Optional.empty());
-				if (compoundTag != null) {
-					try {
-						Tag tag = compoundTag.getTag(Integer.toString(i));
-						if (tag != null) {
-							this.loadedElements.put(l, Optional.of(this.deserializer.apply((Runnable)() -> this.onUpdate(l), new Dynamic<>(NbtOps.INSTANCE, tag))));
-							this.onLoad(l);
-						}
-					} catch (NumberFormatException var7) {
-						LOGGER.error("Error reading data from disk", (Throwable)var7);
-					}
-				}
-			}
-		} catch (IOException var8) {
-			LOGGER.error("Error reading data from disk", (Throwable)var8);
+			this.method_20368(chunkPos, NbtOps.INSTANCE, compoundTag);
+		} catch (IOException var3) {
+			LOGGER.error("Error reading data from disk", (Throwable)var3);
 		}
+	}
+
+	private <T> void method_20368(ChunkPos chunkPos, DynamicOps<T> dynamicOps, @Nullable T object) {
+		if (object == null) {
+			for (int i = 0; i < 16; i++) {
+				this.loadedElements.put(ChunkSectionPos.from(chunkPos, i).asLong(), Optional.empty());
+			}
+		} else {
+			Dynamic<T> dynamic = new Dynamic<>(dynamicOps, object);
+			int j = method_20369(dynamic);
+			int k = SharedConstants.getGameVersion().getWorldVersion();
+			boolean bl = j != k;
+			Dynamic<T> dynamic2 = this.dataFixer.update(this.dataFixType.getTypeReference(), dynamic, j, k);
+			OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
+
+			for (int l = 0; l < 16; l++) {
+				long m = ChunkSectionPos.from(chunkPos, l).asLong();
+				Optional<R> optional = optionalDynamic.get(Integer.toString(l))
+					.get()
+					.map(dynamicx -> (DynamicSerializable)this.deserializer.apply((Runnable)() -> this.onUpdate(m), dynamicx));
+				this.loadedElements.put(m, optional);
+				optional.ifPresent(dynamicSerializable -> {
+					this.onLoad(m);
+					if (bl) {
+						this.onUpdate(m);
+					}
+				});
+			}
+		}
+	}
+
+	private void method_20370(ChunkPos chunkPos) {
+		Dynamic<Tag> dynamic = this.method_20367(chunkPos, NbtOps.INSTANCE);
+		Tag tag = dynamic.getValue();
+		if (tag instanceof CompoundTag) {
+			try {
+				this.setTagAt(chunkPos, (CompoundTag)tag);
+			} catch (IOException var5) {
+				LOGGER.error("Error writing data to disk", (Throwable)var5);
+			}
+		} else {
+			LOGGER.error("Expected compound tag, got {}", tag);
+		}
+	}
+
+	private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
+		Map<T, T> map = Maps.<T, T>newHashMap();
+
+		for (int i = 0; i < 16; i++) {
+			long l = ChunkSectionPos.from(chunkPos, i).asLong();
+			this.unsavedElements.remove(l);
+			Optional<R> optional = this.loadedElements.get(l);
+			if (optional != null && optional.isPresent()) {
+				map.put(dynamicOps.createString(Integer.toString(i)), ((DynamicSerializable)optional.get()).serialize(dynamicOps));
+			}
+		}
+
+		return new Dynamic<>(
+			dynamicOps,
+			dynamicOps.createMap(
+				ImmutableMap.of(
+					dynamicOps.createString("Sections"),
+					dynamicOps.createMap(map),
+					dynamicOps.createString("DataVersion"),
+					dynamicOps.createInt(SharedConstants.getGameVersion().getWorldVersion())
+				)
+			)
+		);
 	}
 
 	protected void onLoad(long l) {
@@ -130,5 +182,9 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> extend
 		} else {
 			LOGGER.warn("No data for position: {}", ChunkSectionPos.from(l));
 		}
+	}
+
+	private static int method_20369(Dynamic<?> dynamic) {
+		return ((Number)dynamic.get("DataVersion").asNumber().orElse(1945)).intValue();
 	}
 }

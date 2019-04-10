@@ -64,7 +64,7 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Featur
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

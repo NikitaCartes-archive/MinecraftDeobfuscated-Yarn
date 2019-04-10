@@ -7,13 +7,13 @@ import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.CreeperIgniteGoal;
 import net.minecraft.entity.ai.goal.FleeEntityGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -39,11 +39,11 @@ public class CreeperEntity extends HostileEntity {
 	private static final TrackedData<Integer> FUSE_SPEED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final TrackedData<Boolean> CHARGED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> IGNITED = DataTracker.registerData(CreeperEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private int field_7229;
-	private int field_7227;
-	private int fuse = 30;
+	private int lastFuseTime;
+	private int currentFuseTime;
+	private int fuseTime = 30;
 	private int explosionRadius = 3;
-	private int field_7226;
+	private int headsDropped;
 
 	public CreeperEntity(EntityType<? extends CreeperEntity> entityType, World world) {
 		super(entityType, world);
@@ -60,7 +60,7 @@ public class CreeperEntity extends HostileEntity {
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(6, new LookAroundGoal(this));
 		this.targetSelector.add(1, new FollowTargetGoal(this, PlayerEntity.class, true));
-		this.targetSelector.add(2, new AvoidGoal(this));
+		this.targetSelector.add(2, new RevengeGoal(this));
 	}
 
 	@Override
@@ -77,9 +77,9 @@ public class CreeperEntity extends HostileEntity {
 	@Override
 	public void handleFallDamage(float f, float g) {
 		super.handleFallDamage(f, g);
-		this.field_7227 = (int)((float)this.field_7227 + f * 1.5F);
-		if (this.field_7227 > this.fuse - 5) {
-			this.field_7227 = this.fuse - 5;
+		this.currentFuseTime = (int)((float)this.currentFuseTime + f * 1.5F);
+		if (this.currentFuseTime > this.fuseTime - 5) {
+			this.currentFuseTime = this.fuseTime - 5;
 		}
 	}
 
@@ -98,7 +98,7 @@ public class CreeperEntity extends HostileEntity {
 			compoundTag.putBoolean("powered", true);
 		}
 
-		compoundTag.putShort("Fuse", (short)this.fuse);
+		compoundTag.putShort("Fuse", (short)this.fuseTime);
 		compoundTag.putByte("ExplosionRadius", (byte)this.explosionRadius);
 		compoundTag.putBoolean("ignited", this.getIgnited());
 	}
@@ -108,7 +108,7 @@ public class CreeperEntity extends HostileEntity {
 		super.readCustomDataFromTag(compoundTag);
 		this.dataTracker.set(CHARGED, compoundTag.getBoolean("powered"));
 		if (compoundTag.containsKey("Fuse", 99)) {
-			this.fuse = compoundTag.getShort("Fuse");
+			this.fuseTime = compoundTag.getShort("Fuse");
 		}
 
 		if (compoundTag.containsKey("ExplosionRadius", 99)) {
@@ -122,25 +122,25 @@ public class CreeperEntity extends HostileEntity {
 
 	@Override
 	public void tick() {
-		if (this.isValid()) {
-			this.field_7229 = this.field_7227;
+		if (this.isAlive()) {
+			this.lastFuseTime = this.currentFuseTime;
 			if (this.getIgnited()) {
 				this.setFuseSpeed(1);
 			}
 
 			int i = this.getFuseSpeed();
-			if (i > 0 && this.field_7227 == 0) {
+			if (i > 0 && this.currentFuseTime == 0) {
 				this.playSound(SoundEvents.field_15057, 1.0F, 0.5F);
 			}
 
-			this.field_7227 += i;
-			if (this.field_7227 < 0) {
-				this.field_7227 = 0;
+			this.currentFuseTime += i;
+			if (this.currentFuseTime < 0) {
+				this.currentFuseTime = 0;
 			}
 
-			if (this.field_7227 >= this.fuse) {
-				this.field_7227 = this.fuse;
-				this.method_7006();
+			if (this.currentFuseTime >= this.fuseTime) {
+				this.currentFuseTime = this.fuseTime;
+				this.explode();
 			}
 		}
 
@@ -163,8 +163,8 @@ public class CreeperEntity extends HostileEntity {
 		Entity entity = damageSource.getAttacker();
 		if (entity != this && entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
-			if (creeperEntity.method_7008()) {
-				creeperEntity.method_7002();
+			if (creeperEntity.shouldDropHead()) {
+				creeperEntity.onHeadDropped();
 				this.dropItem(Items.CREEPER_HEAD);
 			}
 		}
@@ -180,8 +180,8 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_7003(float f) {
-		return MathHelper.lerp(f, (float)this.field_7229, (float)this.field_7227) / (float)(this.fuse - 2);
+	public float getClientFuseTime(float f) {
+		return MathHelper.lerp(f, (float)this.lastFuseTime, (float)this.currentFuseTime) / (float)(this.fuseTime - 2);
 	}
 
 	public int getFuseSpeed() {
@@ -206,7 +206,7 @@ public class CreeperEntity extends HostileEntity {
 			playerEntity.swingHand(hand);
 			if (!this.world.isClient) {
 				this.setIgnited();
-				itemStack.applyDamage(1, playerEntity);
+				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 				return true;
 			}
 		}
@@ -214,19 +214,21 @@ public class CreeperEntity extends HostileEntity {
 		return super.interactMob(playerEntity, hand);
 	}
 
-	private void method_7006() {
+	private void explode() {
 		if (!this.world.isClient) {
-			Explosion.class_4179 lv = this.world.getGameRules().getBoolean("mobGriefing") ? Explosion.class_4179.field_18687 : Explosion.class_4179.field_18685;
+			Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean("mobGriefing")
+				? Explosion.DestructionType.field_18687
+				: Explosion.DestructionType.field_18685;
 			float f = this.isCharged() ? 2.0F : 1.0F;
 			this.dead = true;
-			this.world.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, lv);
-			this.invalidate();
-			this.method_7001();
+			this.world.createExplosion(this, this.x, this.y, this.z, (float)this.explosionRadius * f, destructionType);
+			this.remove();
+			this.spawnEffectsCloud();
 		}
 	}
 
-	private void method_7001() {
-		Collection<StatusEffectInstance> collection = this.getPotionEffects();
+	private void spawnEffectsCloud() {
+		Collection<StatusEffectInstance> collection = this.getStatusEffects();
 		if (!collection.isEmpty()) {
 			AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
 			areaEffectCloudEntity.setRadius(2.5F);
@@ -236,7 +238,7 @@ public class CreeperEntity extends HostileEntity {
 			areaEffectCloudEntity.setRadiusGrowth(-areaEffectCloudEntity.getRadius() / (float)areaEffectCloudEntity.getDuration());
 
 			for (StatusEffectInstance statusEffectInstance : collection) {
-				areaEffectCloudEntity.setPotionEffect(new StatusEffectInstance(statusEffectInstance));
+				areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
 			}
 
 			this.world.spawnEntity(areaEffectCloudEntity);
@@ -251,11 +253,11 @@ public class CreeperEntity extends HostileEntity {
 		this.dataTracker.set(IGNITED, true);
 	}
 
-	public boolean method_7008() {
-		return this.isCharged() && this.field_7226 < 1;
+	public boolean shouldDropHead() {
+		return this.isCharged() && this.headsDropped < 1;
 	}
 
-	public void method_7002() {
-		this.field_7226++;
+	public void onHeadDropped() {
+		this.headsDropped++;
 	}
 }

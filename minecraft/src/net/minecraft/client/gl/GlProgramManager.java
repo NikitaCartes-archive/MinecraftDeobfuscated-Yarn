@@ -24,8 +24,8 @@ public class GlProgramManager {
 	}
 
 	public void deleteProgram(GlProgram glProgram) {
-		glProgram.getFragmentShader().method_1282();
-		glProgram.getVertexShader().method_1282();
+		glProgram.getFragmentShader().release();
+		glProgram.getVertexShader().release();
 		GLX.glDeleteProgram(glProgram.getProgramRef());
 	}
 

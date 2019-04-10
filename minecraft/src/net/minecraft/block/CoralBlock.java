@@ -20,7 +20,7 @@ public class CoralBlock extends CoralParentBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		this.checkLivingConditions(blockState, world, blockPos);
 	}
 

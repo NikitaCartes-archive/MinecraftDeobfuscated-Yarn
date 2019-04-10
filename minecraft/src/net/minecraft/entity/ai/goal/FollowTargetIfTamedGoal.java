@@ -20,6 +20,6 @@ public class FollowTargetIfTamedGoal<T extends LivingEntity> extends FollowTarge
 
 	@Override
 	public boolean shouldContinue() {
-		return this.field_6642 != null ? this.field_6642.test(this.entity, this.field_6644) : super.shouldContinue();
+		return this.targetPredicate != null ? this.targetPredicate.test(this.entity, this.targetEntity) : super.shouldContinue();
 	}
 }

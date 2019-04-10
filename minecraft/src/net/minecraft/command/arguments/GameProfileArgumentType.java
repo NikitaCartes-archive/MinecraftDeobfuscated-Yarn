@@ -21,14 +21,14 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.TranslatableTextComponent;
 
-public class GameProfileArgumentType implements ArgumentType<GameProfileArgumentType.ProfileSupplier> {
+public class GameProfileArgumentType implements ArgumentType<GameProfileArgumentType.GameProfileArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("Player", "0123", "dd12be42-52a9-4a91-a8a1-11c01849e498", "@e");
 	public static final SimpleCommandExceptionType UNKNOWN_PLAYER_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableTextComponent("argument.player.unknown")
 	);
 
 	public static Collection<GameProfile> getProfileArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<GameProfileArgumentType.ProfileSupplier>getArgument(string, GameProfileArgumentType.ProfileSupplier.class)
+		return commandContext.<GameProfileArgumentType.GameProfileArgument>getArgument(string, GameProfileArgumentType.GameProfileArgument.class)
 			.getNames(commandContext.getSource());
 	}
 
@@ -36,14 +36,14 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 		return new GameProfileArgumentType();
 	}
 
-	public GameProfileArgumentType.ProfileSupplier method_9331(StringReader stringReader) throws CommandSyntaxException {
+	public GameProfileArgumentType.GameProfileArgument method_9331(StringReader stringReader) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '@') {
 			EntitySelectorReader entitySelectorReader = new EntitySelectorReader(stringReader);
 			EntitySelector entitySelector = entitySelectorReader.read();
-			if (entitySelector.includesEntities()) {
+			if (entitySelector.includesNonPlayers()) {
 				throw EntityArgumentType.PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.create();
 			} else {
-				return new GameProfileArgumentType.class_2193(entitySelector);
+				return new GameProfileArgumentType.SelectorProfileSupplier(entitySelector);
 			}
 		} else {
 			int i = stringReader.getCursor();
@@ -90,20 +90,20 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 	}
 
 	@FunctionalInterface
-	public interface ProfileSupplier {
+	public interface GameProfileArgument {
 		Collection<GameProfile> getNames(ServerCommandSource serverCommandSource) throws CommandSyntaxException;
 	}
 
-	public static class class_2193 implements GameProfileArgumentType.ProfileSupplier {
-		private final EntitySelector field_9870;
+	public static class SelectorProfileSupplier implements GameProfileArgumentType.GameProfileArgument {
+		private final EntitySelector selector;
 
-		public class_2193(EntitySelector entitySelector) {
-			this.field_9870 = entitySelector;
+		public SelectorProfileSupplier(EntitySelector entitySelector) {
+			this.selector = entitySelector;
 		}
 
 		@Override
 		public Collection<GameProfile> getNames(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-			List<ServerPlayerEntity> list = this.field_9870.getPlayers(serverCommandSource);
+			List<ServerPlayerEntity> list = this.selector.getPlayers(serverCommandSource);
 			if (list.isEmpty()) {
 				throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
 			} else {

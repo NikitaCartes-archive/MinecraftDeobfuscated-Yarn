@@ -25,7 +25,7 @@ public interface DyeableItem {
 		itemStack.getOrCreateSubCompoundTag("display").putInt("color", i);
 	}
 
-	static ItemStack method_19261(ItemStack itemStack, List<DyeItem> list) {
+	static ItemStack applyDyes(ItemStack itemStack, List<DyeItem> list) {
 		ItemStack itemStack2 = ItemStack.EMPTY;
 		int[] is = new int[3];
 		int i = 0;

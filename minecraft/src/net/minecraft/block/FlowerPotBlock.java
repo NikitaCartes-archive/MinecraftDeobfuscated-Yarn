@@ -50,7 +50,7 @@ public class FlowerPotBlock extends Block {
 		if (bl != bl2) {
 			if (bl2) {
 				world.setBlockState(blockPos, block.getDefaultState(), 3);
-				playerEntity.increaseStat(Stats.field_15412);
+				playerEntity.incrementStat(Stats.field_15412);
 				if (!playerEntity.abilities.creativeMode) {
 					itemStack.subtractAmount(1);
 				}

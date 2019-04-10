@@ -43,7 +43,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		} else if (villagerEntity.getVillagerData().getProfession() != VillagerProfession.field_17056) {
 			return false;
 		} else {
-			Set<BlockPos> set = (Set<BlockPos>)((List)villagerEntity.getBrain().getMemory(MemoryModuleType.field_18873).get())
+			Set<BlockPos> set = (Set<BlockPos>)((List)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18873).get())
 				.stream()
 				.map(GlobalPos::getPos)
 				.collect(Collectors.toSet());
@@ -54,7 +54,7 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 				.collect(Collectors.toList());
 			if (!list.isEmpty()) {
 				this.field_18858 = (BlockPos)list.get(serverWorld.getRandom().nextInt(list.size()));
-				this.field_18859 = villagerEntity.method_19623();
+				this.field_18859 = villagerEntity.hasSeedToPlant();
 				this.field_18860 = villagerEntity.canBreed();
 				return true;
 			} else {

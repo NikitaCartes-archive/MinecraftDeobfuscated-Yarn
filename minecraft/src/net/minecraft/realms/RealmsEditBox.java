@@ -3,7 +3,7 @@ package net.minecraft.realms;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.InputListener;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 
 @Environment(EnvType.CLIENT)
@@ -32,7 +32,7 @@ public class RealmsEditBox extends RealmsGuiEventListener {
 	}
 
 	@Override
-	public InputListener getProxy() {
+	public Element getProxy() {
 		return this.editBox;
 	}
 

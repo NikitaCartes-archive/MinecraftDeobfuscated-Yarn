@@ -23,11 +23,11 @@ import net.minecraft.world.loot.context.LootContextType;
 import net.minecraft.world.loot.entry.LootEntry;
 
 public class SetContentsLootFunction extends ConditionalLootFunction {
-	private final List<LootEntry> field_1103;
+	private final List<LootEntry> entries;
 
 	private SetContentsLootFunction(LootCondition[] lootConditions, List<LootEntry> list) {
 		super(lootConditions);
-		this.field_1103 = ImmutableList.copyOf(list);
+		this.entries = ImmutableList.copyOf(list);
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 			return itemStack;
 		} else {
 			DefaultedList<ItemStack> defaultedList = DefaultedList.create();
-			this.field_1103
+			this.entries
 				.forEach(lootEntry -> lootEntry.expand(lootContext, lootChoice -> lootChoice.drop(LootSupplier.limitedConsumer(defaultedList::add), lootContext)));
 			CompoundTag compoundTag = new CompoundTag();
 			Inventories.toTag(compoundTag, defaultedList);
@@ -50,13 +50,31 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 	public void check(LootTableReporter lootTableReporter, Function<Identifier, LootSupplier> function, Set<Identifier> set, LootContextType lootContextType) {
 		super.check(lootTableReporter, function, set, lootContextType);
 
-		for (int i = 0; i < this.field_1103.size(); i++) {
-			((LootEntry)this.field_1103.get(i)).check(lootTableReporter.makeChild(".entry[" + i + "]"), function, set, lootContextType);
+		for (int i = 0; i < this.entries.size(); i++) {
+			((LootEntry)this.entries.get(i)).check(lootTableReporter.makeChild(".entry[" + i + "]"), function, set, lootContextType);
 		}
 	}
 
-	public static SetContentsLootFunction.class_135 method_601() {
-		return new SetContentsLootFunction.class_135();
+	public static SetContentsLootFunction.Builer builder() {
+		return new SetContentsLootFunction.Builer();
+	}
+
+	public static class Builer extends ConditionalLootFunction.Builder<SetContentsLootFunction.Builer> {
+		private final List<LootEntry> entries = Lists.<LootEntry>newArrayList();
+
+		protected SetContentsLootFunction.Builer method_603() {
+			return this;
+		}
+
+		public SetContentsLootFunction.Builer withEntry(LootEntry.Builder<?> builder) {
+			this.entries.add(builder.build());
+			return this;
+		}
+
+		@Override
+		public LootFunction build() {
+			return new SetContentsLootFunction(this.getConditions(), this.entries);
+		}
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<SetContentsLootFunction> {
@@ -66,30 +84,12 @@ public class SetContentsLootFunction extends ConditionalLootFunction {
 
 		public void method_604(JsonObject jsonObject, SetContentsLootFunction setContentsLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, setContentsLootFunction, jsonSerializationContext);
-			jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.field_1103));
+			jsonObject.add("entries", jsonSerializationContext.serialize(setContentsLootFunction.entries));
 		}
 
 		public SetContentsLootFunction method_605(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			LootEntry[] lootEntrys = JsonHelper.deserialize(jsonObject, "entries", jsonDeserializationContext, LootEntry[].class);
 			return new SetContentsLootFunction(lootConditions, Arrays.asList(lootEntrys));
-		}
-	}
-
-	public static class class_135 extends ConditionalLootFunction.Builder<SetContentsLootFunction.class_135> {
-		private final List<LootEntry> field_1104 = Lists.<LootEntry>newArrayList();
-
-		protected SetContentsLootFunction.class_135 method_603() {
-			return this;
-		}
-
-		public SetContentsLootFunction.class_135 method_602(LootEntry.Builder<?> builder) {
-			this.field_1104.add(builder.build());
-			return this;
-		}
-
-		@Override
-		public LootFunction build() {
-			return new SetContentsLootFunction(this.getConditions(), this.field_1104);
 		}
 	}
 }

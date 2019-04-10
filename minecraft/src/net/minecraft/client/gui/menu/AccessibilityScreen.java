@@ -27,13 +27,13 @@ public class AccessibilityScreen extends Screen {
 	}
 
 	@Override
-	protected void onInitialized() {
+	protected void init() {
 		int i = 0;
 
 		for (GameOption gameOption : field_18730) {
-			int j = this.screenWidth / 2 - 155 + i % 2 * 160;
-			int k = this.screenHeight / 6 + 24 * (i >> 1);
-			AbstractButtonWidget abstractButtonWidget = this.addButton(gameOption.createOptionButton(this.client.options, j, k, 150));
+			int j = this.width / 2 - 155 + i % 2 * 160;
+			int k = this.height / 6 + 24 * (i >> 1);
+			AbstractButtonWidget abstractButtonWidget = this.addButton(gameOption.createOptionButton(this.minecraft.options, j, k, 150));
 			if (gameOption == GameOption.NARRATOR) {
 				this.field_18734 = abstractButtonWidget;
 				abstractButtonWidget.active = NarratorManager.INSTANCE.isActive();
@@ -44,24 +44,24 @@ public class AccessibilityScreen extends Screen {
 
 		this.addButton(
 			new ButtonWidget(
-				this.screenWidth / 2 - 100, this.screenHeight / 6 + 144, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(this.field_18731)
+				this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.field_18731)
 			)
 		);
 	}
 
 	@Override
-	public void onClosed() {
-		this.client.options.write();
+	public void removed() {
+		this.minecraft.options.write();
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 20, 16777215);
+		this.renderBackground();
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 16777215);
 		super.render(i, j, f);
 	}
 
 	public void method_19366() {
-		this.field_18734.setMessage(GameOption.NARRATOR.method_18501(this.field_18732));
+		this.field_18734.setMessage(GameOption.NARRATOR.get(this.field_18732));
 	}
 }

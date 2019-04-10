@@ -43,7 +43,9 @@ public class BucketItem extends Item {
 		);
 		if (hitResult.getType() == HitResult.Type.NONE) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
-		} else if (hitResult.getType() == HitResult.Type.BLOCK) {
+		} else if (hitResult.getType() != HitResult.Type.BLOCK) {
+			return new TypedActionResult<>(ActionResult.PASS, itemStack);
+		} else {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockPos blockPos = blockHitResult.getBlockPos();
 			if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceBlock(blockPos, blockHitResult.getSide(), itemStack)) {
@@ -67,7 +69,9 @@ public class BucketItem extends Item {
 				return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 			} else {
 				BlockState blockState = world.getBlockState(blockPos);
-				BlockPos blockPos2 = blockState.getBlock() instanceof FluidFillable ? blockPos : blockHitResult.getBlockPos().offset(blockHitResult.getSide());
+				BlockPos blockPos2 = blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER
+					? blockPos
+					: blockHitResult.getBlockPos().offset(blockHitResult.getSide());
 				if (this.placeFluid(playerEntity, world, blockPos2, blockHitResult)) {
 					this.onEmptied(world, itemStack, blockPos2);
 					if (playerEntity instanceof ServerPlayerEntity) {
@@ -80,8 +84,6 @@ public class BucketItem extends Item {
 					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				}
 			}
-		} else {
-			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		}
 	}
 
@@ -132,7 +134,7 @@ public class BucketItem extends Item {
 					for (int l = 0; l < 8; l++) {
 						world.addParticle(ParticleTypes.field_11237, (double)i + Math.random(), (double)j + Math.random(), (double)k + Math.random(), 0.0, 0.0, 0.0);
 					}
-				} else if (blockState.getBlock() instanceof FluidFillable) {
+				} else if (blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER) {
 					if (((FluidFillable)blockState.getBlock()).tryFillWithFluid(world, blockPos, blockState, ((BaseFluid)this.fluid).getState(false))) {
 						this.playEmptyingSound(playerEntity, world, blockPos);
 					}

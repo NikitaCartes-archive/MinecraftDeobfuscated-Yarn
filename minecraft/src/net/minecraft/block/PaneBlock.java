@@ -40,10 +40,10 @@ public class PaneBlock extends HorizontalConnectedBlock {
 		BlockState blockState3 = blockView.getBlockState(blockPos4);
 		BlockState blockState4 = blockView.getBlockState(blockPos5);
 		return this.getDefaultState()
-			.with(NORTH, Boolean.valueOf(this.connectsTo(blockState, Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos2), Direction.SOUTH))))
-			.with(SOUTH, Boolean.valueOf(this.connectsTo(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(blockView, blockPos3), Direction.NORTH))))
-			.with(WEST, Boolean.valueOf(this.connectsTo(blockState3, Block.isFaceFullSquare(blockState3.getCollisionShape(blockView, blockPos4), Direction.EAST))))
-			.with(EAST, Boolean.valueOf(this.connectsTo(blockState4, Block.isFaceFullSquare(blockState4.getCollisionShape(blockView, blockPos5), Direction.WEST))))
+			.with(NORTH, Boolean.valueOf(this.connectsTo(blockState, Block.isSolidFullSquare(blockState, blockView, blockPos2, Direction.SOUTH))))
+			.with(SOUTH, Boolean.valueOf(this.connectsTo(blockState2, Block.isSolidFullSquare(blockState2, blockView, blockPos3, Direction.NORTH))))
+			.with(WEST, Boolean.valueOf(this.connectsTo(blockState3, Block.isSolidFullSquare(blockState3, blockView, blockPos4, Direction.EAST))))
+			.with(EAST, Boolean.valueOf(this.connectsTo(blockState4, Block.isSolidFullSquare(blockState4, blockView, blockPos5, Direction.WEST))))
 			.with(WATERLOGGED, Boolean.valueOf(fluidState.getFluid() == Fluids.WATER));
 	}
 
@@ -58,7 +58,7 @@ public class PaneBlock extends HorizontalConnectedBlock {
 		return direction.getAxis().isHorizontal()
 			? blockState.with(
 				(Property)FACING_PROPERTIES.get(direction),
-				Boolean.valueOf(this.connectsTo(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(iWorld, blockPos2), direction.getOpposite())))
+				Boolean.valueOf(this.connectsTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction.getOpposite())))
 			)
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
@@ -82,25 +82,7 @@ public class PaneBlock extends HorizontalConnectedBlock {
 
 	public final boolean connectsTo(BlockState blockState, boolean bl) {
 		Block block = blockState.getBlock();
-		return !neverConnectsTo(block) && bl || block instanceof PaneBlock;
-	}
-
-	public static boolean neverConnectsTo(Block block) {
-		return block instanceof ShulkerBoxBlock
-			|| block instanceof LeavesBlock
-			|| block == Blocks.field_10327
-			|| block == Blocks.field_10593
-			|| block == Blocks.field_10171
-			|| block == Blocks.field_10295
-			|| block == Blocks.field_10174
-			|| block == Blocks.field_10560
-			|| block == Blocks.field_10615
-			|| block == Blocks.field_10379
-			|| block == Blocks.field_10545
-			|| block == Blocks.field_10261
-			|| block == Blocks.field_10147
-			|| block == Blocks.field_10009
-			|| block == Blocks.field_10499;
+		return !canConnect(block) && bl || block instanceof PaneBlock;
 	}
 
 	@Override

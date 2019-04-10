@@ -1,22 +1,22 @@
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.entity.passive.ParrotBaseEntity;
+import net.minecraft.entity.passive.TameableShoulderEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 public class ParrotClimbOntoPlayerGoal extends Goal {
-	private final ParrotBaseEntity parrot;
+	private final TameableShoulderEntity parrot;
 	private ServerPlayerEntity parrotOwner;
 	private boolean mounted;
 
-	public ParrotClimbOntoPlayerGoal(ParrotBaseEntity parrotBaseEntity) {
-		this.parrot = parrotBaseEntity;
+	public ParrotClimbOntoPlayerGoal(TameableShoulderEntity tameableShoulderEntity) {
+		this.parrot = tameableShoulderEntity;
 	}
 
 	@Override
 	public boolean canStart() {
 		ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.parrot.getOwner();
 		boolean bl = serverPlayerEntity != null && !serverPlayerEntity.isSpectator() && !serverPlayerEntity.abilities.flying && !serverPlayerEntity.isInsideWater();
-		return !this.parrot.isSitting() && bl && this.parrot.method_6626();
+		return !this.parrot.isSitting() && bl && this.parrot.isReadyToSitOnPlayer();
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public abstract class Task<E extends LivingEntity> {
 	}
 
 	public final boolean tryStarting(ServerWorld serverWorld, E livingEntity, long l) {
-		if (this.method_19546(livingEntity) && this.shouldRun(serverWorld, livingEntity)) {
+		if (this.hasRequiredMemoryState(livingEntity) && this.shouldRun(serverWorld, livingEntity)) {
 			this.status = Task.Status.field_18338;
 			int i = this.minRunTime + serverWorld.getRandom().nextInt(this.maxRunTime + 1 - this.minRunTime);
 			this.endTime = l + (long)i;
@@ -58,10 +58,10 @@ public abstract class Task<E extends LivingEntity> {
 
 	public final void stop(ServerWorld serverWorld, E livingEntity, long l) {
 		this.status = Task.Status.field_18337;
-		this.stopInternal(serverWorld, livingEntity, l);
+		this.finishRunning(serverWorld, livingEntity, l);
 	}
 
-	protected void stopInternal(ServerWorld serverWorld, E livingEntity, long l) {
+	protected void finishRunning(ServerWorld serverWorld, E livingEntity, long l) {
 	}
 
 	protected boolean shouldKeepRunning(ServerWorld serverWorld, E livingEntity, long l) {
@@ -82,7 +82,7 @@ public abstract class Task<E extends LivingEntity> {
 		return this.getClass().getSimpleName();
 	}
 
-	private boolean method_19546(E livingEntity) {
+	private boolean hasRequiredMemoryState(E livingEntity) {
 		return this.getRequiredMemoryState().stream().allMatch(pair -> {
 			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)pair.getFirst();
 			MemoryModuleState memoryModuleState = (MemoryModuleState)pair.getSecond();

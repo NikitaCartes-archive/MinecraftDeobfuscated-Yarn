@@ -13,8 +13,8 @@ import net.minecraft.recipe.Recipe;
 @Environment(EnvType.CLIENT)
 public class RecipeToast implements Toast {
 	private final List<Recipe<?>> recipes = Lists.<Recipe<?>>newArrayList();
-	private long field_2204;
-	private boolean field_2203;
+	private long startTime;
+	private boolean justUpdated;
 
 	public RecipeToast(Recipe<?> recipe) {
 		this.recipes.add(recipe);
@@ -22,9 +22,9 @@ public class RecipeToast implements Toast {
 
 	@Override
 	public Toast.Visibility draw(ToastManager toastManager, long l) {
-		if (this.field_2203) {
-			this.field_2204 = l;
-			this.field_2203 = false;
+		if (this.justUpdated) {
+			this.startTime = l;
+			this.justUpdated = false;
 		}
 
 		if (this.recipes.isEmpty()) {
@@ -32,7 +32,7 @@ public class RecipeToast implements Toast {
 		} else {
 			toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 			GlStateManager.color3f(1.0F, 1.0F, 1.0F);
-			toastManager.drawTexturedRect(0, 0, 0, 32, 160, 32);
+			toastManager.blit(0, 0, 0, 32, 160, 32);
 			toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.title"), 30.0F, 7.0F, -11534256);
 			toastManager.getGame().textRenderer.draw(I18n.translate("recipe.toast.description"), 30.0F, 18.0F, -16777216);
 			GuiLighting.enableForItems();
@@ -43,22 +43,22 @@ public class RecipeToast implements Toast {
 			toastManager.getGame().getItemRenderer().renderGuiItem(null, itemStack, 3, 3);
 			GlStateManager.popMatrix();
 			toastManager.getGame().getItemRenderer().renderGuiItem(null, recipe.getOutput(), 8, 8);
-			return l - this.field_2204 >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
+			return l - this.startTime >= 5000L ? Toast.Visibility.field_2209 : Toast.Visibility.field_2210;
 		}
 	}
 
-	public void method_1984(Recipe<?> recipe) {
+	public void addRecipe(Recipe<?> recipe) {
 		if (this.recipes.add(recipe)) {
-			this.field_2203 = true;
+			this.justUpdated = true;
 		}
 	}
 
-	public static void method_1985(ToastManager toastManager, Recipe<?> recipe) {
-		RecipeToast recipeToast = toastManager.method_1997(RecipeToast.class, field_2208);
+	public static void show(ToastManager toastManager, Recipe<?> recipe) {
+		RecipeToast recipeToast = toastManager.getToast(RecipeToast.class, field_2208);
 		if (recipeToast == null) {
 			toastManager.add(new RecipeToast(recipe));
 		} else {
-			recipeToast.method_1984(recipe);
+			recipeToast.addRecipe(recipe);
 		}
 	}
 }

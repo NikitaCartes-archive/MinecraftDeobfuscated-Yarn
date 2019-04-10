@@ -14,6 +14,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
@@ -250,11 +251,11 @@ public final class ItemStack {
 		}
 	}
 
-	public void applyDamage(int i, LivingEntity livingEntity) {
-		if (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).abilities.creativeMode) {
+	public <T extends LivingEntity> void applyDamage(int i, T livingEntity, Consumer<T> consumer) {
+		if (!livingEntity.world.isClient && (!(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).abilities.creativeMode)) {
 			if (this.hasDurability()) {
 				if (this.applyDamage(i, livingEntity.getRand(), livingEntity instanceof ServerPlayerEntity ? (ServerPlayerEntity)livingEntity : null)) {
-					livingEntity.method_6045(this);
+					consumer.accept(livingEntity);
 					Item item = this.getItem();
 					this.subtractAmount(1);
 					if (livingEntity instanceof PlayerEntity) {
@@ -370,7 +371,7 @@ public final class ItemStack {
 	}
 
 	public void onCrafted(World world, PlayerEntity playerEntity, int i) {
-		playerEntity.incrementStat(Stats.field_15370.getOrCreateStat(this.getItem()), i);
+		playerEntity.increaseStat(Stats.field_15370.getOrCreateStat(this.getItem()), i);
 		this.getItem().onCrafted(this, world, playerEntity);
 	}
 
@@ -497,7 +498,7 @@ public final class ItemStack {
 
 		list.add(textComponent);
 		if (!tooltipContext.isAdvanced() && !this.hasDisplayName() && this.getItem() == Items.field_8204) {
-			list.add(new StringTextComponent("#" + FilledMapItem.method_8003(this)).applyFormat(TextFormat.field_1080));
+			list.add(new StringTextComponent("#" + FilledMapItem.getMapId(this)).applyFormat(TextFormat.field_1080));
 		}
 
 		int i = 0;

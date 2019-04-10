@@ -28,7 +28,7 @@ public class FollowMobGoal extends Goal {
 		this.field_6434 = mobEntity.getNavigation();
 		this.field_6438 = f;
 		this.field_6435 = g;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		if (!(mobEntity.getNavigation() instanceof MobNavigation) && !(mobEntity.getNavigation() instanceof BirdNavigation)) {
 			throw new IllegalArgumentException("Unsupported mob type for FollowMobGoal");
 		}
@@ -64,7 +64,7 @@ public class FollowMobGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.field_6433 = null;
 		this.field_6434.stop();
 		this.field_6432.setPathNodeTypeWeight(PathNodeType.field_18, this.field_6437);
@@ -73,7 +73,7 @@ public class FollowMobGoal extends Goal {
 	@Override
 	public void tick() {
 		if (this.field_6433 != null && !this.field_6432.isLeashed()) {
-			this.field_6432.getLookControl().lookAt(this.field_6433, 10.0F, (float)this.field_6432.method_5978());
+			this.field_6432.getLookControl().lookAt(this.field_6433, 10.0F, (float)this.field_6432.getLookPitchSpeed());
 			if (--this.field_6431 <= 0) {
 				this.field_6431 = 10;
 				double d = this.field_6432.x - this.field_6433.x;

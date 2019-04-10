@@ -22,8 +22,8 @@ public class RedstoneLampBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
-		super.onBlockAdded(blockState, world, blockPos, blockState2);
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
+		super.onBlockAdded(blockState, world, blockPos, blockState2, bl);
 	}
 
 	@Nullable
@@ -33,11 +33,11 @@ public class RedstoneLampBlock extends Block {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
-			boolean bl = (Boolean)blockState.get(LIT);
-			if (bl != world.isReceivingRedstonePower(blockPos)) {
-				if (bl) {
+			boolean bl2 = (Boolean)blockState.get(LIT);
+			if (bl2 != world.isReceivingRedstonePower(blockPos)) {
+				if (bl2) {
 					world.getBlockTickScheduler().schedule(blockPos, this, 4);
 				} else {
 					world.setBlockState(blockPos, blockState.method_11572(LIT), 2);

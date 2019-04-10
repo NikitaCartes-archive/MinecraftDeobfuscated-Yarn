@@ -7,7 +7,6 @@ import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.SystemUtil;
@@ -116,19 +115,7 @@ public class VineBlock extends Block {
 
 	public static boolean shouldConnectTo(BlockView blockView, BlockPos blockPos, Direction direction) {
 		BlockState blockState = blockView.getBlockState(blockPos);
-		return Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction.getOpposite()) && !cannotConnectTo(blockState.getBlock());
-	}
-
-	protected static boolean cannotConnectTo(Block block) {
-		return block instanceof ShulkerBoxBlock
-			|| block instanceof StainedGlassBlock
-			|| block == Blocks.field_10327
-			|| block == Blocks.field_10593
-			|| block == Blocks.field_10033
-			|| block == Blocks.field_10560
-			|| block == Blocks.field_10615
-			|| block == Blocks.field_10379
-			|| block.matches(BlockTags.field_15491);
+		return Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction.getOpposite());
 	}
 
 	private BlockState getPlacementShape(BlockState blockState, BlockView blockView, BlockPos blockPos) {
@@ -179,7 +166,7 @@ public class VineBlock extends Block {
 					world.setBlockState(blockPos, blockState2, 2);
 				} else {
 					dropStacks(blockState, world, blockPos);
-					world.clearBlockState(blockPos);
+					world.clearBlockState(blockPos, false);
 				}
 			} else if (world.random.nextInt(4) == 0) {
 				Direction direction = Direction.random(random);

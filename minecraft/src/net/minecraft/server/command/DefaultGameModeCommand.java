@@ -9,19 +9,19 @@ import net.minecraft.world.GameMode;
 
 public class DefaultGameModeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = ServerCommandManager.literal("defaultgamemode")
+		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("defaultgamemode")
 			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
 			if (gameMode != GameMode.INVALID) {
-				literalArgumentBuilder.then(ServerCommandManager.literal(gameMode.getName()).executes(commandContext -> method_13167(commandContext.getSource(), gameMode)));
+				literalArgumentBuilder.then(CommandManager.literal(gameMode.getName()).executes(commandContext -> execute(commandContext.getSource(), gameMode)));
 			}
 		}
 
 		commandDispatcher.register(literalArgumentBuilder);
 	}
 
-	private static int method_13167(ServerCommandSource serverCommandSource, GameMode gameMode) {
+	private static int execute(ServerCommandSource serverCommandSource, GameMode gameMode) {
 		int i = 0;
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		minecraftServer.setDefaultGameMode(gameMode);

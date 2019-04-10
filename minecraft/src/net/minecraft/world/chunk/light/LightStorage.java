@@ -103,7 +103,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Sect
 	}
 
 	@Override
-	protected int method_18749(long l) {
+	protected int getInitialLevel(long l) {
 		if (this.field_15797.contains(l)) {
 			return 2;
 		} else {
@@ -251,8 +251,8 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Sect
 												r = BlockPos.asLong(i + 16, j + o, k + p);
 										}
 
-										chunkLightProvider.update(q, r, chunkLightProvider.getUpdatedLevel(q, r, chunkLightProvider.getLevel(q)), false);
-										chunkLightProvider.update(r, q, chunkLightProvider.getUpdatedLevel(r, q, chunkLightProvider.getLevel(r)), false);
+										chunkLightProvider.update(q, r, chunkLightProvider.getPropagatedLevel(q, r, chunkLightProvider.getLevel(q)), false);
+										chunkLightProvider.update(r, q, chunkLightProvider.getPropagatedLevel(r, q, chunkLightProvider.getLevel(r)), false);
 									}
 								}
 							}

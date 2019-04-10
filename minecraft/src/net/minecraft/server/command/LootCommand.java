@@ -40,70 +40,70 @@ import net.minecraft.world.loot.context.LootContextParameters;
 import net.minecraft.world.loot.context.LootContextTypes;
 
 public class LootCommand {
-	public static final SuggestionProvider<ServerCommandSource> field_13605 = (commandContext, suggestionsBuilder) -> {
+	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
 		LootManager lootManager = commandContext.getSource().getMinecraftServer().getLootManager();
 		return CommandSource.suggestIdentifiers(lootManager.getSupplierNames(), suggestionsBuilder);
 	};
-	private static final DynamicCommandExceptionType NOHELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType NO_HELD_ITEMS_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("commands.drop.no_held_items", object)
 	);
-	private static final DynamicCommandExceptionType NOLOOTTABLE_EXCEPTION = new DynamicCommandExceptionType(
+	private static final DynamicCommandExceptionType NO_LOOT_TABLE_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("commands.drop.no_loot_table", object)
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
 			method_13206(
-				ServerCommandManager.literal("loot").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)),
-				(argumentBuilder, arg) -> argumentBuilder.then(
-							ServerCommandManager.literal("fish")
+				CommandManager.literal("loot").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)),
+				(argumentBuilder, argumentCallback) -> argumentBuilder.then(
+							CommandManager.literal("fish")
 								.then(
-									ServerCommandManager.argument("loot_table", IdentifierArgumentType.create())
-										.suggests(field_13605)
+									CommandManager.argument("loot_table", IdentifierArgumentType.create())
+										.suggests(SUGGESTION_PROVIDER)
 										.then(
-											ServerCommandManager.argument("pos", BlockPosArgumentType.create())
+											CommandManager.argument("pos", BlockPosArgumentType.create())
 												.executes(
 													commandContext -> method_13199(
 															commandContext,
-															IdentifierArgumentType.getIdentifierArgument(commandContext, "loot_table"),
-															BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
+															IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 															ItemStack.EMPTY,
-															arg
+															argumentCallback
 														)
 												)
 												.then(
-													ServerCommandManager.argument("tool", ItemStackArgumentType.create())
+													CommandManager.argument("tool", ItemStackArgumentType.create())
 														.executes(
 															commandContext -> method_13199(
 																	commandContext,
-																	IdentifierArgumentType.getIdentifierArgument(commandContext, "loot_table"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-																	ItemStackArgumentType.getStackArgument(commandContext, "tool").method_9781(1, false),
-																	arg
+																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+																	ItemStackArgumentType.getItemStackArgument(commandContext, "tool").method_9781(1, false),
+																	argumentCallback
 																)
 														)
 												)
 												.then(
-													ServerCommandManager.literal("mainhand")
+													CommandManager.literal("mainhand")
 														.executes(
 															commandContext -> method_13199(
 																	commandContext,
-																	IdentifierArgumentType.getIdentifierArgument(commandContext, "loot_table"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-																	method_13178(commandContext.getSource(), EquipmentSlot.HAND_MAIN),
-																	arg
+																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+																	getHeldItem(commandContext.getSource(), EquipmentSlot.HAND_MAIN),
+																	argumentCallback
 																)
 														)
 												)
 												.then(
-													ServerCommandManager.literal("offhand")
+													CommandManager.literal("offhand")
 														.executes(
 															commandContext -> method_13199(
 																	commandContext,
-																	IdentifierArgumentType.getIdentifierArgument(commandContext, "loot_table"),
-																	BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-																	method_13178(commandContext.getSource(), EquipmentSlot.HAND_OFF),
-																	arg
+																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
+																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+																	getHeldItem(commandContext.getSource(), EquipmentSlot.HAND_OFF),
+																	argumentCallback
 																)
 														)
 												)
@@ -111,55 +111,57 @@ public class LootCommand {
 								)
 						)
 						.then(
-							ServerCommandManager.literal("loot")
+							CommandManager.literal("loot")
 								.then(
-									ServerCommandManager.argument("loot_table", IdentifierArgumentType.create())
-										.suggests(field_13605)
-										.executes(commandContext -> method_13197(commandContext, IdentifierArgumentType.getIdentifierArgument(commandContext, "loot_table"), arg))
+									CommandManager.argument("loot_table", IdentifierArgumentType.create())
+										.suggests(SUGGESTION_PROVIDER)
+										.executes(commandContext -> method_13197(commandContext, IdentifierArgumentType.getIdentifier(commandContext, "loot_table"), argumentCallback))
 								)
 						)
 						.then(
-							ServerCommandManager.literal("kill")
+							CommandManager.literal("kill")
 								.then(
-									ServerCommandManager.argument("target", EntityArgumentType.oneEntity())
-										.executes(commandContext -> method_13189(commandContext, EntityArgumentType.getEntityArgument(commandContext, "target"), arg))
+									CommandManager.argument("target", EntityArgumentType.entity())
+										.executes(commandContext -> method_13189(commandContext, EntityArgumentType.getEntity(commandContext, "target"), argumentCallback))
 								)
 						)
 						.then(
-							ServerCommandManager.literal("mine")
+							CommandManager.literal("mine")
 								.then(
-									ServerCommandManager.argument("pos", BlockPosArgumentType.create())
-										.executes(commandContext -> method_13219(commandContext, BlockPosArgumentType.getValidPosArgument(commandContext, "pos"), ItemStack.EMPTY, arg))
+									CommandManager.argument("pos", BlockPosArgumentType.create())
+										.executes(
+											commandContext -> method_13219(commandContext, BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"), ItemStack.EMPTY, argumentCallback)
+										)
 										.then(
-											ServerCommandManager.argument("tool", ItemStackArgumentType.create())
+											CommandManager.argument("tool", ItemStackArgumentType.create())
 												.executes(
 													commandContext -> method_13219(
 															commandContext,
-															BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-															ItemStackArgumentType.getStackArgument(commandContext, "tool").method_9781(1, false),
-															arg
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+															ItemStackArgumentType.getItemStackArgument(commandContext, "tool").method_9781(1, false),
+															argumentCallback
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("mainhand")
+											CommandManager.literal("mainhand")
 												.executes(
 													commandContext -> method_13219(
 															commandContext,
-															BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-															method_13178(commandContext.getSource(), EquipmentSlot.HAND_MAIN),
-															arg
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+															getHeldItem(commandContext.getSource(), EquipmentSlot.HAND_MAIN),
+															argumentCallback
 														)
 												)
 										)
 										.then(
-											ServerCommandManager.literal("offhand")
+											CommandManager.literal("offhand")
 												.executes(
 													commandContext -> method_13219(
 															commandContext,
-															BlockPosArgumentType.getValidPosArgument(commandContext, "pos"),
-															method_13178(commandContext.getSource(), EquipmentSlot.HAND_OFF),
-															arg
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
+															getHeldItem(commandContext.getSource(), EquipmentSlot.HAND_OFF),
+															argumentCallback
 														)
 												)
 										)
@@ -169,29 +171,31 @@ public class LootCommand {
 		);
 	}
 
-	private static <T extends ArgumentBuilder<ServerCommandSource, T>> T method_13206(T argumentBuilder, LootCommand.class_3042 arg) {
+	private static <T extends ArgumentBuilder<ServerCommandSource, T>> T method_13206(
+		T argumentBuilder, LootCommand.LootTableArgumentsBuilder lootTableArgumentsBuilder
+	) {
 		return argumentBuilder.then(
-				ServerCommandManager.literal("replace")
+				CommandManager.literal("replace")
 					.then(
-						ServerCommandManager.literal("entity")
+						CommandManager.literal("entity")
 							.then(
-								ServerCommandManager.argument("entities", EntityArgumentType.multipleEntities())
+								CommandManager.argument("entities", EntityArgumentType.entities())
 									.then(
-										arg.construct(
-												ServerCommandManager.argument("slot", ItemSlotArgumentType.create()),
-												(commandContext, list, argx) -> method_13187(
-														EntityArgumentType.method_9317(commandContext, "entities"), ItemSlotArgumentType.getSlotArgument(commandContext, "slot"), list.size(), list, argx
+										lootTableArgumentsBuilder.construct(
+												CommandManager.argument("slot", ItemSlotArgumentType.create()),
+												(commandContext, list, arg) -> executeReplace(
+														EntityArgumentType.getEntities(commandContext, "entities"), ItemSlotArgumentType.getItemSlot(commandContext, "slot"), list.size(), list, arg
 													)
 											)
 											.then(
-												arg.construct(
-													ServerCommandManager.argument("count", IntegerArgumentType.integer(0)),
-													(commandContext, list, argx) -> method_13187(
-															EntityArgumentType.method_9317(commandContext, "entities"),
-															ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
+												lootTableArgumentsBuilder.construct(
+													CommandManager.argument("count", IntegerArgumentType.integer(0)),
+													(commandContext, list, arg) -> executeReplace(
+															EntityArgumentType.getEntities(commandContext, "entities"),
+															ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
 															IntegerArgumentType.getInteger(commandContext, "count"),
 															list,
-															argx
+															arg
 														)
 												)
 											)
@@ -199,31 +203,31 @@ public class LootCommand {
 							)
 					)
 					.then(
-						ServerCommandManager.literal("block")
+						CommandManager.literal("block")
 							.then(
-								ServerCommandManager.argument("targetPos", BlockPosArgumentType.create())
+								CommandManager.argument("targetPos", BlockPosArgumentType.create())
 									.then(
-										arg.construct(
-												ServerCommandManager.argument("slot", ItemSlotArgumentType.create()),
-												(commandContext, list, argx) -> method_13209(
+										lootTableArgumentsBuilder.construct(
+												CommandManager.argument("slot", ItemSlotArgumentType.create()),
+												(commandContext, list, arg) -> executeBlock(
 														commandContext.getSource(),
-														BlockPosArgumentType.getValidPosArgument(commandContext, "targetPos"),
-														ItemSlotArgumentType.getSlotArgument(commandContext, "slot"),
+														BlockPosArgumentType.getLoadedBlockPos(commandContext, "targetPos"),
+														ItemSlotArgumentType.getItemSlot(commandContext, "slot"),
 														list.size(),
 														list,
-														argx
+														arg
 													)
 											)
 											.then(
-												arg.construct(
-													ServerCommandManager.argument("count", IntegerArgumentType.integer(0)),
-													(commandContext, list, argx) -> method_13209(
+												lootTableArgumentsBuilder.construct(
+													CommandManager.argument("count", IntegerArgumentType.integer(0)),
+													(commandContext, list, arg) -> executeBlock(
 															commandContext.getSource(),
-															BlockPosArgumentType.getValidPosArgument(commandContext, "targetPos"),
+															BlockPosArgumentType.getLoadedBlockPos(commandContext, "targetPos"),
 															IntegerArgumentType.getInteger(commandContext, "slot"),
 															IntegerArgumentType.getInteger(commandContext, "count"),
 															list,
-															argx
+															arg
 														)
 												)
 											)
@@ -232,51 +236,49 @@ public class LootCommand {
 					)
 			)
 			.then(
-				ServerCommandManager.literal("insert")
+				CommandManager.literal("insert")
 					.then(
-						arg.construct(
-							ServerCommandManager.argument("targetPos", BlockPosArgumentType.create()),
-							(commandContext, list, argx) -> method_13196(
-									commandContext.getSource(), BlockPosArgumentType.getValidPosArgument(commandContext, "targetPos"), list, argx
-								)
+						lootTableArgumentsBuilder.construct(
+							CommandManager.argument("targetPos", BlockPosArgumentType.create()),
+							(commandContext, list, arg) -> executeInsert(commandContext.getSource(), BlockPosArgumentType.getLoadedBlockPos(commandContext, "targetPos"), list, arg)
 						)
 					)
 			)
 			.then(
-				ServerCommandManager.literal("give")
+				CommandManager.literal("give")
 					.then(
-						arg.construct(
-							ServerCommandManager.argument("players", EntityArgumentType.multiplePlayer()),
-							(commandContext, list, argx) -> method_13201(EntityArgumentType.method_9312(commandContext, "players"), list, argx)
+						lootTableArgumentsBuilder.construct(
+							CommandManager.argument("players", EntityArgumentType.players()),
+							(commandContext, list, arg) -> executeGive(EntityArgumentType.getPlayers(commandContext, "players"), list, arg)
 						)
 					)
 			)
 			.then(
-				ServerCommandManager.literal("spawn")
+				CommandManager.literal("spawn")
 					.then(
-						arg.construct(
-							ServerCommandManager.argument("targetPos", Vec3ArgumentType.create()),
-							(commandContext, list, argx) -> method_13183(commandContext.getSource(), Vec3ArgumentType.getVec3Argument(commandContext, "targetPos"), list, argx)
+						lootTableArgumentsBuilder.construct(
+							CommandManager.argument("targetPos", Vec3ArgumentType.create()),
+							(commandContext, list, arg) -> executeSpawn(commandContext.getSource(), Vec3ArgumentType.getVec3(commandContext, "targetPos"), list, arg)
 						)
 					)
 			);
 	}
 
-	private static Inventory method_13207(ServerCommandSource serverCommandSource, BlockPos blockPos) throws CommandSyntaxException {
+	private static Inventory getBlockInventory(ServerCommandSource serverCommandSource, BlockPos blockPos) throws CommandSyntaxException {
 		BlockEntity blockEntity = serverCommandSource.getWorld().getBlockEntity(blockPos);
 		if (!(blockEntity instanceof Inventory)) {
-			throw ReplaceItemCommand.BLOCK_FAILED_EXCEPTON.create();
+			throw ReplaceItemCommand.BLOCK_FAILED_EXCEPTION.create();
 		} else {
 			return (Inventory)blockEntity;
 		}
 	}
 
-	private static int method_13196(ServerCommandSource serverCommandSource, BlockPos blockPos, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
-		Inventory inventory = method_13207(serverCommandSource, blockPos);
+	private static int executeInsert(ServerCommandSource serverCommandSource, BlockPos blockPos, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
+		Inventory inventory = getBlockInventory(serverCommandSource, blockPos);
 		List<ItemStack> list2 = Lists.<ItemStack>newArrayListWithCapacity(list.size());
 
 		for (ItemStack itemStack : list) {
-			if (method_13223(inventory, itemStack.copy())) {
+			if (insert(inventory, itemStack.copy())) {
 				inventory.markDirty();
 				list2.add(itemStack);
 			}
@@ -286,7 +288,7 @@ public class LootCommand {
 		return list2.size();
 	}
 
-	private static boolean method_13223(Inventory inventory, ItemStack itemStack) {
+	private static boolean insert(Inventory inventory, ItemStack itemStack) {
 		boolean bl = false;
 
 		for (int i = 0; i < inventory.getInvSize() && !itemStack.isEmpty(); i++) {
@@ -298,7 +300,7 @@ public class LootCommand {
 					break;
 				}
 
-				if (method_13218(itemStack2, itemStack)) {
+				if (itemsMatch(itemStack2, itemStack)) {
 					int j = itemStack.getMaxAmount() - itemStack2.getAmount();
 					int k = Math.min(itemStack.getAmount(), j);
 					itemStack.subtractAmount(k);
@@ -311,8 +313,8 @@ public class LootCommand {
 		return bl;
 	}
 
-	private static int method_13209(ServerCommandSource serverCommandSource, BlockPos blockPos, int i, int j, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
-		Inventory inventory = method_13207(serverCommandSource, blockPos);
+	private static int executeBlock(ServerCommandSource serverCommandSource, BlockPos blockPos, int i, int j, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
+		Inventory inventory = getBlockInventory(serverCommandSource, blockPos);
 		int k = inventory.getInvSize();
 		if (i >= 0 && i < k) {
 			List<ItemStack> list2 = Lists.<ItemStack>newArrayListWithCapacity(list.size());
@@ -333,14 +335,14 @@ public class LootCommand {
 		}
 	}
 
-	private static boolean method_13218(ItemStack itemStack, ItemStack itemStack2) {
+	private static boolean itemsMatch(ItemStack itemStack, ItemStack itemStack2) {
 		return itemStack.getItem() == itemStack2.getItem()
 			&& itemStack.getDamage() == itemStack2.getDamage()
 			&& itemStack.getAmount() <= itemStack.getMaxAmount()
 			&& Objects.equals(itemStack.getTag(), itemStack2.getTag());
 	}
 
-	private static int method_13201(Collection<ServerPlayerEntity> collection, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
+	private static int executeGive(Collection<ServerPlayerEntity> collection, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
 		List<ItemStack> list2 = Lists.<ItemStack>newArrayListWithCapacity(list.size());
 
 		for (ItemStack itemStack : list) {
@@ -355,26 +357,26 @@ public class LootCommand {
 		return list2.size();
 	}
 
-	private static void method_16139(Entity entity, List<ItemStack> list, int i, int j, List<ItemStack> list2) {
+	private static void replace(Entity entity, List<ItemStack> list, int i, int j, List<ItemStack> list2) {
 		for (int k = 0; k < j; k++) {
 			ItemStack itemStack = k < list.size() ? (ItemStack)list.get(k) : ItemStack.EMPTY;
-			if (entity.method_5758(i + k, itemStack.copy())) {
+			if (entity.equip(i + k, itemStack.copy())) {
 				list2.add(itemStack);
 			}
 		}
 	}
 
-	private static int method_13187(Collection<? extends Entity> collection, int i, int j, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
+	private static int executeReplace(Collection<? extends Entity> collection, int i, int j, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
 		List<ItemStack> list2 = Lists.<ItemStack>newArrayListWithCapacity(list.size());
 
 		for (Entity entity : collection) {
 			if (entity instanceof ServerPlayerEntity) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 				serverPlayerEntity.playerContainer.sendContentUpdates();
-				method_16139(entity, list, i, j, list2);
+				replace(entity, list, i, j, list2);
 				serverPlayerEntity.playerContainer.sendContentUpdates();
 			} else {
-				method_16139(entity, list, i, j, list2);
+				replace(entity, list, i, j, list2);
 			}
 		}
 
@@ -382,7 +384,7 @@ public class LootCommand {
 		return list2.size();
 	}
 
-	private static int method_13183(ServerCommandSource serverCommandSource, Vec3d vec3d, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
+	private static int executeSpawn(ServerCommandSource serverCommandSource, Vec3d vec3d, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException {
 		ServerWorld serverWorld = serverCommandSource.getWorld();
 		list.forEach(itemStack -> {
 			ItemEntity itemEntity = new ItemEntity(serverWorld, vec3d.x, vec3d.y, vec3d.z, itemStack.copy());
@@ -393,7 +395,7 @@ public class LootCommand {
 		return list.size();
 	}
 
-	private static void method_13213(ServerCommandSource serverCommandSource, List<ItemStack> list) {
+	private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list) {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.drop.success.single", itemStack.getAmount(), itemStack.toTextComponent()), false);
@@ -402,7 +404,7 @@ public class LootCommand {
 		}
 	}
 
-	private static void method_13212(ServerCommandSource serverCommandSource, List<ItemStack> list, Identifier identifier) {
+	private static void sendDroppedFeedback(ServerCommandSource serverCommandSource, List<ItemStack> list, Identifier identifier) {
 		if (list.size() == 1) {
 			ItemStack itemStack = (ItemStack)list.get(0);
 			serverCommandSource.sendFeedback(
@@ -413,16 +415,18 @@ public class LootCommand {
 		}
 	}
 
-	private static ItemStack method_13178(ServerCommandSource serverCommandSource, EquipmentSlot equipmentSlot) throws CommandSyntaxException {
+	private static ItemStack getHeldItem(ServerCommandSource serverCommandSource, EquipmentSlot equipmentSlot) throws CommandSyntaxException {
 		Entity entity = serverCommandSource.getEntityOrThrow();
 		if (entity instanceof LivingEntity) {
 			return ((LivingEntity)entity).getEquippedStack(equipmentSlot);
 		} else {
-			throw NOHELD_ITEMS_EXCEPTION.create(entity.getDisplayName());
+			throw NO_HELD_ITEMS_EXCEPTION.create(entity.getDisplayName());
 		}
 	}
 
-	private static int method_13219(CommandContext<ServerCommandSource> commandContext, BlockPos blockPos, ItemStack itemStack, LootCommand.class_3041 arg) throws CommandSyntaxException {
+	private static int method_13219(
+		CommandContext<ServerCommandSource> commandContext, BlockPos blockPos, ItemStack itemStack, LootCommand.ArgumentCallback argumentCallback
+	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
 		ServerWorld serverWorld = serverCommandSource.getWorld();
 		BlockState blockState = serverWorld.getBlockState(blockPos);
@@ -434,14 +438,14 @@ public class LootCommand {
 			.putNullable(LootContextParameters.field_1226, serverCommandSource.getEntity())
 			.put(LootContextParameters.field_1229, itemStack);
 		List<ItemStack> list = blockState.getDroppedStacks(builder);
-		return arg.accept(commandContext, list, listx -> method_13212(serverCommandSource, listx, blockState.getBlock().getDropTableId()));
+		return argumentCallback.accept(commandContext, list, listx -> sendDroppedFeedback(serverCommandSource, listx, blockState.getBlock().getDropTableId()));
 	}
 
-	private static int method_13189(CommandContext<ServerCommandSource> commandContext, Entity entity, LootCommand.class_3041 arg) throws CommandSyntaxException {
+	private static int method_13189(CommandContext<ServerCommandSource> commandContext, Entity entity, LootCommand.ArgumentCallback argumentCallback) throws CommandSyntaxException {
 		if (!(entity instanceof LivingEntity)) {
-			throw NOLOOTTABLE_EXCEPTION.create(entity.getDisplayName());
+			throw NO_LOOT_TABLE_EXCEPTION.create(entity.getDisplayName());
 		} else {
-			Identifier identifier = ((LivingEntity)entity).method_5989();
+			Identifier identifier = ((LivingEntity)entity).getLootTable();
 			ServerCommandSource serverCommandSource = commandContext.getSource();
 			LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld());
 			Entity entity2 = serverCommandSource.getEntity();
@@ -456,48 +460,54 @@ public class LootCommand {
 			builder.put(LootContextParameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
 			LootSupplier lootSupplier = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
 			List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.ENTITY));
-			return arg.accept(commandContext, list, listx -> method_13212(serverCommandSource, listx, identifier));
+			return argumentCallback.accept(commandContext, list, listx -> sendDroppedFeedback(serverCommandSource, listx, identifier));
 		}
 	}
 
-	private static int method_13197(CommandContext<ServerCommandSource> commandContext, Identifier identifier, LootCommand.class_3041 arg) throws CommandSyntaxException {
+	private static int method_13197(CommandContext<ServerCommandSource> commandContext, Identifier identifier, LootCommand.ArgumentCallback argumentCallback) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
 		LootContext.Builder builder = new LootContext.Builder(serverCommandSource.getWorld())
 			.putNullable(LootContextParameters.field_1226, serverCommandSource.getEntity())
 			.put(LootContextParameters.field_1232, new BlockPos(serverCommandSource.getPosition()));
-		return method_13180(commandContext, identifier, builder.build(LootContextTypes.CHEST), arg);
+		return method_13180(commandContext, identifier, builder.build(LootContextTypes.CHEST), argumentCallback);
 	}
 
 	private static int method_13199(
-		CommandContext<ServerCommandSource> commandContext, Identifier identifier, BlockPos blockPos, ItemStack itemStack, LootCommand.class_3041 arg
+		CommandContext<ServerCommandSource> commandContext,
+		Identifier identifier,
+		BlockPos blockPos,
+		ItemStack itemStack,
+		LootCommand.ArgumentCallback argumentCallback
 	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
 		LootContext lootContext = new LootContext.Builder(serverCommandSource.getWorld())
 			.put(LootContextParameters.field_1232, blockPos)
 			.put(LootContextParameters.field_1229, itemStack)
 			.build(LootContextTypes.FISHING);
-		return method_13180(commandContext, identifier, lootContext, arg);
+		return method_13180(commandContext, identifier, lootContext, argumentCallback);
 	}
 
-	private static int method_13180(CommandContext<ServerCommandSource> commandContext, Identifier identifier, LootContext lootContext, LootCommand.class_3041 arg) throws CommandSyntaxException {
+	private static int method_13180(
+		CommandContext<ServerCommandSource> commandContext, Identifier identifier, LootContext lootContext, LootCommand.ArgumentCallback argumentCallback
+	) throws CommandSyntaxException {
 		ServerCommandSource serverCommandSource = commandContext.getSource();
 		LootSupplier lootSupplier = serverCommandSource.getMinecraftServer().getLootManager().getSupplier(identifier);
 		List<ItemStack> list = lootSupplier.getDrops(lootContext);
-		return arg.accept(commandContext, list, listx -> method_13213(serverCommandSource, listx));
+		return argumentCallback.accept(commandContext, list, listx -> sendDroppedFeedback(serverCommandSource, listx));
+	}
+
+	@FunctionalInterface
+	interface ArgumentCallback {
+		int accept(CommandContext<ServerCommandSource> commandContext, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException;
+	}
+
+	@FunctionalInterface
+	interface LootTableArgumentsBuilder {
+		ArgumentBuilder<ServerCommandSource, ?> construct(ArgumentBuilder<ServerCommandSource, ?> argumentBuilder, LootCommand.ArgumentCallback argumentCallback);
 	}
 
 	@FunctionalInterface
 	interface class_3040 {
 		void accept(List<ItemStack> list) throws CommandSyntaxException;
-	}
-
-	@FunctionalInterface
-	interface class_3041 {
-		int accept(CommandContext<ServerCommandSource> commandContext, List<ItemStack> list, LootCommand.class_3040 arg) throws CommandSyntaxException;
-	}
-
-	@FunctionalInterface
-	interface class_3042 {
-		ArgumentBuilder<ServerCommandSource, ?> construct(ArgumentBuilder<ServerCommandSource, ?> argumentBuilder, LootCommand.class_3041 arg);
 	}
 }

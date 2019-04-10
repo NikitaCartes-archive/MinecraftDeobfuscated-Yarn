@@ -12,9 +12,9 @@ import net.minecraft.util.PacketByteBuf;
 public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	private TitleS2CPacket.Action action;
 	private TextComponent text;
-	private int ticksFadeIn;
-	private int ticksDisplay;
-	private int ticksFadeOut;
+	private int fadeInTicks;
+	private int stayTicks;
+	private int fadeOutTicks;
 
 	public TitleS2CPacket() {
 	}
@@ -30,9 +30,9 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	public TitleS2CPacket(TitleS2CPacket.Action action, @Nullable TextComponent textComponent, int i, int j, int k) {
 		this.action = action;
 		this.text = textComponent;
-		this.ticksFadeIn = i;
-		this.ticksDisplay = j;
-		this.ticksFadeOut = k;
+		this.fadeInTicks = i;
+		this.stayTicks = j;
+		this.fadeOutTicks = k;
 	}
 
 	@Override
@@ -43,9 +43,9 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		if (this.action == TitleS2CPacket.Action.DISPLAY) {
-			this.ticksFadeIn = packetByteBuf.readInt();
-			this.ticksDisplay = packetByteBuf.readInt();
-			this.ticksFadeOut = packetByteBuf.readInt();
+			this.fadeInTicks = packetByteBuf.readInt();
+			this.stayTicks = packetByteBuf.readInt();
+			this.fadeOutTicks = packetByteBuf.readInt();
 		}
 	}
 
@@ -57,9 +57,9 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 
 		if (this.action == TitleS2CPacket.Action.DISPLAY) {
-			packetByteBuf.writeInt(this.ticksFadeIn);
-			packetByteBuf.writeInt(this.ticksDisplay);
-			packetByteBuf.writeInt(this.ticksFadeOut);
+			packetByteBuf.writeInt(this.fadeInTicks);
+			packetByteBuf.writeInt(this.stayTicks);
+			packetByteBuf.writeInt(this.fadeOutTicks);
 		}
 	}
 
@@ -78,18 +78,18 @@ public class TitleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getTicksFadeIn() {
-		return this.ticksFadeIn;
+	public int getFadeInTicks() {
+		return this.fadeInTicks;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getTicksDisplay() {
-		return this.ticksDisplay;
+	public int getStayTicks() {
+		return this.stayTicks;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getTicksFadeOut() {
-		return this.ticksFadeOut;
+	public int getFadeOutTicks() {
+		return this.fadeOutTicks;
 	}
 
 	public static enum Action {

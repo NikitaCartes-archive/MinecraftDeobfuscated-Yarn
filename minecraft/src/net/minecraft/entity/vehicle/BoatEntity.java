@@ -91,7 +91,7 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -132,7 +132,7 @@ public class BoatEntity extends Entity {
 	public boolean damage(DamageSource damageSource, float f) {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
-		} else if (this.world.isClient || this.invalid) {
+		} else if (this.world.isClient || this.removed) {
 			return true;
 		} else if (damageSource instanceof ProjectileDamageSource && damageSource.getAttacker() != null && this.hasPassenger(damageSource.getAttacker())) {
 			return false;
@@ -147,7 +147,7 @@ public class BoatEntity extends Entity {
 					this.dropItem(this.asItem());
 				}
 
-				this.invalidate();
+				this.remove();
 			}
 
 			return true;
@@ -209,8 +209,8 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	public boolean doesCollide() {
-		return !this.invalid;
+	public boolean collides() {
+		return !this.removed;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -256,7 +256,7 @@ public class BoatEntity extends Entity {
 		this.prevZ = this.z;
 		super.tick();
 		this.method_7555();
-		if (this.method_5787()) {
+		if (this.isLogicalSideForUpdatingMovement()) {
 			if (this.getPassengerList().isEmpty() || !(this.getPassengerList().get(0) instanceof PlayerEntity)) {
 				this.setPaddleState(false, false);
 			}
@@ -371,7 +371,7 @@ public class BoatEntity extends Entity {
 	}
 
 	private void method_7555() {
-		if (this.field_7708 > 0 && !this.method_5787()) {
+		if (this.field_7708 > 0 && !this.isLogicalSideForUpdatingMovement()) {
 			double d = this.x + (this.field_7686 - this.x) / (double)this.field_7708;
 			double e = this.y + (this.field_7700 - this.y) / (double)this.field_7708;
 			double f = this.z + (this.field_7685 - this.z) / (double)this.field_7708;
@@ -392,7 +392,7 @@ public class BoatEntity extends Entity {
 	@Environment(EnvType.CLIENT)
 	public float method_7551(int i, float f) {
 		return this.getPaddleState(i)
-			? (float)MathHelper.lerpClamped((double)this.field_7704[i] - (float) (Math.PI / 8), (double)this.field_7704[i], (double)f)
+			? (float)MathHelper.clampedLerp((double)this.field_7704[i] - (float) (Math.PI / 8), (double)this.field_7704[i], (double)f)
 			: 0.0F;
 	}
 
@@ -466,7 +466,7 @@ public class BoatEntity extends Entity {
 		int l = MathHelper.ceil(boundingBox2.maxY) + 1;
 		int m = MathHelper.floor(boundingBox2.minZ) - 1;
 		int n = MathHelper.ceil(boundingBox2.maxZ) + 1;
-		VoxelShape voxelShape = VoxelShapes.cube(boundingBox2);
+		VoxelShape voxelShape = VoxelShapes.cuboid(boundingBox2);
 		float f = 0.0F;
 		int o = 0;
 
@@ -634,10 +634,10 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	public void method_5865(Entity entity) {
+	public void updatePassengerPosition(Entity entity) {
 		if (this.hasPassenger(entity)) {
 			float f = 0.0F;
-			float g = (float)((this.invalid ? 0.01F : this.getMountedHeightOffset()) + entity.getHeightOffset());
+			float g = (float)((this.removed ? 0.01F : this.getMountedHeightOffset()) + entity.getHeightOffset());
 			if (this.getPassengerList().size() > 1) {
 				int i = this.getPassengerList().indexOf(entity);
 				if (i == 0) {
@@ -675,7 +675,7 @@ public class BoatEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5644(Entity entity) {
+	public void onPassengerLookAround(Entity entity) {
 		this.copyEntityData(entity);
 	}
 
@@ -705,7 +705,7 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	protected void method_5623(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
+	protected void fall(double d, boolean bl, BlockState blockState, BlockPos blockPos) {
 		this.field_7696 = this.getVelocity().y;
 		if (!this.hasVehicle()) {
 			if (bl) {
@@ -716,8 +716,8 @@ public class BoatEntity extends Entity {
 					}
 
 					this.handleFallDamage(this.fallDistance, 1.0F);
-					if (!this.world.isClient && !this.invalid) {
-						this.invalidate();
+					if (!this.world.isClient && !this.removed) {
+						this.remove();
 						if (this.world.getGameRules().getBoolean("doEntityDrops")) {
 							for (int i = 0; i < 3; i++) {
 								this.dropItem(this.getBoatType().getBaseBlock());

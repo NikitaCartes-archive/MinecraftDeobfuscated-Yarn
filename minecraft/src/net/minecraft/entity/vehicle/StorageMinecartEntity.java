@@ -93,7 +93,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public boolean method_5758(int i, ItemStack itemStack) {
+	public boolean equip(int i, ItemStack itemStack) {
 		if (i >= 0 && i < this.getInvSize()) {
 			this.setInvStack(i, itemStack);
 			return true;
@@ -108,7 +108,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 
 	@Override
 	public boolean canPlayerUseInv(PlayerEntity playerEntity) {
-		return this.invalid ? false : !(playerEntity.squaredDistanceTo(this) > 64.0);
+		return this.removed ? false : !(playerEntity.squaredDistanceTo(this) > 64.0);
 	}
 
 	@Nullable
@@ -119,12 +119,12 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public void invalidate() {
+	public void remove() {
 		if (!this.world.isClient && this.field_7733) {
 			ItemScatterer.spawn(this.world, this, this);
 		}
 
-		super.invalidate();
+		super.remove();
 	}
 
 	@Override

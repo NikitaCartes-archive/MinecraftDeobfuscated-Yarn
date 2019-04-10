@@ -24,25 +24,23 @@ public class OpenToLanScreen extends Screen {
 	}
 
 	@Override
-	protected void onInitialized() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("lanServer.start"), buttonWidget -> {
-			this.client.openScreen(null);
+	protected void init() {
+		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("lanServer.start"), buttonWidget -> {
+			this.minecraft.openScreen(null);
 			int i = NetworkUtils.findLocalPort();
 			TextComponent textComponent;
-			if (this.client.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i)) {
+			if (this.minecraft.getServer().openToLan(GameMode.byName(this.gameMode), this.allowCommands, i)) {
 				textComponent = new TranslatableTextComponent("commands.publish.started", i);
 			} else {
 				textComponent = new TranslatableTextComponent("commands.publish.failed");
 			}
 
-			this.client.inGameHud.getChatHud().addMessage(textComponent);
+			this.minecraft.inGameHud.getChatHud().addMessage(textComponent);
 		}));
 		this.addButton(
-			new ButtonWidget(
-				this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent)
-			)
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
-		this.buttonGameMode = this.addButton(new ButtonWidget(this.screenWidth / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
+		this.buttonGameMode = this.addButton(new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
 			if ("spectator".equals(this.gameMode)) {
 				this.gameMode = "creative";
 			} else if ("creative".equals(this.gameMode)) {
@@ -55,12 +53,10 @@ public class OpenToLanScreen extends Screen {
 
 			this.updateButtonText();
 		}));
-		this.buttonAllowCommands = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.allowCommands"), buttonWidget -> {
-				this.allowCommands = !this.allowCommands;
-				this.updateButtonText();
-			})
-		);
+		this.buttonAllowCommands = this.addButton(new ButtonWidget(this.width / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.allowCommands"), buttonWidget -> {
+			this.allowCommands = !this.allowCommands;
+			this.updateButtonText();
+		}));
 		this.updateButtonText();
 	}
 
@@ -71,9 +67,9 @@ public class OpenToLanScreen extends Screen {
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 50, 16777215);
-		this.drawStringCentered(this.fontRenderer, I18n.translate("lanServer.otherPlayers"), this.screenWidth / 2, 82, 16777215);
+		this.renderBackground();
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 50, 16777215);
+		this.drawCenteredString(this.font, I18n.translate("lanServer.otherPlayers"), this.width / 2, 82, 16777215);
 		super.render(i, j, f);
 	}
 }

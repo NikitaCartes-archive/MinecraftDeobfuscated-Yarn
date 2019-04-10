@@ -330,6 +330,7 @@ public class Schema99 extends Schema {
 		schema.registerType(false, TypeReferences.OBJECTIVE, DSL::remainder);
 		schema.registerType(false, TypeReferences.TEAM, DSL::remainder);
 		schema.registerType(true, TypeReferences.UNTAGGED_SPAWNER, DSL::remainder);
+		schema.registerType(false, TypeReferences.POI_CHUNK, DSL::remainder);
 	}
 
 	protected static <T> T method_5359(Dynamic<T> dynamic, Map<String, String> map, String string) {

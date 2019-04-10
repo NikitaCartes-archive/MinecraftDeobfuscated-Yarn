@@ -16,6 +16,6 @@ public class ScheduleActivityTask extends Task<LivingEntity> {
 
 	@Override
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
-		livingEntity.getBrain().doActivity(serverWorld.getTimeOfDay(), serverWorld.getTime());
+		livingEntity.getBrain().refreshActivities(serverWorld.getTimeOfDay(), serverWorld.getTime());
 	}
 }

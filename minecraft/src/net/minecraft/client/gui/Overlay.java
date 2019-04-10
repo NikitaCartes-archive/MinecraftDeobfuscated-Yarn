@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public abstract class Overlay extends DrawableHelper implements Drawable {
-	public boolean method_18640() {
+	public boolean pausesGame() {
 		return true;
 	}
 }

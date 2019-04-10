@@ -7,6 +7,7 @@ import net.fabricmc.api.Environment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.ALC10;
 
 @Environment(EnvType.CLIENT)
 public class AlUtil {
@@ -33,6 +34,33 @@ public class AlUtil {
 		int i = AL10.alGetError();
 		if (i != 0) {
 			LOGGER.error("{}: {}", string, getErrorMessage(i));
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private static String method_20052(int i) {
+		switch (i) {
+			case 40961:
+				return "Invalid device.";
+			case 40962:
+				return "Invalid context.";
+			case 40963:
+				return "Illegal enum.";
+			case 40964:
+				return "Invalid value.";
+			case 40965:
+				return "Unable to allocate memory.";
+			default:
+				return "An unrecognized error occurred.";
+		}
+	}
+
+	static boolean method_20051(long l, String string) {
+		int i = ALC10.alcGetError(l);
+		if (i != 0) {
+			LOGGER.error("{}{}: {}", string, l, method_20052(i));
 			return true;
 		} else {
 			return false;

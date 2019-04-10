@@ -5,12 +5,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -40,7 +40,6 @@ public class BlazeEntity extends HostileEntity {
 		this.setPathNodeTypeWeight(PathNodeType.field_14, 8.0F);
 		this.setPathNodeTypeWeight(PathNodeType.field_9, 0.0F);
 		this.setPathNodeTypeWeight(PathNodeType.field_3, 0.0F);
-		this.fireImmune = true;
 		this.experiencePoints = 10;
 	}
 
@@ -51,7 +50,7 @@ public class BlazeEntity extends HostileEntity {
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0, 0.0F));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
-		this.targetSelector.add(1, new AvoidGoal(this).method_6318());
+		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}
 
@@ -91,7 +90,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	public float method_5718() {
+	public float getBrightnessAtEyes() {
 		return 1.0F;
 	}
 
@@ -192,13 +191,13 @@ public class BlazeEntity extends HostileEntity {
 
 		public ShootFireballGoal(BlazeEntity blazeEntity) {
 			this.field_7219 = blazeEntity;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 
 		@Override
 		public boolean canStart() {
 			LivingEntity livingEntity = this.field_7219.getTarget();
-			return livingEntity != null && livingEntity.isValid();
+			return livingEntity != null && livingEntity.isAlive();
 		}
 
 		@Override
@@ -207,7 +206,7 @@ public class BlazeEntity extends HostileEntity {
 		}
 
 		@Override
-		public void onRemove() {
+		public void stop() {
 			this.field_7219.setFireActive(false);
 		}
 
@@ -244,7 +243,7 @@ public class BlazeEntity extends HostileEntity {
 
 					if (this.field_7218 > 1) {
 						float h = MathHelper.sqrt(MathHelper.sqrt(d)) * 0.5F;
-						this.field_7219.world.playEvent(null, 1018, new BlockPos((int)this.field_7219.x, (int)this.field_7219.y, (int)this.field_7219.z), 0);
+						this.field_7219.world.playLevelEvent(null, 1018, new BlockPos((int)this.field_7219.x, (int)this.field_7219.y, (int)this.field_7219.z), 0);
 
 						for (int i = 0; i < 1; i++) {
 							SmallFireballEntity smallFireballEntity = new SmallFireballEntity(

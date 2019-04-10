@@ -51,25 +51,26 @@ public class BellBlock extends BlockWithEntity {
 	@Override
 	public void method_19286(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
 		if (entity instanceof ProjectileEntity) {
-			this.method_19285(world, blockState, world.getBlockEntity(blockHitResult.getBlockPos()), blockHitResult);
+			this.ring(world, blockState, world.getBlockEntity(blockHitResult.getBlockPos()), blockHitResult);
 		}
 	}
 
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		return this.method_19285(world, blockState, world.getBlockEntity(blockPos), blockHitResult);
+		return this.ring(world, blockState, world.getBlockEntity(blockPos), blockHitResult);
 	}
 
-	private boolean method_19285(World world, BlockState blockState, @Nullable BlockEntity blockEntity, BlockHitResult blockHitResult) {
+	public boolean ring(World world, BlockState blockState, @Nullable BlockEntity blockEntity, BlockHitResult blockHitResult) {
 		Direction direction = blockHitResult.getSide();
+		BlockPos blockPos = blockHitResult.getBlockPos();
 		if (!world.isClient
 			&& blockEntity instanceof BellBlockEntity
-			&& this.isPointOnBell(blockState, direction, blockHitResult.getPos().y - (double)blockHitResult.getBlockPos().getY())) {
+			&& this.isPointOnBell(blockState, direction, blockHitResult.getPos().y - (double)blockPos.getY())) {
 			((BellBlockEntity)blockEntity).activate(direction);
-			this.ring(world, blockHitResult.getBlockPos());
+			this.ring(world, blockPos);
 			return true;
 		} else {
-			return false;
+			return true;
 		}
 	}
 
@@ -94,7 +95,7 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	private void ring(World world, BlockPos blockPos) {
-		world.playSound(null, blockPos, SoundEvents.field_17265, SoundCategory.field_15245, 1.0F, 1.0F);
+		world.playSound(null, blockPos, SoundEvents.field_17265, SoundCategory.field_15245, 2.0F, 1.0F);
 	}
 
 	private VoxelShape getShape(BlockState blockState) {
@@ -146,22 +147,24 @@ public class BellBlock extends BlockWithEntity {
 			}
 		} else {
 			boolean bl = axis == Direction.Axis.X
-					&& this.method_17027(world.getBlockState(blockPos.west()), world, blockPos.west(), Direction.EAST)
-					&& this.method_17027(world.getBlockState(blockPos.east()), world, blockPos.east(), Direction.WEST)
+					&& isSolidFullSquare(world.getBlockState(blockPos.west()), world, blockPos.west(), Direction.EAST)
+					&& isSolidFullSquare(world.getBlockState(blockPos.east()), world, blockPos.east(), Direction.WEST)
 				|| axis == Direction.Axis.Z
-					&& this.method_17027(world.getBlockState(blockPos.north()), world, blockPos.north(), Direction.SOUTH)
-					&& this.method_17027(world.getBlockState(blockPos.south()), world, blockPos.south(), Direction.NORTH);
+					&& isSolidFullSquare(world.getBlockState(blockPos.north()), world, blockPos.north(), Direction.SOUTH)
+					&& isSolidFullSquare(world.getBlockState(blockPos.south()), world, blockPos.south(), Direction.NORTH);
 			BlockState blockState = this.getDefaultState().with(FACING, direction.getOpposite()).with(ATTACHMENT, bl ? Attachment.field_17101 : Attachment.field_17100);
+			if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
+				return blockState;
+			}
+
+			boolean bl2 = isSolidFullSquare(world.getBlockState(blockPos.down()), world, blockPos.down(), Direction.UP);
+			blockState = blockState.with(ATTACHMENT, bl2 ? Attachment.field_17098 : Attachment.field_17099);
 			if (blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())) {
 				return blockState;
 			}
 		}
 
 		return null;
-	}
-
-	private boolean method_17027(BlockState blockState, IWorld iWorld, BlockPos blockPos, Direction direction) {
-		return isFaceFullSquare(blockState.getCollisionShape(iWorld, blockPos), direction) && !method_9553(blockState.getBlock());
 	}
 
 	@Override
@@ -174,13 +177,13 @@ public class BellBlock extends BlockWithEntity {
 			return Blocks.field_10124.getDefaultState();
 		} else {
 			if (direction.getAxis() == ((Direction)blockState.get(FACING)).getAxis()) {
-				if (attachment == Attachment.field_17101 && !this.method_17027(blockState2, iWorld, blockPos2, direction)) {
+				if (attachment == Attachment.field_17101 && !isSolidFullSquare(blockState2, iWorld, blockPos2, direction)) {
 					return blockState.with(ATTACHMENT, Attachment.field_17100).with(FACING, direction.getOpposite());
 				}
 
 				if (attachment == Attachment.field_17100
 					&& direction2.getOpposite() == direction
-					&& this.method_17027(blockState2, iWorld, blockPos2, blockState.get(FACING))) {
+					&& isSolidFullSquare(blockState2, iWorld, blockPos2, blockState.get(FACING))) {
 					return blockState.with(ATTACHMENT, Attachment.field_17101);
 				}
 			}
@@ -191,16 +194,7 @@ public class BellBlock extends BlockWithEntity {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = method_16115(blockState).getOpposite();
-		BlockPos blockPos2 = blockPos.offset(direction);
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		Block block = blockState2.getBlock();
-		if (method_9553(block)) {
-			return false;
-		} else {
-			boolean bl = Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction.getOpposite());
-			return direction == Direction.UP ? block == Blocks.field_10312 || bl : !method_9581(block) && bl;
-		}
+		return WallMountedBlock.method_20046(viewableWorld, blockPos, method_16115(blockState).getOpposite());
 	}
 
 	private static Direction method_16115(BlockState blockState) {

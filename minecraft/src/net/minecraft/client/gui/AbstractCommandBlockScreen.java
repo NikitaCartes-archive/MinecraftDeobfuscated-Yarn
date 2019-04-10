@@ -54,7 +54,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.consoleCommandTextField.tick();
 	}
 
@@ -63,37 +63,38 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	abstract int method_2364();
 
 	@Override
-	protected void onInitialized() {
-		this.client.keyboard.enableRepeatEvents(true);
+	protected void init() {
+		this.minecraft.keyboard.enableRepeatEvents(true);
 		this.doneButton = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 4 - 150, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.method_2359())
+			new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.done"), buttonWidget -> this.commitAndClose())
 		);
 		this.cancelButton = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 + 4, this.screenHeight / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.method_2358())
+			new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.onClose())
 		);
-		this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.screenWidth / 2 + 150 - 20, this.method_2364(), 20, 20, "O", buttonWidget -> {
+		this.toggleTrackingOutputButton = this.addButton(new ButtonWidget(this.width / 2 + 150 - 20, this.method_2364(), 20, 20, "O", buttonWidget -> {
 			CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
 			commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
 			this.updateTrackedOutput();
 		}));
-		this.consoleCommandTextField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 150, 50, 300, 20);
+		this.consoleCommandTextField = new TextFieldWidget(this.font, this.width / 2 - 150, 50, 300, 20);
 		this.consoleCommandTextField.setMaxLength(32500);
 		this.consoleCommandTextField.setRenderTextProvider(this::method_2348);
 		this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
-		this.listeners.add(this.consoleCommandTextField);
-		this.previousOutputTextField = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 150, this.method_2364(), 276, 20);
+		this.children.add(this.consoleCommandTextField);
+		this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.method_2364(), 276, 20);
 		this.previousOutputTextField.setMaxLength(32500);
 		this.previousOutputTextField.setIsEditable(false);
 		this.previousOutputTextField.setText("-");
-		this.listeners.add(this.previousOutputTextField);
-		this.focusOn(this.consoleCommandTextField);
+		this.children.add(this.previousOutputTextField);
+		this.method_20085(this.consoleCommandTextField);
+		this.consoleCommandTextField.setFocused(true);
 		this.updateCommand();
 	}
 
 	@Override
-	public void onScaleChanged(MinecraftClient minecraftClient, int i, int j) {
+	public void resize(MinecraftClient minecraftClient, int i, int j) {
 		String string = this.consoleCommandTextField.getText();
-		this.initialize(minecraftClient, i, j);
+		this.init(minecraftClient, i, j);
 		this.setCommand(string);
 		this.updateCommand();
 	}
@@ -108,31 +109,27 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 	}
 
-	protected void method_2359() {
+	protected void commitAndClose() {
 		CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
 		this.syncSettingsToServer(commandBlockExecutor);
 		if (!commandBlockExecutor.isTrackingOutput()) {
 			commandBlockExecutor.setLastOutput(null);
 		}
 
-		this.client.openScreen(null);
+		this.minecraft.openScreen(null);
 	}
 
 	@Override
-	public void onClosed() {
-		this.client.keyboard.enableRepeatEvents(false);
+	public void removed() {
+		this.minecraft.keyboard.enableRepeatEvents(false);
 	}
 
 	protected abstract void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor);
 
-	protected void method_2358() {
-		this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
-		this.client.openScreen(null);
-	}
-
 	@Override
-	public void close() {
-		this.method_2358();
+	public void onClose() {
+		this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
+		this.minecraft.openScreen(null);
 	}
 
 	private void onCommandChanged(String string) {
@@ -143,6 +140,9 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	public boolean keyPressed(int i, int j, int k) {
 		if (this.field_2759 != null && this.field_2759.method_2377(i, j, k)) {
 			return true;
+		} else if (this.getFocused() == this.consoleCommandTextField && i == 258) {
+			this.method_2357();
+			return true;
 		} else if (super.keyPressed(i, j, k)) {
 			return true;
 		} else if (i != 257 && i != 335) {
@@ -152,7 +152,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 			return false;
 		} else {
-			this.method_2359();
+			this.commitAndClose();
 			return true;
 		}
 	}
@@ -179,7 +179,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		this.field_2761.clear();
-		CommandDispatcher<CommandSource> commandDispatcher = this.client.player.networkHandler.getCommandDispatcher();
+		CommandDispatcher<CommandSource> commandDispatcher = this.minecraft.player.networkHandler.getCommandDispatcher();
 		StringReader stringReader = new StringReader(string);
 		if (stringReader.canRead() && stringReader.peek() == '/') {
 			stringReader.skip();
@@ -187,7 +187,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		int i = stringReader.getCursor();
 		if (this.parsedCommand == null) {
-			this.parsedCommand = commandDispatcher.parse(stringReader, this.client.player.networkHandler.getCommandSource());
+			this.parsedCommand = commandDispatcher.parse(stringReader, this.minecraft.player.networkHandler.getCommandSource());
 		}
 
 		int j = this.consoleCommandTextField.getCursor();
@@ -222,13 +222,13 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		}
 
 		this.field_2757 = 0;
-		this.field_2756 = this.screenWidth;
+		this.field_2756 = this.width;
 		if (this.field_2761.isEmpty()) {
 			this.method_2356(TextFormat.field_1080);
 		}
 
 		this.field_2759 = null;
-		if (this.client.options.autoSuggestions) {
+		if (this.minecraft.options.autoSuggestions) {
 			this.method_2357();
 		}
 	}
@@ -240,18 +240,18 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	private void method_2356(TextFormat textFormat) {
 		CommandContextBuilder<CommandSource> commandContextBuilder = this.parsedCommand.getContext();
 		SuggestionContext<CommandSource> suggestionContext = commandContextBuilder.findSuggestionContext(this.consoleCommandTextField.getCursor());
-		Map<CommandNode<CommandSource>, String> map = this.client
+		Map<CommandNode<CommandSource>, String> map = this.minecraft
 			.player
 			.networkHandler
 			.getCommandDispatcher()
-			.getSmartUsage(suggestionContext.parent, this.client.player.networkHandler.getCommandSource());
+			.getSmartUsage(suggestionContext.parent, this.minecraft.player.networkHandler.getCommandSource());
 		List<String> list = Lists.<String>newArrayList();
 		int i = 0;
 
 		for (Entry<CommandNode<CommandSource>, String> entry : map.entrySet()) {
 			if (!(entry.getKey() instanceof LiteralCommandNode)) {
 				list.add(textFormat + (String)entry.getValue());
-				i = Math.max(i, this.fontRenderer.getStringWidth((String)entry.getValue()));
+				i = Math.max(i, this.font.getStringWidth((String)entry.getValue()));
 			}
 		}
 
@@ -268,14 +268,14 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, I18n.translate("advMode.setCommand"), this.screenWidth / 2, 20, 16777215);
-		this.drawString(this.fontRenderer, I18n.translate("advMode.command"), this.screenWidth / 2 - 150, 40, 10526880);
+		this.renderBackground();
+		this.drawCenteredString(this.font, I18n.translate("advMode.setCommand"), this.width / 2, 20, 16777215);
+		this.drawString(this.font, I18n.translate("advMode.command"), this.width / 2 - 150, 40, 10526880);
 		this.consoleCommandTextField.render(i, j, f);
 		int k = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
 			k += 5 * 9 + 1 + this.method_2364() - 135;
-			this.drawString(this.fontRenderer, I18n.translate("advMode.previousOutput"), this.screenWidth / 2 - 150, k + 4, 10526880);
+			this.drawString(this.font, I18n.translate("advMode.previousOutput"), this.width / 2 - 150, k + 4, 10526880);
 			this.previousOutputTextField.render(i, j, f);
 		}
 
@@ -286,8 +286,8 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			k = 0;
 
 			for (String string : this.field_2761) {
-				drawRect(this.field_2757 - 1, 72 + 12 * k, this.field_2757 + this.field_2756 + 1, 84 + 12 * k, Integer.MIN_VALUE);
-				this.fontRenderer.drawWithShadow(string, (float)this.field_2757, (float)(74 + 12 * k), -1);
+				fill(this.field_2757 - 1, 72 + 12 * k, this.field_2757 + this.field_2756 + 1, 84 + 12 * k, Integer.MIN_VALUE);
+				this.font.drawWithShadow(string, (float)this.field_2757, (float)(74 + 12 * k), -1);
 				k++;
 			}
 		}
@@ -300,7 +300,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				int i = 0;
 
 				for (Suggestion suggestion : suggestions.getList()) {
-					i = Math.max(i, this.fontRenderer.getStringWidth(suggestion.getText()));
+					i = Math.max(i, this.font.getStringWidth(suggestion.getText()));
 				}
 
 				int j = MathHelper.clamp(
@@ -352,10 +352,10 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			}
 
 			if (bl3) {
-				DrawableHelper.drawRect(
+				DrawableHelper.fill(
 					this.field_2771.getX(), this.field_2771.getY() - 1, this.field_2771.getX() + this.field_2771.getWidth(), this.field_2771.getY(), Integer.MIN_VALUE
 				);
-				DrawableHelper.drawRect(
+				DrawableHelper.fill(
 					this.field_2771.getX(),
 					this.field_2771.getY() + this.field_2771.getHeight(),
 					this.field_2771.getX() + this.field_2771.getWidth(),
@@ -365,7 +365,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				if (bl) {
 					for (int n = 0; n < this.field_2771.getWidth(); n++) {
 						if (n % 2 == 0) {
-							DrawableHelper.drawRect(this.field_2771.getX() + n, this.field_2771.getY() - 1, this.field_2771.getX() + n + 1, this.field_2771.getY(), -1);
+							DrawableHelper.fill(this.field_2771.getX() + n, this.field_2771.getY() - 1, this.field_2771.getX() + n + 1, this.field_2771.getY(), -1);
 						}
 					}
 				}
@@ -373,7 +373,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				if (bl2) {
 					for (int nx = 0; nx < this.field_2771.getWidth(); nx++) {
 						if (nx % 2 == 0) {
-							DrawableHelper.drawRect(
+							DrawableHelper.fill(
 								this.field_2771.getX() + nx,
 								this.field_2771.getY() + this.field_2771.getHeight(),
 								this.field_2771.getX() + nx + 1,
@@ -389,7 +389,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 			for (int o = 0; o < k; o++) {
 				Suggestion suggestion = (Suggestion)this.field_2764.getList().get(o + this.field_2769);
-				DrawableHelper.drawRect(
+				DrawableHelper.fill(
 					this.field_2771.getX(),
 					this.field_2771.getY() + 12 * o,
 					this.field_2771.getX() + this.field_2771.getWidth(),
@@ -407,7 +407,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 					bl5 = true;
 				}
 
-				AbstractCommandBlockScreen.this.fontRenderer
+				AbstractCommandBlockScreen.this.font
 					.drawWithShadow(
 						suggestion.getText(),
 						(float)(this.field_2771.getX() + 1),
@@ -419,7 +419,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			if (bl5) {
 				Message message = ((Suggestion)this.field_2764.getList().get(this.field_2766)).getTooltip();
 				if (message != null) {
-					AbstractCommandBlockScreen.this.drawTooltip(TextFormatter.message(message).getFormattedText(), i, j);
+					AbstractCommandBlockScreen.this.renderTooltip(TextFormatter.message(message).getFormattedText(), i, j);
 				}
 			}
 		}
@@ -440,14 +440,14 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 		public boolean method_2370(double d) {
 			int i = (int)(
-				AbstractCommandBlockScreen.this.client.mouse.getX()
-					* (double)AbstractCommandBlockScreen.this.client.window.getScaledWidth()
-					/ (double)AbstractCommandBlockScreen.this.client.window.getWidth()
+				AbstractCommandBlockScreen.this.minecraft.mouse.getX()
+					* (double)AbstractCommandBlockScreen.this.minecraft.window.getScaledWidth()
+					/ (double)AbstractCommandBlockScreen.this.minecraft.window.getWidth()
 			);
 			int j = (int)(
-				AbstractCommandBlockScreen.this.client.mouse.getY()
-					* (double)AbstractCommandBlockScreen.this.client.window.getScaledHeight()
-					/ (double)AbstractCommandBlockScreen.this.client.window.getHeight()
+				AbstractCommandBlockScreen.this.minecraft.mouse.getY()
+					* (double)AbstractCommandBlockScreen.this.minecraft.window.getScaledHeight()
+					/ (double)AbstractCommandBlockScreen.this.minecraft.window.getHeight()
 			);
 			if (this.field_2771.contains(i, j)) {
 				this.field_2769 = MathHelper.clamp((int)((double)this.field_2769 - d), 0, Math.max(this.field_2764.getList().size() - 7, 0));
@@ -468,7 +468,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 				return true;
 			} else if (i == 258) {
 				if (this.field_2765) {
-					this.method_2371(Screen.isShiftPressed() ? -1 : 1);
+					this.method_2371(Screen.hasShiftDown() ? -1 : 1);
 				}
 
 				this.method_2375();

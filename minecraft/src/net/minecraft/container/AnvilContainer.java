@@ -90,14 +90,14 @@ public class AnvilContainer extends Container {
 						if (!playerEntity.abilities.creativeMode && blockState.matches(BlockTags.field_15486) && playerEntity.getRand().nextFloat() < 0.12F) {
 							BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 							if (blockState2 == null) {
-								world.clearBlockState(blockPos);
-								world.playEvent(1029, blockPos, 0);
+								world.clearBlockState(blockPos, false);
+								world.method_20290(1029, blockPos, 0);
 							} else {
 								world.setBlockState(blockPos, blockState2, 2);
-								world.playEvent(1030, blockPos, 0);
+								world.method_20290(1030, blockPos, 0);
 							}
 						} else {
-							world.playEvent(1030, blockPos, 0);
+							world.method_20290(1030, blockPos, 0);
 						}
 					}));
 					return itemStack;
@@ -120,11 +120,11 @@ public class AnvilContainer extends Container {
 	public void onContentChanged(Inventory inventory) {
 		super.onContentChanged(inventory);
 		if (inventory == this.inventory) {
-			this.method_7628();
+			this.setLevelCost();
 		}
 	}
 
-	public void method_7628() {
+	public void setLevelCost() {
 		ItemStack itemStack = this.inventory.getInvStack(0);
 		this.levelCost.set(1);
 		int i = 0;
@@ -355,7 +355,7 @@ public class AnvilContainer extends Container {
 			}
 		}
 
-		this.method_7628();
+		this.setLevelCost();
 	}
 
 	@Environment(EnvType.CLIENT)

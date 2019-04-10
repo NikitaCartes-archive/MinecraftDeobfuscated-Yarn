@@ -7,7 +7,6 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -72,7 +71,6 @@ public class SnowBlock extends Block {
 		Block block = blockState2.getBlock();
 		return block != Blocks.field_10295 && block != Blocks.field_10225 && block != Blocks.field_10499
 			? Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos.down()), Direction.UP)
-				|| blockState2.matches(BlockTags.field_15503)
 				|| block == this && (Integer)blockState2.get(LAYERS) == 8
 			: false;
 	}
@@ -90,7 +88,7 @@ public class SnowBlock extends Block {
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (world.getLightLevel(LightType.BLOCK, blockPos) > 11) {
 			dropStacks(blockState, world, blockPos);
-			world.clearBlockState(blockPos);
+			world.clearBlockState(blockPos, false);
 		}
 	}
 

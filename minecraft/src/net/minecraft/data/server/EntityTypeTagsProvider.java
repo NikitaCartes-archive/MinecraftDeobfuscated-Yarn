@@ -16,6 +16,8 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 	@Override
 	protected void configure() {
 		this.method_10512(EntityTags.field_15507).add(EntityType.SKELETON, EntityType.STRAY, EntityType.WITHER_SKELETON);
+		this.method_10512(EntityTags.field_19168)
+			.add(EntityType.EVOKER, EntityType.PILLAGER, EntityType.RAVAGER, EntityType.VINDICATOR, EntityType.ILLUSIONER, EntityType.WITCH);
 	}
 
 	@Override

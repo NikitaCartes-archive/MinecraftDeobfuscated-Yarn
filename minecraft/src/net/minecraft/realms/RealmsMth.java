@@ -37,7 +37,7 @@ public class RealmsMth {
 	}
 
 	public static double clampedLerp(double d, double e, double f) {
-		return MathHelper.lerpClamped(d, e, f);
+		return MathHelper.clampedLerp(d, e, f);
 	}
 
 	public static int ceil(double d) {

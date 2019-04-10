@@ -37,7 +37,7 @@ public class BowItem extends BaseBowItem {
 		if (livingEntity instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)livingEntity;
 			boolean bl = playerEntity.abilities.creativeMode || EnchantmentHelper.getLevel(Enchantments.field_9125, itemStack) > 0;
-			ItemStack itemStack2 = playerEntity.method_18808(itemStack);
+			ItemStack itemStack2 = playerEntity.getArrowType(itemStack);
 			if (!itemStack2.isEmpty() || bl) {
 				if (itemStack2.isEmpty()) {
 					itemStack2 = new ItemStack(Items.field_8107);
@@ -49,7 +49,7 @@ public class BowItem extends BaseBowItem {
 					boolean bl2 = bl && itemStack2.getItem() == Items.field_8107;
 					if (!world.isClient) {
 						ArrowItem arrowItem = (ArrowItem)(itemStack2.getItem() instanceof ArrowItem ? itemStack2.getItem() : Items.field_8107);
-						ProjectileEntity projectileEntity = arrowItem.createEntityArrow(world, itemStack2, playerEntity);
+						ProjectileEntity projectileEntity = arrowItem.createProjectile(world, itemStack2, playerEntity);
 						projectileEntity.method_7474(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, f * 3.0F, 1.0F);
 						if (f == 1.0F) {
 							projectileEntity.setCritical(true);
@@ -69,7 +69,7 @@ public class BowItem extends BaseBowItem {
 							projectileEntity.setOnFireFor(100);
 						}
 
-						itemStack.applyDamage(1, playerEntity);
+						itemStack.applyDamage(1, playerEntity, playerEntity2 -> playerEntity2.sendToolBreakStatus(playerEntity.getActiveHand()));
 						if (bl2 || playerEntity.abilities.creativeMode && (itemStack2.getItem() == Items.field_8236 || itemStack2.getItem() == Items.field_8087)) {
 							projectileEntity.pickupType = ProjectileEntity.PickupType.CREATIVE_PICKUP;
 						}
@@ -123,7 +123,7 @@ public class BowItem extends BaseBowItem {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		boolean bl = !playerEntity.method_18808(itemStack).isEmpty();
+		boolean bl = !playerEntity.getArrowType(itemStack).isEmpty();
 		if (playerEntity.abilities.creativeMode || bl) {
 			playerEntity.setCurrentHand(hand);
 			return new TypedActionResult<>(ActionResult.field_5812, itemStack);
@@ -133,7 +133,7 @@ public class BowItem extends BaseBowItem {
 	}
 
 	@Override
-	public Predicate<ItemStack> method_19268() {
-		return field_18281;
+	public Predicate<ItemStack> getProjectilePredicate() {
+		return IS_BOW_PROJECTILE;
 	}
 }

@@ -36,7 +36,6 @@ public class BossBarHud extends DrawableHelper {
 				int m = this.client.textRenderer.getStringWidth(string);
 				int n = i / 2 - m / 2;
 				int o = j - 9;
-				drawRect(n - 2, o - 2, n + m + 2, o + 9, this.client.options.method_19344(0));
 				this.client.textRenderer.drawWithShadow(string, (float)n, (float)o, 16777215);
 				j += 10 + 9;
 				if (j >= this.client.window.getScaledHeight() / 3) {
@@ -47,16 +46,16 @@ public class BossBarHud extends DrawableHelper {
 	}
 
 	private void drawBossBar(int i, int j, BossBar bossBar) {
-		this.drawTexturedRect(i, j, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
+		this.blit(i, j, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
 		if (bossBar.getOverlay() != BossBar.Overlay.field_5795) {
-			this.drawTexturedRect(i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
+			this.blit(i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
 		}
 
 		int k = (int)(bossBar.getPercent() * 183.0F);
 		if (k > 0) {
-			this.drawTexturedRect(i, j, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, k, 5);
+			this.blit(i, j, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, k, 5);
 			if (bossBar.getOverlay() != BossBar.Overlay.field_5795) {
-				this.drawTexturedRect(i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, k, 5);
+				this.blit(i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, k, 5);
 			}
 		}
 	}

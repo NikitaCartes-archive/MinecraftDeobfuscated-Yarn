@@ -52,14 +52,14 @@ public class SwordItem extends ToolItem {
 
 	@Override
 	public boolean onEntityDamaged(ItemStack itemStack, LivingEntity livingEntity, LivingEntity livingEntity2) {
-		itemStack.applyDamage(1, livingEntity2);
+		itemStack.applyDamage(1, livingEntity2, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
 		return true;
 	}
 
 	@Override
 	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (blockState.getHardness(world, blockPos) != 0.0F) {
-			itemStack.applyDamage(2, livingEntity);
+			itemStack.applyDamage(2, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
 		}
 
 		return true;

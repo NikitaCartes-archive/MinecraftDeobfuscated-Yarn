@@ -11,17 +11,17 @@ public class ScoreboardObjective {
 	private final Scoreboard scoreboard;
 	private final String name;
 	private final ScoreboardCriterion criterion;
-	private TextComponent field_1402;
-	private ScoreboardCriterion.Type criterionType;
+	private TextComponent displayName;
+	private ScoreboardCriterion.RenderType field_1403;
 
 	public ScoreboardObjective(
-		Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, TextComponent textComponent, ScoreboardCriterion.Type type
+		Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, TextComponent textComponent, ScoreboardCriterion.RenderType renderType
 	) {
 		this.scoreboard = scoreboard;
 		this.name = string;
 		this.criterion = scoreboardCriterion;
-		this.field_1402 = textComponent;
-		this.criterionType = type;
+		this.displayName = textComponent;
+		this.field_1403 = renderType;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -38,26 +38,26 @@ public class ScoreboardObjective {
 	}
 
 	public TextComponent getDisplayName() {
-		return this.field_1402;
+		return this.displayName;
 	}
 
 	public TextComponent getTextComponent() {
 		return TextFormatter.bracketed(
-			this.field_1402.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.getName()))))
+			this.displayName.copy().modifyStyle(style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.getName()))))
 		);
 	}
 
-	public void method_1121(TextComponent textComponent) {
-		this.field_1402 = textComponent;
+	public void setDisplayName(TextComponent textComponent) {
+		this.displayName = textComponent;
 		this.scoreboard.updateExistingObjective(this);
 	}
 
-	public ScoreboardCriterion.Type getCriterionType() {
-		return this.criterionType;
+	public ScoreboardCriterion.RenderType method_1118() {
+		return this.field_1403;
 	}
 
-	public void setCriterionType(ScoreboardCriterion.Type type) {
-		this.criterionType = type;
+	public void method_1115(ScoreboardCriterion.RenderType renderType) {
+		this.field_1403 = renderType;
 		this.scoreboard.updateExistingObjective(this);
 	}
 }

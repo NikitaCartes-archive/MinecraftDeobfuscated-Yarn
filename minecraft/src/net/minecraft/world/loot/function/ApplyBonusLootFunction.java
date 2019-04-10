@@ -49,19 +49,19 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 	}
 
 	public static ConditionalLootFunction.Builder<?> binomialWithBonusCount(Enchantment enchantment, float f, int i) {
-		return create(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.BinomialWithBonusCount(i, f)));
+		return builder(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.BinomialWithBonusCount(i, f)));
 	}
 
 	public static ConditionalLootFunction.Builder<?> oreDrops(Enchantment enchantment) {
-		return create(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.OreDrops()));
+		return builder(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.OreDrops()));
 	}
 
-	public static ConditionalLootFunction.Builder<?> one(Enchantment enchantment) {
-		return create(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(1)));
+	public static ConditionalLootFunction.Builder<?> uniformBonusCount(Enchantment enchantment) {
+		return builder(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(1)));
 	}
 
-	public static ConditionalLootFunction.Builder<?> builder(Enchantment enchantment, int i) {
-		return create(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(i)));
+	public static ConditionalLootFunction.Builder<?> uniformBonusCount(Enchantment enchantment, int i) {
+		return builder(lootConditions -> new ApplyBonusLootFunction(lootConditions, enchantment, new ApplyBonusLootFunction.UniformBonusCount(i)));
 	}
 
 	static {
@@ -72,18 +72,18 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 	static final class BinomialWithBonusCount implements ApplyBonusLootFunction.Formula {
 		public static final Identifier ID = new Identifier("binomial_with_bonus_count");
-		private final int field_1014;
-		private final float field_1012;
+		private final int extra;
+		private final float probability;
 
 		public BinomialWithBonusCount(int i, float f) {
-			this.field_1014 = i;
-			this.field_1012 = f;
+			this.extra = i;
+			this.probability = f;
 		}
 
 		@Override
 		public int getValue(Random random, int i, int j) {
-			for (int k = 0; k < j + this.field_1014; k++) {
-				if (random.nextFloat() < this.field_1012) {
+			for (int k = 0; k < j + this.extra; k++) {
+				if (random.nextFloat() < this.probability) {
 					i++;
 				}
 			}
@@ -93,8 +93,8 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 		@Override
 		public void toJson(JsonObject jsonObject, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("extra", this.field_1014);
-			jsonObject.addProperty("probability", this.field_1012);
+			jsonObject.addProperty("extra", this.extra);
+			jsonObject.addProperty("probability", this.probability);
 		}
 
 		public static ApplyBonusLootFunction.Formula fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -195,20 +195,20 @@ public class ApplyBonusLootFunction extends ConditionalLootFunction {
 
 	static final class UniformBonusCount implements ApplyBonusLootFunction.Formula {
 		public static final Identifier ID = new Identifier("uniform_bonus_count");
-		private final int field_1017;
+		private final int bonusMultiplier;
 
 		public UniformBonusCount(int i) {
-			this.field_1017 = i;
+			this.bonusMultiplier = i;
 		}
 
 		@Override
 		public int getValue(Random random, int i, int j) {
-			return i + random.nextInt(this.field_1017 * j + 1);
+			return i + random.nextInt(this.bonusMultiplier * j + 1);
 		}
 
 		@Override
 		public void toJson(JsonObject jsonObject, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("bonusMultiplier", this.field_1017);
+			jsonObject.addProperty("bonusMultiplier", this.bonusMultiplier);
 		}
 
 		public static ApplyBonusLootFunction.Formula fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {

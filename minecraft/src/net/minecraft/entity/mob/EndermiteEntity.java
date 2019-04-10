@@ -7,11 +7,11 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -26,7 +26,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class EndermiteEntity extends HostileEntity {
-	private static final TargetPredicate field_18128 = new TargetPredicate().setBaseMaxDistance(5.0).ignoreDistanceScalingFactor();
+	private static final TargetPredicate CLOSE_PLAYER_PREDICATE = new TargetPredicate().setBaseMaxDistance(5.0).ignoreDistanceScalingFactor();
 	private int lifeTime;
 	private boolean playerSpawned;
 
@@ -42,7 +42,7 @@ public class EndermiteEntity extends HostileEntity {
 		this.goalSelector.add(3, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
-		this.targetSelector.add(1, new AvoidGoal(this).method_6318());
+		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 	}
 
@@ -60,7 +60,7 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -115,11 +115,11 @@ public class EndermiteEntity extends HostileEntity {
 		return 0.1;
 	}
 
-	public boolean method_7023() {
+	public boolean isPlayerSpawned() {
 		return this.playerSpawned;
 	}
 
-	public void method_7022(boolean bl) {
+	public void setPlayerSpawned(boolean bl) {
 		this.playerSpawned = bl;
 	}
 
@@ -145,7 +145,7 @@ public class EndermiteEntity extends HostileEntity {
 			}
 
 			if (this.lifeTime >= 2400) {
-				this.invalidate();
+				this.remove();
 			}
 		}
 	}
@@ -158,7 +158,7 @@ public class EndermiteEntity extends HostileEntity {
 	@Override
 	public boolean canSpawn(IWorld iWorld, SpawnType spawnType) {
 		if (super.canSpawn(iWorld, spawnType)) {
-			PlayerEntity playerEntity = this.world.method_18462(field_18128, this);
+			PlayerEntity playerEntity = this.world.getClosestPlayer(CLOSE_PLAYER_PREDICATE, this);
 			return playerEntity == null;
 		} else {
 			return false;

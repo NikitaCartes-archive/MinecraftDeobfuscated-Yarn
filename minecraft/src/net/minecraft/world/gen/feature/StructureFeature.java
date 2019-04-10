@@ -130,12 +130,12 @@ public abstract class StructureFeature<C extends FeatureConfig> extends Feature<
 
 	private List<StructureStart> getStructureStarts(IWorld iWorld, int i, int j) {
 		List<StructureStart> list = Lists.<StructureStart>newArrayList();
-		Chunk chunk = iWorld.getChunk(i, j, ChunkStatus.EMPTY);
+		Chunk chunk = iWorld.getChunk(i, j, ChunkStatus.STRUCTURE_REFERENCES);
 		LongIterator longIterator = chunk.getStructureReferences(this.getName()).iterator();
 
 		while (longIterator.hasNext()) {
 			long l = longIterator.nextLong();
-			BlockViewWithStructures blockViewWithStructures = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.EMPTY);
+			BlockViewWithStructures blockViewWithStructures = iWorld.getChunk(ChunkPos.getPackedX(l), ChunkPos.getPackedZ(l), ChunkStatus.STRUCTURE_STARTS);
 			StructureStart structureStart = blockViewWithStructures.getStructureStart(this.getName());
 			if (structureStart != null) {
 				list.add(structureStart);

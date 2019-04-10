@@ -118,7 +118,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 
 			this.downloadTask = completableFuture.thenCompose(
 					object -> !this.verifyFile(string4, file)
-							? SystemUtil.method_19483(new RuntimeException("Hash check failure for file " + file + ", see log"))
+							? SystemUtil.completeExceptionally(new RuntimeException("Hash check failure for file " + file + ", see log"))
 							: this.loadServerPack(file)
 				)
 				.whenComplete((void_, throwable) -> {
@@ -279,7 +279,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 		}
 
 		if (string != null) {
-			return SystemUtil.method_19483(new RuntimeException(String.format("Invalid resourcepack at %s: %s", file, string)));
+			return SystemUtil.completeExceptionally(new RuntimeException(String.format("Invalid resourcepack at %s: %s", file, string)));
 		} else {
 			LOGGER.info("Applying server pack {}", file);
 			this.serverContainer = new ClientResourcePackContainer(

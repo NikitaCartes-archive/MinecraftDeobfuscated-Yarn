@@ -31,7 +31,9 @@ public class SugarCaneBlock extends Block {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (blockState.canPlaceAt(world, blockPos) && world.isAir(blockPos.up())) {
+		if (!blockState.canPlaceAt(world, blockPos)) {
+			world.breakBlock(blockPos, true);
+		} else if (world.isAir(blockPos.up())) {
 			int i = 1;
 
 			while (world.getBlockState(blockPos.down(i)).getBlock() == this) {
@@ -54,9 +56,11 @@ public class SugarCaneBlock extends Block {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return !blockState.canPlaceAt(iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
-			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
+		if (!blockState.canPlaceAt(iWorld, blockPos)) {
+			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);
+		}
+
+		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 
 	@Override

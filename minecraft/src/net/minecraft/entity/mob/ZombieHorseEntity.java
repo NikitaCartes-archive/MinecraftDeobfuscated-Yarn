@@ -26,7 +26,7 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 		super.initAttributes();
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(15.0);
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
-		this.getAttributeInstance(ATTR_JUMP_STRENGTH).setBaseValue(this.method_6774());
+		this.getAttributeInstance(JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
 	}
 
 	@Override
@@ -68,14 +68,14 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 		} else if (this.isChild()) {
 			return super.interactMob(playerEntity, hand);
 		} else if (playerEntity.isSneaking()) {
-			this.method_6722(playerEntity);
+			this.openInventory(playerEntity);
 			return true;
 		} else if (this.hasPassengers()) {
 			return super.interactMob(playerEntity, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
 				if (!this.isSaddled() && itemStack.getItem() == Items.field_8175) {
-					this.method_6722(playerEntity);
+					this.openInventory(playerEntity);
 					return true;
 				}
 
@@ -84,12 +84,12 @@ public class ZombieHorseEntity extends HorseBaseEntity {
 				}
 			}
 
-			this.method_6726(playerEntity);
+			this.putPlayerOnBack(playerEntity);
 			return true;
 		}
 	}
 
 	@Override
-	protected void method_6764() {
+	protected void initCustomGoals() {
 	}
 }

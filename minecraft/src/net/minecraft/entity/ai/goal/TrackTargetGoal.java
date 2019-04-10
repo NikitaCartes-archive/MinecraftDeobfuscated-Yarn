@@ -9,7 +9,7 @@ import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.scoreboard.AbstractScoreboardTeam;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
@@ -42,12 +42,12 @@ public abstract class TrackTargetGoal extends Goal {
 
 		if (livingEntity == null) {
 			return false;
-		} else if (!livingEntity.isValid()) {
+		} else if (!livingEntity.isAlive()) {
 			return false;
 		} else {
-			AbstractScoreboardTeam abstractScoreboardTeam = this.entity.getScoreboardTeam();
-			AbstractScoreboardTeam abstractScoreboardTeam2 = livingEntity.getScoreboardTeam();
-			if (abstractScoreboardTeam != null && abstractScoreboardTeam2 == abstractScoreboardTeam) {
+			AbstractTeam abstractTeam = this.entity.method_5781();
+			AbstractTeam abstractTeam2 = livingEntity.method_5781();
+			if (abstractTeam != null && abstractTeam2 == abstractTeam) {
 				return false;
 			} else {
 				double d = this.getFollowRange();
@@ -86,7 +86,7 @@ public abstract class TrackTargetGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.entity.setTarget(null);
 		this.target = null;
 	}

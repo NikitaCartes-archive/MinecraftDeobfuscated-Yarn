@@ -6,12 +6,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.gui.InputListener;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.menu.AccessibilityScreen;
-import net.minecraft.client.gui.menu.settings.ChatSettingsScreen;
-import net.minecraft.client.gui.menu.settings.ControlsSettingsScreen;
+import net.minecraft.client.gui.menu.options.ChatOptionsScreen;
+import net.minecraft.client.gui.menu.options.ControlsOptionsScreen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.Clipboard;
@@ -85,8 +87,8 @@ public class Keyboard {
 					this.debugWarn("debug.reload_chunks.message");
 					return true;
 				case 66:
-					boolean bl = !this.client.getEntityRenderManager().method_3958();
-					this.client.getEntityRenderManager().method_3955(bl);
+					boolean bl = !this.client.getEntityRenderManager().showsHitboxes();
+					this.client.getEntityRenderManager().setShowHitboxes(bl);
 					this.debugWarn(bl ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
 					return true;
 				case 67:
@@ -126,12 +128,10 @@ public class Keyboard {
 					return false;
 				case 70:
 					GameOption.RENDER_DISTANCE
-						.method_18614(
+						.set(
 							this.client.options,
 							MathHelper.clamp(
-								(double)(this.client.options.viewDistance + (Screen.isShiftPressed() ? -1 : 1)),
-								GameOption.RENDER_DISTANCE.method_18615(),
-								GameOption.RENDER_DISTANCE.method_18617()
+								(double)(this.client.options.viewDistance + (Screen.hasShiftDown() ? -1 : 1)), GameOption.RENDER_DISTANCE.getMin(), GameOption.RENDER_DISTANCE.getMax()
 							)
 						);
 					this.debugWarn("debug.cycle_renderdistance.message", this.client.options.viewDistance);
@@ -147,7 +147,7 @@ public class Keyboard {
 					return true;
 				case 73:
 					if (!this.client.player.getReducedDebugInfo()) {
-						this.copyLookAt(this.client.player.allowsPermissionLevel(2), !Screen.isShiftPressed());
+						this.copyLookAt(this.client.player.allowsPermissionLevel(2), !Screen.hasShiftDown());
 					}
 
 					return true;
@@ -285,12 +285,9 @@ public class Keyboard {
 				this.debugCrashElapsedTime = 0L;
 			}
 
-			InputListener inputListener = this.client.currentScreen;
+			ParentElement parentElement = this.client.currentScreen;
 			if (k == 1
-				&& (
-					!(this.client.currentScreen instanceof ControlsSettingsScreen)
-						|| ((ControlsSettingsScreen)inputListener).field_2723 <= SystemUtil.getMeasuringTimeMs() - 20L
-				)) {
+				&& (!(this.client.currentScreen instanceof ControlsOptionsScreen) || ((ControlsOptionsScreen)parentElement).time <= SystemUtil.getMeasuringTimeMs() - 20L)) {
 				if (this.client.options.keyFullscreen.matchesKey(i, j)) {
 					this.client.window.toggleFullscreen();
 					this.client.options.fullscreen = this.client.window.isFullscreen();
@@ -298,7 +295,7 @@ public class Keyboard {
 				}
 
 				if (this.client.options.keyScreenshot.matchesKey(i, j)) {
-					if (Screen.isControlPressed()) {
+					if (Screen.hasControlDown()) {
 					}
 
 					ScreenshotUtils.method_1659(
@@ -312,28 +309,31 @@ public class Keyboard {
 				}
 			}
 
-			if (k != 0 && i == 66 && Screen.isControlPressed()) {
+			boolean bl = parentElement == null
+				|| !(parentElement.getFocused() instanceof TextFieldWidget)
+				|| !((TextFieldWidget)parentElement.getFocused()).method_20315();
+			if (k != 0 && i == 66 && Screen.hasControlDown() && bl) {
 				GameOption.NARRATOR.method_18500(this.client.options, 1);
-				if (inputListener instanceof ChatSettingsScreen) {
-					((ChatSettingsScreen)inputListener).method_2096();
+				if (parentElement instanceof ChatOptionsScreen) {
+					((ChatOptionsScreen)parentElement).method_2096();
 				}
 
-				if (inputListener instanceof AccessibilityScreen) {
-					((AccessibilityScreen)inputListener).method_19366();
+				if (parentElement instanceof AccessibilityScreen) {
+					((AccessibilityScreen)parentElement).method_19366();
 				}
 			}
 
-			if (inputListener != null) {
+			if (parentElement != null) {
 				boolean[] bls = new boolean[]{false};
 				Screen.wrapScreenError(() -> {
 					if (k != 1 && (k != 2 || !this.repeatEvents)) {
 						if (k == 0) {
-							bls[0] = inputListener.keyReleased(i, j, m);
+							bls[0] = parentElement.keyReleased(i, j, m);
 						}
 					} else {
-						bls[0] = inputListener.keyPressed(i, j, m);
+						bls[0] = parentElement.keyPressed(i, j, m);
 					}
-				}, "keyPressed event handler", inputListener.getClass().getCanonicalName());
+				}, "keyPressed event handler", parentElement.getClass().getCanonicalName());
 				if (bls[0]) {
 					return;
 				}
@@ -348,8 +348,8 @@ public class Keyboard {
 							this.switchF3State = false;
 						} else {
 							this.client.options.debugEnabled = !this.client.options.debugEnabled;
-							this.client.options.debugProfilerEnabled = this.client.options.debugEnabled && Screen.isShiftPressed();
-							this.client.options.debugTpsEnabled = this.client.options.debugEnabled && Screen.isAltPressed();
+							this.client.options.debugProfilerEnabled = this.client.options.debugEnabled && Screen.hasShiftDown();
+							this.client.options.debugTpsEnabled = this.client.options.debugEnabled && Screen.hasAltDown();
 						}
 					}
 				} else {
@@ -357,20 +357,20 @@ public class Keyboard {
 						this.client.gameRenderer.toggleShadersEnabled();
 					}
 
-					boolean bl = false;
+					boolean bl2 = false;
 					if (this.client.currentScreen == null) {
 						if (i == 256) {
 							this.client.openPauseMenu();
 						}
 
-						bl = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292) && this.processF3(i);
-						this.switchF3State |= bl;
+						bl2 = InputUtil.isKeyPressed(MinecraftClient.getInstance().window.getHandle(), 292) && this.processF3(i);
+						this.switchF3State |= bl2;
 						if (i == 290) {
 							this.client.options.hudHidden = !this.client.options.hudHidden;
 						}
 					}
 
-					if (bl) {
+					if (bl2) {
 						KeyBinding.setKeyPressed(keyCode, false);
 					} else {
 						KeyBinding.setKeyPressed(keyCode, true);
@@ -395,13 +395,13 @@ public class Keyboard {
 
 	private void onChar(long l, int i, int j) {
 		if (l == this.client.window.getHandle()) {
-			InputListener inputListener = this.client.currentScreen;
-			if (inputListener != null && this.client.method_18506() == null) {
+			Element element = this.client.currentScreen;
+			if (element != null && this.client.getOverlay() == null) {
 				if (Character.charCount(i) == 1) {
-					Screen.wrapScreenError(() -> inputListener.charTyped((char)i, j), "charTyped event handler", inputListener.getClass().getCanonicalName());
+					Screen.wrapScreenError(() -> element.charTyped((char)i, j), "charTyped event handler", element.getClass().getCanonicalName());
 				} else {
 					for (char c : Character.toChars(i)) {
-						Screen.wrapScreenError(() -> inputListener.charTyped(c, j), "charTyped event handler", inputListener.getClass().getCanonicalName());
+						Screen.wrapScreenError(() -> element.charTyped(c, j), "charTyped event handler", element.getClass().getCanonicalName());
 					}
 				}
 			}
@@ -434,7 +434,7 @@ public class Keyboard {
 			long m = 10000L - (l - this.debugCrashStartTime);
 			long n = l - this.debugCrashLastLogTime;
 			if (m < 0L) {
-				if (Screen.isControlPressed()) {
+				if (Screen.hasControlDown()) {
 					GlfwUtil.method_15973();
 				}
 

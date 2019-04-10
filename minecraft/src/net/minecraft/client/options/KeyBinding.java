@@ -124,7 +124,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 			: ((Integer)categoryOrderMap.get(this.category)).compareTo((Integer)categoryOrderMap.get(keyBinding.category));
 	}
 
-	public static Supplier<String> method_1419(String string) {
+	public static Supplier<String> getLocalizedName(String string) {
 		KeyBinding keyBinding = (KeyBinding)keysById.get(string);
 		return keyBinding == null ? () -> string : keyBinding::getLocalizedName;
 	}

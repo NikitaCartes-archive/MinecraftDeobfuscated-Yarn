@@ -58,23 +58,23 @@ public abstract class NumberRange<T extends Number> {
 		}
 	}
 
-	protected static <T extends Number, R extends NumberRange<T>> R method_9039(
-		@Nullable JsonElement jsonElement, R numberRange, BiFunction<JsonElement, String, T> biFunction, NumberRange.class_2097<T, R> arg
+	protected static <T extends Number, R extends NumberRange<T>> R fromJson(
+		@Nullable JsonElement jsonElement, R numberRange, BiFunction<JsonElement, String, T> biFunction, NumberRange.Factory<T, R> factory
 	) {
 		if (jsonElement == null || jsonElement.isJsonNull()) {
 			return numberRange;
 		} else if (JsonHelper.isNumber(jsonElement)) {
 			T number = (T)biFunction.apply(jsonElement, "value");
-			return arg.create(number, number);
+			return factory.create(number, number);
 		} else {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "value");
 			T number2 = (T)(jsonObject.has("min") ? biFunction.apply(jsonObject.get("min"), "min") : null);
 			T number3 = (T)(jsonObject.has("max") ? biFunction.apply(jsonObject.get("max"), "max") : null);
-			return arg.create(number2, number3);
+			return factory.create(number2, number3);
 		}
 	}
 
-	protected static <T extends Number, R extends NumberRange<T>> R method_9043(
+	protected static <T extends Number, R extends NumberRange<T>> R fromStringReader(
 		StringReader stringReader,
 		NumberRange.class_2098<T, R> arg,
 		Function<String, T> function,
@@ -87,12 +87,12 @@ public abstract class NumberRange<T extends Number> {
 			int i = stringReader.getCursor();
 
 			try {
-				T number = (T)method_9035(method_9037(stringReader, function, supplier), function2);
+				T number = (T)method_9035(fromStringReader(stringReader, function, supplier), function2);
 				T number2;
 				if (stringReader.canRead(2) && stringReader.peek() == '.' && stringReader.peek(1) == '.') {
 					stringReader.skip();
 					stringReader.skip();
-					number2 = (T)method_9035(method_9037(stringReader, function, supplier), function2);
+					number2 = (T)method_9035(fromStringReader(stringReader, function, supplier), function2);
 					if (number == null && number2 == null) {
 						throw EXCEPTION_EMPTY.createWithContext(stringReader);
 					}
@@ -113,7 +113,7 @@ public abstract class NumberRange<T extends Number> {
 	}
 
 	@Nullable
-	private static <T extends Number> T method_9037(StringReader stringReader, Function<String, T> function, Supplier<DynamicCommandExceptionType> supplier) throws CommandSyntaxException {
+	private static <T extends Number> T fromStringReader(StringReader stringReader, Function<String, T> function, Supplier<DynamicCommandExceptionType> supplier) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 
 		while (stringReader.canRead() && method_9040(stringReader)) {
@@ -146,32 +146,37 @@ public abstract class NumberRange<T extends Number> {
 		return (T)(object == null ? null : function.apply(object));
 	}
 
-	public static class Float extends NumberRange<java.lang.Float> {
-		public static final NumberRange.Float ANY = new NumberRange.Float(null, null);
+	@FunctionalInterface
+	public interface Factory<T extends Number, R extends NumberRange<T>> {
+		R create(@Nullable T number, @Nullable T number2);
+	}
+
+	public static class FloatRange extends NumberRange<Float> {
+		public static final NumberRange.FloatRange ANY = new NumberRange.FloatRange(null, null);
 		private final Double minSquared;
 		private final Double maxSquared;
 
-		private static NumberRange.Float method_9046(StringReader stringReader, @Nullable java.lang.Float float_, @Nullable java.lang.Float float2) throws CommandSyntaxException {
+		private static NumberRange.FloatRange method_9046(StringReader stringReader, @Nullable Float float_, @Nullable Float float2) throws CommandSyntaxException {
 			if (float_ != null && float2 != null && float_ > float2) {
 				throw EXCEPTION_SWAPPED.createWithContext(stringReader);
 			} else {
-				return new NumberRange.Float(float_, float2);
+				return new NumberRange.FloatRange(float_, float2);
 			}
 		}
 
 		@Nullable
-		private static Double squared(@Nullable java.lang.Float float_) {
+		private static Double squared(@Nullable Float float_) {
 			return float_ == null ? null : float_.doubleValue() * float_.doubleValue();
 		}
 
-		private Float(@Nullable java.lang.Float float_, @Nullable java.lang.Float float2) {
+		private FloatRange(@Nullable Float float_, @Nullable Float float2) {
 			super(float_, float2);
 			this.minSquared = squared(float_);
 			this.maxSquared = squared(float2);
 		}
 
-		public static NumberRange.Float atLeast(float f) {
-			return new NumberRange.Float(f, null);
+		public static NumberRange.FloatRange atLeast(float f) {
+			return new NumberRange.FloatRange(f, null);
 		}
 
 		public boolean matches(float f) {
@@ -182,75 +187,70 @@ public abstract class NumberRange<T extends Number> {
 			return this.minSquared != null && this.minSquared > d ? false : this.maxSquared == null || !(this.maxSquared < d);
 		}
 
-		public static NumberRange.Float fromJson(@Nullable JsonElement jsonElement) {
-			return method_9039(jsonElement, ANY, JsonHelper::asFloat, NumberRange.Float::new);
+		public static NumberRange.FloatRange fromJson(@Nullable JsonElement jsonElement) {
+			return fromJson(jsonElement, ANY, JsonHelper::asFloat, NumberRange.FloatRange::new);
 		}
 
-		public static NumberRange.Float method_9049(StringReader stringReader) throws CommandSyntaxException {
+		public static NumberRange.FloatRange parse(StringReader stringReader) throws CommandSyntaxException {
 			return method_9048(stringReader, float_ -> float_);
 		}
 
-		public static NumberRange.Float method_9048(StringReader stringReader, Function<java.lang.Float, java.lang.Float> function) throws CommandSyntaxException {
-			return method_9043(
-				stringReader, NumberRange.Float::method_9046, java.lang.Float::parseFloat, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidFloat, function
+		public static NumberRange.FloatRange method_9048(StringReader stringReader, Function<Float, Float> function) throws CommandSyntaxException {
+			return fromStringReader(
+				stringReader, NumberRange.FloatRange::method_9046, Float::parseFloat, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidFloat, function
 			);
 		}
 	}
 
-	public static class Integer extends NumberRange<java.lang.Integer> {
-		public static final NumberRange.Integer ANY = new NumberRange.Integer(null, null);
+	public static class IntRange extends NumberRange<Integer> {
+		public static final NumberRange.IntRange ANY = new NumberRange.IntRange(null, null);
 		private final Long minSquared;
 		private final Long maxSquared;
 
-		private static NumberRange.Integer method_9055(StringReader stringReader, @Nullable java.lang.Integer integer, @Nullable java.lang.Integer integer2) throws CommandSyntaxException {
+		private static NumberRange.IntRange method_9055(StringReader stringReader, @Nullable Integer integer, @Nullable Integer integer2) throws CommandSyntaxException {
 			if (integer != null && integer2 != null && integer > integer2) {
 				throw EXCEPTION_SWAPPED.createWithContext(stringReader);
 			} else {
-				return new NumberRange.Integer(integer, integer2);
+				return new NumberRange.IntRange(integer, integer2);
 			}
 		}
 
 		@Nullable
-		private static Long squared(@Nullable java.lang.Integer integer) {
+		private static Long squared(@Nullable Integer integer) {
 			return integer == null ? null : integer.longValue() * integer.longValue();
 		}
 
-		private Integer(@Nullable java.lang.Integer integer, @Nullable java.lang.Integer integer2) {
+		private IntRange(@Nullable Integer integer, @Nullable Integer integer2) {
 			super(integer, integer2);
 			this.minSquared = squared(integer);
 			this.maxSquared = squared(integer2);
 		}
 
-		public static NumberRange.Integer exactly(int i) {
-			return new NumberRange.Integer(i, i);
+		public static NumberRange.IntRange exactly(int i) {
+			return new NumberRange.IntRange(i, i);
 		}
 
-		public static NumberRange.Integer atLeast(int i) {
-			return new NumberRange.Integer(i, null);
+		public static NumberRange.IntRange atLeast(int i) {
+			return new NumberRange.IntRange(i, null);
 		}
 
 		public boolean test(int i) {
 			return this.min != null && this.min > i ? false : this.max == null || this.max >= i;
 		}
 
-		public static NumberRange.Integer fromJson(@Nullable JsonElement jsonElement) {
-			return method_9039(jsonElement, ANY, JsonHelper::asInt, NumberRange.Integer::new);
+		public static NumberRange.IntRange fromJson(@Nullable JsonElement jsonElement) {
+			return fromJson(jsonElement, ANY, JsonHelper::asInt, NumberRange.IntRange::new);
 		}
 
-		public static NumberRange.Integer method_9060(StringReader stringReader) throws CommandSyntaxException {
-			return method_9057(stringReader, integer -> integer);
+		public static NumberRange.IntRange parse(StringReader stringReader) throws CommandSyntaxException {
+			return fromStringReader(stringReader, integer -> integer);
 		}
 
-		public static NumberRange.Integer method_9057(StringReader stringReader, Function<java.lang.Integer, java.lang.Integer> function) throws CommandSyntaxException {
-			return method_9043(
-				stringReader, NumberRange.Integer::method_9055, java.lang.Integer::parseInt, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidInt, function
+		public static NumberRange.IntRange fromStringReader(StringReader stringReader, Function<Integer, Integer> function) throws CommandSyntaxException {
+			return fromStringReader(
+				stringReader, NumberRange.IntRange::method_9055, Integer::parseInt, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidInt, function
 			);
 		}
-	}
-
-	@FunctionalInterface
-	public interface class_2097<T extends Number, R extends NumberRange<T>> {
-		R create(@Nullable T number, @Nullable T number2);
 	}
 
 	@FunctionalInterface

@@ -215,7 +215,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 		if (!this.world.isClient) {
 			ItemStack itemStack = this.inventory.get(1);
 			if (this.isBurning() || !itemStack.isEmpty() && !this.inventory.get(0).isEmpty()) {
-				Recipe<?> recipe = (Recipe<?>)this.world.getRecipeManager().get(this.recipeType, this, this.world).orElse(null);
+				Recipe<?> recipe = (Recipe<?>)this.world.getRecipeManager().getFirstMatch(this.recipeType, this, this.world).orElse(null);
 				if (!this.isBurning() && this.canAcceptRecipeOutput(recipe)) {
 					this.burnTime = this.getFuelTime(itemStack);
 					this.fuelTime = this.burnTime;
@@ -313,7 +313,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	protected int getCookTime() {
-		return (Integer)this.world.getRecipeManager().get(this.recipeType, this, this.world).map(CookingRecipe::getCookTime).orElse(200);
+		return (Integer)this.world.getRecipeManager().getFirstMatch(this.recipeType, this, this.world).map(CookingRecipe::getCookTime).orElse(200);
 	}
 
 	public static boolean canUseAsFuel(ItemStack itemStack) {

@@ -25,7 +25,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	}
 
 	@Override
-	protected int getUpdatedLevel(long l, long m, int i) {
+	protected int getPropagatedLevel(long l, long m, int i) {
 		if (m == Long.MAX_VALUE) {
 			return 15;
 		} else if (l == Long.MAX_VALUE) {
@@ -52,7 +52,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 	protected int getMergedLevel(long l, long m, int i) {
 		int j = i;
 		if (Long.MAX_VALUE != m) {
-			int k = this.getUpdatedLevel(Long.MAX_VALUE, l, 0);
+			int k = this.getPropagatedLevel(Long.MAX_VALUE, l, 0);
 			if (i > k) {
 				j = k;
 			}
@@ -77,7 +77,7 @@ public final class ChunkBlockLightProvider extends ChunkLightProvider<BlockLight
 				}
 
 				if (chunkNibbleArray2 != null) {
-					int q = this.getUpdatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
+					int q = this.getPropagatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray2, o));
 					if (j > q) {
 						j = q;
 					}

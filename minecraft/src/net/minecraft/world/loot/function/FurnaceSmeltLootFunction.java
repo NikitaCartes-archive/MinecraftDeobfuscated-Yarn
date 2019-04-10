@@ -27,7 +27,7 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 		} else {
 			Optional<SmeltingRecipe> optional = lootContext.getWorld()
 				.getRecipeManager()
-				.get(RecipeType.SMELTING, new BasicInventory(itemStack), lootContext.getWorld());
+				.getFirstMatch(RecipeType.SMELTING, new BasicInventory(itemStack), lootContext.getWorld());
 			if (optional.isPresent()) {
 				ItemStack itemStack2 = ((SmeltingRecipe)optional.get()).getOutput();
 				if (!itemStack2.isEmpty()) {
@@ -42,8 +42,8 @@ public class FurnaceSmeltLootFunction extends ConditionalLootFunction {
 		}
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_724() {
-		return create(FurnaceSmeltLootFunction::new);
+	public static ConditionalLootFunction.Builder<?> builder() {
+		return builder(FurnaceSmeltLootFunction::new);
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<FurnaceSmeltLootFunction> {

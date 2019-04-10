@@ -78,7 +78,7 @@ public class EntityTrackerEntry {
 			ItemFrameEntity itemFrameEntity = (ItemFrameEntity)this.entity;
 			ItemStack itemStack = itemFrameEntity.getHeldItemStack();
 			if (itemStack.getItem() instanceof FilledMapItem) {
-				MapState mapState = FilledMapItem.method_8001(itemStack, this.field_18258);
+				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.field_18258);
 
 				for (ServerPlayerEntity serverPlayerEntity : this.field_18258.getPlayers()) {
 					mapState.method_102(serverPlayerEntity, itemStack);
@@ -182,26 +182,26 @@ public class EntityTrackerEntry {
 		}
 	}
 
-	public void method_14302(ServerPlayerEntity serverPlayerEntity) {
+	public void stopTracking(ServerPlayerEntity serverPlayerEntity) {
 		this.entity.onStoppedTrackingBy(serverPlayerEntity);
-		serverPlayerEntity.method_14249(this.entity);
+		serverPlayerEntity.onStoppedTracking(this.entity);
 	}
 
-	public void method_18760(ServerPlayerEntity serverPlayerEntity) {
-		this.method_18757(serverPlayerEntity.networkHandler::sendPacket);
+	public void startTracking(ServerPlayerEntity serverPlayerEntity) {
+		this.sendPackets(serverPlayerEntity.networkHandler::sendPacket);
 		this.entity.onStartedTrackingBy(serverPlayerEntity);
 		serverPlayerEntity.onStartedTracking(this.entity);
 	}
 
-	public void method_18757(Consumer<Packet<?>> consumer) {
-		if (this.entity.invalid) {
+	public void sendPackets(Consumer<Packet<?>> consumer) {
+		if (this.entity.removed) {
 			LOGGER.warn("Fetching addPacket for removed entity");
 		}
 
 		Packet<?> packet = this.entity.createSpawnPacket();
 		this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0F / 360.0F);
 		consumer.accept(packet);
-		if (!this.entity.getDataTracker().method_12790()) {
+		if (!this.entity.getDataTracker().isEmpty()) {
 			consumer.accept(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), this.entity.getDataTracker(), true));
 		}
 
@@ -235,7 +235,7 @@ public class EntityTrackerEntry {
 		if (this.entity instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)this.entity;
 
-			for (StatusEffectInstance statusEffectInstance : livingEntity.getPotionEffects()) {
+			for (StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
 				consumer.accept(new EntityPotionEffectS2CPacket(this.entity.getEntityId(), statusEffectInstance));
 			}
 		}

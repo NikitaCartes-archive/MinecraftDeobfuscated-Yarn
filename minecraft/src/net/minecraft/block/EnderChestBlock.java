@@ -84,7 +84,7 @@ public class EnderChestBlock extends BlockWithEntity implements Waterloggable {
 						(i, playerInventory, playerEntityx) -> GenericContainer.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME
 					)
 				);
-				playerEntity.increaseStat(Stats.field_15424);
+				playerEntity.incrementStat(Stats.field_15424);
 				return true;
 			}
 		} else {

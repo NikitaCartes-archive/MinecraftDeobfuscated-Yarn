@@ -60,13 +60,13 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 
 	public void method_17135(T zombieEntity, float f, float g, float h, float i, float j, float k) {
 		super.method_17087(zombieEntity, f, g, h, i, j, k);
-		float l = MathHelper.sin(this.swingProgress * (float) Math.PI);
-		float m = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float) Math.PI);
+		float l = MathHelper.sin(this.handSwingProgress * (float) Math.PI);
+		float m = MathHelper.sin((1.0F - (1.0F - this.handSwingProgress) * (1.0F - this.handSwingProgress)) * (float) Math.PI);
 		this.armRight.roll = 0.0F;
 		this.armLeft.roll = 0.0F;
 		this.armRight.yaw = -(0.1F - l * 0.6F);
 		this.armLeft.yaw = 0.1F - l * 0.6F;
-		float n = (float) -Math.PI / (zombieEntity.method_6510() ? 1.5F : 2.25F);
+		float n = (float) -Math.PI / (zombieEntity.isAttacking() ? 1.5F : 2.25F);
 		this.armRight.pitch = n;
 		this.armLeft.pitch = n;
 		this.armRight.pitch += l * 1.2F - m * 0.4F;

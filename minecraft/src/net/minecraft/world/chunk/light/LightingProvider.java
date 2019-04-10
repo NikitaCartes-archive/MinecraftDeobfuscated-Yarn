@@ -56,17 +56,17 @@ public class LightingProvider implements LightingView {
 	}
 
 	@Override
-	public void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl) {
+	public void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl) {
 		if (this.blockLightProvider != null) {
-			this.blockLightProvider.scheduleChunkLightUpdate(chunkSectionPos, bl);
+			this.blockLightProvider.updateSectionStatus(chunkSectionPos, bl);
 		}
 
 		if (this.skyLightProvider != null) {
-			this.skyLightProvider.scheduleChunkLightUpdate(chunkSectionPos, bl);
+			this.skyLightProvider.updateSectionStatus(chunkSectionPos, bl);
 		}
 	}
 
-	public void method_15557(ChunkPos chunkPos, boolean bl) {
+	public void suppressLight(ChunkPos chunkPos, boolean bl) {
 		if (this.blockLightProvider != null) {
 			this.blockLightProvider.method_15512(chunkPos, bl);
 		}
@@ -97,7 +97,7 @@ public class LightingProvider implements LightingView {
 		return "n/a";
 	}
 
-	public void setSection(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
+	public void queueData(LightType lightType, ChunkSectionPos chunkSectionPos, ChunkNibbleArray chunkNibbleArray) {
 		if (lightType == LightType.BLOCK) {
 			if (this.blockLightProvider != null) {
 				this.blockLightProvider.setSection(chunkSectionPos.asLong(), chunkNibbleArray);

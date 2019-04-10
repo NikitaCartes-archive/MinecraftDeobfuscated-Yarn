@@ -7,18 +7,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.LevelListWidget;
-import net.minecraft.client.gui.widget.LevelSelectEntryWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableTextComponent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class LevelSelectScreen extends Screen {
-	private static final Logger LOGGER = LogManager.getLogger();
 	protected final Screen parent;
-	protected String title = "Select world";
 	private String field_3222;
 	private ButtonWidget deleteButton;
 	private ButtonWidget selectButton;
@@ -38,77 +33,68 @@ public class LevelSelectScreen extends Screen {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.searchBox.tick();
 	}
 
 	@Override
-	protected void onInitialized() {
-		this.client.keyboard.enableRepeatEvents(true);
-		this.searchBox = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 22, 200, 20, this.searchBox);
+	protected void init() {
+		this.minecraft.keyboard.enableRepeatEvents(true);
+		this.searchBox = new TextFieldWidget(this.font, this.width / 2 - 100, 22, 200, 20, this.searchBox);
 		this.searchBox.setChangedListener(string -> this.levelList.filter(() -> string, false));
-		this.levelList = new LevelListWidget(
-			this, this.client, this.screenWidth, this.screenHeight, 48, this.screenHeight - 64, 36, () -> this.searchBox.getText(), this.levelList
-		);
-		this.listeners.add(this.searchBox);
-		this.listeners.add(this.levelList);
+		this.levelList = new LevelListWidget(this, this.minecraft, this.width, this.height, 48, this.height - 64, 36, () -> this.searchBox.getText(), this.levelList);
+		this.children.add(this.searchBox);
+		this.children.add(this.levelList);
 		this.selectButton = this.addButton(
 			new ButtonWidget(
-				this.screenWidth / 2 - 154,
-				this.screenHeight - 52,
+				this.width / 2 - 154,
+				this.height - 52,
 				150,
 				20,
 				I18n.translate("selectWorld.select"),
-				buttonWidget -> this.levelList.method_2753().ifPresent(LevelSelectEntryWidget::loadLevel)
+				buttonWidget -> this.levelList.method_20159().ifPresent(LevelListWidget.LevelItem::play)
 			)
 		);
 		this.addButton(
 			new ButtonWidget(
-				this.screenWidth / 2 + 4,
-				this.screenHeight - 52,
-				150,
-				20,
-				I18n.translate("selectWorld.create"),
-				buttonWidget -> this.client.openScreen(new NewLevelScreen(this))
+				this.width / 2 + 4, this.height - 52, 150, 20, I18n.translate("selectWorld.create"), buttonWidget -> this.minecraft.openScreen(new NewLevelScreen(this))
 			)
 		);
 		this.editButton = this.addButton(
 			new ButtonWidget(
-				this.screenWidth / 2 - 154,
-				this.screenHeight - 28,
+				this.width / 2 - 154,
+				this.height - 28,
 				72,
 				20,
 				I18n.translate("selectWorld.edit"),
-				buttonWidget -> this.levelList.method_2753().ifPresent(LevelSelectEntryWidget::method_2756)
+				buttonWidget -> this.levelList.method_20159().ifPresent(LevelListWidget.LevelItem::edit)
 			)
 		);
 		this.deleteButton = this.addButton(
 			new ButtonWidget(
-				this.screenWidth / 2 - 76,
-				this.screenHeight - 28,
+				this.width / 2 - 76,
+				this.height - 28,
 				72,
 				20,
 				I18n.translate("selectWorld.delete"),
-				buttonWidget -> this.levelList.method_2753().ifPresent(LevelSelectEntryWidget::method_2755)
+				buttonWidget -> this.levelList.method_20159().ifPresent(LevelListWidget.LevelItem::delete)
 			)
 		);
 		this.recreateButton = this.addButton(
 			new ButtonWidget(
-				this.screenWidth / 2 + 4,
-				this.screenHeight - 28,
+				this.width / 2 + 4,
+				this.height - 28,
 				72,
 				20,
 				I18n.translate("selectWorld.recreate"),
-				buttonWidget -> this.levelList.method_2753().ifPresent(LevelSelectEntryWidget::method_2757)
+				buttonWidget -> this.levelList.method_20159().ifPresent(LevelListWidget.LevelItem::recreate)
 			)
 		);
 		this.addButton(
-			new ButtonWidget(
-				this.screenWidth / 2 + 82, this.screenHeight - 28, 72, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent)
-			)
+			new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 		this.method_19940(false);
-		this.focusOn(this.searchBox);
+		this.method_20085(this.searchBox);
 	}
 
 	@Override
@@ -126,10 +112,10 @@ public class LevelSelectScreen extends Screen {
 		this.field_3222 = null;
 		this.levelList.render(i, j, f);
 		this.searchBox.render(i, j, f);
-		this.drawStringCentered(this.fontRenderer, this.title, this.screenWidth / 2, 8, 16777215);
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 16777215);
 		super.render(i, j, f);
 		if (this.field_3222 != null) {
-			this.drawTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.field_3222)), i, j);
+			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.field_3222)), i, j);
 		}
 	}
 
@@ -145,9 +131,9 @@ public class LevelSelectScreen extends Screen {
 	}
 
 	@Override
-	public void onClosed() {
+	public void removed() {
 		if (this.levelList != null) {
-			this.levelList.getInputListeners().forEach(LevelSelectEntryWidget::close);
+			this.levelList.children().forEach(LevelListWidget.LevelItem::close);
 		}
 	}
 }

@@ -13,7 +13,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.InputListener;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
@@ -21,7 +21,7 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TextFieldWidget extends DrawableHelper implements Drawable, InputListener {
+public class TextFieldWidget extends DrawableHelper implements Drawable, Element {
 	private final TextRenderer textRenderer;
 	private int x;
 	private int y;
@@ -139,7 +139,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 	}
 
 	private void method_16873(int i) {
-		if (Screen.isControlPressed()) {
+		if (Screen.hasControlDown()) {
 			this.method_1877(i);
 		} else {
 			this.method_1878(i);
@@ -250,22 +250,24 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		if (this.isVisible() && this.isFocused()) {
-			this.field_17037 = Screen.isShiftPressed();
-			if (Screen.isSelectAllShortcutPressed(i)) {
+		if (!this.method_20315()) {
+			return false;
+		} else {
+			this.field_17037 = Screen.hasShiftDown();
+			if (Screen.isSelectAll(i)) {
 				this.method_1872();
 				this.method_1884(0);
 				return true;
-			} else if (Screen.isCopyShortcutPressed(i)) {
+			} else if (Screen.isCopy(i)) {
 				MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
 				return true;
-			} else if (Screen.isPasteShortcutPressed(i)) {
+			} else if (Screen.isPaste(i)) {
 				if (this.editable) {
 					this.addText(MinecraftClient.getInstance().keyboard.getClipboard());
 				}
 
 				return true;
-			} else if (Screen.isCutShortcutPressed(i)) {
+			} else if (Screen.isCut(i)) {
 				MinecraftClient.getInstance().keyboard.setClipboard(this.getSelectedText());
 				if (this.editable) {
 					this.addText("");
@@ -294,7 +296,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 
 						return true;
 					case 262:
-						if (Screen.isControlPressed()) {
+						if (Screen.hasControlDown()) {
 							this.method_1883(this.method_1853(1));
 						} else {
 							this.moveCursor(1);
@@ -302,7 +304,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 
 						return true;
 					case 263:
-						if (Screen.isControlPressed()) {
+						if (Screen.hasControlDown()) {
 							this.method_1883(this.method_1853(-1));
 						} else {
 							this.moveCursor(-1);
@@ -317,14 +319,16 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 						return true;
 				}
 			}
-		} else {
-			return false;
 		}
+	}
+
+	public boolean method_20315() {
+		return this.isVisible() && this.isFocused() && this.method_20316();
 	}
 
 	@Override
 	public boolean charTyped(char c, int i) {
-		if (!this.isVisible() || !this.isFocused()) {
+		if (!this.method_20315()) {
 			return false;
 		} else if (SharedConstants.isValidChar(c)) {
 			if (this.editable) {
@@ -366,8 +370,8 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 	public void render(int i, int j, float f) {
 		if (this.isVisible()) {
 			if (this.hasBorder()) {
-				drawRect(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
-				drawRect(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
+				fill(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
+				fill(this.x, this.y, this.x + this.width, this.y + this.height, -16777216);
 			}
 
 			int k = this.editable ? this.field_2100 : this.field_2098;
@@ -407,7 +411,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 
 			if (bl2) {
 				if (bl3) {
-					DrawableHelper.drawRect(q, o - 1, q + 1, o + 1 + 9, -3092272);
+					DrawableHelper.fill(q, o - 1, q + 1, o + 1 + 9, -3092272);
 				} else {
 					this.textRenderer.drawWithShadow("_", (float)q, (float)o, k);
 				}
@@ -490,13 +494,13 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 	}
 
 	@Override
-	public void onFocusChanged(boolean bl) {
-		this.setFocused(bl);
-	}
-
-	@Override
-	public boolean isPartOfFocusCycle() {
-		return this.visible && this.editable;
+	public boolean changeFocus(boolean bl) {
+		if (this.visible && this.editable) {
+			this.setFocused(!this.focused);
+			return this.focused;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
@@ -514,6 +518,10 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, InputLi
 
 	public boolean isFocused() {
 		return this.focused;
+	}
+
+	public boolean method_20316() {
+		return this.editable;
 	}
 
 	public void setIsEditable(boolean bl) {

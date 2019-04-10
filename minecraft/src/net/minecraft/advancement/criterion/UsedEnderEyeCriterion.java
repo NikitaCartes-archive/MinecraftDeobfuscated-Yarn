@@ -55,8 +55,8 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 	}
 
 	public UsedEnderEyeCriterion.Conditions method_9156(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		NumberRange.Float float_ = NumberRange.Float.fromJson(jsonObject.get("distance"));
-		return new UsedEnderEyeCriterion.Conditions(float_);
+		NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("distance"));
+		return new UsedEnderEyeCriterion.Conditions(floatRange);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, BlockPos blockPos) {
@@ -69,11 +69,11 @@ public class UsedEnderEyeCriterion implements Criterion<UsedEnderEyeCriterion.Co
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final NumberRange.Float distance;
+		private final NumberRange.FloatRange distance;
 
-		public Conditions(NumberRange.Float float_) {
+		public Conditions(NumberRange.FloatRange floatRange) {
 			super(UsedEnderEyeCriterion.id);
-			this.distance = float_;
+			this.distance = floatRange;
 		}
 
 		public boolean matches(double d) {

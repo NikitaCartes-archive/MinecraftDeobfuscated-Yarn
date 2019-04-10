@@ -103,7 +103,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 
 		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
 			packetByteBuf.writeString((String)entry.getKey());
-			((CriterionProgress)entry.getValue()).serialize(packetByteBuf);
+			((CriterionProgress)entry.getValue()).toPacket(packetByteBuf);
 		}
 	}
 
@@ -112,7 +112,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 		int i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			advancementProgress.criteriaProgresses.put(packetByteBuf.readString(32767), CriterionProgress.deserialize(packetByteBuf));
+			advancementProgress.criteriaProgresses.put(packetByteBuf.readString(32767), CriterionProgress.fromPacket(packetByteBuf));
 		}
 
 		return advancementProgress;
@@ -230,7 +230,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 			for (Entry<String, CriterionProgress> entry : advancementProgress.criteriaProgresses.entrySet()) {
 				CriterionProgress criterionProgress = (CriterionProgress)entry.getValue();
 				if (criterionProgress.isObtained()) {
-					jsonObject2.add((String)entry.getKey(), criterionProgress.serialize());
+					jsonObject2.add((String)entry.getKey(), criterionProgress.toJson());
 				}
 			}
 
@@ -249,7 +249,7 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 
 			for (Entry<String, JsonElement> entry : jsonObject2.entrySet()) {
 				String string = (String)entry.getKey();
-				advancementProgress.criteriaProgresses.put(string, CriterionProgress.create(JsonHelper.asString((JsonElement)entry.getValue(), string)));
+				advancementProgress.criteriaProgresses.put(string, CriterionProgress.obtainedAt(JsonHelper.asString((JsonElement)entry.getValue(), string)));
 			}
 
 			return advancementProgress;

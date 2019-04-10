@@ -13,7 +13,7 @@ public class NameTagItem extends Item {
 	@Override
 	public boolean interactWithEntity(ItemStack itemStack, PlayerEntity playerEntity, LivingEntity livingEntity, Hand hand) {
 		if (itemStack.hasDisplayName() && !(livingEntity instanceof PlayerEntity)) {
-			if (livingEntity.isValid()) {
+			if (livingEntity.isAlive()) {
 				livingEntity.setCustomName(itemStack.getDisplayName());
 				if (livingEntity instanceof MobEntity) {
 					((MobEntity)livingEntity).setPersistent();

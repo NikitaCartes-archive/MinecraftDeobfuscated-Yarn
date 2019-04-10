@@ -72,10 +72,10 @@ public class ParticleManager implements ResourceReloadListener {
 	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
 	private final Map<Identifier, ParticleManager.class_4090> field_18300 = Maps.<Identifier, ParticleManager.class_4090>newHashMap();
-	private final SpriteAtlasTexture field_18301 = new SpriteAtlasTexture("textures/particle");
+	private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture("textures/particle");
 
 	public ParticleManager(World world, TextureManager textureManager) {
-		textureManager.registerTextureUpdateable(SpriteAtlasTexture.PARTICLE_ATLAS_TEX, this.field_18301);
+		textureManager.registerTextureUpdateable(SpriteAtlasTexture.PARTICLE_ATLAS_TEX, this.particleAtlasTexture);
 		this.world = world;
 		this.textureManager = textureManager;
 		this.registerDefaultFactories();
@@ -98,35 +98,35 @@ public class ParticleManager implements ResourceReloadListener {
 		this.method_18834(ParticleTypes.field_11209, DamageParticle.DefaultFactory::new);
 		this.method_18834(ParticleTypes.field_11216, DragonBreathParticle.Factory::new);
 		this.method_18834(ParticleTypes.field_11222, SuspendParticle.DolphinFactory::new);
-		this.method_18834(ParticleTypes.field_11223, BlockLeakParticle.LavaFactory::new);
-		this.method_18834(ParticleTypes.field_18304, BlockLeakParticle.class_4086::new);
-		this.method_18834(ParticleTypes.field_18305, BlockLeakParticle.class_4087::new);
-		this.method_18834(ParticleTypes.field_11232, BlockLeakParticle.class_4088::new);
-		this.method_18834(ParticleTypes.field_18306, BlockLeakParticle.WaterFactory::new);
+		this.method_18834(ParticleTypes.field_11223, BlockLeakParticle.DrippingLavaFactory::new);
+		this.method_18834(ParticleTypes.field_18304, BlockLeakParticle.FallingLavaFactory::new);
+		this.method_18834(ParticleTypes.field_18305, BlockLeakParticle.LandingLavaFactory::new);
+		this.method_18834(ParticleTypes.field_11232, BlockLeakParticle.DrippingWaterFactory::new);
+		this.method_18834(ParticleTypes.field_18306, BlockLeakParticle.FallingWaterFactory::new);
 		this.method_18834(ParticleTypes.field_11212, RedDustParticle.Factory::new);
-		this.method_18834(ParticleTypes.field_11245, SpellParticle.DefaultFactory::new);
+		this.method_18834(ParticleTypes.field_11245, SpellParticle.InstantFactory::new);
 		this.registerFactory(ParticleTypes.field_11250, new ElderGuardianAppearanceParticle.Factory());
 		this.method_18834(ParticleTypes.field_11208, DamageParticle.EnchantedHitFactory::new);
-		this.method_18834(ParticleTypes.field_11215, EnchantGlyphParticle.NautilusFactory::new);
+		this.method_18834(ParticleTypes.field_11215, EnchantGlyphParticle.EnchantFactory::new);
 		this.method_18834(ParticleTypes.field_11207, EndRodParticle.Factory::new);
 		this.method_18834(ParticleTypes.field_11226, SpellParticle.EntityFactory::new);
 		this.registerFactory(ParticleTypes.field_11221, new ExplosionEmitterParticle.Factory());
 		this.method_18834(ParticleTypes.field_11236, ExplosionLargeParticle.Factory::new);
 		this.method_18834(ParticleTypes.field_11206, BlockFallingDustParticle.Factory::new);
-		this.method_18834(ParticleTypes.field_11248, FireworksSparkParticle.Factory::new);
+		this.method_18834(ParticleTypes.field_11248, FireworksSparkParticle.ExplosionFactory::new);
 		this.method_18834(ParticleTypes.field_11244, FishingParticle.Factory::new);
 		this.method_18834(ParticleTypes.field_11240, FlameParticle.Factory::new);
-		this.method_18834(ParticleTypes.field_17909, FireworksSparkParticle.class_3997::new);
+		this.method_18834(ParticleTypes.field_17909, FireworksSparkParticle.FlashFactory::new);
 		this.method_18834(ParticleTypes.field_11211, SuspendParticle.HappyVillagerFactory::new);
 		this.method_18834(ParticleTypes.field_11201, EmotionParticle.HeartFactory::new);
-		this.method_18834(ParticleTypes.field_11213, SpellParticle.InstantFactory::new);
+		this.method_18834(ParticleTypes.field_11213, SpellParticle.DefaultFactory::new);
 		this.registerFactory(ParticleTypes.field_11218, new CrackParticle.ItemFactory());
 		this.registerFactory(ParticleTypes.field_11246, new CrackParticle.SlimeballFactory());
 		this.registerFactory(ParticleTypes.field_11230, new CrackParticle.SnowballFactory());
 		this.method_18834(ParticleTypes.field_11237, FireSmokeLargeParticle.Factory::new);
 		this.method_18834(ParticleTypes.field_11239, LavaEmberParticle.Factory::new);
 		this.method_18834(ParticleTypes.field_11219, SuspendParticle.MyceliumFactory::new);
-		this.method_18834(ParticleTypes.field_11229, EnchantGlyphParticle.EnchantFactory::new);
+		this.method_18834(ParticleTypes.field_11229, EnchantGlyphParticle.NautilusFactory::new);
 		this.method_18834(ParticleTypes.field_11224, NoteParticle.Factory::new);
 		this.method_18834(ParticleTypes.field_11203, ExplosionSmokeParticle.Factory::new);
 		this.method_18834(ParticleTypes.field_11214, PortalParticle.Factory::new);
@@ -153,7 +153,7 @@ public class ParticleManager implements ResourceReloadListener {
 	}
 
 	@Override
-	public CompletableFuture<Void> apply(
+	public CompletableFuture<Void> reload(
 		ResourceReloadListener.Helper helper, ResourceManager resourceManager, Profiler profiler, Profiler profiler2, Executor executor, Executor executor2
 	) {
 		Map<Identifier, List<Identifier>> map = Maps.<Identifier, List<Identifier>>newConcurrentMap();
@@ -167,7 +167,7 @@ public class ParticleManager implements ResourceReloadListener {
 				profiler.startTick();
 				profiler.push("stitching");
 				Set<Identifier> set = (Set<Identifier>)map.values().stream().flatMap(Collection::stream).collect(Collectors.toSet());
-				SpriteAtlasTexture.Data data = this.field_18301.stitch(resourceManager, set, profiler);
+				SpriteAtlasTexture.Data data = this.particleAtlasTexture.stitch(resourceManager, set, profiler);
 				profiler.pop();
 				profiler.endTick();
 				return data;
@@ -177,14 +177,14 @@ public class ParticleManager implements ResourceReloadListener {
 				data -> {
 					profiler2.startTick();
 					profiler2.push("upload");
-					this.field_18301.upload(data);
+					this.particleAtlasTexture.upload(data);
 					profiler2.swap("bindSpriteSets");
-					Sprite sprite = this.field_18301.getSprite(MissingSprite.getMissingSpriteId());
+					Sprite sprite = this.particleAtlasTexture.getSprite(MissingSprite.getMissingSpriteId());
 					map.forEach(
 						(identifier, list) -> {
 							ImmutableList<Sprite> immutableList = list.isEmpty()
 								? ImmutableList.of(sprite)
-								: (ImmutableList)list.stream().map(this.field_18301::getSprite).collect(ImmutableList.toImmutableList());
+								: (ImmutableList)list.stream().map(this.particleAtlasTexture::getSprite).collect(ImmutableList.toImmutableList());
 							((ParticleManager.class_4090)this.field_18300.get(identifier)).method_18838(immutableList);
 						}
 					);
@@ -195,8 +195,8 @@ public class ParticleManager implements ResourceReloadListener {
 			);
 	}
 
-	public void method_18829() {
-		this.field_18301.clear();
+	public void clearAtlas() {
+		this.particleAtlasTexture.clear();
 	}
 
 	private void method_18836(ResourceManager resourceManager, Identifier identifier, Map<Identifier, List<Identifier>> map) {

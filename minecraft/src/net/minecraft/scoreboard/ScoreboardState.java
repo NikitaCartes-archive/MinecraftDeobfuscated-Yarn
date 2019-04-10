@@ -50,66 +50,66 @@ public class ScoreboardState extends PersistentState {
 				string = string.substring(0, 16);
 			}
 
-			ScoreboardTeam scoreboardTeam = this.scoreboard.addTeam(string);
+			Team team = this.scoreboard.addTeam(string);
 			TextComponent textComponent = TextComponent.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
 			if (textComponent != null) {
-				scoreboardTeam.setDisplayName(textComponent);
+				team.setDisplayName(textComponent);
 			}
 
 			if (compoundTag.containsKey("TeamColor", 8)) {
-				scoreboardTeam.setColor(TextFormat.getFormatByName(compoundTag.getString("TeamColor")));
+				team.setColor(TextFormat.getFormatByName(compoundTag.getString("TeamColor")));
 			}
 
 			if (compoundTag.containsKey("AllowFriendlyFire", 99)) {
-				scoreboardTeam.setFriendlyFireAllowed(compoundTag.getBoolean("AllowFriendlyFire"));
+				team.setFriendlyFireAllowed(compoundTag.getBoolean("AllowFriendlyFire"));
 			}
 
 			if (compoundTag.containsKey("SeeFriendlyInvisibles", 99)) {
-				scoreboardTeam.setShowFriendlyInvisibles(compoundTag.getBoolean("SeeFriendlyInvisibles"));
+				team.setShowFriendlyInvisibles(compoundTag.getBoolean("SeeFriendlyInvisibles"));
 			}
 
 			if (compoundTag.containsKey("MemberNamePrefix", 8)) {
 				TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(compoundTag.getString("MemberNamePrefix"));
 				if (textComponent2 != null) {
-					scoreboardTeam.setPrefix(textComponent2);
+					team.setPrefix(textComponent2);
 				}
 			}
 
 			if (compoundTag.containsKey("MemberNameSuffix", 8)) {
 				TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(compoundTag.getString("MemberNameSuffix"));
 				if (textComponent2 != null) {
-					scoreboardTeam.setSuffix(textComponent2);
+					team.setSuffix(textComponent2);
 				}
 			}
 
 			if (compoundTag.containsKey("NameTagVisibility", 8)) {
-				AbstractScoreboardTeam.VisibilityRule visibilityRule = AbstractScoreboardTeam.VisibilityRule.method_1213(compoundTag.getString("NameTagVisibility"));
+				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(compoundTag.getString("NameTagVisibility"));
 				if (visibilityRule != null) {
-					scoreboardTeam.setNameTagVisibilityRule(visibilityRule);
+					team.method_1149(visibilityRule);
 				}
 			}
 
 			if (compoundTag.containsKey("DeathMessageVisibility", 8)) {
-				AbstractScoreboardTeam.VisibilityRule visibilityRule = AbstractScoreboardTeam.VisibilityRule.method_1213(compoundTag.getString("DeathMessageVisibility"));
+				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(compoundTag.getString("DeathMessageVisibility"));
 				if (visibilityRule != null) {
-					scoreboardTeam.setDeathMessageVisibilityRule(visibilityRule);
+					team.method_1133(visibilityRule);
 				}
 			}
 
 			if (compoundTag.containsKey("CollisionRule", 8)) {
-				AbstractScoreboardTeam.CollisionRule collisionRule = AbstractScoreboardTeam.CollisionRule.method_1210(compoundTag.getString("CollisionRule"));
+				AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(compoundTag.getString("CollisionRule"));
 				if (collisionRule != null) {
-					scoreboardTeam.setCollisionRule(collisionRule);
+					team.method_1145(collisionRule);
 				}
 			}
 
-			this.deserializeTeamPlayers(scoreboardTeam, compoundTag.getList("Players", 8));
+			this.deserializeTeamPlayers(team, compoundTag.getList("Players", 8));
 		}
 	}
 
-	protected void deserializeTeamPlayers(ScoreboardTeam scoreboardTeam, ListTag listTag) {
+	protected void deserializeTeamPlayers(Team team, ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
-			this.scoreboard.addPlayerToTeam(listTag.getString(i), scoreboardTeam);
+			this.scoreboard.addPlayerToTeam(listTag.getString(i), team);
 		}
 	}
 
@@ -133,8 +133,8 @@ public class ScoreboardState extends PersistentState {
 				}
 
 				TextComponent textComponent = TextComponent.Serializer.fromJsonString(compoundTag.getString("DisplayName"));
-				ScoreboardCriterion.Type type = ScoreboardCriterion.Type.method_1229(compoundTag.getString("RenderType"));
-				this.scoreboard.method_1168(string, scoreboardCriterion, textComponent, type);
+				ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(compoundTag.getString("RenderType"));
+				this.scoreboard.method_1168(string, scoreboardCriterion, textComponent, renderType);
 			});
 		}
 	}
@@ -156,24 +156,24 @@ public class ScoreboardState extends PersistentState {
 	protected ListTag serializeTeams() {
 		ListTag listTag = new ListTag();
 
-		for (ScoreboardTeam scoreboardTeam : this.scoreboard.getTeams()) {
+		for (Team team : this.scoreboard.getTeams()) {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putString("Name", scoreboardTeam.getName());
-			compoundTag.putString("DisplayName", TextComponent.Serializer.toJsonString(scoreboardTeam.getDisplayName()));
-			if (scoreboardTeam.getColor().getId() >= 0) {
-				compoundTag.putString("TeamColor", scoreboardTeam.getColor().getFormatName());
+			compoundTag.putString("Name", team.getName());
+			compoundTag.putString("DisplayName", TextComponent.Serializer.toJsonString(team.getDisplayName()));
+			if (team.getColor().getId() >= 0) {
+				compoundTag.putString("TeamColor", team.getColor().getFormatName());
 			}
 
-			compoundTag.putBoolean("AllowFriendlyFire", scoreboardTeam.isFriendlyFireAllowed());
-			compoundTag.putBoolean("SeeFriendlyInvisibles", scoreboardTeam.shouldShowFriendlyInvisibles());
-			compoundTag.putString("MemberNamePrefix", TextComponent.Serializer.toJsonString(scoreboardTeam.getPrefix()));
-			compoundTag.putString("MemberNameSuffix", TextComponent.Serializer.toJsonString(scoreboardTeam.getSuffix()));
-			compoundTag.putString("NameTagVisibility", scoreboardTeam.getNameTagVisibilityRule().field_1445);
-			compoundTag.putString("DeathMessageVisibility", scoreboardTeam.getDeathMessageVisibilityRule().field_1445);
-			compoundTag.putString("CollisionRule", scoreboardTeam.getCollisionRule().field_1436);
+			compoundTag.putBoolean("AllowFriendlyFire", team.isFriendlyFireAllowed());
+			compoundTag.putBoolean("SeeFriendlyInvisibles", team.shouldShowFriendlyInvisibles());
+			compoundTag.putString("MemberNamePrefix", TextComponent.Serializer.toJsonString(team.getPrefix()));
+			compoundTag.putString("MemberNameSuffix", TextComponent.Serializer.toJsonString(team.getSuffix()));
+			compoundTag.putString("NameTagVisibility", team.getNameTagVisibilityRule().name);
+			compoundTag.putString("DeathMessageVisibility", team.getDeathMessageVisibilityRule().name);
+			compoundTag.putString("CollisionRule", team.getCollisionRule().name);
 			ListTag listTag2 = new ListTag();
 
-			for (String string : scoreboardTeam.getPlayerList()) {
+			for (String string : team.getPlayerList()) {
 				listTag2.add(new StringTag(string));
 			}
 
@@ -210,7 +210,7 @@ public class ScoreboardState extends PersistentState {
 				compoundTag.putString("Name", scoreboardObjective.getName());
 				compoundTag.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
 				compoundTag.putString("DisplayName", TextComponent.Serializer.toJsonString(scoreboardObjective.getDisplayName()));
-				compoundTag.putString("RenderType", scoreboardObjective.getCriterionType().getName());
+				compoundTag.putString("RenderType", scoreboardObjective.method_1118().getName());
 				listTag.add(compoundTag);
 			}
 		}

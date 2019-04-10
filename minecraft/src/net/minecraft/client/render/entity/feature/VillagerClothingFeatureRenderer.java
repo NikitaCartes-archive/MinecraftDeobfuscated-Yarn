@@ -72,7 +72,7 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 

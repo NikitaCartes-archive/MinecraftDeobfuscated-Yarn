@@ -23,14 +23,14 @@ public class DebugCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("debug")
+			CommandManager.literal("debug")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
-				.then(ServerCommandManager.literal("start").executes(commandContext -> method_13159(commandContext.getSource())))
-				.then(ServerCommandManager.literal("stop").executes(commandContext -> method_13158(commandContext.getSource())))
+				.then(CommandManager.literal("start").executes(commandContext -> executeStart(commandContext.getSource())))
+				.then(CommandManager.literal("stop").executes(commandContext -> executeStop(commandContext.getSource())))
 		);
 	}
 
-	private static int method_13159(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+	private static int executeStart(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
 		if (disableableProfiler.getController().isEnabled()) {
@@ -42,7 +42,7 @@ public class DebugCommand {
 		}
 	}
 
-	private static int method_13158(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+	private static int executeStop(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		DisableableProfiler disableableProfiler = minecraftServer.getProfiler();
 		if (!disableableProfiler.getController().isEnabled()) {

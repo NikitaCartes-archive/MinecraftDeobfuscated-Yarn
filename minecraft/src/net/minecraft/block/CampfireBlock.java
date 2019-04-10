@@ -71,7 +71,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 						&& campfireBlockEntity.addItem(playerEntity.abilities.creativeMode ? itemStack.copy() : itemStack, ((CampfireCookingRecipe)optional.get()).getCookTime())
 						)
 					 {
-						playerEntity.increaseStat(Stats.field_17486);
+						playerEntity.incrementStat(Stats.field_17486);
 					}
 
 					return true;

@@ -88,7 +88,7 @@ public class ObserverBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
 			if (!world.isClient() && (Boolean)blockState.get(POWERED) && !world.getBlockTickScheduler().isScheduled(blockPos, this)) {
 				BlockState blockState3 = blockState.with(POWERED, Boolean.valueOf(false));

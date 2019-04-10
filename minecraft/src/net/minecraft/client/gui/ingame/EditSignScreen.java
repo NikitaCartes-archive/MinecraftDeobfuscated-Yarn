@@ -31,14 +31,12 @@ public class EditSignScreen extends Screen {
 	}
 
 	@Override
-	protected void onInitialized() {
-		this.client.keyboard.enableRepeatEvents(true);
-		this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 100, this.screenHeight / 4 + 120, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.finishEditing())
-		);
+	protected void init() {
+		this.minecraft.keyboard.enableRepeatEvents(true);
+		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.finishEditing()));
 		this.sign.setEditable(false);
 		this.selectionManager = new SelectionManager(
-			this.client,
+			this.minecraft,
 			() -> this.sign.getTextOnRow(this.currentRow).getString(),
 			string -> this.sign.setTextOnRow(this.currentRow, new StringTextComponent(string)),
 			90
@@ -46,9 +44,9 @@ public class EditSignScreen extends Screen {
 	}
 
 	@Override
-	public void onClosed() {
-		this.client.keyboard.enableRepeatEvents(false);
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+	public void removed() {
+		this.minecraft.keyboard.enableRepeatEvents(false);
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(
 				new UpdateSignC2SPacket(this.sign.getPos(), this.sign.getTextOnRow(0), this.sign.getTextOnRow(1), this.sign.getTextOnRow(2), this.sign.getTextOnRow(3))
@@ -59,13 +57,13 @@ public class EditSignScreen extends Screen {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.ticksSinceOpened++;
 	}
 
 	private void finishEditing() {
 		this.sign.markDirty();
-		this.client.openScreen(null);
+		this.minecraft.openScreen(null);
 	}
 
 	@Override
@@ -75,7 +73,7 @@ public class EditSignScreen extends Screen {
 	}
 
 	@Override
-	public void close() {
+	public void onClose() {
 		this.finishEditing();
 	}
 
@@ -96,11 +94,11 @@ public class EditSignScreen extends Screen {
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 40, 16777215);
+		this.renderBackground();
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 40, 16777215);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.pushMatrix();
-		GlStateManager.translatef((float)(this.screenWidth / 2), 0.0F, 50.0F);
+		GlStateManager.translatef((float)(this.width / 2), 0.0F, 50.0F);
 		float g = 93.75F;
 		GlStateManager.scalef(-93.75F, -93.75F, -93.75F);
 		GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);

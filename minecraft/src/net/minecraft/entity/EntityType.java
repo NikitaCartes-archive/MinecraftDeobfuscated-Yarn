@@ -112,6 +112,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.tag.Tag;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
@@ -131,7 +132,8 @@ import org.apache.logging.log4j.Logger;
 public class EntityType<T extends Entity> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = register(
-		"area_effect_cloud", EntityType.Builder.<AreaEffectCloudEntity>create(AreaEffectCloudEntity::new, EntityCategory.field_17715).setSize(6.0F, 0.5F)
+		"area_effect_cloud",
+		EntityType.Builder.<AreaEffectCloudEntity>create(AreaEffectCloudEntity::new, EntityCategory.field_17715).method_19947().setSize(6.0F, 0.5F)
 	);
 	public static final EntityType<ArmorStandEntity> ARMOR_STAND = register(
 		"armor_stand", EntityType.Builder.<ArmorStandEntity>create(ArmorStandEntity::new, EntityCategory.field_17715).setSize(0.5F, 1.975F)
@@ -141,7 +143,7 @@ public class EntityType<T extends Entity> {
 	);
 	public static final EntityType<BatEntity> BAT = register("bat", EntityType.Builder.create(BatEntity::new, EntityCategory.field_6303).setSize(0.5F, 0.9F));
 	public static final EntityType<BlazeEntity> BLAZE = register(
-		"blaze", EntityType.Builder.create(BlazeEntity::new, EntityCategory.field_6302).setSize(0.6F, 1.8F)
+		"blaze", EntityType.Builder.create(BlazeEntity::new, EntityCategory.field_6302).method_19947().setSize(0.6F, 1.8F)
 	);
 	public static final EntityType<BoatEntity> BOAT = register(
 		"boat", EntityType.Builder.<BoatEntity>create(BoatEntity::new, EntityCategory.field_17715).setSize(1.375F, 0.5625F)
@@ -177,7 +179,7 @@ public class EntityType<T extends Entity> {
 		"end_crystal", EntityType.Builder.<EnderCrystalEntity>create(EnderCrystalEntity::new, EntityCategory.field_17715).setSize(2.0F, 2.0F)
 	);
 	public static final EntityType<EnderDragonEntity> ENDER_DRAGON = register(
-		"ender_dragon", EntityType.Builder.create(EnderDragonEntity::new, EntityCategory.field_6302).setSize(16.0F, 8.0F)
+		"ender_dragon", EntityType.Builder.create(EnderDragonEntity::new, EntityCategory.field_6302).method_19947().setSize(16.0F, 8.0F)
 	);
 	public static final EntityType<EndermanEntity> ENDERMAN = register(
 		"enderman", EntityType.Builder.create(EndermanEntity::new, EntityCategory.field_6302).setSize(0.6F, 2.9F)
@@ -207,7 +209,7 @@ public class EntityType<T extends Entity> {
 		"fox", EntityType.Builder.create(FoxEntity::new, EntityCategory.field_6294).setSize(0.6F, 0.7F)
 	);
 	public static final EntityType<GhastEntity> GHAST = register(
-		"ghast", EntityType.Builder.create(GhastEntity::new, EntityCategory.field_6302).setSize(4.0F, 4.0F)
+		"ghast", EntityType.Builder.create(GhastEntity::new, EntityCategory.field_6302).method_19947().setSize(4.0F, 4.0F)
 	);
 	public static final EntityType<GiantEntity> GIANT = register(
 		"giant", EntityType.Builder.create(GiantEntity::new, EntityCategory.field_6302).setSize(3.6F, 12.0F)
@@ -241,7 +243,7 @@ public class EntityType<T extends Entity> {
 		"llama_spit", EntityType.Builder.<LlamaSpitEntity>create(LlamaSpitEntity::new, EntityCategory.field_17715).setSize(0.25F, 0.25F)
 	);
 	public static final EntityType<MagmaCubeEntity> MAGMA_CUBE = register(
-		"magma_cube", EntityType.Builder.create(MagmaCubeEntity::new, EntityCategory.field_6302).setSize(2.04F, 2.04F)
+		"magma_cube", EntityType.Builder.create(MagmaCubeEntity::new, EntityCategory.field_6302).method_19947().setSize(2.04F, 2.04F)
 	);
 	public static final EntityType<MinecartEntity> MINECART = register(
 		"minecart", EntityType.Builder.<MinecartEntity>create(MinecartEntity::new, EntityCategory.field_17715).setSize(0.98F, 0.7F)
@@ -288,13 +290,13 @@ public class EntityType<T extends Entity> {
 		"pufferfish", EntityType.Builder.create(PufferfishEntity::new, EntityCategory.field_6300).setSize(0.7F, 0.7F)
 	);
 	public static final EntityType<ZombiePigmanEntity> ZOMBIE_PIGMAN = register(
-		"zombie_pigman", EntityType.Builder.create(ZombiePigmanEntity::new, EntityCategory.field_6302).setSize(0.6F, 1.95F)
+		"zombie_pigman", EntityType.Builder.create(ZombiePigmanEntity::new, EntityCategory.field_6302).method_19947().setSize(0.6F, 1.95F)
 	);
 	public static final EntityType<PolarBearEntity> POLAR_BEAR = register(
 		"polar_bear", EntityType.Builder.create(PolarBearEntity::new, EntityCategory.field_6294).setSize(1.4F, 1.4F)
 	);
 	public static final EntityType<PrimedTntEntity> TNT = register(
-		"tnt", EntityType.Builder.<PrimedTntEntity>create(PrimedTntEntity::new, EntityCategory.field_17715).setSize(0.98F, 0.98F)
+		"tnt", EntityType.Builder.<PrimedTntEntity>create(PrimedTntEntity::new, EntityCategory.field_17715).method_19947().setSize(0.98F, 0.98F)
 	);
 	public static final EntityType<RabbitEntity> RABBIT = register(
 		"rabbit", EntityType.Builder.create(RabbitEntity::new, EntityCategory.field_6294).setSize(0.4F, 0.5F)
@@ -306,7 +308,7 @@ public class EntityType<T extends Entity> {
 		"sheep", EntityType.Builder.create(SheepEntity::new, EntityCategory.field_6294).setSize(0.9F, 1.3F)
 	);
 	public static final EntityType<ShulkerEntity> SHULKER = register(
-		"shulker", EntityType.Builder.create(ShulkerEntity::new, EntityCategory.field_6302).setSize(1.0F, 1.0F)
+		"shulker", EntityType.Builder.create(ShulkerEntity::new, EntityCategory.field_6302).method_19947().setSize(1.0F, 1.0F)
 	);
 	public static final EntityType<ShulkerBulletEntity> SHULKER_BULLET = register(
 		"shulker_bullet", EntityType.Builder.<ShulkerBulletEntity>create(ShulkerBulletEntity::new, EntityCategory.field_17715).setSize(0.3125F, 0.3125F)
@@ -369,7 +371,9 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<TridentEntity> TRIDENT = register(
 		"trident", EntityType.Builder.<TridentEntity>create(TridentEntity::new, EntityCategory.field_17715).setSize(0.5F, 0.5F)
 	);
-	public static final EntityType<VexEntity> VEX = register("vex", EntityType.Builder.create(VexEntity::new, EntityCategory.field_6302).setSize(0.4F, 0.8F));
+	public static final EntityType<VexEntity> VEX = register(
+		"vex", EntityType.Builder.create(VexEntity::new, EntityCategory.field_6302).method_19947().setSize(0.4F, 0.8F)
+	);
 	public static final EntityType<VillagerEntity> VILLAGER = register(
 		"villager", EntityType.Builder.<VillagerEntity>create(VillagerEntity::new, EntityCategory.field_6294).setSize(0.6F, 1.95F)
 	);
@@ -389,10 +393,10 @@ public class EntityType<T extends Entity> {
 		"witch", EntityType.Builder.create(WitchEntity::new, EntityCategory.field_6302).setSize(0.6F, 1.95F)
 	);
 	public static final EntityType<WitherEntity> WITHER = register(
-		"wither", EntityType.Builder.create(WitherEntity::new, EntityCategory.field_6302).setSize(0.9F, 3.5F)
+		"wither", EntityType.Builder.create(WitherEntity::new, EntityCategory.field_6302).method_19947().setSize(0.9F, 3.5F)
 	);
 	public static final EntityType<WitherSkeletonEntity> WITHER_SKELETON = register(
-		"wither_skeleton", EntityType.Builder.create(WitherSkeletonEntity::new, EntityCategory.field_6302).setSize(0.7F, 2.4F)
+		"wither_skeleton", EntityType.Builder.create(WitherSkeletonEntity::new, EntityCategory.field_6302).method_19947().setSize(0.7F, 2.4F)
 	);
 	public static final EntityType<ExplodingWitherSkullEntity> WITHER_SKULL = register(
 		"wither_skull", EntityType.Builder.<ExplodingWitherSkullEntity>create(ExplodingWitherSkullEntity::new, EntityCategory.field_17715).setSize(0.3125F, 0.3125F)
@@ -422,10 +426,11 @@ public class EntityType<T extends Entity> {
 	public static final EntityType<FishHookEntity> FISHING_BOBBER = register(
 		"fishing_bobber", EntityType.Builder.<FishHookEntity>create(EntityCategory.field_17715).disableSaving().disableSummon().setSize(0.25F, 0.25F)
 	);
-	private final EntityType.class_4049<T> factory;
+	private final EntityType.EntityFactory<T> factory;
 	private final EntityCategory category;
 	private final boolean saveable;
 	private final boolean summonable;
+	private final boolean fireImmune;
 	@Nullable
 	private String translationKey;
 	@Nullable
@@ -448,11 +453,14 @@ public class EntityType<T extends Entity> {
 		return Registry.ENTITY_TYPE.getOrEmpty(Identifier.create(string));
 	}
 
-	public EntityType(EntityType.class_4049<T> arg, EntityCategory entityCategory, boolean bl, boolean bl2, @Nullable Type<?> type, EntitySize entitySize) {
-		this.factory = arg;
+	public EntityType(
+		EntityType.EntityFactory<T> entityFactory, EntityCategory entityCategory, boolean bl, boolean bl2, boolean bl3, @Nullable Type<?> type, EntitySize entitySize
+	) {
+		this.factory = entityFactory;
 		this.category = entityCategory;
 		this.saveable = bl;
 		this.summonable = bl2;
+		this.fireImmune = bl3;
 		this.dataFixerType = type;
 		this.size = entitySize;
 	}
@@ -507,7 +515,7 @@ public class EntityType<T extends Entity> {
 			double d;
 			if (bl) {
 				entity.setPosition((double)blockPos.getX() + 0.5, (double)(blockPos.getY() + 1), (double)blockPos.getZ() + 0.5);
-				d = method_5884(world, blockPos, bl2, entity.getBoundingBox());
+				d = getOriginY(world, blockPos, bl2, entity.getBoundingBox());
 			} else {
 				d = 0.0;
 			}
@@ -519,7 +527,7 @@ public class EntityType<T extends Entity> {
 				MobEntity mobEntity = (MobEntity)entity;
 				mobEntity.headYaw = mobEntity.yaw;
 				mobEntity.field_6283 = mobEntity.yaw;
-				mobEntity.prepareEntityData(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, compoundTag);
+				mobEntity.initialize(world, world.getLocalDifficulty(new BlockPos(mobEntity)), spawnType, null, compoundTag);
 				mobEntity.playAmbientSound();
 			}
 
@@ -532,13 +540,13 @@ public class EntityType<T extends Entity> {
 		}
 	}
 
-	protected static double method_5884(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl, BoundingBox boundingBox) {
+	protected static double getOriginY(ViewableWorld viewableWorld, BlockPos blockPos, boolean bl, BoundingBox boundingBox) {
 		BoundingBox boundingBox2 = new BoundingBox(blockPos);
 		if (bl) {
 			boundingBox2 = boundingBox2.stretch(0.0, -1.0, 0.0);
 		}
 
-		Stream<VoxelShape> stream = viewableWorld.getCollidingBoundingBoxesForEntity(null, boundingBox2, Collections.emptySet());
+		Stream<VoxelShape> stream = viewableWorld.getCollisionShapes(null, boundingBox2, Collections.emptySet());
 		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, bl ? -2.0 : -1.0);
 	}
 
@@ -565,7 +573,11 @@ public class EntityType<T extends Entity> {
 		return this.summonable;
 	}
 
-	public EntityCategory getEntityClass() {
+	public boolean isFireImmune() {
+		return this.fireImmune;
+	}
+
+	public EntityCategory getCategory() {
 		return this.category;
 	}
 
@@ -614,7 +626,7 @@ public class EntityType<T extends Entity> {
 	}
 
 	public static Optional<Entity> getEntityFromTag(CompoundTag compoundTag, World world) {
-		return SystemUtil.method_17974(
+		return SystemUtil.ifPresentOrElse(
 			fromTag(compoundTag).map(entityType -> entityType.create(world)),
 			entity -> entity.fromTag(compoundTag),
 			() -> LOGGER.warn("Skipping Entity with id {}", compoundTag.getString("id"))
@@ -667,7 +679,7 @@ public class EntityType<T extends Entity> {
 		}
 	}
 
-	public int method_18387() {
+	public int getMaxTrackDistance() {
 		if (this == PLAYER) {
 			return 32;
 		} else if (this == END_CRYSTAL) {
@@ -706,7 +718,7 @@ public class EntityType<T extends Entity> {
 		}
 	}
 
-	public int method_18388() {
+	public int getTrackTickInterval() {
 		if (this == PLAYER || this == EVOKER_FANGS) {
 			return 2;
 		} else if (this == EYE_OF_ENDER) {
@@ -733,7 +745,7 @@ public class EntityType<T extends Entity> {
 		}
 	}
 
-	public boolean method_18389() {
+	public boolean alwaysUpdateVelocity() {
 		return this != PLAYER
 			&& this != LLAMA_SPIT
 			&& this != WITHER
@@ -745,20 +757,25 @@ public class EntityType<T extends Entity> {
 			&& this != EVOKER_FANGS;
 	}
 
+	public boolean isTaggedWith(Tag<EntityType<?>> tag) {
+		return tag.contains(this);
+	}
+
 	public static class Builder<T extends Entity> {
-		private final EntityType.class_4049<T> function;
+		private final EntityType.EntityFactory<T> function;
 		private final EntityCategory entityClass;
 		private boolean saveable = true;
 		private boolean summonable = true;
-		private EntitySize field_18071 = EntitySize.resizeable(0.6F, 1.8F);
+		private boolean field_18982;
+		private EntitySize size = EntitySize.resizeable(0.6F, 1.8F);
 
-		private Builder(EntityType.class_4049<T> arg, EntityCategory entityCategory) {
-			this.function = arg;
+		private Builder(EntityType.EntityFactory<T> entityFactory, EntityCategory entityCategory) {
+			this.function = entityFactory;
 			this.entityClass = entityCategory;
 		}
 
-		public static <T extends Entity> EntityType.Builder<T> create(EntityType.class_4049<T> arg, EntityCategory entityCategory) {
-			return new EntityType.Builder<>(arg, entityCategory);
+		public static <T extends Entity> EntityType.Builder<T> create(EntityType.EntityFactory<T> entityFactory, EntityCategory entityCategory) {
+			return new EntityType.Builder<>(entityFactory, entityCategory);
 		}
 
 		public static <T extends Entity> EntityType.Builder<T> create(EntityCategory entityCategory) {
@@ -766,7 +783,7 @@ public class EntityType<T extends Entity> {
 		}
 
 		public EntityType.Builder<T> setSize(float f, float g) {
-			this.field_18071 = EntitySize.resizeable(f, g);
+			this.size = EntitySize.resizeable(f, g);
 			return this;
 		}
 
@@ -777,6 +794,11 @@ public class EntityType<T extends Entity> {
 
 		public EntityType.Builder<T> disableSaving() {
 			this.saveable = false;
+			return this;
+		}
+
+		public EntityType.Builder<T> method_19947() {
+			this.field_18982 = true;
 			return this;
 		}
 
@@ -796,11 +818,11 @@ public class EntityType<T extends Entity> {
 				}
 			}
 
-			return new EntityType<>(this.function, this.entityClass, this.saveable, this.summonable, type, this.field_18071);
+			return new EntityType<>(this.function, this.entityClass, this.saveable, this.summonable, this.field_18982, type, this.size);
 		}
 	}
 
-	public interface class_4049<T extends Entity> {
+	public interface EntityFactory<T extends Entity> {
 		T create(EntityType<T> entityType, World world);
 	}
 }

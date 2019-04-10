@@ -8,13 +8,13 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.scoreboard.AbstractScoreboardTeam;
+import net.minecraft.scoreboard.AbstractTeam;
 
 public final class EntityPredicates {
-	public static final Predicate<Entity> VALID_ENTITY = Entity::isValid;
-	public static final Predicate<LivingEntity> VALID_ENTITY_LIVING = LivingEntity::isValid;
-	public static final Predicate<Entity> NOT_MOUNTED = entity -> entity.isValid() && !entity.hasPassengers() && !entity.hasVehicle();
-	public static final Predicate<Entity> VALID_INVENTORIES = entity -> entity instanceof Inventory && entity.isValid();
+	public static final Predicate<Entity> VALID_ENTITY = Entity::isAlive;
+	public static final Predicate<LivingEntity> VALID_ENTITY_LIVING = LivingEntity::isAlive;
+	public static final Predicate<Entity> NOT_MOUNTED = entity -> entity.isAlive() && !entity.hasPassengers() && !entity.hasVehicle();
+	public static final Predicate<Entity> VALID_INVENTORIES = entity -> entity instanceof Inventory && entity.isAlive();
 	public static final Predicate<Entity> EXCEPT_CREATIVE_OR_SPECTATOR = entity -> !(entity instanceof PlayerEntity)
 			|| !entity.isSpectator() && !((PlayerEntity)entity).isCreative();
 	public static final Predicate<Entity> EXCEPT_SPECTATOR = entity -> !entity.isSpectator();
@@ -25,28 +25,24 @@ public final class EntityPredicates {
 	}
 
 	public static Predicate<Entity> method_5911(Entity entity) {
-		AbstractScoreboardTeam abstractScoreboardTeam = entity.getScoreboardTeam();
-		AbstractScoreboardTeam.CollisionRule collisionRule = abstractScoreboardTeam == null
-			? AbstractScoreboardTeam.CollisionRule.field_1437
-			: abstractScoreboardTeam.getCollisionRule();
-		return (Predicate<Entity>)(collisionRule == AbstractScoreboardTeam.CollisionRule.field_1435
+		AbstractTeam abstractTeam = entity.method_5781();
+		AbstractTeam.CollisionRule collisionRule = abstractTeam == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam.getCollisionRule();
+		return (Predicate<Entity>)(collisionRule == AbstractTeam.CollisionRule.field_1435
 			? Predicates.alwaysFalse()
 			: EXCEPT_SPECTATOR.and(
 				entity2 -> {
 					if (!entity2.isPushable()) {
 						return false;
-					} else if (!entity.world.isClient || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).method_7340()) {
-						AbstractScoreboardTeam abstractScoreboardTeam2 = entity2.getScoreboardTeam();
-						AbstractScoreboardTeam.CollisionRule collisionRule2 = abstractScoreboardTeam2 == null
-							? AbstractScoreboardTeam.CollisionRule.field_1437
-							: abstractScoreboardTeam2.getCollisionRule();
-						if (collisionRule2 == AbstractScoreboardTeam.CollisionRule.field_1435) {
+					} else if (!entity.world.isClient || entity2 instanceof PlayerEntity && ((PlayerEntity)entity2).isMainPlayer()) {
+						AbstractTeam abstractTeam2 = entity2.method_5781();
+						AbstractTeam.CollisionRule collisionRule2 = abstractTeam2 == null ? AbstractTeam.CollisionRule.ALWAYS : abstractTeam2.getCollisionRule();
+						if (collisionRule2 == AbstractTeam.CollisionRule.field_1435) {
 							return false;
 						} else {
-							boolean bl = abstractScoreboardTeam != null && abstractScoreboardTeam.isEqual(abstractScoreboardTeam2);
-							return (collisionRule == AbstractScoreboardTeam.CollisionRule.field_1440 || collisionRule2 == AbstractScoreboardTeam.CollisionRule.field_1440) && bl
+							boolean bl = abstractTeam != null && abstractTeam.isEqual(abstractTeam2);
+							return (collisionRule == AbstractTeam.CollisionRule.field_1440 || collisionRule2 == AbstractTeam.CollisionRule.field_1440) && bl
 								? false
-								: collisionRule != AbstractScoreboardTeam.CollisionRule.field_1434 && collisionRule2 != AbstractScoreboardTeam.CollisionRule.field_1434 || bl;
+								: collisionRule != AbstractTeam.CollisionRule.field_1434 && collisionRule2 != AbstractTeam.CollisionRule.field_1434 || bl;
 						}
 					} else {
 						return false;
@@ -55,7 +51,7 @@ public final class EntityPredicates {
 			));
 	}
 
-	public static Predicate<Entity> method_5913(Entity entity) {
+	public static Predicate<Entity> getBottommostEntity(Entity entity) {
 		return entity2 -> {
 			while (entity2.hasVehicle()) {
 				entity2 = entity2.getRiddenEntity();
@@ -76,7 +72,7 @@ public final class EntityPredicates {
 		}
 
 		public boolean method_5916(@Nullable Entity entity) {
-			if (!entity.isValid()) {
+			if (!entity.isAlive()) {
 				return false;
 			} else if (!(entity instanceof LivingEntity)) {
 				return false;

@@ -28,72 +28,72 @@ public class EffectCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("effect")
+			CommandManager.literal("effect")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.literal("clear")
+					CommandManager.literal("clear")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
-								.executes(commandContext -> method_13230(commandContext.getSource(), EntityArgumentType.method_9317(commandContext, "targets")))
+							CommandManager.argument("targets", EntityArgumentType.entities())
+								.executes(commandContext -> executeClear(commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets")))
 								.then(
-									ServerCommandManager.argument("effect", MobEffectArgumentType.create())
+									CommandManager.argument("effect", MobEffectArgumentType.create())
 										.executes(
-											commandContext -> method_13231(
+											commandContext -> executeClear(
 													commandContext.getSource(),
-													EntityArgumentType.method_9317(commandContext, "targets"),
-													MobEffectArgumentType.getEffectArgument(commandContext, "effect")
+													EntityArgumentType.getEntities(commandContext, "targets"),
+													MobEffectArgumentType.getMobEffect(commandContext, "effect")
 												)
 										)
 								)
 						)
 				)
 				.then(
-					ServerCommandManager.literal("give")
+					CommandManager.literal("give")
 						.then(
-							ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
+							CommandManager.argument("targets", EntityArgumentType.entities())
 								.then(
-									ServerCommandManager.argument("effect", MobEffectArgumentType.create())
+									CommandManager.argument("effect", MobEffectArgumentType.create())
 										.executes(
-											commandContext -> method_13227(
+											commandContext -> executeGive(
 													commandContext.getSource(),
-													EntityArgumentType.method_9317(commandContext, "targets"),
-													MobEffectArgumentType.getEffectArgument(commandContext, "effect"),
+													EntityArgumentType.getEntities(commandContext, "targets"),
+													MobEffectArgumentType.getMobEffect(commandContext, "effect"),
 													null,
 													0,
 													true
 												)
 										)
 										.then(
-											ServerCommandManager.argument("seconds", IntegerArgumentType.integer(1, 1000000))
+											CommandManager.argument("seconds", IntegerArgumentType.integer(1, 1000000))
 												.executes(
-													commandContext -> method_13227(
+													commandContext -> executeGive(
 															commandContext.getSource(),
-															EntityArgumentType.method_9317(commandContext, "targets"),
-															MobEffectArgumentType.getEffectArgument(commandContext, "effect"),
+															EntityArgumentType.getEntities(commandContext, "targets"),
+															MobEffectArgumentType.getMobEffect(commandContext, "effect"),
 															IntegerArgumentType.getInteger(commandContext, "seconds"),
 															0,
 															true
 														)
 												)
 												.then(
-													ServerCommandManager.argument("amplifier", IntegerArgumentType.integer(0, 255))
+													CommandManager.argument("amplifier", IntegerArgumentType.integer(0, 255))
 														.executes(
-															commandContext -> method_13227(
+															commandContext -> executeGive(
 																	commandContext.getSource(),
-																	EntityArgumentType.method_9317(commandContext, "targets"),
-																	MobEffectArgumentType.getEffectArgument(commandContext, "effect"),
+																	EntityArgumentType.getEntities(commandContext, "targets"),
+																	MobEffectArgumentType.getMobEffect(commandContext, "effect"),
 																	IntegerArgumentType.getInteger(commandContext, "seconds"),
 																	IntegerArgumentType.getInteger(commandContext, "amplifier"),
 																	true
 																)
 														)
 														.then(
-															ServerCommandManager.argument("hideParticles", BoolArgumentType.bool())
+															CommandManager.argument("hideParticles", BoolArgumentType.bool())
 																.executes(
-																	commandContext -> method_13227(
+																	commandContext -> executeGive(
 																			commandContext.getSource(),
-																			EntityArgumentType.method_9317(commandContext, "targets"),
-																			MobEffectArgumentType.getEffectArgument(commandContext, "effect"),
+																			EntityArgumentType.getEntities(commandContext, "targets"),
+																			MobEffectArgumentType.getMobEffect(commandContext, "effect"),
 																			IntegerArgumentType.getInteger(commandContext, "seconds"),
 																			IntegerArgumentType.getInteger(commandContext, "amplifier"),
 																			!BoolArgumentType.getBool(commandContext, "hideParticles")
@@ -108,7 +108,7 @@ public class EffectCommand {
 		);
 	}
 
-	private static int method_13227(
+	private static int executeGive(
 		ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, StatusEffect statusEffect, @Nullable Integer integer, int i, boolean bl
 	) throws CommandSyntaxException {
 		int j = 0;
@@ -154,7 +154,7 @@ public class EffectCommand {
 		}
 	}
 
-	private static int method_13230(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection) throws CommandSyntaxException {
+	private static int executeClear(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection) throws CommandSyntaxException {
 		int i = 0;
 
 		for (Entity entity : collection) {
@@ -178,7 +178,7 @@ public class EffectCommand {
 		}
 	}
 
-	private static int method_13231(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, StatusEffect statusEffect) throws CommandSyntaxException {
+	private static int executeClear(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, StatusEffect statusEffect) throws CommandSyntaxException {
 		int i = 0;
 
 		for (Entity entity : collection) {

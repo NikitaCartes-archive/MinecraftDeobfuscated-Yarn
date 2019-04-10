@@ -17,7 +17,7 @@ import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.scoreboard.AbstractScoreboardTeam;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.text.TextFormat;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.Direction;
@@ -30,7 +30,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final NativeImageBackedTexture colorOverlayTexture = SystemUtil.consume(
 		new NativeImageBackedTexture(16, 16, false), nativeImageBackedTexture -> {
-			nativeImageBackedTexture.getImage().method_4302();
+			nativeImageBackedTexture.getImage().untrack();
 
 			for (int i = 0; i < 16; i++) {
 				for (int j = 0; j < 16; j++) {
@@ -64,7 +64,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	public void method_4054(T livingEntity, double d, double e, double f, float g, float h) {
 		GlStateManager.pushMatrix();
 		GlStateManager.disableCull();
-		this.model.swingProgress = this.method_4044(livingEntity, h);
+		this.model.handSwingProgress = this.getHandSwingProgress(livingEntity, h);
 		this.model.isRiding = livingEntity.hasVehicle();
 		this.model.isChild = livingEntity.isChild();
 
@@ -95,14 +95,14 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 			float m = MathHelper.lerp(h, livingEntity.prevPitch, livingEntity.pitch);
 			this.method_4048(livingEntity, d, e, f);
-			float lx = this.method_4045(livingEntity, h);
+			float lx = this.getAge(livingEntity, h);
 			this.setupTransforms(livingEntity, lx, i, h);
-			float n = this.method_4060(livingEntity, h);
+			float n = this.scaleAndTranslate(livingEntity, h);
 			float o = 0.0F;
 			float p = 0.0F;
-			if (!livingEntity.hasVehicle() && livingEntity.isValid()) {
-				o = MathHelper.lerp(h, livingEntity.field_6211, livingEntity.field_6225);
-				p = livingEntity.field_6249 - livingEntity.field_6225 * (1.0F - h);
+			if (!livingEntity.hasVehicle() && livingEntity.isAlive()) {
+				o = MathHelper.lerp(h, livingEntity.lastLimbDistance, livingEntity.limbDistance);
+				p = livingEntity.limbAngle - livingEntity.limbDistance * (1.0F - h);
 				if (livingEntity.isChild()) {
 					p *= 3.0F;
 				}
@@ -133,7 +133,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 					this.afterOutlineRender();
 				}
 			} else {
-				boolean blx = this.tryApplyOverlayColor(livingEntity, h);
+				boolean blx = this.applyOverlayColor(livingEntity, h);
 				this.render(livingEntity, p, o, lx, k, m, n);
 				if (blx) {
 					this.disableOverlayColor();
@@ -158,10 +158,10 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		super.render(livingEntity, d, e, f, g, h);
 	}
 
-	public float method_4060(T livingEntity, float f) {
+	public float scaleAndTranslate(T livingEntity, float f) {
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.scalef(-1.0F, -1.0F, 1.0F);
-		this.method_4042(livingEntity, f);
+		this.scale(livingEntity, f);
 		float g = 0.0625F;
 		GlStateManager.translatef(0.0F, -1.501F, 0.0F);
 		return 0.0625F;
@@ -183,7 +183,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 	}
 
 	protected void render(T livingEntity, float f, float g, float h, float i, float j, float k) {
-		boolean bl = this.method_4056(livingEntity);
+		boolean bl = this.renderLeftArmOverlay(livingEntity);
 		boolean bl2 = !bl && !livingEntity.canSeePlayer(MinecraftClient.getInstance().player);
 		if (bl || bl2) {
 			if (!this.bindEntityTexture(livingEntity)) {
@@ -201,19 +201,19 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected boolean method_4056(T livingEntity) {
+	protected boolean renderLeftArmOverlay(T livingEntity) {
 		return !livingEntity.isInvisible() || this.renderOutlines;
 	}
 
-	protected boolean tryApplyOverlayColor(T livingEntity, float f) {
-		return this.tryApplyOverlayColor(livingEntity, f, true);
+	protected boolean applyOverlayColor(T livingEntity, float f) {
+		return this.applyOverlayColor(livingEntity, f, true);
 	}
 
-	protected boolean tryApplyOverlayColor(T livingEntity, float f, boolean bl) {
-		float g = livingEntity.method_5718();
+	protected boolean applyOverlayColor(T livingEntity, float f, boolean bl) {
+		float g = livingEntity.getBrightnessAtEyes();
 		int i = this.getOverlayColor(livingEntity, g, f);
 		boolean bl2 = (i >> 24 & 0xFF) > 0;
-		boolean bl3 = livingEntity.hurtTime > 0 || livingEntity.deathCounter > 0;
+		boolean bl3 = livingEntity.hurtTime > 0 || livingEntity.deathTime > 0;
 		if (!bl2 && !bl3) {
 			return false;
 		} else if (!bl2 && !bl) {
@@ -353,8 +353,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.rotatef(180.0F - g, 0.0F, 1.0F, 0.0F);
 		}
 
-		if (livingEntity.deathCounter > 0) {
-			float i = ((float)livingEntity.deathCounter + h - 1.0F) / 20.0F * 1.6F;
+		if (livingEntity.deathTime > 0) {
+			float i = ((float)livingEntity.deathTime + h - 1.0F) / 20.0F * 1.6F;
 			i = MathHelper.sqrt(i);
 			if (i > 1.0F) {
 				i = 1.0F;
@@ -380,17 +380,17 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		}
 	}
 
-	protected float method_4044(T livingEntity, float f) {
-		return livingEntity.method_6055(f);
+	protected float getHandSwingProgress(T livingEntity, float f) {
+		return livingEntity.getHandSwingProgress(f);
 	}
 
-	protected float method_4045(T livingEntity, float f) {
+	protected float getAge(T livingEntity, float f) {
 		return (float)livingEntity.age + f;
 	}
 
 	protected void renderFeatures(T livingEntity, float f, float g, float h, float i, float j, float k, float l) {
 		for (FeatureRenderer<T, M> featureRenderer : this.features) {
-			boolean bl = this.tryApplyOverlayColor(livingEntity, h, featureRenderer.method_4200());
+			boolean bl = this.applyOverlayColor(livingEntity, h, featureRenderer.hasHurtOverlay());
 			featureRenderer.render(livingEntity, f, g, h, i, j, k, l);
 			if (bl) {
 				this.disableOverlayColor();
@@ -406,17 +406,17 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		return 0;
 	}
 
-	protected void method_4042(T livingEntity, float f) {
+	protected void scale(T livingEntity, float f) {
 	}
 
 	public void method_4041(T livingEntity, double d, double e, double f) {
 		if (this.method_4055(livingEntity)) {
-			double g = livingEntity.squaredDistanceTo(this.renderManager.field_4686.getPos());
-			float h = livingEntity.isSneaking() ? 32.0F : 64.0F;
+			double g = livingEntity.squaredDistanceTo(this.renderManager.camera.getPos());
+			float h = livingEntity.isInSneakingPose() ? 32.0F : 64.0F;
 			if (!(g >= (double)(h * h))) {
 				String string = livingEntity.getDisplayName().getFormattedText();
 				GlStateManager.alphaFunc(516, 0.1F);
-				this.method_3930(livingEntity, d, e, f, string, g);
+				this.renderLabel(livingEntity, d, e, f, string, g);
 			}
 		}
 	}
@@ -425,27 +425,25 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
 		boolean bl = !livingEntity.canSeePlayer(clientPlayerEntity);
 		if (livingEntity != clientPlayerEntity) {
-			AbstractScoreboardTeam abstractScoreboardTeam = livingEntity.getScoreboardTeam();
-			AbstractScoreboardTeam abstractScoreboardTeam2 = clientPlayerEntity.getScoreboardTeam();
-			if (abstractScoreboardTeam != null) {
-				AbstractScoreboardTeam.VisibilityRule visibilityRule = abstractScoreboardTeam.getNameTagVisibilityRule();
+			AbstractTeam abstractTeam = livingEntity.method_5781();
+			AbstractTeam abstractTeam2 = clientPlayerEntity.method_5781();
+			if (abstractTeam != null) {
+				AbstractTeam.VisibilityRule visibilityRule = abstractTeam.getNameTagVisibilityRule();
 				switch (visibilityRule) {
 					case ALWAYS:
 						return bl;
 					case NEVER:
 						return false;
 					case HIDDEN_FOR_OTHER_TEAMS:
-						return abstractScoreboardTeam2 == null
-							? bl
-							: abstractScoreboardTeam.isEqual(abstractScoreboardTeam2) && (abstractScoreboardTeam.shouldShowFriendlyInvisibles() || bl);
+						return abstractTeam2 == null ? bl : abstractTeam.isEqual(abstractTeam2) && (abstractTeam.shouldShowFriendlyInvisibles() || bl);
 					case HIDDEN_FOR_TEAM:
-						return abstractScoreboardTeam2 == null ? bl : !abstractScoreboardTeam.isEqual(abstractScoreboardTeam2) && bl;
+						return abstractTeam2 == null ? bl : !abstractTeam.isEqual(abstractTeam2) && bl;
 					default:
 						return true;
 				}
 			}
 		}
 
-		return MinecraftClient.isHudEnabled() && livingEntity != this.renderManager.field_4686.getFocusedEntity() && bl && !livingEntity.hasPassengers();
+		return MinecraftClient.isHudEnabled() && livingEntity != this.renderManager.camera.getFocusedEntity() && bl && !livingEntity.hasPassengers();
 	}
 }

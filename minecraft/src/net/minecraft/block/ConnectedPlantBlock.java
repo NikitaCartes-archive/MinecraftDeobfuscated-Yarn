@@ -46,7 +46,7 @@ public class ConnectedPlantBlock extends Block {
 
 		for (int i = 0; i < FACINGS.length; i++) {
 			Direction direction = FACINGS[i];
-			voxelShapes[i] = VoxelShapes.cube(
+			voxelShapes[i] = VoxelShapes.cuboid(
 				0.5 + Math.min((double)(-f), (double)direction.getOffsetX() * 0.5),
 				0.5 + Math.min((double)(-f), (double)direction.getOffsetY() * 0.5),
 				0.5 + Math.min((double)(-f), (double)direction.getOffsetZ() * 0.5),

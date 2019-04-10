@@ -41,11 +41,11 @@ public class MusicDiscItem extends Item {
 			ItemStack itemStack = itemUsageContext.getItemStack();
 			if (!world.isClient) {
 				((JukeboxBlock)Blocks.field_10223).setRecord(world, blockPos, blockState, itemStack);
-				world.playEvent(null, 1010, blockPos, Item.getRawIdByItem(this));
+				world.playLevelEvent(null, 1010, blockPos, Item.getRawIdByItem(this));
 				itemStack.subtractAmount(1);
 				PlayerEntity playerEntity = itemUsageContext.getPlayer();
 				if (playerEntity != null) {
-					playerEntity.increaseStat(Stats.field_15375);
+					playerEntity.incrementStat(Stats.field_15375);
 				}
 			}
 

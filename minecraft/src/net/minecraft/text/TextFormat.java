@@ -34,7 +34,7 @@ public enum TextFormat {
 	field_1055("STRIKETHROUGH", 'm', true),
 	field_1073("UNDERLINE", 'n', true),
 	field_1056("ITALIC", 'o', true),
-	field_1070("RESET", 'r', -1, null);
+	color("RESET", 'r', -1, null);
 
 	private static final Map<String, TextFormat> field_1052 = (Map<String, TextFormat>)Arrays.stream(values())
 		.collect(Collectors.toMap(textFormat -> sanitizeName(textFormat.field_1057), textFormat -> textFormat));
@@ -82,7 +82,7 @@ public enum TextFormat {
 						stringBuilder.setLength(0);
 					}
 
-					if (textFormat != field_1070) {
+					if (textFormat != color) {
 						stringBuilder.append(textFormat);
 					}
 				}
@@ -101,7 +101,7 @@ public enum TextFormat {
 	}
 
 	public boolean isColor() {
-		return !this.modifier && this != field_1070;
+		return !this.modifier && this != color;
 	}
 
 	@Nullable
@@ -136,7 +136,7 @@ public enum TextFormat {
 	@Nullable
 	public static TextFormat byId(int i) {
 		if (i < 0) {
-			return field_1070;
+			return color;
 		} else {
 			for (TextFormat textFormat : values()) {
 				if (textFormat.getId() == i) {

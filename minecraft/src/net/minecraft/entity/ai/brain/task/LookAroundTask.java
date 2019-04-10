@@ -19,7 +19,7 @@ public class LookAroundTask extends Task<MobEntity> {
 	}
 
 	protected boolean method_18967(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		return mobEntity.getBrain().getMemory(MemoryModuleType.field_18446).filter(lookTarget -> lookTarget.method_18990(mobEntity)).isPresent();
+		return mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18446).filter(lookTarget -> lookTarget.isSeenBy(mobEntity)).isPresent();
 	}
 
 	protected void method_18968(ServerWorld serverWorld, MobEntity mobEntity, long l) {
@@ -27,6 +27,6 @@ public class LookAroundTask extends Task<MobEntity> {
 	}
 
 	protected void method_18969(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		mobEntity.getBrain().getMemory(MemoryModuleType.field_18446).ifPresent(lookTarget -> mobEntity.getLookControl().method_19615(lookTarget.getPos()));
+		mobEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18446).ifPresent(lookTarget -> mobEntity.getLookControl().method_19615(lookTarget.getPos()));
 	}
 }

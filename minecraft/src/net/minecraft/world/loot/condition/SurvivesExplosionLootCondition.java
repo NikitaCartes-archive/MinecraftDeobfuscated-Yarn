@@ -33,7 +33,7 @@ public class SurvivesExplosionLootCondition implements LootCondition {
 		}
 	}
 
-	public static LootCondition.Builder method_871() {
+	public static LootCondition.Builder builder() {
 		return () -> INSTANCE;
 	}
 

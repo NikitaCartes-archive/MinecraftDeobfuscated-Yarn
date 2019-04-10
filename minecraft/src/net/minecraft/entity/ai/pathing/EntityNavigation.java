@@ -86,7 +86,7 @@ public abstract class EntityNavigation {
 		float f = (float)blockPos.getX() + 0.5F;
 		float g = (float)blockPos.getY() + 0.5F;
 		float h = (float)blockPos.getZ() + 0.5F;
-		return this.method_18416(blockPos, (double)f, (double)g, (double)h, 8, false);
+		return this.findPathTo(blockPos, (double)f, (double)g, (double)h, 8, false);
 	}
 
 	@Nullable
@@ -95,11 +95,11 @@ public abstract class EntityNavigation {
 		double d = entity.x;
 		double e = entity.getBoundingBox().minY;
 		double f = entity.z;
-		return this.method_18416(blockPos, d, e, f, 16, true);
+		return this.findPathTo(blockPos, d, e, f, 16, true);
 	}
 
 	@Nullable
-	protected Path method_18416(BlockPos blockPos, double d, double e, double f, int i, boolean bl) {
+	protected Path findPathTo(BlockPos blockPos, double d, double e, double f, int i, boolean bl) {
 		if (!this.isAtValidPosition()) {
 			return null;
 		} else if (this.currentPath != null && !this.currentPath.isFinished() && blockPos.equals(this.targetPos)) {
@@ -140,7 +140,7 @@ public abstract class EntityNavigation {
 				return false;
 			} else {
 				this.speed = d;
-				Vec3d vec3d = this.method_6347();
+				Vec3d vec3d = this.getPos();
 				this.field_6674 = this.tickCount;
 				this.field_6672 = vec3d;
 				return true;
@@ -163,7 +163,7 @@ public abstract class EntityNavigation {
 			if (this.isAtValidPosition()) {
 				this.method_6339();
 			} else if (this.currentPath != null && this.currentPath.getCurrentNodeIndex() < this.currentPath.getLength()) {
-				Vec3d vec3d = this.method_6347();
+				Vec3d vec3d = this.getPos();
 				Vec3d vec3d2 = this.currentPath.getNodePosition(this.entity, this.currentPath.getCurrentNodeIndex());
 				if (vec3d.y > vec3d2.y
 					&& !this.entity.onGround
@@ -185,7 +185,7 @@ public abstract class EntityNavigation {
 	}
 
 	protected void method_6339() {
-		Vec3d vec3d = this.method_6347();
+		Vec3d vec3d = this.getPos();
 		int i = this.currentPath.getLength();
 
 		for (int j = this.currentPath.getCurrentNodeIndex(); j < this.currentPath.getLength(); j++) {
@@ -256,7 +256,7 @@ public abstract class EntityNavigation {
 		this.currentPath = null;
 	}
 
-	protected abstract Vec3d method_6347();
+	protected abstract Vec3d getPos();
 
 	protected abstract boolean isAtValidPosition();
 
@@ -304,7 +304,7 @@ public abstract class EntityNavigation {
 		if (this.currentPath != null && !this.currentPath.isFinished() && this.currentPath.getLength() != 0) {
 			PathNode pathNode = this.currentPath.getEnd();
 			Vec3d vec3d = new Vec3d(((double)pathNode.x + this.entity.x) / 2.0, ((double)pathNode.y + this.entity.y) / 2.0, ((double)pathNode.z + this.entity.z) / 2.0);
-			if (blockPos.method_19769(vec3d, (double)(this.currentPath.getLength() - this.currentPath.getCurrentNodeIndex()))) {
+			if (blockPos.isWithinDistance(vec3d, (double)(this.currentPath.getLength() - this.currentPath.getCurrentNodeIndex()))) {
 				this.recalculatePath();
 			}
 		}

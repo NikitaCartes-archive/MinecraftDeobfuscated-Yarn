@@ -50,7 +50,7 @@ public class RecipeBookGhostSlots {
 	}
 
 	public void draw(MinecraftClient minecraftClient, int i, int j, boolean bl, float f) {
-		if (!Screen.isControlPressed()) {
+		if (!Screen.hasControlDown()) {
 			this.time += f;
 		}
 
@@ -62,16 +62,16 @@ public class RecipeBookGhostSlots {
 			int l = ghostInputSlot.getX() + i;
 			int m = ghostInputSlot.getY() + j;
 			if (k == 0 && bl) {
-				DrawableHelper.drawRect(l - 4, m - 4, l + 20, m + 20, 822018048);
+				DrawableHelper.fill(l - 4, m - 4, l + 20, m + 20, 822018048);
 			} else {
-				DrawableHelper.drawRect(l, m, l + 16, m + 16, 822018048);
+				DrawableHelper.fill(l, m, l + 16, m + 16, 822018048);
 			}
 
 			ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
 			ItemRenderer itemRenderer = minecraftClient.getItemRenderer();
 			itemRenderer.renderGuiItem(minecraftClient.player, itemStack, l, m);
 			GlStateManager.depthFunc(516);
-			DrawableHelper.drawRect(l, m, l + 16, m + 16, 822083583);
+			DrawableHelper.fill(l, m, l + 16, m + 16, 822083583);
 			GlStateManager.depthFunc(515);
 			if (k == 0) {
 				itemRenderer.renderGuiItemOverlay(minecraftClient.textRenderer, itemStack, l, m);

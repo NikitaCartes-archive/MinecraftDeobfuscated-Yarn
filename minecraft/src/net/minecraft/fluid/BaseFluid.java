@@ -15,7 +15,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.Material;
-import net.minecraft.block.StairsBlock;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntegerProperty;
@@ -108,17 +107,13 @@ public abstract class BaseFluid extends Fluid {
 
 	protected boolean method_15749(BlockView blockView, BlockPos blockPos, Direction direction) {
 		BlockState blockState = blockView.getBlockState(blockPos);
-		Block block = blockState.getBlock();
 		FluidState fluidState = blockView.getFluidState(blockPos);
 		if (fluidState.getFluid().matchesType(this)) {
 			return false;
 		} else if (direction == Direction.UP) {
 			return true;
-		} else if (blockState.getMaterial() == Material.ICE) {
-			return false;
 		} else {
-			boolean bl = Block.method_9581(block) || block instanceof StairsBlock;
-			return !bl && Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction);
+			return blockState.getMaterial() == Material.ICE ? false : Block.isSolidFullSquare(blockState, blockView, blockPos, direction);
 		}
 	}
 
@@ -473,6 +468,6 @@ public abstract class BaseFluid extends Fluid {
 		return fluidState.getLevel() == 9 && isFluidAboveEqual(fluidState, blockView, blockPos)
 			? VoxelShapes.fullCube()
 			: (VoxelShape)this.shapeCache
-				.computeIfAbsent(fluidState, fluidStatex -> VoxelShapes.cube(0.0, 0.0, 0.0, 1.0, (double)fluidStatex.getHeight(blockView, blockPos), 1.0));
+				.computeIfAbsent(fluidState, fluidStatex -> VoxelShapes.cuboid(0.0, 0.0, 0.0, 1.0, (double)fluidStatex.getHeight(blockView, blockPos), 1.0));
 	}
 }

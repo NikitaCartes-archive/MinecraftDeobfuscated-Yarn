@@ -50,7 +50,7 @@ public interface Inventory extends Clearable {
 		return i;
 	}
 
-	default boolean method_18862(Set<Item> set) {
+	default boolean containsAnyInInv(Set<Item> set) {
 		for (int i = 0; i < this.getInvSize(); i++) {
 			ItemStack itemStack = this.getInvStack(i);
 			if (set.contains(itemStack.getItem()) && itemStack.getAmount() > 0) {

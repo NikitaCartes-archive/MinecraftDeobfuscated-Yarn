@@ -49,13 +49,13 @@ public class WorldGenerationProgressTracker implements WorldGenerationProgressLi
 
 	public void start() {
 		this.isRunning = true;
+		this.chunkStatuses.clear();
 	}
 
 	@Override
 	public void stop() {
 		this.isRunning = false;
 		this.progressLogger.stop();
-		this.chunkStatuses.clear();
 	}
 
 	public int getCenterSize() {

@@ -89,7 +89,7 @@ public class DebugStickItem extends Item {
 	}
 
 	private static <T> T method_7760(Iterable<T> iterable, @Nullable T object, boolean bl) {
-		return bl ? SystemUtil.method_645(iterable, object) : SystemUtil.method_660(iterable, object);
+		return bl ? SystemUtil.previous(iterable, object) : SystemUtil.next(iterable, object);
 	}
 
 	private static void method_7762(PlayerEntity playerEntity, TextComponent textComponent) {

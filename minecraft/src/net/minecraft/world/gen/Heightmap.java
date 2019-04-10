@@ -122,7 +122,7 @@ public class Heightmap {
 
 	public static enum Type {
 		WORLD_SURFACE_WG("WORLD_SURFACE_WG", Heightmap.class_2904.field_13207, Heightmap.ALWAYS_TRUE),
-		WORLD_SURFACE("WORLD_SURFACE", Heightmap.class_2904.field_13206, Heightmap.ALWAYS_TRUE),
+		WORLD_SURFACE("WORLD_SURFACE", Heightmap.class_2904.field_16424, Heightmap.ALWAYS_TRUE),
 		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.class_2904.field_13207, Heightmap.SUFFOCATES),
 		OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.class_2904.field_13206, Heightmap.SUFFOCATES),
 		MOTION_BLOCKING(
@@ -151,10 +151,6 @@ public class Heightmap {
 
 		public String getName() {
 			return this.name;
-		}
-
-		public boolean method_16136() {
-			return this.field_13198 != Heightmap.class_2904.field_13207;
 		}
 
 		public boolean method_16137() {

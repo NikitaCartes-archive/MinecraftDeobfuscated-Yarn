@@ -19,24 +19,24 @@ import net.minecraft.village.PointOfInterestType;
 
 public class FindPointOfInterestTask extends Task<LivingEntity> {
 	private final Predicate<PointOfInterestType> pointOfInterestType;
-	private final MemoryModuleType<GlobalPos> memoryType;
-	private final boolean field_18854;
+	private final MemoryModuleType<GlobalPos> targetMemoryModule;
+	private final boolean onlyRunIfChild;
 	private long lastRunTime;
 
 	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl) {
-		this.pointOfInterestType = pointOfInterestType.getCompletedCondition();
-		this.memoryType = memoryModuleType;
-		this.field_18854 = bl;
+		this.pointOfInterestType = pointOfInterestType.getCompletionCondition();
+		this.targetMemoryModule = memoryModuleType;
+		this.onlyRunIfChild = bl;
 	}
 
 	@Override
 	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
-		return ImmutableSet.of(Pair.of(this.memoryType, MemoryModuleState.field_18457));
+		return ImmutableSet.of(Pair.of(this.targetMemoryModule, MemoryModuleState.field_18457));
 	}
 
 	@Override
 	protected boolean shouldRun(ServerWorld serverWorld, LivingEntity livingEntity) {
-		return this.field_18854 && livingEntity.isChild() ? false : serverWorld.getTime() - this.lastRunTime >= 10L;
+		return this.onlyRunIfChild && livingEntity.isChild() ? false : serverWorld.getTime() - this.lastRunTime >= 40L;
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 				mutable.setOffset(Direction.DOWN);
 			}
 
-			while (serverWorld.getBlockState(mutable).isAir()) {
+			while (serverWorld.getBlockState(mutable).isAir() && mutable.getY() >= 0) {
 				mutable.setOffset(Direction.DOWN);
 			}
 
@@ -58,8 +58,8 @@ public class FindPointOfInterestTask extends Task<LivingEntity> {
 			return path != null && path.method_19315();
 		};
 		pointOfInterestStorage.getNearestPosition(this.pointOfInterestType, predicate, new BlockPos(livingEntity), 48).ifPresent(blockPos -> {
-			livingEntity.getBrain().putMemory(this.memoryType, GlobalPos.create(serverWorld.getDimension().getType(), blockPos));
-			DebugRendererInfoManager.method_19778(serverWorld, blockPos);
+			livingEntity.getBrain().putMemory(this.targetMemoryModule, GlobalPos.create(serverWorld.getDimension().getType(), blockPos));
+			DebugRendererInfoManager.sendPointOfInterest(serverWorld, blockPos);
 		});
 	}
 }

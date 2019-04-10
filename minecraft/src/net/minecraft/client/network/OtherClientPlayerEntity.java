@@ -36,7 +36,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		this.field_6211 = this.field_6225;
+		this.lastLimbDistance = this.limbDistance;
 		double d = this.x - this.prevX;
 		double e = this.z - this.prevZ;
 		float f = MathHelper.sqrt(d * d + e * e) * 4.0F;
@@ -44,8 +44,8 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 			f = 1.0F;
 		}
 
-		this.field_6225 = this.field_6225 + (f - this.field_6225) * 0.4F;
-		this.field_6249 = this.field_6249 + this.field_6225;
+		this.limbDistance = this.limbDistance + (f - this.limbDistance) * 0.4F;
+		this.limbAngle = this.limbAngle + this.limbDistance;
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		this.field_7505 = this.field_7483;
-		this.method_6119();
+		this.tickHandSwing();
 		float g;
 		if (this.onGround && !(this.getHealth() <= 0.0F)) {
 			g = Math.min(0.1F, MathHelper.sqrt(squaredHorizontalLength(this.getVelocity())));

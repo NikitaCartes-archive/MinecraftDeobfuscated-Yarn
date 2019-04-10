@@ -20,7 +20,7 @@ public class EscapeDangerGoal extends Goal {
 	public EscapeDangerGoal(MobEntityWithAi mobEntityWithAi, double d) {
 		this.owner = mobEntityWithAi;
 		this.speed = d;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
@@ -38,11 +38,11 @@ public class EscapeDangerGoal extends Goal {
 				}
 			}
 
-			return this.method_6301();
+			return this.findTarget();
 		}
 	}
 
-	protected boolean method_6301() {
+	protected boolean findTarget() {
 		Vec3d vec3d = PathfindingUtil.findTarget(this.owner, 5, 4);
 		if (vec3d == null) {
 			return false;

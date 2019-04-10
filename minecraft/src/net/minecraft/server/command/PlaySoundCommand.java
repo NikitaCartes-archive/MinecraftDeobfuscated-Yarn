@@ -23,27 +23,27 @@ public class PlaySoundCommand {
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.playsound.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		RequiredArgumentBuilder<ServerCommandSource, Identifier> requiredArgumentBuilder = ServerCommandManager.argument("sound", IdentifierArgumentType.create())
+		RequiredArgumentBuilder<ServerCommandSource, Identifier> requiredArgumentBuilder = CommandManager.argument("sound", IdentifierArgumentType.create())
 			.suggests(SuggestionProviders.AVAILABLE_SOUNDS);
 
 		for (SoundCategory soundCategory : SoundCategory.values()) {
-			requiredArgumentBuilder.then(method_13497(soundCategory));
+			requiredArgumentBuilder.then(makeArgumentsForCategory(soundCategory));
 		}
 
 		commandDispatcher.register(
-			ServerCommandManager.literal("playsound").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).then(requiredArgumentBuilder)
+			CommandManager.literal("playsound").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).then(requiredArgumentBuilder)
 		);
 	}
 
-	private static LiteralArgumentBuilder<ServerCommandSource> method_13497(SoundCategory soundCategory) {
-		return ServerCommandManager.literal(soundCategory.getName())
+	private static LiteralArgumentBuilder<ServerCommandSource> makeArgumentsForCategory(SoundCategory soundCategory) {
+		return CommandManager.literal(soundCategory.getName())
 			.then(
-				ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+				CommandManager.argument("targets", EntityArgumentType.players())
 					.executes(
-						commandContext -> method_13504(
+						commandContext -> execute(
 								commandContext.getSource(),
-								EntityArgumentType.method_9312(commandContext, "targets"),
-								IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
+								EntityArgumentType.getPlayers(commandContext, "targets"),
+								IdentifierArgumentType.getIdentifier(commandContext, "sound"),
 								soundCategory,
 								commandContext.getSource().getPosition(),
 								1.0F,
@@ -52,56 +52,56 @@ public class PlaySoundCommand {
 							)
 					)
 					.then(
-						ServerCommandManager.argument("pos", Vec3ArgumentType.create())
+						CommandManager.argument("pos", Vec3ArgumentType.create())
 							.executes(
-								commandContext -> method_13504(
+								commandContext -> execute(
 										commandContext.getSource(),
-										EntityArgumentType.method_9312(commandContext, "targets"),
-										IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
+										EntityArgumentType.getPlayers(commandContext, "targets"),
+										IdentifierArgumentType.getIdentifier(commandContext, "sound"),
 										soundCategory,
-										Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
+										Vec3ArgumentType.getVec3(commandContext, "pos"),
 										1.0F,
 										1.0F,
 										0.0F
 									)
 							)
 							.then(
-								ServerCommandManager.argument("volume", FloatArgumentType.floatArg(0.0F))
+								CommandManager.argument("volume", FloatArgumentType.floatArg(0.0F))
 									.executes(
-										commandContext -> method_13504(
+										commandContext -> execute(
 												commandContext.getSource(),
-												EntityArgumentType.method_9312(commandContext, "targets"),
-												IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
+												EntityArgumentType.getPlayers(commandContext, "targets"),
+												IdentifierArgumentType.getIdentifier(commandContext, "sound"),
 												soundCategory,
-												Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
+												Vec3ArgumentType.getVec3(commandContext, "pos"),
 												commandContext.<Float>getArgument("volume", Float.class),
 												1.0F,
 												0.0F
 											)
 									)
 									.then(
-										ServerCommandManager.argument("pitch", FloatArgumentType.floatArg(0.0F, 2.0F))
+										CommandManager.argument("pitch", FloatArgumentType.floatArg(0.0F, 2.0F))
 											.executes(
-												commandContext -> method_13504(
+												commandContext -> execute(
 														commandContext.getSource(),
-														EntityArgumentType.method_9312(commandContext, "targets"),
-														IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
+														EntityArgumentType.getPlayers(commandContext, "targets"),
+														IdentifierArgumentType.getIdentifier(commandContext, "sound"),
 														soundCategory,
-														Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
+														Vec3ArgumentType.getVec3(commandContext, "pos"),
 														commandContext.<Float>getArgument("volume", Float.class),
 														commandContext.<Float>getArgument("pitch", Float.class),
 														0.0F
 													)
 											)
 											.then(
-												ServerCommandManager.argument("minVolume", FloatArgumentType.floatArg(0.0F, 1.0F))
+												CommandManager.argument("minVolume", FloatArgumentType.floatArg(0.0F, 1.0F))
 													.executes(
-														commandContext -> method_13504(
+														commandContext -> execute(
 																commandContext.getSource(),
-																EntityArgumentType.method_9312(commandContext, "targets"),
-																IdentifierArgumentType.getIdentifierArgument(commandContext, "sound"),
+																EntityArgumentType.getPlayers(commandContext, "targets"),
+																IdentifierArgumentType.getIdentifier(commandContext, "sound"),
 																soundCategory,
-																Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
+																Vec3ArgumentType.getVec3(commandContext, "pos"),
 																commandContext.<Float>getArgument("volume", Float.class),
 																commandContext.<Float>getArgument("pitch", Float.class),
 																commandContext.<Float>getArgument("minVolume", Float.class)
@@ -114,7 +114,7 @@ public class PlaySoundCommand {
 			);
 	}
 
-	private static int method_13504(
+	private static int execute(
 		ServerCommandSource serverCommandSource,
 		Collection<ServerPlayerEntity> collection,
 		Identifier identifier,

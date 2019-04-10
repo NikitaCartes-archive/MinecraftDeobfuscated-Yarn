@@ -158,10 +158,10 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 		BoundingBox boundingBox = new BoundingBox((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
 			.expand((double)j)
 			.stretch(0.0, (double)this.world.getHeight(), 0.0);
-		List<PlayerEntity> list = this.world.method_18467(PlayerEntity.class, boundingBox);
+		List<PlayerEntity> list = this.world.getEntities(PlayerEntity.class, boundingBox);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {
-				if (this.pos.method_19771(new BlockPos(playerEntity), (double)j) && playerEntity.isInsideWaterOrRain()) {
+				if (this.pos.isWithinDistance(new BlockPos(playerEntity), (double)j) && playerEntity.isInsideWaterOrRain()) {
 					playerEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_5927, 260, 0, true, true));
 				}
 			}
@@ -182,7 +182,7 @@ public class ConduitBlockEntity extends BlockEntity implements Tickable {
 			if (!list.isEmpty()) {
 				this.targetEntity = (LivingEntity)list.get(this.world.random.nextInt(list.size()));
 			}
-		} else if (!this.targetEntity.isValid() || !this.pos.method_19771(new BlockPos(this.targetEntity), 8.0)) {
+		} else if (!this.targetEntity.isAlive() || !this.pos.isWithinDistance(new BlockPos(this.targetEntity), 8.0)) {
 			this.targetEntity = null;
 		}
 

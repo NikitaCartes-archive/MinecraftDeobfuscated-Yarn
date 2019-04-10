@@ -27,7 +27,7 @@ public class SlimeEntityRenderer extends MobEntityRenderer<SlimeEntity, SlimeEnt
 		float g = 0.999F;
 		GlStateManager.scalef(0.999F, 0.999F, 0.999F);
 		float h = (float)slimeEntity.getSize();
-		float i = MathHelper.lerp(f, slimeEntity.sizeZ, slimeEntity.sizeY) / (h * 0.5F + 1.0F);
+		float i = MathHelper.lerp(f, slimeEntity.lastStretch, slimeEntity.stretch) / (h * 0.5F + 1.0F);
 		float j = 1.0F / (i + 1.0F);
 		GlStateManager.scalef(j * h, 1.0F / j * h, j * h);
 	}

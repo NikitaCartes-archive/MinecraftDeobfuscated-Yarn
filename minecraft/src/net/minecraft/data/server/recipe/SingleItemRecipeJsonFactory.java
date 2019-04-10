@@ -19,7 +19,7 @@ public class SingleItemRecipeJsonFactory {
 	private final Item output;
 	private final Ingredient input;
 	private final int count;
-	private final SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.create();
+	private final SimpleAdvancement.Task builder = SimpleAdvancement.Task.create();
 	private String group;
 	private final RecipeSerializer<?> serializer;
 
@@ -85,7 +85,7 @@ public class SingleItemRecipeJsonFactory {
 		private final Ingredient input;
 		private final Item output;
 		private final int count;
-		private final SimpleAdvancement.Builder builder;
+		private final SimpleAdvancement.Task builder;
 		private final Identifier advancementId;
 		private final RecipeSerializer<?> serializer;
 
@@ -96,7 +96,7 @@ public class SingleItemRecipeJsonFactory {
 			Ingredient ingredient,
 			Item item,
 			int i,
-			SimpleAdvancement.Builder builder,
+			SimpleAdvancement.Task task,
 			Identifier identifier2
 		) {
 			this.recipeId = identifier;
@@ -105,7 +105,7 @@ public class SingleItemRecipeJsonFactory {
 			this.input = ingredient;
 			this.output = item;
 			this.count = i;
-			this.builder = builder;
+			this.builder = task;
 			this.advancementId = identifier2;
 		}
 

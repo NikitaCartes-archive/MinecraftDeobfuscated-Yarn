@@ -12,10 +12,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.BowAttackGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -26,6 +26,7 @@ import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -67,7 +68,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
 		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 3.0F, 1.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 8.0F));
-		this.targetSelector.add(1, new AvoidGoal(this, IllagerEntity.class).method_6318());
+		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true).setMaxTimeWithoutVisibility(300));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false).setMaxTimeWithoutVisibility(300));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, false).setMaxTimeWithoutVisibility(300));
@@ -82,11 +83,11 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.setEquippedStack(EquipmentSlot.HAND_MAIN, new ItemStack(Items.field_8102));
-		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -96,7 +97,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public BoundingBox method_5830() {
+	public BoundingBox getVisibilityBoundingBox() {
 		return this.getBoundingBox().expand(3.0, 0.0, 3.0);
 	}
 
@@ -148,6 +149,11 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		}
 	}
 
+	@Override
+	public SoundEvent getCelebratingSound() {
+		return SoundEvents.field_14644;
+	}
+
 	@Environment(EnvType.CLIENT)
 	public Vec3d[] method_7065(float f) {
 		if (this.field_7296 <= 0) {
@@ -171,7 +177,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 			return true;
 		} else {
 			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
+				? this.method_5781() == null && entity.method_5781() == null
 				: false;
 		}
 	}
@@ -192,7 +198,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	protected SoundEvent method_7142() {
+	protected SoundEvent getCastSpellSound() {
 		return SoundEvents.field_14545;
 	}
 
@@ -202,8 +208,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ItemStack itemStack = this.method_18808(this.getStackInHand(ProjectileUtil.method_18812(this, Items.field_8102)));
-		ProjectileEntity projectileEntity = ProjectileUtil.method_18813(this, itemStack, f);
+		ItemStack itemStack = this.getArrowType(this.getStackInHand(ProjectileUtil.getHandPossiblyHolding(this, Items.field_8102)));
+		ProjectileEntity projectileEntity = ProjectileUtil.createArrowProjectile(this, itemStack, f);
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - projectileEntity.y;
 		double g = livingEntity.z - this.z;
@@ -215,11 +221,11 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public IllagerEntity.State method_6990() {
-		if (this.method_7137()) {
+	public IllagerEntity.State getState() {
+		if (this.isSpellcasting()) {
 			return IllagerEntity.State.field_7212;
 		} else {
-			return this.method_6510() ? IllagerEntity.State.field_7208 : IllagerEntity.State.field_7207;
+			return this.isAttacking() ? IllagerEntity.State.field_7208 : IllagerEntity.State.field_7207;
 		}
 	}
 
@@ -280,7 +286,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 
 		@Override
 		public boolean canStart() {
-			return !super.canStart() ? false : !IllusionerEntity.this.hasPotionEffect(StatusEffects.field_5905);
+			return !super.canStart() ? false : !IllusionerEntity.this.hasStatusEffect(StatusEffects.field_5905);
 		}
 
 		@Override

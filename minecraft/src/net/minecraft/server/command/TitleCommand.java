@@ -16,72 +16,72 @@ import net.minecraft.text.TranslatableTextComponent;
 public class TitleCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("title")
+			CommandManager.literal("title")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							ServerCommandManager.literal("clear")
-								.executes(commandContext -> method_13805(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets")))
+							CommandManager.literal("clear")
+								.executes(commandContext -> executeClear(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets")))
 						)
 						.then(
-							ServerCommandManager.literal("reset")
-								.executes(commandContext -> method_13799(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets")))
+							CommandManager.literal("reset")
+								.executes(commandContext -> executeReset(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets")))
 						)
 						.then(
-							ServerCommandManager.literal("title")
+							CommandManager.literal("title")
 								.then(
-									ServerCommandManager.argument("title", ComponentArgumentType.create())
+									CommandManager.argument("title", ComponentArgumentType.create())
 										.executes(
-											commandContext -> method_13802(
+											commandContext -> executeTitle(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
-													ComponentArgumentType.getComponentArgument(commandContext, "title"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
+													ComponentArgumentType.getComponent(commandContext, "title"),
 													TitleS2CPacket.Action.field_12630
 												)
 										)
 								)
 						)
 						.then(
-							ServerCommandManager.literal("subtitle")
+							CommandManager.literal("subtitle")
 								.then(
-									ServerCommandManager.argument("title", ComponentArgumentType.create())
+									CommandManager.argument("title", ComponentArgumentType.create())
 										.executes(
-											commandContext -> method_13802(
+											commandContext -> executeTitle(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
-													ComponentArgumentType.getComponentArgument(commandContext, "title"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
+													ComponentArgumentType.getComponent(commandContext, "title"),
 													TitleS2CPacket.Action.field_12632
 												)
 										)
 								)
 						)
 						.then(
-							ServerCommandManager.literal("actionbar")
+							CommandManager.literal("actionbar")
 								.then(
-									ServerCommandManager.argument("title", ComponentArgumentType.create())
+									CommandManager.argument("title", ComponentArgumentType.create())
 										.executes(
-											commandContext -> method_13802(
+											commandContext -> executeTitle(
 													commandContext.getSource(),
-													EntityArgumentType.method_9312(commandContext, "targets"),
-													ComponentArgumentType.getComponentArgument(commandContext, "title"),
+													EntityArgumentType.getPlayers(commandContext, "targets"),
+													ComponentArgumentType.getComponent(commandContext, "title"),
 													TitleS2CPacket.Action.field_12627
 												)
 										)
 								)
 						)
 						.then(
-							ServerCommandManager.literal("times")
+							CommandManager.literal("times")
 								.then(
-									ServerCommandManager.argument("fadeIn", IntegerArgumentType.integer(0))
+									CommandManager.argument("fadeIn", IntegerArgumentType.integer(0))
 										.then(
-											ServerCommandManager.argument("stay", IntegerArgumentType.integer(0))
+											CommandManager.argument("stay", IntegerArgumentType.integer(0))
 												.then(
-													ServerCommandManager.argument("fadeOut", IntegerArgumentType.integer(0))
+													CommandManager.argument("fadeOut", IntegerArgumentType.integer(0))
 														.executes(
-															commandContext -> method_13806(
+															commandContext -> executeTimes(
 																	commandContext.getSource(),
-																	EntityArgumentType.method_9312(commandContext, "targets"),
+																	EntityArgumentType.getPlayers(commandContext, "targets"),
 																	IntegerArgumentType.getInteger(commandContext, "fadeIn"),
 																	IntegerArgumentType.getInteger(commandContext, "stay"),
 																	IntegerArgumentType.getInteger(commandContext, "fadeOut")
@@ -95,7 +95,7 @@ public class TitleCommand {
 		);
 	}
 
-	private static int method_13805(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
+	private static int executeClear(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
 		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.HIDE, null);
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
@@ -113,7 +113,7 @@ public class TitleCommand {
 		return collection.size();
 	}
 
-	private static int method_13799(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
+	private static int executeReset(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection) {
 		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(TitleS2CPacket.Action.RESET, null);
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
@@ -131,7 +131,7 @@ public class TitleCommand {
 		return collection.size();
 	}
 
-	private static int method_13802(
+	private static int executeTitle(
 		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent, TitleS2CPacket.Action action
 	) throws CommandSyntaxException {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
@@ -154,7 +154,7 @@ public class TitleCommand {
 		return collection.size();
 	}
 
-	private static int method_13806(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, int i, int j, int k) {
+	private static int executeTimes(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, int i, int j, int k) {
 		TitleS2CPacket titleS2CPacket = new TitleS2CPacket(i, j, k);
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {

@@ -47,13 +47,23 @@ public class PillagerOutpostFeature extends AbstractTempleFeature<PillagerOutpos
 			random.nextInt();
 			if (random.nextInt(5) != 0) {
 				return false;
-			} else {
-				Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
-				return chunkGenerator.hasStructure(biome, Feature.PILLAGER_OUTPOST);
 			}
-		} else {
-			return false;
+
+			Biome biome = chunkGenerator.getBiomeSource().getBiome(new BlockPos((i << 4) + 9, 0, (j << 4) + 9));
+			if (chunkGenerator.hasStructure(biome, Feature.PILLAGER_OUTPOST)) {
+				for (int m = i - 10; m <= i + 10; m++) {
+					for (int n = j - 10; n <= j + 10; n++) {
+						if (Feature.VILLAGE.shouldStartAt(chunkGenerator, random, m, n)) {
+							return false;
+						}
+					}
+				}
+
+				return true;
+			}
 		}
+
+		return false;
 	}
 
 	@Override

@@ -23,7 +23,7 @@ public class GoToWorkTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_18988(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getMemory(MemoryModuleType.field_18439).get();
+		GlobalPos globalPos = (GlobalPos)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18439).get();
 		MinecraftServer minecraftServer = serverWorld.getServer();
 		minecraftServer.getWorld(globalPos.getDimension())
 			.getPointOfInterestStorage()

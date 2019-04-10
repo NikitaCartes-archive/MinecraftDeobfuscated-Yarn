@@ -805,7 +805,7 @@ public class StrongholdGenerator {
 					iWorld.setBlockState(blockPos, Blocks.field_10260.getDefaultState(), 2);
 					BlockEntity blockEntity = iWorld.getBlockEntity(blockPos);
 					if (blockEntity instanceof MobSpawnerBlockEntity) {
-						((MobSpawnerBlockEntity)blockEntity).getLogic().method_8274(EntityType.SILVERFISH);
+						((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.SILVERFISH);
 					}
 				}
 			}

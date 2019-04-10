@@ -13,11 +13,11 @@ import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.PathfindingUtil;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.control.MoveControl;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.goal.ZombieRaiseArmsGoal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
@@ -37,6 +37,7 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -49,28 +50,28 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 
 public class DrownedEntity extends ZombieEntity implements RangedAttacker {
-	private boolean field_7233;
-	protected final SwimNavigation field_7234;
-	protected final MobNavigation field_7232;
+	private boolean targettingUnderwater;
+	protected final SwimNavigation waterNavigation;
+	protected final MobNavigation landNavigation;
 
 	public DrownedEntity(EntityType<? extends DrownedEntity> entityType, World world) {
 		super(entityType, world);
 		this.stepHeight = 1.0F;
 		this.moveControl = new DrownedEntity.DrownedMoveControl(this);
 		this.setPathNodeTypeWeight(PathNodeType.field_18, 0.0F);
-		this.field_7234 = new SwimNavigation(this, world);
-		this.field_7232 = new MobNavigation(this, world);
+		this.waterNavigation = new SwimNavigation(this, world);
+		this.landNavigation = new MobNavigation(this, world);
 	}
 
 	@Override
-	protected void method_7208() {
+	protected void initCustomGoals() {
 		this.goalSelector.add(1, new DrownedEntity.class_1555(this, 1.0));
 		this.goalSelector.add(2, new DrownedEntity.class_1558(this, 1.0, 40, 10.0F));
 		this.goalSelector.add(2, new DrownedEntity.class_1552(this, 1.0, false));
 		this.goalSelector.add(5, new DrownedEntity.class_1554(this, 1.0));
 		this.goalSelector.add(6, new DrownedEntity.class_1557(this, 1.0, this.world.getSeaLevel()));
 		this.goalSelector.add(7, new WanderAroundGoal(this, 1.0));
-		this.targetSelector.add(1, new AvoidGoal(this, DrownedEntity.class).method_6318(ZombiePigmanEntity.class));
+		this.targetSelector.add(1, new RevengeGoal(this, DrownedEntity.class).setGroupRevenge(ZombiePigmanEntity.class));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::method_7012));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
@@ -78,10 +79,10 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	}
 
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (this.getEquippedStack(EquipmentSlot.HAND_OFF).isEmpty() && this.random.nextFloat() < 0.03F) {
 			this.setEquippedStack(EquipmentSlot.HAND_OFF, new ItemStack(Items.field_8864));
 			this.handDropChances[EquipmentSlot.HAND_OFF.getEntitySlotId()] = 2.0F;
@@ -98,12 +99,17 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 			: this.random.nextInt(15) == 0 && super.canSpawn(iWorld, spawnType);
 	}
 
+	@Override
+	protected boolean method_20344(IWorld iWorld, SpawnType spawnType, BlockPos blockPos) {
+		return iWorld.getFluidState(blockPos).matches(FluidTags.field_15517);
+	}
+
 	private boolean method_7015() {
 		return this.getBoundingBox().minY < (double)(this.world.getSeaLevel() - 5);
 	}
 
 	@Override
-	protected boolean method_7212() {
+	protected boolean shouldBreakDoors() {
 		return false;
 	}
 
@@ -161,13 +167,13 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	}
 
 	@Override
-	protected boolean method_7209() {
+	protected boolean canConvertInWater() {
 		return false;
 	}
 
 	@Override
-	public boolean method_5957(ViewableWorld viewableWorld) {
-		return viewableWorld.method_8606(this);
+	public boolean canSpawn(ViewableWorld viewableWorld) {
+		return viewableWorld.intersectsEntities(this);
 	}
 
 	public boolean method_7012(@Nullable LivingEntity livingEntity) {
@@ -179,8 +185,8 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		return !this.isSwimming();
 	}
 
-	private boolean method_7018() {
-		if (this.field_7233) {
+	private boolean isTargettingUnderwater() {
+		if (this.targettingUnderwater) {
 			return true;
 		} else {
 			LivingEntity livingEntity = this.getTarget();
@@ -190,7 +196,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 
 	@Override
 	public void travel(Vec3d vec3d) {
-		if (this.method_6034() && this.isInsideWater() && this.method_7018()) {
+		if (this.canMoveVoluntarily() && this.isInsideWater() && this.isTargettingUnderwater()) {
 			this.updateVelocity(0.01F, vec3d);
 			this.move(MovementType.field_6308, this.getVelocity());
 			this.setVelocity(this.getVelocity().multiply(0.9));
@@ -200,14 +206,14 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 	}
 
 	@Override
-	public void method_5790() {
+	public void updateSwimming() {
 		if (!this.world.isClient) {
-			if (this.method_6034() && this.isInsideWater() && this.method_7018()) {
-				this.navigation = this.field_7234;
-				this.method_5796(true);
+			if (this.canMoveVoluntarily() && this.isInsideWater() && this.isTargettingUnderwater()) {
+				this.navigation = this.waterNavigation;
+				this.setSwimming(true);
 			} else {
-				this.navigation = this.field_7232;
-				this.method_5796(false);
+				this.navigation = this.landNavigation;
+				this.setSwimming(false);
 			}
 		}
 	}
@@ -239,8 +245,8 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		this.world.spawnEntity(tridentEntity);
 	}
 
-	public void method_7013(boolean bl) {
-		this.field_7233 = bl;
+	public void setTargettingUnderwater(boolean bl) {
+		this.targettingUnderwater = bl;
 	}
 
 	static class DrownedMoveControl extends MoveControl {
@@ -254,8 +260,8 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		@Override
 		public void tick() {
 			LivingEntity livingEntity = this.drowned.getTarget();
-			if (this.drowned.method_7018() && this.drowned.isInsideWater()) {
-				if (livingEntity != null && livingEntity.y > this.drowned.y || this.drowned.field_7233) {
+			if (this.drowned.isTargettingUnderwater() && this.drowned.isInsideWater()) {
+				if (livingEntity != null && livingEntity.y > this.drowned.y || this.drowned.targettingUnderwater) {
 					this.drowned.setVelocity(this.drowned.getVelocity().add(0.0, 0.002, 0.0));
 				}
 
@@ -270,7 +276,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-				this.drowned.yaw = this.method_6238(this.drowned.yaw, h, 90.0F);
+				this.drowned.yaw = this.changeAngle(this.drowned.yaw, h, 90.0F);
 				this.drowned.field_6283 = this.drowned.yaw;
 				float i = (float)(this.speed * this.drowned.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue());
 				float j = MathHelper.lerp(0.125F, this.drowned.getMovementSpeed(), i);
@@ -336,14 +342,14 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 
 		@Override
 		public void start() {
-			this.field_7237.method_7013(false);
-			this.field_7237.navigation = this.field_7237.field_7232;
+			this.field_7237.setTargettingUnderwater(false);
+			this.field_7237.navigation = this.field_7237.landNavigation;
 			super.start();
 		}
 
 		@Override
-		public void onRemove() {
-			super.onRemove();
+		public void stop() {
+			super.stop();
 		}
 	}
 
@@ -359,7 +365,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 			this.field_7242 = mobEntityWithAi;
 			this.field_7243 = d;
 			this.field_7241 = mobEntityWithAi.world;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -444,13 +450,13 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 
 		@Override
 		public void start() {
-			this.field_7246.method_7013(true);
+			this.field_7246.setTargettingUnderwater(true);
 			this.field_7248 = false;
 		}
 
 		@Override
-		public void onRemove() {
-			this.field_7246.method_7013(false);
+		public void stop() {
+			this.field_7246.setTargettingUnderwater(false);
 		}
 	}
 
@@ -470,15 +476,15 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		@Override
 		public void start() {
 			super.start();
-			this.field_7249.method_19540(true);
+			this.field_7249.setAttacking(true);
 			this.field_7249.setCurrentHand(Hand.MAIN);
 		}
 
 		@Override
-		public void onRemove() {
-			super.onRemove();
+		public void stop() {
+			super.stop();
 			this.field_7249.method_6021();
-			this.field_7249.method_19540(false);
+			this.field_7249.setAttacking(false);
 		}
 	}
 }

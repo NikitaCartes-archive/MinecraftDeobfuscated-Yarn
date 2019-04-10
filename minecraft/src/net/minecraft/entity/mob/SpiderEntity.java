@@ -11,12 +11,12 @@ import net.minecraft.entity.EntitySize;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.PounceAtTargetGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -56,7 +56,7 @@ public class SpiderEntity extends HostileEntity {
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(6, new LookAroundGoal(this));
-		this.targetSelector.add(1, new AvoidGoal(this));
+		this.targetSelector.add(1, new RevengeGoal(this));
 		this.targetSelector.add(2, new SpiderEntity.class_1631(this, PlayerEntity.class));
 		this.targetSelector.add(3, new SpiderEntity.class_1631(this, IronGolemEntity.class));
 	}
@@ -113,7 +113,7 @@ public class SpiderEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean canClimb() {
+	public boolean isClimbing() {
 		return this.getCanClimb();
 	}
 
@@ -151,14 +151,14 @@ public class SpiderEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (iWorld.getRandom().nextInt(100) == 0) {
 			SkeletonEntity skeletonEntity = EntityType.SKELETON.create(this.world);
 			skeletonEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
-			skeletonEntity.prepareEntityData(iWorld, localDifficulty, spawnType, null, null);
+			skeletonEntity.initialize(iWorld, localDifficulty, spawnType, null, null);
 			iWorld.spawnEntity(skeletonEntity);
 			skeletonEntity.startRiding(this);
 		}
@@ -197,7 +197,7 @@ public class SpiderEntity extends HostileEntity {
 
 		@Override
 		public boolean shouldContinue() {
-			float f = this.entity.method_5718();
+			float f = this.entity.getBrightnessAtEyes();
 			if (f >= 0.5F && this.entity.getRand().nextInt(100) == 0) {
 				this.entity.setTarget(null);
 				return false;
@@ -207,7 +207,7 @@ public class SpiderEntity extends HostileEntity {
 		}
 
 		@Override
-		protected double method_6289(LivingEntity livingEntity) {
+		protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
 			return (double)(4.0F + livingEntity.getWidth());
 		}
 	}
@@ -236,7 +236,7 @@ public class SpiderEntity extends HostileEntity {
 
 		@Override
 		public boolean canStart() {
-			float f = this.entity.method_5718();
+			float f = this.entity.getBrightnessAtEyes();
 			return f >= 0.5F ? false : super.canStart();
 		}
 	}

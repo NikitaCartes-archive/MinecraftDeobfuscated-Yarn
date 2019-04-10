@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
+import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -142,7 +144,7 @@ public class EnchantmentHelper {
 	}
 
 	public static int getEquipmentLevel(Enchantment enchantment, LivingEntity livingEntity) {
-		Iterable<ItemStack> iterable = enchantment.getEquipment(livingEntity);
+		Iterable<ItemStack> iterable = enchantment.getEquipment(livingEntity).values();
 		if (iterable == null) {
 			return 0;
 		} else {
@@ -219,20 +221,22 @@ public class EnchantmentHelper {
 		return getLevel(Enchantments.field_9117, itemStack) > 0;
 	}
 
-	public static ItemStack getRandomEnchantedEquipment(Enchantment enchantment, LivingEntity livingEntity) {
-		List<ItemStack> list = enchantment.getEquipment(livingEntity);
-		if (list.isEmpty()) {
-			return ItemStack.EMPTY;
+	@Nullable
+	public static Entry<EquipmentSlot, ItemStack> getRandomEnchantedEquipment(Enchantment enchantment, LivingEntity livingEntity) {
+		Map<EquipmentSlot, ItemStack> map = enchantment.getEquipment(livingEntity);
+		if (map.isEmpty()) {
+			return null;
 		} else {
-			List<ItemStack> list2 = Lists.<ItemStack>newArrayList();
+			List<Entry<EquipmentSlot, ItemStack>> list = Lists.<Entry<EquipmentSlot, ItemStack>>newArrayList();
 
-			for (ItemStack itemStack : list) {
+			for (Entry<EquipmentSlot, ItemStack> entry : map.entrySet()) {
+				ItemStack itemStack = (ItemStack)entry.getValue();
 				if (!itemStack.isEmpty() && getLevel(enchantment, itemStack) > 0) {
-					list2.add(itemStack);
+					list.add(entry);
 				}
 			}
 
-			return list2.isEmpty() ? ItemStack.EMPTY : (ItemStack)list2.get(livingEntity.getRand().nextInt(list2.size()));
+			return list.isEmpty() ? null : (Entry)list.get(livingEntity.getRand().nextInt(list.size()));
 		}
 	}
 
@@ -334,7 +338,7 @@ public class EnchantmentHelper {
 		boolean bl2 = itemStack.getItem() == Items.field_8529;
 
 		for (Enchantment enchantment : Registry.ENCHANTMENT) {
-			if ((!enchantment.isLootOnly() || bl) && (enchantment.type.isAcceptableItem(item) || bl2)) {
+			if ((!enchantment.isTreasure() || bl) && (enchantment.type.isAcceptableItem(item) || bl2)) {
 				for (int j = enchantment.getMaximumLevel(); j > enchantment.getMinimumLevel() - 1; j--) {
 					if (i >= enchantment.getMinimumPower(j)) {
 						list.add(new InfoEnchantment(enchantment, j));

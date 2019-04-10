@@ -23,36 +23,34 @@ public class DisconnectedScreen extends Screen {
 	}
 
 	@Override
-	public boolean doesEscapeKeyClose() {
+	public boolean shouldCloseOnEsc() {
 		return false;
 	}
 
 	@Override
-	protected void onInitialized() {
-		this.reasonFormatted = this.fontRenderer.wrapStringToWidthAsList(this.reason.getFormattedText(), this.screenWidth - 50);
+	protected void init() {
+		this.reasonFormatted = this.font.wrapStringToWidthAsList(this.reason.getFormattedText(), this.width - 50);
 		this.reasonHeight = this.reasonFormatted.size() * 9;
 		this.addButton(
 			new ButtonWidget(
-				this.screenWidth / 2 - 100,
-				Math.min(this.screenHeight / 2 + this.reasonHeight / 2 + 9, this.screenHeight - 30),
+				this.width / 2 - 100,
+				Math.min(this.height / 2 + this.reasonHeight / 2 + 9, this.height - 30),
 				200,
 				20,
 				I18n.translate("gui.toMenu"),
-				buttonWidget -> this.client.openScreen(this.parent)
+				buttonWidget -> this.minecraft.openScreen(this.parent)
 			)
 		);
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		this.drawStringCentered(
-			this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, this.screenHeight / 2 - this.reasonHeight / 2 - 9 * 2, 11184810
-		);
-		int k = this.screenHeight / 2 - this.reasonHeight / 2;
+		this.renderBackground();
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, this.height / 2 - this.reasonHeight / 2 - 9 * 2, 11184810);
+		int k = this.height / 2 - this.reasonHeight / 2;
 		if (this.reasonFormatted != null) {
 			for (String string : this.reasonFormatted) {
-				this.drawStringCentered(this.fontRenderer, string, this.screenWidth / 2, k, 16777215);
+				this.drawCenteredString(this.font, string, this.width / 2, k, 16777215);
 				k += 9;
 			}
 		}

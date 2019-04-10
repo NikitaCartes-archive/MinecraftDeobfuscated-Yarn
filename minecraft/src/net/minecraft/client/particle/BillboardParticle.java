@@ -27,9 +27,9 @@ public abstract class BillboardParticle extends Particle {
 		float n = this.getMaxU();
 		float o = this.getMinV();
 		float p = this.getMaxV();
-		float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.posX) - cameraX);
-		float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.posY) - cameraY);
-		float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.posZ) - cameraZ);
+		float q = (float)(MathHelper.lerp((double)f, this.prevPosX, this.x) - cameraX);
+		float r = (float)(MathHelper.lerp((double)f, this.prevPosY, this.y) - cameraY);
+		float s = (float)(MathHelper.lerp((double)f, this.prevPosZ, this.z) - cameraZ);
 		int t = this.getColorMultiplier(f);
 		int u = t >> 16 & 65535;
 		int v = t & 65535;

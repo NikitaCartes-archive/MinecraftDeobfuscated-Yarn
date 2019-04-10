@@ -21,7 +21,7 @@ import net.minecraft.world.World;
 		itf = FlyingItemEntity.class
 	)})
 public abstract class ThrownItemEntity extends ThrownEntity implements FlyingItemEntity {
-	private static final TrackedData<ItemStack> field_17082 = DataTracker.registerData(ThrownItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
+	private static final TrackedData<ItemStack> ITEM = DataTracker.registerData(ThrownItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
 
 	public ThrownItemEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
 		super(entityType, world);
@@ -35,34 +35,34 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 		super(entityType, livingEntity, world);
 	}
 
-	public void method_16940(ItemStack itemStack) {
-		if (itemStack.getItem() != this.method_16942() || itemStack.hasTag()) {
-			this.getDataTracker().set(field_17082, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
+	public void setItem(ItemStack itemStack) {
+		if (itemStack.getItem() != this.getDefaultItem() || itemStack.hasTag()) {
+			this.getDataTracker().set(ITEM, SystemUtil.consume(itemStack.copy(), itemStackx -> itemStackx.setAmount(1)));
 		}
 	}
 
-	protected abstract Item method_16942();
+	protected abstract Item getDefaultItem();
 
-	protected ItemStack method_16943() {
-		return this.getDataTracker().get(field_17082);
+	protected ItemStack getItem() {
+		return this.getDataTracker().get(ITEM);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getItem() {
-		ItemStack itemStack = this.method_16943();
-		return itemStack.isEmpty() ? new ItemStack(this.method_16942()) : itemStack;
+	public ItemStack getStack() {
+		ItemStack itemStack = this.getItem();
+		return itemStack.isEmpty() ? new ItemStack(this.getDefaultItem()) : itemStack;
 	}
 
 	@Override
 	protected void initDataTracker() {
-		this.getDataTracker().startTracking(field_17082, ItemStack.EMPTY);
+		this.getDataTracker().startTracking(ITEM, ItemStack.EMPTY);
 	}
 
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		ItemStack itemStack = this.method_16943();
+		ItemStack itemStack = this.getItem();
 		if (!itemStack.isEmpty()) {
 			compoundTag.put("Item", itemStack.toTag(new CompoundTag()));
 		}
@@ -72,6 +72,6 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		ItemStack itemStack = ItemStack.fromTag(compoundTag.getCompound("Item"));
-		this.method_16940(itemStack);
+		this.setItem(itemStack);
 	}
 }

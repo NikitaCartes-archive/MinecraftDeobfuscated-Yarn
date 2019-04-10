@@ -81,7 +81,7 @@ public class TripwireBlock extends Block {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			this.method_10779(world, blockPos, blockState);
 		}
@@ -144,7 +144,7 @@ public class TripwireBlock extends Block {
 		BlockState blockState = world.getBlockState(blockPos);
 		boolean bl = (Boolean)blockState.get(POWERED);
 		boolean bl2 = false;
-		List<? extends Entity> list = world.getVisibleEntities(null, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
+		List<? extends Entity> list = world.getEntities(null, blockState.getOutlineShape(world, blockPos).getBoundingBox().offset(blockPos));
 		if (!list.isEmpty()) {
 			for (Entity entity : list) {
 				if (!entity.canAvoidTraps()) {

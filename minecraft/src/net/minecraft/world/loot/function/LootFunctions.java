@@ -78,7 +78,7 @@ public class LootFunctions {
 		register(new SetCountLootFunction.Factory());
 		register(new EnchantWithLevelsLootFunction.Factory());
 		register(new EnchantRandomlyLootFunction.Factory());
-		register(new SetTagLootFunction.Factory());
+		register(new SetNbtLootFunction.Builder());
 		register(new FurnaceSmeltLootFunction.Factory());
 		register(new LootingEnchantLootFunction.Factory());
 		register(new SetDamageLootFunction.Factory());

@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 
 public class MeleeAttackGoal extends Goal {
 	protected final MobEntityWithAi entity;
-	protected int field_6505;
+	protected int ticksUntilAttack;
 	private final double field_6500;
 	private final boolean field_6502;
 	private Path field_6509;
@@ -20,26 +20,33 @@ public class MeleeAttackGoal extends Goal {
 	private double field_6507;
 	private double field_6506;
 	protected final int field_6504 = 20;
+	private long field_19200;
 
 	public MeleeAttackGoal(MobEntityWithAi mobEntityWithAi, double d, boolean bl) {
 		this.entity = mobEntityWithAi;
 		this.field_6500 = d;
 		this.field_6502 = bl;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
 	public boolean canStart() {
-		LivingEntity livingEntity = this.entity.getTarget();
-		if (livingEntity == null) {
-			return false;
-		} else if (!livingEntity.isValid()) {
+		long l = this.entity.world.getTime();
+		if (l - this.field_19200 < 20L) {
 			return false;
 		} else {
-			this.field_6509 = this.entity.getNavigation().findPathTo(livingEntity);
-			return this.field_6509 != null
-				? true
-				: this.method_6289(livingEntity) >= this.entity.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+			this.field_19200 = l;
+			LivingEntity livingEntity = this.entity.getTarget();
+			if (livingEntity == null) {
+				return false;
+			} else if (!livingEntity.isAlive()) {
+				return false;
+			} else {
+				this.field_6509 = this.entity.getNavigation().findPathTo(livingEntity);
+				return this.field_6509 != null
+					? true
+					: this.getSquaredMaxAttackDistance(livingEntity) >= this.entity.squaredDistanceTo(livingEntity.x, livingEntity.getBoundingBox().minY, livingEntity.z);
+			}
 		}
 	}
 
@@ -48,32 +55,32 @@ public class MeleeAttackGoal extends Goal {
 		LivingEntity livingEntity = this.entity.getTarget();
 		if (livingEntity == null) {
 			return false;
-		} else if (!livingEntity.isValid()) {
+		} else if (!livingEntity.isAlive()) {
 			return false;
 		} else if (!this.field_6502) {
 			return !this.entity.getNavigation().isIdle();
 		} else {
 			return !this.entity.isInWalkTargetRange(new BlockPos(livingEntity))
 				? false
-				: !(livingEntity instanceof PlayerEntity) || !((PlayerEntity)livingEntity).isSpectator() && !((PlayerEntity)livingEntity).isCreative();
+				: !(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative();
 		}
 	}
 
 	@Override
 	public void start() {
 		this.entity.getNavigation().startMovingAlong(this.field_6509, this.field_6500);
-		this.entity.method_19540(true);
+		this.entity.setAttacking(true);
 		this.field_6501 = 0;
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		LivingEntity livingEntity = this.entity.getTarget();
 		if (!EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(livingEntity)) {
 			this.entity.setTarget(null);
 		}
 
-		this.entity.method_19540(false);
+		this.entity.setAttacking(false);
 		this.entity.getNavigation().stop();
 	}
 
@@ -105,20 +112,20 @@ public class MeleeAttackGoal extends Goal {
 			}
 		}
 
-		this.field_6505 = Math.max(this.field_6505 - 1, 0);
-		this.method_6288(livingEntity, d);
+		this.ticksUntilAttack = Math.max(this.ticksUntilAttack - 1, 0);
+		this.attack(livingEntity, d);
 	}
 
-	protected void method_6288(LivingEntity livingEntity, double d) {
-		double e = this.method_6289(livingEntity);
-		if (d <= e && this.field_6505 <= 0) {
-			this.field_6505 = 20;
+	protected void attack(LivingEntity livingEntity, double d) {
+		double e = this.getSquaredMaxAttackDistance(livingEntity);
+		if (d <= e && this.ticksUntilAttack <= 0) {
+			this.ticksUntilAttack = 20;
 			this.entity.swingHand(Hand.MAIN);
 			this.entity.attack(livingEntity);
 		}
 	}
 
-	protected double method_6289(LivingEntity livingEntity) {
+	protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
 		return (double)(this.entity.getWidth() * 2.0F * this.entity.getWidth() * 2.0F + livingEntity.getWidth());
 	}
 }

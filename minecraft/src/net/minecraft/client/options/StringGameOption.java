@@ -9,29 +9,29 @@ import net.minecraft.client.gui.widget.OptionButtonWidget;
 
 @Environment(EnvType.CLIENT)
 public class StringGameOption extends GameOption {
-	private final BiConsumer<GameOptions, Integer> field_18169;
-	private final BiFunction<GameOptions, StringGameOption, String> field_18170;
+	private final BiConsumer<GameOptions, Integer> getter;
+	private final BiFunction<GameOptions, StringGameOption, String> setter;
 
 	public StringGameOption(String string, BiConsumer<GameOptions, Integer> biConsumer, BiFunction<GameOptions, StringGameOption, String> biFunction) {
 		super(string);
-		this.field_18169 = biConsumer;
-		this.field_18170 = biFunction;
+		this.getter = biConsumer;
+		this.setter = biFunction;
 	}
 
 	public void method_18500(GameOptions gameOptions, int i) {
-		this.field_18169.accept(gameOptions, i);
+		this.getter.accept(gameOptions, i);
 		gameOptions.write();
 	}
 
 	@Override
 	public AbstractButtonWidget createOptionButton(GameOptions gameOptions, int i, int j, int k) {
-		return new OptionButtonWidget(i, j, k, 20, this, this.method_18501(gameOptions), buttonWidget -> {
+		return new OptionButtonWidget(i, j, k, 20, this, this.get(gameOptions), buttonWidget -> {
 			this.method_18500(gameOptions, 1);
-			buttonWidget.setMessage(this.method_18501(gameOptions));
+			buttonWidget.setMessage(this.get(gameOptions));
 		});
 	}
 
-	public String method_18501(GameOptions gameOptions) {
-		return (String)this.field_18170.apply(gameOptions, this);
+	public String get(GameOptions gameOptions) {
+		return (String)this.setter.apply(gameOptions, this);
 	}
 }

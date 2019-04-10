@@ -17,19 +17,19 @@ import net.minecraft.util.PacketByteBuf;
 import net.minecraft.world.GameMode;
 
 public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
-	private PlayerListS2CPacket.Type type;
-	private final List<PlayerListS2CPacket.class_2705> field_12369 = Lists.<PlayerListS2CPacket.class_2705>newArrayList();
+	private PlayerListS2CPacket.Action action;
+	private final List<PlayerListS2CPacket.Entry> entries = Lists.<PlayerListS2CPacket.Entry>newArrayList();
 
 	public PlayerListS2CPacket() {
 	}
 
-	public PlayerListS2CPacket(PlayerListS2CPacket.Type type, ServerPlayerEntity... serverPlayerEntitys) {
-		this.type = type;
+	public PlayerListS2CPacket(PlayerListS2CPacket.Action action, ServerPlayerEntity... serverPlayerEntitys) {
+		this.action = action;
 
 		for (ServerPlayerEntity serverPlayerEntity : serverPlayerEntitys) {
-			this.field_12369
+			this.entries
 				.add(
-					new PlayerListS2CPacket.class_2705(
+					new PlayerListS2CPacket.Entry(
 						serverPlayerEntity.getGameProfile(),
 						serverPlayerEntity.field_13967,
 						serverPlayerEntity.interactionManager.getGameMode(),
@@ -39,13 +39,13 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public PlayerListS2CPacket(PlayerListS2CPacket.Type type, Iterable<ServerPlayerEntity> iterable) {
-		this.type = type;
+	public PlayerListS2CPacket(PlayerListS2CPacket.Action action, Iterable<ServerPlayerEntity> iterable) {
+		this.action = action;
 
 		for (ServerPlayerEntity serverPlayerEntity : iterable) {
-			this.field_12369
+			this.entries
 				.add(
-					new PlayerListS2CPacket.class_2705(
+					new PlayerListS2CPacket.Entry(
 						serverPlayerEntity.getGameProfile(),
 						serverPlayerEntity.field_13967,
 						serverPlayerEntity.interactionManager.getGameMode(),
@@ -57,7 +57,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.type = packetByteBuf.readEnumConstant(PlayerListS2CPacket.Type.class);
+		this.action = packetByteBuf.readEnumConstant(PlayerListS2CPacket.Action.class);
 		int i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
@@ -65,7 +65,7 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 			int k = 0;
 			GameMode gameMode = null;
 			TextComponent textComponent = null;
-			switch (this.type) {
+			switch (this.action) {
 				case ADD:
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), packetByteBuf.readString(16));
 					int l = packetByteBuf.readVarInt();
@@ -105,23 +105,23 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 					gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
 			}
 
-			this.field_12369.add(new PlayerListS2CPacket.class_2705(gameProfile, k, gameMode, textComponent));
+			this.entries.add(new PlayerListS2CPacket.Entry(gameProfile, k, gameMode, textComponent));
 		}
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeEnumConstant(this.type);
-		packetByteBuf.writeVarInt(this.field_12369.size());
+		packetByteBuf.writeEnumConstant(this.action);
+		packetByteBuf.writeVarInt(this.entries.size());
 
-		for (PlayerListS2CPacket.class_2705 lv : this.field_12369) {
-			switch (this.type) {
+		for (PlayerListS2CPacket.Entry entry : this.entries) {
+			switch (this.action) {
 				case ADD:
-					packetByteBuf.writeUuid(lv.method_11726().getId());
-					packetByteBuf.writeString(lv.method_11726().getName());
-					packetByteBuf.writeVarInt(lv.method_11726().getProperties().size());
+					packetByteBuf.writeUuid(entry.getProfile().getId());
+					packetByteBuf.writeString(entry.getProfile().getName());
+					packetByteBuf.writeVarInt(entry.getProfile().getProperties().size());
 
-					for (Property property : lv.method_11726().getProperties().values()) {
+					for (Property property : entry.getProfile().getProperties().values()) {
 						packetByteBuf.writeString(property.getName());
 						packetByteBuf.writeString(property.getValue());
 						if (property.hasSignature()) {
@@ -132,34 +132,34 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 						}
 					}
 
-					packetByteBuf.writeVarInt(lv.method_11725().getId());
-					packetByteBuf.writeVarInt(lv.method_11727());
-					if (lv.method_11724() == null) {
+					packetByteBuf.writeVarInt(entry.getGameMode().getId());
+					packetByteBuf.writeVarInt(entry.getLatency());
+					if (entry.getDisplayName() == null) {
 						packetByteBuf.writeBoolean(false);
 					} else {
 						packetByteBuf.writeBoolean(true);
-						packetByteBuf.writeTextComponent(lv.method_11724());
+						packetByteBuf.writeTextComponent(entry.getDisplayName());
 					}
 					break;
 				case UPDATE_GAMEMODE:
-					packetByteBuf.writeUuid(lv.method_11726().getId());
-					packetByteBuf.writeVarInt(lv.method_11725().getId());
+					packetByteBuf.writeUuid(entry.getProfile().getId());
+					packetByteBuf.writeVarInt(entry.getGameMode().getId());
 					break;
 				case UPDATE_LATENCY:
-					packetByteBuf.writeUuid(lv.method_11726().getId());
-					packetByteBuf.writeVarInt(lv.method_11727());
+					packetByteBuf.writeUuid(entry.getProfile().getId());
+					packetByteBuf.writeVarInt(entry.getLatency());
 					break;
 				case UPDATE_DISPLAY_NAME:
-					packetByteBuf.writeUuid(lv.method_11726().getId());
-					if (lv.method_11724() == null) {
+					packetByteBuf.writeUuid(entry.getProfile().getId());
+					if (entry.getDisplayName() == null) {
 						packetByteBuf.writeBoolean(false);
 					} else {
 						packetByteBuf.writeBoolean(true);
-						packetByteBuf.writeTextComponent(lv.method_11724());
+						packetByteBuf.writeTextComponent(entry.getDisplayName());
 					}
 					break;
 				case REMOVE:
-					packetByteBuf.writeUuid(lv.method_11726().getId());
+					packetByteBuf.writeUuid(entry.getProfile().getId());
 			}
 		}
 	}
@@ -169,20 +169,20 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public List<PlayerListS2CPacket.class_2705> method_11722() {
-		return this.field_12369;
+	public List<PlayerListS2CPacket.Entry> getEntries() {
+		return this.entries;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PlayerListS2CPacket.Type getType() {
-		return this.type;
+	public PlayerListS2CPacket.Action getAction() {
+		return this.action;
 	}
 
 	public String toString() {
-		return MoreObjects.toStringHelper(this).add("action", this.type).add("entries", this.field_12369).toString();
+		return MoreObjects.toStringHelper(this).add("action", this.action).add("entries", this.entries).toString();
 	}
 
-	public static enum Type {
+	public static enum Action {
 		ADD,
 		UPDATE_GAMEMODE,
 		UPDATE_LATENCY,
@@ -190,42 +190,42 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		REMOVE;
 	}
 
-	public class class_2705 {
-		private final int field_12378;
-		private final GameMode field_12379;
-		private final GameProfile field_12380;
-		private final TextComponent field_12377;
+	public class Entry {
+		private final int latency;
+		private final GameMode gameMode;
+		private final GameProfile profile;
+		private final TextComponent displayName;
 
-		public class_2705(GameProfile gameProfile, int i, @Nullable GameMode gameMode, @Nullable TextComponent textComponent) {
-			this.field_12380 = gameProfile;
-			this.field_12378 = i;
-			this.field_12379 = gameMode;
-			this.field_12377 = textComponent;
+		public Entry(GameProfile gameProfile, int i, @Nullable GameMode gameMode, @Nullable TextComponent textComponent) {
+			this.profile = gameProfile;
+			this.latency = i;
+			this.gameMode = gameMode;
+			this.displayName = textComponent;
 		}
 
-		public GameProfile method_11726() {
-			return this.field_12380;
+		public GameProfile getProfile() {
+			return this.profile;
 		}
 
-		public int method_11727() {
-			return this.field_12378;
+		public int getLatency() {
+			return this.latency;
 		}
 
-		public GameMode method_11725() {
-			return this.field_12379;
+		public GameMode getGameMode() {
+			return this.gameMode;
 		}
 
 		@Nullable
-		public TextComponent method_11724() {
-			return this.field_12377;
+		public TextComponent getDisplayName() {
+			return this.displayName;
 		}
 
 		public String toString() {
 			return MoreObjects.toStringHelper(this)
-				.add("latency", this.field_12378)
-				.add("gameMode", this.field_12379)
-				.add("profile", this.field_12380)
-				.add("displayName", this.field_12377 == null ? null : TextComponent.Serializer.toJsonString(this.field_12377))
+				.add("latency", this.latency)
+				.add("gameMode", this.gameMode)
+				.add("profile", this.profile)
+				.add("displayName", this.displayName == null ? null : TextComponent.Serializer.toJsonString(this.displayName))
 				.toString();
 		}
 	}

@@ -20,46 +20,46 @@ public class TagCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("tag")
+			CommandManager.literal("tag")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
+					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							ServerCommandManager.literal("add")
+							CommandManager.literal("add")
 								.then(
-									ServerCommandManager.argument("name", StringArgumentType.word())
+									CommandManager.argument("name", StringArgumentType.word())
 										.executes(
-											commandContext -> method_13702(
-													commandContext.getSource(), EntityArgumentType.method_9317(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")
+											commandContext -> executeAdd(
+													commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")
 												)
 										)
 								)
 						)
 						.then(
-							ServerCommandManager.literal("remove")
+							CommandManager.literal("remove")
 								.then(
-									ServerCommandManager.argument("name", StringArgumentType.word())
+									CommandManager.argument("name", StringArgumentType.word())
 										.suggests(
 											(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-													method_13706(EntityArgumentType.method_9317(commandContext, "targets")), suggestionsBuilder
+													getTags(EntityArgumentType.getEntities(commandContext, "targets")), suggestionsBuilder
 												)
 										)
 										.executes(
-											commandContext -> method_13699(
-													commandContext.getSource(), EntityArgumentType.method_9317(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")
+											commandContext -> executeRemove(
+													commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets"), StringArgumentType.getString(commandContext, "name")
 												)
 										)
 								)
 						)
 						.then(
-							ServerCommandManager.literal("list")
-								.executes(commandContext -> method_13700(commandContext.getSource(), EntityArgumentType.method_9317(commandContext, "targets")))
+							CommandManager.literal("list")
+								.executes(commandContext -> executeList(commandContext.getSource(), EntityArgumentType.getEntities(commandContext, "targets")))
 						)
 				)
 		);
 	}
 
-	private static Collection<String> method_13706(Collection<? extends Entity> collection) {
+	private static Collection<String> getTags(Collection<? extends Entity> collection) {
 		Set<String> set = Sets.<String>newHashSet();
 
 		for (Entity entity : collection) {
@@ -69,7 +69,7 @@ public class TagCommand {
 		return set;
 	}
 
-	private static int method_13702(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, String string) throws CommandSyntaxException {
+	private static int executeAdd(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, String string) throws CommandSyntaxException {
 		int i = 0;
 
 		for (Entity entity : collection) {
@@ -93,7 +93,7 @@ public class TagCommand {
 		}
 	}
 
-	private static int method_13699(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, String string) throws CommandSyntaxException {
+	private static int executeRemove(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection, String string) throws CommandSyntaxException {
 		int i = 0;
 
 		for (Entity entity : collection) {
@@ -117,7 +117,7 @@ public class TagCommand {
 		}
 	}
 
-	private static int method_13700(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection) {
+	private static int executeList(ServerCommandSource serverCommandSource, Collection<? extends Entity> collection) {
 		Set<String> set = Sets.<String>newHashSet();
 
 		for (Entity entity : collection) {

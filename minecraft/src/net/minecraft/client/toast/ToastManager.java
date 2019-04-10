@@ -41,7 +41,7 @@ public class ToastManager extends DrawableHelper {
 	}
 
 	@Nullable
-	public <T extends Toast> T method_1997(Class<? extends T> class_, Object object) {
+	public <T extends Toast> T getToast(Class<? extends T> class_, Object object) {
 		for (ToastManager.Entry<?> entry : this.visibleEntries) {
 			if (entry != null && class_.isAssignableFrom(entry.getInstance().getClass()) && entry.getInstance().getType().equals(object)) {
 				return (T)entry.getInstance();
@@ -85,7 +85,7 @@ public class ToastManager extends DrawableHelper {
 			return this.instance;
 		}
 
-		private float method_2003(long l) {
+		private float getDissapearProgress(long l) {
 			float f = MathHelper.clamp((float)(l - this.field_2243) / 600.0F, 0.0F, 1.0F);
 			f *= f;
 			return this.field_2244 == Toast.Visibility.field_2209 ? 1.0F - f : f;
@@ -103,11 +103,11 @@ public class ToastManager extends DrawableHelper {
 			}
 
 			GlStateManager.pushMatrix();
-			GlStateManager.translatef((float)i - 160.0F * this.method_2003(l), (float)(j * 32), (float)(500 + j));
+			GlStateManager.translatef((float)i - 160.0F * this.getDissapearProgress(l), (float)(j * 32), (float)(500 + j));
 			Toast.Visibility visibility = this.instance.draw(ToastManager.this, l - this.field_2242);
 			GlStateManager.popMatrix();
 			if (visibility != this.field_2244) {
-				this.field_2243 = l - (long)((int)((1.0F - this.method_2003(l)) * 600.0F));
+				this.field_2243 = l - (long)((int)((1.0F - this.getDissapearProgress(l)) * 600.0F));
 				this.field_2244 = visibility;
 				this.field_2244.play(ToastManager.this.client.getSoundManager());
 			}

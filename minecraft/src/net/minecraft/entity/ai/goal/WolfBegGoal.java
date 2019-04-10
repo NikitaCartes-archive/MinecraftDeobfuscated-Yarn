@@ -13,42 +13,44 @@ public class WolfBegGoal extends Goal {
 	private final WolfEntity owner;
 	private PlayerEntity begFrom;
 	private final World world;
-	private final float chance;
+	private final float begDistance;
 	private int timer;
-	private final TargetPredicate field_18085;
+	private final TargetPredicate validPlayerPredicate;
 
 	public WolfBegGoal(WolfEntity wolfEntity, float f) {
 		this.owner = wolfEntity;
 		this.world = wolfEntity.world;
-		this.chance = f;
-		this.field_18085 = new TargetPredicate().setBaseMaxDistance((double)f).includeInvulnerable().includeTeammates().ignoreEntityTargetRules();
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18406));
+		this.begDistance = f;
+		this.validPlayerPredicate = new TargetPredicate().setBaseMaxDistance((double)f).includeInvulnerable().includeTeammates().ignoreEntityTargetRules();
+		this.setControls(EnumSet.of(Goal.Control.field_18406));
 	}
 
 	@Override
 	public boolean canStart() {
-		this.begFrom = this.world.method_18462(this.field_18085, this.owner);
-		return this.begFrom == null ? false : this.method_6244(this.begFrom);
+		this.begFrom = this.world.getClosestPlayer(this.validPlayerPredicate, this.owner);
+		return this.begFrom == null ? false : this.isAttractive(this.begFrom);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		if (!this.begFrom.isValid()) {
+		if (!this.begFrom.isAlive()) {
 			return false;
 		} else {
-			return this.owner.squaredDistanceTo(this.begFrom) > (double)(this.chance * this.chance) ? false : this.timer > 0 && this.method_6244(this.begFrom);
+			return this.owner.squaredDistanceTo(this.begFrom) > (double)(this.begDistance * this.begDistance)
+				? false
+				: this.timer > 0 && this.isAttractive(this.begFrom);
 		}
 	}
 
 	@Override
 	public void start() {
-		this.owner.method_6712(true);
+		this.owner.setBegging(true);
 		this.timer = 40 + this.owner.getRand().nextInt(40);
 	}
 
 	@Override
-	public void onRemove() {
-		this.owner.method_6712(false);
+	public void stop() {
+		this.owner.setBegging(false);
 		this.begFrom = null;
 	}
 
@@ -56,11 +58,11 @@ public class WolfBegGoal extends Goal {
 	public void tick() {
 		this.owner
 			.getLookControl()
-			.lookAt(this.begFrom.x, this.begFrom.y + (double)this.begFrom.getStandingEyeHeight(), this.begFrom.z, 10.0F, (float)this.owner.method_5978());
+			.lookAt(this.begFrom.x, this.begFrom.y + (double)this.begFrom.getStandingEyeHeight(), this.begFrom.z, 10.0F, (float)this.owner.getLookPitchSpeed());
 		this.timer--;
 	}
 
-	private boolean method_6244(PlayerEntity playerEntity) {
+	private boolean isAttractive(PlayerEntity playerEntity) {
 		for (Hand hand : Hand.values()) {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			if (this.owner.isTamed() && itemStack.getItem() == Items.field_8606) {

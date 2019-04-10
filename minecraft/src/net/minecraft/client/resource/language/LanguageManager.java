@@ -76,7 +76,7 @@ public class LanguageManager implements SynchronousResourceReloadListener {
 		return Sets.<LanguageDefinition>newTreeSet(this.languageDefs.values());
 	}
 
-	public LanguageDefinition method_4668(String string) {
+	public LanguageDefinition getLanguage(String string) {
 		return (LanguageDefinition)this.languageDefs.get(string);
 	}
 }

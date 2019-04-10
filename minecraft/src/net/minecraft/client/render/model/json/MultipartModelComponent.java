@@ -86,7 +86,9 @@ public class MultipartModelComponent {
 				}
 			} else {
 				return new AndMultipartModelSelector(
-					(Iterable<? extends MultipartModelSelector>)set.stream().map(entry -> createStatePropertySelector(entry)).collect(Collectors.toList())
+					(Iterable<? extends MultipartModelSelector>)set.stream()
+						.map(MultipartModelComponent.Deserializer::createStatePropertySelector)
+						.collect(Collectors.toList())
 				);
 			}
 		}

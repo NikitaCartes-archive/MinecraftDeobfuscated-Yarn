@@ -34,12 +34,12 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 			if (this.ticks == 1) {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
-					if (clientPlayerEntity.inventory.method_7382(ItemTags.field_15537)) {
+					if (clientPlayerEntity.inventory.contains(ItemTags.field_15537)) {
 						this.manager.setStep(TutorialStep.NONE);
 						return;
 					}
 
-					if (method_4895(clientPlayerEntity, ItemTags.field_15537)) {
+					if (hasCrafted(clientPlayerEntity, ItemTags.field_15537)) {
 						this.manager.setStep(TutorialStep.NONE);
 						return;
 					}
@@ -69,7 +69,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 		}
 	}
 
-	public static boolean method_4895(ClientPlayerEntity clientPlayerEntity, Tag<Item> tag) {
+	public static boolean hasCrafted(ClientPlayerEntity clientPlayerEntity, Tag<Item> tag) {
 		for (Item item : tag.values()) {
 			if (clientPlayerEntity.getStats().getStat(Stats.field_15370.getOrCreateStat(item)) > 0) {
 				return true;

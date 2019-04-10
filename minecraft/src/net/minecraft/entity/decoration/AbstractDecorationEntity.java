@@ -96,15 +96,15 @@ public abstract class AbstractDecorationEntity extends Entity {
 		this.prevZ = this.z;
 		if (this.field_7097++ == 100 && !this.world.isClient) {
 			this.field_7097 = 0;
-			if (!this.invalid && !this.method_6888()) {
-				this.invalidate();
+			if (!this.removed && !this.method_6888()) {
+				this.remove();
 				this.onBreak(null);
 			}
 		}
 	}
 
 	public boolean method_6888() {
-		if (!this.world.method_17892(this)) {
+		if (!this.world.doesNotCollide(this)) {
 			return false;
 		} else {
 			int i = Math.max(1, this.getWidthPixels() / 16);
@@ -130,12 +130,12 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public boolean doesCollide() {
+	public boolean collides() {
 		return true;
 	}
 
 	@Override
-	public boolean method_5698(Entity entity) {
+	public boolean handlePlayerAttack(Entity entity) {
 		return entity instanceof PlayerEntity ? this.damage(DamageSource.player((PlayerEntity)entity), 0.0F) : false;
 	}
 
@@ -149,8 +149,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 		if (this.isInvulnerableTo(damageSource)) {
 			return false;
 		} else {
-			if (!this.invalid && !this.world.isClient) {
-				this.invalidate();
+			if (!this.removed && !this.world.isClient) {
+				this.remove();
 				this.scheduleVelocityUpdate();
 				this.onBreak(damageSource.getAttacker());
 			}
@@ -161,16 +161,16 @@ public abstract class AbstractDecorationEntity extends Entity {
 
 	@Override
 	public void move(MovementType movementType, Vec3d vec3d) {
-		if (!this.world.isClient && !this.invalid && vec3d.lengthSquared() > 0.0) {
-			this.invalidate();
+		if (!this.world.isClient && !this.removed && vec3d.lengthSquared() > 0.0) {
+			this.remove();
 			this.onBreak(null);
 		}
 	}
 
 	@Override
 	public void addVelocity(double d, double e, double f) {
-		if (!this.world.isClient && !this.invalid && d * d + e * e + f * f > 0.0) {
-			this.invalidate();
+		if (!this.world.isClient && !this.removed && d * d + e * e + f * f > 0.0) {
+			this.remove();
 			this.onBreak(null);
 		}
 	}

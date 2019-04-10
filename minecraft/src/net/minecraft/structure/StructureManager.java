@@ -1,7 +1,6 @@
 package net.minecraft.structure;
 
 import com.google.common.collect.Maps;
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,15 +15,16 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Map;
 import javax.annotation.Nullable;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.sortme.WorldNameProvider;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.SystemUtil;
 import net.minecraft.util.TagHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -151,7 +151,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		}
 
 		Structure structure = new Structure();
-		structure.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, compoundTag, compoundTag.getInt("DataVersion")));
+		structure.fromTag(TagHelper.update(this.dataFixer, DataFixTypes.field_19217, compoundTag, compoundTag.getInt("DataVersion")));
 		return structure;
 	}
 
@@ -209,7 +209,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		try {
 			Path path = this.generatedPath.resolve(identifier.getNamespace());
 			Path path2 = path.resolve("structures");
-			return SystemUtil.method_662(path2, identifier.getPath(), string);
+			return WorldNameProvider.method_20202(path2, identifier.getPath(), string);
 		} catch (InvalidPathException var5) {
 			throw new InvalidIdentifierException("Invalid resource path: " + identifier, var5);
 		}
@@ -220,7 +220,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 			throw new InvalidIdentifierException("Invalid resource path: " + identifier);
 		} else {
 			Path path = this.getStructurePath(identifier, string);
-			if (path.startsWith(this.generatedPath) && SystemUtil.isPathNormalized(path) && SystemUtil.isPathLegal(path)) {
+			if (path.startsWith(this.generatedPath) && WorldNameProvider.method_20200(path) && WorldNameProvider.method_20201(path)) {
 				return path;
 			} else {
 				throw new InvalidIdentifierException("Invalid resource path: " + path);

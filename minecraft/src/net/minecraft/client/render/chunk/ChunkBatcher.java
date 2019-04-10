@@ -209,7 +209,7 @@ public class ChunkBatcher {
 			if (GLX.useVbo()) {
 				this.method_3621(bufferBuilder, chunkRenderer.getGlBuffer(blockRenderLayer.ordinal()));
 			} else {
-				this.method_3623(bufferBuilder, ((DisplayListChunkRenderer)chunkRenderer).method_3639(blockRenderLayer, chunkRenderData), chunkRenderer);
+				this.method_3623(bufferBuilder, ((DisplayListChunkRenderer)chunkRenderer).method_3639(blockRenderLayer, chunkRenderData));
 			}
 
 			bufferBuilder.setOffset(0.0, 0.0, 0.0);
@@ -225,12 +225,9 @@ public class ChunkBatcher {
 		}
 	}
 
-	private void method_3623(BufferBuilder bufferBuilder, int i, ChunkRenderer chunkRenderer) {
+	private void method_3623(BufferBuilder bufferBuilder, int i) {
 		GlStateManager.newList(i, 4864);
-		GlStateManager.pushMatrix();
-		chunkRenderer.multiplyMatrix();
 		this.bufferRenderer.draw(bufferBuilder);
-		GlStateManager.popMatrix();
 		GlStateManager.endList();
 	}
 
@@ -248,7 +245,7 @@ public class ChunkBatcher {
 		}
 	}
 
-	public boolean method_3630() {
+	public boolean isEmpty() {
 		return this.pendingChunks.isEmpty() && this.pendingUploads.isEmpty();
 	}
 

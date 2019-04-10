@@ -58,7 +58,7 @@ public class ChickenEntity extends AnimalEntity {
 
 	@Override
 	protected float getActiveEyeHeight(EntityPose entityPose, EntitySize entitySize) {
-		return entitySize.height;
+		return entitySize.height * 0.95F;
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class ChickenEntity extends AnimalEntity {
 		}
 
 		this.field_6741 = this.field_6741 + this.field_6737 * 2.0F;
-		if (!this.world.isClient && this.isValid() && !this.isChild() && !this.hasJockey() && --this.eggLayTime <= 0) {
+		if (!this.world.isClient && this.isAlive() && !this.isChild() && !this.hasJockey() && --this.eggLayTime <= 0) {
 			this.playSound(SoundEvents.field_15219, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			this.dropItem(Items.field_8803);
 			this.eggLayTime = this.random.nextInt(6000) + 6000;
@@ -153,8 +153,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void method_5865(Entity entity) {
-		super.method_5865(entity);
+	public void updatePassengerPosition(Entity entity) {
+		super.updatePassengerPosition(entity);
 		float f = MathHelper.sin(this.field_6283 * (float) (Math.PI / 180.0));
 		float g = MathHelper.cos(this.field_6283 * (float) (Math.PI / 180.0));
 		float h = 0.1F;

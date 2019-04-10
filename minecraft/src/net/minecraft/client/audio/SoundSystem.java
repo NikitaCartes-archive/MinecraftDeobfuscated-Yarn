@@ -38,7 +38,7 @@ public class SoundSystem {
 	private final SoundEngine soundEngine = new SoundEngine();
 	private final Listener listener = this.soundEngine.getListener();
 	private final SoundLoader soundLoader;
-	private final SoundTaskQueue taskQueue = new SoundTaskQueue();
+	private final SoundExecutor taskQueue = new SoundExecutor();
 	private final Channel channel = new Channel(this.soundEngine, this.taskQueue);
 	private int ticks;
 	private final Map<SoundInstance, Channel.SourceManager> field_18950 = Maps.<SoundInstance, Channel.SourceManager>newHashMap();
@@ -73,16 +73,14 @@ public class SoundSystem {
 	private synchronized void initializeSystem() {
 		if (!this.initialized) {
 			try {
-				this.initialized = true;
 				this.soundEngine.init();
 				this.listener.method_19673();
 				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
 				this.soundLoader.method_19741(this.streamedSounds).thenRun(this.streamedSounds::clear);
+				this.initialized = true;
 				LOGGER.info(MARKER, "Sound engine started");
 			} catch (RuntimeException var2) {
 				LOGGER.error(MARKER, "Error starting SoundSystem. Turning off sounds & music", (Throwable)var2);
-				this.settings.setSoundVolume(SoundCategory.field_15250, 0.0F);
-				this.settings.write();
 			}
 		}
 	}
@@ -150,7 +148,15 @@ public class SoundSystem {
 		this.listeners.remove(listenerSoundInstance);
 	}
 
-	public void tick() {
+	public void method_20185(boolean bl) {
+		if (!bl) {
+			this.tick();
+		}
+
+		this.channel.tick();
+	}
+
+	private void tick() {
 		this.ticks++;
 
 		for (TickableSoundInstance tickableSoundInstance : this.tickingSounds) {
@@ -220,8 +226,6 @@ public class SoundSystem {
 				iterator2.remove();
 			}
 		}
-
-		this.channel.tick();
 	}
 
 	public boolean isPlaying(SoundInstance soundInstance) {
@@ -321,11 +325,15 @@ public class SoundSystem {
 	}
 
 	public void pauseAll() {
-		this.channel.execute(stream -> stream.forEach(Source::pause));
+		if (this.initialized) {
+			this.channel.execute(stream -> stream.forEach(Source::pause));
+		}
 	}
 
 	public void playAll() {
-		this.channel.execute(stream -> stream.forEach(Source::play));
+		if (this.initialized) {
+			this.channel.execute(stream -> stream.forEach(Source::play));
+		}
 	}
 
 	public void play(SoundInstance soundInstance, int i) {
@@ -360,5 +368,9 @@ public class SoundSystem {
 				}
 			}
 		}
+	}
+
+	public String method_20304() {
+		return this.soundEngine.method_20296();
 	}
 }

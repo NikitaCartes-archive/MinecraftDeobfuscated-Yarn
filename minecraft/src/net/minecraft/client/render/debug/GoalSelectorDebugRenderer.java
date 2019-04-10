@@ -13,10 +13,10 @@ import net.minecraft.util.math.BlockPos;
 @Environment(EnvType.CLIENT)
 public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
-	private final Map<String, List<GoalSelectorDebugRenderer.class_4206>> goalSelectors = Maps.<String, List<GoalSelectorDebugRenderer.class_4206>>newHashMap();
+	private final Map<Integer, List<GoalSelectorDebugRenderer.class_4206>> goalSelectors = Maps.<Integer, List<GoalSelectorDebugRenderer.class_4206>>newHashMap();
 
-	public void setGoalSelectorList(int i, String string, BlockPos blockPos, List<GoalSelectorDebugRenderer.class_4206> list) {
-		this.goalSelectors.put(string, list);
+	public void setGoalSelectorList(int i, List<GoalSelectorDebugRenderer.class_4206> list) {
+		this.goalSelectors.put(i, list);
 	}
 
 	public GoalSelectorDebugRenderer(MinecraftClient minecraftClient) {
@@ -33,10 +33,10 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 		);
 		GlStateManager.disableTexture();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
-		this.goalSelectors.forEach((string, list) -> {
+		this.goalSelectors.forEach((integer, list) -> {
 			for (int i = 0; i < list.size(); i++) {
 				GoalSelectorDebugRenderer.class_4206 lv = (GoalSelectorDebugRenderer.class_4206)list.get(i);
-				if (blockPos.method_19771(lv.field_18782, 160.0)) {
+				if (blockPos.isWithinDistance(lv.field_18782, 160.0)) {
 					double d = (double)lv.field_18782.getX() + 0.5;
 					double e = (double)lv.field_18782.getY() + 2.0 + (double)i * 0.25;
 					double f = (double)lv.field_18782.getZ() + 0.5;

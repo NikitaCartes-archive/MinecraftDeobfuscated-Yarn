@@ -27,7 +27,7 @@ public class FireSmokeParticle extends SpriteBillboardParticle {
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.maxAge = (int)((float)this.maxAge * j);
 		this.maxAge = Math.max(this.maxAge, 1);
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
@@ -42,16 +42,16 @@ public class FireSmokeParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17868);
+			this.setSpriteForAge(this.field_17868);
 			this.velocityY += 0.004;
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.posY == this.prevPosY) {
+			if (this.y == this.prevPosY) {
 				this.velocityX *= 1.1;
 				this.velocityZ *= 1.1;
 			}

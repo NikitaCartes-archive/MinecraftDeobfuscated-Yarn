@@ -66,7 +66,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 			this.sprites.put(sprite.getId(), sprite);
 
 			try {
-				sprite.method_4584();
+				sprite.upload();
 			} catch (Throwable var7) {
 				CrashReport crashReport = CrashReport.create(var7, "Stitching texture atlas");
 				CrashReportSection crashReportSection = crashReport.addElement("Texture being stitched together");
@@ -237,7 +237,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TickableTextu
 			CrashReportSection crashReportSection = crashReport.addElement("Sprite being mipmapped");
 			crashReportSection.add("Sprite name", (ICrashCallable<String>)(() -> sprite.getId().toString()));
 			crashReportSection.add("Sprite size", (ICrashCallable<String>)(() -> sprite.getWidth() + " x " + sprite.getHeight()));
-			crashReportSection.add("Sprite frames", (ICrashCallable<String>)(() -> sprite.method_4592() + " frames"));
+			crashReportSection.add("Sprite frames", (ICrashCallable<String>)(() -> sprite.getFrameCount() + " frames"));
 			crashReportSection.add("Mipmap levels", this.mipLevel);
 			throw new CrashException(crashReport);
 		}

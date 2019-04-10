@@ -74,36 +74,36 @@ public class EditBookScreen extends Screen {
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		this.tickCounter++;
 	}
 
 	@Override
-	protected void onInitialized() {
-		this.client.keyboard.enableRepeatEvents(true);
-		this.buttonSign = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.signButton"), buttonWidget -> {
+	protected void init() {
+		this.minecraft.keyboard.enableRepeatEvents(true);
+		this.buttonSign = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.signButton"), buttonWidget -> {
 			this.signing = true;
 			this.updateButtons();
 		}));
-		this.buttonDone = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.client.openScreen(null);
+		this.buttonDone = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.done"), buttonWidget -> {
+			this.minecraft.openScreen(null);
 			this.finalizeBook(false);
 		}));
-		this.buttonFinalize = this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton"), buttonWidget -> {
+		this.buttonFinalize = this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 98, 20, I18n.translate("book.finalizeButton"), buttonWidget -> {
 			if (this.signing) {
 				this.finalizeBook(true);
-				this.client.openScreen(null);
+				this.minecraft.openScreen(null);
 			}
 		}));
-		this.buttonCancel = this.addButton(new ButtonWidget(this.screenWidth / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel"), buttonWidget -> {
+		this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 2, 196, 98, 20, I18n.translate("gui.cancel"), buttonWidget -> {
 			if (this.signing) {
 				this.signing = false;
 			}
 
 			this.updateButtons();
 		}));
-		int i = (this.screenWidth - 192) / 2;
+		int i = (this.width - 192) / 2;
 		int j = 2;
 		this.buttonPreviousPage = this.addButton(new BookPageButtonWidget(i + 116, 159, true, buttonWidget -> this.openNextPage(), true));
 		this.buttonNextPage = this.addButton(new BookPageButtonWidget(i + 43, 159, false, buttonWidget -> this.openPreviousPage(), true));
@@ -151,12 +151,13 @@ public class EditBookScreen extends Screen {
 	}
 
 	@Override
-	public void onClosed() {
-		this.client.keyboard.enableRepeatEvents(false);
+	public void removed() {
+		this.minecraft.keyboard.enableRepeatEvents(false);
 	}
 
 	private void updateButtons() {
 		this.buttonNextPage.visible = !this.signing && this.currentPage > 0;
+		this.buttonPreviousPage.visible = !this.signing;
 		this.buttonDone.visible = !this.signing;
 		this.buttonSign.visible = !this.signing;
 		this.buttonCancel.visible = this.signing;
@@ -186,7 +187,7 @@ public class EditBookScreen extends Screen {
 				this.itemStack.setChildTag("title", new StringTag(this.title.trim()));
 			}
 
-			this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));
+			this.minecraft.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, bl, this.hand));
 		}
 	}
 
@@ -229,19 +230,19 @@ public class EditBookScreen extends Screen {
 
 	private boolean keyPressedEditMode(int i, int j, int k) {
 		String string = this.getCurrentPageContent();
-		if (Screen.isSelectAllShortcutPressed(i)) {
+		if (Screen.isSelectAll(i)) {
 			this.highlightTo = 0;
 			this.cursorIndex = string.length();
 			return true;
-		} else if (Screen.isCopyShortcutPressed(i)) {
-			this.client.keyboard.setClipboard(this.getHighlightedText());
+		} else if (Screen.isCopy(i)) {
+			this.minecraft.keyboard.setClipboard(this.getHighlightedText());
 			return true;
-		} else if (Screen.isPasteShortcutPressed(i)) {
-			this.writeString(this.stripFromatting(TextFormat.stripFormatting(this.client.keyboard.getClipboard().replaceAll("\\r", ""))));
+		} else if (Screen.isPaste(i)) {
+			this.writeString(this.stripFromatting(TextFormat.stripFormatting(this.minecraft.keyboard.getClipboard().replaceAll("\\r", ""))));
 			this.highlightTo = this.cursorIndex;
 			return true;
-		} else if (Screen.isCutShortcutPressed(i)) {
-			this.client.keyboard.setClipboard(this.getHighlightedText());
+		} else if (Screen.isCut(i)) {
+			this.minecraft.keyboard.setClipboard(this.getHighlightedText());
 			this.removeHighlightedText();
 			return true;
 		} else {
@@ -269,10 +270,10 @@ public class EditBookScreen extends Screen {
 					this.applyUpArrowKey(string);
 					return true;
 				case 266:
-					this.buttonNextPage.onPressed();
+					this.buttonNextPage.onPress();
 					return true;
 				case 267:
-					this.buttonPreviousPage.onPressed();
+					this.buttonPreviousPage.onPress();
 					return true;
 				case 268:
 					this.moveCursorToTop(string);
@@ -311,27 +312,27 @@ public class EditBookScreen extends Screen {
 	}
 
 	private void applyLeftArrowKey(String string) {
-		int i = this.fontRenderer.isRightToLeft() ? 1 : -1;
-		if (Screen.isControlPressed()) {
-			this.cursorIndex = this.fontRenderer.findWordEdge(string, i, this.cursorIndex, true);
+		int i = this.font.isRightToLeft() ? 1 : -1;
+		if (Screen.hasControlDown()) {
+			this.cursorIndex = this.font.findWordEdge(string, i, this.cursorIndex, true);
 		} else {
 			this.cursorIndex = Math.max(0, this.cursorIndex + i);
 		}
 
-		if (!Screen.isShiftPressed()) {
+		if (!Screen.hasShiftDown()) {
 			this.highlightTo = this.cursorIndex;
 		}
 	}
 
 	private void applyRightArrowKey(String string) {
-		int i = this.fontRenderer.isRightToLeft() ? -1 : 1;
-		if (Screen.isControlPressed()) {
-			this.cursorIndex = this.fontRenderer.findWordEdge(string, i, this.cursorIndex, true);
+		int i = this.font.isRightToLeft() ? -1 : 1;
+		if (Screen.hasControlDown()) {
+			this.cursorIndex = this.font.findWordEdge(string, i, this.cursorIndex, true);
 		} else {
 			this.cursorIndex = Math.min(string.length(), this.cursorIndex + i);
 		}
 
-		if (!Screen.isShiftPressed()) {
+		if (!Screen.hasShiftDown()) {
 			this.highlightTo = this.cursorIndex;
 		}
 	}
@@ -341,7 +342,7 @@ public class EditBookScreen extends Screen {
 			EditBookScreen.Position position = this.getCursorPositionForIndex(string, this.cursorIndex);
 			if (position.y == 0) {
 				this.cursorIndex = 0;
-				if (!Screen.isShiftPressed()) {
+				if (!Screen.hasShiftDown()) {
 					this.highlightTo = this.cursorIndex;
 				}
 			} else {
@@ -350,7 +351,7 @@ public class EditBookScreen extends Screen {
 				);
 				if (i >= 0) {
 					this.cursorIndex = i;
-					if (!Screen.isShiftPressed()) {
+					if (!Screen.hasShiftDown()) {
 						this.highlightTo = this.cursorIndex;
 					}
 				}
@@ -361,10 +362,10 @@ public class EditBookScreen extends Screen {
 	private void applyDownArrowKey(String string) {
 		if (!string.isEmpty()) {
 			EditBookScreen.Position position = this.getCursorPositionForIndex(string, this.cursorIndex);
-			int i = this.fontRenderer.getStringBoundedHeight(string + "" + TextFormat.BLACK + "_", 114);
+			int i = this.font.getStringBoundedHeight(string + "" + TextFormat.BLACK + "_", 114);
 			if (position.y + 9 == i) {
 				this.cursorIndex = string.length();
-				if (!Screen.isShiftPressed()) {
+				if (!Screen.hasShiftDown()) {
 					this.highlightTo = this.cursorIndex;
 				}
 			} else {
@@ -373,7 +374,7 @@ public class EditBookScreen extends Screen {
 				);
 				if (j >= 0) {
 					this.cursorIndex = j;
-					if (!Screen.isShiftPressed()) {
+					if (!Screen.hasShiftDown()) {
 						this.highlightTo = this.cursorIndex;
 					}
 				}
@@ -383,14 +384,14 @@ public class EditBookScreen extends Screen {
 
 	private void moveCursorToTop(String string) {
 		this.cursorIndex = this.getCharacterCountInFrontOfCursor(string, new EditBookScreen.Position(0, this.getCursorPositionForIndex(string, this.cursorIndex).y));
-		if (!Screen.isShiftPressed()) {
+		if (!Screen.hasShiftDown()) {
 			this.highlightTo = this.cursorIndex;
 		}
 	}
 
 	private void moveCursorToBottom(String string) {
 		this.cursorIndex = this.getCharacterCountInFrontOfCursor(string, new EditBookScreen.Position(113, this.getCursorPositionForIndex(string, this.cursorIndex).y));
-		if (!Screen.isShiftPressed()) {
+		if (!Screen.hasShiftDown()) {
 			this.highlightTo = this.cursorIndex;
 		}
 	}
@@ -408,7 +409,7 @@ public class EditBookScreen extends Screen {
 	}
 
 	private int getCharWidthInString(String string, int i) {
-		return (int)this.fontRenderer.getCharWidth(string.charAt(MathHelper.clamp(i, 0, string.length() - 1)));
+		return (int)this.font.getCharWidth(string.charAt(MathHelper.clamp(i, 0, string.length() - 1)));
 	}
 
 	private boolean keyPressedSignMode(int i, int j, int k) {
@@ -417,7 +418,7 @@ public class EditBookScreen extends Screen {
 			case 335:
 				if (!this.title.isEmpty()) {
 					this.finalizeBook(true);
-					this.client.openScreen(null);
+					this.minecraft.openScreen(null);
 				}
 
 				return true;
@@ -452,7 +453,7 @@ public class EditBookScreen extends Screen {
 		String string2 = this.getCurrentPageContent();
 		this.cursorIndex = MathHelper.clamp(this.cursorIndex, 0, string2.length());
 		String string3 = new StringBuilder(string2).insert(this.cursorIndex, string).toString();
-		int i = this.fontRenderer.getStringBoundedHeight(string3 + "" + TextFormat.BLACK + "_", 114);
+		int i = this.font.getStringBoundedHeight(string3 + "" + TextFormat.BLACK + "_", 114);
 		if (i <= 128 && string3.length() < 1024) {
 			this.setPageContent(string3);
 			this.highlightTo = this.cursorIndex = Math.min(this.getCurrentPageContent().length(), this.cursorIndex + string.length());
@@ -461,11 +462,13 @@ public class EditBookScreen extends Screen {
 
 	@Override
 	public void render(int i, int j, float f) {
+		this.renderBackground();
+		this.setFocused(null);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
-		int k = (this.screenWidth - 192) / 2;
+		this.minecraft.getTextureManager().bindTexture(WrittenBookScreen.BOOK_TEXTURE);
+		int k = (this.width - 192) / 2;
 		int l = 2;
-		this.drawTexturedRect(k, 2, 0, 0, 192, 192);
+		this.blit(k, 2, 0, 0, 192, 192);
 		if (this.signing) {
 			String string = this.title;
 			if (this.tickCounter / 6 % 2 == 0) {
@@ -476,33 +479,33 @@ public class EditBookScreen extends Screen {
 
 			String string2 = I18n.translate("book.editTitle");
 			int m = this.getStringWidth(string2);
-			this.fontRenderer.draw(string2, (float)(k + 36 + (114 - m) / 2), 34.0F, 0);
+			this.font.draw(string2, (float)(k + 36 + (114 - m) / 2), 34.0F, 0);
 			int n = this.getStringWidth(string);
-			this.fontRenderer.draw(string, (float)(k + 36 + (114 - n) / 2), 50.0F, 0);
+			this.font.draw(string, (float)(k + 36 + (114 - n) / 2), 50.0F, 0);
 			String string3 = I18n.translate("book.byAuthor", this.player.getName().getString());
 			int o = this.getStringWidth(string3);
-			this.fontRenderer.draw(TextFormat.field_1063 + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
+			this.font.draw(TextFormat.field_1063 + string3, (float)(k + 36 + (114 - o) / 2), 60.0F, 0);
 			String string4 = I18n.translate("book.finalizeWarning");
-			this.fontRenderer.drawStringBounded(string4, k + 36, 82, 114, 0);
+			this.font.drawStringBounded(string4, k + 36, 82, 114, 0);
 		} else {
 			String string = I18n.translate("book.pageIndicator", this.currentPage + 1, this.countPages());
 			String string2 = this.getCurrentPageContent();
 			int m = this.getStringWidth(string);
-			this.fontRenderer.draw(string, (float)(k - m + 192 - 44), 18.0F, 0);
-			this.fontRenderer.drawStringBounded(string2, k + 36, 32, 114, 0);
+			this.font.draw(string, (float)(k - m + 192 - 44), 18.0F, 0);
+			this.font.drawStringBounded(string2, k + 36, 32, 114, 0);
 			this.drawHighlight(string2);
 			if (this.tickCounter / 6 % 2 == 0) {
 				EditBookScreen.Position position = this.getCursorPositionForIndex(string2, this.cursorIndex);
-				if (this.fontRenderer.isRightToLeft()) {
+				if (this.font.isRightToLeft()) {
 					this.localizePosition(position);
 					position.x = position.x - 4;
 				}
 
 				this.translateRelativePositionToGlPosition(position);
 				if (this.cursorIndex < string2.length()) {
-					DrawableHelper.drawRect(position.x, position.y - 1, position.x + 1, position.y + 9, -16777216);
+					DrawableHelper.fill(position.x, position.y - 1, position.x + 1, position.y + 9, -16777216);
 				} else {
-					this.fontRenderer.draw("_", (float)position.x, (float)position.y, 0);
+					this.font.draw("_", (float)position.x, (float)position.y, 0);
 				}
 			}
 		}
@@ -511,11 +514,11 @@ public class EditBookScreen extends Screen {
 	}
 
 	private int getStringWidth(String string) {
-		return this.fontRenderer.getStringWidth(this.fontRenderer.isRightToLeft() ? this.fontRenderer.mirror(string) : string);
+		return this.font.getStringWidth(this.font.isRightToLeft() ? this.font.mirror(string) : string);
 	}
 
 	private int getCharacterCountForWidth(String string, int i) {
-		return this.fontRenderer.getCharacterCountForWidth(string, i);
+		return this.font.getCharacterCountForWidth(string, i);
 	}
 
 	private String getHighlightedText() {
@@ -530,7 +533,7 @@ public class EditBookScreen extends Screen {
 			int i = Math.min(this.cursorIndex, this.highlightTo);
 			int j = Math.max(this.cursorIndex, this.highlightTo);
 			String string2 = string.substring(i, j);
-			int k = this.fontRenderer.findWordEdge(string, 1, j, true);
+			int k = this.font.findWordEdge(string, 1, j, true);
 			String string3 = string.substring(i, k);
 			EditBookScreen.Position position = this.getCursorPositionForIndex(string, i);
 			EditBookScreen.Position position2 = new EditBookScreen.Position(position.x, position.y + 9);
@@ -561,7 +564,7 @@ public class EditBookScreen extends Screen {
 	private void drawHighlightRect(EditBookScreen.Position position, EditBookScreen.Position position2) {
 		EditBookScreen.Position position3 = new EditBookScreen.Position(position.x, position.y);
 		EditBookScreen.Position position4 = new EditBookScreen.Position(position2.x, position2.y);
-		if (this.fontRenderer.isRightToLeft()) {
+		if (this.font.isRightToLeft()) {
 			this.localizePosition(position3);
 			this.localizePosition(position4);
 			int i = position4.x;
@@ -618,18 +621,18 @@ public class EditBookScreen extends Screen {
 	}
 
 	private void localizePosition(EditBookScreen.Position position) {
-		if (this.fontRenderer.isRightToLeft()) {
+		if (this.font.isRightToLeft()) {
 			position.x = 114 - position.x;
 		}
 	}
 
 	private void translateGlPositionToRelativePosition(EditBookScreen.Position position) {
-		position.x = position.x - (this.screenWidth - 192) / 2 - 36;
+		position.x = position.x - (this.width - 192) / 2 - 36;
 		position.y = position.y - 32;
 	}
 
 	private void translateRelativePositionToGlPosition(EditBookScreen.Position position) {
-		position.x = position.x + (this.screenWidth - 192) / 2 + 36;
+		position.x = position.x + (this.width - 192) / 2 + 36;
 		position.y = position.y + 32;
 	}
 
@@ -643,7 +646,7 @@ public class EditBookScreen extends Screen {
 
 			for (int j = 0; j < string2.length(); j++) {
 				char c = string2.charAt(j);
-				float g = this.fontRenderer.getCharWidth(c);
+				float g = this.font.getCharWidth(c);
 				if (c == 167 && j < string2.length() - 1) {
 					c = string2.charAt(++j);
 					if (c == 'l' || c == 'L') {
@@ -717,12 +720,12 @@ public class EditBookScreen extends Screen {
 				if (j >= 0) {
 					if (j != this.lastClickIndex || l - this.lastClickTime >= 250L) {
 						this.cursorIndex = j;
-						if (!Screen.isShiftPressed()) {
+						if (!Screen.hasShiftDown()) {
 							this.highlightTo = this.cursorIndex;
 						}
 					} else if (this.highlightTo == this.cursorIndex) {
-						this.highlightTo = this.fontRenderer.findWordEdge(string, -1, j, false);
-						this.cursorIndex = this.fontRenderer.findWordEdge(string, 1, j, false);
+						this.highlightTo = this.font.findWordEdge(string, -1, j, false);
+						this.cursorIndex = this.font.findWordEdge(string, 1, j, false);
 					} else {
 						this.highlightTo = 0;
 						this.cursorIndex = this.getCurrentPageContent().length();

@@ -61,8 +61,8 @@ public class ServerList {
 		return (ServerEntry)this.serverEntries.get(i);
 	}
 
-	public void remove(int i) {
-		this.serverEntries.remove(i);
+	public void remove(ServerEntry serverEntry) {
+		this.serverEntries.remove(serverEntry);
 	}
 
 	public void add(ServerEntry serverEntry) {

@@ -38,15 +38,15 @@ public class ClientCommandSource implements CommandSource {
 	public Collection<String> getPlayerNames() {
 		List<String> list = Lists.<String>newArrayList();
 
-		for (ScoreboardEntry scoreboardEntry : this.networkHandler.getScoreboardEntries()) {
-			list.add(scoreboardEntry.getProfile().getName());
+		for (PlayerListEntry playerListEntry : this.networkHandler.getScoreboardEntries()) {
+			list.add(playerListEntry.getProfile().getName());
 		}
 
 		return list;
 	}
 
 	@Override
-	public Collection<String> method_9269() {
+	public Collection<String> getEntitySuggestions() {
 		return (Collection<String>)(this.client.hitResult != null && this.client.hitResult.getType() == HitResult.Type.ENTITY
 			? Collections.singleton(((EntityHitResult)this.client.hitResult).getEntity().getUuidAsString())
 			: Collections.emptyList());
@@ -94,24 +94,24 @@ public class ClientCommandSource implements CommandSource {
 	}
 
 	@Override
-	public Collection<CommandSource.RelativePosition> method_17771() {
+	public Collection<CommandSource.RelativePosition> getBlockPositionSuggestions() {
 		HitResult hitResult = this.client.hitResult;
 		if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
 			return Collections.singleton(new CommandSource.RelativePosition(formatInt(blockPos.getX()), formatInt(blockPos.getY()), formatInt(blockPos.getZ())));
 		} else {
-			return CommandSource.super.method_17771();
+			return CommandSource.super.getBlockPositionSuggestions();
 		}
 	}
 
 	@Override
-	public Collection<CommandSource.RelativePosition> method_17772() {
+	public Collection<CommandSource.RelativePosition> getPositionSuggestions() {
 		HitResult hitResult = this.client.hitResult;
 		if (hitResult != null && hitResult.getType() == HitResult.Type.BLOCK) {
 			Vec3d vec3d = hitResult.getPos();
 			return Collections.singleton(new CommandSource.RelativePosition(formatDouble(vec3d.x), formatDouble(vec3d.y), formatDouble(vec3d.z)));
 		} else {
-			return CommandSource.super.method_17772();
+			return CommandSource.super.getPositionSuggestions();
 		}
 	}
 

@@ -47,7 +47,7 @@ public class BlockCrackParticle extends SpriteBillboardParticle {
 	}
 
 	public BlockCrackParticle setBlockPosFromPosition() {
-		this.blockPos = new BlockPos(this.posX, this.posY, this.posZ);
+		this.blockPos = new BlockPos(this.x, this.y, this.z);
 		Block block = this.block.getBlock();
 		if (block == Blocks.field_10219) {
 			return this;

@@ -310,7 +310,9 @@ public class SavannaVillageData {
 					new Identifier("village/savanna/villagers"),
 					new Identifier("empty"),
 					ImmutableList.of(
-						new Pair<>(new SinglePoolElement("village/savanna/villagers/nitwit"), 1), new Pair<>(new SinglePoolElement("village/savanna/villagers/unemployed"), 10)
+						new Pair<>(new SinglePoolElement("village/savanna/villagers/nitwit"), 1),
+						new Pair<>(new SinglePoolElement("village/savanna/villagers/baby"), 1),
+						new Pair<>(new SinglePoolElement("village/savanna/villagers/unemployed"), 10)
 					),
 					StructurePool.Projection.RIGID
 				)

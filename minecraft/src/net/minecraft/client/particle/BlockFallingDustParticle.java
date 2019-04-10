@@ -27,7 +27,7 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 		this.scale *= 0.67499995F;
 		int k = (int)(32.0 / (Math.random() * 0.8 + 0.2));
 		this.maxAge = (int)Math.max((float)k * 0.9F, 1.0F);
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 		this.field_3809 = ((float)Math.random() - 0.5F) * 0.1F;
 		this.angle = (float)Math.random() * (float) (Math.PI * 2);
 	}
@@ -44,13 +44,13 @@ public class BlockFallingDustParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17808);
+			this.setSpriteForAge(this.field_17808);
 			this.prevAngle = this.angle;
 			this.angle = this.angle + (float) Math.PI * this.field_3809 * 2.0F;
 			if (this.onGround) {

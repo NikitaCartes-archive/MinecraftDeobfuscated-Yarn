@@ -199,7 +199,7 @@ public class EnchantingTableContainer extends Container {
 						}
 					}
 
-					playerEntity.increaseStat(Stats.field_15420);
+					playerEntity.incrementStat(Stats.field_15420);
 					if (playerEntity instanceof ServerPlayerEntity) {
 						Criterions.ENCHANTED_ITEM.handle((ServerPlayerEntity)playerEntity, itemStack3, j);
 					}

@@ -13,7 +13,7 @@ import net.minecraft.util.PacketByteBuf;
 public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private String name;
 	private TextComponent displayName;
-	private ScoreboardCriterion.Type type;
+	private ScoreboardCriterion.RenderType type;
 	private int mode;
 
 	public ScoreboardObjectiveUpdateS2CPacket() {
@@ -22,7 +22,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 	public ScoreboardObjectiveUpdateS2CPacket(ScoreboardObjective scoreboardObjective, int i) {
 		this.name = scoreboardObjective.getName();
 		this.displayName = scoreboardObjective.getDisplayName();
-		this.type = scoreboardObjective.getCriterionType();
+		this.type = scoreboardObjective.method_1118();
 		this.mode = i;
 	}
 
@@ -32,7 +32,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		this.mode = packetByteBuf.readByte();
 		if (this.mode == 0 || this.mode == 2) {
 			this.displayName = packetByteBuf.readTextComponent();
-			this.type = packetByteBuf.readEnumConstant(ScoreboardCriterion.Type.class);
+			this.type = packetByteBuf.readEnumConstant(ScoreboardCriterion.RenderType.class);
 		}
 	}
 
@@ -66,7 +66,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ScoreboardCriterion.Type getType() {
+	public ScoreboardCriterion.RenderType getType() {
 		return this.type;
 	}
 }

@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.command.ServerCommandManager;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.SystemUtil;
@@ -132,20 +132,20 @@ public class GameRules {
 		BOOLEAN(BoolArgumentType::bool, (commandContext, string) -> commandContext.<Boolean>getArgument(string, Boolean.class).toString()),
 		INTEGER(IntegerArgumentType::integer, (commandContext, string) -> commandContext.<Integer>getArgument(string, Integer.class).toString());
 
-		private final Supplier<ArgumentType<?>> field_9208;
-		private final BiFunction<CommandContext<ServerCommandSource>, String, String> field_9207;
+		private final Supplier<ArgumentType<?>> argumentType;
+		private final BiFunction<CommandContext<ServerCommandSource>, String, String> argumentProvider;
 
 		private Type(Supplier<ArgumentType<?>> supplier, BiFunction<CommandContext<ServerCommandSource>, String, String> biFunction) {
-			this.field_9208 = supplier;
-			this.field_9207 = biFunction;
+			this.argumentType = supplier;
+			this.argumentProvider = biFunction;
 		}
 
-		public RequiredArgumentBuilder<ServerCommandSource, ?> method_8371(String string) {
-			return ServerCommandManager.argument(string, (ArgumentType)this.field_9208.get());
+		public RequiredArgumentBuilder<ServerCommandSource, ?> argument(String string) {
+			return CommandManager.argument(string, (ArgumentType)this.argumentType.get());
 		}
 
-		public void method_8370(CommandContext<ServerCommandSource> commandContext, String string, GameRules.Value value) {
-			value.set((String)this.field_9207.apply(commandContext, string), commandContext.getSource().getMinecraftServer());
+		public void set(CommandContext<ServerCommandSource> commandContext, String string, GameRules.Value value) {
+			value.set((String)this.argumentProvider.apply(commandContext, string), commandContext.getSource().getMinecraftServer());
 		}
 	}
 

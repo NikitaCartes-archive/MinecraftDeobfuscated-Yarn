@@ -40,7 +40,7 @@ public class EndermanBlockFeatureRenderer extends FeatureRenderer<EndermanEntity
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

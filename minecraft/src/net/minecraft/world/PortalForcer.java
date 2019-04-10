@@ -43,7 +43,7 @@ public class PortalForcer {
 			entity.setVelocity(vec3d3);
 			entity.yaw = f + (float)pair.getSecond().getSecond().intValue();
 			if (entity instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)entity).networkHandler.teleportRequest(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
+				((ServerPlayerEntity)entity).networkHandler.requestTeleport(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
 				((ServerPlayerEntity)entity).networkHandler.syncWithPlayerPosition();
 			} else {
 				entity.setPositionAndAngles(vec3d2.x, vec3d2.y, vec3d2.z, entity.yaw, entity.pitch);
@@ -77,7 +77,7 @@ public class PortalForcer {
 								blockPos3 = blockPos4;
 							}
 
-							double g = blockPos3.squaredDistanceTo(blockPos);
+							double g = blockPos3.getSquaredDistance(blockPos);
 							if (f < 0.0 || g < f) {
 								f = g;
 								blockPos2 = blockPos3;

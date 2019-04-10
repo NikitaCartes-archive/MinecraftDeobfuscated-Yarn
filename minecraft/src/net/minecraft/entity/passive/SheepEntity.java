@@ -75,12 +75,12 @@ public class SheepEntity extends AnimalEntity {
 		enumMap.put(DyeColor.BLACK, Blocks.field_10146);
 	});
 	private static final Map<DyeColor, float[]> COLORS = Maps.newEnumMap(
-		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor, SheepEntity::method_6630))
+		(Map)Arrays.stream(DyeColor.values()).collect(Collectors.toMap(dyeColor -> dyeColor, SheepEntity::getDyedColor))
 	);
 	private int field_6865;
 	private EatGrassGoal eatGrassGoal;
 
-	private static float[] method_6630(DyeColor dyeColor) {
+	private static float[] getDyedColor(DyeColor dyeColor) {
 		if (dyeColor == DyeColor.field_7952) {
 			return new float[]{0.9019608F, 0.9019608F, 0.9019608F};
 		} else {
@@ -186,11 +186,11 @@ public class SheepEntity extends AnimalEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 10) {
 			this.field_6865 = 40;
 		} else {
-			super.method_5711(b);
+			super.handleStatus(b);
 		}
 	}
 
@@ -220,7 +220,9 @@ public class SheepEntity extends AnimalEntity {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868 && !this.isSheared() && !this.isChild()) {
 			this.dropItems();
-			itemStack.applyDamage(1, playerEntity);
+			if (this.world.isClient) {
+				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+			}
 		}
 
 		return super.interactMob(playerEntity, hand);
@@ -328,19 +330,19 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void method_5983() {
+	public void onEatingGrass() {
 		this.setSheared(false);
 		if (this.isChild()) {
-			this.method_5615(60);
+			this.growUp(60);
 		}
 	}
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		this.setColor(generateDefaultColor(iWorld.getRandom()));
 		return entityData;
 	}
@@ -351,7 +353,7 @@ public class SheepEntity extends AnimalEntity {
 		CraftingInventory craftingInventory = method_17690(dyeColor, dyeColor2);
 		return (DyeColor)this.world
 			.getRecipeManager()
-			.get(RecipeType.CRAFTING, craftingInventory, this.world)
+			.getFirstMatch(RecipeType.CRAFTING, craftingInventory, this.world)
 			.map(craftingRecipe -> craftingRecipe.craft(craftingInventory))
 			.map(ItemStack::getItem)
 			.filter(DyeItem.class::isInstance)

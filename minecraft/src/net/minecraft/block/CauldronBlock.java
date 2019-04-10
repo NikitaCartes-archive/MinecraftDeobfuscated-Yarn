@@ -31,8 +31,17 @@ import net.minecraft.world.World;
 
 public class CauldronBlock extends Block {
 	public static final IntegerProperty LEVEL = Properties.CAULDRON_LEVEL;
-	protected static final VoxelShape RAY_TRACE_SHAPE = Block.createCuboidShape(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
-	protected static final VoxelShape OUTLINE_SHAPE = VoxelShapes.combineAndSimplify(VoxelShapes.fullCube(), RAY_TRACE_SHAPE, BooleanBiFunction.ONLY_FIRST);
+	private static final VoxelShape RAY_TRACE_SHAPE = createCuboidShape(2.0, 4.0, 2.0, 14.0, 16.0, 14.0);
+	protected static final VoxelShape OUTLINE_SHAPE = VoxelShapes.combineAndSimplify(
+		VoxelShapes.fullCube(),
+		VoxelShapes.union(
+			createCuboidShape(0.0, 0.0, 4.0, 16.0, 3.0, 12.0),
+			createCuboidShape(4.0, 0.0, 0.0, 12.0, 3.0, 16.0),
+			createCuboidShape(2.0, 0.0, 2.0, 14.0, 3.0, 14.0),
+			RAY_TRACE_SHAPE
+		),
+		BooleanBiFunction.ONLY_FIRST
+	);
 
 	public CauldronBlock(Block.Settings settings) {
 		super(settings);
@@ -78,7 +87,7 @@ public class CauldronBlock extends Block {
 						playerEntity.setStackInHand(hand, new ItemStack(Items.field_8550));
 					}
 
-					playerEntity.increaseStat(Stats.field_15430);
+					playerEntity.incrementStat(Stats.field_15430);
 					this.setLevel(world, blockPos, blockState, 3);
 					world.playSound(null, blockPos, SoundEvents.field_14834, SoundCategory.field_15245, 1.0F, 1.0F);
 				}
@@ -95,7 +104,7 @@ public class CauldronBlock extends Block {
 						}
 					}
 
-					playerEntity.increaseStat(Stats.field_15373);
+					playerEntity.incrementStat(Stats.field_15373);
 					this.setLevel(world, blockPos, blockState, 0);
 					world.playSound(null, blockPos, SoundEvents.field_15126, SoundCategory.field_15245, 1.0F, 1.0F);
 				}
@@ -105,7 +114,7 @@ public class CauldronBlock extends Block {
 				if (i > 0 && !world.isClient) {
 					if (!playerEntity.abilities.creativeMode) {
 						ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(Items.field_8574), Potions.field_8991);
-						playerEntity.increaseStat(Stats.field_15373);
+						playerEntity.incrementStat(Stats.field_15373);
 						itemStack.subtractAmount(1);
 						if (itemStack.isEmpty()) {
 							playerEntity.setStackInHand(hand, itemStack2);
@@ -125,7 +134,7 @@ public class CauldronBlock extends Block {
 				if (i < 3 && !world.isClient) {
 					if (!playerEntity.abilities.creativeMode) {
 						ItemStack itemStack2 = new ItemStack(Items.field_8469);
-						playerEntity.increaseStat(Stats.field_15373);
+						playerEntity.incrementStat(Stats.field_15373);
 						playerEntity.setStackInHand(hand, itemStack2);
 						if (playerEntity instanceof ServerPlayerEntity) {
 							((ServerPlayerEntity)playerEntity).method_14204(playerEntity.playerContainer);
@@ -143,7 +152,7 @@ public class CauldronBlock extends Block {
 					if (dyeableItem.hasColor(itemStack) && !world.isClient) {
 						dyeableItem.removeColor(itemStack);
 						this.setLevel(world, blockPos, blockState, i - 1);
-						playerEntity.increaseStat(Stats.field_15382);
+						playerEntity.incrementStat(Stats.field_15382);
 						return true;
 					}
 				}
@@ -153,7 +162,7 @@ public class CauldronBlock extends Block {
 						ItemStack itemStack2 = itemStack.copy();
 						itemStack2.setAmount(1);
 						BannerBlockEntity.loadFromItemStack(itemStack2);
-						playerEntity.increaseStat(Stats.field_15390);
+						playerEntity.incrementStat(Stats.field_15390);
 						if (!playerEntity.abilities.creativeMode) {
 							itemStack.subtractAmount(1);
 							this.setLevel(world, blockPos, blockState, i - 1);
@@ -179,7 +188,7 @@ public class CauldronBlock extends Block {
 
 						playerEntity.setStackInHand(hand, itemStack3);
 						this.setLevel(world, blockPos, blockState, i - 1);
-						playerEntity.increaseStat(Stats.field_15398);
+						playerEntity.incrementStat(Stats.field_15398);
 					}
 
 					return true;

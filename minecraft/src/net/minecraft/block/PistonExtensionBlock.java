@@ -62,7 +62,7 @@ public class PistonExtensionBlock extends BlockWithEntity {
 		BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
 		BlockState blockState2 = iWorld.getBlockState(blockPos2);
 		if (blockState2.getBlock() instanceof PistonBlock && (Boolean)blockState2.get(PistonBlock.EXTENDED)) {
-			iWorld.clearBlockState(blockPos2);
+			iWorld.clearBlockState(blockPos2, false);
 		}
 	}
 
@@ -72,9 +72,19 @@ public class PistonExtensionBlock extends BlockWithEntity {
 	}
 
 	@Override
+	public boolean isSimpleFullBlock(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return false;
+	}
+
+	@Override
+	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
+		return false;
+	}
+
+	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient && world.getBlockEntity(blockPos) == null) {
-			world.clearBlockState(blockPos);
+			world.clearBlockState(blockPos, false);
 			return true;
 		} else {
 			return false;

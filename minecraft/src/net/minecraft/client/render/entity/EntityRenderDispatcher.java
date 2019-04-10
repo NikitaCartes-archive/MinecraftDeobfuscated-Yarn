@@ -134,20 +134,20 @@ public class EntityRenderDispatcher {
 	private final Map<Class<? extends Entity>, EntityRenderer<? extends Entity>> renderers = Maps.<Class<? extends Entity>, EntityRenderer<? extends Entity>>newHashMap();
 	private final Map<String, PlayerEntityRenderer> skinMap = Maps.<String, PlayerEntityRenderer>newHashMap();
 	private final PlayerEntityRenderer playerRenderer;
-	private TextRenderer fontRenderer;
+	private TextRenderer textRenderer;
 	private double renderPosX;
 	private double renderPosY;
 	private double renderPosZ;
 	public final TextureManager textureManager;
 	public World world;
-	public Camera field_4686;
-	public Entity field_4678;
-	public float field_4679;
-	public float field_4677;
-	public GameOptions settings;
+	public Camera camera;
+	public Entity targetedEntity;
+	public float cameraYaw;
+	public float cameraPitch;
+	public GameOptions gameOptions;
 	private boolean renderOutlines;
 	private boolean field_4681 = true;
-	private boolean field_4680;
+	private boolean showHitboxes;
 
 	private <T extends Entity> void method_17145(Class<T> class_, EntityRenderer<? super T> entityRenderer) {
 		this.renderers.put(class_, entityRenderer);
@@ -285,26 +285,26 @@ public class EntityRenderDispatcher {
 		}
 	}
 
-	public void method_3941(World world, TextRenderer textRenderer, Camera camera, Entity entity, GameOptions gameOptions) {
+	public void configure(World world, TextRenderer textRenderer, Camera camera, Entity entity, GameOptions gameOptions) {
 		this.world = world;
-		this.settings = gameOptions;
-		this.field_4686 = camera;
-		this.field_4678 = entity;
-		this.fontRenderer = textRenderer;
+		this.gameOptions = gameOptions;
+		this.camera = camera;
+		this.targetedEntity = entity;
+		this.textRenderer = textRenderer;
 		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()) {
 			Direction direction = ((LivingEntity)camera.getFocusedEntity()).method_18401();
 			if (direction != null) {
-				this.field_4679 = direction.getOpposite().asRotation();
-				this.field_4677 = 0.0F;
+				this.cameraYaw = direction.getOpposite().asRotation();
+				this.cameraPitch = 0.0F;
 			}
 		} else {
-			this.field_4679 = camera.getYaw();
-			this.field_4677 = camera.getPitch();
+			this.cameraYaw = camera.getYaw();
+			this.cameraPitch = camera.getPitch();
 		}
 	}
 
 	public void method_3945(float f) {
-		this.field_4679 = f;
+		this.cameraYaw = f;
 	}
 
 	public boolean method_3951() {
@@ -315,12 +315,12 @@ public class EntityRenderDispatcher {
 		this.field_4681 = bl;
 	}
 
-	public void method_3955(boolean bl) {
-		this.field_4680 = bl;
+	public void setShowHitboxes(boolean bl) {
+		this.showHitboxes = bl;
 	}
 
-	public boolean method_3958() {
-		return this.field_4680;
+	public boolean showsHitboxes() {
+		return this.showHitboxes;
 	}
 
 	public boolean hasSecondPass(Entity entity) {
@@ -376,7 +376,7 @@ public class EntityRenderDispatcher {
 					throw new CrashException(CrashReport.create(var18, "Post-rendering entity in world"));
 				}
 
-				if (this.field_4680 && !entity.isInvisible() && !bl && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
+				if (this.showHitboxes && !entity.isInvisible() && !bl && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
 					try {
 						this.renderHitbox(entity, d, e, f, g, h);
 					} catch (Throwable var16) {
@@ -497,16 +497,16 @@ public class EntityRenderDispatcher {
 	public void method_3944(@Nullable World world) {
 		this.world = world;
 		if (world == null) {
-			this.field_4686 = null;
+			this.camera = null;
 		}
 	}
 
 	public double method_3959(double d, double e, double f) {
-		return this.field_4686.getPos().squaredDistanceTo(d, e, f);
+		return this.camera.getPos().squaredDistanceTo(d, e, f);
 	}
 
-	public TextRenderer getFontRenderer() {
-		return this.fontRenderer;
+	public TextRenderer getTextRenderer() {
+		return this.textRenderer;
 	}
 
 	public void setRenderOutlines(boolean bl) {

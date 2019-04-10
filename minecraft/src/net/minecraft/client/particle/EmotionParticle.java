@@ -31,14 +31,14 @@ public class EmotionParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.posY == this.prevPosY) {
+			if (this.y == this.prevPosY) {
 				this.velocityX *= 1.1;
 				this.velocityZ *= 1.1;
 			}
@@ -63,7 +63,7 @@ public class EmotionParticle extends SpriteBillboardParticle {
 
 		public Particle method_3034(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EmotionParticle emotionParticle = new EmotionParticle(world, d, e + 0.5, f);
-			emotionParticle.method_18140(this.field_17813);
+			emotionParticle.setSprite(this.field_17813);
 			emotionParticle.setColor(1.0F, 1.0F, 1.0F);
 			return emotionParticle;
 		}
@@ -79,7 +79,7 @@ public class EmotionParticle extends SpriteBillboardParticle {
 
 		public Particle method_3035(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EmotionParticle emotionParticle = new EmotionParticle(world, d, e, f);
-			emotionParticle.method_18140(this.field_17814);
+			emotionParticle.setSprite(this.field_17814);
 			return emotionParticle;
 		}
 	}

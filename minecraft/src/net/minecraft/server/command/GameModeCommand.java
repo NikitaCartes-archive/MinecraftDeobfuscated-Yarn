@@ -13,17 +13,17 @@ import net.minecraft.world.GameMode;
 
 public class GameModeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = ServerCommandManager.literal("gamemode")
+		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("gamemode")
 			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
 			if (gameMode != GameMode.INVALID) {
 				literalArgumentBuilder.then(
-					ServerCommandManager.literal(gameMode.getName())
-						.executes(commandContext -> method_13387(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
+					CommandManager.literal(gameMode.getName())
+						.executes(commandContext -> execute(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
 						.then(
-							ServerCommandManager.argument("target", EntityArgumentType.multiplePlayer())
-								.executes(commandContext -> method_13387(commandContext, EntityArgumentType.method_9312(commandContext, "target"), gameMode))
+							CommandManager.argument("target", EntityArgumentType.players())
+								.executes(commandContext -> execute(commandContext, EntityArgumentType.getPlayers(commandContext, "target"), gameMode))
 						)
 				);
 			}
@@ -32,7 +32,7 @@ public class GameModeCommand {
 		commandDispatcher.register(literalArgumentBuilder);
 	}
 
-	private static void method_13390(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, GameMode gameMode) {
+	private static void setGameMode(ServerCommandSource serverCommandSource, ServerPlayerEntity serverPlayerEntity, GameMode gameMode) {
 		TextComponent textComponent = new TranslatableTextComponent("gameMode." + gameMode.getName());
 		if (serverCommandSource.getEntity() == serverPlayerEntity) {
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamemode.success.self", textComponent), true);
@@ -45,13 +45,13 @@ public class GameModeCommand {
 		}
 	}
 
-	private static int method_13387(CommandContext<ServerCommandSource> commandContext, Collection<ServerPlayerEntity> collection, GameMode gameMode) {
+	private static int execute(CommandContext<ServerCommandSource> commandContext, Collection<ServerPlayerEntity> collection, GameMode gameMode) {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			if (serverPlayerEntity.interactionManager.getGameMode() != gameMode) {
 				serverPlayerEntity.setGameMode(gameMode);
-				method_13390(commandContext.getSource(), serverPlayerEntity, gameMode);
+				setGameMode(commandContext.getSource(), serverPlayerEntity, gameMode);
 				i++;
 			}
 		}

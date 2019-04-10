@@ -11,28 +11,28 @@ public class GameOptionSliderWidget extends SliderWidget {
 	private final DoubleGameOption option;
 
 	public GameOptionSliderWidget(GameOptions gameOptions, int i, int j, int k, int l, DoubleGameOption doubleGameOption) {
-		super(gameOptions, i, j, k, l, (double)((float)doubleGameOption.method_18611(doubleGameOption.method_18613(gameOptions))));
+		super(gameOptions, i, j, k, l, (double)((float)doubleGameOption.method_18611(doubleGameOption.get(gameOptions))));
 		this.option = doubleGameOption;
-		this.updateText();
+		this.updateMessage();
 	}
 
 	@Override
 	public void renderButton(int i, int j, float f) {
 		if (this.option == GameOption.FULLSCREEN_RESOLUTION) {
-			this.updateText();
+			this.updateMessage();
 		}
 
 		super.renderButton(i, j, f);
 	}
 
 	@Override
-	protected void onProgressChanged() {
-		this.option.method_18614(this.gameOptions, this.option.method_18616(this.progress));
-		this.gameOptions.write();
+	protected void applyValue() {
+		this.option.set(this.options, this.option.method_18616(this.value));
+		this.options.write();
 	}
 
 	@Override
-	protected void updateText() {
-		this.setMessage(this.option.method_18619(this.gameOptions));
+	protected void updateMessage() {
+		this.setMessage(this.option.getDisplayString(this.options));
 	}
 }

@@ -13,15 +13,15 @@ import net.minecraft.util.NumberRange;
 import net.minecraft.util.PacketByteBuf;
 
 public interface NumberRangeArgumentType<T extends NumberRange<?>> extends ArgumentType<T> {
-	static NumberRangeArgumentType.IntRangeArgumentType method_9422() {
+	static NumberRangeArgumentType.IntRangeArgumentType create() {
 		return new NumberRangeArgumentType.IntRangeArgumentType();
 	}
 
-	public static class FloatRangeArgumentType implements NumberRangeArgumentType<NumberRange.Float> {
+	public static class FloatRangeArgumentType implements NumberRangeArgumentType<NumberRange.FloatRange> {
 		private static final Collection<String> EXAMPLES = Arrays.asList("0..5.2", "0", "-5.4", "-100.76..", "..100");
 
-		public NumberRange.Float method_9423(StringReader stringReader) throws CommandSyntaxException {
-			return NumberRange.Float.method_9049(stringReader);
+		public NumberRange.FloatRange method_9423(StringReader stringReader) throws CommandSyntaxException {
+			return NumberRange.FloatRange.parse(stringReader);
 		}
 
 		@Override
@@ -36,15 +36,15 @@ public interface NumberRangeArgumentType<T extends NumberRange<?>> extends Argum
 		}
 	}
 
-	public static class IntRangeArgumentType implements NumberRangeArgumentType<NumberRange.Integer> {
+	public static class IntRangeArgumentType implements NumberRangeArgumentType<NumberRange.IntRange> {
 		private static final Collection<String> EXAMPLES = Arrays.asList("0..5", "0", "-5", "-100..", "..100");
 
-		public static NumberRange.Integer getRangeArgument(CommandContext<ServerCommandSource> commandContext, String string) {
-			return commandContext.getArgument(string, NumberRange.Integer.class);
+		public static NumberRange.IntRange getRangeArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+			return commandContext.getArgument(string, NumberRange.IntRange.class);
 		}
 
-		public NumberRange.Integer method_9426(StringReader stringReader) throws CommandSyntaxException {
-			return NumberRange.Integer.method_9060(stringReader);
+		public NumberRange.IntRange method_9426(StringReader stringReader) throws CommandSyntaxException {
+			return NumberRange.IntRange.parse(stringReader);
 		}
 
 		@Override

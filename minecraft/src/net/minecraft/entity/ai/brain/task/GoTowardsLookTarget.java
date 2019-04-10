@@ -12,10 +12,12 @@ import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.server.world.ServerWorld;
 
 public class GoTowardsLookTarget extends Task<LivingEntity> {
-	private final float field_18378;
+	private final float speed;
+	private final int completionRange;
 
-	public GoTowardsLookTarget(float f) {
-		this.field_18378 = f;
+	public GoTowardsLookTarget(float f, int i) {
+		this.speed = f;
+		this.completionRange = i;
 	}
 
 	@Override
@@ -28,7 +30,7 @@ public class GoTowardsLookTarget extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		Brain<?> brain = livingEntity.getBrain();
-		LookTarget lookTarget = (LookTarget)brain.getMemory(MemoryModuleType.field_18446).get();
-		brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(lookTarget, this.field_18378, 0));
+		LookTarget lookTarget = (LookTarget)brain.getOptionalMemory(MemoryModuleType.field_18446).get();
+		brain.putMemory(MemoryModuleType.field_18445, new WalkTarget(lookTarget, this.speed, this.completionRange));
 	}
 }

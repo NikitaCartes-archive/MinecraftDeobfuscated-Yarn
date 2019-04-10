@@ -46,10 +46,10 @@ public class ItemDispenserBehavior implements DispenserBehavior {
 	}
 
 	protected void playSound(BlockPointer blockPointer) {
-		blockPointer.getWorld().playEvent(1000, blockPointer.getBlockPos(), 0);
+		blockPointer.getWorld().method_20290(1000, blockPointer.getBlockPos(), 0);
 	}
 
 	protected void spawnParticles(BlockPointer blockPointer, Direction direction) {
-		blockPointer.getWorld().playEvent(2000, blockPointer.getBlockPos(), direction.getId());
+		blockPointer.getWorld().method_20290(2000, blockPointer.getBlockPos(), direction.getId());
 	}
 }

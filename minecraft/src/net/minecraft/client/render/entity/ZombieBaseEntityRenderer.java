@@ -21,7 +21,7 @@ public abstract class ZombieBaseEntityRenderer<T extends ZombieEntity, M extends
 	}
 
 	protected void method_17144(T zombieEntity, float f, float g, float h) {
-		if (zombieEntity.isDrowning()) {
+		if (zombieEntity.isConvertingInWater()) {
 			g += (float)(Math.cos((double)zombieEntity.age * 3.25) * Math.PI * 0.25);
 		}
 

@@ -17,7 +17,7 @@ import net.minecraft.text.TranslatableTextComponent;
 
 public class ColorArgumentType implements ArgumentType<TextFormat> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("red", "green");
-	public static final DynamicCommandExceptionType INVALID_COLOR_EXCPETION = new DynamicCommandExceptionType(
+	public static final DynamicCommandExceptionType INVALID_COLOR_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("argument.color.invalid", object)
 	);
 
@@ -28,7 +28,7 @@ public class ColorArgumentType implements ArgumentType<TextFormat> {
 		return new ColorArgumentType();
 	}
 
-	public static TextFormat getColorArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static TextFormat getColor(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, TextFormat.class);
 	}
 
@@ -38,7 +38,7 @@ public class ColorArgumentType implements ArgumentType<TextFormat> {
 		if (textFormat != null && !textFormat.isModifier()) {
 			return textFormat;
 		} else {
-			throw INVALID_COLOR_EXCPETION.create(string);
+			throw INVALID_COLOR_EXCEPTION.create(string);
 		}
 	}
 

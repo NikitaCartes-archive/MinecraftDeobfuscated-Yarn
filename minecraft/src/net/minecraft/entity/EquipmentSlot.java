@@ -46,6 +46,16 @@ public enum EquipmentSlot {
 		throw new IllegalArgumentException("Invalid slot '" + string + "'");
 	}
 
+	public static EquipmentSlot method_20234(EquipmentSlot.Type type, int i) {
+		for (EquipmentSlot equipmentSlot : values()) {
+			if (equipmentSlot.getType() == type && equipmentSlot.getEntitySlotId() == i) {
+				return equipmentSlot;
+			}
+		}
+
+		throw new IllegalArgumentException("Invalid slot '" + type + "': " + i);
+	}
+
 	public static enum Type {
 		HAND,
 		ARMOR;

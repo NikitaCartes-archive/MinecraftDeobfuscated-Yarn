@@ -79,7 +79,6 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 		EntityType.SPIDER,
 		EntityType.ZOMBIE_PIGMAN,
 		EntityType.ENDERMAN,
-		EntityType.POLAR_BEAR,
 		EntityType.BLAZE,
 		EntityType.CREEPER,
 		EntityType.EVOKER,
@@ -104,7 +103,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 	};
 
 	public void method_10335(Consumer<SimpleAdvancement> consumer) {
-		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Task.create()
 			.display(
 				Items.field_8895,
 				new TranslatableTextComponent("advancements.adventure.root.title"),
@@ -119,7 +118,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			.criterion("killed_something", OnKilledCriterion.Conditions.method_8999())
 			.criterion("killed_by_something", OnKilledCriterion.Conditions.method_8998())
 			.build(consumer, "adventure/root");
-		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement)
 			.display(
 				Blocks.field_10069,
@@ -133,7 +132,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criterion("slept_in_bed", LocationArrivalCriterion.Conditions.method_9032())
 			.build(consumer, "adventure/sleep_in_bed");
-		SimpleAdvancement simpleAdvancement3 = this.method_10337(SimpleAdvancement.Builder.create())
+		SimpleAdvancement simpleAdvancement3 = this.method_10337(SimpleAdvancement.Task.create())
 			.parent(simpleAdvancement2)
 			.display(
 				Items.field_8285,
@@ -147,7 +146,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.rewards(AdvancementRewards.Builder.experience(500))
 			.build(consumer, "adventure/adventuring_time");
-		SimpleAdvancement simpleAdvancement4 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement4 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement)
 			.display(
 				Items.field_8687,
@@ -161,7 +160,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criterion("traded", VillagerTradeCriterion.Conditions.any())
 			.build(consumer, "adventure/trade");
-		SimpleAdvancement simpleAdvancement5 = this.method_10336(SimpleAdvancement.Builder.create())
+		SimpleAdvancement simpleAdvancement5 = this.method_10336(SimpleAdvancement.Task.create())
 			.parent(simpleAdvancement)
 			.display(
 				Items.field_8371,
@@ -175,7 +174,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criteriaMerger(CriteriaMerger.OR)
 			.build(consumer, "adventure/kill_a_mob");
-		SimpleAdvancement simpleAdvancement6 = this.method_10336(SimpleAdvancement.Builder.create())
+		SimpleAdvancement simpleAdvancement6 = this.method_10336(SimpleAdvancement.Task.create())
 			.parent(simpleAdvancement5)
 			.display(
 				Items.field_8802,
@@ -189,7 +188,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
 			.build(consumer, "adventure/kill_all_mobs");
-		SimpleAdvancement simpleAdvancement7 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement7 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement5)
 			.display(
 				Items.field_8102,
@@ -209,7 +208,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 				)
 			)
 			.build(consumer, "adventure/shoot_arrow");
-		SimpleAdvancement simpleAdvancement8 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement8 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement5)
 			.display(
 				Items.field_8547,
@@ -229,7 +228,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 				)
 			)
 			.build(consumer, "adventure/throw_trident");
-		SimpleAdvancement simpleAdvancement9 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement9 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement8)
 			.display(
 				Items.field_8547,
@@ -243,7 +242,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criterion("struck_villager", ChanneledLightningCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.VILLAGER).build()))
 			.build(consumer, "adventure/very_very_frightening");
-		SimpleAdvancement simpleAdvancement10 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement10 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement4)
 			.display(
 				Blocks.field_10147,
@@ -257,7 +256,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criterion("summoned_golem", SummonedEntityCriterion.Conditions.method_9129(EntityPredicate.Builder.create().type(EntityType.IRON_GOLEM)))
 			.build(consumer, "adventure/summon_iron_golem");
-		SimpleAdvancement simpleAdvancement11 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement11 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement7)
 			.display(
 				Items.field_8107,
@@ -273,12 +272,12 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			.criterion(
 				"killed_skeleton",
 				OnKilledCriterion.Conditions.method_9001(
-					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.method_8860(NumberRange.Float.atLeast(50.0F))),
+					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.method_8860(NumberRange.FloatRange.atLeast(50.0F))),
 					DamageSourcePredicate.Builder.create().projectile(true)
 				)
 			)
 			.build(consumer, "adventure/sniper_duel");
-		SimpleAdvancement simpleAdvancement12 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement12 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement5)
 			.display(
 				Items.field_8288,
@@ -292,7 +291,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criterion("used_totem", UsedTotemCriterion.Conditions.method_9170(Items.field_8288))
 			.build(consumer, "adventure/totem_of_undying");
-		SimpleAdvancement simpleAdvancement13 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement13 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement)
 			.display(
 				Items.field_8399,
@@ -306,7 +305,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criterion("shot_crossbow", ShotCrossbowCriterion.Conditions.create(Items.field_8399))
 			.build(consumer, "adventure/ol_betsy");
-		SimpleAdvancement simpleAdvancement14 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement14 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement13)
 			.display(
 				Items.field_8399,
@@ -320,7 +319,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			)
 			.criterion("kill_pillager", KilledByCrossbowCriterion.Conditions.method_8986(EntityPredicate.Builder.create().type(EntityType.PILLAGER)))
 			.build(consumer, "adventure/whos_the_pillager_now");
-		SimpleAdvancement simpleAdvancement15 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement15 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement13)
 			.display(
 				Items.field_8399,
@@ -340,7 +339,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 				)
 			)
 			.build(consumer, "adventure/two_birds_one_arrow");
-		SimpleAdvancement simpleAdvancement16 = SimpleAdvancement.Builder.create()
+		SimpleAdvancement simpleAdvancement16 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement13)
 			.display(
 				Items.field_8399,
@@ -353,25 +352,23 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 				true
 			)
 			.rewards(AdvancementRewards.Builder.experience(85))
-			.criterion("arbalistic", KilledByCrossbowCriterion.Conditions.method_8987(NumberRange.Integer.exactly(5)))
+			.criterion("arbalistic", KilledByCrossbowCriterion.Conditions.method_8987(NumberRange.IntRange.exactly(5)))
 			.build(consumer, "adventure/arbalistic");
 	}
 
-	private SimpleAdvancement.Builder method_10336(SimpleAdvancement.Builder builder) {
+	private SimpleAdvancement.Task method_10336(SimpleAdvancement.Task task) {
 		for (EntityType<?> entityType : MONSTERS) {
-			builder.criterion(
-				Registry.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createKill(EntityPredicate.Builder.create().type(entityType))
-			);
+			task.criterion(Registry.ENTITY_TYPE.getId(entityType).toString(), OnKilledCriterion.Conditions.createKill(EntityPredicate.Builder.create().type(entityType)));
 		}
 
-		return builder;
+		return task;
 	}
 
-	private SimpleAdvancement.Builder method_10337(SimpleAdvancement.Builder builder) {
+	private SimpleAdvancement.Task method_10337(SimpleAdvancement.Task task) {
 		for (Biome biome : BIOMES) {
-			builder.criterion(Registry.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9022(biome)));
+			task.criterion(Registry.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9022(biome)));
 		}
 
-		return builder;
+		return task;
 	}
 }

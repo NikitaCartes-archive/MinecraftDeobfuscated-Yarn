@@ -3,6 +3,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.EntityType;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.state.StateFactory;
@@ -35,7 +36,7 @@ public class LeavesBlock extends Block {
 	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!(Boolean)blockState.get(PERSISTENT) && (Integer)blockState.get(DISTANCE) == 7) {
 			dropStacks(blockState, world, blockPos);
-			world.clearBlockState(blockPos);
+			world.clearBlockState(blockPos, false);
 		}
 	}
 
@@ -92,7 +93,7 @@ public class LeavesBlock extends Block {
 			if (random.nextInt(15) == 1) {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState2 = world.getBlockState(blockPos2);
-				if (!blockState2.isFullBoundsCubeForCulling() || !Block.isFaceFullSquare(blockState2.method_11615(world, blockPos2), Direction.UP)) {
+				if (!blockState2.isFullBoundsCubeForCulling() || !Block.isSolidFullSquare(blockState2, world, blockPos2, Direction.UP)) {
 					double d = (double)((float)blockPos.getX() + random.nextFloat());
 					double e = (double)blockPos.getY() - 0.05;
 					double f = (double)((float)blockPos.getZ() + random.nextFloat());
@@ -120,6 +121,11 @@ public class LeavesBlock extends Block {
 	@Override
 	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		return false;
+	}
+
+	@Override
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return entityType == EntityType.OCELOT || entityType == EntityType.PARROT;
 	}
 
 	@Override

@@ -6,58 +6,58 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 
 public class IronGolemLookGoal extends Goal {
-	private static final TargetPredicate field_18089 = new TargetPredicate().setBaseMaxDistance(6.0).includeTeammates().includeInvulnerable();
-	private final IronGolemEntity field_6542;
-	private VillagerEntity field_6544;
-	private int field_6543;
+	private static final TargetPredicate CLOSE_VILLAGER_PREDICATE = new TargetPredicate().setBaseMaxDistance(6.0).includeTeammates().includeInvulnerable();
+	private final IronGolemEntity ironGolemEntity;
+	private VillagerEntity targetVillager;
+	private int lookCountdown;
 
 	public IronGolemLookGoal(IronGolemEntity ironGolemEntity) {
-		this.field_6542 = ironGolemEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.ironGolemEntity = ironGolemEntity;
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.field_6542.world.isDaylight()) {
+		if (!this.ironGolemEntity.world.isDaylight()) {
 			return false;
-		} else if (this.field_6542.getRand().nextInt(8000) != 0) {
+		} else if (this.ironGolemEntity.getRand().nextInt(8000) != 0) {
 			return false;
 		} else {
-			this.field_6544 = this.field_6542
+			this.targetVillager = this.ironGolemEntity
 				.world
-				.method_18465(
+				.getClosestEntity(
 					VillagerEntity.class,
-					field_18089,
-					this.field_6542,
-					this.field_6542.x,
-					this.field_6542.y,
-					this.field_6542.z,
-					this.field_6542.getBoundingBox().expand(6.0, 2.0, 6.0)
+					CLOSE_VILLAGER_PREDICATE,
+					this.ironGolemEntity,
+					this.ironGolemEntity.x,
+					this.ironGolemEntity.y,
+					this.ironGolemEntity.z,
+					this.ironGolemEntity.getBoundingBox().expand(6.0, 2.0, 6.0)
 				);
-			return this.field_6544 != null;
+			return this.targetVillager != null;
 		}
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return this.field_6543 > 0;
+		return this.lookCountdown > 0;
 	}
 
 	@Override
 	public void start() {
-		this.field_6543 = 400;
-		this.field_6542.method_6497(true);
+		this.lookCountdown = 400;
+		this.ironGolemEntity.method_6497(true);
 	}
 
 	@Override
-	public void onRemove() {
-		this.field_6542.method_6497(false);
-		this.field_6544 = null;
+	public void stop() {
+		this.ironGolemEntity.method_6497(false);
+		this.targetVillager = null;
 	}
 
 	@Override
 	public void tick() {
-		this.field_6542.getLookControl().lookAt(this.field_6544, 30.0F, 30.0F);
-		this.field_6543--;
+		this.ironGolemEntity.getLookControl().lookAt(this.targetVillager, 30.0F, 30.0F);
+		this.lookCountdown--;
 	}
 }

@@ -67,10 +67,14 @@ public abstract class PatrolEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		if (spawnType != SpawnType.field_16527 && spawnType != SpawnType.field_16467 && this.random.nextFloat() < 0.06F && this.canLead()) {
+		if (spawnType != SpawnType.field_16527
+			&& spawnType != SpawnType.field_16467
+			&& spawnType != SpawnType.field_16474
+			&& this.random.nextFloat() < 0.06F
+			&& this.canLead()) {
 			this.patrolLeader = true;
 		}
 
@@ -83,7 +87,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			this.patrolling = true;
 		}
 
-		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -135,12 +139,12 @@ public abstract class PatrolEntity extends HostileEntity {
 			this.field_16481 = patrolEntity;
 			this.field_16480 = d;
 			this.field_16535 = e;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
 		public boolean canStart() {
-			return this.field_16481.getTarget() == null && !this.field_16481.hasPassengers() && this.field_16481.hasPatrolTarget();
+			return this.field_16481.isRaidCenterSet() && this.field_16481.getTarget() == null && !this.field_16481.hasPassengers() && this.field_16481.hasPatrolTarget();
 		}
 
 		@Override
@@ -148,7 +152,7 @@ public abstract class PatrolEntity extends HostileEntity {
 		}
 
 		@Override
-		public void onRemove() {
+		public void stop() {
 		}
 
 		@Override
@@ -156,7 +160,7 @@ public abstract class PatrolEntity extends HostileEntity {
 			boolean bl = this.field_16481.isPatrolLeader();
 			EntityNavigation entityNavigation = this.field_16481.getNavigation();
 			if (entityNavigation.isIdle()) {
-				if (bl && this.field_16481.getPatrolTarget().method_19769(this.field_16481.getPos(), 10.0)) {
+				if (bl && this.field_16481.getPatrolTarget().isWithinDistance(this.field_16481.getPos(), 10.0)) {
 					this.field_16481.setRandomRaidCenter();
 				} else {
 					Vec3d vec3d = new Vec3d(this.field_16481.getPatrolTarget());

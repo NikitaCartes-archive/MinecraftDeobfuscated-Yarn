@@ -1,18 +1,18 @@
 package net.minecraft.datafixers;
 
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DSL.TypeReference;
 
 public class TypeReferences {
-	public static final TypeReference LEVEL = DataFixTypes.LEVEL;
-	public static final TypeReference PLAYER = DataFixTypes.PLAYER;
-	public static final TypeReference CHUNK = DataFixTypes.CHUNK;
-	public static final TypeReference HOTBAR = DataFixTypes.HOTBAR;
-	public static final TypeReference OPTIONS = DataFixTypes.OPTIONS;
-	public static final TypeReference STRUCTURE = DataFixTypes.STRUCTURE;
-	public static final TypeReference STATS = DataFixTypes.STATS;
-	public static final TypeReference SAVED_DATA = DataFixTypes.SAVED_DATA;
-	public static final TypeReference ADVANCEMENTS = DataFixTypes.ADVANCEMENTS;
+	public static final TypeReference LEVEL = () -> "level";
+	public static final TypeReference PLAYER = () -> "player";
+	public static final TypeReference CHUNK = () -> "chunk";
+	public static final TypeReference HOTBAR = () -> "hotbar";
+	public static final TypeReference OPTIONS = () -> "options";
+	public static final TypeReference STRUCTURE = () -> "structure";
+	public static final TypeReference STATS = () -> "stats";
+	public static final TypeReference SAVED_DATA = () -> "saved_data";
+	public static final TypeReference ADVANCEMENTS = () -> "advancements";
+	public static final TypeReference POI_CHUNK = () -> "poi_chunk";
 	public static final TypeReference BLOCK_ENTITY = () -> "block_entity";
 	public static final TypeReference ITEM_STACK = () -> "item_stack";
 	public static final TypeReference BLOCK_STATE = () -> "block_state";

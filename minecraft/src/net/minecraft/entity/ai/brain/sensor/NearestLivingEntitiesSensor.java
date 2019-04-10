@@ -12,13 +12,16 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public class NearestLivingEntitiesSensor extends Sensor<LivingEntity> {
-	private static final TargetPredicate field_18965 = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules().includeHidden();
+	private static final TargetPredicate CLOSE_ENTITY_PREDICATE = new TargetPredicate()
+		.setBaseMaxDistance(16.0)
+		.includeTeammates()
+		.ignoreEntityTargetRules()
+		.includeHidden();
 
 	@Override
-	public void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
-		this.field_18463 = serverWorld.getTime();
+	protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
 		List<LivingEntity> list = serverWorld.getEntities(
-			LivingEntity.class, livingEntity.getBoundingBox().expand(16.0, 16.0, 16.0), livingEntity2 -> livingEntity2 != livingEntity && livingEntity2.isValid()
+			LivingEntity.class, livingEntity.getBoundingBox().expand(16.0, 16.0, 16.0), livingEntity2 -> livingEntity2 != livingEntity && livingEntity2.isAlive()
 		);
 		list.sort(Comparator.comparingDouble(livingEntity::squaredDistanceTo));
 		Brain<?> brain = livingEntity.getBrain();
@@ -26,7 +29,7 @@ public class NearestLivingEntitiesSensor extends Sensor<LivingEntity> {
 		brain.putMemory(
 			MemoryModuleType.field_18442,
 			(List<LivingEntity>)list.stream()
-				.filter(livingEntity2 -> field_18965.test(livingEntity, livingEntity2))
+				.filter(livingEntity2 -> CLOSE_ENTITY_PREDICATE.test(livingEntity, livingEntity2))
 				.filter(livingEntity::canSee)
 				.collect(Collectors.toList())
 		);

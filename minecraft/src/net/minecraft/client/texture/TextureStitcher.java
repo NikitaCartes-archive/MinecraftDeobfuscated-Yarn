@@ -12,10 +12,10 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class TextureStitcher {
-	private static final Comparator<TextureStitcher.Holder> field_18030 = Comparator.comparing(holder -> -holder.height)
+	private static final Comparator<TextureStitcher.Holder> comparator = Comparator.comparing(holder -> -holder.height)
 		.thenComparing(holder -> -holder.width)
 		.thenComparing(holder -> holder.sprite.getId());
-	private final int field_5243;
+	private final int mipLevel;
 	private final Set<TextureStitcher.Holder> holders = Sets.<TextureStitcher.Holder>newHashSetWithExpectedSize(256);
 	private final List<TextureStitcher.Slot> slots = Lists.<TextureStitcher.Slot>newArrayListWithCapacity(256);
 	private int width;
@@ -24,7 +24,7 @@ public class TextureStitcher {
 	private final int maxHeight;
 
 	public TextureStitcher(int i, int j, int k) {
-		this.field_5243 = k;
+		this.mipLevel = k;
 		this.maxWidth = i;
 		this.maxHeight = j;
 	}
@@ -38,13 +38,13 @@ public class TextureStitcher {
 	}
 
 	public void add(Sprite sprite) {
-		TextureStitcher.Holder holder = new TextureStitcher.Holder(sprite, this.field_5243);
+		TextureStitcher.Holder holder = new TextureStitcher.Holder(sprite, this.mipLevel);
 		this.holders.add(holder);
 	}
 
 	public void stitch() {
 		List<TextureStitcher.Holder> list = Lists.<TextureStitcher.Holder>newArrayList(this.holders);
-		list.sort(field_18030);
+		list.sort(comparator);
 
 		for (TextureStitcher.Holder holder : list) {
 			if (!this.tryFit(holder)) {
@@ -61,7 +61,7 @@ public class TextureStitcher {
 
 		for (TextureStitcher.Slot slot : this.slots) {
 			slot.addAllFilledSlots(slotx -> {
-				TextureStitcher.Holder holder = slotx.getSpriteHolder();
+				TextureStitcher.Holder holder = slotx.getTexture();
 				Sprite sprite = holder.sprite;
 				sprite.init(this.width, this.height, slotx.getX(), slotx.getY());
 				list.add(sprite);
@@ -71,7 +71,7 @@ public class TextureStitcher {
 		return list;
 	}
 
-	private static int method_4551(int i, int j) {
+	private static int applyMipLevel(int i, int j) {
 		return (i >> j) + ((i & (1 << j) - 1) == 0 ? 0 : 1) << j;
 	}
 
@@ -131,8 +131,8 @@ public class TextureStitcher {
 
 		public Holder(Sprite sprite, int i) {
 			this.sprite = sprite;
-			this.width = TextureStitcher.method_4551(sprite.getWidth(), i);
-			this.height = TextureStitcher.method_4551(sprite.getHeight(), i);
+			this.width = TextureStitcher.applyMipLevel(sprite.getWidth(), i);
+			this.height = TextureStitcher.applyMipLevel(sprite.getHeight(), i);
 		}
 
 		public String toString() {
@@ -147,7 +147,7 @@ public class TextureStitcher {
 		private final int width;
 		private final int height;
 		private List<TextureStitcher.Slot> subSlots;
-		private TextureStitcher.Holder spriteHolder;
+		private TextureStitcher.Holder texture;
 
 		public Slot(int i, int j, int k, int l) {
 			this.x = i;
@@ -156,8 +156,8 @@ public class TextureStitcher {
 			this.height = l;
 		}
 
-		public TextureStitcher.Holder getSpriteHolder() {
-			return this.spriteHolder;
+		public TextureStitcher.Holder getTexture() {
+			return this.texture;
 		}
 
 		public int getX() {
@@ -169,14 +169,14 @@ public class TextureStitcher {
 		}
 
 		public boolean tryFit(TextureStitcher.Holder holder) {
-			if (this.spriteHolder != null) {
+			if (this.texture != null) {
 				return false;
 			} else {
 				int i = holder.width;
 				int j = holder.height;
 				if (i <= this.width && j <= this.height) {
 					if (i == this.width && j == this.height) {
-						this.spriteHolder = holder;
+						this.texture = holder;
 						return true;
 					} else {
 						if (this.subSlots == null) {
@@ -216,7 +216,7 @@ public class TextureStitcher {
 		}
 
 		public void addAllFilledSlots(Consumer<TextureStitcher.Slot> consumer) {
-			if (this.spriteHolder != null) {
+			if (this.texture != null) {
 				consumer.accept(this);
 			} else if (this.subSlots != null) {
 				for (TextureStitcher.Slot slot : this.subSlots) {
@@ -235,7 +235,7 @@ public class TextureStitcher {
 				+ ", height="
 				+ this.height
 				+ ", texture="
-				+ this.spriteHolder
+				+ this.texture
 				+ ", subSlots="
 				+ this.subSlots
 				+ '}';

@@ -24,8 +24,8 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(
 			new BlockPos(blockPos.getX() - 4, blockPos.getY() - 1, blockPos.getZ() - 4), new BlockPos(blockPos.getX() + 4, blockPos.getY() + 32, blockPos.getZ() + 4)
 		)) {
-			boolean bl = blockPos2.method_19771(blockPos, 2.5);
-			if (bl || blockPos2.method_19771(blockPos, 3.5)) {
+			boolean bl = blockPos2.isWithinDistance(blockPos, 2.5);
+			if (bl || blockPos2.isWithinDistance(blockPos, 3.5)) {
 				if (blockPos2.getY() < blockPos.getY()) {
 					if (bl) {
 						this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());

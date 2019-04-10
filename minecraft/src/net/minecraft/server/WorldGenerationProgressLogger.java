@@ -11,14 +11,14 @@ import org.apache.logging.log4j.Logger;
 
 public class WorldGenerationProgressLogger implements WorldGenerationProgressListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final int field_17468;
-	private int field_17469;
+	private final int totalCount;
+	private int generatedCount;
 	private long startTime;
 	private long nextMessageTime = Long.MAX_VALUE;
 
 	public WorldGenerationProgressLogger(int i) {
 		int j = i * 2 + 1;
-		this.field_17468 = j * j;
+		this.totalCount = j * j;
 	}
 
 	@Override
@@ -30,7 +30,7 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 	@Override
 	public void setChunkStatus(ChunkPos chunkPos, @Nullable ChunkStatus chunkStatus) {
 		if (chunkStatus == ChunkStatus.FULL) {
-			this.field_17469++;
+			this.generatedCount++;
 		}
 
 		int i = this.getProgressPercentage();
@@ -47,6 +47,6 @@ public class WorldGenerationProgressLogger implements WorldGenerationProgressLis
 	}
 
 	public int getProgressPercentage() {
-		return MathHelper.floor((float)this.field_17469 * 100.0F / (float)this.field_17468);
+		return MathHelper.floor((float)this.generatedCount * 100.0F / (float)this.totalCount);
 	}
 }

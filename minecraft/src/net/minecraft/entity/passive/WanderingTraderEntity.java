@@ -37,9 +37,9 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.village.TraderRecipe;
-import net.minecraft.village.TraderRecipeList;
-import net.minecraft.village.Trades;
+import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOffers;
+import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.World;
 
 public class WanderingTraderEntity extends AbstractTraderEntity {
@@ -95,7 +95,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	public boolean method_19270() {
+	public boolean isLevelledTrader() {
 		return false;
 	}
 
@@ -106,17 +106,17 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		if (bl) {
 			itemStack.interactWithEntity(playerEntity, this, hand);
 			return true;
-		} else if (itemStack.getItem() != Items.field_8086 && this.isValid() && !this.hasCustomer() && !this.isChild()) {
+		} else if (itemStack.getItem() != Items.field_8086 && this.isAlive() && !this.hasCustomer() && !this.isChild()) {
 			if (hand == Hand.MAIN) {
-				playerEntity.increaseStat(Stats.field_15384);
+				playerEntity.incrementStat(Stats.field_15384);
 			}
 
-			if (this.getRecipes().isEmpty()) {
+			if (this.getOffers().isEmpty()) {
 				return super.interactMob(playerEntity, hand);
 			} else {
 				if (!this.world.isClient) {
 					this.setCurrentCustomer(playerEntity);
-					this.sendRecipes(playerEntity, this.getDisplayName(), 1);
+					this.sendOffers(playerEntity, this.getDisplayName(), 1);
 				}
 
 				return true;
@@ -128,16 +128,16 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 
 	@Override
 	protected void fillRecipes() {
-		Trades.Factory[] factorys = Trades.WANDERING_TRADER_TRADES.get(1);
-		Trades.Factory[] factorys2 = Trades.WANDERING_TRADER_TRADES.get(2);
+		TradeOffers.Factory[] factorys = TradeOffers.WANDERING_TRADER_TRADES.get(1);
+		TradeOffers.Factory[] factorys2 = TradeOffers.WANDERING_TRADER_TRADES.get(2);
 		if (factorys != null && factorys2 != null) {
-			TraderRecipeList traderRecipeList = this.getRecipes();
-			this.fillRecipesFromPool(traderRecipeList, factorys, 5);
+			TraderOfferList traderOfferList = this.getOffers();
+			this.fillRecipesFromPool(traderOfferList, factorys, 5);
 			int i = this.random.nextInt(factorys2.length);
-			Trades.Factory factory = factorys2[i];
-			TraderRecipe traderRecipe = factory.create(this, this.random);
-			if (traderRecipe != null) {
-				traderRecipeList.add(traderRecipe);
+			TradeOffers.Factory factory = factorys2[i];
+			TradeOffer tradeOffer = factory.create(this, this.random);
+			if (tradeOffer != null) {
+				traderOfferList.add(tradeOffer);
 			}
 		}
 	}
@@ -169,8 +169,8 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	}
 
 	@Override
-	protected void afterUsing(TraderRecipe traderRecipe) {
-		if (traderRecipe.shouldRewardExp()) {
+	protected void afterUsing(TradeOffer tradeOffer) {
+		if (tradeOffer.shouldRewardPlayerExperience()) {
 			int i = 3 + this.random.nextInt(4);
 			this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y + 0.5, this.z, i));
 		}
@@ -219,7 +219,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 	public void tick() {
 		super.tick();
 		if (this.despawnDelay > 0 && !this.hasCustomer() && --this.despawnDelay == 0) {
-			this.invalidate();
+			this.remove();
 		}
 	}
 
@@ -241,11 +241,11 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 			this.field_17759 = wanderingTraderEntity2;
 			this.proximityDistance = d;
 			this.speed = e;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
-		public void onRemove() {
+		public void stop() {
 			this.field_17759.setWanderTarget(null);
 			WanderingTraderEntity.this.navigation.stop();
 		}
@@ -274,7 +274,7 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		}
 
 		private boolean isTooFarFrom(BlockPos blockPos, double d) {
-			return !blockPos.method_19769(this.field_17759.getPos(), d);
+			return !blockPos.isWithinDistance(this.field_17759.getPos(), d);
 		}
 	}
 }

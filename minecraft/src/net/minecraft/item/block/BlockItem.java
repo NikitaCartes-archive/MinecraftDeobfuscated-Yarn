@@ -139,8 +139,12 @@ public class BlockItem extends Item {
 	protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {
 		PlayerEntity playerEntity = itemPlacementContext.getPlayer();
 		VerticalEntityPosition verticalEntityPosition = playerEntity == null ? VerticalEntityPosition.minValue() : VerticalEntityPosition.fromEntity(playerEntity);
-		return blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos())
-			&& itemPlacementContext.getWorld().method_8628(blockState, itemPlacementContext.getBlockPos(), verticalEntityPosition);
+		return (!this.method_20360() || blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()))
+			&& itemPlacementContext.getWorld().canPlace(blockState, itemPlacementContext.getBlockPos(), verticalEntityPosition);
+	}
+
+	protected boolean method_20360() {
+		return true;
 	}
 
 	protected boolean setBlockState(ItemPlacementContext itemPlacementContext, BlockState blockState) {

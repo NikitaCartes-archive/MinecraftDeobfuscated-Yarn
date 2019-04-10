@@ -22,7 +22,7 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TagHelper;
 
-public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemPredicateFactory> {
+public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemPredicateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
 	private static final DynamicCommandExceptionType UNKNOWN_TAG_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("arguments.item.tag.unknown", object)
@@ -32,7 +32,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		return new ItemPredicateArgumentType();
 	}
 
-	public ItemPredicateArgumentType.ItemPredicateFactory method_9800(StringReader stringReader) throws CommandSyntaxException {
+	public ItemPredicateArgumentType.ItemPredicateArgument method_9800(StringReader stringReader) throws CommandSyntaxException {
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
 		if (itemStringReader.getItem() != null) {
 			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(
@@ -52,8 +52,8 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		}
 	}
 
-	public static Predicate<ItemStack> getPredicateArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<ItemPredicateArgumentType.ItemPredicateFactory>getArgument(string, ItemPredicateArgumentType.ItemPredicateFactory.class)
+	public static Predicate<ItemStack> getItemPredicate(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+		return commandContext.<ItemPredicateArgumentType.ItemPredicateArgument>getArgument(string, ItemPredicateArgumentType.ItemPredicateArgument.class)
 			.create(commandContext);
 	}
 
@@ -91,7 +91,7 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		}
 	}
 
-	public interface ItemPredicateFactory {
+	public interface ItemPredicateArgument {
 		Predicate<ItemStack> create(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
 	}
 

@@ -66,7 +66,7 @@ public class StrafePlayerPhase extends AbstractPhase {
 						double o = this.field_7062.x - l;
 						double p = this.field_7062.y + (double)(this.field_7062.getHeight() / 2.0F) - (m + (double)(this.dragon.partHead.getHeight() / 2.0F));
 						double q = this.field_7062.z - n;
-						this.dragon.world.playEvent(null, 1017, new BlockPos(this.dragon), 0);
+						this.dragon.world.playLevelEvent(null, 1017, new BlockPos(this.dragon), 0);
 						DragonFireballEntity dragonFireballEntity = new DragonFireballEntity(this.dragon.world, this.dragon, o, p, q);
 						dragonFireballEntity.setPositionAndAngles(l, m, n, 0.0F, 0.0F);
 						this.dragon.world.spawnEntity(dragonFireballEntity);

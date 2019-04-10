@@ -2,7 +2,6 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,17 +29,18 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld serverWorld, LivingEntity livingEntity, long l) {
 		Brain<?> brain = livingEntity.getBrain();
-		Path path = (Path)brain.getMemory(MemoryModuleType.field_18449).get();
-		List<GlobalPos> list = (List<GlobalPos>)brain.getMemory(MemoryModuleType.field_18450).get();
-		List<BlockPos> list2 = (List<BlockPos>)Arrays.stream(path.getNodes())
+		Path path = (Path)brain.getOptionalMemory(MemoryModuleType.field_18449).get();
+		List<GlobalPos> list = (List<GlobalPos>)brain.getOptionalMemory(MemoryModuleType.field_18450).get();
+		List<BlockPos> list2 = (List<BlockPos>)path.getNodes()
+			.stream()
 			.map(pathNode -> new BlockPos(pathNode.x, pathNode.y, pathNode.z))
 			.collect(Collectors.toList());
-		Set<BlockPos> set = this.method_19567(serverWorld, list, list2);
+		Set<BlockPos> set = this.getDoorsOnPath(serverWorld, list, list2);
 		int i = path.getCurrentNodeIndex() - 1;
-		this.method_19568(serverWorld, list2, set, i);
+		this.openDoors(serverWorld, list2, set, i);
 	}
 
-	private Set<BlockPos> method_19567(ServerWorld serverWorld, List<GlobalPos> list, List<BlockPos> list2) {
+	private Set<BlockPos> getDoorsOnPath(ServerWorld serverWorld, List<GlobalPos> list, List<BlockPos> list2) {
 		return (Set<BlockPos>)list.stream()
 			.filter(globalPos -> globalPos.getDimension() == serverWorld.getDimension().getType())
 			.map(GlobalPos::getPos)
@@ -48,7 +48,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 			.collect(Collectors.toSet());
 	}
 
-	private void method_19568(ServerWorld serverWorld, List<BlockPos> list, Set<BlockPos> set, int i) {
+	private void openDoors(ServerWorld serverWorld, List<BlockPos> list, Set<BlockPos> set, int i) {
 		set.forEach(blockPos -> {
 			int j = list.indexOf(blockPos);
 			BlockState blockState = serverWorld.getBlockState(blockPos);

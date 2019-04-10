@@ -89,7 +89,7 @@ public class MooshroomEntity extends CowEntity {
 		} else if (itemStack.getItem() == Items.field_8868 && this.getBreedingAge() >= 0) {
 			this.world.addParticle(ParticleTypes.field_11236, this.x, this.y + (double)(this.getHeight() / 2.0F), this.z, 0.0, 0.0, 0.0);
 			if (!this.world.isClient) {
-				this.invalidate();
+				this.remove();
 				CowEntity cowEntity = EntityType.COW.create(this.world);
 				cowEntity.setPositionAndAngles(this.x, this.y, this.z, this.yaw, this.pitch);
 				cowEntity.setHealth(this.getHealth());
@@ -107,7 +107,7 @@ public class MooshroomEntity extends CowEntity {
 						);
 				}
 
-				itemStack.applyDamage(1, playerEntity);
+				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 				this.playSound(SoundEvents.field_14705, 1.0F, 1.0F);
 			}
 

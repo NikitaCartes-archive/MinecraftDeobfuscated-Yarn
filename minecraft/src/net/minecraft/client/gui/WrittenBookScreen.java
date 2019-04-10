@@ -47,7 +47,7 @@ public class WrittenBookScreen extends Screen {
 	private int cachedPageIndex = -1;
 	private BookPageButtonWidget lastPageButton;
 	private BookPageButtonWidget nextPageButton;
-	private final boolean field_18976;
+	private final boolean pageTurnSound;
 
 	public WrittenBookScreen(WrittenBookScreen.Contents contents) {
 		this(contents, true);
@@ -60,7 +60,7 @@ public class WrittenBookScreen extends Screen {
 	private WrittenBookScreen(WrittenBookScreen.Contents contents, boolean bl) {
 		super(NarratorManager.field_18967);
 		this.contents = contents;
-		this.field_18976 = bl;
+		this.pageTurnSound = bl;
 	}
 
 	public void setPageProvider(WrittenBookScreen.Contents contents) {
@@ -87,20 +87,20 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	@Override
-	protected void onInitialized() {
+	protected void init() {
 		this.addCloseButton();
 		this.addPageButtons();
 	}
 
 	protected void addCloseButton() {
-		this.addButton(new ButtonWidget(this.screenWidth / 2 - 100, 196, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.client.openScreen(null)));
+		this.addButton(new ButtonWidget(this.width / 2 - 100, 196, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(null)));
 	}
 
 	protected void addPageButtons() {
-		int i = (this.screenWidth - 192) / 2;
+		int i = (this.width - 192) / 2;
 		int j = 2;
-		this.lastPageButton = this.addButton(new BookPageButtonWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.field_18976));
-		this.nextPageButton = this.addButton(new BookPageButtonWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.field_18976));
+		this.lastPageButton = this.addButton(new BookPageButtonWidget(i + 116, 159, true, buttonWidget -> this.goToNextPage(), this.pageTurnSound));
+		this.nextPageButton = this.addButton(new BookPageButtonWidget(i + 43, 159, false, buttonWidget -> this.goToPreviousPage(), this.pageTurnSound));
 		this.updatePageButtons();
 	}
 
@@ -136,10 +136,10 @@ public class WrittenBookScreen extends Screen {
 		} else {
 			switch (i) {
 				case 266:
-					this.nextPageButton.onPressed();
+					this.nextPageButton.onPress();
 					return true;
 				case 267:
-					this.lastPageButton.onPressed();
+					this.lastPageButton.onPress();
 					return true;
 				default:
 					return false;
@@ -149,44 +149,45 @@ public class WrittenBookScreen extends Screen {
 
 	@Override
 	public void render(int i, int j, float f) {
+		this.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(BOOK_TEXTURE);
-		int k = (this.screenWidth - 192) / 2;
+		this.minecraft.getTextureManager().bindTexture(BOOK_TEXTURE);
+		int k = (this.width - 192) / 2;
 		int l = 2;
-		this.drawTexturedRect(k, 2, 0, 0, 192, 192);
+		this.blit(k, 2, 0, 0, 192, 192);
 		String string = I18n.translate("book.pageIndicator", this.pageIndex + 1, Math.max(this.getPageCount(), 1));
 		if (this.cachedPageIndex != this.pageIndex) {
 			TextComponent textComponent = this.contents.getLineOrDefault(this.pageIndex);
-			this.cachedPage = TextComponentUtil.wrapLines(textComponent, 114, this.fontRenderer, true, true);
+			this.cachedPage = TextComponentUtil.wrapLines(textComponent, 114, this.font, true, true);
 		}
 
 		this.cachedPageIndex = this.pageIndex;
 		int m = this.getStringWidth(string);
-		this.fontRenderer.draw(string, (float)(k - m + 192 - 44), 18.0F, 0);
+		this.font.draw(string, (float)(k - m + 192 - 44), 18.0F, 0);
 		int n = Math.min(128 / 9, this.cachedPage.size());
 
 		for (int o = 0; o < n; o++) {
 			TextComponent textComponent2 = (TextComponent)this.cachedPage.get(o);
-			this.fontRenderer.draw(textComponent2.getFormattedText(), (float)(k + 36), (float)(32 + o * 9), 0);
+			this.font.draw(textComponent2.getFormattedText(), (float)(k + 36), (float)(32 + o * 9), 0);
 		}
 
 		TextComponent textComponent3 = this.getLineAt((double)i, (double)j);
 		if (textComponent3 != null) {
-			this.drawTextComponentHover(textComponent3, i, j);
+			this.renderComponentHoverEffect(textComponent3, i, j);
 		}
 
 		super.render(i, j, f);
 	}
 
 	private int getStringWidth(String string) {
-		return this.fontRenderer.getStringWidth(this.fontRenderer.isRightToLeft() ? this.fontRenderer.mirror(string) : string);
+		return this.font.getStringWidth(this.font.isRightToLeft() ? this.font.mirror(string) : string);
 	}
 
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (i == 0) {
 			TextComponent textComponent = this.getLineAt(d, e);
-			if (textComponent != null && this.handleTextComponentClick(textComponent)) {
+			if (textComponent != null && this.handleComponentClicked(textComponent)) {
 				return true;
 			}
 		}
@@ -195,7 +196,7 @@ public class WrittenBookScreen extends Screen {
 	}
 
 	@Override
-	public boolean handleTextComponentClick(TextComponent textComponent) {
+	public boolean handleComponentClicked(TextComponent textComponent) {
 		ClickEvent clickEvent = textComponent.getStyle().getClickEvent();
 		if (clickEvent == null) {
 			return false;
@@ -209,9 +210,9 @@ public class WrittenBookScreen extends Screen {
 				return false;
 			}
 		} else {
-			boolean bl = super.handleTextComponentClick(textComponent);
+			boolean bl = super.handleComponentClicked(textComponent);
 			if (bl && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-				this.client.openScreen(null);
+				this.minecraft.openScreen(null);
 			}
 
 			return bl;
@@ -223,7 +224,7 @@ public class WrittenBookScreen extends Screen {
 		if (this.cachedPage == null) {
 			return null;
 		} else {
-			int i = MathHelper.floor(d - (double)((this.screenWidth - 192) / 2) - 36.0);
+			int i = MathHelper.floor(d - (double)((this.width - 192) / 2) - 36.0);
 			int j = MathHelper.floor(e - 2.0 - 30.0);
 			if (i >= 0 && j >= 0) {
 				int k = Math.min(128 / 9, this.cachedPage.size());
@@ -235,7 +236,7 @@ public class WrittenBookScreen extends Screen {
 
 						for (TextComponent textComponent2 : textComponent) {
 							if (textComponent2 instanceof StringTextComponent) {
-								m += this.client.textRenderer.getStringWidth(textComponent2.getFormattedText());
+								m += this.minecraft.textRenderer.getStringWidth(textComponent2.getFormattedText());
 								if (m > i) {
 									return textComponent2;
 								}

@@ -9,18 +9,18 @@ import net.minecraft.world.GameRules;
 
 public class GameRuleCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = ServerCommandManager.literal("gamerule")
+		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("gamerule")
 			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
 
 		for (Entry<String, GameRules.Key> entry : GameRules.getKeys().entrySet()) {
 			literalArgumentBuilder.then(
-				ServerCommandManager.literal((String)entry.getKey())
-					.executes(commandContext -> method_13397(commandContext.getSource(), (String)entry.getKey()))
+				CommandManager.literal((String)entry.getKey())
+					.executes(commandContext -> executeQuery(commandContext.getSource(), (String)entry.getKey()))
 					.then(
 						((GameRules.Key)entry.getValue())
 							.getType()
-							.method_8371("value")
-							.executes(commandContext -> method_13394(commandContext.getSource(), (String)entry.getKey(), commandContext))
+							.argument("value")
+							.executes(commandContext -> executeSet(commandContext.getSource(), (String)entry.getKey(), commandContext))
 					)
 			);
 		}
@@ -28,14 +28,14 @@ public class GameRuleCommand {
 		commandDispatcher.register(literalArgumentBuilder);
 	}
 
-	private static int method_13394(ServerCommandSource serverCommandSource, String string, CommandContext<ServerCommandSource> commandContext) {
+	private static int executeSet(ServerCommandSource serverCommandSource, String string, CommandContext<ServerCommandSource> commandContext) {
 		GameRules.Value value = serverCommandSource.getMinecraftServer().getGameRules().get(string);
-		value.getType().method_8370(commandContext, "value", value);
+		value.getType().set(commandContext, "value", value);
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamerule.set", string, value.getString()), true);
 		return value.getInteger();
 	}
 
-	private static int method_13397(ServerCommandSource serverCommandSource, String string) {
+	private static int executeQuery(ServerCommandSource serverCommandSource, String string) {
 		GameRules.Value value = serverCommandSource.getMinecraftServer().getGameRules().get(string);
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamerule.query", string, value.getString()), false);
 		return value.getInteger();

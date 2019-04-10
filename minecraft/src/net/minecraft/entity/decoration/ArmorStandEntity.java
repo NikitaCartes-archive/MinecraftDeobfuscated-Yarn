@@ -55,7 +55,7 @@ public class ArmorStandEntity extends LivingEntity {
 	public static final TrackedData<Rotation> TRACKER_RIGHT_ARM_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
 	public static final TrackedData<Rotation> TRACKER_LEFT_LEG_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
 	public static final TrackedData<Rotation> TRACKER_RIGHT_LEG_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	private static final Predicate<Entity> field_7102 = entity -> entity instanceof AbstractMinecartEntity
+	private static final Predicate<Entity> RIDEABLE_MINECART_PREDICATE = entity -> entity instanceof AbstractMinecartEntity
 			&& ((AbstractMinecartEntity)entity).getMinecartType() == AbstractMinecartEntity.Type.field_7674;
 	private final DefaultedList<ItemStack> heldItems = DefaultedList.create(2, ItemStack.EMPTY);
 	private final DefaultedList<ItemStack> armorItems = DefaultedList.create(4, ItemStack.EMPTY);
@@ -88,13 +88,13 @@ public class ArmorStandEntity extends LivingEntity {
 		this.setPosition(d, e, f);
 	}
 
-	private boolean method_18059() {
+	private boolean canClip() {
 		return !this.isMarker() && !this.isUnaffectedByGravity();
 	}
 
 	@Override
-	public boolean method_6034() {
-		return super.method_6034() && this.method_18059();
+	public boolean canMoveVoluntarily() {
+		return super.canMoveVoluntarily() && this.canClip();
 	}
 
 	@Override
@@ -115,7 +115,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public Iterable<ItemStack> getItemsArmor() {
+	public Iterable<ItemStack> getArmorItems() {
 		return this.armorItems;
 	}
 
@@ -145,7 +145,7 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean method_5758(int i, ItemStack itemStack) {
+	public boolean equip(int i, ItemStack itemStack) {
 		EquipmentSlot equipmentSlot;
 		if (i == 98) {
 			equipmentSlot = EquipmentSlot.HAND_MAIN;
@@ -165,7 +165,7 @@ public class ArmorStandEntity extends LivingEntity {
 			equipmentSlot = EquipmentSlot.FEET;
 		}
 
-		if (!itemStack.isEmpty() && !MobEntity.method_5935(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.HEAD) {
+		if (!itemStack.isEmpty() && !MobEntity.canEquipmentSlotContain(equipmentSlot, itemStack) && equipmentSlot != EquipmentSlot.HEAD) {
 			return false;
 		} else {
 			this.setEquippedStack(equipmentSlot, itemStack);
@@ -243,7 +243,7 @@ public class ArmorStandEntity extends LivingEntity {
 		this.disabledSlots = compoundTag.getInt("DisabledSlots");
 		this.setHideBasePlate(compoundTag.getBoolean("NoBasePlate"));
 		this.setMarker(compoundTag.getBoolean("Marker"));
-		this.noClip = !this.method_18059();
+		this.noClip = !this.canClip();
 		CompoundTag compoundTag2 = compoundTag.getCompound("Pose");
 		this.deserializePose(compoundTag2);
 	}
@@ -303,7 +303,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	protected void doPushLogic() {
-		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), field_7102);
+		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), RIDEABLE_MINECART_PREDICATE);
 
 		for (int i = 0; i < list.size(); i++) {
 			Entity entity = (Entity)list.get(i);
@@ -391,16 +391,16 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public boolean damage(DamageSource damageSource, float f) {
-		if (this.world.isClient || this.invalid) {
+		if (this.world.isClient || this.removed) {
 			return false;
 		} else if (DamageSource.OUT_OF_WORLD.equals(damageSource)) {
-			this.invalidate();
+			this.remove();
 			return false;
 		} else if (this.isInvulnerableTo(damageSource) || this.field_7111 || this.isMarker()) {
 			return false;
 		} else if (damageSource.isExplosive()) {
 			this.method_6908(damageSource);
-			this.invalidate();
+			this.remove();
 			return false;
 		} else if (DamageSource.IN_FIRE.equals(damageSource)) {
 			if (this.isOnFire()) {
@@ -424,17 +424,17 @@ public class ArmorStandEntity extends LivingEntity {
 			} else if (damageSource.isSourceCreativePlayer()) {
 				this.method_6920();
 				this.method_6898();
-				this.invalidate();
+				this.remove();
 				return bl2;
 			} else {
 				long l = this.world.getTime();
 				if (l - this.field_7112 > 5L && !bl) {
-					this.world.summonParticle(this, (byte)32);
+					this.world.sendEntityStatus(this, (byte)32);
 					this.field_7112 = l;
 				} else {
 					this.method_6924(damageSource);
 					this.method_6898();
-					this.invalidate();
+					this.remove();
 				}
 
 				return true;
@@ -444,14 +444,14 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 32) {
 			if (this.world.isClient) {
 				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14897, this.getSoundCategory(), 0.3F, 1.0F, false);
 				this.field_7112 = this.world.getTime();
 			}
 		} else {
-			super.method_5711(b);
+			super.handleStatus(b);
 		}
 	}
 
@@ -470,7 +470,7 @@ public class ArmorStandEntity extends LivingEntity {
 	private void method_6898() {
 		if (this.world instanceof ServerWorld) {
 			((ServerWorld)this.world)
-				.method_14199(
+				.spawnParticles(
 					new BlockStateParticleParameters(ParticleTypes.field_11217, Blocks.field_10161.getDefaultState()),
 					this.x,
 					this.y + (double)this.getHeight() / 1.5,
@@ -489,7 +489,7 @@ public class ArmorStandEntity extends LivingEntity {
 		g -= f;
 		if (g <= 0.5F) {
 			this.method_6908(damageSource);
-			this.invalidate();
+			this.remove();
 		} else {
 			this.setHealth(g);
 		}
@@ -502,7 +502,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	private void method_6908(DamageSource damageSource) {
 		this.method_6920();
-		this.method_16080(damageSource);
+		this.drop(damageSource);
 
 		for (int i = 0; i < this.heldItems.size(); i++) {
 			ItemStack itemStack = this.heldItems.get(i);
@@ -544,7 +544,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public void travel(Vec3d vec3d) {
-		if (this.method_18059()) {
+		if (this.canClip()) {
 			super.travel(vec3d);
 		}
 	}
@@ -613,7 +613,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	@Override
 	public void kill() {
-		this.invalidate();
+		this.remove();
 	}
 
 	@Override
@@ -727,8 +727,8 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean doesCollide() {
-		return super.doesCollide() && !this.isMarker();
+	public boolean collides() {
+		return super.collides() && !this.isMarker();
 	}
 
 	@Override

@@ -8,14 +8,14 @@ import net.minecraft.world.ViewableWorld;
 public abstract class MoveToTargetPosGoal extends Goal {
 	protected final MobEntityWithAi owner;
 	public final double speed;
-	protected int counter;
+	protected int cooldown;
 	protected int tryingTime;
 	private int safeWaitingTime;
 	protected BlockPos targetPos = BlockPos.ORIGIN;
 	private boolean reached;
-	private final int field_6510;
+	private final int range;
 	private final int maxYDifference;
-	public int field_6515;
+	protected int lowestY;
 
 	public MoveToTargetPosGoal(MobEntityWithAi mobEntityWithAi, double d, int i) {
 		this(mobEntityWithAi, d, i, 1);
@@ -24,19 +24,19 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	public MoveToTargetPosGoal(MobEntityWithAi mobEntityWithAi, double d, int i, int j) {
 		this.owner = mobEntityWithAi;
 		this.speed = d;
-		this.field_6510 = i;
-		this.field_6515 = 0;
+		this.range = i;
+		this.lowestY = 0;
 		this.maxYDifference = j;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18407));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18407));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (this.counter > 0) {
-			this.counter--;
+		if (this.cooldown > 0) {
+			this.cooldown--;
 			return false;
 		} else {
-			this.counter = this.getInterval(this.owner);
+			this.cooldown = this.getInterval(this.owner);
 			return this.findTargetPos();
 		}
 	}
@@ -69,7 +69,7 @@ public abstract class MoveToTargetPosGoal extends Goal {
 
 	@Override
 	public void tick() {
-		if (!this.targetPos.up().method_19769(this.owner.getPos(), this.getDesiredSquaredDistanceToTarget())) {
+		if (!this.targetPos.up().isWithinDistance(this.owner.getPos(), this.getDesiredSquaredDistanceToTarget())) {
 			this.reached = false;
 			this.tryingTime++;
 			if (this.shouldResetPath()) {
@@ -92,12 +92,12 @@ public abstract class MoveToTargetPosGoal extends Goal {
 	}
 
 	protected boolean findTargetPos() {
-		int i = this.field_6510;
+		int i = this.range;
 		int j = this.maxYDifference;
 		BlockPos blockPos = new BlockPos(this.owner);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int k = this.field_6515; k <= j; k = k > 0 ? -k : 1 - k) {
+		for (int k = this.lowestY; k <= j; k = k > 0 ? -k : 1 - k) {
 			for (int l = 0; l < i; l++) {
 				for (int m = 0; m <= l; m = m > 0 ? -m : 1 - m) {
 					for (int n = m < l && m > -l ? l : 0; n <= l; n = n > 0 ? -n : 1 - n) {

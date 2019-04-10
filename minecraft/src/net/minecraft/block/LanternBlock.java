@@ -1,12 +1,12 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
+import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -62,21 +62,16 @@ public class LanternBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		Direction direction = method_16370(blockState).getOpposite();
-		BlockPos blockPos2 = blockPos.offset(direction);
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		Block block = blockState2.getBlock();
-		if (method_9553(block)) {
-			return false;
-		} else {
-			boolean bl = Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction.getOpposite())
-				|| block.matches(BlockTags.field_16584)
-				|| block.matches(BlockTags.field_15504);
-			return direction == Direction.UP ? block == Blocks.field_10312 || bl : !method_9581(block) && bl;
-		}
+		return Block.isSolidSmallSquare(viewableWorld, blockPos.offset(direction), direction.getOpposite());
 	}
 
 	protected static Direction method_16370(BlockState blockState) {
 		return blockState.get(HANGING) ? Direction.DOWN : Direction.UP;
+	}
+
+	@Override
+	public PistonBehavior getPistonBehavior(BlockState blockState) {
+		return PistonBehavior.field_15971;
 	}
 
 	@Override

@@ -47,9 +47,9 @@ public class DebugRenderer {
 	private boolean showStructures;
 	private boolean showSkyLight;
 	private boolean showWorldGenAttempts;
-	private boolean field_4518;
+	private boolean showBlockOutlines;
 	private boolean field_18775;
-	private boolean field_18776;
+	private boolean showGoalSelectors;
 
 	public DebugRenderer(MinecraftClient minecraftClient) {
 		this.pathfindingDebugRenderer = new PathfindingDebugRenderer(minecraftClient);
@@ -77,9 +77,9 @@ public class DebugRenderer {
 			|| this.showNeighborUpdates
 			|| this.showSkyLight
 			|| this.showWorldGenAttempts
-			|| this.field_4518
+			|| this.showBlockOutlines
 			|| this.field_18775
-			|| this.field_18776;
+			|| this.showGoalSelectors;
 	}
 
 	public boolean toggleShowChunkBorder() {
@@ -128,11 +128,11 @@ public class DebugRenderer {
 			this.worldGenAttemptDebugRenderer.render(l);
 		}
 
-		if (this.field_4518) {
+		if (this.showBlockOutlines) {
 			this.blockOutlineDebugRenderer.render(l);
 		}
 
-		if (this.field_18776) {
+		if (this.showGoalSelectors) {
 			this.goalSelectorDebugRenderer.render(l);
 		}
 	}
@@ -144,10 +144,10 @@ public class DebugRenderer {
 			Vec3d vec3d = entity.getCameraPosVec(1.0F);
 			Vec3d vec3d2 = entity.getRotationVec(1.0F).multiply((double)i);
 			Vec3d vec3d3 = vec3d.add(vec3d2);
-			BoundingBox boundingBox = entity.getBoundingBox().method_18804(vec3d2).expand(1.0);
+			BoundingBox boundingBox = entity.getBoundingBox().stretch(vec3d2).expand(1.0);
 			int j = i * i;
-			Predicate<Entity> predicate = entityx -> !entityx.isSpectator() && entityx.doesCollide();
-			EntityHitResult entityHitResult = ProjectileUtil.method_18075(entity, vec3d, vec3d3, boundingBox, predicate, (double)j);
+			Predicate<Entity> predicate = entityx -> !entityx.isSpectator() && entityx.collides();
+			EntityHitResult entityHitResult = ProjectileUtil.rayTrace(entity, vec3d, vec3d3, boundingBox, predicate, (double)j);
 			if (entityHitResult == null) {
 				return Optional.empty();
 			} else {
@@ -159,7 +159,7 @@ public class DebugRenderer {
 	public static void method_19697(BlockPos blockPos, BlockPos blockPos2, float f, float g, float h, float i) {
 		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		if (camera.isReady()) {
-			Vec3d vec3d = camera.getPos().method_19637();
+			Vec3d vec3d = camera.getPos().negate();
 			BoundingBox boundingBox = new BoundingBox(blockPos, blockPos2).offset(vec3d);
 			method_19695(boundingBox, f, g, h, i);
 		}
@@ -168,7 +168,7 @@ public class DebugRenderer {
 	public static void method_19696(BlockPos blockPos, float f, float g, float h, float i, float j) {
 		Camera camera = MinecraftClient.getInstance().gameRenderer.getCamera();
 		if (camera.isReady()) {
-			Vec3d vec3d = camera.getPos().method_19637();
+			Vec3d vec3d = camera.getPos().negate();
 			BoundingBox boundingBox = new BoundingBox(blockPos).offset(vec3d).expand((double)f);
 			method_19695(boundingBox, g, h, i, j);
 		}
@@ -201,7 +201,7 @@ public class DebugRenderer {
 	public static void method_3712(String string, double d, double e, double f, int i, float g, boolean bl, float h, boolean bl2) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		Camera camera = minecraftClient.gameRenderer.getCamera();
-		if (camera.isReady() && minecraftClient.getEntityRenderManager().settings != null) {
+		if (camera.isReady() && minecraftClient.getEntityRenderManager().gameOptions != null) {
 			TextRenderer textRenderer = minecraftClient.textRenderer;
 			double j = camera.getPos().x;
 			double k = camera.getPos().y;
@@ -211,8 +211,8 @@ public class DebugRenderer {
 			GlStateManager.normal3f(0.0F, 1.0F, 0.0F);
 			GlStateManager.scalef(g, -g, g);
 			EntityRenderDispatcher entityRenderDispatcher = minecraftClient.getEntityRenderManager();
-			GlStateManager.rotatef(-entityRenderDispatcher.field_4679, 0.0F, 1.0F, 0.0F);
-			GlStateManager.rotatef(-entityRenderDispatcher.field_4677, 1.0F, 0.0F, 0.0F);
+			GlStateManager.rotatef(-entityRenderDispatcher.cameraYaw, 0.0F, 1.0F, 0.0F);
+			GlStateManager.rotatef(-entityRenderDispatcher.cameraPitch, 1.0F, 0.0F, 0.0F);
 			GlStateManager.enableTexture();
 			if (bl2) {
 				GlStateManager.disableDepthTest();

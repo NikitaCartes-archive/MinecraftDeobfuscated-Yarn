@@ -20,7 +20,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.scoreboard.ScoreboardTeam;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
@@ -50,7 +50,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		} else if (entity.ignoreCameraFrustum) {
 			return true;
 		} else {
-			BoundingBox boundingBox = entity.method_5830().expand(0.5);
+			BoundingBox boundingBox = entity.getVisibilityBoundingBox().expand(0.5);
 			if (boundingBox.isValid() || boundingBox.averageDimension() == 0.0) {
 				boundingBox = new BoundingBox(entity.x - 2.0, entity.y - 2.0, entity.z - 2.0, entity.x + 2.0, entity.y + 2.0, entity.z + 2.0);
 			}
@@ -61,27 +61,27 @@ public abstract class EntityRenderer<T extends Entity> {
 
 	public void render(T entity, double d, double e, double f, float g, float h) {
 		if (!this.renderOutlines) {
-			this.method_3926(entity, d, e, f);
+			this.renderLabelIfPresent(entity, d, e, f);
 		}
 	}
 
 	protected int getOutlineColor(T entity) {
-		ScoreboardTeam scoreboardTeam = (ScoreboardTeam)entity.getScoreboardTeam();
-		return scoreboardTeam != null && scoreboardTeam.getColor().getColor() != null ? scoreboardTeam.getColor().getColor() : 16777215;
+		Team team = (Team)entity.method_5781();
+		return team != null && team.getColor().getColor() != null ? team.getColor().getColor() : 16777215;
 	}
 
-	protected void method_3926(T entity, double d, double e, double f) {
-		if (this.method_3921(entity)) {
-			this.renderEntityLabel(entity, entity.getDisplayName().getFormattedText(), d, e, f, 64);
+	protected void renderLabelIfPresent(T entity, double d, double e, double f) {
+		if (this.hasLabel(entity)) {
+			this.renderLabel(entity, entity.getDisplayName().getFormattedText(), d, e, f, 64);
 		}
 	}
 
-	protected boolean method_3921(T entity) {
+	protected boolean hasLabel(T entity) {
 		return entity.shouldRenderName() && entity.hasCustomName();
 	}
 
-	protected void method_3930(T entity, double d, double e, double f, String string, double g) {
-		this.renderEntityLabel(entity, string, d, e, f, 64);
+	protected void renderLabel(T entity, double d, double e, double f, String string, double g) {
+		this.renderLabel(entity, string, d, e, f, 64);
 	}
 
 	@Nullable
@@ -116,7 +116,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		float j = 0.0F;
 		float k = entity.getHeight() / h;
 		float l = (float)(entity.y - entity.getBoundingBox().minY);
-		GlStateManager.rotatef(-this.renderManager.field_4679, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotatef(-this.renderManager.cameraYaw, 0.0F, 1.0F, 0.0F);
 		GlStateManager.translatef(0.0F, 0.0F, -0.3F + (float)((int)k) * 0.02F);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float m = 0.0F;
@@ -281,8 +281,8 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public void postRender(Entity entity, double d, double e, double f, float g, float h) {
-		if (this.renderManager.settings != null) {
-			if (this.renderManager.settings.entityShadows && this.field_4673 > 0.0F && !entity.isInvisible() && this.renderManager.method_3951()) {
+		if (this.renderManager.gameOptions != null) {
+			if (this.renderManager.gameOptions.entityShadows && this.field_4673 > 0.0F && !entity.isInvisible() && this.renderManager.method_3951()) {
 				double i = this.renderManager.method_3959(entity.x, entity.y, entity.z);
 				float j = (float)((1.0 - i / 256.0) * (double)this.field_4672);
 				if (j > 0.0F) {
@@ -297,18 +297,18 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public TextRenderer getFontRenderer() {
-		return this.renderManager.getFontRenderer();
+		return this.renderManager.getTextRenderer();
 	}
 
-	protected void renderEntityLabel(T entity, String string, double d, double e, double f, int i) {
-		double g = entity.squaredDistanceTo(this.renderManager.field_4686.getPos());
+	protected void renderLabel(T entity, String string, double d, double e, double f, int i) {
+		double g = entity.squaredDistanceTo(this.renderManager.camera.getPos());
 		if (!(g > (double)(i * i))) {
-			boolean bl = entity.isSneaking();
-			float h = this.renderManager.field_4679;
-			float j = this.renderManager.field_4677;
+			boolean bl = entity.isInSneakingPose();
+			float h = this.renderManager.cameraYaw;
+			float j = this.renderManager.cameraPitch;
 			float k = entity.getHeight() + 0.5F - (bl ? 0.25F : 0.0F);
 			int l = "deadmau5".equals(string) ? -10 : 0;
-			GameRenderer.method_3179(this.getFontRenderer(), string, (float)d, (float)e + k, (float)f, l, h, j, bl);
+			GameRenderer.renderFloatingText(this.getFontRenderer(), string, (float)d, (float)e + k, (float)f, l, h, j, bl);
 		}
 	}
 

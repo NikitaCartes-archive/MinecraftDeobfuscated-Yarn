@@ -34,8 +34,11 @@ public class FishingRodItem extends Item {
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (playerEntity.fishHook != null) {
-			int i = playerEntity.fishHook.method_6957(itemStack);
-			itemStack.applyDamage(i, playerEntity);
+			if (!world.isClient) {
+				int i = playerEntity.fishHook.method_6957(itemStack);
+				itemStack.applyDamage(i, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
+			}
+
 			playerEntity.swingHand(hand);
 			world.playSound(
 				null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15093, SoundCategory.field_15254, 1.0F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)

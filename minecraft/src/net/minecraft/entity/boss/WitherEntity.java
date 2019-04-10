@@ -15,12 +15,12 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -55,7 +55,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	private static final TrackedData<Integer> TRACKED_ENTITY_ID_3 = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final List<TrackedData<Integer>> field_7087 = ImmutableList.of(TRACKED_ENTITY_ID_1, TRACKED_ENTITY_ID_2, TRACKED_ENTITY_ID_3);
 	private static final TrackedData<Integer> INVUL_TIMER = DataTracker.registerData(WitherEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TargetPredicate field_18125 = new TargetPredicate().setBaseMaxDistance(20.0);
+	private static final TargetPredicate HEAD_TARGET_PREDICATE = new TargetPredicate().setBaseMaxDistance(20.0);
 	private final float[] field_7084 = new float[2];
 	private final float[] field_7083 = new float[2];
 	private final float[] field_7095 = new float[2];
@@ -70,7 +70,6 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	public WitherEntity(EntityType<? extends WitherEntity> entityType, World world) {
 		super(entityType, world);
 		this.setHealth(this.getHealthMaximum());
-		this.fireImmune = true;
 		this.getNavigation().setCanSwim(true);
 		this.experiencePoints = 50;
 	}
@@ -82,7 +81,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 		this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(7, new LookAroundGoal(this));
-		this.targetSelector.add(1, new AvoidGoal(this));
+		this.targetSelector.add(1, new RevengeGoal(this));
 		this.targetSelector.add(2, new FollowTargetGoal(this, MobEntity.class, 0, false, false, field_7086));
 	}
 
@@ -239,8 +238,10 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 		if (this.getInvulTimer() > 0) {
 			int i = this.getInvulTimer() - 1;
 			if (i <= 0) {
-				Explosion.class_4179 lv = this.world.getGameRules().getBoolean("mobGriefing") ? Explosion.class_4179.field_18687 : Explosion.class_4179.field_18685;
-				this.world.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0F, false, lv);
+				Explosion.DestructionType destructionType = this.world.getGameRules().getBoolean("mobGriefing")
+					? Explosion.DestructionType.field_18687
+					: Explosion.DestructionType.field_18685;
+				this.world.createExplosion(this, this.x, this.y + (double)this.getStandingEyeHeight(), this.z, 7.0F, false, destructionType);
 				this.world.playGlobalEvent(1023, new BlockPos(this), 0);
 			}
 
@@ -267,7 +268,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 					int j = this.getTrackedEntityId(ix);
 					if (j > 0) {
 						Entity entity = this.world.getEntityById(j);
-						if (entity == null || !entity.isValid() || this.squaredDistanceTo(entity) > 900.0 || !this.canSee(entity)) {
+						if (entity == null || !entity.isAlive() || this.squaredDistanceTo(entity) > 900.0 || !this.canSee(entity)) {
 							this.setTrackedEntityId(ix, 0);
 						} else if (entity instanceof PlayerEntity && ((PlayerEntity)entity).abilities.invulnerable) {
 							this.setTrackedEntityId(ix, 0);
@@ -277,11 +278,11 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 							this.field_7092[ix - 1] = 0;
 						}
 					} else {
-						List<LivingEntity> list = this.world.method_18466(LivingEntity.class, field_18125, this, this.getBoundingBox().expand(20.0, 8.0, 20.0));
+						List<LivingEntity> list = this.world.getTargets(LivingEntity.class, HEAD_TARGET_PREDICATE, this, this.getBoundingBox().expand(20.0, 8.0, 20.0));
 
 						for (int k = 0; k < 10 && !list.isEmpty(); k++) {
 							LivingEntity livingEntity = (LivingEntity)list.get(this.random.nextInt(list.size()));
-							if (livingEntity != this && livingEntity.isValid() && this.canSee(livingEntity)) {
+							if (livingEntity != this && livingEntity.isAlive() && this.canSee(livingEntity)) {
 								if (livingEntity instanceof PlayerEntity) {
 									if (!((PlayerEntity)livingEntity).abilities.invulnerable) {
 										this.setTrackedEntityId(ix, livingEntity.getEntityId());
@@ -328,7 +329,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 					}
 
 					if (bl) {
-						this.world.playEvent(null, 1022, new BlockPos(this), 0);
+						this.world.playLevelEvent(null, 1022, new BlockPos(this), 0);
 					}
 				}
 			}
@@ -410,7 +411,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	}
 
 	private void method_6877(int i, double d, double e, double f, boolean bl) {
-		this.world.playEvent(null, 1024, new BlockPos(this), 0);
+		this.world.playLevelEvent(null, 1024, new BlockPos(this), 0);
 		double g = this.method_6874(i);
 		double h = this.method_6880(i);
 		double j = this.method_6881(i);
@@ -556,7 +557,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 
 	class class_1529 extends Goal {
 		public class_1529() {
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18407, Goal.class_4134.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18407, Goal.Control.field_18406));
 		}
 
 		@Override

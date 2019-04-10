@@ -10,7 +10,7 @@ public class SkinRemappingImageFilter implements ImageFilter {
 		boolean bl = nativeImage.getHeight() == 32;
 		if (bl) {
 			NativeImage nativeImage2 = new NativeImage(64, 64, true);
-			nativeImage2.method_4317(nativeImage);
+			nativeImage2.copyFrom(nativeImage);
 			nativeImage.close();
 			nativeImage = nativeImage2;
 			nativeImage2.fillRGBA(0, 32, 64, 32, 0);

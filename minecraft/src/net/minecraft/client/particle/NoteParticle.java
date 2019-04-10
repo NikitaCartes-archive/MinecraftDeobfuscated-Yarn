@@ -33,14 +33,14 @@ public class NoteParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.posY == this.prevPosY) {
+			if (this.y == this.prevPosY) {
 				this.velocityX *= 1.1;
 				this.velocityZ *= 1.1;
 			}
@@ -65,7 +65,7 @@ public class NoteParticle extends SpriteBillboardParticle {
 
 		public Particle method_3041(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			NoteParticle noteParticle = new NoteParticle(world, d, e, f, g);
-			noteParticle.method_18140(this.field_17819);
+			noteParticle.setSprite(this.field_17819);
 			return noteParticle;
 		}
 	}

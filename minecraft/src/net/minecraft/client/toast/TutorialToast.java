@@ -14,23 +14,23 @@ public class TutorialToast implements Toast {
 	private final String title;
 	private final String description;
 	private Toast.Visibility visibility = Toast.Visibility.field_2210;
-	private long field_2223;
-	private float field_2229;
-	private float field_2228;
-	private final boolean field_2222;
+	private long lastTime;
+	private float lastProgress;
+	private float progress;
+	private final boolean hasProgressBar;
 
 	public TutorialToast(TutorialToast.Type type, TextComponent textComponent, @Nullable TextComponent textComponent2, boolean bl) {
 		this.type = type;
 		this.title = textComponent.getFormattedText();
 		this.description = textComponent2 == null ? null : textComponent2.getFormattedText();
-		this.field_2222 = bl;
+		this.hasProgressBar = bl;
 	}
 
 	@Override
 	public Toast.Visibility draw(ToastManager toastManager, long l) {
 		toastManager.getGame().getTextureManager().bindTexture(TOASTS_TEX);
 		GlStateManager.color3f(1.0F, 1.0F, 1.0F);
-		toastManager.drawTexturedRect(0, 0, 0, 96, 160, 32);
+		toastManager.blit(0, 0, 0, 96, 160, 32);
 		this.type.drawIcon(toastManager, 6, 6);
 		if (this.description == null) {
 			toastManager.getGame().textRenderer.draw(this.title, 30.0F, 12.0F, -11534256);
@@ -39,19 +39,19 @@ public class TutorialToast implements Toast {
 			toastManager.getGame().textRenderer.draw(this.description, 30.0F, 18.0F, -16777216);
 		}
 
-		if (this.field_2222) {
-			DrawableHelper.drawRect(3, 28, 157, 29, -1);
-			float f = (float)MathHelper.lerpClamped((double)this.field_2229, (double)this.field_2228, (double)((float)(l - this.field_2223) / 100.0F));
+		if (this.hasProgressBar) {
+			DrawableHelper.fill(3, 28, 157, 29, -1);
+			float f = (float)MathHelper.clampedLerp((double)this.lastProgress, (double)this.progress, (double)((float)(l - this.lastTime) / 100.0F));
 			int i;
-			if (this.field_2228 >= this.field_2229) {
+			if (this.progress >= this.lastProgress) {
 				i = -16755456;
 			} else {
 				i = -11206656;
 			}
 
-			DrawableHelper.drawRect(3, 28, (int)(3.0F + 154.0F * f), 29, i);
-			this.field_2229 = f;
-			this.field_2223 = l;
+			DrawableHelper.fill(3, 28, (int)(3.0F + 154.0F * f), 29, i);
+			this.lastProgress = f;
+			this.lastTime = l;
 		}
 
 		return this.visibility;
@@ -61,8 +61,8 @@ public class TutorialToast implements Toast {
 		this.visibility = Toast.Visibility.field_2209;
 	}
 
-	public void method_1992(float f) {
-		this.field_2228 = f;
+	public void setProgress(float f) {
+		this.progress = f;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -83,7 +83,7 @@ public class TutorialToast implements Toast {
 
 		public void drawIcon(DrawableHelper drawableHelper, int i, int j) {
 			GlStateManager.enableBlend();
-			drawableHelper.drawTexturedRect(i, j, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
+			drawableHelper.blit(i, j, 176 + this.textureSlotX * 20, this.textureSlotY * 20, 20, 20);
 			GlStateManager.enableBlend();
 		}
 	}

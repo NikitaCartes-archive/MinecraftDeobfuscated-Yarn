@@ -135,15 +135,15 @@ public abstract class AnimalEntity extends PassiveEntity {
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (this.isBreedingItem(itemStack)) {
-			if (this.getBreedingAge() == 0 && this.method_6482()) {
-				this.method_6475(playerEntity, itemStack);
-				this.method_6480(playerEntity);
+			if (this.getBreedingAge() == 0 && this.canEat()) {
+				this.eat(playerEntity, itemStack);
+				this.lovePlayer(playerEntity);
 				return true;
 			}
 
 			if (this.isChild()) {
-				this.method_6475(playerEntity, itemStack);
-				this.method_5620((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
+				this.eat(playerEntity, itemStack);
+				this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
 				return true;
 			}
 		}
@@ -151,23 +151,23 @@ public abstract class AnimalEntity extends PassiveEntity {
 		return super.interactMob(playerEntity, hand);
 	}
 
-	protected void method_6475(PlayerEntity playerEntity, ItemStack itemStack) {
+	protected void eat(PlayerEntity playerEntity, ItemStack itemStack) {
 		if (!playerEntity.abilities.creativeMode) {
 			itemStack.subtractAmount(1);
 		}
 	}
 
-	public boolean method_6482() {
+	public boolean canEat() {
 		return this.loveTicks <= 0;
 	}
 
-	public void method_6480(@Nullable PlayerEntity playerEntity) {
+	public void lovePlayer(@Nullable PlayerEntity playerEntity) {
 		this.loveTicks = 600;
 		if (playerEntity != null) {
 			this.lovingPlayer = playerEntity.getUuid();
 		}
 
-		this.world.summonParticle(this, (byte)18);
+		this.world.sendEntityStatus(this, (byte)18);
 	}
 
 	public void setLoveTicks(int i) {
@@ -179,7 +179,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 		if (this.lovingPlayer == null) {
 			return null;
 		} else {
-			PlayerEntity playerEntity = this.world.method_18470(this.lovingPlayer);
+			PlayerEntity playerEntity = this.world.getPlayerByUuid(this.lovingPlayer);
 			return playerEntity instanceof ServerPlayerEntity ? (ServerPlayerEntity)playerEntity : null;
 		}
 	}
@@ -202,7 +202,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 18) {
 			for (int i = 0; i < 7; i++) {
 				double d = this.random.nextGaussian() * 0.02;
@@ -220,7 +220,7 @@ public abstract class AnimalEntity extends PassiveEntity {
 					);
 			}
 		} else {
-			super.method_5711(b);
+			super.handleStatus(b);
 		}
 	}
 }

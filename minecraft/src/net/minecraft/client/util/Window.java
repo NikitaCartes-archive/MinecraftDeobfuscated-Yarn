@@ -14,6 +14,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.WindowEventHandler;
 import net.minecraft.client.WindowSettings;
+import net.minecraft.client.options.GameOption;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.PointerBuffer;
@@ -210,7 +211,9 @@ public final class Window implements AutoCloseable {
 	}
 
 	private void updateMonitor() {
+		Monitor monitor = this.monitor;
 		this.monitor = this.monitorTracker.getMonitor(this);
+		GameOption.FULLSCREEN_RESOLUTION.setMax((float)this.monitor.getVideoModeCount());
 	}
 
 	private void onWindowPosChanged(long l, int i, int j) {

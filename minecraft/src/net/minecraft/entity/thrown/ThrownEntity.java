@@ -31,7 +31,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	protected boolean inGround;
 	public int shake;
 	protected LivingEntity owner;
-	private UUID field_7644;
+	private UUID ownerUuid;
 	private Entity field_7637;
 	private int field_7638;
 
@@ -47,7 +47,7 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 	protected ThrownEntity(EntityType<? extends ThrownEntity> entityType, LivingEntity livingEntity, World world) {
 		this(entityType, livingEntity.x, livingEntity.y + (double)livingEntity.getStandingEyeHeight() - 0.1F, livingEntity.z, world);
 		this.owner = livingEntity;
-		this.field_7644 = livingEntity.getUuid();
+		this.ownerUuid = livingEntity.getUuid();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -115,9 +115,9 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 			);
 		}
 
-		BoundingBox boundingBox = this.getBoundingBox().method_18804(this.getVelocity()).expand(1.0);
+		BoundingBox boundingBox = this.getBoundingBox().stretch(this.getVelocity()).expand(1.0);
 
-		for (Entity entity : this.world.getEntities(this, boundingBox, entityx -> !entityx.isSpectator() && entityx.doesCollide())) {
+		for (Entity entity : this.world.getEntities(this, boundingBox, entityx -> !entityx.isSpectator() && entityx.collides())) {
 			if (entity == this.field_7637) {
 				this.field_7638++;
 				break;
@@ -130,8 +130,8 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 			}
 		}
 
-		HitResult hitResult = ProjectileUtil.method_18074(
-			this, boundingBox, entity -> !entity.isSpectator() && entity.doesCollide() && entity != this.field_7637, RayTraceContext.ShapeType.field_17559, true
+		HitResult hitResult = ProjectileUtil.getCollision(
+			this, boundingBox, entity -> !entity.isSpectator() && entity.collides() && entity != this.field_7637, RayTraceContext.ShapeType.field_17559, true
 		);
 		if (this.field_7637 != null && this.field_7638-- <= 0) {
 			this.field_7637 = null;
@@ -205,8 +205,8 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		compoundTag.putInt("zTile", this.blockZ);
 		compoundTag.putByte("shake", (byte)this.shake);
 		compoundTag.putByte("inGround", (byte)(this.inGround ? 1 : 0));
-		if (this.field_7644 != null) {
-			compoundTag.put("owner", TagHelper.serializeUuid(this.field_7644));
+		if (this.ownerUuid != null) {
+			compoundTag.put("owner", TagHelper.serializeUuid(this.ownerUuid));
 		}
 	}
 
@@ -219,18 +219,18 @@ public abstract class ThrownEntity extends Entity implements Projectile {
 		this.inGround = compoundTag.getByte("inGround") == 1;
 		this.owner = null;
 		if (compoundTag.containsKey("owner", 10)) {
-			this.field_7644 = TagHelper.deserializeUuid(compoundTag.getCompound("owner"));
+			this.ownerUuid = TagHelper.deserializeUuid(compoundTag.getCompound("owner"));
 		}
 	}
 
 	@Nullable
 	public LivingEntity getOwner() {
-		if (this.owner == null && this.field_7644 != null && this.world instanceof ServerWorld) {
-			Entity entity = ((ServerWorld)this.world).getEntity(this.field_7644);
+		if (this.owner == null && this.ownerUuid != null && this.world instanceof ServerWorld) {
+			Entity entity = ((ServerWorld)this.world).getEntity(this.ownerUuid);
 			if (entity instanceof LivingEntity) {
 				this.owner = (LivingEntity)entity;
 			} else {
-				this.field_7644 = null;
+				this.ownerUuid = null;
 			}
 		}
 

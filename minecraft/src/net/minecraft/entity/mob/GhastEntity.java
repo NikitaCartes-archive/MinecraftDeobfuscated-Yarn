@@ -37,7 +37,6 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 	public GhastEntity(EntityType<? extends GhastEntity> entityType, World world) {
 		super(entityType, world);
-		this.fireImmune = true;
 		this.experiencePoints = 5;
 		this.moveControl = new GhastEntity.GhastMoveControl(this);
 	}
@@ -67,7 +66,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 	public void tick() {
 		super.tick();
 		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-			this.invalidate();
+			this.remove();
 		}
 	}
 
@@ -155,7 +154,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		public FlyRandomlyGoal(GhastEntity ghastEntity) {
 			this.field_7279 = ghastEntity;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+			this.setControls(EnumSet.of(Goal.Control.field_18405));
 		}
 
 		@Override
@@ -218,7 +217,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 			for (int j = 1; j < i; j++) {
 				boundingBox = boundingBox.offset(vec3d);
-				if (!this.ghast.world.isEntityColliding(this.ghast, boundingBox)) {
+				if (!this.ghast.world.doesNotCollide(this.ghast, boundingBox)) {
 					return false;
 				}
 			}
@@ -246,7 +245,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 		}
 
 		@Override
-		public void onRemove() {
+		public void stop() {
 			this.owner.setShooting(false);
 		}
 
@@ -258,7 +257,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 				World world = this.owner.world;
 				this.cooldown++;
 				if (this.cooldown == 10) {
-					world.playEvent(null, 1015, new BlockPos(this.owner), 0);
+					world.playLevelEvent(null, 1015, new BlockPos(this.owner), 0);
 				}
 
 				if (this.cooldown == 20) {
@@ -267,7 +266,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 					double f = livingEntity.x - (this.owner.x + vec3d.x * 4.0);
 					double g = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 2.0F) - (0.5 + this.owner.y + (double)(this.owner.getHeight() / 2.0F));
 					double h = livingEntity.z - (this.owner.z + vec3d.z * 4.0);
-					world.playEvent(null, 1016, new BlockPos(this.owner), 0);
+					world.playLevelEvent(null, 1016, new BlockPos(this.owner), 0);
 					FireballEntity fireballEntity = new FireballEntity(world, this.owner, f, g, h);
 					fireballEntity.explosionPower = this.owner.getFireballStrength();
 					fireballEntity.x = this.owner.x + vec3d.x * 4.0;
@@ -289,7 +288,7 @@ public class GhastEntity extends FlyingEntity implements Monster {
 
 		public class_1572(GhastEntity ghastEntity) {
 			this.field_7274 = ghastEntity;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.field_18406));
 		}
 
 		@Override

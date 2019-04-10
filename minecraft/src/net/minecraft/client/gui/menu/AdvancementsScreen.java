@@ -34,7 +34,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	protected void onInitialized() {
+	protected void init() {
 		this.widgetMap.clear();
 		this.selectedWidget = null;
 		this.advancementHandler.setGui(this);
@@ -46,9 +46,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	public void onClosed() {
+	public void removed() {
 		this.advancementHandler.setGui(null);
-		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
+		ClientPlayNetworkHandler clientPlayNetworkHandler = this.minecraft.getNetworkHandler();
 		if (clientPlayNetworkHandler != null) {
 			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.close());
 		}
@@ -57,8 +57,8 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		if (i == 0) {
-			int j = (this.screenWidth - 252) / 2;
-			int k = (this.screenHeight - 140) / 2;
+			int j = (this.width - 252) / 2;
+			int k = (this.height - 140) / 2;
 
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
 				if (advancementTreeWidget.method_2316(j, k, d, e)) {
@@ -73,9 +73,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		if (this.client.options.keyAdvancements.matchesKey(i, j)) {
-			this.client.openScreen(null);
-			this.client.mouse.lockCursor();
+		if (this.minecraft.options.keyAdvancements.matchesKey(i, j)) {
+			this.minecraft.openScreen(null);
+			this.minecraft.mouse.lockCursor();
 			return true;
 		} else {
 			return super.keyPressed(i, j, k);
@@ -84,9 +84,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void render(int i, int j, float f) {
-		int k = (this.screenWidth - 252) / 2;
-		int l = (this.screenHeight - 140) / 2;
-		this.drawBackground();
+		int k = (this.width - 252) / 2;
+		int l = (this.height - 140) / 2;
+		this.renderBackground();
 		this.drawAdvancementTree(i, j, k, l);
 		this.drawWidgets(k, l);
 		this.drawWidgetTooltip(i, j, k, l);
@@ -111,11 +111,11 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	private void drawAdvancementTree(int i, int j, int k, int l) {
 		AdvancementTreeWidget advancementTreeWidget = this.selectedWidget;
 		if (advancementTreeWidget == null) {
-			drawRect(k + 9, l + 18, k + 9 + 234, l + 18 + 113, -16777216);
+			fill(k + 9, l + 18, k + 9 + 234, l + 18 + 113, -16777216);
 			String string = I18n.translate("advancements.empty");
-			int m = this.fontRenderer.getStringWidth(string);
-			this.fontRenderer.draw(string, (float)(k + 9 + 117 - m / 2), (float)(l + 18 + 56 - 9 / 2), -1);
-			this.fontRenderer.draw(":(", (float)(k + 9 + 117 - this.fontRenderer.getStringWidth(":(") / 2), (float)(l + 18 + 113 - 9), -1);
+			int m = this.font.getStringWidth(string);
+			this.font.draw(string, (float)(k + 9 + 117 - m / 2), (float)(l + 18 + 56 - 9 / 2), -1);
+			this.font.draw(":(", (float)(k + 9 + 117 - this.font.getStringWidth(":(") / 2), (float)(l + 18 + 113 - 9), -1);
 		} else {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef((float)(k + 9), (float)(l + 18), -400.0F);
@@ -131,10 +131,10 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.enableBlend();
 		GuiLighting.disable();
-		this.client.getTextureManager().bindTexture(WINDOW_TEXTURE);
-		this.drawTexturedRect(i, j, 0, 0, 252, 140);
+		this.minecraft.getTextureManager().bindTexture(WINDOW_TEXTURE);
+		this.blit(i, j, 0, 0, 252, 140);
 		if (this.widgetMap.size() > 1) {
-			this.client.getTextureManager().bindTexture(TABS_TEXTURE);
+			this.minecraft.getTextureManager().bindTexture(TABS_TEXTURE);
 
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
 				advancementTreeWidget.drawBackground(i, j, advancementTreeWidget == this.selectedWidget);
@@ -153,7 +153,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			GlStateManager.disableBlend();
 		}
 
-		this.fontRenderer.draw(I18n.translate("gui.advancements"), (float)(i + 8), (float)(j + 6), 4210752);
+		this.font.draw(I18n.translate("gui.advancements"), (float)(i + 8), (float)(j + 6), 4210752);
 	}
 
 	private void drawWidgetTooltip(int i, int j, int k, int l) {
@@ -170,7 +170,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		if (this.widgetMap.size() > 1) {
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
 				if (advancementTreeWidget.method_2316(k, l, (double)i, (double)j)) {
-					this.drawTooltip(advancementTreeWidget.method_2309(), i, j);
+					this.renderTooltip(advancementTreeWidget.method_2309(), i, j);
 				}
 			}
 		}
@@ -178,7 +178,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void onRootAdded(SimpleAdvancement simpleAdvancement) {
-		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.create(this.client, this, this.widgetMap.size(), simpleAdvancement);
+		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.create(this.minecraft, this, this.widgetMap.size(), simpleAdvancement);
 		if (advancementTreeWidget != null) {
 			this.widgetMap.put(simpleAdvancement, advancementTreeWidget);
 		}

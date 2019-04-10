@@ -69,8 +69,8 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 		return itemStack;
 	}
 
-	public static ConditionalLootFunction.Builder<?> method_489() {
-		return create(lootConditions -> new EnchantRandomlyLootFunction(lootConditions, ImmutableList.<Enchantment>of()));
+	public static ConditionalLootFunction.Builder<?> builder() {
+		return builder(lootConditions -> new EnchantRandomlyLootFunction(lootConditions, ImmutableList.<Enchantment>of()));
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<EnchantRandomlyLootFunction> {

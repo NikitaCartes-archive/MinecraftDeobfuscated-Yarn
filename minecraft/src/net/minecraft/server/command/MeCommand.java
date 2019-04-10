@@ -7,9 +7,9 @@ import net.minecraft.text.TranslatableTextComponent;
 public class MeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("me")
+			CommandManager.literal("me")
 				.then(
-					ServerCommandManager.argument("action", StringArgumentType.greedyString())
+					CommandManager.argument("action", StringArgumentType.greedyString())
 						.executes(
 							commandContext -> {
 								commandContext.getSource()

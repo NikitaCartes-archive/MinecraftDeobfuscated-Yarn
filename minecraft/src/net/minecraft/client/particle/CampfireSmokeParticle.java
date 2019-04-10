@@ -25,9 +25,9 @@ public class CampfireSmokeParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ < this.maxAge && !(this.colorAlpha <= 0.0F)) {
 			this.velocityX = this.velocityX + (double)(this.random.nextFloat() / 5000.0F * (float)(this.random.nextBoolean() ? 1 : -1));
 			this.velocityZ = this.velocityZ + (double)(this.random.nextFloat() / 5000.0F * (float)(this.random.nextBoolean() ? 1 : -1));
@@ -57,7 +57,7 @@ public class CampfireSmokeParticle extends SpriteBillboardParticle {
 		public Particle method_17579(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(world, d, e, f, g, h, i, false);
 			campfireSmokeParticle.setColorAlpha(0.9F);
-			campfireSmokeParticle.method_18140(this.field_18290);
+			campfireSmokeParticle.setSprite(this.field_18290);
 			return campfireSmokeParticle;
 		}
 	}
@@ -73,7 +73,7 @@ public class CampfireSmokeParticle extends SpriteBillboardParticle {
 		public Particle method_18820(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			CampfireSmokeParticle campfireSmokeParticle = new CampfireSmokeParticle(world, d, e, f, g, h, i, true);
 			campfireSmokeParticle.setColorAlpha(0.95F);
-			campfireSmokeParticle.method_18140(this.field_17789);
+			campfireSmokeParticle.setSprite(this.field_17789);
 			return campfireSmokeParticle;
 		}
 	}

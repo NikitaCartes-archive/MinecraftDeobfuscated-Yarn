@@ -4,8 +4,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -17,12 +17,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnType;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.BreakDoorGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.StepAndDestroyBlockGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.ai.goal.ZombieRaiseArmsGoal;
@@ -66,11 +66,12 @@ public class ZombieEntity extends HostileEntity {
 	);
 	private static final TrackedData<Boolean> BABY = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> field_7427 = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private static final TrackedData<Boolean> field_7425 = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private final BreakDoorGoal field_7433 = new BreakDoorGoal(this);
-	private boolean field_7432;
-	private int field_7426;
-	private int field_7424;
+	private static final TrackedData<Boolean> CONVERTING_IN_WATER = DataTracker.registerData(ZombieEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	private static final Predicate<Difficulty> field_19015 = difficulty -> difficulty == Difficulty.HARD;
+	private final BreakDoorGoal breakDoorsGoal = new BreakDoorGoal(this, field_19015);
+	private boolean canBreakDoors;
+	private int inWaterTime;
+	private int ticksUntilWaterConversion;
 
 	public ZombieEntity(EntityType<? extends ZombieEntity> entityType, World world) {
 		super(entityType, world);
@@ -82,17 +83,17 @@ public class ZombieEntity extends HostileEntity {
 
 	@Override
 	protected void initGoals() {
-		this.goalSelector.add(4, new ZombieEntity.DestroyEggGoal(Blocks.field_10195, this, 1.0, 3));
+		this.goalSelector.add(4, new ZombieEntity.DestroyEggGoal(this, 1.0, 3));
 		this.goalSelector.add(8, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
-		this.method_7208();
+		this.initCustomGoals();
 	}
 
-	protected void method_7208() {
+	protected void initCustomGoals() {
 		this.goalSelector.add(2, new ZombieRaiseArmsGoal(this, 1.0, false));
 		this.goalSelector.add(6, new MoveThroughVillageGoal(this, 1.0, true, 4, this::canBreakDoors));
 		this.goalSelector.add(7, new WanderAroundFarGoal(this, 1.0));
-		this.targetSelector.add(1, new AvoidGoal(this).method_6318(ZombiePigmanEntity.class));
+		this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge(ZombiePigmanEntity.class));
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
@@ -114,35 +115,35 @@ public class ZombieEntity extends HostileEntity {
 		super.initDataTracker();
 		this.getDataTracker().startTracking(BABY, false);
 		this.getDataTracker().startTracking(field_7427, 0);
-		this.getDataTracker().startTracking(field_7425, false);
+		this.getDataTracker().startTracking(CONVERTING_IN_WATER, false);
 	}
 
-	public boolean isDrowning() {
-		return this.getDataTracker().get(field_7425);
+	public boolean isConvertingInWater() {
+		return this.getDataTracker().get(CONVERTING_IN_WATER);
 	}
 
 	public boolean canBreakDoors() {
-		return this.field_7432;
+		return this.canBreakDoors;
 	}
 
-	public void setBreakDoors(boolean bl) {
-		if (this.method_7212()) {
-			if (this.field_7432 != bl) {
-				this.field_7432 = bl;
+	public void setCanBreakDoors(boolean bl) {
+		if (this.shouldBreakDoors()) {
+			if (this.canBreakDoors != bl) {
+				this.canBreakDoors = bl;
 				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(bl);
 				if (bl) {
-					this.goalSelector.add(1, this.field_7433);
+					this.goalSelector.add(1, this.breakDoorsGoal);
 				} else {
-					this.goalSelector.remove(this.field_7433);
+					this.goalSelector.remove(this.breakDoorsGoal);
 				}
 			}
-		} else if (this.field_7432) {
-			this.goalSelector.remove(this.field_7433);
-			this.field_7432 = false;
+		} else if (this.canBreakDoors) {
+			this.goalSelector.remove(this.breakDoorsGoal);
+			this.canBreakDoors = false;
 		}
 	}
 
-	protected boolean method_7212() {
+	protected boolean shouldBreakDoors() {
 		return true;
 	}
 
@@ -180,26 +181,26 @@ public class ZombieEntity extends HostileEntity {
 		super.onTrackedDataSet(trackedData);
 	}
 
-	protected boolean method_7209() {
+	protected boolean canConvertInWater() {
 		return true;
 	}
 
 	@Override
 	public void tick() {
-		if (!this.world.isClient && this.isValid()) {
-			if (this.isDrowning()) {
-				this.field_7424--;
-				if (this.field_7424 < 0) {
-					this.method_7218();
+		if (!this.world.isClient && this.isAlive()) {
+			if (this.isConvertingInWater()) {
+				this.ticksUntilWaterConversion--;
+				if (this.ticksUntilWaterConversion < 0) {
+					this.convertInWater();
 				}
-			} else if (this.method_7209()) {
+			} else if (this.canConvertInWater()) {
 				if (this.isInFluid(FluidTags.field_15517)) {
-					this.field_7426++;
-					if (this.field_7426 >= 600) {
-						this.method_7213(300);
+					this.inWaterTime++;
+					if (this.inWaterTime >= 600) {
+						this.setTicksUntilWaterConversion(300);
 					}
 				} else {
-					this.field_7426 = -1;
+					this.inWaterTime = -1;
 				}
 			}
 		}
@@ -209,15 +210,15 @@ public class ZombieEntity extends HostileEntity {
 
 	@Override
 	public void updateMovement() {
-		if (this.isValid()) {
-			boolean bl = this.method_7216() && this.method_5972();
+		if (this.isAlive()) {
+			boolean bl = this.burnsInDaylight() && this.isInDaylight();
 			if (bl) {
 				ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
 				if (!itemStack.isEmpty()) {
 					if (itemStack.hasDurability()) {
 						itemStack.setDamage(itemStack.getDamage() + this.random.nextInt(2));
 						if (itemStack.getDamage() >= itemStack.getDurability()) {
-							this.method_6045(itemStack);
+							this.sendEquipmentBreakStatus(EquipmentSlot.HEAD);
 							this.setEquippedStack(EquipmentSlot.HEAD, ItemStack.EMPTY);
 						}
 					}
@@ -234,22 +235,22 @@ public class ZombieEntity extends HostileEntity {
 		super.updateMovement();
 	}
 
-	private void method_7213(int i) {
-		this.field_7424 = i;
-		this.getDataTracker().set(field_7425, true);
+	private void setTicksUntilWaterConversion(int i) {
+		this.ticksUntilWaterConversion = i;
+		this.getDataTracker().set(CONVERTING_IN_WATER, true);
 	}
 
-	protected void method_7218() {
-		this.method_7200(EntityType.DROWNED);
-		this.world.playEvent(null, 1040, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
+	protected void convertInWater() {
+		this.convertTo(EntityType.DROWNED);
+		this.world.playLevelEvent(null, 1040, new BlockPos((int)this.x, (int)this.y, (int)this.z), 0);
 	}
 
-	protected void method_7200(EntityType<? extends ZombieEntity> entityType) {
-		if (!this.invalid) {
+	protected void convertTo(EntityType<? extends ZombieEntity> entityType) {
+		if (!this.removed) {
 			ZombieEntity zombieEntity = entityType.create(this.world);
 			zombieEntity.setPositionAndAngles(this);
 			zombieEntity.setCanPickUpLoot(this.canPickUpLoot());
-			zombieEntity.setBreakDoors(zombieEntity.method_7212() && this.canBreakDoors());
+			zombieEntity.setCanBreakDoors(zombieEntity.shouldBreakDoors() && this.canBreakDoors());
 			zombieEntity.method_7205(zombieEntity.world.getLocalDifficulty(new BlockPos(zombieEntity)).getClampedLocalDifficulty());
 			zombieEntity.setChild(this.isChild());
 			zombieEntity.setAiDisabled(this.isAiDisabled());
@@ -258,7 +259,7 @@ public class ZombieEntity extends HostileEntity {
 				ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 				if (!itemStack.isEmpty()) {
 					zombieEntity.setEquippedStack(equipmentSlot, itemStack);
-					zombieEntity.setEquipmentDropChance(equipmentSlot, this.method_5929(equipmentSlot));
+					zombieEntity.setEquipmentDropChance(equipmentSlot, this.getDropChance(equipmentSlot));
 				}
 			}
 
@@ -268,11 +269,11 @@ public class ZombieEntity extends HostileEntity {
 			}
 
 			this.world.spawnEntity(zombieEntity);
-			this.invalidate();
+			this.remove();
 		}
 	}
 
-	protected boolean method_7216() {
+	protected boolean burnsInDaylight() {
 		return true;
 	}
 
@@ -300,13 +301,13 @@ public class ZombieEntity extends HostileEntity {
 					BlockPos blockPos = new BlockPos(m, n - 1, o);
 					if (this.world.getBlockState(blockPos).hasSolidTopSurface(this.world, blockPos, zombieEntity) && this.world.getLightLevel(new BlockPos(m, n, o)) < 10) {
 						zombieEntity.setPosition((double)m, (double)n, (double)o);
-						if (!this.world.method_18458((double)m, (double)n, (double)o, 7.0)
-							&& this.world.method_8606(zombieEntity)
-							&& this.world.method_17892(zombieEntity)
-							&& !this.world.isInFluid(zombieEntity.getBoundingBox())) {
+						if (!this.world.isPlayerInRange((double)m, (double)n, (double)o, 7.0)
+							&& this.world.intersectsEntities(zombieEntity)
+							&& this.world.doesNotCollide(zombieEntity)
+							&& !this.world.intersectsFluid(zombieEntity.getBoundingBox())) {
 							this.world.spawnEntity(zombieEntity);
 							zombieEntity.setTarget(livingEntity);
-							zombieEntity.prepareEntityData(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16463, null, null);
+							zombieEntity.initialize(this.world, this.world.getLocalDifficulty(new BlockPos(zombieEntity)), SpawnType.field_16463, null, null);
 							this.getAttributeInstance(SPAWN_REINFORCEMENTS)
 								.addModifier(new EntityAttributeModifier("Zombie reinforcement caller charge", -0.05F, EntityAttributeModifier.Operation.field_6328));
 							zombieEntity.getAttributeInstance(SPAWN_REINFORCEMENTS)
@@ -386,8 +387,8 @@ public class ZombieEntity extends HostileEntity {
 		}
 
 		compoundTag.putBoolean("CanBreakDoors", this.canBreakDoors());
-		compoundTag.putInt("InWaterTime", this.isInsideWater() ? this.field_7426 : -1);
-		compoundTag.putInt("DrownedConversionTime", this.isDrowning() ? this.field_7424 : -1);
+		compoundTag.putInt("InWaterTime", this.isInsideWater() ? this.inWaterTime : -1);
+		compoundTag.putInt("DrownedConversionTime", this.isConvertingInWater() ? this.ticksUntilWaterConversion : -1);
 	}
 
 	@Override
@@ -397,10 +398,10 @@ public class ZombieEntity extends HostileEntity {
 			this.setChild(true);
 		}
 
-		this.setBreakDoors(compoundTag.getBoolean("CanBreakDoors"));
-		this.field_7426 = compoundTag.getInt("InWaterTime");
+		this.setCanBreakDoors(compoundTag.getBoolean("CanBreakDoors"));
+		this.inWaterTime = compoundTag.getInt("InWaterTime");
 		if (compoundTag.containsKey("DrownedConversionTime", 99) && compoundTag.getInt("DrownedConversionTime") > -1) {
-			this.method_7213(compoundTag.getInt("DrownedConversionTime"));
+			this.setTicksUntilWaterConversion(compoundTag.getInt("DrownedConversionTime"));
 		}
 	}
 
@@ -415,13 +416,13 @@ public class ZombieEntity extends HostileEntity {
 			VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
 			ZombieVillagerEntity zombieVillagerEntity = EntityType.ZOMBIE_VILLAGER.create(this.world);
 			zombieVillagerEntity.setPositionAndAngles(villagerEntity);
-			villagerEntity.invalidate();
-			zombieVillagerEntity.prepareEntityData(
+			villagerEntity.remove();
+			zombieVillagerEntity.initialize(
 				this.world, this.world.getLocalDifficulty(new BlockPos(zombieVillagerEntity)), SpawnType.field_16468, new ZombieEntity.class_1644(false), null
 			);
 			zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
-			zombieVillagerEntity.setOfferData(villagerEntity.getRecipes().toTag());
-			zombieVillagerEntity.method_19622(villagerEntity.getExperience());
+			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
+			zombieVillagerEntity.setXp(villagerEntity.getExperience());
 			zombieVillagerEntity.setChild(villagerEntity.isChild());
 			zombieVillagerEntity.setAiDisabled(villagerEntity.isAiDisabled());
 			if (villagerEntity.hasCustomName()) {
@@ -430,7 +431,7 @@ public class ZombieEntity extends HostileEntity {
 			}
 
 			this.world.spawnEntity(zombieVillagerEntity);
-			this.world.playEvent(null, 1026, new BlockPos(this), 0);
+			this.world.playLevelEvent(null, 1026, new BlockPos(this), 0);
 		}
 	}
 
@@ -446,10 +447,10 @@ public class ZombieEntity extends HostileEntity {
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		float f = localDifficulty.getClampedLocalDifficulty();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * f);
 		if (entityData == null) {
@@ -470,16 +471,16 @@ public class ZombieEntity extends HostileEntity {
 				} else if ((double)iWorld.getRandom().nextFloat() < 0.05) {
 					ChickenEntity chickenEntity2 = EntityType.CHICKEN.create(this.world);
 					chickenEntity2.setPositionAndAngles(this.x, this.y, this.z, this.yaw, 0.0F);
-					chickenEntity2.prepareEntityData(iWorld, localDifficulty, SpawnType.field_16460, null, null);
+					chickenEntity2.initialize(iWorld, localDifficulty, SpawnType.field_16460, null, null);
 					chickenEntity2.setHasJockey(true);
 					iWorld.spawnEntity(chickenEntity2);
 					this.startRiding(chickenEntity2);
 				}
 			}
 
-			this.setBreakDoors(this.method_7212() && this.random.nextFloat() < f * 0.1F);
+			this.setCanBreakDoors(this.shouldBreakDoors() && this.random.nextFloat() < f * 0.1F);
 			this.initEquipment(localDifficulty);
-			this.method_5984(localDifficulty);
+			this.updateEnchantments(localDifficulty);
 		}
 
 		if (this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
@@ -510,7 +511,7 @@ public class ZombieEntity extends HostileEntity {
 				.addModifier(new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 0.25 + 0.5, EntityAttributeModifier.Operation.field_6328));
 			this.getAttributeInstance(EntityAttributes.MAX_HEALTH)
 				.addModifier(new EntityAttributeModifier("Leader zombie bonus", this.random.nextDouble() * 3.0 + 1.0, EntityAttributeModifier.Operation.field_6331));
-			this.setBreakDoors(this.method_7212());
+			this.setCanBreakDoors(this.shouldBreakDoors());
 		}
 	}
 
@@ -525,8 +526,8 @@ public class ZombieEntity extends HostileEntity {
 		Entity entity = damageSource.getAttacker();
 		if (entity instanceof CreeperEntity) {
 			CreeperEntity creeperEntity = (CreeperEntity)entity;
-			if (creeperEntity.method_7008()) {
-				creeperEntity.method_7002();
+			if (creeperEntity.shouldDropHead()) {
+				creeperEntity.onHeadDropped();
 				ItemStack itemStack = this.getSkull();
 				if (!itemStack.isEmpty()) {
 					this.dropStack(itemStack);
@@ -540,8 +541,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	class DestroyEggGoal extends StepAndDestroyBlockGoal {
-		DestroyEggGoal(Block block, MobEntityWithAi mobEntityWithAi, double d, int i) {
-			super(block, mobEntityWithAi, d, i);
+		DestroyEggGoal(MobEntityWithAi mobEntityWithAi, double d, int i) {
+			super(Blocks.field_10195, mobEntityWithAi, d, i);
 		}
 
 		@Override

@@ -9,70 +9,70 @@ import net.minecraft.text.TranslatableTextComponent;
 public class TimeCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("time")
+			CommandManager.literal("time")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.literal("set")
-						.then(ServerCommandManager.literal("day").executes(commandContext -> method_13784(commandContext.getSource(), 1000)))
-						.then(ServerCommandManager.literal("noon").executes(commandContext -> method_13784(commandContext.getSource(), 6000)))
-						.then(ServerCommandManager.literal("night").executes(commandContext -> method_13784(commandContext.getSource(), 13000)))
-						.then(ServerCommandManager.literal("midnight").executes(commandContext -> method_13784(commandContext.getSource(), 18000)))
+					CommandManager.literal("set")
+						.then(CommandManager.literal("day").executes(commandContext -> executeSet(commandContext.getSource(), 1000)))
+						.then(CommandManager.literal("noon").executes(commandContext -> executeSet(commandContext.getSource(), 6000)))
+						.then(CommandManager.literal("night").executes(commandContext -> executeSet(commandContext.getSource(), 13000)))
+						.then(CommandManager.literal("midnight").executes(commandContext -> executeSet(commandContext.getSource(), 18000)))
 						.then(
-							ServerCommandManager.argument("time", TimeArgumentType.create())
-								.executes(commandContext -> method_13784(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
+							CommandManager.argument("time", TimeArgumentType.create())
+								.executes(commandContext -> executeSet(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
 						)
 				)
 				.then(
-					ServerCommandManager.literal("add")
+					CommandManager.literal("add")
 						.then(
-							ServerCommandManager.argument("time", TimeArgumentType.create())
-								.executes(commandContext -> method_13788(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
+							CommandManager.argument("time", TimeArgumentType.create())
+								.executes(commandContext -> executeAdd(commandContext.getSource(), IntegerArgumentType.getInteger(commandContext, "time")))
 						)
 				)
 				.then(
-					ServerCommandManager.literal("query")
+					CommandManager.literal("query")
 						.then(
-							ServerCommandManager.literal("daytime")
-								.executes(commandContext -> method_13796(commandContext.getSource(), method_13787(commandContext.getSource().getWorld())))
+							CommandManager.literal("daytime")
+								.executes(commandContext -> executeQuery(commandContext.getSource(), getDayTime(commandContext.getSource().getWorld())))
 						)
 						.then(
-							ServerCommandManager.literal("gametime")
-								.executes(commandContext -> method_13796(commandContext.getSource(), (int)(commandContext.getSource().getWorld().getTime() % 2147483647L)))
+							CommandManager.literal("gametime")
+								.executes(commandContext -> executeQuery(commandContext.getSource(), (int)(commandContext.getSource().getWorld().getTime() % 2147483647L)))
 						)
 						.then(
-							ServerCommandManager.literal("day")
+							CommandManager.literal("day")
 								.executes(
-									commandContext -> method_13796(commandContext.getSource(), (int)(commandContext.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L))
+									commandContext -> executeQuery(commandContext.getSource(), (int)(commandContext.getSource().getWorld().getTimeOfDay() / 24000L % 2147483647L))
 								)
 						)
 				)
 		);
 	}
 
-	private static int method_13787(ServerWorld serverWorld) {
+	private static int getDayTime(ServerWorld serverWorld) {
 		return (int)(serverWorld.getTimeOfDay() % 24000L);
 	}
 
-	private static int method_13796(ServerCommandSource serverCommandSource, int i) {
+	private static int executeQuery(ServerCommandSource serverCommandSource, int i) {
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.time.query", i), false);
 		return i;
 	}
 
-	public static int method_13784(ServerCommandSource serverCommandSource, int i) {
+	public static int executeSet(ServerCommandSource serverCommandSource, int i) {
 		for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
 			serverWorld.setTimeOfDay((long)i);
 		}
 
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.time.set", i), true);
-		return method_13787(serverCommandSource.getWorld());
+		return getDayTime(serverCommandSource.getWorld());
 	}
 
-	public static int method_13788(ServerCommandSource serverCommandSource, int i) {
+	public static int executeAdd(ServerCommandSource serverCommandSource, int i) {
 		for (ServerWorld serverWorld : serverCommandSource.getMinecraftServer().getWorlds()) {
 			serverWorld.setTimeOfDay(serverWorld.getTimeOfDay() + (long)i);
 		}
 
-		int j = method_13787(serverCommandSource.getWorld());
+		int j = getDayTime(serverCommandSource.getWorld());
 		serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.time.set", j), true);
 		return j;
 	}

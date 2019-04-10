@@ -18,7 +18,7 @@ import net.minecraft.command.arguments.EntityArgumentType;
 import net.minecraft.command.arguments.Vec2ArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.scoreboard.AbstractScoreboardTeam;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
@@ -36,26 +36,26 @@ public class SpreadPlayersCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("spreadplayers")
+			CommandManager.literal("spreadplayers")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("center", Vec2ArgumentType.create())
+					CommandManager.argument("center", Vec2ArgumentType.create())
 						.then(
-							ServerCommandManager.argument("spreadDistance", FloatArgumentType.floatArg(0.0F))
+							CommandManager.argument("spreadDistance", FloatArgumentType.floatArg(0.0F))
 								.then(
-									ServerCommandManager.argument("maxRange", FloatArgumentType.floatArg(1.0F))
+									CommandManager.argument("maxRange", FloatArgumentType.floatArg(1.0F))
 										.then(
-											ServerCommandManager.argument("respectTeams", BoolArgumentType.bool())
+											CommandManager.argument("respectTeams", BoolArgumentType.bool())
 												.then(
-													ServerCommandManager.argument("targets", EntityArgumentType.multipleEntities())
+													CommandManager.argument("targets", EntityArgumentType.entities())
 														.executes(
-															commandContext -> method_13656(
+															commandContext -> execute(
 																	commandContext.getSource(),
-																	Vec2ArgumentType.getVec2Argument(commandContext, "center"),
+																	Vec2ArgumentType.getVec2(commandContext, "center"),
 																	FloatArgumentType.getFloat(commandContext, "spreadDistance"),
 																	FloatArgumentType.getFloat(commandContext, "maxRange"),
 																	BoolArgumentType.getBool(commandContext, "respectTeams"),
-																	EntityArgumentType.method_9317(commandContext, "targets")
+																	EntityArgumentType.getEntities(commandContext, "targets")
 																)
 														)
 												)
@@ -66,30 +66,30 @@ public class SpreadPlayersCommand {
 		);
 	}
 
-	private static int method_13656(ServerCommandSource serverCommandSource, Vec2f vec2f, float f, float g, boolean bl, Collection<? extends Entity> collection) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource serverCommandSource, Vec2f vec2f, float f, float g, boolean bl, Collection<? extends Entity> collection) throws CommandSyntaxException {
 		Random random = new Random();
 		double d = (double)(vec2f.x - g);
 		double e = (double)(vec2f.y - g);
 		double h = (double)(vec2f.x + g);
 		double i = (double)(vec2f.y + g);
-		SpreadPlayersCommand.class_3132[] lvs = method_13653(random, bl ? method_13652(collection) : collection.size(), d, e, h, i);
-		method_13661(vec2f, (double)f, serverCommandSource.getWorld(), random, d, e, h, i, lvs, bl);
-		double j = method_13657(collection, serverCommandSource.getWorld(), lvs, bl);
+		SpreadPlayersCommand.Pile[] piles = makePiles(random, bl ? getPileCountRespectingTeams(collection) : collection.size(), d, e, h, i);
+		spread(vec2f, (double)f, serverCommandSource.getWorld(), random, d, e, h, i, piles, bl);
+		double j = getMinimumDistance(collection, serverCommandSource.getWorld(), piles, bl);
 		serverCommandSource.sendFeedback(
 			new TranslatableTextComponent(
-				"commands.spreadplayers.success." + (bl ? "teams" : "entities"), lvs.length, vec2f.x, vec2f.y, String.format(Locale.ROOT, "%.2f", j)
+				"commands.spreadplayers.success." + (bl ? "teams" : "entities"), piles.length, vec2f.x, vec2f.y, String.format(Locale.ROOT, "%.2f", j)
 			),
 			true
 		);
-		return lvs.length;
+		return piles.length;
 	}
 
-	private static int method_13652(Collection<? extends Entity> collection) {
-		Set<AbstractScoreboardTeam> set = Sets.<AbstractScoreboardTeam>newHashSet();
+	private static int getPileCountRespectingTeams(Collection<? extends Entity> collection) {
+		Set<AbstractTeam> set = Sets.<AbstractTeam>newHashSet();
 
 		for (Entity entity : collection) {
 			if (entity instanceof PlayerEntity) {
-				set.add(entity.getScoreboardTeam());
+				set.add(entity.method_5781());
 			} else {
 				set.add(null);
 			}
@@ -98,8 +98,8 @@ public class SpreadPlayersCommand {
 		return set.size();
 	}
 
-	private static void method_13661(
-		Vec2f vec2f, double d, ServerWorld serverWorld, Random random, double e, double f, double g, double h, SpreadPlayersCommand.class_3132[] args, boolean bl
+	private static void spread(
+		Vec2f vec2f, double d, ServerWorld serverWorld, Random random, double e, double f, double g, double h, SpreadPlayersCommand.Pile[] piles, boolean bl
 	) throws CommandSyntaxException {
 		boolean bl2 = true;
 		double i = Float.MAX_VALUE;
@@ -109,47 +109,47 @@ public class SpreadPlayersCommand {
 			bl2 = false;
 			i = Float.MAX_VALUE;
 
-			for (int k = 0; k < args.length; k++) {
-				SpreadPlayersCommand.class_3132 lv = args[k];
+			for (int k = 0; k < piles.length; k++) {
+				SpreadPlayersCommand.Pile pile = piles[k];
 				int l = 0;
-				SpreadPlayersCommand.class_3132 lv2 = new SpreadPlayersCommand.class_3132();
+				SpreadPlayersCommand.Pile pile2 = new SpreadPlayersCommand.Pile();
 
-				for (int m = 0; m < args.length; m++) {
+				for (int m = 0; m < piles.length; m++) {
 					if (k != m) {
-						SpreadPlayersCommand.class_3132 lv3 = args[m];
-						double n = lv.method_13665(lv3);
+						SpreadPlayersCommand.Pile pile3 = piles[m];
+						double n = pile.getDistance(pile3);
 						i = Math.min(n, i);
 						if (n < d) {
 							l++;
-							lv2.field_13737 = lv2.field_13737 + (lv3.field_13737 - lv.field_13737);
-							lv2.field_13736 = lv2.field_13736 + (lv3.field_13736 - lv.field_13736);
+							pile2.x = pile2.x + (pile3.x - pile.x);
+							pile2.z = pile2.z + (pile3.z - pile.z);
 						}
 					}
 				}
 
 				if (l > 0) {
-					lv2.field_13737 = lv2.field_13737 / (double)l;
-					lv2.field_13736 = lv2.field_13736 / (double)l;
-					double o = (double)lv2.method_13668();
+					pile2.x = pile2.x / (double)l;
+					pile2.z = pile2.z / (double)l;
+					double o = (double)pile2.method_13668();
 					if (o > 0.0) {
-						lv2.method_13671();
-						lv.method_13670(lv2);
+						pile2.method_13671();
+						pile.method_13670(pile2);
 					} else {
-						lv.method_13667(random, e, f, g, h);
+						pile.setPileLocation(random, e, f, g, h);
 					}
 
 					bl2 = true;
 				}
 
-				if (lv.method_13666(e, f, g, h)) {
+				if (pile.method_13666(e, f, g, h)) {
 					bl2 = true;
 				}
 			}
 
 			if (!bl2) {
-				for (SpreadPlayersCommand.class_3132 lv2 : args) {
-					if (!lv2.method_13662(serverWorld)) {
-						lv2.method_13667(random, e, f, g, h);
+				for (SpreadPlayersCommand.Pile pile2 : piles) {
+					if (!pile2.isSafe(serverWorld)) {
+						pile2.setPileLocation(random, e, f, g, h);
 						bl2 = true;
 					}
 				}
@@ -162,39 +162,37 @@ public class SpreadPlayersCommand {
 
 		if (j >= 10000) {
 			if (bl) {
-				throw FAILED_TEAMS_EXCEPTION.create(args.length, vec2f.x, vec2f.y, String.format(Locale.ROOT, "%.2f", i));
+				throw FAILED_TEAMS_EXCEPTION.create(piles.length, vec2f.x, vec2f.y, String.format(Locale.ROOT, "%.2f", i));
 			} else {
-				throw FAILED_ENTITIES_EXCEPTION.create(args.length, vec2f.x, vec2f.y, String.format(Locale.ROOT, "%.2f", i));
+				throw FAILED_ENTITIES_EXCEPTION.create(piles.length, vec2f.x, vec2f.y, String.format(Locale.ROOT, "%.2f", i));
 			}
 		}
 	}
 
-	private static double method_13657(Collection<? extends Entity> collection, ServerWorld serverWorld, SpreadPlayersCommand.class_3132[] args, boolean bl) {
+	private static double getMinimumDistance(Collection<? extends Entity> collection, ServerWorld serverWorld, SpreadPlayersCommand.Pile[] piles, boolean bl) {
 		double d = 0.0;
 		int i = 0;
-		Map<AbstractScoreboardTeam, SpreadPlayersCommand.class_3132> map = Maps.<AbstractScoreboardTeam, SpreadPlayersCommand.class_3132>newHashMap();
+		Map<AbstractTeam, SpreadPlayersCommand.Pile> map = Maps.<AbstractTeam, SpreadPlayersCommand.Pile>newHashMap();
 
 		for (Entity entity : collection) {
-			SpreadPlayersCommand.class_3132 lv;
+			SpreadPlayersCommand.Pile pile;
 			if (bl) {
-				AbstractScoreboardTeam abstractScoreboardTeam = entity instanceof PlayerEntity ? entity.getScoreboardTeam() : null;
-				if (!map.containsKey(abstractScoreboardTeam)) {
-					map.put(abstractScoreboardTeam, args[i++]);
+				AbstractTeam abstractTeam = entity instanceof PlayerEntity ? entity.method_5781() : null;
+				if (!map.containsKey(abstractTeam)) {
+					map.put(abstractTeam, piles[i++]);
 				}
 
-				lv = (SpreadPlayersCommand.class_3132)map.get(abstractScoreboardTeam);
+				pile = (SpreadPlayersCommand.Pile)map.get(abstractTeam);
 			} else {
-				lv = args[i++];
+				pile = piles[i++];
 			}
 
-			entity.method_5859(
-				(double)((float)MathHelper.floor(lv.field_13737) + 0.5F), (double)lv.method_13669(serverWorld), (double)MathHelper.floor(lv.field_13736) + 0.5
-			);
+			entity.requestTeleport((double)((float)MathHelper.floor(pile.x) + 0.5F), (double)pile.method_13669(serverWorld), (double)MathHelper.floor(pile.z) + 0.5);
 			double e = Double.MAX_VALUE;
 
-			for (SpreadPlayersCommand.class_3132 lv2 : args) {
-				if (lv != lv2) {
-					double f = lv.method_13665(lv2);
+			for (SpreadPlayersCommand.Pile pile2 : piles) {
+				if (pile != pile2) {
+					double f = pile.getDistance(pile2);
 					e = Math.min(f, e);
 				}
 			}
@@ -205,58 +203,58 @@ public class SpreadPlayersCommand {
 		return collection.size() < 2 ? 0.0 : d / (double)collection.size();
 	}
 
-	private static SpreadPlayersCommand.class_3132[] method_13653(Random random, int i, double d, double e, double f, double g) {
-		SpreadPlayersCommand.class_3132[] lvs = new SpreadPlayersCommand.class_3132[i];
+	private static SpreadPlayersCommand.Pile[] makePiles(Random random, int i, double d, double e, double f, double g) {
+		SpreadPlayersCommand.Pile[] piles = new SpreadPlayersCommand.Pile[i];
 
-		for (int j = 0; j < lvs.length; j++) {
-			SpreadPlayersCommand.class_3132 lv = new SpreadPlayersCommand.class_3132();
-			lv.method_13667(random, d, e, f, g);
-			lvs[j] = lv;
+		for (int j = 0; j < piles.length; j++) {
+			SpreadPlayersCommand.Pile pile = new SpreadPlayersCommand.Pile();
+			pile.setPileLocation(random, d, e, f, g);
+			piles[j] = pile;
 		}
 
-		return lvs;
+		return piles;
 	}
 
-	static class class_3132 {
-		private double field_13737;
-		private double field_13736;
+	static class Pile {
+		private double x;
+		private double z;
 
-		double method_13665(SpreadPlayersCommand.class_3132 arg) {
-			double d = this.field_13737 - arg.field_13737;
-			double e = this.field_13736 - arg.field_13736;
+		double getDistance(SpreadPlayersCommand.Pile pile) {
+			double d = this.x - pile.x;
+			double e = this.z - pile.z;
 			return Math.sqrt(d * d + e * e);
 		}
 
 		void method_13671() {
 			double d = (double)this.method_13668();
-			this.field_13737 /= d;
-			this.field_13736 /= d;
+			this.x /= d;
+			this.z /= d;
 		}
 
 		float method_13668() {
-			return MathHelper.sqrt(this.field_13737 * this.field_13737 + this.field_13736 * this.field_13736);
+			return MathHelper.sqrt(this.x * this.x + this.z * this.z);
 		}
 
-		public void method_13670(SpreadPlayersCommand.class_3132 arg) {
-			this.field_13737 = this.field_13737 - arg.field_13737;
-			this.field_13736 = this.field_13736 - arg.field_13736;
+		public void method_13670(SpreadPlayersCommand.Pile pile) {
+			this.x = this.x - pile.x;
+			this.z = this.z - pile.z;
 		}
 
 		public boolean method_13666(double d, double e, double f, double g) {
 			boolean bl = false;
-			if (this.field_13737 < d) {
-				this.field_13737 = d;
+			if (this.x < d) {
+				this.x = d;
 				bl = true;
-			} else if (this.field_13737 > f) {
-				this.field_13737 = f;
+			} else if (this.x > f) {
+				this.x = f;
 				bl = true;
 			}
 
-			if (this.field_13736 < e) {
-				this.field_13736 = e;
+			if (this.z < e) {
+				this.z = e;
 				bl = true;
-			} else if (this.field_13736 > g) {
-				this.field_13736 = g;
+			} else if (this.z > g) {
+				this.z = g;
 				bl = true;
 			}
 
@@ -264,7 +262,7 @@ public class SpreadPlayersCommand {
 		}
 
 		public int method_13669(BlockView blockView) {
-			BlockPos blockPos = new BlockPos(this.field_13737, 256.0, this.field_13736);
+			BlockPos blockPos = new BlockPos(this.x, 256.0, this.z);
 
 			while (blockPos.getY() > 0) {
 				blockPos = blockPos.down();
@@ -276,8 +274,8 @@ public class SpreadPlayersCommand {
 			return 257;
 		}
 
-		public boolean method_13662(BlockView blockView) {
-			BlockPos blockPos = new BlockPos(this.field_13737, 256.0, this.field_13736);
+		public boolean isSafe(BlockView blockView) {
+			BlockPos blockPos = new BlockPos(this.x, 256.0, this.z);
 
 			while (blockPos.getY() > 0) {
 				blockPos = blockPos.down();
@@ -291,9 +289,9 @@ public class SpreadPlayersCommand {
 			return false;
 		}
 
-		public void method_13667(Random random, double d, double e, double f, double g) {
-			this.field_13737 = MathHelper.nextDouble(random, d, f);
-			this.field_13736 = MathHelper.nextDouble(random, e, g);
+		public void setPileLocation(Random random, double d, double e, double f, double g) {
+			this.x = MathHelper.nextDouble(random, d, f);
+			this.z = MathHelper.nextDouble(random, e, g);
 		}
 	}
 }

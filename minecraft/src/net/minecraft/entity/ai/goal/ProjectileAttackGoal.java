@@ -33,18 +33,18 @@ public class ProjectileAttackGoal extends Goal {
 			this.field_6577 = j;
 			this.field_6585 = f;
 			this.field_6584 = f * f;
-			this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+			this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 		}
 	}
 
 	@Override
 	public boolean canStart() {
 		LivingEntity livingEntity = this.mobEntity.getTarget();
-		if (livingEntity == null) {
-			return false;
-		} else {
+		if (livingEntity != null && livingEntity.isAlive()) {
 			this.target = livingEntity;
 			return true;
+		} else {
+			return false;
 		}
 	}
 
@@ -54,7 +54,7 @@ public class ProjectileAttackGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.target = null;
 		this.field_6579 = 0;
 		this.field_6581 = -1;

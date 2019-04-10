@@ -18,7 +18,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 	}
 
 	public void method_4177(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
-		if (abstractClientPlayerEntity.method_3125()
+		if (abstractClientPlayerEntity.hasScoreboardEntry()
 			&& !abstractClientPlayerEntity.isInvisible()
 			&& abstractClientPlayerEntity.isSkinOverlayVisible(PlayerModelPart.CAPE)
 			&& abstractClientPlayerEntity.method_3119() != null) {
@@ -49,7 +49,7 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 
 				float t = MathHelper.lerp(h, abstractClientPlayerEntity.field_7505, abstractClientPlayerEntity.field_7483);
 				q += MathHelper.sin(MathHelper.lerp(h, abstractClientPlayerEntity.field_6039, abstractClientPlayerEntity.field_5973) * 6.0F) * 32.0F * t;
-				if (abstractClientPlayerEntity.isSneaking()) {
+				if (abstractClientPlayerEntity.isInSneakingPose()) {
 					q += 25.0F;
 				}
 
@@ -57,14 +57,14 @@ public class CapeFeatureRenderer extends FeatureRenderer<AbstractClientPlayerEnt
 				GlStateManager.rotatef(s / 2.0F, 0.0F, 0.0F, 1.0F);
 				GlStateManager.rotatef(-s / 2.0F, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef(180.0F, 0.0F, 1.0F, 0.0F);
-				this.getModel().method_2823(0.0625F);
+				this.getModel().renderCape(0.0625F);
 				GlStateManager.popMatrix();
 			}
 		}
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

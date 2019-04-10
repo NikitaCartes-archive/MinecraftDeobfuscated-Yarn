@@ -29,13 +29,13 @@ public class VillagerProfession {
 	private final String id;
 	private final PointOfInterestType workStation;
 	private final ImmutableSet<Item> gatherableItems;
-	private final ImmutableSet<Block> field_18880;
+	private final ImmutableSet<Block> secondaryJobSites;
 
 	private VillagerProfession(String string, PointOfInterestType pointOfInterestType, ImmutableSet<Item> immutableSet, ImmutableSet<Block> immutableSet2) {
 		this.id = string;
 		this.workStation = pointOfInterestType;
 		this.gatherableItems = immutableSet;
-		this.field_18880 = immutableSet2;
+		this.secondaryJobSites = immutableSet2;
 	}
 
 	public PointOfInterestType getWorkStation() {
@@ -46,8 +46,8 @@ public class VillagerProfession {
 		return this.gatherableItems;
 	}
 
-	public ImmutableSet<Block> method_19630() {
-		return this.field_18880;
+	public ImmutableSet<Block> getSecondaryJobSites() {
+		return this.secondaryJobSites;
 	}
 
 	public String toString() {

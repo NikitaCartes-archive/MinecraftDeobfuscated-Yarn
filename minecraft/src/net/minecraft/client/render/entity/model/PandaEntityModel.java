@@ -9,9 +9,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityModel<T> {
-	private float field_3470;
-	private float field_3469;
-	private float field_3468;
+	private float scaredAnimationProgress;
+	private float lieOnBackAnimationProgress;
+	private float playAnimationProgress;
 
 	public PandaEntityModel(int i, float f) {
 		super(i, f);
@@ -44,17 +44,17 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 
 	public void method_17102(T pandaEntity, float f, float g, float h) {
 		super.animateModel(pandaEntity, f, g, h);
-		this.field_3470 = pandaEntity.method_6534(h);
-		this.field_3469 = pandaEntity.method_6555(h);
-		this.field_3468 = pandaEntity.isChild() ? 0.0F : pandaEntity.method_6560(h);
+		this.scaredAnimationProgress = pandaEntity.getScaredAnimationProgress(h);
+		this.lieOnBackAnimationProgress = pandaEntity.getLieOnBackAnimationProgress(h);
+		this.playAnimationProgress = pandaEntity.isChild() ? 0.0F : pandaEntity.getRollOverAnimationProgress(h);
 	}
 
 	public void method_17103(T pandaEntity, float f, float g, float h, float i, float j, float k) {
 		super.setAngles(pandaEntity, f, g, h, i, j, k);
-		boolean bl = pandaEntity.method_6521() > 0;
-		boolean bl2 = pandaEntity.method_6545();
-		int l = pandaEntity.method_6532();
-		boolean bl3 = pandaEntity.method_6527();
+		boolean bl = pandaEntity.getAskForBambooTicks() > 0;
+		boolean bl2 = pandaEntity.isSneezing();
+		int l = pandaEntity.getSneezeProgress();
+		boolean bl3 = pandaEntity.isEating();
 		boolean bl4 = pandaEntity.method_6524();
 		if (bl) {
 			this.head.yaw = 0.35F * MathHelper.sin(0.6F * h);
@@ -74,9 +74,9 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 			}
 		}
 
-		if (this.field_3470 > 0.0F) {
-			this.body.pitch = this.method_2822(this.body.pitch, 1.7407963F, this.field_3470);
-			this.head.pitch = this.method_2822(this.head.pitch, (float) (Math.PI / 2), this.field_3470);
+		if (this.scaredAnimationProgress > 0.0F) {
+			this.body.pitch = this.interpolateAngle(this.body.pitch, 1.7407963F, this.scaredAnimationProgress);
+			this.head.pitch = this.interpolateAngle(this.head.pitch, (float) (Math.PI / 2), this.scaredAnimationProgress);
 			this.leg3.roll = -0.27079642F;
 			this.leg4.roll = 0.27079642F;
 			this.leg1.roll = 0.5707964F;
@@ -99,16 +99,16 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 			this.leg4.roll = 0.0F;
 		}
 
-		if (this.field_3469 > 0.0F) {
+		if (this.lieOnBackAnimationProgress > 0.0F) {
 			this.leg1.pitch = -0.6F * MathHelper.sin(h * 0.15F);
 			this.leg2.pitch = 0.6F * MathHelper.sin(h * 0.15F);
 			this.leg3.pitch = 0.3F * MathHelper.sin(h * 0.25F);
 			this.leg4.pitch = -0.3F * MathHelper.sin(h * 0.25F);
-			this.head.pitch = this.method_2822(this.head.pitch, (float) (Math.PI / 2), this.field_3469);
+			this.head.pitch = this.interpolateAngle(this.head.pitch, (float) (Math.PI / 2), this.lieOnBackAnimationProgress);
 		}
 
-		if (this.field_3468 > 0.0F) {
-			this.head.pitch = this.method_2822(this.head.pitch, 2.0561945F, this.field_3468);
+		if (this.playAnimationProgress > 0.0F) {
+			this.head.pitch = this.interpolateAngle(this.head.pitch, 2.0561945F, this.playAnimationProgress);
 			this.leg1.pitch = -0.5F * MathHelper.sin(h * 0.5F);
 			this.leg2.pitch = 0.5F * MathHelper.sin(h * 0.5F);
 			this.leg3.pitch = 0.5F * MathHelper.sin(h * 0.5F);
@@ -116,7 +116,7 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		}
 	}
 
-	protected float method_2822(float f, float g, float h) {
+	protected float interpolateAngle(float f, float g, float h) {
 		float i = g - f;
 
 		while (i < (float) -Math.PI) {

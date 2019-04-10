@@ -39,22 +39,22 @@ public class FilledMapItem extends MapItem {
 		super(settings);
 	}
 
-	public static ItemStack method_8005(World world, int i, int j, byte b, boolean bl, boolean bl2) {
+	public static ItemStack createMap(World world, int i, int j, byte b, boolean bl, boolean bl2) {
 		ItemStack itemStack = new ItemStack(Items.field_8204);
-		method_8000(itemStack, world, i, j, b, bl, bl2, world.dimension.getType());
+		createMapState(itemStack, world, i, j, b, bl, bl2, world.dimension.getType());
 		return itemStack;
 	}
 
 	@Nullable
-	public static MapState method_7997(ItemStack itemStack, World world) {
-		return world.getMapState(method_17440(method_8003(itemStack)));
+	public static MapState getMapState(ItemStack itemStack, World world) {
+		return world.getMapState(getMapStorageName(getMapId(itemStack)));
 	}
 
 	@Nullable
-	public static MapState method_8001(ItemStack itemStack, World world) {
-		MapState mapState = method_7997(itemStack, world);
+	public static MapState getOrCreateMapState(ItemStack itemStack, World world) {
+		MapState mapState = getMapState(itemStack, world);
 		if (mapState == null && !world.isClient) {
-			mapState = method_8000(
+			mapState = createMapState(
 				itemStack, world, world.getLevelProperties().getSpawnX(), world.getLevelProperties().getSpawnZ(), 3, false, false, world.dimension.getType()
 			);
 		}
@@ -62,21 +62,21 @@ public class FilledMapItem extends MapItem {
 		return mapState;
 	}
 
-	public static int method_8003(ItemStack itemStack) {
+	public static int getMapId(ItemStack itemStack) {
 		CompoundTag compoundTag = itemStack.getTag();
 		return compoundTag != null && compoundTag.containsKey("map", 99) ? compoundTag.getInt("map") : 0;
 	}
 
-	private static MapState method_8000(ItemStack itemStack, World world, int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
+	private static MapState createMapState(ItemStack itemStack, World world, int i, int j, int k, boolean bl, boolean bl2, DimensionType dimensionType) {
 		int l = world.getNextMapId();
-		MapState mapState = new MapState(method_17440(l));
-		mapState.method_105(i, j, k, bl, bl2, dimensionType);
+		MapState mapState = new MapState(getMapStorageName(l));
+		mapState.init(i, j, k, bl, bl2, dimensionType);
 		world.putMapState(mapState);
 		itemStack.getOrCreateTag().putInt("map", l);
 		return mapState;
 	}
 
-	public static String method_17440(int i) {
+	public static String getMapStorageName(int i) {
 		return "map_" + i;
 	}
 
@@ -208,9 +208,7 @@ public class FilledMapItem extends MapItem {
 
 	private BlockState method_7995(World world, BlockState blockState, BlockPos blockPos) {
 		FluidState fluidState = blockState.getFluidState();
-		return !fluidState.isEmpty() && !Block.isFaceFullSquare(blockState.getCollisionShape(world, blockPos), Direction.UP)
-			? fluidState.getBlockState()
-			: blockState;
+		return !fluidState.isEmpty() && !Block.isSolidFullSquare(blockState, world, blockPos, Direction.UP) ? fluidState.getBlockState() : blockState;
 	}
 
 	private static boolean method_8004(Biome[] biomes, int i, int j, int k) {
@@ -218,7 +216,7 @@ public class FilledMapItem extends MapItem {
 	}
 
 	public static void method_8002(World world, ItemStack itemStack) {
-		MapState mapState = method_8001(itemStack, world);
+		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
 			if (world.dimension.getType() == mapState.dimension) {
 				int i = 1 << mapState.scale;
@@ -306,7 +304,7 @@ public class FilledMapItem extends MapItem {
 	@Override
 	public void onEntityTick(ItemStack itemStack, World world, Entity entity, int i, boolean bl) {
 		if (!world.isClient) {
-			MapState mapState = method_8001(itemStack, world);
+			MapState mapState = getOrCreateMapState(itemStack, world);
 			if (mapState != null) {
 				if (entity instanceof PlayerEntity) {
 					PlayerEntity playerEntity = (PlayerEntity)entity;
@@ -323,7 +321,7 @@ public class FilledMapItem extends MapItem {
 	@Nullable
 	@Override
 	public Packet<?> createMapPacket(ItemStack itemStack, World world, PlayerEntity playerEntity) {
-		return method_8001(itemStack, world).method_100(itemStack, world, playerEntity);
+		return getOrCreateMapState(itemStack, world).method_100(itemStack, world, playerEntity);
 	}
 
 	@Override
@@ -336,9 +334,9 @@ public class FilledMapItem extends MapItem {
 	}
 
 	protected static void method_7996(ItemStack itemStack, World world, int i) {
-		MapState mapState = method_8001(itemStack, world);
+		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
-			method_8000(
+			createMapState(
 				itemStack,
 				world,
 				mapState.xCenter,
@@ -353,10 +351,10 @@ public class FilledMapItem extends MapItem {
 
 	@Nullable
 	public static ItemStack method_17442(World world, ItemStack itemStack) {
-		MapState mapState = method_8001(itemStack, world);
+		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
 			ItemStack itemStack2 = itemStack.copy();
-			MapState mapState2 = method_8000(itemStack2, world, 0, 0, mapState.scale, mapState.showIcons, mapState.unlimitedTracking, mapState.dimension);
+			MapState mapState2 = createMapState(itemStack2, world, 0, 0, mapState.scale, mapState.showIcons, mapState.unlimitedTracking, mapState.dimension);
 			mapState2.method_18818(mapState);
 			return itemStack2;
 		} else {
@@ -367,14 +365,14 @@ public class FilledMapItem extends MapItem {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
-		MapState mapState = world == null ? null : method_8001(itemStack, world);
+		MapState mapState = world == null ? null : getOrCreateMapState(itemStack, world);
 		if (mapState != null && mapState.locked) {
-			list.add(new TranslatableTextComponent("filled_map.locked", method_8003(itemStack)).applyFormat(TextFormat.field_1080));
+			list.add(new TranslatableTextComponent("filled_map.locked", getMapId(itemStack)).applyFormat(TextFormat.field_1080));
 		}
 
 		if (tooltipContext.isAdvanced()) {
 			if (mapState != null) {
-				list.add(new TranslatableTextComponent("filled_map.id", method_8003(itemStack)).applyFormat(TextFormat.field_1080));
+				list.add(new TranslatableTextComponent("filled_map.id", getMapId(itemStack)).applyFormat(TextFormat.field_1080));
 				list.add(new TranslatableTextComponent("filled_map.scale", 1 << mapState.scale).applyFormat(TextFormat.field_1080));
 				list.add(new TranslatableTextComponent("filled_map.level", mapState.scale, 4).applyFormat(TextFormat.field_1080));
 			} else {
@@ -399,7 +397,7 @@ public class FilledMapItem extends MapItem {
 		BlockState blockState = itemUsageContext.getWorld().getBlockState(itemUsageContext.getBlockPos());
 		if (blockState.matches(BlockTags.field_15501)) {
 			if (!itemUsageContext.world.isClient) {
-				MapState mapState = method_8001(itemUsageContext.getItemStack(), itemUsageContext.getWorld());
+				MapState mapState = getOrCreateMapState(itemUsageContext.getItemStack(), itemUsageContext.getWorld());
 				mapState.method_108(itemUsageContext.getWorld(), itemUsageContext.getBlockPos());
 			}
 

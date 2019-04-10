@@ -27,7 +27,7 @@ public class MobEffectArgumentType implements ArgumentType<StatusEffect> {
 		return new MobEffectArgumentType();
 	}
 
-	public static StatusEffect getEffectArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static StatusEffect getMobEffect(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		return commandContext.getArgument(string, StatusEffect.class);
 	}
 

@@ -13,14 +13,14 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.entity.Entity;
-import net.minecraft.sortme.CuboidBlockIterator;
+import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.DynamicSerializable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Immutable
 public class BlockPos extends Vec3i implements DynamicSerializable {
-	private static final Logger field_18789 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	public static final BlockPos ORIGIN = new BlockPos(0, 0, 0);
 	private static final int SIZE_BITS_X = 1 + MathHelper.log2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
 	private static final int SIZE_BITS_Z = SIZE_BITS_X;
@@ -55,7 +55,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		this(vec3i.getX(), vec3i.getY(), vec3i.getZ());
 	}
 
-	public static <T> BlockPos method_19438(Dynamic<T> dynamic) {
+	public static <T> BlockPos deserialize(Dynamic<T> dynamic) {
 		OfInt ofInt = dynamic.asIntStream().spliterator();
 		int[] is = new int[3];
 		if (ofInt.tryAdvance(i -> is[0] = i) && ofInt.tryAdvance(i -> is[1] = i)) {
@@ -188,7 +188,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 			: new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
 	}
 
-	public BlockPos method_10070(net.minecraft.util.Rotation rotation) {
+	public BlockPos rotate(net.minecraft.util.Rotation rotation) {
 		switch (rotation) {
 			case ROT_0:
 			default:
@@ -225,7 +225,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		);
 	}
 
-	public static Stream<BlockPos> getBlocksInCuboid(int i, int j, int k, int l, int m, int n) {
+	public static Stream<BlockPos> streamBoxPositions(int i, int j, int k, int l, int m, int n) {
 		return StreamSupport.stream(new AbstractSpliterator<BlockPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64) {
 			final CuboidBlockIterator connector = new CuboidBlockIterator(i, j, k, l, m, n);
 			final BlockPos.Mutable field_18231 = new BlockPos.Mutable();
@@ -243,13 +243,11 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 
 	public static Iterable<BlockPos> iterateBoxPositions(int i, int j, int k, int l, int m, int n) {
 		return () -> new AbstractIterator<BlockPos>() {
-				final CuboidBlockIterator field_17596 = new CuboidBlockIterator(i, j, k, l, m, n);
-				final BlockPos.Mutable field_18232 = new BlockPos.Mutable();
+				final CuboidBlockIterator iterator = new CuboidBlockIterator(i, j, k, l, m, n);
+				final BlockPos.Mutable pos = new BlockPos.Mutable();
 
 				protected BlockPos method_10106() {
-					return (BlockPos)(this.field_17596.step()
-						? this.field_18232.set(this.field_17596.getX(), this.field_17596.getY(), this.field_17596.getZ())
-						: this.endOfData());
+					return (BlockPos)(this.iterator.step() ? this.pos.set(this.iterator.getX(), this.iterator.getY(), this.iterator.getZ()) : this.endOfData());
 				}
 			};
 	}
@@ -294,8 +292,8 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		}
 
 		@Override
-		public BlockPos method_10070(net.minecraft.util.Rotation rotation) {
-			return super.method_10070(rotation).toImmutable();
+		public BlockPos rotate(net.minecraft.util.Rotation rotation) {
+			return super.rotate(rotation).toImmutable();
 		}
 
 		@Override
@@ -363,7 +361,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 	}
 
 	public static final class PooledMutable extends BlockPos.Mutable implements AutoCloseable {
-		private boolean field_11004;
+		private boolean free;
 		private static final List<BlockPos.PooledMutable> POOL = Lists.<BlockPos.PooledMutable>newArrayList();
 
 		private PooledMutable(int i, int j, int k) {
@@ -386,8 +384,8 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 			synchronized (POOL) {
 				if (!POOL.isEmpty()) {
 					BlockPos.PooledMutable pooledMutable = (BlockPos.PooledMutable)POOL.remove(POOL.size() - 1);
-					if (pooledMutable != null && pooledMutable.field_11004) {
-						pooledMutable.field_11004 = false;
+					if (pooledMutable != null && pooledMutable.free) {
+						pooledMutable.free = false;
 						pooledMutable.method_10113(i, j, k);
 						return pooledMutable;
 					}
@@ -431,7 +429,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 					POOL.add(this);
 				}
 
-				this.field_11004 = true;
+				this.free = true;
 			}
 		}
 	}

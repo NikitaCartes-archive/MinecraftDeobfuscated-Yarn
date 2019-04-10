@@ -60,7 +60,7 @@ public class LightningEntity extends Entity {
 		this.ambientTick--;
 		if (this.ambientTick < 0) {
 			if (this.remainingActions == 0) {
-				this.invalidate();
+				this.remove();
 			} else if (this.ambientTick < -this.random.nextInt(10)) {
 				this.remainingActions--;
 				this.ambientTick = 1;
@@ -75,7 +75,7 @@ public class LightningEntity extends Entity {
 			} else if (!this.cosmetic) {
 				double d = 3.0;
 				List<Entity> list = this.world
-					.getEntities(this, new BoundingBox(this.x - 3.0, this.y - 3.0, this.z - 3.0, this.x + 3.0, this.y + 6.0 + 3.0, this.z + 3.0), Entity::isValid);
+					.getEntities(this, new BoundingBox(this.x - 3.0, this.y - 3.0, this.z - 3.0, this.x + 3.0, this.y + 6.0 + 3.0, this.z + 3.0), Entity::isAlive);
 
 				for (Entity entity : list) {
 					entity.onStruckByLightning(this);

@@ -44,16 +44,16 @@ public class CommandBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof CommandBlockBlockEntity) {
 				CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)blockEntity;
-				boolean bl = world.isReceivingRedstonePower(blockPos);
-				boolean bl2 = commandBlockBlockEntity.isPowered();
-				commandBlockBlockEntity.setPowered(bl);
-				if (!bl2 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getType() != CommandBlockBlockEntity.Type.field_11922) {
-					if (bl) {
+				boolean bl2 = world.isReceivingRedstonePower(blockPos);
+				boolean bl3 = commandBlockBlockEntity.isPowered();
+				commandBlockBlockEntity.setPowered(bl2);
+				if (!bl3 && !commandBlockBlockEntity.isAuto() && commandBlockBlockEntity.getType() != CommandBlockBlockEntity.Type.field_11922) {
+					if (bl2) {
 						commandBlockBlockEntity.updateConditionMet();
 						world.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(world));
 					}

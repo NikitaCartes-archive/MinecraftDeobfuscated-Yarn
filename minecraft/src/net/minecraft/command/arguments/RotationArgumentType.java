@@ -20,7 +20,7 @@ public class RotationArgumentType implements ArgumentType<PosArgument> {
 		return new RotationArgumentType();
 	}
 
-	public static PosArgument getRotationArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static PosArgument getRotation(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, PosArgument.class);
 	}
 

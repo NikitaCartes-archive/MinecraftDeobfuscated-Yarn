@@ -58,8 +58,8 @@ public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.
 
 	public EnchantedItemCriterion.Conditions method_8872(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		ItemPredicate itemPredicate = ItemPredicate.deserialize(jsonObject.get("item"));
-		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("levels"));
-		return new EnchantedItemCriterion.Conditions(itemPredicate, integer);
+		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("levels"));
+		return new EnchantedItemCriterion.Conditions(itemPredicate, intRange);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, int i) {
@@ -71,27 +71,27 @@ public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate item;
-		private final NumberRange.Integer levels;
+		private final NumberRange.IntRange field_9568;
 
-		public Conditions(ItemPredicate itemPredicate, NumberRange.Integer integer) {
+		public Conditions(ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
 			super(EnchantedItemCriterion.ID);
 			this.item = itemPredicate;
-			this.levels = integer;
+			this.field_9568 = intRange;
 		}
 
 		public static EnchantedItemCriterion.Conditions any() {
-			return new EnchantedItemCriterion.Conditions(ItemPredicate.ANY, NumberRange.Integer.ANY);
+			return new EnchantedItemCriterion.Conditions(ItemPredicate.ANY, NumberRange.IntRange.ANY);
 		}
 
 		public boolean matches(ItemStack itemStack, int i) {
-			return !this.item.test(itemStack) ? false : this.levels.test(i);
+			return !this.item.test(itemStack) ? false : this.field_9568.test(i);
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("item", this.item.serialize());
-			jsonObject.add("levels", this.levels.serialize());
+			jsonObject.add("levels", this.field_9568.serialize());
 			return jsonObject;
 		}
 	}

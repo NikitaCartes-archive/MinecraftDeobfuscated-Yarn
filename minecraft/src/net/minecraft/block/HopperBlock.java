@@ -109,7 +109,7 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
 			this.method_10217(world, blockPos, blockState);
 		}
@@ -123,7 +123,7 @@ public class HopperBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof HopperBlockEntity) {
 				playerEntity.openContainer((HopperBlockEntity)blockEntity);
-				playerEntity.increaseStat(Stats.field_15366);
+				playerEntity.incrementStat(Stats.field_15366);
 			}
 
 			return true;
@@ -131,7 +131,7 @@ public class HopperBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		this.method_10217(world, blockPos, blockState);
 	}
 

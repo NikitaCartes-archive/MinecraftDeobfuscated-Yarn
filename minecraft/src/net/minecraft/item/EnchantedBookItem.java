@@ -71,7 +71,7 @@ public class EnchantedBookItem extends Item {
 		itemStack.getOrCreateTag().put("StoredEnchantments", listTag);
 	}
 
-	public static ItemStack method_7808(InfoEnchantment infoEnchantment) {
+	public static ItemStack makeStack(InfoEnchantment infoEnchantment) {
 		ItemStack itemStack = new ItemStack(Items.field_8598);
 		addEnchantment(itemStack, infoEnchantment);
 		return itemStack;
@@ -83,14 +83,14 @@ public class EnchantedBookItem extends Item {
 			for (Enchantment enchantment : Registry.ENCHANTMENT) {
 				if (enchantment.type != null) {
 					for (int i = enchantment.getMinimumLevel(); i <= enchantment.getMaximumLevel(); i++) {
-						defaultedList.add(method_7808(new InfoEnchantment(enchantment, i)));
+						defaultedList.add(makeStack(new InfoEnchantment(enchantment, i)));
 					}
 				}
 			}
 		} else if (itemGroup.getEnchantments().length != 0) {
 			for (Enchantment enchantmentx : Registry.ENCHANTMENT) {
 				if (itemGroup.containsEnchantments(enchantmentx.type)) {
-					defaultedList.add(method_7808(new InfoEnchantment(enchantmentx, enchantmentx.getMaximumLevel())));
+					defaultedList.add(makeStack(new InfoEnchantment(enchantmentx, enchantmentx.getMaximumLevel())));
 				}
 			}
 		}

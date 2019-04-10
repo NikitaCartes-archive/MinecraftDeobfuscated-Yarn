@@ -3,6 +3,7 @@ package net.minecraft.item;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -16,7 +17,7 @@ public class ShearsItem extends Item {
 	@Override
 	public boolean onBlockBroken(ItemStack itemStack, World world, BlockState blockState, BlockPos blockPos, LivingEntity livingEntity) {
 		if (!world.isClient) {
-			itemStack.applyDamage(1, livingEntity);
+			itemStack.applyDamage(1, livingEntity, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HAND_MAIN));
 		}
 
 		Block block = blockState.getBlock();

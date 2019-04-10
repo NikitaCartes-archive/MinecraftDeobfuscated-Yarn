@@ -209,10 +209,10 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
-		entityData = super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		entityData = super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 		if (compoundTag != null && compoundTag.containsKey("BucketVariantTag", 3)) {
 			this.setVariant(compoundTag.getInt("BucketVariantTag"));
 			return entityData;
@@ -278,7 +278,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 
 		private final int shape;
 		private final int pattern;
-		private static final TropicalFishEntity.Variety[] field_6885 = values();
+		private static final TropicalFishEntity.Variety[] VALUES = values();
 
 		private Variety(int j, int k) {
 			this.shape = j;
@@ -295,7 +295,7 @@ public class TropicalFishEntity extends SchoolingFishEntity {
 
 		@Environment(EnvType.CLIENT)
 		public static String getTranslateKey(int i, int j) {
-			return field_6885[j + 6 * i].getTranslationKey();
+			return VALUES[j + 6 * i].getTranslationKey();
 		}
 
 		@Environment(EnvType.CLIENT)

@@ -72,16 +72,14 @@ public class ClientWorld extends World {
 	private final WorldRenderer worldRenderer;
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final List<AbstractClientPlayerEntity> players = Lists.<AbstractClientPlayerEntity>newArrayList();
-	private int field_3732;
-	private int field_3731;
-	private int ticksSinceLightingClient = this.random.nextInt(12000);
+	private int ticksUntilCaveAmbientSound = this.random.nextInt(12000);
 	private Scoreboard scoreboard = new Scoreboard();
 	private final Map<String, MapState> mapStates = Maps.<String, MapState>newHashMap();
 
 	public ClientWorld(
-		ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, Profiler profiler, WorldRenderer worldRenderer
+		ClientPlayNetworkHandler clientPlayNetworkHandler, LevelInfo levelInfo, DimensionType dimensionType, int i, Profiler profiler, WorldRenderer worldRenderer
 	) {
-		super(new LevelProperties(levelInfo, "MpServer"), dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world), profiler, true);
+		super(new LevelProperties(levelInfo, "MpServer"), dimensionType, (world, dimension) -> new ClientChunkManager((ClientWorld)world, i), profiler, true);
 		this.netHandler = clientPlayNetworkHandler;
 		this.worldRenderer = worldRenderer;
 		this.setSpawnPos(new BlockPos(8, 64, 8));
@@ -89,12 +87,12 @@ public class ClientWorld extends World {
 		this.initWeatherGradients();
 	}
 
-	public void method_8441(BooleanSupplier booleanSupplier) {
-		this.getWorldBorder().update();
+	public void tick(BooleanSupplier booleanSupplier) {
+		this.getWorldBorder().tick();
 		this.tickTime();
 		this.getProfiler().push("blocks");
 		this.chunkManager.tick(booleanSupplier);
-		this.method_2939();
+		this.tickCaveAmbientSound();
 		this.getProfiler().pop();
 	}
 
@@ -102,7 +100,7 @@ public class ClientWorld extends World {
 		return Iterables.concat(this.regularEntities.values(), this.globalEntities);
 	}
 
-	public void method_18116() {
+	public void tickEntities() {
 		Profiler profiler = this.getProfiler();
 		profiler.push("entities");
 		profiler.push("global");
@@ -113,7 +111,7 @@ public class ClientWorld extends World {
 				entityx.age++;
 				entityx.tick();
 			}, entity);
-			if (entity.invalid) {
+			if (entity.removed) {
 				this.globalEntities.remove(i--);
 			}
 		}
@@ -126,15 +124,15 @@ public class ClientWorld extends World {
 			Entity entity2 = (Entity)entry.getValue();
 			if (!entity2.hasVehicle()) {
 				profiler.push("tick");
-				if (!entity2.invalid) {
-					this.tickEntity(this::method_18646, entity2);
+				if (!entity2.removed) {
+					this.tickEntity(this::tickEntity, entity2);
 				}
 
 				profiler.pop();
 				profiler.push("remove");
-				if (entity2.invalid) {
+				if (entity2.removed) {
 					objectIterator.remove();
-					this.method_18117(entity2);
+					this.finishRemovingEntity(entity2);
 				}
 
 				profiler.pop();
@@ -142,12 +140,12 @@ public class ClientWorld extends World {
 		}
 
 		profiler.pop();
-		this.method_18471();
+		this.tickBlockEntities();
 		profiler.pop();
 	}
 
-	public void method_18646(Entity entity) {
-		if (entity instanceof PlayerEntity || this.method_2935().isEntityInLoadedChunk(entity)) {
+	public void tickEntity(Entity entity) {
+		if (entity instanceof PlayerEntity || this.method_2935().shouldTickEntity(entity)) {
 			entity.prevRenderX = entity.x;
 			entity.prevRenderY = entity.y;
 			entity.prevRenderZ = entity.z;
@@ -160,19 +158,19 @@ public class ClientWorld extends World {
 				this.getProfiler().pop();
 			}
 
-			this.method_18648(entity);
+			this.checkChunk(entity);
 			if (entity.field_6016) {
 				for (Entity entity2 : entity.getPassengerList()) {
-					this.method_18647(entity, entity2);
+					this.tickPassenger(entity, entity2);
 				}
 			}
 		}
 	}
 
-	public void method_18647(Entity entity, Entity entity2) {
-		if (entity2.invalid || entity2.getRiddenEntity() != entity) {
+	public void tickPassenger(Entity entity, Entity entity2) {
+		if (entity2.removed || entity2.getRiddenEntity() != entity) {
 			entity2.stopRiding();
-		} else if (entity2 instanceof PlayerEntity || this.method_2935().isEntityInLoadedChunk(entity2)) {
+		} else if (entity2 instanceof PlayerEntity || this.method_2935().shouldTickEntity(entity2)) {
 			entity2.prevRenderX = entity2.x;
 			entity2.prevRenderY = entity2.y;
 			entity2.prevRenderZ = entity2.z;
@@ -180,19 +178,19 @@ public class ClientWorld extends World {
 			entity2.prevPitch = entity2.pitch;
 			if (entity2.field_6016) {
 				entity2.age++;
-				entity2.updateRiding();
+				entity2.tickRiding();
 			}
 
-			this.method_18648(entity2);
+			this.checkChunk(entity2);
 			if (entity2.field_6016) {
 				for (Entity entity3 : entity2.getPassengerList()) {
-					this.method_18647(entity2, entity3);
+					this.tickPassenger(entity2, entity3);
 				}
 			}
 		}
 	}
 
-	public void method_18648(Entity entity) {
+	public void checkChunk(Entity entity) {
 		this.getProfiler().push("chunkCheck");
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.y / 16.0);
@@ -212,8 +210,8 @@ public class ClientWorld extends World {
 		this.getProfiler().pop();
 	}
 
-	public void method_18110(WorldChunk worldChunk) {
-		this.field_18139.addAll(worldChunk.getBlockEntityMap().values());
+	public void unloadBlockEntities(WorldChunk worldChunk) {
+		this.unloadedBlockEntities.addAll(worldChunk.getBlockEntities().values());
 	}
 
 	@Override
@@ -221,90 +219,67 @@ public class ClientWorld extends World {
 		return true;
 	}
 
-	private void method_2939() {
-		int i = this.client.options.viewDistance;
-		int j = MathHelper.floor(this.client.player.x / 16.0);
-		int k = MathHelper.floor(this.client.player.z / 16.0);
-		if (this.ticksSinceLightingClient > 0) {
-			this.ticksSinceLightingClient--;
-		} else {
-			for (int l = 0; l < 10; l++) {
-				int m = j + this.field_3732;
-				int n = k + this.field_3731;
-				int o = m * 16;
-				int p = n * 16;
-				this.field_3731++;
-				if (this.field_3731 >= i) {
-					this.field_3731 = -i;
-					this.field_3732++;
-					if (this.field_3732 >= i) {
-						this.field_3732 = -i;
-					}
-				}
-
-				WorldChunk worldChunk = this.method_8497(m, n);
-				this.lcgBlockSeed = this.lcgBlockSeed * 3 + 1013904223;
-				int q = this.lcgBlockSeed >> 2;
-				int r = q & 15;
-				int s = q >> 8 & 15;
-				int t = q >> 16 & 0xFF;
-				double d = this.client.player.squaredDistanceTo((double)r + 0.5, (double)t + 0.5, (double)s + 0.5);
-				if (this.client.player != null && d > 4.0 && d < 256.0) {
-					BlockPos blockPos = new BlockPos(r + o, t, s + p);
-					BlockState blockState = worldChunk.getBlockState(blockPos);
-					r += o;
-					s += p;
-					if (blockState.isAir() && this.getLightLevel(blockPos, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos) <= 0) {
+	private void tickCaveAmbientSound() {
+		if (this.client.player != null) {
+			if (this.ticksUntilCaveAmbientSound > 0) {
+				this.ticksUntilCaveAmbientSound--;
+			} else {
+				BlockPos blockPos = new BlockPos(this.client.player);
+				BlockPos blockPos2 = blockPos.add(4 * (this.random.nextInt(3) - 1), 4 * (this.random.nextInt(3) - 1), 4 * (this.random.nextInt(3) - 1));
+				double d = blockPos.getSquaredDistance(blockPos2);
+				if (d >= 4.0 && d <= 256.0) {
+					BlockState blockState = this.getBlockState(blockPos2);
+					if (blockState.isAir() && this.getLightLevel(blockPos2, 0) <= this.random.nextInt(8) && this.getLightLevel(LightType.SKY, blockPos2) <= 0) {
 						this.playSound(
-							(double)r + 0.5,
-							(double)t + 0.5,
-							(double)s + 0.5,
+							(double)blockPos2.getX() + 0.5,
+							(double)blockPos2.getY() + 0.5,
+							(double)blockPos2.getZ() + 0.5,
 							SoundEvents.field_14564,
 							SoundCategory.field_15256,
 							0.7F,
 							0.8F + this.random.nextFloat() * 0.2F,
 							false
 						);
-						this.ticksSinceLightingClient = this.random.nextInt(12000) + 6000;
+						this.ticksUntilCaveAmbientSound = this.random.nextInt(12000) + 6000;
 					}
 				}
 			}
 		}
 	}
 
-	public int method_18120() {
+	public int getRegularEntityCount() {
 		return this.regularEntities.size();
 	}
 
-	public void method_18108(LightningEntity lightningEntity) {
+	public void addLightning(LightningEntity lightningEntity) {
 		this.globalEntities.add(lightningEntity);
 	}
 
-	public void method_18107(int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
-		this.method_18114(i, abstractClientPlayerEntity);
+	public void addPlayer(int i, AbstractClientPlayerEntity abstractClientPlayerEntity) {
+		this.addEntityPrivate(i, abstractClientPlayerEntity);
 		this.players.add(abstractClientPlayerEntity);
 	}
 
-	public void method_2942(int i, Entity entity) {
-		this.method_18114(i, entity);
+	public void addEntity(int i, Entity entity) {
+		this.addEntityPrivate(i, entity);
 	}
 
-	private void method_18114(int i, Entity entity) {
-		this.method_2945(i);
+	private void addEntityPrivate(int i, Entity entity) {
+		this.removeEntity(i);
 		this.regularEntities.put(i, entity);
 		this.method_2935().method_2857(MathHelper.floor(entity.x / 16.0), MathHelper.floor(entity.z / 16.0), ChunkStatus.FULL, true).addEntity(entity);
 	}
 
-	public void method_2945(int i) {
+	public void removeEntity(int i) {
 		Entity entity = this.regularEntities.remove(i);
 		if (entity != null) {
-			entity.invalidate();
-			this.method_18117(entity);
+			entity.remove();
+			this.finishRemovingEntity(entity);
 		}
 	}
 
-	private void method_18117(Entity entity) {
-		entity.method_18375();
+	private void finishRemovingEntity(Entity entity) {
+		entity.detach();
 		if (entity.field_6016) {
 			this.method_8497(entity.chunkX, entity.chunkZ).remove(entity);
 		}
@@ -312,7 +287,7 @@ public class ClientWorld extends World {
 		this.players.remove(entity);
 	}
 
-	public void method_18115(WorldChunk worldChunk) {
+	public void addEntitiesToChunk(WorldChunk worldChunk) {
 		for (Entry<Entity> entry : this.regularEntities.int2ObjectEntrySet()) {
 			Entity entity = (Entity)entry.getValue();
 			int i = MathHelper.floor(entity.x / 16.0);
@@ -329,7 +304,7 @@ public class ClientWorld extends World {
 		return this.regularEntities.get(i);
 	}
 
-	public void method_2937(BlockPos blockPos, BlockState blockState) {
+	public void setBlockStateWithoutNeighborUpdates(BlockPos blockPos, BlockState blockState) {
 		this.setBlockState(blockPos, blockState, 19);
 	}
 
@@ -365,9 +340,9 @@ public class ClientWorld extends World {
 			fluidState.randomDisplayTick(this, mutable, random);
 			ParticleParameters particleParameters = fluidState.getParticle();
 			if (particleParameters != null && this.random.nextInt(10) == 0) {
-				boolean bl2 = Block.isFaceFullSquare(blockState.getCollisionShape(this, mutable), Direction.DOWN);
+				boolean bl2 = Block.isSolidFullSquare(blockState, this, mutable, Direction.DOWN);
 				BlockPos blockPos = mutable.down();
-				this.method_2938(blockPos, this.getBlockState(blockPos), particleParameters, bl2);
+				this.addParticle(blockPos, this.getBlockState(blockPos), particleParameters, bl2);
 			}
 		}
 
@@ -376,13 +351,13 @@ public class ClientWorld extends World {
 		}
 	}
 
-	private void method_2938(BlockPos blockPos, BlockState blockState, ParticleParameters particleParameters, boolean bl) {
+	private void addParticle(BlockPos blockPos, BlockState blockState, ParticleParameters particleParameters, boolean bl) {
 		if (blockState.getFluidState().isEmpty()) {
 			VoxelShape voxelShape = blockState.getCollisionShape(this, blockPos);
 			double d = voxelShape.getMaximum(Direction.Axis.Y);
 			if (d < 1.0) {
 				if (bl) {
-					this.method_2932(
+					this.addParticle(
 						(double)blockPos.getX(),
 						(double)(blockPos.getX() + 1),
 						(double)blockPos.getZ(),
@@ -394,22 +369,22 @@ public class ClientWorld extends World {
 			} else if (!blockState.matches(BlockTags.field_15490)) {
 				double e = voxelShape.getMinimum(Direction.Axis.Y);
 				if (e > 0.0) {
-					this.method_2948(blockPos, particleParameters, voxelShape, (double)blockPos.getY() + e - 0.05);
+					this.addParticle(blockPos, particleParameters, voxelShape, (double)blockPos.getY() + e - 0.05);
 				} else {
 					BlockPos blockPos2 = blockPos.down();
 					BlockState blockState2 = this.getBlockState(blockPos2);
 					VoxelShape voxelShape2 = blockState2.getCollisionShape(this, blockPos2);
 					double f = voxelShape2.getMaximum(Direction.Axis.Y);
 					if (f < 1.0 && blockState2.getFluidState().isEmpty()) {
-						this.method_2948(blockPos, particleParameters, voxelShape, (double)blockPos.getY() - 0.05);
+						this.addParticle(blockPos, particleParameters, voxelShape, (double)blockPos.getY() - 0.05);
 					}
 				}
 			}
 		}
 	}
 
-	private void method_2948(BlockPos blockPos, ParticleParameters particleParameters, VoxelShape voxelShape, double d) {
-		this.method_2932(
+	private void addParticle(BlockPos blockPos, ParticleParameters particleParameters, VoxelShape voxelShape, double d) {
+		this.addParticle(
 			(double)blockPos.getX() + voxelShape.getMinimum(Direction.Axis.X),
 			(double)blockPos.getX() + voxelShape.getMaximum(Direction.Axis.X),
 			(double)blockPos.getZ() + voxelShape.getMinimum(Direction.Axis.Z),
@@ -419,19 +394,19 @@ public class ClientWorld extends World {
 		);
 	}
 
-	private void method_2932(double d, double e, double f, double g, double h, ParticleParameters particleParameters) {
+	private void addParticle(double d, double e, double f, double g, double h, ParticleParameters particleParameters) {
 		this.addParticle(particleParameters, MathHelper.lerp(this.random.nextDouble(), d, e), h, MathHelper.lerp(this.random.nextDouble(), f, g), 0.0, 0.0, 0.0);
 	}
 
-	public void method_2936() {
+	public void finishRemovingEntities() {
 		ObjectIterator<Entry<Entity>> objectIterator = this.regularEntities.int2ObjectEntrySet().iterator();
 
 		while (objectIterator.hasNext()) {
 			Entry<Entity> entry = (Entry<Entity>)objectIterator.next();
 			Entity entity = (Entity)entry.getValue();
-			if (entity.invalid) {
+			if (entity.removed) {
 				objectIterator.remove();
-				this.method_18117(entity);
+				this.finishRemovingEntity(entity);
 			}
 		}
 	}
@@ -478,7 +453,7 @@ public class ClientWorld extends World {
 
 	@Override
 	public void addFireworkParticle(double d, double e, double f, double g, double h, double i, @Nullable CompoundTag compoundTag) {
-		this.client.particleManager.addParticle(new FireworksSparkParticle.create(this, d, e, f, g, h, i, this.client.particleManager, compoundTag));
+		this.client.particleManager.addParticle(new FireworksSparkParticle.FireworkParticle(this, d, e, f, g, h, i, this.client.particleManager, compoundTag));
 	}
 
 	@Override
@@ -549,16 +524,16 @@ public class ClientWorld extends World {
 
 	@Override
 	public void updateListeners(BlockPos blockPos, BlockState blockState, BlockState blockState2, int i) {
-		this.worldRenderer.method_8570(this, blockPos, blockState, blockState2, i);
+		this.worldRenderer.updateBlock(this, blockPos, blockState, blockState2, i);
 	}
 
 	@Override
 	public void scheduleBlockRender(BlockPos blockPos) {
-		this.worldRenderer.scheduleBlockRender(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
+		this.worldRenderer.scheduleBlockRenders(blockPos.getX(), blockPos.getY(), blockPos.getZ(), blockPos.getX(), blockPos.getY(), blockPos.getZ());
 	}
 
-	public void method_18113(int i, int j, int k) {
-		this.worldRenderer.method_18145(i, j, k);
+	public void scheduleBlockRenders(int i, int j, int k) {
+		this.worldRenderer.scheduleBlockRenders(i, j, k);
 	}
 
 	@Override
@@ -572,7 +547,7 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
+	public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 		try {
 			this.worldRenderer.playLevelEvent(playerEntity, i, blockPos, j);
 		} catch (Throwable var8) {

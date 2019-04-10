@@ -25,7 +25,7 @@ public class ThrownExperienceBottleEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	protected Item method_16942() {
+	protected Item getDefaultItem() {
 		return Items.field_8287;
 	}
 
@@ -37,7 +37,7 @@ public class ThrownExperienceBottleEntity extends ThrownItemEntity {
 	@Override
 	protected void onCollision(HitResult hitResult) {
 		if (!this.world.isClient) {
-			this.world.playEvent(2002, new BlockPos(this), PotionUtil.getColor(Potions.field_8991));
+			this.world.method_20290(2002, new BlockPos(this), PotionUtil.getColor(Potions.field_8991));
 			int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5);
 
 			while (i > 0) {
@@ -46,7 +46,7 @@ public class ThrownExperienceBottleEntity extends ThrownItemEntity {
 				this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.x, this.y, this.z, j));
 			}
 
-			this.invalidate();
+			this.remove();
 		}
 	}
 }

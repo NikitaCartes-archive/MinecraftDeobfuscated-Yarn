@@ -15,7 +15,7 @@ public interface Criterion<T extends CriterionConditions> {
 
 	void endTracking(PlayerAdvancementTracker playerAdvancementTracker);
 
-	T deserializeConditions(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
+	T conditionsFromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext);
 
 	public static class ConditionsContainer<T extends CriterionConditions> {
 		private final T conditions;

@@ -114,7 +114,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 			if (minecraftServer != null && minecraftServer.method_3814() && minecraftServer.areCommandBlocksEnabled() && !ChatUtil.isEmpty(this.command)) {
 				try {
 					this.lastOutput = null;
-					ServerCommandSource serverCommandSource = this.method_8303().withConsumer((commandContext, bl, i) -> {
+					ServerCommandSource serverCommandSource = this.markDirty().withConsumer((commandContext, bl, i) -> {
 						if (bl) {
 							this.successCount++;
 						}
@@ -187,7 +187,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	@Environment(EnvType.CLIENT)
 	public abstract Vec3d getPos();
 
-	public abstract ServerCommandSource method_8303();
+	public abstract ServerCommandSource markDirty();
 
 	@Override
 	public boolean sendCommandFeedback() {

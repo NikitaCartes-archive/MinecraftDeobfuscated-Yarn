@@ -41,7 +41,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 				ServerWorld serverWorld = (ServerWorld)world;
 
 				for (int i = 0; i < 2; i++) {
-					serverWorld.method_14199(
+					serverWorld.spawnParticles(
 						ParticleTypes.field_11202,
 						(double)((float)blockPos.getX() + world.random.nextFloat()),
 						(double)(blockPos.getY() + 1),
@@ -52,7 +52,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 						0.0,
 						1.0
 					);
-					serverWorld.method_14199(
+					serverWorld.spawnParticles(
 						ParticleTypes.field_11247,
 						(double)((float)blockPos.getX() + world.random.nextFloat()),
 						(double)(blockPos.getY() + 1),
@@ -71,7 +71,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		method_9657(world, blockPos.up(), method_9656(world, blockPos.down()));
 	}
 

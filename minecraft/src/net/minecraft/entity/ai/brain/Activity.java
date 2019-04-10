@@ -11,6 +11,9 @@ public class Activity {
 	public static final Activity field_18597 = register("rest");
 	public static final Activity field_18598 = register("meet");
 	public static final Activity field_18599 = register("panic");
+	public static final Activity field_19041 = register("raid");
+	public static final Activity field_19042 = register("pre_raid");
+	public static final Activity field_19043 = register("hide");
 	private final String id;
 
 	private Activity(String string) {

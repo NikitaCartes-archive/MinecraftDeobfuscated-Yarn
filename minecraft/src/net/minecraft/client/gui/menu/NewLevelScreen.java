@@ -57,73 +57,71 @@ public class NewLevelScreen extends Screen {
 	}
 
 	@Override
-	public void update() {
+	public void tick() {
 		this.textFieldLevelName.tick();
 		this.textFieldSeed.tick();
 	}
 
 	@Override
-	protected void onInitialized() {
-		this.client.keyboard.enableRepeatEvents(true);
-		this.textFieldLevelName = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 60, 200, 20);
+	protected void init() {
+		this.minecraft.keyboard.enableRepeatEvents(true);
+		this.textFieldLevelName = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20);
 		this.textFieldLevelName.setText(this.levelName);
 		this.textFieldLevelName.setChangedListener(string -> {
 			this.levelName = string;
 			this.buttonCreateLevel.active = !this.textFieldLevelName.getText().isEmpty();
 			this.method_2727();
 		});
-		this.listeners.add(this.textFieldLevelName);
-		this.buttonGameModeSwitch = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 75, 115, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
-				if ("survival".equals(this.gameMode)) {
-					if (!this.field_3179) {
-						this.commandsAllowed = false;
-					}
-
-					this.field_3178 = false;
-					this.gameMode = "hardcore";
-					this.field_3178 = true;
-					this.buttonCommandsAllowed.active = false;
-					this.buttonGenerateBonusItems.active = false;
-					this.method_2722();
-				} else if ("hardcore".equals(this.gameMode)) {
-					if (!this.field_3179) {
-						this.commandsAllowed = true;
-					}
-
-					this.field_3178 = false;
-					this.gameMode = "creative";
-					this.method_2722();
-					this.field_3178 = false;
-					this.buttonCommandsAllowed.active = true;
-					this.buttonGenerateBonusItems.active = true;
-				} else {
-					if (!this.field_3179) {
-						this.commandsAllowed = false;
-					}
-
-					this.gameMode = "survival";
-					this.method_2722();
-					this.buttonCommandsAllowed.active = true;
-					this.buttonGenerateBonusItems.active = true;
-					this.field_3178 = false;
+		this.children.add(this.textFieldLevelName);
+		this.buttonGameModeSwitch = this.addButton(new ButtonWidget(this.width / 2 - 75, 115, 150, 20, I18n.translate("selectWorld.gameMode"), buttonWidget -> {
+			if ("survival".equals(this.gameMode)) {
+				if (!this.field_3179) {
+					this.commandsAllowed = false;
 				}
 
+				this.field_3178 = false;
+				this.gameMode = "hardcore";
+				this.field_3178 = true;
+				this.buttonCommandsAllowed.active = false;
+				this.buttonGenerateBonusItems.active = false;
 				this.method_2722();
-			})
-		);
-		this.textFieldSeed = new TextFieldWidget(this.fontRenderer, this.screenWidth / 2 - 100, 60, 200, 20);
+			} else if ("hardcore".equals(this.gameMode)) {
+				if (!this.field_3179) {
+					this.commandsAllowed = true;
+				}
+
+				this.field_3178 = false;
+				this.gameMode = "creative";
+				this.method_2722();
+				this.field_3178 = false;
+				this.buttonCommandsAllowed.active = true;
+				this.buttonGenerateBonusItems.active = true;
+			} else {
+				if (!this.field_3179) {
+					this.commandsAllowed = false;
+				}
+
+				this.gameMode = "survival";
+				this.method_2722();
+				this.buttonCommandsAllowed.active = true;
+				this.buttonGenerateBonusItems.active = true;
+				this.field_3178 = false;
+			}
+
+			this.method_2722();
+		}));
+		this.textFieldSeed = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20);
 		this.textFieldSeed.setText(this.seed);
 		this.textFieldSeed.setChangedListener(string -> this.seed = this.textFieldSeed.getText());
-		this.listeners.add(this.textFieldSeed);
+		this.children.add(this.textFieldSeed);
 		this.buttonGenerateStructures = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.mapFeatures"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 - 155, 100, 150, 20, I18n.translate("selectWorld.mapFeatures"), buttonWidget -> {
 				this.structures = !this.structures;
 				this.method_2722();
 			})
 		);
 		this.buttonGenerateStructures.visible = false;
-		this.buttonMapTypeSwitch = this.addButton(new ButtonWidget(this.screenWidth / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.mapType"), buttonWidget -> {
+		this.buttonMapTypeSwitch = this.addButton(new ButtonWidget(this.width / 2 + 5, 100, 150, 20, I18n.translate("selectWorld.mapType"), buttonWidget -> {
 			this.generatorType++;
 			if (this.generatorType >= LevelGeneratorType.TYPES.length) {
 				this.generatorType = 0;
@@ -141,46 +139,40 @@ public class NewLevelScreen extends Screen {
 			this.method_2710(this.field_3202);
 		}));
 		this.buttonMapTypeSwitch.visible = false;
-		this.buttonCustomizeType = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType"), buttonWidget -> {
-				if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.FLAT) {
-					this.client.openScreen(new CustomizeFlatLevelScreen(this, this.field_18979));
-				}
+		this.buttonCustomizeType = this.addButton(new ButtonWidget(this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType"), buttonWidget -> {
+			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.FLAT) {
+				this.minecraft.openScreen(new CustomizeFlatLevelScreen(this, this.field_18979));
+			}
 
-				if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.BUFFET) {
-					this.client.openScreen(new CustomizeBuffetLevelScreen(this, this.field_18979));
-				}
-			})
-		);
+			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.BUFFET) {
+				this.minecraft.openScreen(new CustomizeBuffetLevelScreen(this, this.field_18979));
+			}
+		}));
 		this.buttonCustomizeType.visible = false;
 		this.buttonCommandsAllowed = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 155, 151, 150, 20, I18n.translate("selectWorld.allowCommands"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 - 155, 151, 150, 20, I18n.translate("selectWorld.allowCommands"), buttonWidget -> {
 				this.field_3179 = true;
 				this.commandsAllowed = !this.commandsAllowed;
 				this.method_2722();
 			})
 		);
 		this.buttonCommandsAllowed.visible = false;
-		this.buttonGenerateBonusItems = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 + 5, 151, 150, 20, I18n.translate("selectWorld.bonusItems"), buttonWidget -> {
-				this.enableBonusItems = !this.enableBonusItems;
-				this.method_2722();
-			})
-		);
+		this.buttonGenerateBonusItems = this.addButton(new ButtonWidget(this.width / 2 + 5, 151, 150, 20, I18n.translate("selectWorld.bonusItems"), buttonWidget -> {
+			this.enableBonusItems = !this.enableBonusItems;
+			this.method_2722();
+		}));
 		this.buttonGenerateBonusItems.visible = false;
 		this.buttonMoreOptions = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions"), buttonWidget -> this.method_2721())
+			new ButtonWidget(this.width / 2 - 75, 187, 150, 20, I18n.translate("selectWorld.moreWorldOptions"), buttonWidget -> this.method_2721())
 		);
 		this.buttonCreateLevel = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 155, this.screenHeight - 28, 150, 20, I18n.translate("selectWorld.create"), buttonWidget -> this.createLevel())
+			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("selectWorld.create"), buttonWidget -> this.createLevel())
 		);
 		this.addButton(
-			new ButtonWidget(
-				this.screenWidth / 2 + 5, this.screenHeight - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.client.openScreen(this.parent)
-			)
+			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 		this.method_2710(this.field_3202);
-		this.focusOn(this.textFieldLevelName);
+		this.method_20085(this.textFieldLevelName);
 		this.method_2727();
 		this.method_2722();
 	}
@@ -192,12 +184,12 @@ public class NewLevelScreen extends Screen {
 		}
 
 		try {
-			this.field_3196 = WorldNameProvider.transformWorldName(this.client.getLevelStorage().method_19636(), this.field_3196);
+			this.field_3196 = WorldNameProvider.transformWorldName(this.minecraft.getLevelStorage().method_19636(), this.field_3196, "");
 		} catch (Exception var4) {
 			this.field_3196 = "World";
 
 			try {
-				this.field_3196 = WorldNameProvider.transformWorldName(this.client.getLevelStorage().method_19636(), this.field_3196);
+				this.field_3196 = WorldNameProvider.transformWorldName(this.minecraft.getLevelStorage().method_19636(), this.field_3196, "");
 			} catch (Exception var3) {
 				throw new RuntimeException("Could not create save folder", var3);
 			}
@@ -218,12 +210,12 @@ public class NewLevelScreen extends Screen {
 	}
 
 	@Override
-	public void onClosed() {
-		this.client.keyboard.enableRepeatEvents(false);
+	public void removed() {
+		this.minecraft.keyboard.enableRepeatEvents(false);
 	}
 
 	private void createLevel() {
-		this.client.openScreen(null);
+		this.minecraft.openScreen(null);
 		if (!this.isCreatingLevel) {
 			this.isCreatingLevel = true;
 			long l = new Random().nextLong();
@@ -249,7 +241,7 @@ public class NewLevelScreen extends Screen {
 				levelInfo.enableCommands();
 			}
 
-			this.client.startIntegratedServer(this.field_3196, this.textFieldLevelName.getText().trim(), levelInfo);
+			this.minecraft.startIntegratedServer(this.field_3196, this.textFieldLevelName.getText().trim(), levelInfo);
 		}
 	}
 
@@ -258,7 +250,7 @@ public class NewLevelScreen extends Screen {
 		if (levelGeneratorType == null || !levelGeneratorType.isVisible()) {
 			return false;
 		} else {
-			return levelGeneratorType == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES ? isShiftPressed() : true;
+			return levelGeneratorType == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES ? hasShiftDown() : true;
 		}
 	}
 
@@ -307,23 +299,35 @@ public class NewLevelScreen extends Screen {
 	}
 
 	@Override
+	public boolean keyPressed(int i, int j, int k) {
+		if (super.keyPressed(i, j, k)) {
+			return true;
+		} else if (i != 257 && i != 335) {
+			return false;
+		} else {
+			this.createLevel();
+			return true;
+		}
+	}
+
+	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
-		this.drawStringCentered(this.fontRenderer, this.title.getFormattedText(), this.screenWidth / 2, 20, -1);
+		this.renderBackground();
+		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, -1);
 		if (this.field_3202) {
-			this.drawString(this.fontRenderer, I18n.translate("selectWorld.enterSeed"), this.screenWidth / 2 - 100, 47, -6250336);
-			this.drawString(this.fontRenderer, I18n.translate("selectWorld.seedInfo"), this.screenWidth / 2 - 100, 85, -6250336);
+			this.drawString(this.font, I18n.translate("selectWorld.enterSeed"), this.width / 2 - 100, 47, -6250336);
+			this.drawString(this.font, I18n.translate("selectWorld.seedInfo"), this.width / 2 - 100, 85, -6250336);
 			if (this.buttonGenerateStructures.visible) {
-				this.drawString(this.fontRenderer, I18n.translate("selectWorld.mapFeatures.info"), this.screenWidth / 2 - 150, 122, -6250336);
+				this.drawString(this.font, I18n.translate("selectWorld.mapFeatures.info"), this.width / 2 - 150, 122, -6250336);
 			}
 
 			if (this.buttonCommandsAllowed.visible) {
-				this.drawString(this.fontRenderer, I18n.translate("selectWorld.allowCommands.info"), this.screenWidth / 2 - 150, 172, -6250336);
+				this.drawString(this.font, I18n.translate("selectWorld.allowCommands.info"), this.width / 2 - 150, 172, -6250336);
 			}
 
 			this.textFieldSeed.render(i, j, f);
 			if (LevelGeneratorType.TYPES[this.generatorType].hasInfo()) {
-				this.fontRenderer
+				this.font
 					.drawStringBounded(
 						I18n.translate(LevelGeneratorType.TYPES[this.generatorType].getInfoTranslationKey()),
 						this.buttonMapTypeSwitch.x + 2,
@@ -333,11 +337,11 @@ public class NewLevelScreen extends Screen {
 					);
 			}
 		} else {
-			this.drawString(this.fontRenderer, I18n.translate("selectWorld.enterName"), this.screenWidth / 2 - 100, 47, -6250336);
-			this.drawString(this.fontRenderer, I18n.translate("selectWorld.resultFolder") + " " + this.field_3196, this.screenWidth / 2 - 100, 85, -6250336);
+			this.drawString(this.font, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 47, -6250336);
+			this.drawString(this.font, I18n.translate("selectWorld.resultFolder") + " " + this.field_3196, this.width / 2 - 100, 85, -6250336);
 			this.textFieldLevelName.render(i, j, f);
-			this.drawStringCentered(this.fontRenderer, this.field_3194, this.screenWidth / 2, 137, -6250336);
-			this.drawStringCentered(this.fontRenderer, this.field_3199, this.screenWidth / 2, 149, -6250336);
+			this.drawCenteredString(this.font, this.field_3194, this.width / 2, 137, -6250336);
+			this.drawCenteredString(this.font, this.field_3199, this.width / 2, 149, -6250336);
 		}
 
 		super.render(i, j, f);

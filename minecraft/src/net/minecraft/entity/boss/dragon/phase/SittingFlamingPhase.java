@@ -69,7 +69,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			this.field_7051.setRadius(5.0F);
 			this.field_7051.setDuration(200);
 			this.field_7051.setParticleType(ParticleTypes.field_11216);
-			this.field_7051.setPotionEffect(new StatusEffectInstance(StatusEffects.field_5921));
+			this.field_7051.addEffect(new StatusEffectInstance(StatusEffects.field_5921));
 			this.dragon.world.spawnEntity(this.field_7051);
 		}
 	}
@@ -83,7 +83,7 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 	@Override
 	public void endPhase() {
 		if (this.field_7051 != null) {
-			this.field_7051.invalidate();
+			this.field_7051.remove();
 			this.field_7051 = null;
 		}
 	}

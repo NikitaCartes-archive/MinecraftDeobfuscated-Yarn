@@ -8,13 +8,13 @@ import net.minecraft.text.TranslatableTextComponent;
 public class SayCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("say")
+			CommandManager.literal("say")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("message", MessageArgumentType.create())
+					CommandManager.argument("message", MessageArgumentType.create())
 						.executes(
 							commandContext -> {
-								TextComponent textComponent = MessageArgumentType.getMessageArgument(commandContext, "message");
+								TextComponent textComponent = MessageArgumentType.getMessage(commandContext, "message");
 								commandContext.getSource()
 									.getMinecraftServer()
 									.getPlayerManager()

@@ -12,9 +12,6 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
-import net.minecraft.particle.ParticleTypes;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.IntegerProperty;
 import net.minecraft.state.property.Properties;
@@ -96,7 +93,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (this.method_10316(world, blockPos, blockState)) {
 			world.getFluidTickScheduler().schedule(blockPos, blockState.getFluidState().getFluid(), this.getTickRate(world));
 		}
@@ -114,7 +111,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (this.method_10316(world, blockPos, blockState)) {
 			world.getFluidTickScheduler().schedule(blockPos, blockState.getFluidState().getFluid(), this.getTickRate(world));
 		}
@@ -150,17 +147,8 @@ public class FluidBlock extends Block implements FluidDrainable {
 		return true;
 	}
 
-	protected void method_10318(IWorld iWorld, BlockPos blockPos) {
-		double d = (double)blockPos.getX();
-		double e = (double)blockPos.getY();
-		double f = (double)blockPos.getZ();
-		iWorld.playSound(
-			null, blockPos, SoundEvents.field_15112, SoundCategory.field_15245, 0.5F, 2.6F + (iWorld.getRandom().nextFloat() - iWorld.getRandom().nextFloat()) * 0.8F
-		);
-
-		for (int i = 0; i < 8; i++) {
-			iWorld.addParticle(ParticleTypes.field_11237, d + Math.random(), e + 1.2, f + Math.random(), 0.0, 0.0, 0.0);
-		}
+	private void method_10318(IWorld iWorld, BlockPos blockPos) {
+		iWorld.method_20290(1501, blockPos, 0);
 	}
 
 	@Override

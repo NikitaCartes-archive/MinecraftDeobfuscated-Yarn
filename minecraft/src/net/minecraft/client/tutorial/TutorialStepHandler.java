@@ -17,13 +17,13 @@ public interface TutorialStepHandler {
 	default void tick() {
 	}
 
-	default void method_4903(Input input) {
+	default void onMovement(Input input) {
 	}
 
-	default void method_4901(double d, double e) {
+	default void onMouseUpdate(double d, double e) {
 	}
 
-	default void method_4898(ClientWorld clientWorld, HitResult hitResult) {
+	default void onTarget(ClientWorld clientWorld, HitResult hitResult) {
 	}
 
 	default void onBlockAttacked(ClientWorld clientWorld, BlockPos blockPos, BlockState blockState, float f) {

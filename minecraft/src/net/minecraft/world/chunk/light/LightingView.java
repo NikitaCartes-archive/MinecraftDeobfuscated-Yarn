@@ -4,9 +4,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 
 public interface LightingView {
-	default void scheduleChunkLightUpdate(BlockPos blockPos, boolean bl) {
-		this.scheduleChunkLightUpdate(ChunkSectionPos.from(blockPos), bl);
+	default void updateSectionStatus(BlockPos blockPos, boolean bl) {
+		this.updateSectionStatus(ChunkSectionPos.from(blockPos), bl);
 	}
 
-	void scheduleChunkLightUpdate(ChunkSectionPos chunkSectionPos, boolean bl);
+	void updateSectionStatus(ChunkSectionPos chunkSectionPos, boolean bl);
 }

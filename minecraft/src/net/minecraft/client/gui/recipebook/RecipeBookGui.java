@@ -13,7 +13,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.InputListener;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.RecipeBookGhostSlots;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -38,7 +38,7 @@ import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public class RecipeBookGui extends DrawableHelper implements Drawable, InputListener, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
+public class RecipeBookGui extends DrawableHelper implements Drawable, Element, RecipeDisplayListener, RecipeGridAligner<Ingredient> {
 	protected static final Identifier TEXTURE = new Identifier("textures/gui/recipe_book.png");
 	private int leftOffset;
 	private int parentWidth;
@@ -111,6 +111,11 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 		this.currentTab.setToggled(true);
 		this.refreshResults(false);
 		this.refreshTabButtons();
+	}
+
+	@Override
+	public boolean changeFocus(boolean bl) {
+		return false;
 	}
 
 	protected void setBookButtonTexture() {
@@ -230,7 +235,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			int k = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int l = (this.parentHeight - 166) / 2;
-			this.drawTexturedRect(k, l, 1, 1, 147, 166);
+			this.blit(k, l, 1, 1, 147, 166);
 			this.searchField.render(i, j, f);
 			GuiLighting.disable();
 
@@ -250,7 +255,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			if (this.toggleCraftableButton.isHovered()) {
 				String string = this.getCraftableButtonText();
 				if (this.client.currentScreen != null) {
-					this.client.currentScreen.drawTooltip(string, k, l);
+					this.client.currentScreen.renderTooltip(string, k, l);
 				}
 			}
 
@@ -275,7 +280,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 		}
 
 		if (itemStack != null && this.client.currentScreen != null) {
-			this.client.currentScreen.drawTooltip(this.client.currentScreen.getStackTooltip(itemStack), k, l);
+			this.client.currentScreen.renderTooltip(this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
 		}
 	}
 
@@ -295,7 +300,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 					}
 
 					this.ghostSlots.reset();
-					this.client.interactionManager.clickRecipe(this.client.player.container.syncId, recipe, Screen.isShiftPressed());
+					this.client.interactionManager.clickRecipe(this.client.player.container.syncId, recipe, Screen.hasShiftDown());
 					if (!this.isWide()) {
 						this.setOpen(false);
 					}
@@ -372,7 +377,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 	@Override
 	public boolean keyReleased(int i, int j, int k) {
 		this.field_3087 = false;
-		return InputListener.super.keyReleased(i, j, k);
+		return Element.super.keyReleased(i, j, k);
 	}
 
 	@Override
@@ -385,7 +390,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 			this.refreshSearchResults();
 			return true;
 		} else {
-			return InputListener.super.charTyped(c, i);
+			return Element.super.charTyped(c, i);
 		}
 	}
 
@@ -406,7 +411,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, InputList
 	private void triggerPirateSpeakEasterEgg(String string) {
 		if ("excitedze".equals(string)) {
 			LanguageManager languageManager = this.client.getLanguageManager();
-			LanguageDefinition languageDefinition = languageManager.method_4668("en_pt");
+			LanguageDefinition languageDefinition = languageManager.getLanguage("en_pt");
 			if (languageManager.getLanguage().method_4673(languageDefinition) == 0) {
 				return;
 			}

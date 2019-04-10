@@ -110,7 +110,7 @@ public class DebugHud extends DrawableHelper {
 				int k = this.fontRenderer.getStringWidth(string);
 				int l = 2;
 				int m = 2 + j * i;
-				drawRect(1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
+				fill(1, m - 1, 2 + k + 1, m + j - 1, -1873784752);
 				this.fontRenderer.draw(string, 2.0F, (float)m, 14737632);
 			}
 		}
@@ -126,7 +126,7 @@ public class DebugHud extends DrawableHelper {
 				int k = this.fontRenderer.getStringWidth(string);
 				int l = this.client.window.getScaledWidth() - 2 - k;
 				int m = 2 + j * i;
-				drawRect(l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
+				fill(l - 1, m - 1, l + k + 1, m + j - 1, -1873784752);
 				this.fontRenderer.draw(string, (float)l, (float)m, 14737632);
 			}
 		}
@@ -152,7 +152,7 @@ public class DebugHud extends DrawableHelper {
 				string,
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
-				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.method_18120(),
+				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
 				this.client.world.getChunkProviderStatus(),
 				"",
 				String.format("Chunk-relative: %d %d %d", blockPos.getX() & 15, blockPos.getY() & 15, blockPos.getZ() & 15)
@@ -199,7 +199,7 @@ public class DebugHud extends DrawableHelper {
 				string,
 				this.client.worldRenderer.getChunksDebugString(),
 				this.client.worldRenderer.getEntitiesDebugString(),
-				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.method_18120(),
+				"P: " + this.client.particleManager.getDebugString() + ". T: " + this.client.world.getRegularEntityCount(),
 				this.client.world.getChunkProviderStatus(),
 				DimensionType.getId(this.client.world.dimension.getType()).toString() + " FC: " + Integer.toString(longSet.size()),
 				"",
@@ -254,7 +254,7 @@ public class DebugHud extends DrawableHelper {
 							long l = 0L;
 							float h = 0.0F;
 							if (worldChunk2 != null) {
-								h = world.method_8391();
+								h = world.getMoonSize();
 								l = worldChunk2.getInhabitedTime();
 							}
 
@@ -277,7 +277,7 @@ public class DebugHud extends DrawableHelper {
 				list.add("Outside of world...");
 			}
 
-			if (this.client.gameRenderer != null && this.client.gameRenderer.method_3175()) {
+			if (this.client.gameRenderer != null && this.client.gameRenderer.isShaderEnabled()) {
 				list.add("Shader: " + this.client.gameRenderer.getShader().getName());
 			}
 
@@ -291,6 +291,7 @@ public class DebugHud extends DrawableHelper {
 				list.add(String.format("Looking at liquid: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
 			}
 
+			list.add(this.client.getSoundManager().method_20305());
 			return list;
 		}
 	}
@@ -308,7 +309,7 @@ public class DebugHud extends DrawableHelper {
 			if (integratedServer != null) {
 				ServerWorld serverWorld = integratedServer.getWorld(this.client.world.dimension.getType());
 				if (serverWorld != null) {
-					this.chunkFuture = serverWorld.getChunkSyncIfServerThread(this.pos.x, this.pos.z, false);
+					this.chunkFuture = serverWorld.getChunkFutureSyncOnMainThread(this.pos.x, this.pos.z, false);
 				}
 			}
 
@@ -429,35 +430,35 @@ public class DebugHud extends DrawableHelper {
 		}
 
 		int t = this.client.window.getScaledHeight();
-		drawRect(i, t - 60, i + p, t, -1873784752);
+		fill(i, t - 60, i + p, t, -1873784752);
 
 		while (m != l) {
 			int u = metricsData.method_15248(ls[m], bl ? 30 : 60, bl ? 60 : 20);
 			int v = bl ? 100 : 60;
 			int w = this.method_1833(MathHelper.clamp(u, 0, v), 0, v / 2, v);
-			this.drawVerticalLine(n, t, t - u, w);
+			this.vLine(n, t, t - u, w);
 			n++;
 			m = metricsData.wrapIndex(m + 1);
 		}
 
 		if (bl) {
-			drawRect(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
+			fill(i + 1, t - 30 + 1, i + 14, t - 30 + 10, -1873784752);
 			this.fontRenderer.draw("60 FPS", (float)(i + 2), (float)(t - 30 + 2), 14737632);
-			this.drawHorizontalLine(i, i + p - 1, t - 30, -1);
-			drawRect(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+			this.hLine(i, i + p - 1, t - 30, -1);
+			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
 			this.fontRenderer.draw("30 FPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
-			this.drawHorizontalLine(i, i + p - 1, t - 60, -1);
+			this.hLine(i, i + p - 1, t - 60, -1);
 		} else {
-			drawRect(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
+			fill(i + 1, t - 60 + 1, i + 14, t - 60 + 10, -1873784752);
 			this.fontRenderer.draw("20 TPS", (float)(i + 2), (float)(t - 60 + 2), 14737632);
-			this.drawHorizontalLine(i, i + p - 1, t - 60, -1);
+			this.hLine(i, i + p - 1, t - 60, -1);
 		}
 
-		this.drawHorizontalLine(i, i + p - 1, t - 1, -1);
-		this.drawVerticalLine(i, t - 60, t, -1);
-		this.drawVerticalLine(i + p - 1, t - 60, t, -1);
+		this.hLine(i, i + p - 1, t - 1, -1);
+		this.vLine(i, t - 60, t, -1);
+		this.vLine(i + p - 1, t - 60, t, -1);
 		if (bl && this.client.options.maxFps > 0 && this.client.options.maxFps <= 250) {
-			this.drawHorizontalLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
+			this.hLine(i, i + p - 1, t - 1 - (int)(1800.0 / (double)this.client.options.maxFps), -16711681);
 		}
 
 		String string = r + " ms min";

@@ -6,7 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
-import com.mojang.datafixers.DataFixTypes;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,6 +28,7 @@ import net.minecraft.client.resource.ClientResourcePackContainer;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.VideoMode;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resource.ResourcePackContainerManager;
 import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
@@ -70,7 +70,7 @@ public class GameOptions {
 	public List<String> incompatibleResourcePacks = Lists.<String>newArrayList();
 	public ChatVisibility chatVisibility = ChatVisibility.FULL;
 	public double chatOpacity = 1.0;
-	public double field_18726 = 0.5;
+	public double textBackgroundOpacity = 0.5;
 	@Nullable
 	public String fullscreenResolution;
 	public boolean hideServerAddress;
@@ -106,7 +106,7 @@ public class GameOptions {
 	public boolean reducedDebugInfo;
 	public boolean snooperEnabled = true;
 	public boolean showSubtitles;
-	public boolean field_18725 = true;
+	public boolean backgroundForChatOnly = true;
 	public boolean touchscreen;
 	public boolean fullscreen;
 	public boolean bobView = true;
@@ -175,7 +175,7 @@ public class GameOptions {
 		this.keysHotbar
 	);
 	protected MinecraftClient client;
-	private File optionsFile;
+	private final File optionsFile;
 	public Difficulty difficulty = Difficulty.NORMAL;
 	public boolean hudHidden;
 	public int perspective;
@@ -195,25 +195,25 @@ public class GameOptions {
 		this.client = minecraftClient;
 		this.optionsFile = new File(file, "options.txt");
 		if (minecraftClient.is64Bit() && Runtime.getRuntime().maxMemory() >= 1000000000L) {
-			GameOption.RENDER_DISTANCE.method_18612(32.0F);
+			GameOption.RENDER_DISTANCE.setMax(32.0F);
 		} else {
-			GameOption.RENDER_DISTANCE.method_18612(16.0F);
+			GameOption.RENDER_DISTANCE.setMax(16.0F);
 		}
 
 		this.viewDistance = minecraftClient.is64Bit() ? 12 : 8;
 		this.load();
 	}
 
-	public float method_19343(float f) {
-		return this.field_18725 ? f : (float)this.field_18726;
+	public float getTextBackgroundOpacity(float f) {
+		return this.backgroundForChatOnly ? f : (float)this.textBackgroundOpacity;
 	}
 
-	public int method_19345(float f) {
-		return (int)(this.method_19343(f) * 255.0F) << 24 & 0xFF000000;
+	public int getTextBackgroundColor(float f) {
+		return (int)(this.getTextBackgroundOpacity(f) * 255.0F) << 24 & 0xFF000000;
 	}
 
-	public int method_19344(int i) {
-		return this.field_18725 ? i : (int)(this.field_18726 * 255.0) << 24 & 0xFF000000;
+	public int getTextBackgroundColor(int i) {
+		return this.backgroundForChatOnly ? i : (int)(this.textBackgroundOpacity * 255.0) << 24 & 0xFF000000;
 	}
 
 	public void setKeyCode(KeyBinding keyBinding, InputUtil.KeyCode keyCode) {
@@ -247,67 +247,67 @@ public class GameOptions {
 
 				try {
 					if ("autoJump".equals(string)) {
-						GameOption.AUTO_JUMP.method_18492(this, string2);
+						GameOption.AUTO_JUMP.set(this, string2);
 					}
 
 					if ("autoSuggestions".equals(string)) {
-						GameOption.AUTO_SUGGESTIONS.method_18492(this, string2);
+						GameOption.AUTO_SUGGESTIONS.set(this, string2);
 					}
 
 					if ("chatColors".equals(string)) {
-						GameOption.CHAT_COLOR.method_18492(this, string2);
+						GameOption.CHAT_COLOR.set(this, string2);
 					}
 
 					if ("chatLinks".equals(string)) {
-						GameOption.CHAT_LINKS.method_18492(this, string2);
+						GameOption.CHAT_LINKS.set(this, string2);
 					}
 
 					if ("chatLinksPrompt".equals(string)) {
-						GameOption.CHAT_LINKS_PROMPT.method_18492(this, string2);
+						GameOption.CHAT_LINKS_PROMPT.set(this, string2);
 					}
 
 					if ("enableVsync".equals(string)) {
-						GameOption.VSYNC.method_18492(this, string2);
+						GameOption.VSYNC.set(this, string2);
 					}
 
 					if ("entityShadows".equals(string)) {
-						GameOption.ENTITY_SHADOWS.method_18492(this, string2);
+						GameOption.ENTITY_SHADOWS.set(this, string2);
 					}
 
 					if ("forceUnicodeFont".equals(string)) {
-						GameOption.FORCE_UNICODE_FONT.method_18492(this, string2);
+						GameOption.FORCE_UNICODE_FONT.set(this, string2);
 					}
 
 					if ("invertYMouse".equals(string)) {
-						GameOption.INVERT_MOUSE.method_18492(this, string2);
+						GameOption.INVERT_MOUSE.set(this, string2);
 					}
 
 					if ("realmsNotifications".equals(string)) {
-						GameOption.REALMS_NOTIFICATIONS.method_18492(this, string2);
+						GameOption.REALMS_NOTIFICATIONS.set(this, string2);
 					}
 
 					if ("reducedDebugInfo".equals(string)) {
-						GameOption.REDUCED_DEBUG_INFO.method_18492(this, string2);
+						GameOption.REDUCED_DEBUG_INFO.set(this, string2);
 					}
 
 					if ("showSubtitles".equals(string)) {
-						GameOption.SUBTITLES.method_18492(this, string2);
+						GameOption.SUBTITLES.set(this, string2);
 					}
 
 					if ("snooperEnabled".equals(string)) {
-						GameOption.SNOOPER.method_18492(this, string2);
+						GameOption.SNOOPER.set(this, string2);
 					}
 
 					if ("touchscreen".equals(string)) {
-						GameOption.TOUCHSCREEN.method_18492(this, string2);
+						GameOption.TOUCHSCREEN.set(this, string2);
 					}
 
 					if ("fullscreen".equals(string)) {
-						GameOption.FULLSCREEN.method_18492(this, string2);
+						GameOption.FULLSCREEN.set(this, string2);
 					}
 
 					if ("bobView".equals(string)) {
-						GameOption.VIEW_BOBBING.method_18492(this, string2);
+						GameOption.VIEW_BOBBING.set(this, string2);
 					}
 
 					if ("mouseSensitivity".equals(string)) {
@@ -336,7 +336,9 @@ public class GameOptions {
 
 					if ("maxFps".equals(string)) {
 						this.maxFps = Integer.parseInt(string2);
-						this.client.window.setFramerateLimit(this.maxFps);
+						if (this.client.window != null) {
+							this.client.window.setFramerateLimit(this.maxFps);
+						}
 					}
 
 					if ("difficulty".equals(string)) {
@@ -406,11 +408,11 @@ public class GameOptions {
 					}
 
 					if ("textBackgroundOpacity".equals(string)) {
-						this.field_18726 = (double)parseFloat(string2);
+						this.textBackgroundOpacity = (double)parseFloat(string2);
 					}
 
 					if ("backgroundForChatOnly".equals(string)) {
-						this.field_18725 = "true".equals(string2);
+						this.backgroundForChatOnly = "true".equals(string2);
 					}
 
 					if ("fullscreenResolution".equals(string)) {
@@ -521,7 +523,7 @@ public class GameOptions {
 		} catch (RuntimeException var4) {
 		}
 
-		return TagHelper.update(this.client.getDataFixer(), DataFixTypes.OPTIONS, compoundTag, i);
+		return TagHelper.update(this.client.getDataFixer(), DataFixTypes.field_19216, compoundTag, i);
 	}
 
 	private static float parseFloat(String string) {
@@ -539,22 +541,22 @@ public class GameOptions {
 
 			try {
 				printWriter.println("version:" + SharedConstants.getGameVersion().getWorldVersion());
-				printWriter.println("autoJump:" + GameOption.AUTO_JUMP.method_18494(this));
-				printWriter.println("autoSuggestions:" + GameOption.AUTO_SUGGESTIONS.method_18494(this));
-				printWriter.println("chatColors:" + GameOption.CHAT_COLOR.method_18494(this));
-				printWriter.println("chatLinks:" + GameOption.CHAT_LINKS.method_18494(this));
-				printWriter.println("chatLinksPrompt:" + GameOption.CHAT_LINKS_PROMPT.method_18494(this));
-				printWriter.println("enableVsync:" + GameOption.VSYNC.method_18494(this));
-				printWriter.println("entityShadows:" + GameOption.ENTITY_SHADOWS.method_18494(this));
-				printWriter.println("forceUnicodeFont:" + GameOption.FORCE_UNICODE_FONT.method_18494(this));
-				printWriter.println("invertYMouse:" + GameOption.INVERT_MOUSE.method_18494(this));
-				printWriter.println("realmsNotifications:" + GameOption.REALMS_NOTIFICATIONS.method_18494(this));
-				printWriter.println("reducedDebugInfo:" + GameOption.REDUCED_DEBUG_INFO.method_18494(this));
-				printWriter.println("snooperEnabled:" + GameOption.SNOOPER.method_18494(this));
-				printWriter.println("showSubtitles:" + GameOption.SUBTITLES.method_18494(this));
-				printWriter.println("touchscreen:" + GameOption.TOUCHSCREEN.method_18494(this));
-				printWriter.println("fullscreen:" + GameOption.FULLSCREEN.method_18494(this));
-				printWriter.println("bobView:" + GameOption.VIEW_BOBBING.method_18494(this));
+				printWriter.println("autoJump:" + GameOption.AUTO_JUMP.get(this));
+				printWriter.println("autoSuggestions:" + GameOption.AUTO_SUGGESTIONS.get(this));
+				printWriter.println("chatColors:" + GameOption.CHAT_COLOR.get(this));
+				printWriter.println("chatLinks:" + GameOption.CHAT_LINKS.get(this));
+				printWriter.println("chatLinksPrompt:" + GameOption.CHAT_LINKS_PROMPT.get(this));
+				printWriter.println("enableVsync:" + GameOption.VSYNC.get(this));
+				printWriter.println("entityShadows:" + GameOption.ENTITY_SHADOWS.get(this));
+				printWriter.println("forceUnicodeFont:" + GameOption.FORCE_UNICODE_FONT.get(this));
+				printWriter.println("invertYMouse:" + GameOption.INVERT_MOUSE.get(this));
+				printWriter.println("realmsNotifications:" + GameOption.REALMS_NOTIFICATIONS.get(this));
+				printWriter.println("reducedDebugInfo:" + GameOption.REDUCED_DEBUG_INFO.get(this));
+				printWriter.println("snooperEnabled:" + GameOption.SNOOPER.get(this));
+				printWriter.println("showSubtitles:" + GameOption.SUBTITLES.get(this));
+				printWriter.println("touchscreen:" + GameOption.TOUCHSCREEN.get(this));
+				printWriter.println("fullscreen:" + GameOption.FULLSCREEN.get(this));
+				printWriter.println("bobView:" + GameOption.VIEW_BOBBING.get(this));
 				printWriter.println("mouseSensitivity:" + this.mouseSensitivity);
 				printWriter.println("fov:" + (this.fov - 70.0) / 40.0);
 				printWriter.println("gamma:" + this.gamma);
@@ -583,8 +585,8 @@ public class GameOptions {
 				printWriter.println("lang:" + this.language);
 				printWriter.println("chatVisibility:" + this.chatVisibility.getId());
 				printWriter.println("chatOpacity:" + this.chatOpacity);
-				printWriter.println("textBackgroundOpacity:" + this.field_18726);
-				printWriter.println("backgroundForChatOnly:" + this.field_18725);
+				printWriter.println("textBackgroundOpacity:" + this.textBackgroundOpacity);
+				printWriter.println("backgroundForChatOnly:" + this.backgroundForChatOnly);
 				if (this.client.window.getVideoMode().isPresent()) {
 					printWriter.println("fullscreenResolution:" + ((VideoMode)this.client.window.getVideoMode().get()).asString());
 				}

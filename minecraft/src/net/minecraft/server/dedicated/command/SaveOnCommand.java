@@ -2,17 +2,17 @@ package net.minecraft.server.dedicated.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
-import net.minecraft.server.command.ServerCommandManager;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
 
 public class SaveOnCommand {
-	private static final SimpleCommandExceptionType field_13704 = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.save.alreadyOn"));
+	private static final SimpleCommandExceptionType ALREADY_ON_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.save.alreadyOn"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("save-on").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4)).executes(commandContext -> {
+			CommandManager.literal("save-on").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4)).executes(commandContext -> {
 				ServerCommandSource serverCommandSource = commandContext.getSource();
 				boolean bl = false;
 
@@ -24,7 +24,7 @@ public class SaveOnCommand {
 				}
 
 				if (!bl) {
-					throw field_13704.create();
+					throw ALREADY_ON_EXCEPTION.create();
 				} else {
 					serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.save.enabled"), true);
 					return 1;

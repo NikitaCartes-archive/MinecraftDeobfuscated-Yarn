@@ -31,7 +31,7 @@ public class FurnaceBlock extends AbstractFurnaceBlock {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof FurnaceBlockEntity) {
 			playerEntity.openContainer((NameableContainerProvider)blockEntity);
-			playerEntity.increaseStat(Stats.field_15379);
+			playerEntity.incrementStat(Stats.field_15379);
 		}
 	}
 

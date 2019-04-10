@@ -101,7 +101,7 @@ public class PistonHeadBlock extends FacingBlock {
 			BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
 			Block block = world.getBlockState(blockPos2).getBlock();
 			if (block == Blocks.field_10560 || block == Blocks.field_10615) {
-				world.clearBlockState(blockPos2);
+				world.clearBlockState(blockPos2, false);
 			}
 		}
 
@@ -117,7 +117,7 @@ public class PistonHeadBlock extends FacingBlock {
 			BlockState blockState3 = world.getBlockState(blockPos);
 			if ((blockState3.getBlock() == Blocks.field_10560 || blockState3.getBlock() == Blocks.field_10615) && (Boolean)blockState3.get(PistonBlock.EXTENDED)) {
 				dropStacks(blockState3, world, blockPos);
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 			}
 		}
 	}
@@ -138,10 +138,10 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (blockState.canPlaceAt(world, blockPos)) {
 			BlockPos blockPos3 = blockPos.offset(((Direction)blockState.get(FACING)).getOpposite());
-			world.getBlockState(blockPos3).neighborUpdate(world, blockPos3, block, blockPos2);
+			world.getBlockState(blockPos3).neighborUpdate(world, blockPos3, block, blockPos2, false);
 		}
 	}
 

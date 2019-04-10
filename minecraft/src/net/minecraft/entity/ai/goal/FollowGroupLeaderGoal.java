@@ -51,7 +51,7 @@ public class FollowGroupLeaderGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.owner.leaveGroup();
 	}
 

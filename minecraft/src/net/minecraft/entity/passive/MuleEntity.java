@@ -30,7 +30,7 @@ public class MuleEntity extends AbstractDonkeyEntity {
 	}
 
 	@Override
-	protected void method_6705() {
+	protected void playAddChestSound() {
 		this.playSound(SoundEvents.field_15063, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 }

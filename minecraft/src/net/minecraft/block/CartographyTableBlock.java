@@ -23,7 +23,7 @@ public class CartographyTableBlock extends Block {
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
-		playerEntity.increaseStat(Stats.field_15368);
+		playerEntity.incrementStat(Stats.field_15368);
 		return true;
 	}
 

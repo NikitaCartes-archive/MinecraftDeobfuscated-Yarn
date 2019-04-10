@@ -84,13 +84,13 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		BlockPos blockPos = this.getCamera().getBlockPos();
 
 		for (BlockPos blockPos2 : this.pointsOfInterest.keySet()) {
-			if (blockPos.method_19771(blockPos2, 160.0)) {
+			if (blockPos.isWithinDistance(blockPos2, 160.0)) {
 				method_19709(blockPos2);
 			}
 		}
 
 		for (ChunkSectionPos chunkSectionPos : this.field_18788) {
-			if (blockPos.method_19771(chunkSectionPos.method_19768(), 160.0)) {
+			if (blockPos.isWithinDistance(chunkSectionPos.getCenterPos(), 160.0)) {
 				method_19714(chunkSectionPos);
 			}
 		}
@@ -102,7 +102,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		for (PointOfInterestDebugRenderer.class_4233 lv2 : this.pointsOfInterest.values()) {
-			if (blockPos.method_19771(lv2.field_18931, 160.0)) {
+			if (blockPos.isWithinDistance(lv2.field_18931, 160.0)) {
 				this.method_19708(lv2);
 			}
 		}
@@ -110,7 +110,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 
 	private static void method_19714(ChunkSectionPos chunkSectionPos) {
 		float f = 1.0F;
-		BlockPos blockPos = chunkSectionPos.method_19768();
+		BlockPos blockPos = chunkSectionPos.getCenterPos();
 		BlockPos blockPos2 = blockPos.add(-1.0, -1.0, -1.0);
 		BlockPos blockPos3 = blockPos.add(1.0, 1.0, 1.0);
 		DebugRenderer.method_19697(blockPos2, blockPos3, 0.2F, 1.0F, 0.2F, 0.15F);
@@ -144,7 +144,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		if (this.method_19711(arg)) {
-			for (String string : arg.field_18929) {
+			for (String string : Lists.reverse(arg.field_18929)) {
 				method_19704(arg.field_18926, i, string, -3355444, 0.02F);
 				i++;
 			}
@@ -187,7 +187,7 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		PlayerEntity playerEntity = this.field_18786.player;
 		BlockPos blockPos = new BlockPos(playerEntity.x, 0.0, playerEntity.z);
 		BlockPos blockPos2 = new BlockPos(arg.field_18926);
-		return blockPos.method_19771(blockPos2, 160.0);
+		return blockPos.isWithinDistance(blockPos2, 160.0);
 	}
 
 	private Collection<UUID> method_19713(BlockPos blockPos) {

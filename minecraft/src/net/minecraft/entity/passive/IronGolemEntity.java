@@ -6,7 +6,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.GoToEntityTargetGoal;
 import net.minecraft.entity.ai.goal.IronGolemLookGoal;
@@ -14,6 +13,7 @@ import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.TrackIronGolemTargetGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -57,7 +57,7 @@ public class IronGolemEntity extends GolemEntity {
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
 		this.goalSelector.add(8, new LookAroundGoal(this));
 		this.targetSelector.add(1, new TrackIronGolemTargetGoal(this));
-		this.targetSelector.add(2, new AvoidGoal(this));
+		this.targetSelector.add(2, new RevengeGoal(this));
 		this.targetSelector
 			.add(
 				3,
@@ -80,7 +80,7 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	protected int method_6130(int i) {
+	protected int getNextBreathInWater(int i) {
 		return i;
 	}
 
@@ -148,7 +148,7 @@ public class IronGolemEntity extends GolemEntity {
 	@Override
 	public boolean attack(Entity entity) {
 		this.field_6762 = 10;
-		this.world.summonParticle(this, (byte)4);
+		this.world.sendEntityStatus(this, (byte)4);
 		boolean bl = entity.damage(DamageSource.mob(this), (float)(7 + this.random.nextInt(15)));
 		if (bl) {
 			entity.setVelocity(entity.getVelocity().add(0.0, 0.4F, 0.0));
@@ -161,7 +161,7 @@ public class IronGolemEntity extends GolemEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 4) {
 			this.field_6762 = 10;
 			this.playSound(SoundEvents.field_14649, 1.0F, 1.0F);
@@ -170,7 +170,7 @@ public class IronGolemEntity extends GolemEntity {
 		} else if (b == 34) {
 			this.field_6759 = 0;
 		} else {
-			super.method_5711(b);
+			super.handleStatus(b);
 		}
 	}
 
@@ -182,10 +182,10 @@ public class IronGolemEntity extends GolemEntity {
 	public void method_6497(boolean bl) {
 		if (bl) {
 			this.field_6759 = 400;
-			this.world.summonParticle(this, (byte)11);
+			this.world.sendEntityStatus(this, (byte)11);
 		} else {
 			this.field_6759 = 0;
-			this.world.summonParticle(this, (byte)34);
+			this.world.sendEntityStatus(this, (byte)34);
 		}
 	}
 
@@ -228,7 +228,7 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean method_5957(ViewableWorld viewableWorld) {
+	public boolean canSpawn(ViewableWorld viewableWorld) {
 		BlockPos blockPos = new BlockPos(this);
 		BlockPos blockPos2 = blockPos.down();
 		BlockState blockState = viewableWorld.getBlockState(blockPos2);
@@ -239,7 +239,7 @@ public class IronGolemEntity extends GolemEntity {
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
 			return SpawnHelper.isClearForSpawn(viewableWorld, blockPos3, blockState2, blockState2.getFluidState())
 				&& SpawnHelper.isClearForSpawn(viewableWorld, blockPos, viewableWorld.getBlockState(blockPos), Fluids.EMPTY.getDefaultState())
-				&& viewableWorld.method_8606(this);
+				&& viewableWorld.intersectsEntities(this);
 		}
 	}
 }

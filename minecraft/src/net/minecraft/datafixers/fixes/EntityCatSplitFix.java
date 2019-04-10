@@ -14,7 +14,13 @@ public class EntityCatSplitFix extends EntitySimpleTransformFix {
 	protected Pair<String, Dynamic<?>> transform(String string, Dynamic<?> dynamic) {
 		if (Objects.equals("minecraft:ocelot", string)) {
 			int i = dynamic.get("CatType").asInt(0);
-			if (i > 0 && i < 4) {
+			if (i == 0) {
+				String string2 = dynamic.get("Owner").asString("");
+				String string3 = dynamic.get("OwnerUUID").asString("");
+				if (string2.length() > 0 || string3.length() > 0) {
+					dynamic.set("Trusting", dynamic.createBoolean(true));
+				}
+			} else if (i > 0 && i < 4) {
 				dynamic = dynamic.set("CatType", dynamic.createInt(i));
 				dynamic = dynamic.set("OwnerUUID", dynamic.createString(dynamic.get("OwnerUUID").asString("")));
 				return Pair.of("minecraft:cat", dynamic);

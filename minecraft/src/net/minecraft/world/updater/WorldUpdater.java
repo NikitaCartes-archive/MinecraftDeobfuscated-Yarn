@@ -37,6 +37,7 @@ public class WorldUpdater {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
 	private final String levelName;
+	private final boolean field_19225;
 	private final WorldSaveHandler worldSaveHandler;
 	private final Thread updateThread;
 	private final File worldDirectory;
@@ -53,8 +54,9 @@ public class WorldUpdater {
 	private static final Pattern REGION_FILE_PATTERN = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 	private final PersistentStateManager persistentStateManager;
 
-	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties) {
+	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties, boolean bl) {
 		this.levelName = levelProperties.getLevelName();
+		this.field_19225 = bl;
 		this.worldSaveHandler = levelStorage.method_242(string, null);
 		this.worldSaveHandler.saveWorld(levelProperties);
 		this.persistentStateManager = new PersistentStateManager(
@@ -121,13 +123,22 @@ public class WorldUpdater {
 							if (compoundTag != null) {
 								int i = VersionedChunkStorage.getDataVersion(compoundTag);
 								CompoundTag compoundTag2 = versionedChunkStorage.updateChunkTag(dimensionType3, () -> this.persistentStateManager, compoundTag);
-								if (i < SharedConstants.getGameVersion().getWorldVersion()) {
+								boolean bl3 = i < SharedConstants.getGameVersion().getWorldVersion();
+								if (this.field_19225) {
+									CompoundTag compoundTag3 = compoundTag2.getCompound("Level");
+									bl3 = bl3 || compoundTag3.containsKey("Heightmaps");
+									compoundTag3.remove("Heightmaps");
+									bl3 = bl3 || compoundTag3.containsKey("isLightOn");
+									compoundTag3.remove("isLightOn");
+								}
+
+								if (bl3) {
 									versionedChunkStorage.setTagAt(chunkPos, compoundTag2);
 									bl2 = true;
 								}
 							}
-						} catch (IOException var21) {
-							LOGGER.error("Error upgrading chunk {}", chunkPos, var21);
+						} catch (IOException var23) {
+							LOGGER.error("Error upgrading chunk {}", chunkPos, var23);
 						}
 
 						if (bl2) {
@@ -155,8 +166,8 @@ public class WorldUpdater {
 			for (VersionedChunkStorage versionedChunkStorage2 : immutableMap2.values()) {
 				try {
 					versionedChunkStorage2.close();
-				} catch (IOException var20) {
-					LOGGER.error("Error upgrading chunk", (Throwable)var20);
+				} catch (IOException var22) {
+					LOGGER.error("Error upgrading chunk", (Throwable)var22);
 				}
 			}
 

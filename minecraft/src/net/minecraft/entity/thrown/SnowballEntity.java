@@ -31,21 +31,21 @@ public class SnowballEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	protected Item method_16942() {
+	protected Item getDefaultItem() {
 		return Items.field_8543;
 	}
 
 	@Environment(EnvType.CLIENT)
-	private ParticleParameters method_16939() {
-		ItemStack itemStack = this.method_16943();
+	private ParticleParameters getParticleParameters() {
+		ItemStack itemStack = this.getItem();
 		return (ParticleParameters)(itemStack.isEmpty() ? ParticleTypes.field_11230 : new ItemStackParticleParameters(ParticleTypes.field_11218, itemStack));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 3) {
-			ParticleParameters particleParameters = this.method_16939();
+			ParticleParameters particleParameters = this.getParticleParameters();
 
 			for (int i = 0; i < 8; i++) {
 				this.world.addParticle(particleParameters, this.x, this.y, this.z, 0.0, 0.0, 0.0);
@@ -62,8 +62,8 @@ public class SnowballEntity extends ThrownItemEntity {
 		}
 
 		if (!this.world.isClient) {
-			this.world.summonParticle(this, (byte)3);
-			this.invalidate();
+			this.world.sendEntityStatus(this, (byte)3);
+			this.remove();
 		}
 	}
 }

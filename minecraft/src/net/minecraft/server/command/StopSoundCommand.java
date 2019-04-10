@@ -16,21 +16,19 @@ import net.minecraft.util.Identifier;
 
 public class StopSoundCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> requiredArgumentBuilder = ServerCommandManager.argument(
-				"targets", EntityArgumentType.multiplePlayer()
-			)
-			.executes(commandContext -> method_13685(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), null, null))
+		RequiredArgumentBuilder<ServerCommandSource, EntitySelector> requiredArgumentBuilder = CommandManager.argument("targets", EntityArgumentType.players())
+			.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), null, null))
 			.then(
-				ServerCommandManager.literal("*")
+				CommandManager.literal("*")
 					.then(
-						ServerCommandManager.argument("sound", IdentifierArgumentType.create())
+						CommandManager.argument("sound", IdentifierArgumentType.create())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
-								commandContext -> method_13685(
+								commandContext -> execute(
 										commandContext.getSource(),
-										EntityArgumentType.method_9312(commandContext, "targets"),
+										EntityArgumentType.getPlayers(commandContext, "targets"),
 										null,
-										IdentifierArgumentType.getIdentifierArgument(commandContext, "sound")
+										IdentifierArgumentType.getIdentifier(commandContext, "sound")
 									)
 							)
 					)
@@ -38,17 +36,17 @@ public class StopSoundCommand {
 
 		for (SoundCategory soundCategory : SoundCategory.values()) {
 			requiredArgumentBuilder.then(
-				ServerCommandManager.literal(soundCategory.getName())
-					.executes(commandContext -> method_13685(commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), soundCategory, null))
+				CommandManager.literal(soundCategory.getName())
+					.executes(commandContext -> execute(commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), soundCategory, null))
 					.then(
-						ServerCommandManager.argument("sound", IdentifierArgumentType.create())
+						CommandManager.argument("sound", IdentifierArgumentType.create())
 							.suggests(SuggestionProviders.AVAILABLE_SOUNDS)
 							.executes(
-								commandContext -> method_13685(
+								commandContext -> execute(
 										commandContext.getSource(),
-										EntityArgumentType.method_9312(commandContext, "targets"),
+										EntityArgumentType.getPlayers(commandContext, "targets"),
 										soundCategory,
-										IdentifierArgumentType.getIdentifierArgument(commandContext, "sound")
+										IdentifierArgumentType.getIdentifier(commandContext, "sound")
 									)
 							)
 					)
@@ -56,11 +54,11 @@ public class StopSoundCommand {
 		}
 
 		commandDispatcher.register(
-			ServerCommandManager.literal("stopsound").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).then(requiredArgumentBuilder)
+			CommandManager.literal("stopsound").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2)).then(requiredArgumentBuilder)
 		);
 	}
 
-	private static int method_13685(
+	private static int execute(
 		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, @Nullable SoundCategory soundCategory, @Nullable Identifier identifier
 	) {
 		StopSoundS2CPacket stopSoundS2CPacket = new StopSoundS2CPacket(identifier, soundCategory);

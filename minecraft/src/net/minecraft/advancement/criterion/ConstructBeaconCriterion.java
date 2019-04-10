@@ -56,8 +56,8 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 	}
 
 	public ConstructBeaconCriterion.Conditions method_8811(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
-		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("level"));
-		return new ConstructBeaconCriterion.Conditions(integer);
+		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("level"));
+		return new ConstructBeaconCriterion.Conditions(intRange);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, BeaconBlockEntity beaconBlockEntity) {
@@ -68,25 +68,25 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final NumberRange.Integer level;
+		private final NumberRange.IntRange field_9508;
 
-		public Conditions(NumberRange.Integer integer) {
+		public Conditions(NumberRange.IntRange intRange) {
 			super(ConstructBeaconCriterion.ID);
-			this.level = integer;
+			this.field_9508 = intRange;
 		}
 
-		public static ConstructBeaconCriterion.Conditions level(NumberRange.Integer integer) {
-			return new ConstructBeaconCriterion.Conditions(integer);
+		public static ConstructBeaconCriterion.Conditions method_8818(NumberRange.IntRange intRange) {
+			return new ConstructBeaconCriterion.Conditions(intRange);
 		}
 
 		public boolean matches(BeaconBlockEntity beaconBlockEntity) {
-			return this.level.test(beaconBlockEntity.getLevel());
+			return this.field_9508.test(beaconBlockEntity.getLevel());
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("level", this.level.serialize());
+			jsonObject.add("level", this.field_9508.serialize());
 			return jsonObject;
 		}
 	}

@@ -9,19 +9,19 @@ import net.minecraft.text.TextFormatter;
 public class TellRawCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("tellraw")
+			CommandManager.literal("tellraw")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+					CommandManager.argument("targets", EntityArgumentType.players())
 						.then(
-							ServerCommandManager.argument("message", ComponentArgumentType.create())
+							CommandManager.argument("message", ComponentArgumentType.create())
 								.executes(
 									commandContext -> {
 										int i = 0;
 
-										for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.method_9312(commandContext, "targets")) {
+										for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(commandContext, "targets")) {
 											serverPlayerEntity.appendCommandFeedback(
-												TextFormatter.method_10881(commandContext.getSource(), ComponentArgumentType.getComponentArgument(commandContext, "message"), serverPlayerEntity)
+												TextFormatter.method_10881(commandContext.getSource(), ComponentArgumentType.getComponent(commandContext, "message"), serverPlayerEntity)
 											);
 											i++;
 										}

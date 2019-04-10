@@ -2,7 +2,7 @@ package net.minecraft.sortme;
 
 import javax.annotation.Nullable;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.Goals;
+import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -26,7 +26,7 @@ public class DebugRendererInfoManager {
 	public static void method_19777(ServerWorld serverWorld, BlockPos blockPos) {
 	}
 
-	public static void method_19778(ServerWorld serverWorld, BlockPos blockPos) {
+	public static void sendPointOfInterest(ServerWorld serverWorld, BlockPos blockPos) {
 	}
 
 	public static void sendPathfindingData(World world, MobEntity mobEntity, @Nullable Path path, float f) {
@@ -38,9 +38,9 @@ public class DebugRendererInfoManager {
 	public static void sendStructureStart(IWorld iWorld, StructureStart structureStart) {
 	}
 
-	public static void method_19469(World world, MobEntity mobEntity, Goals goals) {
+	public static void sendGoalSelector(World world, MobEntity mobEntity, GoalSelector goalSelector) {
 	}
 
-	public static void method_19774(LivingEntity livingEntity) {
+	public static void sendVillagerAiDebugData(LivingEntity livingEntity) {
 	}
 }

@@ -66,6 +66,19 @@ public class LootTables {
 	public static final Identifier GAMEPLAY_FISHING_TREASURE = registerLootTable("gameplay/fishing/treasure");
 	public static final Identifier GAMEPLAY_FISHING_FISH = registerLootTable("gameplay/fishing/fish");
 	public static final Identifier ENTITY_CAT_MORNING_GIFT = registerLootTable("gameplay/cat_morning_gift");
+	public static final Identifier field_19062 = registerLootTable("gameplay/hero_of_the_village/armorer_gift");
+	public static final Identifier field_19063 = registerLootTable("gameplay/hero_of_the_village/butcher_gift");
+	public static final Identifier field_19064 = registerLootTable("gameplay/hero_of_the_village/cartographer_gift");
+	public static final Identifier field_19065 = registerLootTable("gameplay/hero_of_the_village/cleric_gift");
+	public static final Identifier field_19066 = registerLootTable("gameplay/hero_of_the_village/farmer_gift");
+	public static final Identifier field_19067 = registerLootTable("gameplay/hero_of_the_village/fisherman_gift");
+	public static final Identifier field_19068 = registerLootTable("gameplay/hero_of_the_village/fletcher_gift");
+	public static final Identifier field_19069 = registerLootTable("gameplay/hero_of_the_village/leatherworker_gift");
+	public static final Identifier field_19070 = registerLootTable("gameplay/hero_of_the_village/librarian_gift");
+	public static final Identifier field_19071 = registerLootTable("gameplay/hero_of_the_village/mason_gift");
+	public static final Identifier field_19072 = registerLootTable("gameplay/hero_of_the_village/shepherd_gift");
+	public static final Identifier field_19073 = registerLootTable("gameplay/hero_of_the_village/toolsmith_gift");
+	public static final Identifier field_19074 = registerLootTable("gameplay/hero_of_the_village/weaponsmith_gift");
 
 	private static Identifier registerLootTable(String string) {
 		return registerLootTable(new Identifier(string));

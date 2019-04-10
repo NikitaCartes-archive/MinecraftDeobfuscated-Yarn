@@ -17,7 +17,7 @@ public enum BlankGlyph implements RenderableGlyph {
 			}
 		}
 
-		nativeImage.method_4302();
+		nativeImage.untrack();
 	});
 
 	@Override

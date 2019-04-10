@@ -65,7 +65,7 @@ public abstract class LeafEntry extends LootEntry {
 		}
 	}
 
-	public static LeafEntry.Builder<?> create(LeafEntry.Factory factory) {
+	public static LeafEntry.Builder<?> builder(LeafEntry.Factory factory) {
 		return new LeafEntry.BasicBuilder(factory);
 	}
 
@@ -149,10 +149,10 @@ public abstract class LeafEntry extends LootEntry {
 			int i = JsonHelper.getInt(jsonObject, "weight", 1);
 			int j = JsonHelper.getInt(jsonObject, "quality", 0);
 			LootFunction[] lootFunctions = JsonHelper.deserialize(jsonObject, "functions", new LootFunction[0], jsonDeserializationContext, LootFunction[].class);
-			return this.method_443(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
+			return this.fromJson(jsonObject, jsonDeserializationContext, i, j, lootConditions, lootFunctions);
 		}
 
-		protected abstract T method_443(
+		protected abstract T fromJson(
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		);
 	}

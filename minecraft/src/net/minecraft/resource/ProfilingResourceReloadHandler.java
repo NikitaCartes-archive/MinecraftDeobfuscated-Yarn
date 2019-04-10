@@ -30,7 +30,7 @@ public class ProfilingResourceReloadHandler extends ResourceReloadHandler<Profil
 				AtomicLong atomicLong2 = new AtomicLong();
 				ProfilerSystem profilerSystem = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), () -> 0);
 				ProfilerSystem profilerSystem2 = new ProfilerSystem(SystemUtil.getMeasuringTimeNano(), () -> 0);
-				CompletableFuture<java.lang.Void> completableFuturex = resourceReloadListener.apply(
+				CompletableFuture<java.lang.Void> completableFuturex = resourceReloadListener.reload(
 					helper, resourceManagerx, profilerSystem, profilerSystem2, runnable -> executor2x.execute(() -> {
 							long l = SystemUtil.getMeasuringTimeNano();
 							runnable.run();

@@ -37,28 +37,28 @@ public class AlternativeLootCondition implements LootCondition {
 		}
 	}
 
-	public static AlternativeLootCondition.Builder or(LootCondition.Builder... builders) {
+	public static AlternativeLootCondition.Builder builder(LootCondition.Builder... builders) {
 		return new AlternativeLootCondition.Builder(builders);
 	}
 
 	public static class Builder implements LootCondition.Builder {
-		private final List<LootCondition> field_1248 = Lists.<LootCondition>newArrayList();
+		private final List<LootCondition> terms = Lists.<LootCondition>newArrayList();
 
 		public Builder(LootCondition.Builder... builders) {
 			for (LootCondition.Builder builder : builders) {
-				this.field_1248.add(builder.build());
+				this.terms.add(builder.build());
 			}
 		}
 
 		@Override
-		public AlternativeLootCondition.Builder or(LootCondition.Builder builder) {
-			this.field_1248.add(builder.build());
+		public AlternativeLootCondition.Builder withCondition(LootCondition.Builder builder) {
+			this.terms.add(builder.build());
 			return this;
 		}
 
 		@Override
 		public LootCondition build() {
-			return new AlternativeLootCondition((LootCondition[])this.field_1248.toArray(new LootCondition[0]));
+			return new AlternativeLootCondition((LootCondition[])this.terms.toArray(new LootCondition[0]));
 		}
 	}
 

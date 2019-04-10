@@ -24,37 +24,37 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 		this.field_6569 = d;
 		this.field_6575 = i;
 		this.field_6570 = f * f;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18406));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18406));
 	}
 
-	public void method_6305(int i) {
+	public void setAttackInterval(int i) {
 		this.field_6575 = i;
 	}
 
 	@Override
 	public boolean canStart() {
-		return this.field_6576.getTarget() == null ? false : this.method_6306();
+		return this.field_6576.getTarget() == null ? false : this.isHoldingBow();
 	}
 
-	protected boolean method_6306() {
-		return this.field_6576.method_18809(Items.field_8102);
+	protected boolean isHoldingBow() {
+		return this.field_6576.isHolding(Items.field_8102);
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return (this.canStart() || !this.field_6576.getNavigation().isIdle()) && this.method_6306();
+		return (this.canStart() || !this.field_6576.getNavigation().isIdle()) && this.isHoldingBow();
 	}
 
 	@Override
 	public void start() {
 		super.start();
-		this.field_6576.method_19540(true);
+		this.field_6576.setAttacking(true);
 	}
 
 	@Override
-	public void onRemove() {
-		super.onRemove();
-		this.field_6576.method_19540(false);
+	public void stop() {
+		super.stop();
+		this.field_6576.setAttacking(false);
 		this.field_6572 = 0;
 		this.field_6574 = -1;
 		this.field_6576.method_6021();
@@ -105,7 +105,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 				}
 
 				this.field_6576.getMoveControl().method_6243(this.field_6571 ? -0.5F : 0.5F, this.field_6573 ? 0.5F : -0.5F);
-				this.field_6576.method_5951(livingEntity, 30.0F, 30.0F);
+				this.field_6576.lookAtEntity(livingEntity, 30.0F, 30.0F);
 			} else {
 				this.field_6576.getLookControl().lookAt(livingEntity, 30.0F, 30.0F);
 			}
@@ -122,7 +122,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 					}
 				}
 			} else if (--this.field_6574 <= 0 && this.field_6572 >= -60) {
-				this.field_6576.setCurrentHand(ProjectileUtil.method_18812(this.field_6576, Items.field_8102));
+				this.field_6576.setCurrentHand(ProjectileUtil.getHandPossiblyHolding(this.field_6576, Items.field_8102));
 			}
 		}
 	}

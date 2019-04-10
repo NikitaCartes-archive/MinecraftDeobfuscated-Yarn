@@ -23,10 +23,10 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ProjectileUtil;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.ai.RangedAttacker;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.CrossbowAttackGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -38,6 +38,7 @@ import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.Projectile;
+import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.CrossbowItem;
@@ -49,9 +50,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
@@ -70,12 +73,12 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	protected void initGoals() {
 		super.initGoals();
 		this.goalSelector.add(0, new SwimGoal(this));
-		this.goalSelector.add(2, new RaiderEntity.class_4223(this, 10.0F));
+		this.goalSelector.add(2, new RaiderEntity.PatrolApproachGoal(this, 10.0F));
 		this.goalSelector.add(3, new CrossbowAttackGoal<>(this, 1.0, 8.0F));
 		this.goalSelector.add(8, new WanderAroundGoal(this, 0.6));
 		this.goalSelector.add(9, new LookAtEntityGoal(this, PlayerEntity.class, 15.0F, 1.0F));
 		this.goalSelector.add(10, new LookAtEntityGoal(this, MobEntity.class, 15.0F));
-		this.targetSelector.add(1, new AvoidGoal(this, IllagerEntity.class).method_6318());
+		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
@@ -123,13 +126,13 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public IllagerEntity.State method_6990() {
+	public IllagerEntity.State getState() {
 		if (this.isCharging()) {
 			return IllagerEntity.State.field_7210;
-		} else if (this.method_18809(Items.field_8399)) {
+		} else if (this.isHolding(Items.field_8399)) {
 			return IllagerEntity.State.field_7213;
 		} else {
-			return this.method_6510() ? IllagerEntity.State.field_7211 : IllagerEntity.State.field_7207;
+			return this.isAttacking() ? IllagerEntity.State.field_7211 : IllagerEntity.State.field_7207;
 		}
 	}
 
@@ -171,12 +174,12 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Nullable
 	@Override
-	public EntityData prepareEntityData(
+	public EntityData initialize(
 		IWorld iWorld, LocalDifficulty localDifficulty, SpawnType spawnType, @Nullable EntityData entityData, @Nullable CompoundTag compoundTag
 	) {
 		this.initEquipment(localDifficulty);
-		this.method_5984(localDifficulty);
-		return super.prepareEntityData(iWorld, localDifficulty, spawnType, entityData, compoundTag);
+		this.updateEnchantments(localDifficulty);
+		return super.initialize(iWorld, localDifficulty, spawnType, entityData, compoundTag);
 	}
 
 	@Override
@@ -197,7 +200,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 			return true;
 		} else {
 			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
-				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
+				? this.method_5781() == null && entity.method_5781() == null
 				: false;
 		}
 	}
@@ -219,31 +222,32 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public void attack(LivingEntity livingEntity, float f) {
-		ItemStack itemStack = this.getStackInHand(ProjectileUtil.method_18812(this, Items.field_8399));
-		if (this.method_18809(Items.field_8399)) {
-			CrossbowItem.shootAllProjectiles(this.world, this, itemStack, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
+		Hand hand = ProjectileUtil.getHandPossiblyHolding(this, Items.field_8399);
+		ItemStack itemStack = this.getStackInHand(hand);
+		if (this.isHolding(Items.field_8399)) {
+			CrossbowItem.shootAllProjectiles(this.world, this, hand, itemStack, 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		}
 
 		this.despawnCounter = 0;
 	}
 
 	@Override
-	public void method_18811(LivingEntity livingEntity, ItemStack itemStack, Projectile projectile, float f) {
+	public void shoot(LivingEntity livingEntity, ItemStack itemStack, Projectile projectile, float f) {
 		Entity entity = (Entity)projectile;
 		double d = livingEntity.x - this.x;
 		double e = livingEntity.z - this.z;
 		double g = (double)MathHelper.sqrt(d * d + e * e);
 		double h = livingEntity.getBoundingBox().minY + (double)(livingEntity.getHeight() / 3.0F) - entity.y + g * 0.2F;
-		Vector3f vector3f = this.method_19168(new Vec3d(d, h, e), f);
+		Vector3f vector3f = this.getProjectileVelocity(new Vec3d(d, h, e), f);
 		projectile.setVelocity((double)vector3f.x(), (double)vector3f.y(), (double)vector3f.z(), 1.6F, (float)(14 - this.world.getDifficulty().getId() * 4));
 		this.playSound(SoundEvents.field_15187, 1.0F, 1.0F / (this.getRand().nextFloat() * 0.4F + 0.8F));
 	}
 
-	private Vector3f method_19168(Vec3d vec3d, float f) {
+	private Vector3f getProjectileVelocity(Vec3d vec3d, float f) {
 		Vec3d vec3d2 = vec3d.normalize();
 		Vec3d vec3d3 = vec3d2.crossProduct(new Vec3d(0.0, 1.0, 0.0));
 		if (vec3d3.lengthSquared() <= 1.0E-7) {
-			vec3d3 = vec3d2.crossProduct(this.method_18864(1.0F));
+			vec3d3 = vec3d2.crossProduct(this.getOppositeRotationVector(1.0F));
 		}
 
 		Quaternion quaternion = new Quaternion(new Vector3f(vec3d3), 90.0F, true);
@@ -260,16 +264,16 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	}
 
 	@Override
-	protected void pickupItem(ItemEntity itemEntity) {
+	protected void loot(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
 		if (itemStack.getItem() instanceof BannerItem) {
-			super.pickupItem(itemEntity);
+			super.loot(itemEntity);
 		} else {
 			Item item = itemStack.getItem();
 			if (this.method_7111(item)) {
 				ItemStack itemStack2 = this.inventory.add(itemStack);
 				if (itemStack2.isEmpty()) {
-					itemEntity.invalidate();
+					itemEntity.remove();
 				} else {
 					itemStack.setAmount(itemStack2.getAmount());
 				}
@@ -278,12 +282,12 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 	}
 
 	private boolean method_7111(Item item) {
-		return this.hasActiveRaid() ? item == Items.field_8539 : false;
+		return this.hasActiveRaid() && item == Items.field_8539;
 	}
 
 	@Override
-	public boolean method_5758(int i, ItemStack itemStack) {
-		if (super.method_5758(i, itemStack)) {
+	public boolean equip(int i, ItemStack itemStack) {
+		if (super.equip(i, itemStack)) {
 			return true;
 		} else {
 			int j = i - 300;
@@ -298,25 +302,31 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 
 	@Override
 	public void addBonusForWave(int i, boolean bl) {
-		if (i > 3) {
-			int j = 5;
-			if (this.random.nextInt(Math.max(6 - i, 1)) == 0) {
-				ItemStack itemStack = new ItemStack(Items.field_8399);
-				Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
-				if (i > 6) {
-					map.put(Enchantments.field_9098, 2);
-				}
-
-				map.put(Enchantments.field_9108, 1);
-				EnchantmentHelper.set(map, itemStack);
-				this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
+		Raid raid = this.getRaid();
+		boolean bl2 = this.random.nextFloat() <= raid.getEnchantmentChance();
+		if (bl2) {
+			ItemStack itemStack = new ItemStack(Items.field_8399);
+			Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newHashMap();
+			if (i > raid.getMaxWaves(Difficulty.NORMAL)) {
+				map.put(Enchantments.field_9098, 2);
+			} else if (i > raid.getMaxWaves(Difficulty.EASY)) {
+				map.put(Enchantments.field_9098, 1);
 			}
+
+			map.put(Enchantments.field_9108, 1);
+			EnchantmentHelper.set(map, itemStack);
+			this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack);
 		}
 	}
 
 	@Override
 	public boolean cannotDespawn() {
 		return super.cannotDespawn() && this.getInventory().isInvEmpty();
+	}
+
+	@Override
+	public SoundEvent getCelebratingSound() {
+		return SoundEvents.field_19150;
 	}
 
 	@Override

@@ -35,22 +35,20 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	}
 
 	@Override
-	protected void onInitialized() {
-		super.onInitialized();
-		this.modeButton = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence"), buttonWidget -> {
-				this.cycleType();
-				this.updateMode();
-			})
-		);
+	protected void init() {
+		super.init();
+		this.modeButton = this.addButton(new ButtonWidget(this.width / 2 - 50 - 100 - 4, 165, 100, 20, I18n.translate("advMode.mode.sequence"), buttonWidget -> {
+			this.cycleType();
+			this.updateMode();
+		}));
 		this.conditionalModeButton = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 - 50, 165, 100, 20, I18n.translate("advMode.mode.unconditional"), buttonWidget -> {
 				this.conditional = !this.conditional;
 				this.updateConditionalMode();
 			})
 		);
 		this.redstoneTriggerButton = this.addButton(
-			new ButtonWidget(this.screenWidth / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered"), buttonWidget -> {
+			new ButtonWidget(this.width / 2 + 50 + 4, 165, 100, 20, I18n.translate("advMode.mode.redstoneTriggered"), buttonWidget -> {
 				this.autoActivate = !this.autoActivate;
 				this.updateActivationMode();
 			})
@@ -81,8 +79,8 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	}
 
 	@Override
-	public void onScaleChanged(MinecraftClient minecraftClient, int i, int j) {
-		super.onScaleChanged(minecraftClient, i, j);
+	public void resize(MinecraftClient minecraftClient, int i, int j) {
+		super.resize(minecraftClient, i, j);
 		this.updateTrackedOutput();
 		this.updateMode();
 		this.updateConditionalMode();
@@ -96,7 +94,7 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 
 	@Override
 	protected void syncSettingsToServer(CommandBlockExecutor commandBlockExecutor) {
-		this.client
+		this.minecraft
 			.getNetworkHandler()
 			.sendPacket(
 				new UpdateCommandBlockC2SPacket(

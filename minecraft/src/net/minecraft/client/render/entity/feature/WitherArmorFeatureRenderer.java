@@ -36,11 +36,11 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<WitherEntity, Wi
 			GlStateManager.disableLighting();
 			GlStateManager.blendFunc(GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ONE);
 			this.field_4909.method_17128(witherEntity, f, g, h);
-			this.getModel().method_17081(this.field_4909);
+			this.getModel().copyStateTo(this.field_4909);
 			GameRenderer gameRenderer = MinecraftClient.getInstance().gameRenderer;
-			gameRenderer.method_3201(true);
+			gameRenderer.setFogBlack(true);
 			this.field_4909.method_17129(witherEntity, f, g, i, j, k, l);
-			gameRenderer.method_3201(false);
+			gameRenderer.setFogBlack(false);
 			GlStateManager.matrixMode(5890);
 			GlStateManager.loadIdentity();
 			GlStateManager.matrixMode(5888);
@@ -51,7 +51,7 @@ public class WitherArmorFeatureRenderer extends FeatureRenderer<WitherEntity, Wi
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 }

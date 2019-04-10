@@ -23,7 +23,7 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 	private static final DynamicCommandExceptionType UNKNOWN_SLOT_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("slot.unknown", object)
 	);
-	private static final Map<String, Integer> slotNames = SystemUtil.consume(Maps.<String, Integer>newHashMap(), hashMap -> {
+	private static final Map<String, Integer> slotNamesToSlotCommandId = SystemUtil.consume(Maps.<String, Integer>newHashMap(), hashMap -> {
 		for (int i = 0; i < 54; i++) {
 			hashMap.put("container." + i, i);
 		}
@@ -64,22 +64,22 @@ public class ItemSlotArgumentType implements ArgumentType<Integer> {
 		return new ItemSlotArgumentType();
 	}
 
-	public static int getSlotArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static int getItemSlot(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.<Integer>getArgument(string, Integer.class);
 	}
 
 	public Integer method_9470(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
-		if (!slotNames.containsKey(string)) {
+		if (!slotNamesToSlotCommandId.containsKey(string)) {
 			throw UNKNOWN_SLOT_EXCEPTION.create(string);
 		} else {
-			return (Integer)slotNames.get(string);
+			return (Integer)slotNamesToSlotCommandId.get(string);
 		}
 	}
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestMatching(slotNames.keySet(), suggestionsBuilder);
+		return CommandSource.suggestMatching(slotNamesToSlotCommandId.keySet(), suggestionsBuilder);
 	}
 
 	@Override

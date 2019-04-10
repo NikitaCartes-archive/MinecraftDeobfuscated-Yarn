@@ -46,7 +46,7 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		return (Recipe<?>)recipeManager.get(identifier).orElseThrow(() -> UNKNOWN_RECIPE_EXCEPTION.create(identifier));
 	}
 
-	public static Identifier getIdentifierArgument(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static Identifier getIdentifier(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, Identifier.class);
 	}
 

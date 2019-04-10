@@ -9,7 +9,7 @@ import net.minecraft.util.PacketByteBuf;
 public interface Palette<T> {
 	int getIndex(T object);
 
-	boolean method_19525(T object);
+	boolean accepts(T object);
 
 	@Nullable
 	T getByIndex(int i);

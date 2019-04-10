@@ -34,20 +34,20 @@ import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.World;
 
 public class ShulkerBulletEntity extends Entity {
-	private LivingEntity field_7630;
-	private Entity field_7626;
+	private LivingEntity owner;
+	private Entity target;
 	@Nullable
-	private Direction field_7628;
+	private Direction direction;
 	private int field_7627;
 	private double field_7635;
 	private double field_7633;
 	private double field_7625;
 	@Nullable
-	private UUID field_7629;
-	private BlockPos field_7634;
+	private UUID ownerUuid;
+	private BlockPos ownerPos;
 	@Nullable
-	private UUID field_7632;
-	private BlockPos field_7631;
+	private UUID targetUuid;
+	private BlockPos targetPos;
 
 	public ShulkerBulletEntity(EntityType<? extends ShulkerBulletEntity> entityType, World world) {
 		super(entityType, world);
@@ -63,14 +63,14 @@ public class ShulkerBulletEntity extends Entity {
 
 	public ShulkerBulletEntity(World world, LivingEntity livingEntity, Entity entity, Direction.Axis axis) {
 		this(EntityType.SHULKER_BULLET, world);
-		this.field_7630 = livingEntity;
+		this.owner = livingEntity;
 		BlockPos blockPos = new BlockPos(livingEntity);
 		double d = (double)blockPos.getX() + 0.5;
 		double e = (double)blockPos.getY() + 0.5;
 		double f = (double)blockPos.getZ() + 0.5;
 		this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-		this.field_7626 = entity;
-		this.field_7628 = Direction.UP;
+		this.target = entity;
+		this.direction = Direction.UP;
 		this.method_7486(axis);
 	}
 
@@ -81,26 +81,26 @@ public class ShulkerBulletEntity extends Entity {
 
 	@Override
 	protected void writeCustomDataToTag(CompoundTag compoundTag) {
-		if (this.field_7630 != null) {
-			BlockPos blockPos = new BlockPos(this.field_7630);
-			CompoundTag compoundTag2 = TagHelper.serializeUuid(this.field_7630.getUuid());
+		if (this.owner != null) {
+			BlockPos blockPos = new BlockPos(this.owner);
+			CompoundTag compoundTag2 = TagHelper.serializeUuid(this.owner.getUuid());
 			compoundTag2.putInt("X", blockPos.getX());
 			compoundTag2.putInt("Y", blockPos.getY());
 			compoundTag2.putInt("Z", blockPos.getZ());
 			compoundTag.put("Owner", compoundTag2);
 		}
 
-		if (this.field_7626 != null) {
-			BlockPos blockPos = new BlockPos(this.field_7626);
-			CompoundTag compoundTag2 = TagHelper.serializeUuid(this.field_7626.getUuid());
+		if (this.target != null) {
+			BlockPos blockPos = new BlockPos(this.target);
+			CompoundTag compoundTag2 = TagHelper.serializeUuid(this.target.getUuid());
 			compoundTag2.putInt("X", blockPos.getX());
 			compoundTag2.putInt("Y", blockPos.getY());
 			compoundTag2.putInt("Z", blockPos.getZ());
 			compoundTag.put("Target", compoundTag2);
 		}
 
-		if (this.field_7628 != null) {
-			compoundTag.putInt("Dir", this.field_7628.getId());
+		if (this.direction != null) {
+			compoundTag.putInt("Dir", this.direction.getId());
 		}
 
 		compoundTag.putInt("Steps", this.field_7627);
@@ -116,19 +116,19 @@ public class ShulkerBulletEntity extends Entity {
 		this.field_7633 = compoundTag.getDouble("TYD");
 		this.field_7625 = compoundTag.getDouble("TZD");
 		if (compoundTag.containsKey("Dir", 99)) {
-			this.field_7628 = Direction.byId(compoundTag.getInt("Dir"));
+			this.direction = Direction.byId(compoundTag.getInt("Dir"));
 		}
 
 		if (compoundTag.containsKey("Owner", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("Owner");
-			this.field_7629 = TagHelper.deserializeUuid(compoundTag2);
-			this.field_7634 = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
+			this.ownerUuid = TagHelper.deserializeUuid(compoundTag2);
+			this.ownerPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
 		}
 
 		if (compoundTag.containsKey("Target", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("Target");
-			this.field_7632 = TagHelper.deserializeUuid(compoundTag2);
-			this.field_7631 = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
+			this.targetUuid = TagHelper.deserializeUuid(compoundTag2);
+			this.targetPos = new BlockPos(compoundTag2.getInt("X"), compoundTag2.getInt("Y"), compoundTag2.getInt("Z"));
 		}
 	}
 
@@ -136,25 +136,25 @@ public class ShulkerBulletEntity extends Entity {
 	protected void initDataTracker() {
 	}
 
-	private void method_7487(@Nullable Direction direction) {
-		this.field_7628 = direction;
+	private void setDirection(@Nullable Direction direction) {
+		this.direction = direction;
 	}
 
 	private void method_7486(@Nullable Direction.Axis axis) {
 		double d = 0.5;
 		BlockPos blockPos;
-		if (this.field_7626 == null) {
+		if (this.target == null) {
 			blockPos = new BlockPos(this).down();
 		} else {
-			d = (double)this.field_7626.getHeight() * 0.5;
-			blockPos = new BlockPos(this.field_7626.x, this.field_7626.y + d, this.field_7626.z);
+			d = (double)this.target.getHeight() * 0.5;
+			blockPos = new BlockPos(this.target.x, this.target.y + d, this.target.z);
 		}
 
 		double e = (double)blockPos.getX() + 0.5;
 		double f = (double)blockPos.getY() + d;
 		double g = (double)blockPos.getZ() + 0.5;
 		Direction direction = null;
-		if (!blockPos.method_19769(this.getPos(), 2.0)) {
+		if (!blockPos.isWithinDistance(this.getPos(), 2.0)) {
 			BlockPos blockPos2 = new BlockPos(this);
 			List<Direction> list = Lists.<Direction>newArrayList();
 			if (axis != Direction.Axis.X) {
@@ -195,7 +195,7 @@ public class ShulkerBulletEntity extends Entity {
 			g = this.z + (double)direction.getOffsetZ();
 		}
 
-		this.method_7487(direction);
+		this.setDirection(direction);
 		double h = e - this.x;
 		double j = f - this.y;
 		double k = g - this.z;
@@ -217,35 +217,33 @@ public class ShulkerBulletEntity extends Entity {
 	@Override
 	public void tick() {
 		if (!this.world.isClient && this.world.getDifficulty() == Difficulty.PEACEFUL) {
-			this.invalidate();
+			this.remove();
 		} else {
 			super.tick();
 			if (!this.world.isClient) {
-				if (this.field_7626 == null && this.field_7632 != null) {
-					for (LivingEntity livingEntity : this.world
-						.method_18467(LivingEntity.class, new BoundingBox(this.field_7631.add(-2, -2, -2), this.field_7631.add(2, 2, 2)))) {
-						if (livingEntity.getUuid().equals(this.field_7632)) {
-							this.field_7626 = livingEntity;
+				if (this.target == null && this.targetUuid != null) {
+					for (LivingEntity livingEntity : this.world.getEntities(LivingEntity.class, new BoundingBox(this.targetPos.add(-2, -2, -2), this.targetPos.add(2, 2, 2)))) {
+						if (livingEntity.getUuid().equals(this.targetUuid)) {
+							this.target = livingEntity;
 							break;
 						}
 					}
 
-					this.field_7632 = null;
+					this.targetUuid = null;
 				}
 
-				if (this.field_7630 == null && this.field_7629 != null) {
-					for (LivingEntity livingEntityx : this.world
-						.method_18467(LivingEntity.class, new BoundingBox(this.field_7634.add(-2, -2, -2), this.field_7634.add(2, 2, 2)))) {
-						if (livingEntityx.getUuid().equals(this.field_7629)) {
-							this.field_7630 = livingEntityx;
+				if (this.owner == null && this.ownerUuid != null) {
+					for (LivingEntity livingEntityx : this.world.getEntities(LivingEntity.class, new BoundingBox(this.ownerPos.add(-2, -2, -2), this.ownerPos.add(2, 2, 2)))) {
+						if (livingEntityx.getUuid().equals(this.ownerUuid)) {
+							this.owner = livingEntityx;
 							break;
 						}
 					}
 
-					this.field_7629 = null;
+					this.ownerUuid = null;
 				}
 
-				if (this.field_7626 == null || !this.field_7626.isValid() || this.field_7626 instanceof PlayerEntity && ((PlayerEntity)this.field_7626).isSpectator()) {
+				if (this.target == null || !this.target.isAlive() || this.target instanceof PlayerEntity && ((PlayerEntity)this.target).isSpectator()) {
 					if (!this.isUnaffectedByGravity()) {
 						this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 					}
@@ -257,9 +255,9 @@ public class ShulkerBulletEntity extends Entity {
 					this.setVelocity(vec3d.add((this.field_7635 - vec3d.x) * 0.2, (this.field_7633 - vec3d.y) * 0.2, (this.field_7625 - vec3d.z) * 0.2));
 				}
 
-				HitResult hitResult = ProjectileUtil.method_18076(this, true, false, this.field_7630, RayTraceContext.ShapeType.field_17558);
+				HitResult hitResult = ProjectileUtil.getCollision(this, true, false, this.owner, RayTraceContext.ShapeType.field_17558);
 				if (hitResult.getType() != HitResult.Type.NONE) {
-					this.method_7488(hitResult);
+					this.onHit(hitResult);
 				}
 			}
 
@@ -268,21 +266,21 @@ public class ShulkerBulletEntity extends Entity {
 			ProjectileUtil.method_7484(this, 0.5F);
 			if (this.world.isClient) {
 				this.world.addParticle(ParticleTypes.field_11207, this.x - vec3d.x, this.y - vec3d.y + 0.15, this.z - vec3d.z, 0.0, 0.0, 0.0);
-			} else if (this.field_7626 != null && !this.field_7626.invalid) {
+			} else if (this.target != null && !this.target.removed) {
 				if (this.field_7627 > 0) {
 					this.field_7627--;
 					if (this.field_7627 == 0) {
-						this.method_7486(this.field_7628 == null ? null : this.field_7628.getAxis());
+						this.method_7486(this.direction == null ? null : this.direction.getAxis());
 					}
 				}
 
-				if (this.field_7628 != null) {
+				if (this.direction != null) {
 					BlockPos blockPos = new BlockPos(this);
-					Direction.Axis axis = this.field_7628.getAxis();
-					if (this.world.doesBlockHaveSolidTopSurface(blockPos.offset(this.field_7628), this)) {
+					Direction.Axis axis = this.direction.getAxis();
+					if (this.world.doesBlockHaveSolidTopSurface(blockPos.offset(this.direction), this)) {
 						this.method_7486(axis);
 					} else {
-						BlockPos blockPos2 = new BlockPos(this.field_7626);
+						BlockPos blockPos2 = new BlockPos(this.target);
 						if (axis == Direction.Axis.X && blockPos.getX() == blockPos2.getX()
 							|| axis == Direction.Axis.Z && blockPos.getZ() == blockPos2.getZ()
 							|| axis == Direction.Axis.Y && blockPos.getY() == blockPos2.getY()) {
@@ -306,7 +304,7 @@ public class ShulkerBulletEntity extends Entity {
 	}
 
 	@Override
-	public float method_5718() {
+	public float getBrightnessAtEyes() {
 		return 1.0F;
 	}
 
@@ -316,26 +314,26 @@ public class ShulkerBulletEntity extends Entity {
 		return 15728880;
 	}
 
-	protected void method_7488(HitResult hitResult) {
+	protected void onHit(HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.ENTITY) {
 			Entity entity = ((EntityHitResult)hitResult).getEntity();
-			boolean bl = entity.damage(DamageSource.mobProjectile(this, this.field_7630).setProjectile(), 4.0F);
+			boolean bl = entity.damage(DamageSource.mobProjectile(this, this.owner).setProjectile(), 4.0F);
 			if (bl) {
-				this.dealDamage(this.field_7630, entity);
+				this.dealDamage(this.owner, entity);
 				if (entity instanceof LivingEntity) {
 					((LivingEntity)entity).addPotionEffect(new StatusEffectInstance(StatusEffects.field_5902, 200));
 				}
 			}
 		} else {
-			((ServerWorld)this.world).method_14199(ParticleTypes.field_11236, this.x, this.y, this.z, 2, 0.2, 0.2, 0.2, 0.0);
+			((ServerWorld)this.world).spawnParticles(ParticleTypes.field_11236, this.x, this.y, this.z, 2, 0.2, 0.2, 0.2, 0.0);
 			this.playSound(SoundEvents.field_14895, 1.0F, 1.0F);
 		}
 
-		this.invalidate();
+		this.remove();
 	}
 
 	@Override
-	public boolean doesCollide() {
+	public boolean collides() {
 		return true;
 	}
 
@@ -343,8 +341,8 @@ public class ShulkerBulletEntity extends Entity {
 	public boolean damage(DamageSource damageSource, float f) {
 		if (!this.world.isClient) {
 			this.playSound(SoundEvents.field_14977, 1.0F, 1.0F);
-			((ServerWorld)this.world).method_14199(ParticleTypes.field_11205, this.x, this.y, this.z, 15, 0.2, 0.2, 0.2, 0.0);
-			this.invalidate();
+			((ServerWorld)this.world).spawnParticles(ParticleTypes.field_11205, this.x, this.y, this.z, 15, 0.2, 0.2, 0.2, 0.0);
+			this.remove();
 		}
 
 		return true;

@@ -38,7 +38,7 @@ import net.minecraft.world.loot.context.LootContextParameters;
 
 public class Explosion {
 	private final boolean createFire;
-	private final Explosion.class_4179 destroyBlocks;
+	private final Explosion.DestructionType blockDestructionType;
 	private final Random random = new Random();
 	private final World world;
 	private final double x;
@@ -52,16 +52,18 @@ public class Explosion {
 
 	@Environment(EnvType.CLIENT)
 	public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, List<BlockPos> list) {
-		this(world, entity, d, e, f, g, false, Explosion.class_4179.field_18687, list);
+		this(world, entity, d, e, f, g, false, Explosion.DestructionType.field_18687, list);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, Explosion.class_4179 arg, List<BlockPos> list) {
-		this(world, entity, d, e, f, g, bl, arg);
+	public Explosion(
+		World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType, List<BlockPos> list
+	) {
+		this(world, entity, d, e, f, g, bl, destructionType);
 		this.affectedBlocks.addAll(list);
 	}
 
-	public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, Explosion.class_4179 arg) {
+	public Explosion(World world, @Nullable Entity entity, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
 		this.world = world;
 		this.entity = entity;
 		this.power = g;
@@ -69,7 +71,7 @@ public class Explosion {
 		this.y = e;
 		this.z = f;
 		this.createFire = bl;
-		this.destroyBlocks = arg;
+		this.blockDestructionType = destructionType;
 		this.damageSource = DamageSource.explosion(this);
 	}
 
@@ -163,7 +165,7 @@ public class Explosion {
 		int t = MathHelper.floor(this.y + (double)r + 1.0);
 		int u = MathHelper.floor(this.z - (double)r - 1.0);
 		int v = MathHelper.floor(this.z + (double)r + 1.0);
-		List<Entity> list = this.world.getVisibleEntities(this.entity, new BoundingBox((double)k, (double)s, (double)u, (double)lx, (double)t, (double)v));
+		List<Entity> list = this.world.getEntities(this.entity, new BoundingBox((double)k, (double)s, (double)u, (double)lx, (double)t, (double)v));
 		Vec3d vec3d = new Vec3d(this.x, this.y, this.z);
 
 		for (int w = 0; w < list.size(); w++) {
@@ -212,7 +214,7 @@ public class Explosion {
 				4.0F,
 				(1.0F + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2F) * 0.7F
 			);
-		boolean bl2 = this.destroyBlocks != Explosion.class_4179.field_18685;
+		boolean bl2 = this.blockDestructionType != Explosion.DestructionType.field_18685;
 		if (!(this.power < 2.0F) && bl2) {
 			this.world.addParticle(ParticleTypes.field_11221, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 		} else {
@@ -251,7 +253,7 @@ public class Explosion {
 							.put(LootContextParameters.field_1232, blockPos)
 							.put(LootContextParameters.field_1229, ItemStack.EMPTY)
 							.putNullable(LootContextParameters.field_1228, blockEntity);
-						if (this.destroyBlocks == Explosion.class_4179.field_18687) {
+						if (this.blockDestructionType == Explosion.DestructionType.field_18687) {
 							builder.put(LootContextParameters.field_1225, this.power);
 						}
 
@@ -306,7 +308,7 @@ public class Explosion {
 		return this.affectedBlocks;
 	}
 
-	public static enum class_4179 {
+	public static enum DestructionType {
 		field_18685,
 		field_18686,
 		field_18687;

@@ -22,9 +22,9 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 		this.prevPosX = d + g;
 		this.prevPosY = e + h;
 		this.prevPosZ = f + i;
-		this.posX = this.prevPosX;
-		this.posY = this.prevPosY;
-		this.posZ = this.prevPosZ;
+		this.x = this.prevPosX;
+		this.y = this.prevPosY;
+		this.z = this.prevPosZ;
 		this.scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.2F);
 		float j = this.random.nextFloat() * 0.6F + 0.4F;
 		this.colorRed = 0.9F * j;
@@ -63,9 +63,9 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
@@ -74,9 +74,9 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 			float g = 1.0F - f;
 			g *= g;
 			g *= g;
-			this.posX = this.startX + this.velocityX * (double)f;
-			this.posY = this.startY + this.velocityY * (double)f - (double)(g * 1.2F);
-			this.posZ = this.startZ + this.velocityZ * (double)f;
+			this.x = this.startX + this.velocityX * (double)f;
+			this.y = this.startY + this.velocityY * (double)f - (double)(g * 1.2F);
+			this.z = this.startZ + this.velocityZ * (double)f;
 		}
 	}
 
@@ -90,7 +90,7 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 
 		public Particle method_3021(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(world, d, e, f, g, h, i);
-			enchantGlyphParticle.method_18140(this.field_17803);
+			enchantGlyphParticle.setSprite(this.field_17803);
 			return enchantGlyphParticle;
 		}
 	}
@@ -105,7 +105,7 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 
 		public Particle method_3020(DefaultParticleType defaultParticleType, World world, double d, double e, double f, double g, double h, double i) {
 			EnchantGlyphParticle enchantGlyphParticle = new EnchantGlyphParticle(world, d, e, f, g, h, i);
-			enchantGlyphParticle.method_18140(this.field_17804);
+			enchantGlyphParticle.setSprite(this.field_17804);
 			return enchantGlyphParticle;
 		}
 	}

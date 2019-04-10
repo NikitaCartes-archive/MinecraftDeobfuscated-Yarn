@@ -2,20 +2,26 @@ package net.minecraft.block;
 
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.client.util.NetworkUtils;
+import net.minecraft.client.block.ColoredBlock;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stat.Stats;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
-public class BeaconBlock extends BlockWithEntity {
+public class BeaconBlock extends BlockWithEntity implements ColoredBlock {
 	public BeaconBlock(Block.Settings settings) {
 		super(settings);
+	}
+
+	@Override
+	public DyeColor getColor() {
+		return DyeColor.field_7952;
 	}
 
 	@Override
@@ -31,7 +37,7 @@ public class BeaconBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BeaconBlockEntity) {
 				playerEntity.openContainer((BeaconBlockEntity)blockEntity);
-				playerEntity.increaseStat(Stats.field_15416);
+				playerEntity.incrementStat(Stats.field_15416);
 			}
 
 			return true;
@@ -61,27 +67,5 @@ public class BeaconBlock extends BlockWithEntity {
 	@Override
 	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.CUTOUT;
-	}
-
-	public static void onStainedGlassAdded(World world, BlockPos blockPos) {
-		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
-			for (int i = blockPos.getY() - 1; i >= 0; i--) {
-				BlockPos blockPos2 = new BlockPos(blockPos.getX(), i, blockPos.getZ());
-				if (!world.isSkyVisible(blockPos2)) {
-					break;
-				}
-
-				BlockState blockState = world.getBlockState(blockPos2);
-				if (blockState.getBlock() == Blocks.field_10327) {
-					world.getServer().execute(() -> {
-						BlockEntity blockEntity = world.getBlockEntity(blockPos2);
-						if (blockEntity instanceof BeaconBlockEntity) {
-							((BeaconBlockEntity)blockEntity).update();
-							world.addBlockAction(blockPos2, Blocks.field_10327, 1, 0);
-						}
-					});
-				}
-			}
-		}));
 	}
 }

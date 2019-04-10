@@ -10,12 +10,12 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.RangedAttacker;
-import net.minecraft.entity.ai.goal.AvoidGoal;
 import net.minecraft.entity.ai.goal.DisableableFollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.ProjectileAttackGoal;
 import net.minecraft.entity.ai.goal.RaidGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -44,15 +44,15 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class WitchEntity extends RaiderEntity implements RangedAttacker {
-	private static final UUID field_7418 = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
-	private static final EntityAttributeModifier field_7416 = new EntityAttributeModifier(
-			field_7418, "Drinking speed penalty", -0.25, EntityAttributeModifier.Operation.field_6328
+	private static final UUID DRINKING_SPEED_PENALTY_MODIFIER_ID = UUID.fromString("5CD17E52-A79A-43D3-A529-90FDE04B181E");
+	private static final EntityAttributeModifier DRINKING_SPEED_PENALTY_MODIFIER = new EntityAttributeModifier(
+			DRINKING_SPEED_PENALTY_MODIFIER_ID, "Drinking speed penalty", -0.25, EntityAttributeModifier.Operation.field_6328
 		)
 		.setSerialize(false);
 	private static final TrackedData<Boolean> DRINKING = DataTracker.registerData(WitchEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private int field_7417;
-	private RaidGoal<RaiderEntity> field_17283;
-	private DisableableFollowTargetGoal<PlayerEntity> field_17284;
+	private int drinkTimeLeft;
+	private RaidGoal<RaiderEntity> raidGoal;
+	private DisableableFollowTargetGoal<PlayerEntity> attackPlayerGoal;
 
 	public WitchEntity(EntityType<? extends WitchEntity> entityType, World world) {
 		super(entityType, world);
@@ -61,16 +61,18 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 	@Override
 	protected void initGoals() {
 		super.initGoals();
-		this.field_17283 = new RaidGoal<>(this, RaiderEntity.class, true, livingEntity -> livingEntity != null && this.hasActiveRaid());
-		this.field_17284 = new DisableableFollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, null);
+		this.raidGoal = new RaidGoal<>(
+			this, RaiderEntity.class, true, livingEntity -> livingEntity != null && this.hasActiveRaid() && livingEntity.getType() != EntityType.WITCH
+		);
+		this.attackPlayerGoal = new DisableableFollowTargetGoal<>(this, PlayerEntity.class, 10, true, false, null);
 		this.goalSelector.add(1, new SwimGoal(this));
 		this.goalSelector.add(2, new ProjectileAttackGoal(this, 1.0, 60, 10.0F));
 		this.goalSelector.add(2, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(3, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.add(3, new LookAroundGoal(this));
-		this.targetSelector.add(1, new AvoidGoal(this, RaiderEntity.class));
-		this.targetSelector.add(2, this.field_17283);
-		this.targetSelector.add(3, this.field_17284);
+		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class));
+		this.targetSelector.add(2, this.raidGoal);
+		this.targetSelector.add(3, this.attackPlayerGoal);
 	}
 
 	@Override
@@ -111,16 +113,16 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 
 	@Override
 	public void updateMovement() {
-		if (!this.world.isClient && this.isValid()) {
-			this.field_17283.method_17353();
-			if (this.field_17283.method_17352() <= 0) {
-				this.field_17284.setEnabled(true);
+		if (!this.world.isClient && this.isAlive()) {
+			this.raidGoal.decreaseCooldown();
+			if (this.raidGoal.getCooldown() <= 0) {
+				this.attackPlayerGoal.setEnabled(true);
 			} else {
-				this.field_17284.setEnabled(false);
+				this.attackPlayerGoal.setEnabled(false);
 			}
 
 			if (this.isDrinking()) {
-				if (this.field_7417-- <= 0) {
+				if (this.drinkTimeLeft-- <= 0) {
 					this.setDrinking(false);
 					ItemStack itemStack = this.getMainHandStack();
 					this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
@@ -133,47 +135,52 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 						}
 					}
 
-					this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(field_7416);
+					this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 				}
 			} else {
 				Potion potion = null;
-				if (this.random.nextFloat() < 0.15F && this.isInFluid(FluidTags.field_15517) && !this.hasPotionEffect(StatusEffects.field_5923)) {
+				if (this.random.nextFloat() < 0.15F && this.isInFluid(FluidTags.field_15517) && !this.hasStatusEffect(StatusEffects.field_5923)) {
 					potion = Potions.field_8994;
 				} else if (this.random.nextFloat() < 0.15F
 					&& (this.isOnFire() || this.getRecentDamageSource() != null && this.getRecentDamageSource().isFire())
-					&& !this.hasPotionEffect(StatusEffects.field_5918)) {
+					&& !this.hasStatusEffect(StatusEffects.field_5918)) {
 					potion = Potions.field_8987;
 				} else if (this.random.nextFloat() < 0.05F && this.getHealth() < this.getHealthMaximum()) {
 					potion = Potions.field_8963;
 				} else if (this.random.nextFloat() < 0.5F
 					&& this.getTarget() != null
-					&& !this.hasPotionEffect(StatusEffects.field_5904)
+					&& !this.hasStatusEffect(StatusEffects.field_5904)
 					&& this.getTarget().squaredDistanceTo(this) > 121.0) {
 					potion = Potions.field_9005;
 				}
 
 				if (potion != null) {
 					this.setEquippedStack(EquipmentSlot.HAND_MAIN, PotionUtil.setPotion(new ItemStack(Items.field_8574), potion));
-					this.field_7417 = this.getMainHandStack().getMaxUseTime();
+					this.drinkTimeLeft = this.getMainHandStack().getMaxUseTime();
 					this.setDrinking(true);
 					this.world.playSound(null, this.x, this.y, this.z, SoundEvents.field_14565, this.getSoundCategory(), 1.0F, 0.8F + this.random.nextFloat() * 0.4F);
 					EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
-					entityAttributeInstance.removeModifier(field_7416);
-					entityAttributeInstance.addModifier(field_7416);
+					entityAttributeInstance.removeModifier(DRINKING_SPEED_PENALTY_MODIFIER);
+					entityAttributeInstance.addModifier(DRINKING_SPEED_PENALTY_MODIFIER);
 				}
 			}
 
 			if (this.random.nextFloat() < 7.5E-4F) {
-				this.world.summonParticle(this, (byte)15);
+				this.world.sendEntityStatus(this, (byte)15);
 			}
 		}
 
 		super.updateMovement();
 	}
 
+	@Override
+	public SoundEvent getCelebratingSound() {
+		return SoundEvents.field_19153;
+	}
+
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 15) {
 			for (int i = 0; i < this.random.nextInt(35) + 10; i++) {
 				this.world
@@ -188,13 +195,13 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 					);
 			}
 		} else {
-			super.method_5711(b);
+			super.handleStatus(b);
 		}
 	}
 
 	@Override
-	protected float method_6036(DamageSource damageSource, float f) {
-		f = super.method_6036(damageSource, f);
+	protected float applyEnchantmentsToDamage(DamageSource damageSource, float f) {
+		f = super.applyEnchantmentsToDamage(damageSource, f);
 		if (damageSource.getAttacker() == this) {
 			f = 0.0F;
 		}
@@ -223,11 +230,11 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 				}
 
 				this.setTarget(null);
-			} else if (h >= 8.0F && !livingEntity.hasPotionEffect(StatusEffects.field_5909)) {
+			} else if (h >= 8.0F && !livingEntity.hasStatusEffect(StatusEffects.field_5909)) {
 				potion = Potions.field_8996;
-			} else if (livingEntity.getHealth() >= 8.0F && !livingEntity.hasPotionEffect(StatusEffects.field_5899)) {
+			} else if (livingEntity.getHealth() >= 8.0F && !livingEntity.hasStatusEffect(StatusEffects.field_5899)) {
 				potion = Potions.field_8982;
-			} else if (h <= 3.0F && !livingEntity.hasPotionEffect(StatusEffects.field_5911) && this.random.nextFloat() < 0.25F) {
+			} else if (h <= 3.0F && !livingEntity.hasStatusEffect(StatusEffects.field_5911) && this.random.nextFloat() < 0.25F) {
 				potion = Potions.field_8975;
 			}
 

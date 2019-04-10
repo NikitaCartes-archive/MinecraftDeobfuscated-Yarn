@@ -9,12 +9,12 @@ public class StopFollowingCustomerGoal extends Goal {
 
 	public StopFollowingCustomerGoal(AbstractTraderEntity abstractTraderEntity) {
 		this.field_6610 = abstractTraderEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!this.field_6610.isValid()) {
+		if (!this.field_6610.isAlive()) {
 			return false;
 		} else if (this.field_6610.isInsideWater()) {
 			return false;
@@ -38,7 +38,7 @@ public class StopFollowingCustomerGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.field_6610.setCurrentCustomer(null);
 	}
 }

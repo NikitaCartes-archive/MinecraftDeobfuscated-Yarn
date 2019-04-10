@@ -2,6 +2,7 @@ package net.minecraft.world.gen.chunk;
 
 import java.util.List;
 import net.minecraft.entity.EntityCategory;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sortme.SpawnHelper;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
@@ -9,9 +10,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
+import net.minecraft.world.gen.CatSpawner;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.PhantomSpawner;
 import net.minecraft.world.gen.PillagerSpawner;
@@ -31,6 +32,7 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	private final boolean amplified;
 	private final PhantomSpawner phantomSpawner = new PhantomSpawner();
 	private final PillagerSpawner pillagerSpawner = new PillagerSpawner();
+	private final CatSpawner field_19181 = new CatSpawner();
 
 	public OverworldChunkGenerator(IWorld iWorld, BiomeSource biomeSource, OverworldChunkGeneratorConfig overworldChunkGeneratorConfig) {
 		super(iWorld, biomeSource, 4, 8, 256, overworldChunkGeneratorConfig, true);
@@ -154,9 +156,10 @@ public class OverworldChunkGenerator extends SurfaceChunkGenerator<OverworldChun
 	}
 
 	@Override
-	public void spawnEntities(World world, boolean bl, boolean bl2) {
-		this.phantomSpawner.spawn(world, bl, bl2);
-		this.pillagerSpawner.spawn(world, bl, bl2);
+	public void spawnEntities(ServerWorld serverWorld, boolean bl, boolean bl2) {
+		this.phantomSpawner.spawn(serverWorld, bl, bl2);
+		this.pillagerSpawner.spawn(serverWorld, bl, bl2);
+		this.field_19181.spawn(serverWorld, bl, bl2);
 	}
 
 	@Override

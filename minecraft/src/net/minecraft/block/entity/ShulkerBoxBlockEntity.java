@@ -72,6 +72,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 					this.method_11316();
 					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
 					this.animationProgress = 1.0F;
+					this.method_20047();
 				}
 				break;
 			case field_12064:
@@ -79,6 +80,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 				if (this.animationProgress <= 0.0F) {
 					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
 					this.animationProgress = 0.0F;
+					this.method_20047();
 				}
 				break;
 			case OPENED:
@@ -95,12 +97,11 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	public BoundingBox getBoundingBox(Direction direction) {
+		float f = this.getAnimationProgress(1.0F);
 		return VoxelShapes.fullCube()
 			.getBoundingBox()
 			.stretch(
-				(double)(0.5F * this.getAnimationProgress(1.0F) * (float)direction.getOffsetX()),
-				(double)(0.5F * this.getAnimationProgress(1.0F) * (float)direction.getOffsetY()),
-				(double)(0.5F * this.getAnimationProgress(1.0F) * (float)direction.getOffsetZ())
+				(double)(0.5F * f * (float)direction.getOffsetX()), (double)(0.5F * f * (float)direction.getOffsetY()), (double)(0.5F * f * (float)direction.getOffsetZ())
 			);
 	}
 
@@ -114,7 +115,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		if (blockState.getBlock() instanceof ShulkerBoxBlock) {
 			Direction direction = blockState.get(ShulkerBoxBlock.FACING);
 			BoundingBox boundingBox = this.method_11315(direction).offset(this.pos);
-			List<Entity> list = this.world.getVisibleEntities(null, boundingBox);
+			List<Entity> list = this.world.getEntities(null, boundingBox);
 			if (!list.isEmpty()) {
 				for (int i = 0; i < list.size(); i++) {
 					Entity entity = (Entity)list.get(i);
@@ -172,16 +173,22 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			this.viewerCount = j;
 			if (j == 0) {
 				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12064;
+				this.method_20047();
 			}
 
 			if (j == 1) {
 				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12066;
+				this.method_20047();
 			}
 
 			return true;
 		} else {
 			return super.onBlockAction(i, j);
 		}
+	}
+
+	private void method_20047() {
+		this.getCachedState().updateNeighborStates(this.getWorld(), this.getPos(), 3);
 	}
 
 	@Override

@@ -50,7 +50,7 @@ public class AlternativeEntry extends CombinedEntry {
 		}
 	}
 
-	public static AlternativeEntry.Builder create(LootEntry.Builder<?>... builders) {
+	public static AlternativeEntry.Builder builder(LootEntry.Builder<?>... builders) {
 		return new AlternativeEntry.Builder(builders);
 	}
 

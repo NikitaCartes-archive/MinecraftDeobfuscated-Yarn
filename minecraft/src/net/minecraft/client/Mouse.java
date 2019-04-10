@@ -2,7 +2,7 @@ package net.minecraft.client;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.InputListener;
+import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.GlfwUtil;
@@ -13,12 +13,12 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class Mouse {
 	private final MinecraftClient client;
-	private boolean field_1791;
-	private boolean field_1790;
-	private boolean field_1788;
+	private boolean leftButtonClicked;
+	private boolean middleButtonClicked;
+	private boolean rightButtonClicked;
 	private double x;
 	private double y;
-	private int field_1781;
+	private int controlLeftTicks;
 	private int activeButton = -1;
 	private boolean hasResolutionChanged = true;
 	private int field_1796;
@@ -42,11 +42,11 @@ public class Mouse {
 				if (bl) {
 					if ((k & 2) == 2) {
 						i = 1;
-						this.field_1781++;
+						this.controlLeftTicks++;
 					}
-				} else if (this.field_1781 > 0) {
+				} else if (this.controlLeftTicks > 0) {
 					i = 1;
-					this.field_1781--;
+					this.controlLeftTicks--;
 				}
 			}
 
@@ -89,11 +89,11 @@ public class Mouse {
 
 			if (!bls[0] && (this.client.currentScreen == null || this.client.currentScreen.passEvents) && this.client.overlay == null) {
 				if (m == 0) {
-					this.field_1791 = bl;
+					this.leftButtonClicked = bl;
 				} else if (m == 2) {
-					this.field_1790 = bl;
+					this.middleButtonClicked = bl;
 				} else if (m == 1) {
-					this.field_1788 = bl;
+					this.rightButtonClicked = bl;
 				}
 
 				KeyBinding.setKeyPressed(InputUtil.Type.field_1672.createFromCode(m), bl);
@@ -155,17 +155,15 @@ public class Mouse {
 				this.hasResolutionChanged = false;
 			}
 
-			InputListener inputListener = this.client.currentScreen;
-			if (inputListener != null && this.client.overlay == null) {
+			Element element = this.client.currentScreen;
+			if (element != null && this.client.overlay == null) {
 				double f = d * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 				double g = e * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
-				Screen.wrapScreenError(() -> inputListener.mouseMoved(f, g), "mouseMoved event handler", inputListener.getClass().getCanonicalName());
+				Screen.wrapScreenError(() -> element.mouseMoved(f, g), "mouseMoved event handler", element.getClass().getCanonicalName());
 				if (this.activeButton != -1 && this.glfwTime > 0.0) {
 					double h = (d - this.x) * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();
 					double i = (e - this.y) * (double)this.client.window.getScaledHeight() / (double)this.client.window.getHeight();
-					Screen.wrapScreenError(
-						() -> inputListener.mouseDragged(f, g, this.activeButton, h, i), "mouseDragged event handler", inputListener.getClass().getCanonicalName()
-					);
+					Screen.wrapScreenError(() -> element.mouseDragged(f, g, this.activeButton, h, i), "mouseDragged event handler", element.getClass().getCanonicalName());
 				}
 			}
 
@@ -210,9 +208,9 @@ public class Mouse {
 				l = -1;
 			}
 
-			this.client.getTutorialManager().method_4908(j, k);
+			this.client.getTutorialManager().onUpdateMouse(j, k);
 			if (this.client.player != null) {
-				this.client.player.method_5872(j, k * (double)l);
+				this.client.player.changeLookDirection(j, k * (double)l);
 			}
 		} else {
 			this.cursorDeltaX = 0.0;
@@ -220,12 +218,12 @@ public class Mouse {
 		}
 	}
 
-	public boolean method_1608() {
-		return this.field_1791;
+	public boolean wasLeftButtonClicked() {
+		return this.leftButtonClicked;
 	}
 
-	public boolean method_1609() {
-		return this.field_1788;
+	public boolean wasRightButtonClicked() {
+		return this.rightButtonClicked;
 	}
 
 	public double getX() {

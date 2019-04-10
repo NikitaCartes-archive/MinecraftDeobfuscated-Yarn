@@ -30,18 +30,18 @@ public class ArmorStandItem extends Item {
 			ItemPlacementContext itemPlacementContext = new ItemPlacementContext(itemUsageContext);
 			BlockPos blockPos = itemPlacementContext.getBlockPos();
 			BlockPos blockPos2 = blockPos.up();
-			if (itemPlacementContext.canPlace() && world.getBlockState(blockPos2).method_11587(itemPlacementContext)) {
+			if (itemPlacementContext.canPlace() && world.getBlockState(blockPos2).canReplace(itemPlacementContext)) {
 				double d = (double)blockPos.getX();
 				double e = (double)blockPos.getY();
 				double f = (double)blockPos.getZ();
-				List<Entity> list = world.getVisibleEntities(null, new BoundingBox(d, e, f, d + 1.0, e + 2.0, f + 1.0));
+				List<Entity> list = world.getEntities(null, new BoundingBox(d, e, f, d + 1.0, e + 2.0, f + 1.0));
 				if (!list.isEmpty()) {
 					return ActionResult.field_5814;
 				} else {
 					ItemStack itemStack = itemUsageContext.getItemStack();
 					if (!world.isClient) {
-						world.clearBlockState(blockPos);
-						world.clearBlockState(blockPos2);
+						world.clearBlockState(blockPos, false);
+						world.clearBlockState(blockPos2, false);
 						ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, d + 0.5, e, f + 0.5);
 						float g = (float)MathHelper.floor((MathHelper.wrapDegrees(itemUsageContext.getPlayerYaw() - 180.0F) + 22.5F) / 45.0F) * 45.0F;
 						armorStandEntity.setPositionAndAngles(d + 0.5, e, f + 0.5, g, 0.0F);

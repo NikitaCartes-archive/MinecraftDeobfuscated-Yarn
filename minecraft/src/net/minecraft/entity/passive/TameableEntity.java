@@ -18,7 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.scoreboard.AbstractScoreboardTeam;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.server.config.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
@@ -43,10 +43,10 @@ public abstract class TameableEntity extends AnimalEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
-		if (this.method_6139() == null) {
+		if (this.getOwnerUuid() == null) {
 			compoundTag.putString("OwnerUUID", "");
 		} else {
-			compoundTag.putString("OwnerUUID", this.method_6139().toString());
+			compoundTag.putString("OwnerUUID", this.getOwnerUuid().toString());
 		}
 
 		compoundTag.putBoolean("Sitting", this.isSitting());
@@ -84,7 +84,7 @@ public abstract class TameableEntity extends AnimalEntity {
 		return !this.isLeashed();
 	}
 
-	protected void method_6180(boolean bl) {
+	protected void showEmoteParticle(boolean bl) {
 		ParticleParameters particleParameters = ParticleTypes.field_11201;
 		if (!bl) {
 			particleParameters = ParticleTypes.field_11251;
@@ -109,13 +109,13 @@ public abstract class TameableEntity extends AnimalEntity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
+	public void handleStatus(byte b) {
 		if (b == 7) {
-			this.method_6180(true);
+			this.showEmoteParticle(true);
 		} else if (b == 6) {
-			this.method_6180(false);
+			this.showEmoteParticle(false);
 		} else {
-			super.method_5711(b);
+			super.handleStatus(b);
 		}
 	}
 
@@ -151,7 +151,7 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Nullable
-	public UUID method_6139() {
+	public UUID getOwnerUuid() {
 		return (UUID)this.dataTracker.get(OWNER_UUID).orElse(null);
 	}
 
@@ -159,7 +159,7 @@ public abstract class TameableEntity extends AnimalEntity {
 		this.dataTracker.set(OWNER_UUID, Optional.ofNullable(uUID));
 	}
 
-	public void method_6170(PlayerEntity playerEntity) {
+	public void setOwner(PlayerEntity playerEntity) {
 		this.setTamed(true);
 		this.setOwnerUuid(playerEntity.getUuid());
 		if (playerEntity instanceof ServerPlayerEntity) {
@@ -170,8 +170,8 @@ public abstract class TameableEntity extends AnimalEntity {
 	@Nullable
 	public LivingEntity getOwner() {
 		try {
-			UUID uUID = this.method_6139();
-			return uUID == null ? null : this.world.method_18470(uUID);
+			UUID uUID = this.getOwnerUuid();
+			return uUID == null ? null : this.world.getPlayerByUuid(uUID);
 		} catch (IllegalArgumentException var2) {
 			return null;
 		}
@@ -190,20 +190,20 @@ public abstract class TameableEntity extends AnimalEntity {
 		return this.sitGoal;
 	}
 
-	public boolean method_6178(LivingEntity livingEntity, LivingEntity livingEntity2) {
+	public boolean canAttackWithOwner(LivingEntity livingEntity, LivingEntity livingEntity2) {
 		return true;
 	}
 
 	@Override
-	public AbstractScoreboardTeam getScoreboardTeam() {
+	public AbstractTeam method_5781() {
 		if (this.isTamed()) {
 			LivingEntity livingEntity = this.getOwner();
 			if (livingEntity != null) {
-				return livingEntity.getScoreboardTeam();
+				return livingEntity.method_5781();
 			}
 		}
 
-		return super.getScoreboardTeam();
+		return super.method_5781();
 	}
 
 	@Override

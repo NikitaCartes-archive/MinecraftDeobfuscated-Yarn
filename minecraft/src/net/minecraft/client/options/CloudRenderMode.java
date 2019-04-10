@@ -12,7 +12,7 @@ public enum CloudRenderMode {
 	field_18163(1, "options.clouds.fast"),
 	field_18164(2, "options.clouds.fancy");
 
-	private static final CloudRenderMode[] field_18165 = (CloudRenderMode[])Arrays.stream(values())
+	private static final CloudRenderMode[] RENDER_MODES = (CloudRenderMode[])Arrays.stream(values())
 		.sorted(Comparator.comparingInt(CloudRenderMode::getRenderModeId))
 		.toArray(CloudRenderMode[]::new);
 	private final int renderModeId;
@@ -31,7 +31,7 @@ public enum CloudRenderMode {
 		return this.renderMode;
 	}
 
-	public static CloudRenderMode method_18497(int i) {
-		return field_18165[MathHelper.floorMod(i, field_18165.length)];
+	public static CloudRenderMode fromId(int i) {
+		return RENDER_MODES[MathHelper.floorMod(i, RENDER_MODES.length)];
 	}
 }

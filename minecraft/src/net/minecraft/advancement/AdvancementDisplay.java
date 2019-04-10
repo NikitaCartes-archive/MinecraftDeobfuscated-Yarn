@@ -102,11 +102,11 @@ public class AdvancementDisplay {
 		return this.hidden;
 	}
 
-	public static AdvancementDisplay deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+	public static AdvancementDisplay fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		TextComponent textComponent = JsonHelper.deserialize(jsonObject, "title", jsonDeserializationContext, TextComponent.class);
 		TextComponent textComponent2 = JsonHelper.deserialize(jsonObject, "description", jsonDeserializationContext, TextComponent.class);
 		if (textComponent != null && textComponent2 != null) {
-			ItemStack itemStack = method_822(JsonHelper.getObject(jsonObject, "icon"));
+			ItemStack itemStack = iconFromJson(JsonHelper.getObject(jsonObject, "icon"));
 			Identifier identifier = jsonObject.has("background") ? new Identifier(JsonHelper.getString(jsonObject, "background")) : null;
 			AdvancementFrame advancementFrame = jsonObject.has("frame") ? AdvancementFrame.forName(JsonHelper.getString(jsonObject, "frame")) : AdvancementFrame.TASK;
 			boolean bl = JsonHelper.getBoolean(jsonObject, "show_toast", true);
@@ -118,7 +118,7 @@ public class AdvancementDisplay {
 		}
 	}
 
-	private static ItemStack method_822(JsonObject jsonObject) {
+	private static ItemStack iconFromJson(JsonObject jsonObject) {
 		if (!jsonObject.has("item")) {
 			throw new JsonSyntaxException("Unsupported icon type, currently only items are supported (add 'item' key)");
 		} else {

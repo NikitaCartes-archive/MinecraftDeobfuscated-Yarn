@@ -67,8 +67,8 @@ public class SimpleAdvancement {
 		}
 	}
 
-	public SimpleAdvancement.Builder createTask() {
-		return new SimpleAdvancement.Builder(this.parent == null ? null : this.parent.getId(), this.display, this.rewards, this.criteria, this.requirements);
+	public SimpleAdvancement.Task createTask() {
+		return new SimpleAdvancement.Task(this.parent == null ? null : this.parent.getId(), this.display, this.rewards, this.criteria, this.requirements);
 	}
 
 	@Nullable
@@ -145,7 +145,7 @@ public class SimpleAdvancement {
 		return this.textComponent;
 	}
 
-	public static class Builder {
+	public static class Task {
 		private Identifier parentId;
 		private SimpleAdvancement parentObj;
 		private AdvancementDisplay display;
@@ -154,7 +154,7 @@ public class SimpleAdvancement {
 		private String[][] requirements;
 		private CriteriaMerger merger = CriteriaMerger.AND;
 
-		private Builder(
+		private Task(
 			@Nullable Identifier identifier,
 			@Nullable AdvancementDisplay advancementDisplay,
 			AdvancementRewards advancementRewards,
@@ -168,24 +168,24 @@ public class SimpleAdvancement {
 			this.requirements = strings;
 		}
 
-		private Builder() {
+		private Task() {
 		}
 
-		public static SimpleAdvancement.Builder create() {
-			return new SimpleAdvancement.Builder();
+		public static SimpleAdvancement.Task create() {
+			return new SimpleAdvancement.Task();
 		}
 
-		public SimpleAdvancement.Builder parent(SimpleAdvancement simpleAdvancement) {
+		public SimpleAdvancement.Task parent(SimpleAdvancement simpleAdvancement) {
 			this.parentObj = simpleAdvancement;
 			return this;
 		}
 
-		public SimpleAdvancement.Builder parent(Identifier identifier) {
+		public SimpleAdvancement.Task parent(Identifier identifier) {
 			this.parentId = identifier;
 			return this;
 		}
 
-		public SimpleAdvancement.Builder display(
+		public SimpleAdvancement.Task display(
 			ItemProvider itemProvider,
 			TextComponent textComponent,
 			TextComponent textComponent2,
@@ -198,25 +198,25 @@ public class SimpleAdvancement {
 			return this.display(new AdvancementDisplay(new ItemStack(itemProvider.getItem()), textComponent, textComponent2, identifier, advancementFrame, bl, bl2, bl3));
 		}
 
-		public SimpleAdvancement.Builder display(AdvancementDisplay advancementDisplay) {
+		public SimpleAdvancement.Task display(AdvancementDisplay advancementDisplay) {
 			this.display = advancementDisplay;
 			return this;
 		}
 
-		public SimpleAdvancement.Builder rewards(AdvancementRewards.Builder builder) {
+		public SimpleAdvancement.Task rewards(AdvancementRewards.Builder builder) {
 			return this.rewards(builder.build());
 		}
 
-		public SimpleAdvancement.Builder rewards(AdvancementRewards advancementRewards) {
+		public SimpleAdvancement.Task rewards(AdvancementRewards advancementRewards) {
 			this.rewards = advancementRewards;
 			return this;
 		}
 
-		public SimpleAdvancement.Builder criterion(String string, CriterionConditions criterionConditions) {
+		public SimpleAdvancement.Task criterion(String string, CriterionConditions criterionConditions) {
 			return this.criterion(string, new AdvancementCriterion(criterionConditions));
 		}
 
-		public SimpleAdvancement.Builder criterion(String string, AdvancementCriterion advancementCriterion) {
+		public SimpleAdvancement.Task criterion(String string, AdvancementCriterion advancementCriterion) {
 			if (this.criteria.containsKey(string)) {
 				throw new IllegalArgumentException("Duplicate criterion " + string);
 			} else {
@@ -225,7 +225,7 @@ public class SimpleAdvancement {
 			}
 		}
 
-		public SimpleAdvancement.Builder criteriaMerger(CriteriaMerger criteriaMerger) {
+		public SimpleAdvancement.Task criteriaMerger(CriteriaMerger criteriaMerger) {
 			this.merger = criteriaMerger;
 			return this;
 		}
@@ -300,7 +300,7 @@ public class SimpleAdvancement {
 			return jsonObject;
 		}
 
-		public void serialize(PacketByteBuf packetByteBuf) {
+		public void toPacket(PacketByteBuf packetByteBuf) {
 			if (this.parentId == null) {
 				packetByteBuf.writeBoolean(false);
 			} else {
@@ -341,10 +341,10 @@ public class SimpleAdvancement {
 				+ '}';
 		}
 
-		public static SimpleAdvancement.Builder deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
+		public static SimpleAdvancement.Task fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			Identifier identifier = jsonObject.has("parent") ? new Identifier(JsonHelper.getString(jsonObject, "parent")) : null;
 			AdvancementDisplay advancementDisplay = jsonObject.has("display")
-				? AdvancementDisplay.deserialize(JsonHelper.getObject(jsonObject, "display"), jsonDeserializationContext)
+				? AdvancementDisplay.fromJson(JsonHelper.getObject(jsonObject, "display"), jsonDeserializationContext)
 				: null;
 			AdvancementRewards advancementRewards = JsonHelper.deserialize(
 				jsonObject, "rewards", AdvancementRewards.NONE, jsonDeserializationContext, AdvancementRewards.class
@@ -403,11 +403,11 @@ public class SimpleAdvancement {
 					}
 				}
 
-				return new SimpleAdvancement.Builder(identifier, advancementDisplay, advancementRewards, map, strings);
+				return new SimpleAdvancement.Task(identifier, advancementDisplay, advancementRewards, map, strings);
 			}
 		}
 
-		public static SimpleAdvancement.Builder deserialize(PacketByteBuf packetByteBuf) {
+		public static SimpleAdvancement.Task fromPacket(PacketByteBuf packetByteBuf) {
 			Identifier identifier = packetByteBuf.readBoolean() ? packetByteBuf.readIdentifier() : null;
 			AdvancementDisplay advancementDisplay = packetByteBuf.readBoolean() ? AdvancementDisplay.fromPacket(packetByteBuf) : null;
 			Map<String, AdvancementCriterion> map = AdvancementCriterion.fromPacket(packetByteBuf);
@@ -421,7 +421,7 @@ public class SimpleAdvancement {
 				}
 			}
 
-			return new SimpleAdvancement.Builder(identifier, advancementDisplay, AdvancementRewards.NONE, map, strings);
+			return new SimpleAdvancement.Task(identifier, advancementDisplay, AdvancementRewards.NONE, map, strings);
 		}
 
 		public Map<String, AdvancementCriterion> getCriteria() {

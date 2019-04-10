@@ -56,19 +56,19 @@ public class AdvancementManager {
 		}
 	}
 
-	public void load(Map<Identifier, SimpleAdvancement.Builder> map) {
+	public void load(Map<Identifier, SimpleAdvancement.Task> map) {
 		Function<Identifier, SimpleAdvancement> function = Functions.forMap(this.advancements, null);
 
 		while (!map.isEmpty()) {
 			boolean bl = false;
-			Iterator<Entry<Identifier, SimpleAdvancement.Builder>> iterator = map.entrySet().iterator();
+			Iterator<Entry<Identifier, SimpleAdvancement.Task>> iterator = map.entrySet().iterator();
 
 			while (iterator.hasNext()) {
-				Entry<Identifier, SimpleAdvancement.Builder> entry = (Entry<Identifier, SimpleAdvancement.Builder>)iterator.next();
+				Entry<Identifier, SimpleAdvancement.Task> entry = (Entry<Identifier, SimpleAdvancement.Task>)iterator.next();
 				Identifier identifier = (Identifier)entry.getKey();
-				SimpleAdvancement.Builder builder = (SimpleAdvancement.Builder)entry.getValue();
-				if (builder.findParent(function)) {
-					SimpleAdvancement simpleAdvancement = builder.build(identifier);
+				SimpleAdvancement.Task task = (SimpleAdvancement.Task)entry.getValue();
+				if (task.findParent(function)) {
+					SimpleAdvancement simpleAdvancement = task.build(identifier);
 					this.advancements.put(identifier, simpleAdvancement);
 					bl = true;
 					iterator.remove();
@@ -87,7 +87,7 @@ public class AdvancementManager {
 			}
 
 			if (!bl) {
-				for (Entry<Identifier, SimpleAdvancement.Builder> entry : map.entrySet()) {
+				for (Entry<Identifier, SimpleAdvancement.Task> entry : map.entrySet()) {
 					LOGGER.error("Couldn't load advancement {}: {}", entry.getKey(), entry.getValue());
 				}
 				break;

@@ -62,7 +62,7 @@ public class WanderingTraderManager {
 	}
 
 	private boolean method_18018() {
-		PlayerEntity playerEntity = this.world.method_18779();
+		PlayerEntity playerEntity = this.world.getRandomAlivePlayer();
 		if (playerEntity == null) {
 			return true;
 		} else if (this.random.nextInt(10) != 0) {
@@ -72,7 +72,7 @@ public class WanderingTraderManager {
 			int i = 48;
 			PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 			Optional<BlockPos> optional = pointOfInterestStorage.getPosition(
-				PointOfInterestType.field_18518.getCompletedCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY
+				PointOfInterestType.field_18518.getCompletionCondition(), blockPosx -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY
 			);
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.method_18017(blockPos2, 48);
@@ -80,7 +80,7 @@ public class WanderingTraderManager {
 				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713.spawn(this.world, null, null, null, blockPos3, SpawnType.field_16467, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int j = 0; j < 2; j++) {
-						this.method_18016(wanderingTraderEntity, 8);
+						this.method_18016(wanderingTraderEntity, 4);
 					}
 
 					this.world.getLevelProperties().setWanderingTraderId(wanderingTraderEntity.getUuid());

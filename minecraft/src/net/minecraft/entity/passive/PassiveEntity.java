@@ -18,8 +18,8 @@ import net.minecraft.world.World;
 public abstract class PassiveEntity extends MobEntityWithAi {
 	private static final TrackedData<Boolean> CHILD = DataTracker.registerData(PassiveEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	protected int breedingAge;
-	protected int field_5948;
-	protected int field_5947;
+	protected int forcedAge;
+	protected int happyTicksRemaining;
 
 	protected PassiveEntity(EntityType<? extends PassiveEntity> entityType, World world) {
 		super(entityType, world);
@@ -28,14 +28,14 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	@Nullable
 	public abstract PassiveEntity createChild(PassiveEntity passiveEntity);
 
-	protected void method_18249(PlayerEntity playerEntity, PassiveEntity passiveEntity) {
+	protected void onPlayerSpawnedChild(PlayerEntity playerEntity, PassiveEntity passiveEntity) {
 	}
 
 	@Override
 	public boolean interactMob(PlayerEntity playerEntity, Hand hand) {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if (item instanceof SpawnEggItem && ((SpawnEggItem)item).method_8018(itemStack.getTag(), this.getType())) {
+		if (item instanceof SpawnEggItem && ((SpawnEggItem)item).isOfSameEntityType(itemStack.getTag(), this.getType())) {
 			if (!this.world.isClient) {
 				PassiveEntity passiveEntity = this.createChild(this);
 				if (passiveEntity != null) {
@@ -46,7 +46,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 						passiveEntity.setCustomName(itemStack.getDisplayName());
 					}
 
-					this.method_18249(playerEntity, passiveEntity);
+					this.onPlayerSpawnedChild(playerEntity, passiveEntity);
 					if (!playerEntity.abilities.creativeMode) {
 						itemStack.subtractAmount(1);
 					}
@@ -73,7 +73,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		}
 	}
 
-	public void method_5620(int i, boolean bl) {
+	public void growUp(int i, boolean bl) {
 		int j = this.getBreedingAge();
 		j += i * 20;
 		if (j > 0) {
@@ -83,19 +83,19 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		int l = j - j;
 		this.setBreedingAge(j);
 		if (bl) {
-			this.field_5948 += l;
-			if (this.field_5947 == 0) {
-				this.field_5947 = 40;
+			this.forcedAge += l;
+			if (this.happyTicksRemaining == 0) {
+				this.happyTicksRemaining = 40;
 			}
 		}
 
 		if (this.getBreedingAge() == 0) {
-			this.setBreedingAge(this.field_5948);
+			this.setBreedingAge(this.forcedAge);
 		}
 	}
 
-	public void method_5615(int i) {
-		this.method_5620(i, false);
+	public void growUp(int i) {
+		this.growUp(i, false);
 	}
 
 	public void setBreedingAge(int i) {
@@ -103,7 +103,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		this.breedingAge = i;
 		if (j < 0 && i >= 0 || j >= 0 && i < 0) {
 			this.dataTracker.set(CHILD, i < 0);
-			this.method_5619();
+			this.onGrowUp();
 		}
 	}
 
@@ -111,14 +111,14 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	public void writeCustomDataToTag(CompoundTag compoundTag) {
 		super.writeCustomDataToTag(compoundTag);
 		compoundTag.putInt("Age", this.getBreedingAge());
-		compoundTag.putInt("ForcedAge", this.field_5948);
+		compoundTag.putInt("ForcedAge", this.forcedAge);
 	}
 
 	@Override
 	public void readCustomDataFromTag(CompoundTag compoundTag) {
 		super.readCustomDataFromTag(compoundTag);
 		this.setBreedingAge(compoundTag.getInt("Age"));
-		this.field_5948 = compoundTag.getInt("ForcedAge");
+		this.forcedAge = compoundTag.getInt("ForcedAge");
 	}
 
 	@Override
@@ -134,8 +134,8 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	public void updateMovement() {
 		super.updateMovement();
 		if (this.world.isClient) {
-			if (this.field_5947 > 0) {
-				if (this.field_5947 % 4 == 0) {
+			if (this.happyTicksRemaining > 0) {
+				if (this.happyTicksRemaining % 4 == 0) {
 					this.world
 						.addParticle(
 							ParticleTypes.field_11211,
@@ -148,9 +148,9 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 						);
 				}
 
-				this.field_5947--;
+				this.happyTicksRemaining--;
 			}
-		} else if (this.isValid()) {
+		} else if (this.isAlive()) {
 			int i = this.getBreedingAge();
 			if (i < 0) {
 				this.setBreedingAge(++i);
@@ -160,7 +160,7 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 		}
 	}
 
-	protected void method_5619() {
+	protected void onGrowUp() {
 	}
 
 	@Override

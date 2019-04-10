@@ -20,7 +20,6 @@ public class PrimedTntEntity extends Entity {
 	public PrimedTntEntity(EntityType<? extends PrimedTntEntity> entityType, World world) {
 		super(entityType, world);
 		this.field_6033 = true;
-		this.fireImmune = true;
 	}
 
 	public PrimedTntEntity(World world, double d, double e, double f, @Nullable LivingEntity livingEntity) {
@@ -41,13 +40,13 @@ public class PrimedTntEntity extends Entity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
 	@Override
-	public boolean doesCollide() {
-		return !this.invalid;
+	public boolean collides() {
+		return !this.removed;
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public class PrimedTntEntity extends Entity {
 
 		this.fuseTimer--;
 		if (this.fuseTimer <= 0) {
-			this.invalidate();
+			this.remove();
 			if (!this.world.isClient) {
 				this.explode();
 			}
@@ -79,7 +78,7 @@ public class PrimedTntEntity extends Entity {
 
 	private void explode() {
 		float f = 4.0F;
-		this.world.createExplosion(this, this.x, this.y + (double)(this.getHeight() / 16.0F), this.z, 4.0F, Explosion.class_4179.field_18686);
+		this.world.createExplosion(this, this.x, this.y + (double)(this.getHeight() / 16.0F), this.z, 4.0F, Explosion.DestructionType.field_18686);
 	}
 
 	@Override

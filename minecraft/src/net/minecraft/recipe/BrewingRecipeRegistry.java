@@ -54,6 +54,18 @@ public class BrewingRecipeRegistry {
 		return false;
 	}
 
+	public static boolean method_20361(Potion potion) {
+		int i = 0;
+
+		for (int j = POTION_RECIPES.size(); i < j; i++) {
+			if (((BrewingRecipeRegistry.Recipe)POTION_RECIPES.get(i)).output == potion) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public static boolean hasRecipe(ItemStack itemStack, ItemStack itemStack2) {
 		return !POTION_TYPE_PREDICATE.test(itemStack) ? false : hasItemRecipe(itemStack, itemStack2) || hasPotionRecipe(itemStack, itemStack2);
 	}

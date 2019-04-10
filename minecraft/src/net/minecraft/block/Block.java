@@ -14,6 +14,7 @@ import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -72,9 +73,10 @@ public class Block implements ItemProvider {
 	protected static final Logger LOGGER = LogManager.getLogger();
 	public static final IdList<BlockState> STATE_IDS = new IdList<>();
 	private static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
-	protected static final VoxelShape field_18966 = VoxelShapes.combineAndSimplify(
+	private static final VoxelShape field_18966 = VoxelShapes.combineAndSimplify(
 		VoxelShapes.fullCube(), createCuboidShape(2.0, 0.0, 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST
 	);
+	private static final VoxelShape field_19061 = createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 10.0);
 	protected final int lightLevel;
 	protected final float hardness;
 	protected final float resistance;
@@ -127,27 +129,21 @@ public class Block implements ItemProvider {
 			)
 			.offset((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 
-		for (Entity entity : world.getVisibleEntities(null, voxelShape.getBoundingBox())) {
+		for (Entity entity : world.getEntities(null, voxelShape.getBoundingBox())) {
 			double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
-			entity.method_5859(entity.x, entity.y + 1.0 + d, entity.z);
+			entity.requestTeleport(entity.x, entity.y + 1.0 + d, entity.z);
 		}
 
 		return blockState2;
 	}
 
 	public static VoxelShape createCuboidShape(double d, double e, double f, double g, double h, double i) {
-		return VoxelShapes.cube(d / 16.0, e / 16.0, f / 16.0, g / 16.0, h / 16.0, i / 16.0);
-	}
-
-	protected static boolean method_16361(BlockView blockView, BlockPos blockPos) {
-		return !VoxelShapes.matchesAnywhere(
-			blockView.getBlockState(blockPos).getCollisionShape(blockView, blockPos).getFace(Direction.UP), field_18966, BooleanBiFunction.ONLY_SECOND
-		);
+		return VoxelShapes.cuboid(d / 16.0, e / 16.0, f / 16.0, g / 16.0, h / 16.0, i / 16.0);
 	}
 
 	@Deprecated
-	public boolean allowsSpawning(BlockState blockState, Entity entity) {
-		return true;
+	public boolean allowsSpawning(BlockState blockState, BlockView blockView, BlockPos blockPos, EntityType<?> entityType) {
+		return isSolidFullSquare(blockState, blockView, blockPos, Direction.UP);
 	}
 
 	@Deprecated
@@ -249,22 +245,13 @@ public class Block implements ItemProvider {
 		this.setDefaultState(this.stateFactory.getDefaultState());
 	}
 
-	protected static boolean method_9553(Block block) {
-		return block instanceof ShulkerBoxBlock
-			|| block instanceof LeavesBlock
-			|| block.matches(BlockTags.field_15487)
-			|| block instanceof StainedGlassBlock
-			|| block == Blocks.field_10327
-			|| block == Blocks.field_10593
-			|| block == Blocks.field_10033
-			|| block == Blocks.field_10171
-			|| block == Blocks.field_10295
-			|| block == Blocks.field_10174
-			|| block == Blocks.field_10502;
-	}
-
-	public static boolean method_9581(Block block) {
-		return method_9553(block) || block == Blocks.field_10560 || block == Blocks.field_10615 || block == Blocks.field_10379;
+	public static boolean canConnect(Block block) {
+		return block instanceof LeavesBlock
+			|| block == Blocks.field_10499
+			|| block == Blocks.field_10147
+			|| block == Blocks.field_10009
+			|| block == Blocks.field_10545
+			|| block == Blocks.field_10261;
 	}
 
 	@Deprecated
@@ -390,6 +377,22 @@ public class Block implements ItemProvider {
 		return VoxelShapes.empty();
 	}
 
+	public static boolean isSolidMediumSquare(BlockView blockView, BlockPos blockPos) {
+		BlockState blockState = blockView.getBlockState(blockPos);
+		return !blockState.matches(BlockTags.field_15503)
+			&& !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(blockView, blockPos).getFace(Direction.UP), field_18966, BooleanBiFunction.ONLY_SECOND);
+	}
+
+	public static boolean isSolidSmallSquare(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
+		BlockState blockState = viewableWorld.getBlockState(blockPos);
+		return !blockState.matches(BlockTags.field_15503)
+			&& !VoxelShapes.matchesAnywhere(blockState.getCollisionShape(viewableWorld, blockPos).getFace(direction), field_19061, BooleanBiFunction.ONLY_SECOND);
+	}
+
+	public static boolean isSolidFullSquare(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
+		return !blockState.matches(BlockTags.field_15503) && isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction);
+	}
+
 	public static boolean isFaceFullSquare(VoxelShape voxelShape, Direction direction) {
 		VoxelShape voxelShape2 = voxelShape.getFace(direction);
 		return isShapeFullCube(voxelShape2);
@@ -423,11 +426,6 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public final boolean usesNeighborLightValues(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return !blockState.isFullOpaque(blockView, blockPos) && blockState.getLightSubtracted(blockView, blockPos) == blockView.getMaxLightLevel();
-	}
-
-	@Deprecated
 	public void onRandomTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		this.onScheduledTick(blockState, world, blockPos, random);
 	}
@@ -444,7 +442,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		DebugRendererInfoManager.sendBlockUpdate(world, blockPos);
 	}
 
@@ -459,7 +457,7 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 	}
 
 	@Deprecated
@@ -712,7 +710,7 @@ public class Block implements ItemProvider {
 	}
 
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
-		world.playEvent(playerEntity, 2001, blockPos, getRawIdFromState(blockState));
+		world.playLevelEvent(playerEntity, 2001, blockPos, getRawIdFromState(blockState));
 	}
 
 	public void onRainTick(World world, BlockPos blockPos) {

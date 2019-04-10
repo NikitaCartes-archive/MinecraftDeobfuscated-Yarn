@@ -8,7 +8,6 @@ import net.minecraft.block.EndPortalFrameBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.entity.EnderEyeEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -42,25 +41,14 @@ public class EnderEyeItem extends Item {
 			world.setBlockState(blockPos, blockState2, 2);
 			world.updateHorizontalAdjacent(blockPos, Blocks.field_10398);
 			itemUsageContext.getItemStack().subtractAmount(1);
-
-			for (int i = 0; i < 16; i++) {
-				double d = (double)((float)blockPos.getX() + (5.0F + random.nextFloat() * 6.0F) / 16.0F);
-				double e = (double)((float)blockPos.getY() + 0.8125F);
-				double f = (double)((float)blockPos.getZ() + (5.0F + random.nextFloat() * 6.0F) / 16.0F);
-				double g = 0.0;
-				double h = 0.0;
-				double j = 0.0;
-				world.addParticle(ParticleTypes.field_11251, d, e, f, 0.0, 0.0, 0.0);
-			}
-
-			world.playSound(null, blockPos, SoundEvents.field_14874, SoundCategory.field_15245, 1.0F, 1.0F);
+			world.method_20290(1503, blockPos, 0);
 			BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
 			if (result != null) {
 				BlockPos blockPos2 = result.getFrontTopLeft().add(-3, 0, -3);
 
-				for (int k = 0; k < 3; k++) {
-					for (int l = 0; l < 3; l++) {
-						world.setBlockState(blockPos2.add(k, 0, l), Blocks.field_10027.getDefaultState(), 2);
+				for (int i = 0; i < 3; i++) {
+					for (int j = 0; j < 3; j++) {
+						world.setBlockState(blockPos2.add(i, 0, j), Blocks.field_10027.getDefaultState(), 2);
 					}
 				}
 
@@ -93,7 +81,7 @@ public class EnderEyeItem extends Item {
 					world.playSound(
 						null, playerEntity.x, playerEntity.y, playerEntity.z, SoundEvents.field_15155, SoundCategory.field_15254, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F)
 					);
-					world.playEvent(null, 1003, new BlockPos(playerEntity), 0);
+					world.playLevelEvent(null, 1003, new BlockPos(playerEntity), 0);
 					if (!playerEntity.abilities.creativeMode) {
 						itemStack.subtractAmount(1);
 					}

@@ -18,7 +18,7 @@ import net.minecraft.util.PacketByteBuf;
 
 public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private boolean clearCurrent;
-	private Map<Identifier, SimpleAdvancement.Builder> toEarn;
+	private Map<Identifier, SimpleAdvancement.Task> toEarn;
 	private Set<Identifier> toRemove;
 	private Map<Identifier, AdvancementProgress> toSetProgress;
 
@@ -27,7 +27,7 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 
 	public AdvancementUpdateS2CPacket(boolean bl, Collection<SimpleAdvancement> collection, Set<Identifier> set, Map<Identifier, AdvancementProgress> map) {
 		this.clearCurrent = bl;
-		this.toEarn = Maps.<Identifier, SimpleAdvancement.Builder>newHashMap();
+		this.toEarn = Maps.<Identifier, SimpleAdvancement.Task>newHashMap();
 
 		for (SimpleAdvancement simpleAdvancement : collection) {
 			this.toEarn.put(simpleAdvancement.getId(), simpleAdvancement.createTask());
@@ -44,15 +44,15 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.clearCurrent = packetByteBuf.readBoolean();
-		this.toEarn = Maps.<Identifier, SimpleAdvancement.Builder>newHashMap();
+		this.toEarn = Maps.<Identifier, SimpleAdvancement.Task>newHashMap();
 		this.toRemove = Sets.<Identifier>newLinkedHashSet();
 		this.toSetProgress = Maps.<Identifier, AdvancementProgress>newHashMap();
 		int i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
 			Identifier identifier = packetByteBuf.readIdentifier();
-			SimpleAdvancement.Builder builder = SimpleAdvancement.Builder.deserialize(packetByteBuf);
-			this.toEarn.put(identifier, builder);
+			SimpleAdvancement.Task task = SimpleAdvancement.Task.fromPacket(packetByteBuf);
+			this.toEarn.put(identifier, task);
 		}
 
 		i = packetByteBuf.readVarInt();
@@ -75,11 +75,11 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		packetByteBuf.writeBoolean(this.clearCurrent);
 		packetByteBuf.writeVarInt(this.toEarn.size());
 
-		for (Entry<Identifier, SimpleAdvancement.Builder> entry : this.toEarn.entrySet()) {
+		for (Entry<Identifier, SimpleAdvancement.Task> entry : this.toEarn.entrySet()) {
 			Identifier identifier = (Identifier)entry.getKey();
-			SimpleAdvancement.Builder builder = (SimpleAdvancement.Builder)entry.getValue();
+			SimpleAdvancement.Task task = (SimpleAdvancement.Task)entry.getValue();
 			packetByteBuf.writeIdentifier(identifier);
-			builder.serialize(packetByteBuf);
+			task.toPacket(packetByteBuf);
 		}
 
 		packetByteBuf.writeVarInt(this.toRemove.size());
@@ -97,7 +97,7 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Map<Identifier, SimpleAdvancement.Builder> getAdvancementsToEarn() {
+	public Map<Identifier, SimpleAdvancement.Task> getAdvancementsToEarn() {
 		return this.toEarn;
 	}
 

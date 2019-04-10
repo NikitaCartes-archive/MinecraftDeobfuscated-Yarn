@@ -34,9 +34,9 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	@Override
 	protected void initAttributes() {
 		super.initAttributes();
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)this.method_6754());
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue((double)this.getChildHealthBonus());
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.175F);
-		this.getAttributeInstance(ATTR_JUMP_STRENGTH).setBaseValue(0.5);
+		this.getAttributeInstance(JUMP_STRENGTH).setBaseValue(0.5);
 	}
 
 	public boolean hasChest() {
@@ -58,8 +58,8 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected SoundEvent method_6747() {
-		super.method_6747();
+	protected SoundEvent getAngrySound() {
+		super.getAngrySound();
 		return SoundEvents.field_14661;
 	}
 
@@ -82,8 +82,8 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		if (this.hasChest()) {
 			ListTag listTag = new ListTag();
 
-			for (int i = 2; i < this.decorationItem.getInvSize(); i++) {
-				ItemStack itemStack = this.decorationItem.getInvStack(i);
+			for (int i = 2; i < this.items.getInvSize(); i++) {
+				ItemStack itemStack = this.items.getInvStack(i);
 				if (!itemStack.isEmpty()) {
 					CompoundTag compoundTag2 = new CompoundTag();
 					compoundTag2.putByte("Slot", (byte)i);
@@ -107,17 +107,17 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag2 = listTag.getCompoundTag(i);
 				int j = compoundTag2.getByte("Slot") & 255;
-				if (j >= 2 && j < this.decorationItem.getInvSize()) {
-					this.decorationItem.setInvStack(j, ItemStack.fromTag(compoundTag2));
+				if (j >= 2 && j < this.items.getInvSize()) {
+					this.items.setInvStack(j, ItemStack.fromTag(compoundTag2));
 				}
 			}
 		}
 
-		this.method_6731();
+		this.updateSaddle();
 	}
 
 	@Override
-	public boolean method_5758(int i, ItemStack itemStack) {
+	public boolean equip(int i, ItemStack itemStack) {
 		if (i == 499) {
 			if (this.hasChest() && itemStack.isEmpty()) {
 				this.setHasChest(false);
@@ -132,7 +132,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			}
 		}
 
-		return super.method_5758(i, itemStack);
+		return super.equip(i, itemStack);
 	}
 
 	@Override
@@ -143,7 +143,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 		} else {
 			if (!this.isChild()) {
 				if (this.isTame() && playerEntity.isSneaking()) {
-					this.method_6722(playerEntity);
+					this.openInventory(playerEntity);
 					return true;
 				}
 
@@ -153,26 +153,26 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			}
 
 			if (!itemStack.isEmpty()) {
-				boolean bl = this.method_6742(playerEntity, itemStack);
+				boolean bl = this.receiveFood(playerEntity, itemStack);
 				if (!bl) {
 					if (!this.isTame() || itemStack.getItem() == Items.field_8448) {
 						if (itemStack.interactWithEntity(playerEntity, this, hand)) {
 							return true;
 						} else {
-							this.method_6757();
+							this.playAngrySound();
 							return true;
 						}
 					}
 
 					if (!this.hasChest() && itemStack.getItem() == Blocks.field_10034.getItem()) {
 						this.setHasChest(true);
-						this.method_6705();
+						this.playAddChestSound();
 						bl = true;
 						this.method_6721();
 					}
 
 					if (!this.isChild() && !this.isSaddled() && itemStack.getItem() == Items.field_8175) {
-						this.method_6722(playerEntity);
+						this.openInventory(playerEntity);
 						return true;
 					}
 				}
@@ -189,13 +189,13 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 			if (this.isChild()) {
 				return super.interactMob(playerEntity, hand);
 			} else {
-				this.method_6726(playerEntity);
+				this.putPlayerOnBack(playerEntity);
 				return true;
 			}
 		}
 	}
 
-	protected void method_6705() {
+	protected void playAddChestSound() {
 		this.playSound(SoundEvents.field_14598, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 	}
 

@@ -143,7 +143,7 @@ public class ItemModelGenerator {
 		int j = sprite.getHeight();
 		List<ItemModelGenerator.class_802> list = Lists.<ItemModelGenerator.class_802>newArrayList();
 
-		for (int k = 0; k < sprite.method_4592(); k++) {
+		for (int k = 0; k < sprite.getFrameCount(); k++) {
 			for (int l = 0; l < j; l++) {
 				for (int m = 0; m < i; m++) {
 					boolean bl = !this.method_3477(sprite, k, m, l, i, j);

@@ -22,9 +22,9 @@ public abstract class Particle {
 	protected double prevPosX;
 	protected double prevPosY;
 	protected double prevPosZ;
-	protected double posX;
-	protected double posY;
-	protected double posZ;
+	protected double x;
+	protected double y;
+	protected double z;
 	protected double velocityX;
 	protected double velocityY;
 	protected double velocityZ;
@@ -101,9 +101,9 @@ public abstract class Particle {
 	}
 
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
@@ -126,11 +126,11 @@ public abstract class Particle {
 	public String toString() {
 		return this.getClass().getSimpleName()
 			+ ", Pos ("
-			+ this.posX
+			+ this.x
 			+ ","
-			+ this.posY
+			+ this.y
 			+ ","
-			+ this.posZ
+			+ this.z
 			+ "), RGBA ("
 			+ this.colorRed
 			+ ","
@@ -161,9 +161,9 @@ public abstract class Particle {
 	}
 
 	public void setPos(double d, double e, double f) {
-		this.posX = d;
-		this.posY = e;
-		this.posZ = f;
+		this.x = d;
+		this.y = e;
+		this.z = f;
 		float g = this.spacingXZ / 2.0F;
 		float h = this.spacingY;
 		this.setBoundingBox(new BoundingBox(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g));
@@ -199,13 +199,13 @@ public abstract class Particle {
 
 	protected void repositionFromBoundingBox() {
 		BoundingBox boundingBox = this.getBoundingBox();
-		this.posX = (boundingBox.minX + boundingBox.maxX) / 2.0;
-		this.posY = boundingBox.minY;
-		this.posZ = (boundingBox.minZ + boundingBox.maxZ) / 2.0;
+		this.x = (boundingBox.minX + boundingBox.maxX) / 2.0;
+		this.y = boundingBox.minY;
+		this.z = (boundingBox.minZ + boundingBox.maxZ) / 2.0;
 	}
 
 	protected int getColorMultiplier(float f) {
-		BlockPos blockPos = new BlockPos(this.posX, this.posY, this.posZ);
+		BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 		return this.world.isBlockLoaded(blockPos) ? this.world.getLightmapIndex(blockPos, 0) : 0;
 	}
 

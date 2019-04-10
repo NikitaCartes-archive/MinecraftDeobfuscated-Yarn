@@ -27,7 +27,7 @@ public class EggItem extends Item {
 		);
 		if (!world.isClient) {
 			ThrownEggEntity thrownEggEntity = new ThrownEggEntity(world, playerEntity);
-			thrownEggEntity.method_16940(itemStack);
+			thrownEggEntity.setItem(itemStack);
 			thrownEggEntity.method_19207(playerEntity, playerEntity.pitch, playerEntity.yaw, 0.0F, 1.5F, 1.0F);
 			world.spawnEntity(thrownEggEntity);
 		}

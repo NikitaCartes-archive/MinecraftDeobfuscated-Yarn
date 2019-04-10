@@ -78,7 +78,7 @@ public class Blocks {
 			new DarkOakSaplingGenerator(), Block.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.GRASS)
 		)
 	);
-	public static final Block field_9987 = register("bedrock", new Block(Block.Settings.of(Material.STONE).strength(-1.0F, 3600000.0F).dropsNothing()));
+	public static final Block field_9987 = register("bedrock", new BedrockBlock(Block.Settings.of(Material.STONE).strength(-1.0F, 3600000.0F).dropsNothing()));
 	public static final Block field_10382 = register(
 		"water", new FluidBlock(Fluids.WATER, Block.Settings.of(Material.WATER).noCollision().strength(100.0F).dropsNothing())
 	);
@@ -325,13 +325,13 @@ public class Blocks {
 		"moving_piston", new PistonExtensionBlock(Block.Settings.of(Material.PISTON).strength(-1.0F).hasDynamicBounds().dropsNothing())
 	);
 	public static final Block field_10182 = register(
-		"dandelion", new FlowerBlock(StatusEffects.field_5922, 5, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
+		"dandelion", new FlowerBlock(StatusEffects.field_5922, 7, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block field_10449 = register(
 		"poppy", new FlowerBlock(StatusEffects.field_5904, 6, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block field_10086 = register(
-		"blue_orchid", new FlowerBlock(StatusEffects.field_5922, 5, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
+		"blue_orchid", new FlowerBlock(StatusEffects.field_5922, 7, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block field_10226 = register(
 		"allium", new FlowerBlock(StatusEffects.field_5918, 4, Block.Settings.of(Material.PLANT).noCollision().breakInstantly().sounds(BlockSoundGroup.GRASS))

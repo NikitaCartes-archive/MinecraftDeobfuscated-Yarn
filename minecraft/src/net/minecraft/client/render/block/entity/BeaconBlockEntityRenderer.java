@@ -16,28 +16,26 @@ public class BeaconBlockEntityRenderer extends BlockEntityRenderer<BeaconBlockEn
 	private static final Identifier BEAM_TEX = new Identifier("textures/entity/beacon_beam.png");
 
 	public void method_3541(BeaconBlockEntity beaconBlockEntity, double d, double e, double f, float g, int i) {
-		this.render(d, e, f, (double)g, (double)beaconBlockEntity.getBeamTextureOffset(), beaconBlockEntity.getBeamSegments(), beaconBlockEntity.getWorld().getTime());
+		this.render(d, e, f, (double)g, beaconBlockEntity.getBeamSegments(), beaconBlockEntity.getWorld().getTime());
 	}
 
-	private void render(double d, double e, double f, double g, double h, List<BeaconBlockEntity.BeamSegment> list, long l) {
+	private void render(double d, double e, double f, double g, List<BeaconBlockEntity.BeamSegment> list, long l) {
 		GlStateManager.alphaFunc(516, 0.1F);
 		this.bindTexture(BEAM_TEX);
-		if (h > 0.0) {
-			GlStateManager.disableFog();
-			int i = 0;
+		GlStateManager.disableFog();
+		int i = 0;
 
-			for (int j = 0; j < list.size(); j++) {
-				BeaconBlockEntity.BeamSegment beamSegment = (BeaconBlockEntity.BeamSegment)list.get(j);
-				renderBeaconLightBeam(d, e, f, g, h, l, i, beamSegment.getHeight(), beamSegment.getColor());
-				i += beamSegment.getHeight();
-			}
-
-			GlStateManager.enableFog();
+		for (int j = 0; j < list.size(); j++) {
+			BeaconBlockEntity.BeamSegment beamSegment = (BeaconBlockEntity.BeamSegment)list.get(j);
+			renderBeaconLightBeam(d, e, f, g, l, i, j == list.size() - 1 ? 1024 : beamSegment.getHeight(), beamSegment.getColor());
+			i += beamSegment.getHeight();
 		}
+
+		GlStateManager.enableFog();
 	}
 
-	private static void renderBeaconLightBeam(double d, double e, double f, double g, double h, long l, int i, int j, float[] fs) {
-		renderLightBeam(d, e, f, g, h, l, i, j, fs, 0.2, 0.25);
+	private static void renderBeaconLightBeam(double d, double e, double f, double g, long l, int i, int j, float[] fs) {
+		renderLightBeam(d, e, f, g, 1.0, l, i, j, fs, 0.2, 0.25);
 	}
 
 	public static void renderLightBeam(double d, double e, double f, double g, double h, long l, int i, int j, float[] fs, double k, double m) {

@@ -23,18 +23,18 @@ import net.minecraft.world.loot.condition.LootCondition;
 import net.minecraft.world.loot.context.LootContext;
 
 public class SetAttributesLootFunction extends ConditionalLootFunction {
-	private final List<SetAttributesLootFunction.Attribute> field_1105;
+	private final List<SetAttributesLootFunction.Attribute> attributes;
 
 	private SetAttributesLootFunction(LootCondition[] lootConditions, List<SetAttributesLootFunction.Attribute> list) {
 		super(lootConditions);
-		this.field_1105 = ImmutableList.copyOf(list);
+		this.attributes = ImmutableList.copyOf(list);
 	}
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
 		Random random = lootContext.getRandom();
 
-		for (SetAttributesLootFunction.Attribute attribute : this.field_1105) {
+		for (SetAttributesLootFunction.Attribute attribute : this.attributes) {
 			UUID uUID = attribute.id;
 			if (uUID == null) {
 				uUID = UUID.randomUUID();
@@ -42,9 +42,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 			EquipmentSlot equipmentSlot = attribute.slots[random.nextInt(attribute.slots.length)];
 			itemStack.addAttributeModifier(
-				attribute.attribute,
-				new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amountRange.nextFloat(random), attribute.field_1109),
-				equipmentSlot
+				attribute.attribute, new EntityAttributeModifier(uUID, attribute.name, (double)attribute.amountRange.nextFloat(random), attribute.operation), equipmentSlot
 			);
 		}
 
@@ -54,7 +52,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 	static class Attribute {
 		private final String name;
 		private final String attribute;
-		private final EntityAttributeModifier.Operation field_1109;
+		private final EntityAttributeModifier.Operation operation;
 		private final UniformLootTableRange amountRange;
 		@Nullable
 		private final UUID id;
@@ -70,7 +68,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		) {
 			this.name = string;
 			this.attribute = string2;
-			this.field_1109 = operation;
+			this.operation = operation;
 			this.amountRange = uniformLootTableRange;
 			this.id = uUID;
 			this.slots = equipmentSlots;
@@ -80,7 +78,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.addProperty("name", this.name);
 			jsonObject.addProperty("attribute", this.attribute);
-			jsonObject.addProperty("operation", method_612(this.field_1109));
+			jsonObject.addProperty("operation", getName(this.operation));
 			jsonObject.add("amount", jsonSerializationContext.serialize(this.amountRange));
 			if (this.id != null) {
 				jsonObject.addProperty("id", this.id.toString());
@@ -104,7 +102,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 		public static SetAttributesLootFunction.Attribute deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			String string = JsonHelper.getString(jsonObject, "name");
 			String string2 = JsonHelper.getString(jsonObject, "attribute");
-			EntityAttributeModifier.Operation operation = method_609(JsonHelper.getString(jsonObject, "operation"));
+			EntityAttributeModifier.Operation operation = fromName(JsonHelper.getString(jsonObject, "operation"));
 			UniformLootTableRange uniformLootTableRange = JsonHelper.deserialize(jsonObject, "amount", jsonDeserializationContext, UniformLootTableRange.class);
 			UUID uUID = null;
 			EquipmentSlot[] equipmentSlots;
@@ -141,7 +139,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			return new SetAttributesLootFunction.Attribute(string, string2, operation, uniformLootTableRange, equipmentSlots, uUID);
 		}
 
-		private static String method_612(EntityAttributeModifier.Operation operation) {
+		private static String getName(EntityAttributeModifier.Operation operation) {
 			switch (operation) {
 				case field_6328:
 					return "addition";
@@ -154,7 +152,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			}
 		}
 
-		private static EntityAttributeModifier.Operation method_609(String string) {
+		private static EntityAttributeModifier.Operation fromName(String string) {
 			switch (string) {
 				case "addition":
 					return EntityAttributeModifier.Operation.field_6328;
@@ -177,7 +175,7 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 			super.method_529(jsonObject, setAttributesLootFunction, jsonSerializationContext);
 			JsonArray jsonArray = new JsonArray();
 
-			for (SetAttributesLootFunction.Attribute attribute : setAttributesLootFunction.field_1105) {
+			for (SetAttributesLootFunction.Attribute attribute : setAttributesLootFunction.attributes) {
 				jsonArray.add(attribute.serialize(jsonSerializationContext));
 			}
 

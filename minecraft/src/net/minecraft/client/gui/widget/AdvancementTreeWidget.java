@@ -82,7 +82,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 		}
 
 		GlStateManager.depthFunc(518);
-		drawRect(0, 0, 234, 113, -16777216);
+		fill(0, 0, 234, 113, -16777216);
 		GlStateManager.depthFunc(515);
 		Identifier identifier = this.field_2695.getBackground();
 		if (identifier != null) {
@@ -99,7 +99,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 
 		for (int m = -1; m <= 15; m++) {
 			for (int n = -1; n <= 8; n++) {
-				drawTexturedRect(k + 16 * m, l + 16 * n, 0.0F, 0.0F, 16, 16, 16.0F, 16.0F);
+				blit(k + 16 * m, l + 16 * n, 0.0F, 0.0F, 16, 16, 16, 16);
 			}
 		}
 
@@ -111,7 +111,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	public void method_2314(int i, int j, int k, int l) {
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(0.0F, 0.0F, 200.0F);
-		drawRect(0, 0, 234, 113, MathHelper.floor(this.field_2688 * 255.0F) << 24);
+		fill(0, 0, 234, 113, MathHelper.floor(this.field_2688 * 255.0F) << 24);
 		boolean bl = false;
 		int m = MathHelper.floor(this.field_2690);
 		int n = MathHelper.floor(this.field_2689);

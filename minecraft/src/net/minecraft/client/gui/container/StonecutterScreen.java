@@ -37,20 +37,20 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer.draw(this.title.getFormattedText(), 8.0F, 4.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 94), 4210752);
+		this.font.draw(this.title.getFormattedText(), 8.0F, 4.0F, 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 94), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
-		this.drawBackground();
+		this.renderBackground();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
 		int k = this.left;
 		int l = this.top;
-		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
+		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
 		int m = (int)(41.0F * this.scrollAmount);
-		this.drawTexturedRect(k + 119, l + 15 + m, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
+		this.blit(k + 119, l + 15 + m, 176 + (this.shouldScroll() ? 0 : 12), 0, 12, 15);
 		int n = this.left + 52;
 		int o = this.top + 14;
 		int p = this.scrollOffset + 12;
@@ -64,14 +64,14 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 			int p = k + o % 4 * 16;
 			int q = o / 4;
 			int r = l + q * 18 + 2;
-			int s = this.height;
+			int s = this.containerHeight;
 			if (n == this.container.getSelectedRecipe()) {
 				s += 18;
 			} else if (i >= p && j >= r && i < p + 16 && j < r + 18) {
 				s += 36;
 			}
 
-			this.drawTexturedRect(p, r - 1, 0, s, 16, 18);
+			this.blit(p, r - 1, 0, s, 16, 18);
 		}
 	}
 
@@ -84,7 +84,7 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 			int n = i + m % 4 * 16;
 			int o = m / 4;
 			int p = j + o * 18 + 2;
-			this.client.getItemRenderer().renderGuiItem(((StonecuttingRecipe)list.get(l)).getOutput(), n, p);
+			this.minecraft.getItemRenderer().renderGuiItem(((StonecuttingRecipe)list.get(l)).getOutput(), n, p);
 		}
 
 		GuiLighting.disable();
@@ -102,9 +102,9 @@ public class StonecutterScreen extends ContainerScreen<StonecutterContainer> {
 				int n = m - this.scrollOffset;
 				double f = d - (double)(j + n % 4 * 16);
 				double g = e - (double)(k + n / 4 * 18);
-				if (f >= 0.0 && g >= 0.0 && f < 16.0 && g < 18.0 && this.container.onButtonClick(this.client.player, m)) {
+				if (f >= 0.0 && g >= 0.0 && f < 16.0 && g < 18.0 && this.container.onButtonClick(this.minecraft.player, m)) {
 					MinecraftClient.getInstance().getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_17711, 1.0F));
-					this.client.interactionManager.clickButton(this.container.syncId, m);
+					this.minecraft.interactionManager.clickButton(this.container.syncId, m);
 					return true;
 				}
 			}

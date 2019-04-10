@@ -2,7 +2,6 @@ package net.minecraft.world.level;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.mojang.datafixers.DataFixTypes;
 import com.mojang.datafixers.DataFixer;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.JsonOps;
@@ -14,6 +13,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -415,7 +415,7 @@ public class LevelProperties {
 					throw new NullPointerException("Fixer Upper not set inside LevelData, and the player tag is not upgraded.");
 				}
 
-				this.playerData = TagHelper.update(this.dataFixer, DataFixTypes.PLAYER, this.playerData, this.playerWorldId);
+				this.playerData = TagHelper.update(this.dataFixer, DataFixTypes.field_19213, this.playerData, this.playerWorldId);
 			}
 
 			this.dimension = this.playerData.getInt("Dimension");

@@ -157,6 +157,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"sweet_berry_bush",
 		new WildCropFeature(DefaultFeatureConfig::deserialize, Blocks.field_16999.getDefaultState().with(SweetBerryBushBlock.AGE, Integer.valueOf(3)))
 	);
+	public static final Feature<FillLayerFeatureConfig> field_19201 = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig::deserialize));
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig::deserialize));
 	public static final BiMap<String, StructureFeature<?>> STRUCTURES = SystemUtil.consume(HashBiMap.create(), hashBiMap -> {
 		hashBiMap.put("Pillager_Outpost".toLowerCase(Locale.ROOT), PILLAGER_OUTPOST);

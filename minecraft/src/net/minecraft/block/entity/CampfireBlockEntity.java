@@ -61,7 +61,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 					Inventory inventory = new BasicInventory(itemStack);
 					ItemStack itemStack2 = (ItemStack)this.world
 						.getRecipeManager()
-						.get(RecipeType.CAMPFIRE_COOKING, inventory, this.world)
+						.getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, this.world)
 						.map(campfireCookingRecipe -> campfireCookingRecipe.craft(inventory))
 						.orElse(itemStack);
 					BlockPos blockPos = this.getPos();
@@ -156,7 +156,7 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack itemStack) {
 		return this.itemsBeingCooked.stream().noneMatch(ItemStack::isEmpty)
 			? Optional.empty()
-			: this.world.getRecipeManager().get(RecipeType.CAMPFIRE_COOKING, new BasicInventory(itemStack), this.world);
+			: this.world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, new BasicInventory(itemStack), this.world);
 	}
 
 	public boolean addItem(ItemStack itemStack, int i) {

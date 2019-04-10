@@ -52,7 +52,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 			if (itemStack.isEmpty()) {
 				return false;
 			} else {
-				MapState mapState = FilledMapItem.method_8001(itemStack, world);
+				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, world);
 				if (mapState == null) {
 					return false;
 				} else {

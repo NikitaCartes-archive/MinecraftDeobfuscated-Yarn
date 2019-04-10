@@ -15,9 +15,9 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 
 	public void method_4181(AbstractClientPlayerEntity abstractClientPlayerEntity, float f, float g, float h, float i, float j, float k, float l) {
 		if ("deadmau5".equals(abstractClientPlayerEntity.getName().getString())
-			&& abstractClientPlayerEntity.method_3127()
+			&& abstractClientPlayerEntity.hasSkinTexture()
 			&& !abstractClientPlayerEntity.isInvisible()) {
-			this.bindTexture(abstractClientPlayerEntity.method_3117());
+			this.bindTexture(abstractClientPlayerEntity.getSkinTexture());
 
 			for (int m = 0; m < 2; m++) {
 				float n = MathHelper.lerp(h, abstractClientPlayerEntity.prevYaw, abstractClientPlayerEntity.yaw)
@@ -32,14 +32,14 @@ public class Deadmau5FeatureRenderer extends FeatureRenderer<AbstractClientPlaye
 				GlStateManager.rotatef(-n, 0.0F, 1.0F, 0.0F);
 				float p = 1.3333334F;
 				GlStateManager.scalef(1.3333334F, 1.3333334F, 1.3333334F);
-				this.getModel().method_2824(0.0625F);
+				this.getModel().renderEars(0.0625F);
 				GlStateManager.popMatrix();
 			}
 		}
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return true;
 	}
 }

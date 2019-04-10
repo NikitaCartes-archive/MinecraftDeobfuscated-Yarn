@@ -153,7 +153,7 @@ public class ChunkRenderWorker implements Runnable {
 					return;
 				}
 
-				chunkRenderTask.getChunkRenderer().method_3665(chunkRenderData);
+				chunkRenderTask.getChunkRenderer().setChunkRenderData(chunkRenderData);
 			}
 
 			@Override

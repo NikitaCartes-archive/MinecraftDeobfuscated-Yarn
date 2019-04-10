@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -41,7 +42,7 @@ public class BarrelBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BarrelBlockEntity) {
 				playerEntity.openContainer((BarrelBlockEntity)blockEntity);
-				playerEntity.increaseStat(Stats.field_17271);
+				playerEntity.incrementStat(Stats.field_17271);
 			}
 
 			return true;
@@ -58,6 +59,14 @@ public class BarrelBlock extends BlockWithEntity {
 			}
 
 			super.onBlockRemoved(blockState, world, blockPos, blockState2, bl);
+		}
+	}
+
+	@Override
+	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+		if (blockEntity instanceof BarrelBlockEntity) {
+			((BarrelBlockEntity)blockEntity).method_20362();
 		}
 	}
 

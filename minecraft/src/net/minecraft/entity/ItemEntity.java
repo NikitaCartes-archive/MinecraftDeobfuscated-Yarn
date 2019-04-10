@@ -53,7 +53,7 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	protected boolean method_5658() {
+	protected boolean canClimb() {
 		return false;
 	}
 
@@ -65,7 +65,7 @@ public class ItemEntity extends Entity {
 	@Override
 	public void tick() {
 		if (this.getStack().isEmpty()) {
-			this.invalidate();
+			this.remove();
 		} else {
 			super.tick();
 			if (this.pickupDelay > 0 && this.pickupDelay != 32767) {
@@ -85,9 +85,9 @@ public class ItemEntity extends Entity {
 			if (this.world.isClient) {
 				this.noClip = false;
 			} else {
-				this.noClip = !this.world.method_17892(this);
+				this.noClip = !this.world.doesNotCollide(this);
 				if (this.noClip) {
-					this.method_5632(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
+					this.pushOutOfBlocks(this.x, (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.z);
 				}
 			}
 
@@ -129,7 +129,7 @@ public class ItemEntity extends Entity {
 			}
 
 			if (!this.world.isClient && this.age >= 6000) {
-				this.invalidate();
+				this.remove();
 			}
 		}
 	}
@@ -140,7 +140,7 @@ public class ItemEntity extends Entity {
 	}
 
 	private void tryMerge() {
-		List<ItemEntity> list = this.world.method_18467(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5));
+		List<ItemEntity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5));
 		if (!list.isEmpty()) {
 			for (ItemEntity itemEntity : list) {
 				this.tryMerge(itemEntity);
@@ -151,7 +151,7 @@ public class ItemEntity extends Entity {
 	private boolean tryMerge(ItemEntity itemEntity) {
 		if (itemEntity == this) {
 			return false;
-		} else if (!itemEntity.isValid() || !this.isValid()) {
+		} else if (!itemEntity.isAlive() || !this.isAlive()) {
 			return false;
 		} else if (this.pickupDelay == 32767 || itemEntity.pickupDelay == 32767) {
 			return false;
@@ -190,7 +190,7 @@ public class ItemEntity extends Entity {
 		itemEntity.setStack(itemStack3);
 		itemEntity.pickupDelay = Math.max(itemEntity.pickupDelay, itemEntity2.pickupDelay);
 		itemEntity.age = Math.min(itemEntity.age, itemEntity2.age);
-		itemEntity2.invalidate();
+		itemEntity2.remove();
 	}
 
 	public void method_6980() {
@@ -212,7 +212,7 @@ public class ItemEntity extends Entity {
 			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - f);
 			if (this.health <= 0) {
-				this.invalidate();
+				this.remove();
 			}
 
 			return false;
@@ -256,7 +256,7 @@ public class ItemEntity extends Entity {
 		CompoundTag compoundTag2 = compoundTag.getCompound("Item");
 		this.setStack(ItemStack.fromTag(compoundTag2));
 		if (this.getStack().isEmpty()) {
-			this.invalidate();
+			this.remove();
 		}
 	}
 
@@ -269,13 +269,13 @@ public class ItemEntity extends Entity {
 			if (this.pickupDelay == 0
 				&& (this.owner == null || 6000 - this.age <= 200 || this.owner.equals(playerEntity.getUuid()))
 				&& playerEntity.inventory.insertStack(itemStack)) {
-				playerEntity.pickUpEntity(this, i);
+				playerEntity.sendPickup(this, i);
 				if (itemStack.isEmpty()) {
-					this.invalidate();
+					this.remove();
 					itemStack.setAmount(i);
 				}
 
-				playerEntity.incrementStat(Stats.field_15392.getOrCreateStat(item), i);
+				playerEntity.increaseStat(Stats.field_15392.getOrCreateStat(item), i);
 			}
 		}
 	}
@@ -287,7 +287,7 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public boolean method_5732() {
+	public boolean canPlayerAttack() {
 		return false;
 	}
 

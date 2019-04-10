@@ -78,7 +78,7 @@ public class RecipesProvider implements DataProvider {
 		);
 		this.method_10427(
 			dataCache,
-			SimpleAdvancement.Builder.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(),
+			SimpleAdvancement.Task.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(),
 			path.resolve("data/minecraft/advancements/recipes/root.json")
 		);
 	}
@@ -531,7 +531,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_packed_ice", this.method_10424(NumberRange.Integer.atLeast(9), Blocks.field_10225))
+			.criterion("has_at_least_9_packed_ice", this.method_10424(NumberRange.IntRange.atLeast(9), Blocks.field_10225))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10060, 8)
 			.input('#', Blocks.field_10033)
@@ -587,7 +587,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("XXX")
 			.pattern("XXX")
 			.pattern("XXX")
-			.criterion("has_at_least_9_bonemeal", this.method_10424(NumberRange.Integer.atLeast(9), item))
+			.criterion("has_at_least_9_bonemeal", this.method_10424(NumberRange.IntRange.atLeast(9), item))
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8324, 3)
 			.input(Items.field_8606)
@@ -597,7 +597,7 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Items.field_8324, 9)
 			.input(Blocks.field_10166)
 			.group("bonemeal")
-			.criterion("has_at_least_9_bonemeal", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8324))
+			.criterion("has_at_least_9_bonemeal", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8324))
 			.criterion("has_bone_block", this.method_10426(Blocks.field_10166))
 			.offerTo(consumer, "bone_meal_from_bone_block");
 		ShapelessRecipeJsonFactory.create(Items.field_8529)
@@ -807,7 +807,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.criterion(
 				"has_lots_of_items",
-				new InventoryChangedCriterion.Conditions(NumberRange.Integer.atLeast(10), NumberRange.Integer.ANY, NumberRange.Integer.ANY, new ItemPredicate[0])
+				new InventoryChangedCriterion.Conditions(NumberRange.IntRange.atLeast(10), NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, new ItemPredicate[0])
 			)
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.field_8388)
@@ -847,7 +847,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8713, 9)
 			.input(Blocks.field_10381)
-			.criterion("has_at_least_9_coal", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8713))
+			.criterion("has_at_least_9_coal", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8713))
 			.criterion("has_coal_block", this.method_10426(Blocks.field_10381))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10381)
@@ -855,7 +855,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_coal", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8713))
+			.criterion("has_at_least_9_coal", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8713))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10253, 4)
 			.input('D', Blocks.field_10566)
@@ -1156,7 +1156,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8477, 9)
 			.input(Blocks.field_10201)
-			.criterion("has_at_least_9_diamond", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8477))
+			.criterion("has_at_least_9_diamond", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8477))
 			.criterion("has_diamond_block", this.method_10426(Blocks.field_10201))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.field_8556)
@@ -1172,7 +1172,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_diamond", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8477))
+			.criterion("has_at_least_9_diamond", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8477))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.field_8285)
 			.input('X', Items.field_8477)
@@ -1258,7 +1258,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8687, 9)
 			.input(Blocks.field_10234)
-			.criterion("has_at_least_9_emerald", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8687))
+			.criterion("has_at_least_9_emerald", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8687))
 			.criterion("has_emerald_block", this.method_10426(Blocks.field_10234))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10234)
@@ -1266,7 +1266,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_emerald", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8687))
+			.criterion("has_at_least_9_emerald", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8687))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10485)
 			.input('B', Items.field_8529)
@@ -1488,12 +1488,12 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_gold_ingot", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8695))
+			.criterion("has_at_least_9_gold_ingot", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8695))
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8695, 9)
 			.input(Blocks.field_10205)
 			.group("gold_ingot")
-			.criterion("has_at_least_9_gold_ingot", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8695))
+			.criterion("has_at_least_9_gold_ingot", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8695))
 			.criterion("has_gold_block", this.method_10426(Blocks.field_10205))
 			.offerTo(consumer, "gold_ingot_from_gold_block");
 		ShapedRecipeJsonFactory.create(Items.field_8695)
@@ -1502,11 +1502,11 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.group("gold_ingot")
-			.criterion("has_at_least_9_gold_nugget", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8397))
+			.criterion("has_at_least_9_gold_nugget", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8397))
 			.offerTo(consumer, "gold_ingot_from_nuggets");
 		ShapelessRecipeJsonFactory.create(Items.field_8397, 9)
 			.input(Items.field_8695)
-			.criterion("has_at_least_9_gold_nugget", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8397))
+			.criterion("has_at_least_9_gold_nugget", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8397))
 			.criterion("has_gold_ingot", this.method_10426(Items.field_8695))
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Blocks.field_10474)
@@ -1701,7 +1701,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_wheat", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8861))
+			.criterion("has_at_least_9_wheat", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8861))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10582)
 			.input('#', Items.field_8620)
@@ -1742,7 +1742,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_iron_ingot", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8620))
+			.criterion("has_at_least_9_iron_ingot", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8620))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.field_8660)
 			.input('X', Items.field_8620)
@@ -1781,7 +1781,7 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Items.field_8620, 9)
 			.input(Blocks.field_10085)
 			.group("iron_ingot")
-			.criterion("has_at_least_9_iron_ingot", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8620))
+			.criterion("has_at_least_9_iron_ingot", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8620))
 			.criterion("has_iron_block", this.method_10426(Blocks.field_10085))
 			.offerTo(consumer, "iron_ingot_from_iron_block");
 		ShapedRecipeJsonFactory.create(Items.field_8620)
@@ -1790,7 +1790,7 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.group("iron_ingot")
-			.criterion("has_at_least_9_iron_nugget", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8675))
+			.criterion("has_at_least_9_iron_nugget", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8675))
 			.offerTo(consumer, "iron_ingot_from_nuggets");
 		ShapedRecipeJsonFactory.create(Items.field_8396)
 			.input('X', Items.field_8620)
@@ -1801,7 +1801,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8675, 9)
 			.input(Items.field_8620)
-			.criterion("has_at_least_9_iron_nugget", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8675))
+			.criterion("has_at_least_9_iron_nugget", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8675))
 			.criterion("has_iron_ingot", this.method_10426(Items.field_8620))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.field_8403)
@@ -1937,11 +1937,11 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_lapis", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8759))
+			.criterion("has_at_least_9_lapis", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8759))
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8759, 9)
 			.input(Blocks.field_10441)
-			.criterion("has_at_least_9_lapis", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8759))
+			.criterion("has_at_least_9_lapis", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8759))
 			.criterion("has_lapis_block", this.method_10426(Blocks.field_10441))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.field_8719, 2)
@@ -2726,7 +2726,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Blocks.field_10225)
 			.input(Blocks.field_10295, 9)
-			.criterion("has_at_least_9_ice", this.method_10424(NumberRange.Integer.atLeast(9), Blocks.field_10295))
+			.criterion("has_at_least_9_ice", this.method_10424(NumberRange.IntRange.atLeast(9), Blocks.field_10295))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.field_8329)
 			.input('#', Blocks.field_10459)
@@ -3077,14 +3077,14 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Items.field_8725, 9)
 			.input(Blocks.field_10002)
 			.criterion("has_redstone_block", this.method_10426(Blocks.field_10002))
-			.criterion("has_at_least_9_redstone", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8725))
+			.criterion("has_at_least_9_redstone", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8725))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10002)
 			.input('#', Items.field_8725)
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_redstone", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8725))
+			.criterion("has_at_least_9_redstone", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8725))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10524)
 			.input('R', Items.field_8725)
@@ -3351,11 +3351,11 @@ public class RecipesProvider implements DataProvider {
 			.pattern("###")
 			.pattern("###")
 			.pattern("###")
-			.criterion("has_at_least_9_slime_ball", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8777))
+			.criterion("has_at_least_9_slime_ball", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8777))
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8777, 9)
 			.input(Blocks.field_10030)
-			.criterion("has_at_least_9_slime_ball", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8777))
+			.criterion("has_at_least_9_slime_ball", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8777))
 			.criterion("has_slime", this.method_10426(Blocks.field_10030))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10518, 4)
@@ -3508,12 +3508,12 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_cobblestone", this.method_10426(Blocks.field_10445))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10131, 6)
-			.input('#', Ingredient.fromTag(ItemTags.field_15531))
+			.input('#', Blocks.field_10056)
 			.pattern("###")
 			.criterion("has_stone_bricks", this.method_10420(ItemTags.field_15531))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10392, 4)
-			.input('#', Ingredient.fromTag(ItemTags.field_15531))
+			.input('#', Blocks.field_10056)
 			.pattern("#  ")
 			.pattern("## ")
 			.pattern("###")
@@ -3637,7 +3637,7 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8861, 9)
 			.input(Blocks.field_10359)
-			.criterion("has_at_least_9_wheat", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8861))
+			.criterion("has_at_least_9_wheat", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8861))
 			.criterion("has_hay_block", this.method_10426(Blocks.field_10359))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Items.field_8539)
@@ -3870,12 +3870,12 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Items.field_8551, 9)
 			.input(Blocks.field_10342)
-			.criterion("has_at_least_9_dried_kelp", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8551))
+			.criterion("has_at_least_9_dried_kelp", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8551))
 			.criterion("has_dried_kelp_block", this.method_10426(Blocks.field_10342))
 			.offerTo(consumer);
 		ShapelessRecipeJsonFactory.create(Blocks.field_10342)
 			.input(Items.field_8551, 9)
-			.criterion("has_at_least_9_dried_kelp", this.method_10424(NumberRange.Integer.atLeast(9), Items.field_8551))
+			.criterion("has_at_least_9_dried_kelp", this.method_10424(NumberRange.IntRange.atLeast(9), Items.field_8551))
 			.criterion("has_dried_kelp_block", this.method_10426(Blocks.field_10342))
 			.offerTo(consumer);
 		ShapedRecipeJsonFactory.create(Blocks.field_10502)
@@ -4609,6 +4609,9 @@ public class RecipesProvider implements DataProvider {
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10252)
 			.create("has_stone_bricks", this.method_10426(Blocks.field_10056))
 			.offerTo(consumer, "stone_brick_wall_from_stone_bricks_stonecutting");
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10056), Blocks.field_10552)
+			.create("has_stone_bricks", this.method_10426(Blocks.field_10056))
+			.offerTo(consumer, "chiseled_stone_bricks_from_stone_bricks_stonecutting");
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.field_10104), Blocks.field_10191, 2)
 			.create("has_bricks", this.method_10426(Blocks.field_10104))
 			.offerTo(consumer, "brick_slab_from_bricks_stonecutting");
@@ -4834,8 +4837,8 @@ public class RecipesProvider implements DataProvider {
 		return new EnterBlockCriterion.Conditions(block, null);
 	}
 
-	private InventoryChangedCriterion.Conditions method_10424(NumberRange.Integer integer, ItemProvider itemProvider) {
-		return this.method_10423(ItemPredicate.Builder.create().item(itemProvider).count(integer).build());
+	private InventoryChangedCriterion.Conditions method_10424(NumberRange.IntRange intRange, ItemProvider itemProvider) {
+		return this.method_10423(ItemPredicate.Builder.create().item(itemProvider).method_8974(intRange).build());
 	}
 
 	private InventoryChangedCriterion.Conditions method_10426(ItemProvider itemProvider) {
@@ -4847,7 +4850,7 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private InventoryChangedCriterion.Conditions method_10423(ItemPredicate... itemPredicates) {
-		return new InventoryChangedCriterion.Conditions(NumberRange.Integer.ANY, NumberRange.Integer.ANY, NumberRange.Integer.ANY, itemPredicates);
+		return new InventoryChangedCriterion.Conditions(NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, NumberRange.IntRange.ANY, itemPredicates);
 	}
 
 	@Override

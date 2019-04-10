@@ -43,7 +43,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 	private static final TextComponent TITLE = new TranslatableTextComponent("tutorial.find_tree.title");
 	private static final TextComponent DESCRIPTION = new TranslatableTextComponent("tutorial.find_tree.description");
 	private final TutorialManager manager;
-	private TutorialToast field_5633;
+	private TutorialToast toast;
 	private int ticks;
 
 	public FindTreeTutorialStepHandler(TutorialManager tutorialManager) {
@@ -60,7 +60,7 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 				ClientPlayerEntity clientPlayerEntity = this.manager.getClient().player;
 				if (clientPlayerEntity != null) {
 					for (Block block : MATCHING_BLOCKS) {
-						if (clientPlayerEntity.inventory.containsStack(new ItemStack(block))) {
+						if (clientPlayerEntity.inventory.contains(new ItemStack(block))) {
 							this.manager.setStep(TutorialStep.CRAFT_PLANKS);
 							return;
 						}
@@ -73,23 +73,23 @@ public class FindTreeTutorialStepHandler implements TutorialStepHandler {
 				}
 			}
 
-			if (this.ticks >= 6000 && this.field_5633 == null) {
-				this.field_5633 = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, false);
-				this.manager.getClient().getToastManager().add(this.field_5633);
+			if (this.ticks >= 6000 && this.toast == null) {
+				this.toast = new TutorialToast(TutorialToast.Type.field_2235, TITLE, DESCRIPTION, false);
+				this.manager.getClient().getToastManager().add(this.toast);
 			}
 		}
 	}
 
 	@Override
 	public void destroy() {
-		if (this.field_5633 != null) {
-			this.field_5633.hide();
-			this.field_5633 = null;
+		if (this.toast != null) {
+			this.toast.hide();
+			this.toast = null;
 		}
 	}
 
 	@Override
-	public void method_4898(ClientWorld clientWorld, HitResult hitResult) {
+	public void onTarget(ClientWorld clientWorld, HitResult hitResult) {
 		if (hitResult.getType() == HitResult.Type.BLOCK) {
 			BlockState blockState = clientWorld.getBlockState(((BlockHitResult)hitResult).getBlockPos());
 			if (MATCHING_BLOCKS.contains(blockState.getBlock())) {

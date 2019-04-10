@@ -28,10 +28,10 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 	protected final boolean field_11778;
 	protected final String path;
 	@Nullable
-	protected final NbtPathArgumentType.class_2209 field_11779;
+	protected final NbtPathArgumentType.NbtPath field_11779;
 
 	@Nullable
-	private static NbtPathArgumentType.class_2209 method_10919(String string) {
+	private static NbtPathArgumentType.NbtPath method_10919(String string) {
 		try {
 			return new NbtPathArgumentType().method_9362(new StringReader(string));
 		} catch (CommandSyntaxException var2) {
@@ -43,9 +43,9 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 		this(string, method_10919(string), bl);
 	}
 
-	protected NbtTextComponent(String string, @Nullable NbtPathArgumentType.class_2209 arg, boolean bl) {
+	protected NbtTextComponent(String string, @Nullable NbtPathArgumentType.NbtPath nbtPath, boolean bl) {
 		this.path = string;
-		this.field_11779 = arg;
+		this.field_11779 = nbtPath;
 		this.field_11778 = bl;
 	}
 
@@ -69,7 +69,7 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 		if (serverCommandSource != null && this.field_11779 != null) {
 			Stream<String> stream = this.method_10916(serverCommandSource).flatMap(compoundTag -> {
 				try {
-					return this.field_11779.method_9366(compoundTag).stream();
+					return this.field_11779.get(compoundTag).stream();
 				} catch (CommandSyntaxException var3x) {
 					return Stream.empty();
 				}
@@ -110,8 +110,8 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 			}
 		}
 
-		private BlockPosArgument(String string, @Nullable NbtPathArgumentType.class_2209 arg, boolean bl, String string2, @Nullable PosArgument posArgument) {
-			super(string, arg, bl);
+		private BlockPosArgument(String string, @Nullable NbtPathArgumentType.NbtPath nbtPath, boolean bl, String string2, @Nullable PosArgument posArgument) {
+			super(string, nbtPath, bl);
 			this.pos = string2;
 			this.field_16408 = posArgument;
 		}
@@ -182,9 +182,9 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 		}
 
 		private EntityNbtTextComponent(
-			String string, @Nullable NbtPathArgumentType.class_2209 arg, boolean bl, String string2, @Nullable EntitySelector entitySelector
+			String string, @Nullable NbtPathArgumentType.NbtPath nbtPath, boolean bl, String string2, @Nullable EntitySelector entitySelector
 		) {
-			super(string, arg, bl);
+			super(string, nbtPath, bl);
 			this.selector = string2;
 			this.field_11781 = entitySelector;
 		}

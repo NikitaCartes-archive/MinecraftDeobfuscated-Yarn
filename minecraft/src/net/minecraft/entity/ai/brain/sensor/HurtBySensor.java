@@ -11,11 +11,11 @@ import net.minecraft.server.world.ServerWorld;
 
 public class HurtBySensor extends Sensor<LivingEntity> {
 	@Override
-	public void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
+	protected void sense(ServerWorld serverWorld, LivingEntity livingEntity) {
 		Brain<?> brain = livingEntity.getBrain();
 		if (livingEntity.getRecentDamageSource() != null) {
 			brain.putMemory(MemoryModuleType.field_18451, livingEntity.getRecentDamageSource());
-			Entity entity = ((DamageSource)brain.getMemory(MemoryModuleType.field_18451).get()).getAttacker();
+			Entity entity = ((DamageSource)brain.getOptionalMemory(MemoryModuleType.field_18451).get()).getAttacker();
 			if (entity instanceof LivingEntity) {
 				brain.putMemory(MemoryModuleType.field_18452, (LivingEntity)entity);
 			}

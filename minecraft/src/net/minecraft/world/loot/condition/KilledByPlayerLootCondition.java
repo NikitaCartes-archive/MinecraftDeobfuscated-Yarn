@@ -25,7 +25,7 @@ public class KilledByPlayerLootCondition implements LootCondition {
 		return lootContext.hasParameter(LootContextParameters.field_1233);
 	}
 
-	public static LootCondition.Builder method_939() {
+	public static LootCondition.Builder builder() {
 		return () -> INSTANCE;
 	}
 

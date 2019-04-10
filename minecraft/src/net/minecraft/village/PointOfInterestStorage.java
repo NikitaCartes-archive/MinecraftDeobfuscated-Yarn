@@ -1,16 +1,24 @@
 package net.minecraft.village;
 
+import com.mojang.datafixers.DataFixer;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 import java.io.File;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.Random;
+import java.util.function.BiConsumer;
 import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.block.BlockState;
+import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.util.SectionRelativeLevelPropagator;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.ChunkPos;
@@ -18,10 +26,12 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.storage.SerializingRegionBasedStorage;
 
 public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointOfInterestSet> {
-	private final PointOfInterestStorage.PathfindingFavorProvider levelProcessor = new PointOfInterestStorage.PathfindingFavorProvider();
+	private final PointOfInterestStorage.PointOfInterestDistanceTracker pointOfInterestDistanceTracker = new PointOfInterestStorage.PointOfInterestDistanceTracker(
+		
+	);
 
-	public PointOfInterestStorage(File file) {
-		super(file, PointOfInterestSet::new, PointOfInterestSet::new);
+	public PointOfInterestStorage(File file, DataFixer dataFixer) {
+		super(file, PointOfInterestSet::new, PointOfInterestSet::new, dataFixer, DataFixTypes.field_19221);
 	}
 
 	public void add(BlockPos blockPos, PointOfInterestType pointOfInterestType) {
@@ -32,13 +42,17 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		this.getOrCreate(ChunkSectionPos.from(blockPos).asLong()).remove(blockPos);
 	}
 
+	public long count(Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus) {
+		return this.get(predicate, blockPos, i, occupationStatus).count();
+	}
+
 	private Stream<PointOfInterest> get(
 		Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
 		int j = i * i;
 		return ChunkPos.streamPositions(new ChunkPos(blockPos), Math.floorDiv(i, 16))
 			.flatMap(
-				chunkPos -> this.get(predicate, chunkPos, occupationStatus).filter(pointOfInterest -> pointOfInterest.getPos().squaredDistanceTo(blockPos) <= (double)j)
+				chunkPos -> this.get(predicate, chunkPos, occupationStatus).filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos) <= (double)j)
 			);
 	}
 
@@ -56,6 +70,16 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return this.get(predicate, blockPos, i, occupationStatus).map(PointOfInterest::getPos).filter(predicate2).findFirst();
 	}
 
+	public Optional<BlockPos> getNearestPosition(
+		Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
+	) {
+		return this.get(predicate, blockPos, i, occupationStatus)
+			.map(PointOfInterest::getPos)
+			.sorted(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)))
+			.filter(predicate2)
+			.findFirst();
+	}
+
 	public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
 		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
 			.filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos()))
@@ -68,13 +92,26 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 
 	public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> predicate, Predicate<BlockPos> predicate2, BlockPos blockPos, int i) {
 		return this.get(predicate, blockPos, i, PointOfInterestStorage.OccupationStatus.HAS_SPACE)
-			.sorted(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().squaredDistanceTo(blockPos)))
+			.sorted(Comparator.comparingDouble(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos)))
 			.filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos()))
 			.findFirst()
 			.map(pointOfInterest -> {
 				pointOfInterest.reserveTicket();
 				return pointOfInterest.getPos();
 			});
+	}
+
+	public Optional<BlockPos> getPosition(
+		Predicate<PointOfInterestType> predicate,
+		Predicate<BlockPos> predicate2,
+		PointOfInterestStorage.OccupationStatus occupationStatus,
+		BlockPos blockPos,
+		int i,
+		Random random
+	) {
+		List<PointOfInterest> list = (List<PointOfInterest>)this.get(predicate, blockPos, i, occupationStatus).collect(Collectors.toList());
+		Collections.shuffle(list, random);
+		return list.stream().filter(pointOfInterest -> predicate2.test(pointOfInterest.getPos())).findFirst().map(PointOfInterest::getPos);
 	}
 
 	public boolean releaseTicket(BlockPos blockPos) {
@@ -90,48 +127,60 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		return pointOfInterestSet.getType(blockPos);
 	}
 
-	public int getLevel(ChunkSectionPos chunkSectionPos) {
-		this.levelProcessor.method_19134();
-		return this.levelProcessor.getLevel(chunkSectionPos.asLong());
+	public int getDistanceFromNearestOccupied(ChunkSectionPos chunkSectionPos) {
+		this.pointOfInterestDistanceTracker.update();
+		return this.pointOfInterestDistanceTracker.getLevel(chunkSectionPos.asLong());
 	}
 
-	private boolean method_19133(long l) {
+	private boolean isOccupied(long l) {
 		return this.get(PointOfInterestType.ALWAYS_TRUE, l, PointOfInterestStorage.OccupationStatus.IS_OCCUPIED).count() > 0L;
 	}
 
 	@Override
 	public void tick(BooleanSupplier booleanSupplier) {
 		super.tick(booleanSupplier);
-		this.levelProcessor.method_19134();
+		this.pointOfInterestDistanceTracker.update();
 	}
 
 	@Override
 	protected void onUpdate(long l) {
 		super.onUpdate(l);
-		this.levelProcessor.method_18750(l, this.levelProcessor.method_18749(l), false);
+		this.pointOfInterestDistanceTracker.update(l, this.pointOfInterestDistanceTracker.getInitialLevel(l), false);
 	}
 
 	@Override
 	protected void onLoad(long l) {
-		this.levelProcessor.method_18750(l, this.levelProcessor.method_18749(l), false);
+		this.pointOfInterestDistanceTracker.update(l, this.pointOfInterestDistanceTracker.getInitialLevel(l), false);
 	}
 
-	public void method_19510(ChunkPos chunkPos, ChunkSection chunkSection) {
+	public void initForPalette(ChunkPos chunkPos, ChunkSection chunkSection) {
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunkPos, chunkSection.getYOffset() >> 4);
-		Optional<PointOfInterestSet> optional = this.get(chunkSectionPos.asLong());
-		if (!optional.isPresent()) {
-			if (!PointOfInterestType.method_19518().noneMatch(chunkSection::method_19523)) {
-				chunkSectionPos.method_19533()
-					.forEach(
-						blockPos -> {
-							BlockState blockState = chunkSection.getBlockState(
-								ChunkSectionPos.toLocalCoord(blockPos.getX()), ChunkSectionPos.toLocalCoord(blockPos.getY()), ChunkSectionPos.toLocalCoord(blockPos.getZ())
-							);
-							PointOfInterestType.method_19516(blockState).ifPresent(pointOfInterestType -> this.add(blockPos, pointOfInterestType));
-						}
-					);
+		SystemUtil.ifPresentOrElse(this.get(chunkSectionPos.asLong()), pointOfInterestSet -> pointOfInterestSet.updatePointsOfInterest(biConsumer -> {
+				if (shouldScan(chunkSection)) {
+					this.scanAndPopulate(chunkSection, chunkSectionPos, biConsumer);
+				}
+			}), () -> {
+			if (shouldScan(chunkSection)) {
+				PointOfInterestSet pointOfInterestSet = this.getOrCreate(chunkSectionPos.asLong());
+				this.scanAndPopulate(chunkSection, chunkSectionPos, pointOfInterestSet::add);
 			}
-		}
+		});
+	}
+
+	private static boolean shouldScan(ChunkSection chunkSection) {
+		return PointOfInterestType.getAllAssociatedStates().anyMatch(chunkSection::method_19523);
+	}
+
+	private void scanAndPopulate(ChunkSection chunkSection, ChunkSectionPos chunkSectionPos, BiConsumer<BlockPos, PointOfInterestType> biConsumer) {
+		chunkSectionPos.streamBoxPositions()
+			.forEach(
+				blockPos -> {
+					BlockState blockState = chunkSection.getBlockState(
+						ChunkSectionPos.toLocalCoord(blockPos.getX()), ChunkSectionPos.toLocalCoord(blockPos.getY()), ChunkSectionPos.toLocalCoord(blockPos.getZ())
+					);
+					PointOfInterestType.from(blockState).ifPresent(pointOfInterestType -> biConsumer.accept(blockPos, pointOfInterestType));
+				}
+			);
 	}
 
 	public static enum OccupationStatus {
@@ -150,34 +199,34 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		}
 	}
 
-	final class PathfindingFavorProvider extends SectionRelativeLevelPropagator {
-		private final Long2ByteMap pathfindingFavors = new Long2ByteOpenHashMap();
+	final class PointOfInterestDistanceTracker extends SectionRelativeLevelPropagator {
+		private final Long2ByteMap distances = new Long2ByteOpenHashMap();
 
-		protected PathfindingFavorProvider() {
+		protected PointOfInterestDistanceTracker() {
 			super(5, 16, 256);
-			this.pathfindingFavors.defaultReturnValue((byte)5);
+			this.distances.defaultReturnValue((byte)5);
 		}
 
 		@Override
-		protected int method_18749(long l) {
-			return PointOfInterestStorage.this.method_19133(l) ? 0 : 5;
+		protected int getInitialLevel(long l) {
+			return PointOfInterestStorage.this.isOccupied(l) ? 0 : 5;
 		}
 
 		@Override
 		protected int getLevel(long l) {
-			return this.pathfindingFavors.get(l);
+			return this.distances.get(l);
 		}
 
 		@Override
 		protected void setLevel(long l, int i) {
 			if (i > 4) {
-				this.pathfindingFavors.remove(l);
+				this.distances.remove(l);
 			} else {
-				this.pathfindingFavors.put(l, (byte)i);
+				this.distances.put(l, (byte)i);
 			}
 		}
 
-		public void method_19134() {
+		public void update() {
 			super.updateAllRecursively(Integer.MAX_VALUE);
 		}
 	}

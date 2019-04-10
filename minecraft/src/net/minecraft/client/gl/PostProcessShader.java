@@ -18,10 +18,10 @@ public class PostProcessShader implements AutoCloseable {
 	private final JsonGlProgram program;
 	public final GlFramebuffer input;
 	public final GlFramebuffer output;
-	private final List<Object> field_1534 = Lists.<Object>newArrayList();
-	private final List<String> field_1539 = Lists.<String>newArrayList();
-	private final List<Integer> field_1533 = Lists.<Integer>newArrayList();
-	private final List<Integer> field_1537 = Lists.<Integer>newArrayList();
+	private final List<Object> samplerValues = Lists.<Object>newArrayList();
+	private final List<String> samplerNames = Lists.<String>newArrayList();
+	private final List<Integer> samplerWidths = Lists.<Integer>newArrayList();
+	private final List<Integer> samplerHeights = Lists.<Integer>newArrayList();
 	private Matrix4f projectionMatrix;
 
 	public PostProcessShader(ResourceManager resourceManager, String string, GlFramebuffer glFramebuffer, GlFramebuffer glFramebuffer2) throws IOException {
@@ -35,13 +35,13 @@ public class PostProcessShader implements AutoCloseable {
 	}
 
 	public void addAuxTarget(String string, Object object, int i, int j) {
-		this.field_1539.add(this.field_1539.size(), string);
-		this.field_1534.add(this.field_1534.size(), object);
-		this.field_1533.add(this.field_1533.size(), i);
-		this.field_1537.add(this.field_1537.size(), j);
+		this.samplerNames.add(this.samplerNames.size(), string);
+		this.samplerValues.add(this.samplerValues.size(), object);
+		this.samplerWidths.add(this.samplerWidths.size(), i);
+		this.samplerHeights.add(this.samplerHeights.size(), j);
 	}
 
-	private void method_1294() {
+	private void setGlState() {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.disableBlend();
 		GlStateManager.disableDepthTest();
@@ -58,18 +58,18 @@ public class PostProcessShader implements AutoCloseable {
 	}
 
 	public void render(float f) {
-		this.method_1294();
+		this.setGlState();
 		this.input.endWrite();
 		float g = (float)this.output.texWidth;
 		float h = (float)this.output.texHeight;
 		GlStateManager.viewport(0, 0, (int)g, (int)h);
 		this.program.bindSampler("DiffuseSampler", this.input);
 
-		for (int i = 0; i < this.field_1534.size(); i++) {
-			this.program.bindSampler((String)this.field_1539.get(i), this.field_1534.get(i));
+		for (int i = 0; i < this.samplerValues.size(); i++) {
+			this.program.bindSampler((String)this.samplerNames.get(i), this.samplerValues.get(i));
 			this.program
 				.getUniformByNameOrDummy("AuxSize" + i)
-				.set((float)((Integer)this.field_1533.get(i)).intValue(), (float)((Integer)this.field_1537.get(i)).intValue());
+				.set((float)((Integer)this.samplerWidths.get(i)).intValue(), (float)((Integer)this.samplerHeights.get(i)).intValue());
 		}
 
 		this.program.getUniformByNameOrDummy("ProjMat").set(this.projectionMatrix);
@@ -99,7 +99,7 @@ public class PostProcessShader implements AutoCloseable {
 		this.output.endWrite();
 		this.input.endRead();
 
-		for (Object object : this.field_1534) {
+		for (Object object : this.samplerValues) {
 			if (object instanceof GlFramebuffer) {
 				((GlFramebuffer)object).endRead();
 			}

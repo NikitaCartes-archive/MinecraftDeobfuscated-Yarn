@@ -24,39 +24,39 @@ public class SummonCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("summon")
+			CommandManager.literal("summon")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("entity", EntitySummonArgumentType.create())
+					CommandManager.argument("entity", EntitySummonArgumentType.create())
 						.suggests(SuggestionProviders.SUMMONABLE_ENTITIES)
 						.executes(
-							commandContext -> method_13694(
+							commandContext -> execute(
 									commandContext.getSource(),
-									EntitySummonArgumentType.getSummonArgument(commandContext, "entity"),
+									EntitySummonArgumentType.getEntitySummon(commandContext, "entity"),
 									commandContext.getSource().getPosition(),
 									new CompoundTag(),
 									true
 								)
 						)
 						.then(
-							ServerCommandManager.argument("pos", Vec3ArgumentType.create())
+							CommandManager.argument("pos", Vec3ArgumentType.create())
 								.executes(
-									commandContext -> method_13694(
+									commandContext -> execute(
 											commandContext.getSource(),
-											EntitySummonArgumentType.getSummonArgument(commandContext, "entity"),
-											Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
+											EntitySummonArgumentType.getEntitySummon(commandContext, "entity"),
+											Vec3ArgumentType.getVec3(commandContext, "pos"),
 											new CompoundTag(),
 											true
 										)
 								)
 								.then(
-									ServerCommandManager.argument("nbt", NbtCompoundTagArgumentType.create())
+									CommandManager.argument("nbt", NbtCompoundTagArgumentType.create())
 										.executes(
-											commandContext -> method_13694(
+											commandContext -> execute(
 													commandContext.getSource(),
-													EntitySummonArgumentType.getSummonArgument(commandContext, "entity"),
-													Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
-													NbtCompoundTagArgumentType.getCompoundArgument(commandContext, "nbt"),
+													EntitySummonArgumentType.getEntitySummon(commandContext, "entity"),
+													Vec3ArgumentType.getVec3(commandContext, "pos"),
+													NbtCompoundTagArgumentType.getCompoundTag(commandContext, "nbt"),
 													false
 												)
 										)
@@ -66,7 +66,7 @@ public class SummonCommand {
 		);
 	}
 
-	private static int method_13694(ServerCommandSource serverCommandSource, Identifier identifier, Vec3d vec3d, CompoundTag compoundTag, boolean bl) throws CommandSyntaxException {
+	private static int execute(ServerCommandSource serverCommandSource, Identifier identifier, Vec3d vec3d, CompoundTag compoundTag, boolean bl) throws CommandSyntaxException {
 		CompoundTag compoundTag2 = compoundTag.method_10553();
 		compoundTag2.putString("id", identifier.toString());
 		if (EntityType.getId(EntityType.LIGHTNING_BOLT).equals(identifier)) {
@@ -85,9 +85,7 @@ public class SummonCommand {
 			} else {
 				if (bl && entity instanceof MobEntity) {
 					((MobEntity)entity)
-						.prepareEntityData(
-							serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16462, null, null
-						);
+						.initialize(serverCommandSource.getWorld(), serverCommandSource.getWorld().getLocalDifficulty(new BlockPos(entity)), SpawnType.field_16462, null, null);
 				}
 
 				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.summon.success", entity.getDisplayName()), true);

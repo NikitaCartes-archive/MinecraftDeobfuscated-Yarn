@@ -3,6 +3,8 @@ package net.minecraft.entity.raid;
 import com.google.common.collect.Maps;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.entity.LivingEntity;
@@ -11,6 +13,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.village.PointOfInterestStorage;
+import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.Dimension;
 
@@ -37,7 +41,7 @@ public class RaidManager extends PersistentState {
 
 		while (iterator.hasNext()) {
 			Raid raid = (Raid)iterator.next();
-			if (raid.isMarkedForRemoval()) {
+			if (raid.hasStopped()) {
 				iterator.remove();
 				this.markDirty();
 			} else {
@@ -52,37 +56,55 @@ public class RaidManager extends PersistentState {
 
 	public static boolean isValidRaiderFor(RaiderEntity raiderEntity, Raid raid) {
 		return raiderEntity != null && raid != null && raid.getWorld() != null
-			? raiderEntity.isValid()
+			? raiderEntity.isAlive()
+				&& raiderEntity.canJoinRaid()
 				&& raiderEntity.getDespawnCounter() <= 2400
 				&& raiderEntity.world.getDimension().getType() == raid.getWorld().getDimension().getType()
 			: false;
 	}
 
 	public static boolean isLivingAroundVillage(LivingEntity livingEntity, BlockPos blockPos, int i) {
-		return blockPos.squaredDistanceTo(new BlockPos(livingEntity.x, livingEntity.y, livingEntity.z)) < (double)(i * i + 24);
+		return blockPos.getSquaredDistance(new BlockPos(livingEntity.x, livingEntity.y, livingEntity.z)) < (double)(i * i + 24);
 	}
 
 	@Nullable
 	public Raid startRaid(ServerPlayerEntity serverPlayerEntity) {
-		Raid raid = this.getOrCreateRaid(serverPlayerEntity.getServerWorld(), new BlockPos(serverPlayerEntity));
-		if (!raid.hasStarted() && !serverPlayerEntity.isSpectator()) {
-			if (!this.raids.containsKey(raid.getRaidId())) {
-				this.raids.put(raid.getRaidId(), raid);
+		if (serverPlayerEntity.isSpectator()) {
+			return null;
+		} else {
+			BlockPos blockPos = new BlockPos(serverPlayerEntity);
+			Optional<BlockPos> optional = this.world
+				.getPointOfInterestStorage()
+				.getNearestPosition(
+					pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18518, Objects::nonNull, blockPos, 15, PointOfInterestStorage.OccupationStatus.ANY
+				);
+			if (!optional.isPresent()) {
+				optional = Optional.of(blockPos);
 			}
 
-			raid.start(serverPlayerEntity);
-			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
-		} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
-			raid.start(serverPlayerEntity);
-			serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
-		}
+			Raid raid = this.getOrCreateRaid(serverPlayerEntity.getServerWorld(), (BlockPos)optional.get());
+			boolean bl = false;
+			if (!raid.hasStarted()) {
+				if (!this.raids.containsKey(raid.getRaidId())) {
+					this.raids.put(raid.getRaidId(), raid);
+				}
 
-		this.markDirty();
-		return raid;
+				bl = true;
+			} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
+				bl = true;
+			}
+
+			if (bl) {
+				raid.start(serverPlayerEntity);
+				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
+			}
+
+			this.markDirty();
+			return raid;
+		}
 	}
 
-	@Nullable
-	public Raid getOrCreateRaid(ServerWorld serverWorld, BlockPos blockPos) {
+	private Raid getOrCreateRaid(ServerWorld serverWorld, BlockPos blockPos) {
 		Raid raid = serverWorld.getRaidAt(blockPos);
 		return raid != null ? raid : new Raid(this.nextId(), serverWorld, blockPos);
 	}
@@ -130,8 +152,8 @@ public class RaidManager extends PersistentState {
 		double d = 2.147483647E9;
 
 		for (Raid raid2 : this.raids.values()) {
-			double e = raid2.getCenter().squaredDistanceTo(blockPos);
-			if (raid2.isOnGoing() && e < d) {
+			double e = raid2.getCenter().getSquaredDistance(blockPos);
+			if (raid2.isActive() && e < d) {
 				raid = raid2;
 				d = e;
 			}

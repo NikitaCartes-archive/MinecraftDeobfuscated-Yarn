@@ -21,41 +21,40 @@ public class BrewingStandScreen extends ContainerScreen<BrewingStandContainer> {
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
+		this.renderBackground();
 		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 	}
 
 	@Override
 	protected void drawForeground(int i, int j) {
-		this.fontRenderer
-			.draw(this.title.getFormattedText(), (float)(this.width / 2 - this.fontRenderer.getStringWidth(this.title.getFormattedText()) / 2), 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+		this.font.draw(this.title.getFormattedText(), (float)(this.containerWidth / 2 - this.font.getStringWidth(this.title.getFormattedText()) / 2), 6.0F, 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
-		int k = (this.screenWidth - this.width) / 2;
-		int l = (this.screenHeight - this.height) / 2;
-		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
+		this.minecraft.getTextureManager().bindTexture(TEXTURE);
+		int k = (this.width - this.containerWidth) / 2;
+		int l = (this.height - this.containerHeight) / 2;
+		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
 		int m = this.container.method_17377();
 		int n = MathHelper.clamp((18 * m + 20 - 1) / 20, 0, 18);
 		if (n > 0) {
-			this.drawTexturedRect(k + 60, l + 44, 176, 29, n, 4);
+			this.blit(k + 60, l + 44, 176, 29, n, 4);
 		}
 
 		int o = this.container.method_17378();
 		if (o > 0) {
 			int p = (int)(28.0F * (1.0F - (float)o / 400.0F));
 			if (p > 0) {
-				this.drawTexturedRect(k + 97, l + 16, 176, 0, 9, p);
+				this.blit(k + 97, l + 16, 176, 0, 9, p);
 			}
 
 			p = field_2824[o / 2 % 7];
 			if (p > 0) {
-				this.drawTexturedRect(k + 63, l + 14 + 29 - p, 185, 29 - p, 12, p);
+				this.blit(k + 63, l + 14 + 29 - p, 185, 29 - p, 12, p);
 			}
 		}
 	}

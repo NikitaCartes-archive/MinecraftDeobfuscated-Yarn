@@ -38,6 +38,7 @@ import net.minecraft.world.gen.feature.MineshaftFeature;
 import net.minecraft.world.gen.feature.MineshaftFeatureConfig;
 import net.minecraft.world.gen.feature.OceanRuinFeature;
 import net.minecraft.world.gen.feature.OceanRuinFeatureConfig;
+import net.minecraft.world.gen.feature.PillagerOutpostFeatureConfig;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 import net.minecraft.world.gen.feature.VillageFeatureConfig;
 import org.apache.logging.log4j.LogManager;
@@ -84,6 +85,9 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 	private static final ConfiguredFeature<?> OCEAN_RUIN = Biome.configureFeature(
 		Feature.OCEAN_RUIN, new OceanRuinFeatureConfig(OceanRuinFeature.BiomeType.COLD, 0.3F, 0.1F), Decorator.NOPE, DecoratorConfig.DEFAULT
 	);
+	private static final ConfiguredFeature<?> field_19182 = Biome.configureFeature(
+		Feature.PILLAGER_OUTPOST, new PillagerOutpostFeatureConfig(0.004), Decorator.NOPE, DecoratorConfig.DEFAULT
+	);
 	public static final Map<ConfiguredFeature<?>, GenerationStep.Feature> FEATURE_TO_GENERATION_STEP = SystemUtil.consume(
 		Maps.<ConfiguredFeature<?>, GenerationStep.Feature>newHashMap(), hashMap -> {
 			hashMap.put(MINESHAFT, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
@@ -101,6 +105,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(WOODLAND_MANSION, GenerationStep.Feature.SURFACE_STRUCTURES);
 			hashMap.put(NETHER_BRIDGE, GenerationStep.Feature.UNDERGROUND_STRUCTURES);
 			hashMap.put(OCEAN_MONUMENT, GenerationStep.Feature.SURFACE_STRUCTURES);
+			hashMap.put(field_19182, GenerationStep.Feature.SURFACE_STRUCTURES);
 		}
 	);
 	public static final Map<String, ConfiguredFeature<?>[]> STRUCTURE_TO_FEATURES = SystemUtil.consume(
@@ -115,6 +120,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put("endcity", new ConfiguredFeature[]{END_CITY});
 			hashMap.put("mansion", new ConfiguredFeature[]{WOODLAND_MANSION});
 			hashMap.put("fortress", new ConfiguredFeature[]{NETHER_BRIDGE});
+			hashMap.put("pillager_outpost", new ConfiguredFeature[]{field_19182});
 		}
 	);
 	public static final Map<ConfiguredFeature<?>, FeatureConfig> FEATURE_TO_FEATURE_CONFIG = SystemUtil.consume(
@@ -132,6 +138,7 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 			hashMap.put(END_CITY, FeatureConfig.DEFAULT);
 			hashMap.put(WOODLAND_MANSION, FeatureConfig.DEFAULT);
 			hashMap.put(NETHER_BRIDGE, FeatureConfig.DEFAULT);
+			hashMap.put(field_19182, new PillagerOutpostFeatureConfig(0.004));
 		}
 	);
 	private final List<FlatChunkGeneratorLayer> layers = Lists.<FlatChunkGeneratorLayer>newArrayList();
@@ -476,5 +483,9 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 
 	public BlockState[] getLayerBlocks() {
 		return this.layerBlocks;
+	}
+
+	public void method_20314(int i) {
+		this.layerBlocks[i] = null;
 	}
 }

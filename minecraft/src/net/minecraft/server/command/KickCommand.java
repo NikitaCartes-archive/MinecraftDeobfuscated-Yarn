@@ -11,22 +11,20 @@ import net.minecraft.text.TranslatableTextComponent;
 public class KickCommand {
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("kick")
+			CommandManager.literal("kick")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(3))
 				.then(
-					ServerCommandManager.argument("targets", EntityArgumentType.multiplePlayer())
+					CommandManager.argument("targets", EntityArgumentType.players())
 						.executes(
-							commandContext -> method_13411(
-									commandContext.getSource(), EntityArgumentType.method_9312(commandContext, "targets"), new TranslatableTextComponent("multiplayer.disconnect.kicked")
+							commandContext -> execute(
+									commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), new TranslatableTextComponent("multiplayer.disconnect.kicked")
 								)
 						)
 						.then(
-							ServerCommandManager.argument("reason", MessageArgumentType.create())
+							CommandManager.argument("reason", MessageArgumentType.create())
 								.executes(
-									commandContext -> method_13411(
-											commandContext.getSource(),
-											EntityArgumentType.method_9312(commandContext, "targets"),
-											MessageArgumentType.getMessageArgument(commandContext, "reason")
+									commandContext -> execute(
+											commandContext.getSource(), EntityArgumentType.getPlayers(commandContext, "targets"), MessageArgumentType.getMessage(commandContext, "reason")
 										)
 								)
 						)
@@ -34,7 +32,7 @@ public class KickCommand {
 		);
 	}
 
-	private static int method_13411(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			serverPlayerEntity.networkHandler.disconnect(textComponent);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.kick.success", serverPlayerEntity.getDisplayName(), textComponent), true);

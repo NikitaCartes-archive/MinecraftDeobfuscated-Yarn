@@ -41,7 +41,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 	}
 
 	@Override
-	protected Item method_16942() {
+	protected Item getDefaultItem() {
 		return Items.field_8634;
 	}
 
@@ -68,7 +68,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 					}
 
 					endGatewayBlockEntity.tryTeleportingEntity(livingEntity);
-					this.invalidate();
+					this.remove();
 					return;
 				}
 
@@ -90,7 +90,7 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 				if (serverPlayerEntity.networkHandler.getConnection().isOpen() && serverPlayerEntity.world == this.world && !serverPlayerEntity.isSleeping()) {
 					if (this.random.nextFloat() < 0.05F && this.world.getGameRules().getBoolean("doMobSpawning")) {
 						EndermiteEntity endermiteEntity = EntityType.ENDERMITE.create(this.world);
-						endermiteEntity.method_7022(true);
+						endermiteEntity.setPlayerSpawned(true);
 						endermiteEntity.setPositionAndAngles(livingEntity.x, livingEntity.y, livingEntity.z, livingEntity.yaw, livingEntity.pitch);
 						this.world.spawnEntity(endermiteEntity);
 					}
@@ -99,24 +99,24 @@ public class ThrownEnderpearlEntity extends ThrownItemEntity {
 						livingEntity.stopRiding();
 					}
 
-					livingEntity.method_5859(this.x, this.y, this.z);
+					livingEntity.requestTeleport(this.x, this.y, this.z);
 					livingEntity.fallDistance = 0.0F;
 					livingEntity.damage(DamageSource.FALL, 5.0F);
 				}
 			} else if (livingEntity != null) {
-				livingEntity.method_5859(this.x, this.y, this.z);
+				livingEntity.requestTeleport(this.x, this.y, this.z);
 				livingEntity.fallDistance = 0.0F;
 			}
 
-			this.invalidate();
+			this.remove();
 		}
 	}
 
 	@Override
 	public void tick() {
 		LivingEntity livingEntity = this.getOwner();
-		if (livingEntity != null && livingEntity instanceof PlayerEntity && !livingEntity.isValid()) {
-			this.invalidate();
+		if (livingEntity != null && livingEntity instanceof PlayerEntity && !livingEntity.isAlive()) {
+			this.remove();
 		} else {
 			super.tick();
 		}

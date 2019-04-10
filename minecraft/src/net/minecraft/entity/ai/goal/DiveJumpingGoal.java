@@ -4,7 +4,7 @@ import java.util.EnumSet;
 
 public abstract class DiveJumpingGoal extends Goal {
 	public DiveJumpingGoal() {
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405, Goal.class_4134.field_18407));
+		this.setControls(EnumSet.of(Goal.Control.field_18405, Goal.Control.field_18407));
 	}
 
 	protected float updatePitch(float f, float g, float h) {

@@ -18,7 +18,7 @@ public class VanishingCurseEnchantment extends Enchantment {
 	}
 
 	@Override
-	public boolean isLootOnly() {
+	public boolean isTreasure() {
 		return true;
 	}
 

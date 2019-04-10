@@ -61,8 +61,8 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 
 	public KilledByCrossbowCriterion.Conditions method_8979(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		EntityPredicate[] entityPredicates = EntityPredicate.deserializeAll(jsonObject.get("victims"));
-		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("unique_entity_types"));
-		return new KilledByCrossbowCriterion.Conditions(entityPredicates, integer);
+		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("unique_entity_types"));
+		return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
 	}
 
 	public void method_8980(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
@@ -74,12 +74,12 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate[] victims;
-		private final NumberRange.Integer uniqueEntityTypes;
+		private final NumberRange.IntRange field_9659;
 
-		public Conditions(EntityPredicate[] entityPredicates, NumberRange.Integer integer) {
+		public Conditions(EntityPredicate[] entityPredicates, NumberRange.IntRange intRange) {
 			super(KilledByCrossbowCriterion.ID);
 			this.victims = entityPredicates;
-			this.uniqueEntityTypes = integer;
+			this.field_9659 = intRange;
 		}
 
 		public static KilledByCrossbowCriterion.Conditions method_8986(EntityPredicate.Builder... builders) {
@@ -90,12 +90,12 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 				entityPredicates[i] = builder.build();
 			}
 
-			return new KilledByCrossbowCriterion.Conditions(entityPredicates, NumberRange.Integer.ANY);
+			return new KilledByCrossbowCriterion.Conditions(entityPredicates, NumberRange.IntRange.ANY);
 		}
 
-		public static KilledByCrossbowCriterion.Conditions method_8987(NumberRange.Integer integer) {
+		public static KilledByCrossbowCriterion.Conditions method_8987(NumberRange.IntRange intRange) {
 			EntityPredicate[] entityPredicates = new EntityPredicate[0];
-			return new KilledByCrossbowCriterion.Conditions(entityPredicates, integer);
+			return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
 		}
 
 		public boolean matches(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
@@ -121,7 +121,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 				}
 			}
 
-			if (this.uniqueEntityTypes == NumberRange.Integer.ANY) {
+			if (this.field_9659 == NumberRange.IntRange.ANY) {
 				return true;
 			} else {
 				Set<EntityType<?>> set = Sets.<EntityType<?>>newHashSet();
@@ -130,7 +130,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 					set.add(entity2.getType());
 				}
 
-				return this.uniqueEntityTypes.test(set.size()) && this.uniqueEntityTypes.test(i);
+				return this.field_9659.test(set.size()) && this.field_9659.test(i);
 			}
 		}
 
@@ -138,7 +138,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("victims", EntityPredicate.serializeAll(this.victims));
-			jsonObject.add("unique_entity_types", this.uniqueEntityTypes.serialize());
+			jsonObject.add("unique_entity_types", this.field_9659.serialize());
 			return jsonObject;
 		}
 	}

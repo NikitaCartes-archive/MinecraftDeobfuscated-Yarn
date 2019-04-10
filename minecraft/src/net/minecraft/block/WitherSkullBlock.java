@@ -12,7 +12,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.block.BlockStatePredicate;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.MaterialPredicate;
@@ -22,7 +21,9 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 
 public class WitherSkullBlock extends SkullBlock {
+	@Nullable
 	private static BlockPattern witherBossPattern;
+	@Nullable
 	private static BlockPattern witherDispenserPattern;
 
 	protected WitherSkullBlock(Block.Settings settings) {
@@ -48,40 +49,29 @@ public class WitherSkullBlock extends SkullBlock {
 				if (result != null) {
 					for (int i = 0; i < blockPattern.getWidth(); i++) {
 						for (int j = 0; j < blockPattern.getHeight(); j++) {
-							world.setBlockState(result.translate(i, j, 0).getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
+							CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
+							world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
+							world.method_20290(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 						}
 					}
 
-					BlockPos blockPos2 = result.translate(1, 0, 0).getBlockPos();
 					WitherEntity witherEntity = EntityType.WITHER.create(world);
-					BlockPos blockPos3 = result.translate(1, 2, 0).getBlockPos();
+					BlockPos blockPos2 = result.translate(1, 2, 0).getBlockPos();
 					witherEntity.setPositionAndAngles(
-						(double)blockPos3.getX() + 0.5,
-						(double)blockPos3.getY() + 0.55,
-						(double)blockPos3.getZ() + 0.5,
+						(double)blockPos2.getX() + 0.5,
+						(double)blockPos2.getY() + 0.55,
+						(double)blockPos2.getZ() + 0.5,
 						result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F,
 						0.0F
 					);
 					witherEntity.field_6283 = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
 					witherEntity.method_6885();
 
-					for (ServerPlayerEntity serverPlayerEntity : world.method_18467(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
+					for (ServerPlayerEntity serverPlayerEntity : world.getEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
 						Criterions.SUMMONED_ENTITY.handle(serverPlayerEntity, witherEntity);
 					}
 
 					world.spawnEntity(witherEntity);
-
-					for (int k = 0; k < 120; k++) {
-						world.addParticle(
-							ParticleTypes.field_11230,
-							(double)blockPos2.getX() + world.random.nextDouble(),
-							(double)(blockPos2.getY() - 2) + world.random.nextDouble() * 3.9,
-							(double)blockPos2.getZ() + world.random.nextDouble(),
-							0.0,
-							0.0,
-							0.0
-						);
-					}
 
 					for (int k = 0; k < blockPattern.getWidth(); k++) {
 						for (int l = 0; l < blockPattern.getHeight(); l++) {
@@ -99,7 +89,7 @@ public class WitherSkullBlock extends SkullBlock {
 			: false;
 	}
 
-	protected static BlockPattern getWitherBossPattern() {
+	private static BlockPattern getWitherBossPattern() {
 		if (witherBossPattern == null) {
 			witherBossPattern = BlockPatternBuilder.start()
 				.aisle("^^^", "###", "~#~")
@@ -112,7 +102,7 @@ public class WitherSkullBlock extends SkullBlock {
 		return witherBossPattern;
 	}
 
-	protected static BlockPattern getWitherDispenserPattern() {
+	private static BlockPattern getWitherDispenserPattern() {
 		if (witherDispenserPattern == null) {
 			witherDispenserPattern = BlockPatternBuilder.start()
 				.aisle("   ", "###", "~#~")

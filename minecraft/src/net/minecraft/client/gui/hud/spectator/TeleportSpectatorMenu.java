@@ -10,26 +10,26 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
-import net.minecraft.client.network.ScoreboardEntry;
+import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, SpectatorMenuCommand {
-	private static final Ordering<ScoreboardEntry> field_3267 = Ordering.from(
-		(scoreboardEntry, scoreboardEntry2) -> ComparisonChain.start().compare(scoreboardEntry.getProfile().getId(), scoreboardEntry2.getProfile().getId()).result()
+	private static final Ordering<PlayerListEntry> field_3267 = Ordering.from(
+		(playerListEntry, playerListEntry2) -> ComparisonChain.start().compare(playerListEntry.getProfile().getId(), playerListEntry2.getProfile().getId()).result()
 	);
 	private final List<SpectatorMenuCommand> elements = Lists.<SpectatorMenuCommand>newArrayList();
 
 	public TeleportSpectatorMenu() {
-		this(field_3267.<ScoreboardEntry>sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntries()));
+		this(field_3267.<PlayerListEntry>sortedCopy(MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntries()));
 	}
 
-	public TeleportSpectatorMenu(Collection<ScoreboardEntry> collection) {
-		for (ScoreboardEntry scoreboardEntry : field_3267.sortedCopy(collection)) {
-			if (scoreboardEntry.getGameMode() != GameMode.field_9219) {
-				this.elements.add(new TeleportToSpecificPlayerSpectatorCommand(scoreboardEntry.getProfile()));
+	public TeleportSpectatorMenu(Collection<PlayerListEntry> collection) {
+		for (PlayerListEntry playerListEntry : field_3267.sortedCopy(collection)) {
+			if (playerListEntry.getGameMode() != GameMode.field_9219) {
+				this.elements.add(new TeleportToSpecificPlayerSpectatorCommand(playerListEntry.getProfile()));
 			}
 		}
 	}
@@ -57,7 +57,7 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	@Override
 	public void renderIcon(float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEX);
-		DrawableHelper.drawTexturedRect(0, 0, 0.0F, 0.0F, 16, 16, 256.0F, 256.0F);
+		DrawableHelper.blit(0, 0, 0.0F, 0.0F, 16, 16, 256, 256);
 	}
 
 	@Override

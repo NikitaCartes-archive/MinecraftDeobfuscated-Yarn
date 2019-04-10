@@ -110,14 +110,14 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 		for (BlockPos blockPos2 : railPlacementHelper.getNeighbors()) {
 			BlockState blockState2 = world.getBlockState(blockPos2);
-			blockState2.neighborUpdate(world, blockPos2, blockState2.getBlock(), blockPos);
+			blockState2.neighborUpdate(world, blockPos2, blockState2.getBlock(), blockPos, false);
 		}
 	}
 
 	@Override
-	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2) {
+	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
-			super.onBlockAdded(blockState, world, blockPos, blockState2);
+			super.onBlockAdded(blockState, world, blockPos, blockState2, bl);
 			this.method_10002(world, blockPos, blockState);
 		}
 	}

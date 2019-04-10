@@ -7,13 +7,13 @@ public enum ChestType implements StringRepresentable {
 	field_12574("left", 2),
 	field_12571("right", 1);
 
-	public static final ChestType[] field_12570 = values();
+	public static final ChestType[] VALUES = values();
 	private final String name;
-	private final int field_12568;
+	private final int opposite;
 
 	private ChestType(String string2, int j) {
 		this.name = string2;
-		this.field_12568 = j;
+		this.opposite = j;
 	}
 
 	@Override
@@ -21,7 +21,7 @@ public enum ChestType implements StringRepresentable {
 		return this.name;
 	}
 
-	public ChestType method_11824() {
-		return field_12570[this.field_12568];
+	public ChestType getOpposite() {
+		return VALUES[this.opposite];
 	}
 }

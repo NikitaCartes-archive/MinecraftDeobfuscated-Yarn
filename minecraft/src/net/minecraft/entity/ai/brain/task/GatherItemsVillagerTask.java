@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Set;
 import java.util.stream.Collectors;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ItemEntity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -13,7 +13,6 @@ import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.MathHelper;
 
 public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	private Set<Item> items = ImmutableSet.of();
@@ -34,22 +33,22 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 	}
 
 	protected void method_19017(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getMemory(MemoryModuleType.field_18447).get();
+		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).get();
 		LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 		this.items = getGatherableItems(villagerEntity, villagerEntity2);
 	}
 
 	protected void method_19018(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getMemory(MemoryModuleType.field_18447).get();
+		VillagerEntity villagerEntity2 = (VillagerEntity)villagerEntity.getBrain().getOptionalMemory(MemoryModuleType.field_18447).get();
 		if (!(villagerEntity.squaredDistanceTo(villagerEntity2) > 5.0)) {
 			LookTargetUtil.lookAtAndWalkTowardsEachOther(villagerEntity, villagerEntity2);
 			villagerEntity.talkWithVillager(villagerEntity2, l);
 			if (villagerEntity.wantsToStartBreeding() && villagerEntity2.canBreed()) {
-				method_19013(villagerEntity, VillagerEntity.ITEM_FOOD_VALUES.keySet());
+				giveHalfOfStack(villagerEntity, VillagerEntity.ITEM_FOOD_VALUES.keySet(), villagerEntity2);
 			}
 
-			if (!this.items.isEmpty() && villagerEntity.getInventory().method_18862(this.items)) {
-				method_19013(villagerEntity, this.items);
+			if (!this.items.isEmpty() && villagerEntity.getInventory().containsAnyInInv(this.items)) {
+				giveHalfOfStack(villagerEntity, this.items, villagerEntity2);
 			}
 		}
 	}
@@ -64,7 +63,7 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		return (Set<Item>)immutableSet.stream().filter(item -> !immutableSet2.contains(item)).collect(Collectors.toSet());
 	}
 
-	private static void method_19013(VillagerEntity villagerEntity, Set<Item> set) {
+	private static void giveHalfOfStack(VillagerEntity villagerEntity, Set<Item> set, LivingEntity livingEntity) {
 		BasicInventory basicInventory = villagerEntity.getInventory();
 		ItemStack itemStack = ItemStack.EMPTY;
 
@@ -82,18 +81,7 @@ public class GatherItemsVillagerTask extends Task<VillagerEntity> {
 		}
 
 		if (!itemStack.isEmpty()) {
-			double d = villagerEntity.y - 0.3F + (double)villagerEntity.getStandingEyeHeight();
-			ItemEntity itemEntity = new ItemEntity(villagerEntity.world, villagerEntity.x, d, villagerEntity.z, itemStack);
-			float f = 0.3F;
-			float g = villagerEntity.headYaw;
-			float h = villagerEntity.pitch;
-			itemEntity.setVelocity(
-				(double)(0.3F * -MathHelper.sin(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0))),
-				(double)(0.3F * -MathHelper.sin(h * (float) (Math.PI / 180.0)) + 0.1F),
-				(double)(0.3F * MathHelper.cos(g * (float) (Math.PI / 180.0)) * MathHelper.cos(h * (float) (Math.PI / 180.0)))
-			);
-			itemEntity.setToDefaultPickupDelay();
-			villagerEntity.world.spawnEntity(itemEntity);
+			LookTargetUtil.give(villagerEntity, itemStack, livingEntity);
 		}
 	}
 }

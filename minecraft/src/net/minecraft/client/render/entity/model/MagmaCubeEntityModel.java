@@ -32,7 +32,7 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends EntityModel<T> 
 	}
 
 	public void method_17098(T slimeEntity, float f, float g, float h) {
-		float i = MathHelper.lerp(h, slimeEntity.sizeZ, slimeEntity.sizeY);
+		float i = MathHelper.lerp(h, slimeEntity.lastStretch, slimeEntity.stretch);
 		if (i < 0.0F) {
 			i = 0.0F;
 		}

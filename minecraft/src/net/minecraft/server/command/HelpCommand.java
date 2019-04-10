@@ -16,7 +16,7 @@ public class HelpCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("help")
+			CommandManager.literal("help")
 				.executes(commandContext -> {
 					Map<CommandNode<ServerCommandSource>, String> map = commandDispatcher.getSmartUsage(commandDispatcher.getRoot(), commandContext.getSource());
 
@@ -27,7 +27,7 @@ public class HelpCommand {
 					return map.size();
 				})
 				.then(
-					ServerCommandManager.argument("command", StringArgumentType.greedyString())
+					CommandManager.argument("command", StringArgumentType.greedyString())
 						.executes(
 							commandContext -> {
 								ParseResults<ServerCommandSource> parseResults = commandDispatcher.parse(

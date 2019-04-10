@@ -18,7 +18,7 @@ import net.minecraft.world.level.LevelProperties;
 public class WorldBorder {
 	private final List<WorldBorderListener> listeners = Lists.<WorldBorderListener>newArrayList();
 	private double damagePerBlock = 0.2;
-	private double safeZone = 5.0;
+	private double buffer = 5.0;
 	private int warningTime = 15;
 	private int warningBlocks = 5;
 	private double centerX;
@@ -149,12 +149,12 @@ public class WorldBorder {
 		return this.maxWorldBorderRadius;
 	}
 
-	public double getSafeZone() {
-		return this.safeZone;
+	public double getBuffer() {
+		return this.buffer;
 	}
 
-	public void setSafeZone(double d) {
-		this.safeZone = d;
+	public void setBuffer(double d) {
+		this.buffer = d;
 
 		for (WorldBorderListener worldBorderListener : this.getListeners()) {
 			worldBorderListener.onSafeZoneChanged(this, d);
@@ -202,7 +202,7 @@ public class WorldBorder {
 		}
 	}
 
-	public void update() {
+	public void tick() {
 		this.area = this.area.getAreaInstance();
 	}
 
@@ -210,7 +210,7 @@ public class WorldBorder {
 		levelProperties.setBorderSize(this.getSize());
 		levelProperties.setBorderCenterX(this.getCenterX());
 		levelProperties.borderCenterZ(this.getCenterZ());
-		levelProperties.setBorderSafeZone(this.getSafeZone());
+		levelProperties.setBorderSafeZone(this.getBuffer());
 		levelProperties.setBorderDamagePerBlock(this.getDamagePerBlock());
 		levelProperties.setBorderWarningBlocks(this.getWarningBlocks());
 		levelProperties.setBorderWarningTime(this.getWarningTime());
@@ -221,7 +221,7 @@ public class WorldBorder {
 	public void load(LevelProperties levelProperties) {
 		this.setCenter(levelProperties.getBorderCenterX(), levelProperties.getBorderCenterZ());
 		this.setDamagePerBlock(levelProperties.getBorderDamagePerBlock());
-		this.setSafeZone(levelProperties.getBorderSafeZone());
+		this.setBuffer(levelProperties.getBorderSafeZone());
 		this.setWarningBlocks(levelProperties.getBorderWarningBlocks());
 		this.setWarningTime(levelProperties.getBorderWarningTime());
 		if (levelProperties.getBorderSizeLerpTime() > 0L) {
@@ -340,8 +340,8 @@ public class WorldBorder {
 		@Override
 		public VoxelShape method_17906() {
 			return VoxelShapes.combineAndSimplify(
-				VoxelShapes.field_17669,
-				VoxelShapes.cube(
+				VoxelShapes.UNBOUNDED,
+				VoxelShapes.cuboid(
 					Math.floor(this.getBoundWest()),
 					Double.NEGATIVE_INFINITY,
 					Math.floor(this.getBoundNorth()),
@@ -420,8 +420,8 @@ public class WorldBorder {
 			this.boundEast = Math.min(WorldBorder.this.getCenterX() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
 			this.boundSouth = Math.min(WorldBorder.this.getCenterZ() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
 			this.field_17653 = VoxelShapes.combineAndSimplify(
-				VoxelShapes.field_17669,
-				VoxelShapes.cube(
+				VoxelShapes.UNBOUNDED,
+				VoxelShapes.cuboid(
 					Math.floor(this.getBoundWest()),
 					Double.NEGATIVE_INFINITY,
 					Math.floor(this.getBoundNorth()),

@@ -13,25 +13,29 @@ import net.minecraft.util.NumberRange;
 
 public class DamagePredicate {
 	public static final DamagePredicate ANY = DamagePredicate.Builder.create().build();
-	private final NumberRange.Float dealt;
-	private final NumberRange.Float taken;
+	private final NumberRange.FloatRange field_9523;
+	private final NumberRange.FloatRange field_9524;
 	private final EntityPredicate sourceEntity;
 	private final Boolean blocked;
 	private final DamageSourcePredicate type;
 
 	public DamagePredicate() {
-		this.dealt = NumberRange.Float.ANY;
-		this.taken = NumberRange.Float.ANY;
+		this.field_9523 = NumberRange.FloatRange.ANY;
+		this.field_9524 = NumberRange.FloatRange.ANY;
 		this.sourceEntity = EntityPredicate.ANY;
 		this.blocked = null;
 		this.type = DamageSourcePredicate.EMPTY;
 	}
 
 	public DamagePredicate(
-		NumberRange.Float float_, NumberRange.Float float2, EntityPredicate entityPredicate, @Nullable Boolean boolean_, DamageSourcePredicate damageSourcePredicate
+		NumberRange.FloatRange floatRange,
+		NumberRange.FloatRange floatRange2,
+		EntityPredicate entityPredicate,
+		@Nullable Boolean boolean_,
+		DamageSourcePredicate damageSourcePredicate
 	) {
-		this.dealt = float_;
-		this.taken = float2;
+		this.field_9523 = floatRange;
+		this.field_9524 = floatRange2;
 		this.sourceEntity = entityPredicate;
 		this.blocked = boolean_;
 		this.type = damageSourcePredicate;
@@ -40,9 +44,9 @@ public class DamagePredicate {
 	public boolean test(ServerPlayerEntity serverPlayerEntity, DamageSource damageSource, float f, float g, boolean bl) {
 		if (this == ANY) {
 			return true;
-		} else if (!this.dealt.matches(f)) {
+		} else if (!this.field_9523.matches(f)) {
 			return false;
-		} else if (!this.taken.matches(g)) {
+		} else if (!this.field_9524.matches(g)) {
 			return false;
 		} else if (!this.sourceEntity.test(serverPlayerEntity, damageSource.getAttacker())) {
 			return false;
@@ -54,12 +58,12 @@ public class DamagePredicate {
 	public static DamagePredicate deserialize(@Nullable JsonElement jsonElement) {
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
 			JsonObject jsonObject = JsonHelper.asObject(jsonElement, "damage");
-			NumberRange.Float float_ = NumberRange.Float.fromJson(jsonObject.get("dealt"));
-			NumberRange.Float float2 = NumberRange.Float.fromJson(jsonObject.get("taken"));
+			NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject.get("dealt"));
+			NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject.get("taken"));
 			Boolean boolean_ = jsonObject.has("blocked") ? JsonHelper.getBoolean(jsonObject, "blocked") : null;
 			EntityPredicate entityPredicate = EntityPredicate.deserialize(jsonObject.get("source_entity"));
 			DamageSourcePredicate damageSourcePredicate = DamageSourcePredicate.deserialize(jsonObject.get("type"));
-			return new DamagePredicate(float_, float2, entityPredicate, boolean_, damageSourcePredicate);
+			return new DamagePredicate(floatRange, floatRange2, entityPredicate, boolean_, damageSourcePredicate);
 		} else {
 			return ANY;
 		}
@@ -70,8 +74,8 @@ public class DamagePredicate {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("dealt", this.dealt.serialize());
-			jsonObject.add("taken", this.taken.serialize());
+			jsonObject.add("dealt", this.field_9523.serialize());
+			jsonObject.add("taken", this.field_9524.serialize());
 			jsonObject.add("source_entity", this.sourceEntity.serialize());
 			jsonObject.add("type", this.type.serialize());
 			if (this.blocked != null) {
@@ -83,8 +87,8 @@ public class DamagePredicate {
 	}
 
 	public static class Builder {
-		private NumberRange.Float dealt = NumberRange.Float.ANY;
-		private NumberRange.Float taken = NumberRange.Float.ANY;
+		private NumberRange.FloatRange field_9530 = NumberRange.FloatRange.ANY;
+		private NumberRange.FloatRange field_9527 = NumberRange.FloatRange.ANY;
 		private EntityPredicate sourceEntity = EntityPredicate.ANY;
 		private Boolean blocked;
 		private DamageSourcePredicate type = DamageSourcePredicate.EMPTY;
@@ -104,7 +108,7 @@ public class DamagePredicate {
 		}
 
 		public DamagePredicate build() {
-			return new DamagePredicate(this.dealt, this.taken, this.sourceEntity, this.blocked, this.type);
+			return new DamagePredicate(this.field_9530, this.field_9527, this.sourceEntity, this.blocked, this.type);
 		}
 	}
 }

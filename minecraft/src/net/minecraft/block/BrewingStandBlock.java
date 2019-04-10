@@ -64,7 +64,7 @@ public class BrewingStandBlock extends BlockWithEntity {
 			BlockEntity blockEntity = world.getBlockEntity(blockPos);
 			if (blockEntity instanceof BrewingStandBlockEntity) {
 				playerEntity.openContainer((BrewingStandBlockEntity)blockEntity);
-				playerEntity.increaseStat(Stats.field_15407);
+				playerEntity.incrementStat(Stats.field_15407);
 			}
 
 			return true;

@@ -7,7 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class WitchEntityModel<T extends Entity> extends VillagerEntityModel<T> {
+public class WitchEntityModel<T extends Entity> extends VillagerResemblingModel<T> {
 	private boolean field_3614;
 	private final Cuboid mole = new Cuboid(this).setTextureSize(64, 128);
 

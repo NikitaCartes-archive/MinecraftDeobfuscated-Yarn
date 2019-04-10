@@ -19,8 +19,8 @@ import net.minecraft.world.World;
 public class EvokerFangsEntity extends Entity {
 	private int warmup;
 	private boolean field_7610;
-	private int field_7607 = 22;
-	private boolean field_7608;
+	private int ticksLeft = 22;
+	private boolean hasAttacked;
 	private LivingEntity owner;
 	private UUID ownerUuid;
 
@@ -77,9 +77,9 @@ public class EvokerFangsEntity extends Entity {
 	public void tick() {
 		super.tick();
 		if (this.world.isClient) {
-			if (this.field_7608) {
-				this.field_7607--;
-				if (this.field_7607 == 14) {
+			if (this.hasAttacked) {
+				this.ticksLeft--;
+				if (this.ticksLeft == 14) {
 					for (int i = 0; i < 12; i++) {
 						double d = this.x + (this.random.nextDouble() * 2.0 - 1.0) * (double)this.getWidth() * 0.5;
 						double e = this.y + 0.05 + this.random.nextDouble();
@@ -93,25 +93,25 @@ public class EvokerFangsEntity extends Entity {
 			}
 		} else if (--this.warmup < 0) {
 			if (this.warmup == -8) {
-				for (LivingEntity livingEntity : this.world.method_18467(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
-					this.method_7471(livingEntity);
+				for (LivingEntity livingEntity : this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(0.2, 0.0, 0.2))) {
+					this.damage(livingEntity);
 				}
 			}
 
 			if (!this.field_7610) {
-				this.world.summonParticle(this, (byte)4);
+				this.world.sendEntityStatus(this, (byte)4);
 				this.field_7610 = true;
 			}
 
-			if (--this.field_7607 < 0) {
-				this.invalidate();
+			if (--this.ticksLeft < 0) {
+				this.remove();
 			}
 		}
 	}
 
-	private void method_7471(LivingEntity livingEntity) {
+	private void damage(LivingEntity livingEntity) {
 		LivingEntity livingEntity2 = this.getOwner();
-		if (livingEntity.isValid() && !livingEntity.isInvulnerable() && livingEntity != livingEntity2) {
+		if (livingEntity.isAlive() && !livingEntity.isInvulnerable() && livingEntity != livingEntity2) {
 			if (livingEntity2 == null) {
 				livingEntity.damage(DamageSource.MAGIC, 6.0F);
 			} else {
@@ -126,10 +126,10 @@ public class EvokerFangsEntity extends Entity {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_5711(byte b) {
-		super.method_5711(b);
+	public void handleStatus(byte b) {
+		super.handleStatus(b);
 		if (b == 4) {
-			this.field_7608 = true;
+			this.hasAttacked = true;
 			if (!this.isSilent()) {
 				this.world.playSound(this.x, this.y, this.z, SoundEvents.field_14692, this.getSoundCategory(), 1.0F, this.random.nextFloat() * 0.2F + 0.85F, false);
 			}
@@ -137,11 +137,11 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_7472(float f) {
-		if (!this.field_7608) {
+	public float getAnimationProgress(float f) {
+		if (!this.hasAttacked) {
 			return 0.0F;
 		} else {
-			int i = this.field_7607 - 2;
+			int i = this.ticksLeft - 2;
 			return i <= 0 ? 1.0F : 1.0F - ((float)i - f) / 20.0F;
 		}
 	}

@@ -130,7 +130,7 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	private static void method_4308(boolean bl, boolean bl2) {
+	private static void setTextureFilter(boolean bl, boolean bl2) {
 		if (bl) {
 			GlStateManager.texParameter(3553, 10241, bl2 ? 9987 : 9729);
 			GlStateManager.texParameter(3553, 10240, 9729);
@@ -193,7 +193,7 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	public byte getAlphaOrLuminance(int i, int j) {
-		if (!this.format.method_4337()) {
+		if (!this.format.hasLuminanceOrAlpha()) {
 			throw new IllegalArgumentException(String.format("no luminance or alpha in %s", this.format));
 		} else if (i <= this.width && j <= this.height) {
 			return MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes).get((i + j * this.width) * this.format.getBytesPerPixel() + this.format.method_4330() / 8);
@@ -278,7 +278,7 @@ public final class NativeImage implements AutoCloseable {
 
 	public void upload(int i, int j, int k, int l, int m, int n, int o, boolean bl, boolean bl2, boolean bl3) {
 		this.checkAllocated();
-		method_4308(bl, bl3);
+		setTextureFilter(bl, bl3);
 		setTextureClamp(bl2);
 		if (n == this.getWidth()) {
 			GlStateManager.pixelStore(3314, 0);
@@ -288,14 +288,14 @@ public final class NativeImage implements AutoCloseable {
 
 		GlStateManager.pixelStore(3316, l);
 		GlStateManager.pixelStore(3315, m);
-		this.format.method_4340();
-		GlStateManager.texSubImage2D(3553, i, j, k, n, o, this.format.method_4333(), 5121, this.pointer);
+		this.format.setUnpackAlignment();
+		GlStateManager.texSubImage2D(3553, i, j, k, n, o, this.format.getPixelDataFormat(), 5121, this.pointer);
 	}
 
-	public void method_4327(int i, boolean bl) {
+	public void loadFromTextureImage(int i, boolean bl) {
 		this.checkAllocated();
-		this.format.method_4339();
-		GlStateManager.getTexImage(3553, i, this.format.method_4333(), 5121, this.pointer);
+		this.format.setPackAlignment();
+		GlStateManager.getTexImage(3553, i, this.format.getPixelDataFormat(), 5121, this.pointer);
 		if (bl && this.format.method_4329()) {
 			for (int j = 0; j < this.getHeight(); j++) {
 				for (int k = 0; k < this.getWidth(); k++) {
@@ -307,12 +307,12 @@ public final class NativeImage implements AutoCloseable {
 
 	public void method_4306(boolean bl) {
 		this.checkAllocated();
-		this.format.method_4339();
+		this.format.setPackAlignment();
 		if (bl) {
 			GlStateManager.pixelTransfer(3357, Float.MAX_VALUE);
 		}
 
-		GlStateManager.readPixels(0, 0, this.width, this.height, this.format.method_4333(), 5121, this.pointer);
+		GlStateManager.readPixels(0, 0, this.width, this.height, this.format.getPixelDataFormat(), 5121, this.pointer);
 		if (bl) {
 			GlStateManager.pixelTransfer(3357, 0.0F);
 		}
@@ -347,19 +347,19 @@ public final class NativeImage implements AutoCloseable {
 			Throwable var3 = null;
 
 			try {
-				NativeImage.class_1014 lv = new NativeImage.class_1014(writableByteChannel);
+				NativeImage.WriteCallback writeCallback = new NativeImage.WriteCallback(writableByteChannel);
 
 				try {
 					if (!STBImageWrite.stbi_write_png_to_func(
-						lv, 0L, this.getWidth(), this.getHeight(), this.format.getBytesPerPixel(), MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes), 0
+						writeCallback, 0L, this.getWidth(), this.getHeight(), this.format.getBytesPerPixel(), MemoryUtil.memByteBuffer(this.pointer, this.sizeBytes), 0
 					)) {
 						throw new IOException("Could not write image to the PNG file \"" + path.toAbsolutePath() + "\": " + STBImage.stbi_failure_reason());
 					}
 				} finally {
-					lv.free();
+					writeCallback.free();
 				}
 
-				lv.method_4342();
+				writeCallback.throwStoredException();
 			} catch (Throwable var19) {
 				var3 = var19;
 				throw var19;
@@ -379,7 +379,7 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void method_4317(NativeImage nativeImage) {
+	public void copyFrom(NativeImage nativeImage) {
 		if (nativeImage.getFormat() != this.format) {
 			throw new UnsupportedOperationException("Image formats don't match.");
 		} else {
@@ -450,14 +450,14 @@ public final class NativeImage implements AutoCloseable {
 		}
 	}
 
-	public void method_4302() {
+	public void untrack() {
 		UntrackMemoryUtil.untrack(this.pointer);
 	}
 
 	public static NativeImage fromBase64(String string) throws IOException {
 		NativeImage var6;
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			ByteBuffer byteBuffer = memoryStack.UTF8(string, false);
+			ByteBuffer byteBuffer = memoryStack.UTF8(string.replaceAll("\n", ""), false);
 			ByteBuffer byteBuffer2 = Base64.getDecoder().decode(byteBuffer);
 			ByteBuffer byteBuffer3 = memoryStack.malloc(byteBuffer2.remaining());
 			byteBuffer3.put(byteBuffer2);
@@ -476,7 +476,7 @@ public final class NativeImage implements AutoCloseable {
 		field_4998(1, 6409, false, false, false, true, false, 0, 0, 0, 0, 255, true);
 
 		private final int bytesPerPixel;
-		private final int field_4993;
+		private final int pixelDataFormat;
 		private final boolean field_5005;
 		private final boolean field_5004;
 		private final boolean field_5003;
@@ -491,7 +491,7 @@ public final class NativeImage implements AutoCloseable {
 
 		private Format(int j, int k, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, int l, int m, int n, int o, int p, boolean bl6) {
 			this.bytesPerPixel = j;
-			this.field_4993 = k;
+			this.pixelDataFormat = k;
 			this.field_5005 = bl;
 			this.field_5004 = bl2;
 			this.field_5003 = bl3;
@@ -509,16 +509,16 @@ public final class NativeImage implements AutoCloseable {
 			return this.bytesPerPixel;
 		}
 
-		public void method_4339() {
+		public void setPackAlignment() {
 			GlStateManager.pixelStore(3333, this.getBytesPerPixel());
 		}
 
-		public void method_4340() {
+		public void setUnpackAlignment() {
 			GlStateManager.pixelStore(3317, this.getBytesPerPixel());
 		}
 
-		public int method_4333() {
-			return this.field_4993;
+		public int getPixelDataFormat() {
+			return this.pixelDataFormat;
 		}
 
 		public boolean method_4329() {
@@ -529,7 +529,7 @@ public final class NativeImage implements AutoCloseable {
 			return this.field_5006;
 		}
 
-		public boolean method_4337() {
+		public boolean hasLuminanceOrAlpha() {
 			return this.field_5000 || this.field_4999;
 		}
 
@@ -557,6 +557,33 @@ public final class NativeImage implements AutoCloseable {
 	}
 
 	@Environment(EnvType.CLIENT)
+	static class WriteCallback extends STBIWriteCallback {
+		private final WritableByteChannel channel;
+		private IOException exception;
+
+		private WriteCallback(WritableByteChannel writableByteChannel) {
+			this.channel = writableByteChannel;
+		}
+
+		@Override
+		public void invoke(long l, long m, int i) {
+			ByteBuffer byteBuffer = getData(m, i);
+
+			try {
+				this.channel.write(byteBuffer);
+			} catch (IOException var8) {
+				this.exception = var8;
+			}
+		}
+
+		public void throwStoredException() throws IOException {
+			if (this.exception != null) {
+				throw this.exception;
+			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static enum class_1013 {
 		field_5012(6408),
 		field_5011(6407),
@@ -572,33 +599,6 @@ public final class NativeImage implements AutoCloseable {
 
 		public int method_4341() {
 			return this.field_5015;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class class_1014 extends STBIWriteCallback {
-		private final WritableByteChannel field_5018;
-		private IOException field_5019;
-
-		private class_1014(WritableByteChannel writableByteChannel) {
-			this.field_5018 = writableByteChannel;
-		}
-
-		@Override
-		public void invoke(long l, long m, int i) {
-			ByteBuffer byteBuffer = getData(m, i);
-
-			try {
-				this.field_5018.write(byteBuffer);
-			} catch (IOException var8) {
-				this.field_5019 = var8;
-			}
-		}
-
-		public void method_4342() throws IOException {
-			if (this.field_5019 != null) {
-				throw this.field_5019;
-			}
 		}
 	}
 }

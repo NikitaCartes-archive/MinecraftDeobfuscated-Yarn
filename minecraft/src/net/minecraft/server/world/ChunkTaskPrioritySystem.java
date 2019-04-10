@@ -24,13 +24,13 @@ import org.apache.logging.log4j.Logger;
 
 public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.LevelUpdateListener {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Map<Actor<?>, LevelIndexedQueue<? extends Function<Actor<Void>, ?>>> queues;
+	private final Map<Actor<?>, LevelPrioritizedQueue<? extends Function<Actor<Void>, ?>>> queues;
 	private final Set<Actor<?>> actors;
 	private final MailboxProcessor<Mailbox.PrioritizedMessage> sorter;
 
 	public ChunkTaskPrioritySystem(List<Actor<?>> list, Executor executor, int i) {
-		this.queues = (Map<Actor<?>, LevelIndexedQueue<? extends Function<Actor<Void>, ?>>>)list.stream()
-			.collect(Collectors.toMap(Function.identity(), actor -> new LevelIndexedQueue(actor.getName() + "_queue", i)));
+		this.queues = (Map<Actor<?>, LevelPrioritizedQueue<? extends Function<Actor<Void>, ?>>>)list.stream()
+			.collect(Collectors.toMap(Function.identity(), actor -> new LevelPrioritizedQueue(actor.getName() + "_queue", i)));
 		this.actors = Sets.<Actor<?>>newHashSet(list);
 		this.sorter = new MailboxProcessor<>(new Mailbox.PrioritizedQueueMailbox(4), executor, "sorter");
 	}
@@ -42,15 +42,15 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 			}, l, intSupplier);
 	}
 
-	public static ChunkTaskPrioritySystem.RunnableMessage<Runnable> createRunnableMessage(ChunkHolder chunkHolder, Runnable runnable) {
-		return createRunnableMessage(runnable, chunkHolder.getPos().toLong(), chunkHolder::getLastLevelUpdatedTo);
+	public static ChunkTaskPrioritySystem.RunnableMessage<Runnable> createExecutorMessage(ChunkHolder chunkHolder, Runnable runnable) {
+		return createRunnableMessage(runnable, chunkHolder.getPos().toLong(), chunkHolder::getCompletedLevel);
 	}
 
-	public static ChunkTaskPrioritySystem.SorterMessage createPrioritySorterMessage(Runnable runnable, long l, boolean bl) {
+	public static ChunkTaskPrioritySystem.SorterMessage createSorterMessage(Runnable runnable, long l, boolean bl) {
 		return new ChunkTaskPrioritySystem.SorterMessage(runnable, l, bl);
 	}
 
-	public <T> Actor<ChunkTaskPrioritySystem.RunnableMessage<T>> getExecutingActor(Actor<T> actor, boolean bl) {
+	public <T> Actor<ChunkTaskPrioritySystem.RunnableMessage<T>> createExecutingActor(Actor<T> actor, boolean bl) {
 		return (Actor<ChunkTaskPrioritySystem.RunnableMessage<T>>)this.sorter
 			.createAndSendFutureActor(
 				actor2 -> new Mailbox.PrioritizedMessage(
@@ -60,7 +60,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 							actor2.send(
 								Actor.createConsumerActor(
 									"chunk priority sorter around " + actor.getName(),
-									runnableMessage -> this.method_17282(actor, runnableMessage.function, runnableMessage.pos, runnableMessage.lastLevelUpdatedToProvider, bl)
+									runnableMessage -> this.execute(actor, runnableMessage.function, runnableMessage.pos, runnableMessage.lastLevelUpdatedToProvider, bl)
 								)
 							);
 						}
@@ -69,7 +69,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 			.join();
 	}
 
-	public Actor<ChunkTaskPrioritySystem.SorterMessage> getSortingActor(Actor<Runnable> actor) {
+	public Actor<ChunkTaskPrioritySystem.SorterMessage> createSortingActor(Actor<Runnable> actor) {
 		return (Actor<ChunkTaskPrioritySystem.SorterMessage>)this.sorter
 			.createAndSendFutureActor(
 				actor2 -> new Mailbox.PrioritizedMessage(
@@ -77,7 +77,7 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 						() -> actor2.send(
 								Actor.createConsumerActor(
 									"chunk priority sorter around " + actor.getName(),
-									sorterMessage -> this.method_17615(actor, sorterMessage.pos, sorterMessage.runnable, sorterMessage.field_17451)
+									sorterMessage -> this.sort(actor, sorterMessage.pos, sorterMessage.runnable, sorterMessage.field_17451)
 								)
 							)
 					)
@@ -89,58 +89,59 @@ public class ChunkTaskPrioritySystem implements AutoCloseable, ChunkHolder.Level
 	public void updateLevel(ChunkPos chunkPos, IntSupplier intSupplier, int i, IntConsumer intConsumer) {
 		this.sorter.send(new Mailbox.PrioritizedMessage(0, () -> {
 			int j = intSupplier.getAsInt();
-			this.queues.values().forEach(levelIndexedQueue -> levelIndexedQueue.updateLevel(j, chunkPos, i));
+			this.queues.values().forEach(levelPrioritizedQueue -> levelPrioritizedQueue.updateLevel(j, chunkPos, i));
 			intConsumer.accept(i);
 		}));
 	}
 
-	private <T> void method_17615(Actor<T> actor, long l, Runnable runnable, boolean bl) {
+	private <T> void sort(Actor<T> actor, long l, Runnable runnable, boolean bl) {
 		this.sorter.send(new Mailbox.PrioritizedMessage(1, () -> {
-			LevelIndexedQueue<Function<Actor<Void>, T>> levelIndexedQueue = this.getQueue(actor);
-			levelIndexedQueue.method_17609(l, bl);
+			LevelPrioritizedQueue<Function<Actor<Void>, T>> levelPrioritizedQueue = this.getQueue(actor);
+			levelPrioritizedQueue.clearPosition(l, bl);
 			if (this.actors.remove(actor)) {
-				this.method_17630(levelIndexedQueue, actor);
+				this.method_17630(levelPrioritizedQueue, actor);
 			}
 
 			runnable.run();
 		}));
 	}
 
-	private <T> void method_17282(Actor<T> actor, Function<Actor<Void>, T> function, long l, IntSupplier intSupplier, boolean bl) {
+	private <T> void execute(Actor<T> actor, Function<Actor<Void>, T> function, long l, IntSupplier intSupplier, boolean bl) {
 		this.sorter.send(new Mailbox.PrioritizedMessage(2, () -> {
-			LevelIndexedQueue<Function<Actor<Void>, T>> levelIndexedQueue = this.getQueue(actor);
+			LevelPrioritizedQueue<Function<Actor<Void>, T>> levelPrioritizedQueue = this.getQueue(actor);
 			int i = intSupplier.getAsInt();
-			levelIndexedQueue.method_17274(Optional.of(function), l, i);
+			levelPrioritizedQueue.add(Optional.of(function), l, i);
 			if (bl) {
-				levelIndexedQueue.method_17274(Optional.empty(), l, i);
+				levelPrioritizedQueue.add(Optional.empty(), l, i);
 			}
 
 			if (this.actors.remove(actor)) {
-				this.method_17630(levelIndexedQueue, actor);
+				this.method_17630(levelPrioritizedQueue, actor);
 			}
 		}));
 	}
 
-	private <T> void method_17630(LevelIndexedQueue<Function<Actor<Void>, T>> levelIndexedQueue, Actor<T> actor) {
+	private <T> void method_17630(LevelPrioritizedQueue<Function<Actor<Void>, T>> levelPrioritizedQueue, Actor<T> actor) {
 		this.sorter.send(new Mailbox.PrioritizedMessage(3, () -> {
-			Stream<Either<Function<Actor<Void>, T>, Runnable>> stream = levelIndexedQueue.getNext();
+			Stream<Either<Function<Actor<Void>, T>, Runnable>> stream = levelPrioritizedQueue.poll();
 			if (stream == null) {
 				this.actors.add(actor);
 			} else {
 				SystemUtil.thenCombine((List)stream.map(either -> either.map(actor::createAndSendFutureActor, runnable -> {
 						runnable.run();
 						return CompletableFuture.completedFuture(Void.INSTANCE);
-					})).collect(Collectors.toList())).thenAccept(list -> this.method_17630(levelIndexedQueue, actor));
+					})).collect(Collectors.toList())).thenAccept(list -> this.method_17630(levelPrioritizedQueue, actor));
 			}
 		}));
 	}
 
-	private <T> LevelIndexedQueue<Function<Actor<Void>, T>> getQueue(Actor<T> actor) {
-		LevelIndexedQueue<? extends Function<Actor<Void>, ?>> levelIndexedQueue = (LevelIndexedQueue<? extends Function<Actor<Void>, ?>>)this.queues.get(actor);
-		if (levelIndexedQueue == null) {
+	private <T> LevelPrioritizedQueue<Function<Actor<Void>, T>> getQueue(Actor<T> actor) {
+		LevelPrioritizedQueue<? extends Function<Actor<Void>, ?>> levelPrioritizedQueue = (LevelPrioritizedQueue<? extends Function<Actor<Void>, ?>>)this.queues
+			.get(actor);
+		if (levelPrioritizedQueue == null) {
 			throw new IllegalArgumentException("No queue for: " + actor);
 		} else {
-			return (LevelIndexedQueue<Function<Actor<Void>, T>>)levelIndexedQueue;
+			return (LevelPrioritizedQueue<Function<Actor<Void>, T>>)levelPrioritizedQueue;
 		}
 	}
 

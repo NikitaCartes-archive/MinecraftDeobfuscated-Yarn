@@ -30,7 +30,7 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	@Override
-	protected Vec3d method_6347() {
+	protected Vec3d getPos() {
 		return new Vec3d(this.entity.x, (double)this.method_6362(), this.entity.z);
 	}
 
@@ -102,7 +102,7 @@ public class MobNavigation extends EntityNavigation {
 			for (int i = 0; i < this.currentPath.getLength(); i++) {
 				PathNode pathNode = this.currentPath.getNode(i);
 				if (this.world.isSkyVisible(new BlockPos(pathNode.x, pathNode.y, pathNode.z))) {
-					this.currentPath.setLength(i - 1);
+					this.currentPath.setLength(i);
 					return;
 				}
 			}

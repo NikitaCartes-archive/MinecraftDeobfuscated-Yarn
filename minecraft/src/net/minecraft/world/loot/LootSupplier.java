@@ -106,7 +106,7 @@ public class LootSupplier {
 		List<ItemStack> list = this.getDrops(lootContext);
 		Random random = lootContext.getRandom();
 		List<Integer> list2 = this.getFreeSlots(inventory, random);
-		this.method_333(list, list2.size(), random);
+		this.shuffle(list, list2.size(), random);
 
 		for (ItemStack itemStack : list) {
 			if (list2.isEmpty()) {
@@ -122,7 +122,7 @@ public class LootSupplier {
 		}
 	}
 
-	private void method_333(List<ItemStack> list, int i, Random random) {
+	private void shuffle(List<ItemStack> list, int i, Random random) {
 		List<ItemStack> list2 = Lists.<ItemStack>newArrayList();
 		Iterator<ItemStack> iterator = list.iterator();
 
@@ -170,7 +170,7 @@ public class LootSupplier {
 		return list;
 	}
 
-	public static LootSupplier.Builder create() {
+	public static LootSupplier.Builder builder() {
 		return new LootSupplier.Builder();
 	}
 

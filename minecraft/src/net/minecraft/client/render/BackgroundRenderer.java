@@ -58,8 +58,8 @@ public class BackgroundRenderer {
 		}
 
 		double d = camera.getPos().y * world.dimension.getHorizonShadingRatio();
-		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasPotionEffect(StatusEffects.field_5919)) {
-			int i = ((LivingEntity)camera.getFocusedEntity()).getPotionEffect(StatusEffects.field_5919).getDuration();
+		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5919)) {
+			int i = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.field_5919).getDuration();
 			if (i < 20) {
 				d *= (double)(1.0F - (float)i / 20.0F);
 			} else {
@@ -104,8 +104,8 @@ public class BackgroundRenderer {
 			this.red = this.red * (1.0F - g) + this.red * h * g;
 			this.green = this.green * (1.0F - g) + this.green * h * g;
 			this.blue = this.blue * (1.0F - g) + this.blue * h * g;
-		} else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasPotionEffect(StatusEffects.field_5925)) {
-			float gx = this.gameRenderer.method_3174((LivingEntity)camera.getFocusedEntity(), f);
+		} else if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5925)) {
+			float gx = this.gameRenderer.getNightVisionStrength((LivingEntity)camera.getFocusedEntity(), f);
 			float hx = 1.0F / this.red;
 			if (hx > 1.0F / this.green) {
 				hx = 1.0F / this.green;
@@ -204,13 +204,13 @@ public class BackgroundRenderer {
 	}
 
 	public void applyFog(Camera camera, int i) {
-		this.updateFogColor(false);
+		this.setFogBlack(false);
 		GlStateManager.normal3f(0.0F, -1.0F, 0.0F);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		FluidState fluidState = camera.getSubmergedFluidState();
-		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasPotionEffect(StatusEffects.field_5919)) {
+		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.field_5919)) {
 			float f = 5.0F;
-			int j = ((LivingEntity)camera.getFocusedEntity()).getPotionEffect(StatusEffects.field_5919).getDuration();
+			int j = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.field_5919).getDuration();
 			if (j < 20) {
 				f = MathHelper.lerp(1.0F - (float)j / 20.0F, 5.0F, this.gameRenderer.getViewDistance());
 			}
@@ -269,7 +269,7 @@ public class BackgroundRenderer {
 		GlStateManager.colorMaterial(1028, 4608);
 	}
 
-	public void updateFogColor(boolean bl) {
+	public void setFogBlack(boolean bl) {
 		if (bl) {
 			GlStateManager.fog(2918, this.blackColorBuffer);
 		} else {

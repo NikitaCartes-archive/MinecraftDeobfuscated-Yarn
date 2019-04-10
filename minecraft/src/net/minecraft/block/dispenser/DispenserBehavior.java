@@ -89,7 +89,7 @@ public interface DispenserBehavior {
 				@Override
 				protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
 					return SystemUtil.consume(
-						new ThrownEggEntity(world, position.getX(), position.getY(), position.getZ()), thrownEggEntity -> thrownEggEntity.method_16940(itemStack)
+						new ThrownEggEntity(world, position.getX(), position.getY(), position.getZ()), thrownEggEntity -> thrownEggEntity.setItem(itemStack)
 					);
 				}
 			}
@@ -100,7 +100,7 @@ public interface DispenserBehavior {
 				@Override
 				protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
 					return SystemUtil.consume(
-						new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), snowballEntity -> snowballEntity.method_16940(itemStack)
+						new SnowballEntity(world, position.getX(), position.getY(), position.getZ()), snowballEntity -> snowballEntity.setItem(itemStack)
 					);
 				}
 			}
@@ -112,7 +112,7 @@ public interface DispenserBehavior {
 				protected Projectile createProjectile(World world, Position position, ItemStack itemStack) {
 					return SystemUtil.consume(
 						new ThrownExperienceBottleEntity(world, position.getX(), position.getY(), position.getZ()),
-						thrownExperienceBottleEntity -> thrownExperienceBottleEntity.method_16940(itemStack)
+						thrownExperienceBottleEntity -> thrownExperienceBottleEntity.setItem(itemStack)
 					);
 				}
 
@@ -212,7 +212,7 @@ public interface DispenserBehavior {
 
 			@Override
 			protected void playSound(BlockPointer blockPointer) {
-				blockPointer.getWorld().playEvent(1004, blockPointer.getBlockPos(), 0);
+				blockPointer.getWorld().method_20290(1004, blockPointer.getBlockPos(), 0);
 			}
 		});
 		DispenserBlock.registerBehavior(Items.field_8814, new ItemDispenserBehavior() {
@@ -235,7 +235,7 @@ public interface DispenserBehavior {
 
 			@Override
 			protected void playSound(BlockPointer blockPointer) {
-				blockPointer.getWorld().playEvent(1018, blockPointer.getBlockPos(), 0);
+				blockPointer.getWorld().method_20290(1018, blockPointer.getBlockPos(), 0);
 			}
 		});
 		DispenserBlock.registerBehavior(Items.field_8533, new BoatDispenserBehavior(BoatEntity.Type.OAK));
@@ -310,7 +310,7 @@ public interface DispenserBehavior {
 					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
 				} else if (blockState.getBlock() instanceof TntBlock) {
 					TntBlock.primeTnt(world, blockPos);
-					world.clearBlockState(blockPos);
+					world.clearBlockState(blockPos, false);
 				} else {
 					this.success = false;
 				}
@@ -331,7 +331,7 @@ public interface DispenserBehavior {
 				if (!BoneMealItem.method_7720(itemStack, world, blockPos) && !BoneMealItem.method_7719(itemStack, world, blockPos, null)) {
 					this.success = false;
 				} else if (!world.isClient) {
-					world.playEvent(2005, blockPos, 0);
+					world.method_20290(2005, blockPos, 0);
 				}
 
 				return itemStack;
@@ -429,8 +429,8 @@ public interface DispenserBehavior {
 					this.success = false;
 					BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 
-					for (SheepEntity sheepEntity : world.method_18467(SheepEntity.class, new BoundingBox(blockPos))) {
-						if (sheepEntity.isValid() && !sheepEntity.isSheared() && !sheepEntity.isChild()) {
+					for (SheepEntity sheepEntity : world.getEntities(SheepEntity.class, new BoundingBox(blockPos))) {
+						if (sheepEntity.isAlive() && !sheepEntity.isSheared() && !sheepEntity.isChild()) {
 							sheepEntity.dropItems();
 							if (itemStack.applyDamage(1, world.random, null)) {
 								itemStack.setAmount(0);

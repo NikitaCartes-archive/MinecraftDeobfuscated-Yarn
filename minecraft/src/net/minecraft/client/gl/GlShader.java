@@ -28,7 +28,7 @@ public class GlShader {
 		GLX.glAttachShader(glProgram.getProgramRef(), this.shaderRef);
 	}
 
-	public void method_1282() {
+	public void release() {
 		this.refCount--;
 		if (this.refCount <= 0) {
 			GLX.glDeleteShader(this.shaderRef);

@@ -10,7 +10,7 @@ public class SitGoal extends Goal {
 
 	public SitGoal(TameableEntity tameableEntity) {
 		this.entity = tameableEntity;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18407, Goal.class_4134.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.field_18407, Goal.Control.field_18405));
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class SitGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.entity.setSitting(false);
 	}
 

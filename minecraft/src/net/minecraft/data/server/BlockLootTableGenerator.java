@@ -74,12 +74,12 @@ import net.minecraft.world.loot.function.SetContentsLootFunction;
 import net.minecraft.world.loot.function.SetCountLootFunction;
 
 public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, LootSupplier.Builder>> {
-	private static final LootCondition.Builder field_11336 = MatchToolLootCondition.method_945(
-		ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.field_9099, NumberRange.Integer.atLeast(1)))
+	private static final LootCondition.Builder field_11336 = MatchToolLootCondition.builder(
+		ItemPredicate.Builder.create().enchantment(new EnchantmentPredicate(Enchantments.field_9099, NumberRange.IntRange.atLeast(1)))
 	);
 	private static final LootCondition.Builder field_11337 = field_11336.invert();
-	private static final LootCondition.Builder field_11343 = MatchToolLootCondition.method_945(ItemPredicate.Builder.create().item(Items.field_8868));
-	private static final LootCondition.Builder field_11342 = field_11343.or(field_11336);
+	private static final LootCondition.Builder field_11343 = MatchToolLootCondition.builder(ItemPredicate.Builder.create().item(Items.field_8868));
+	private static final LootCondition.Builder field_11342 = field_11343.withCondition(field_11336);
 	private static final LootCondition.Builder field_11341 = field_11342.invert();
 	private static final Set<Item> field_11340 = (Set<Item>)Stream.of(
 			Blocks.field_10081,
@@ -117,24 +117,24 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 
 	private static <T> T method_10393(ItemProvider itemProvider, FunctionConsumerBuilder<T> functionConsumerBuilder) {
 		return !field_11340.contains(itemProvider.getItem())
-			? functionConsumerBuilder.withFunction(ExplosionDecayLootFunction.method_478())
+			? functionConsumerBuilder.withFunction(ExplosionDecayLootFunction.builder())
 			: functionConsumerBuilder.getThis();
 	}
 
 	private static <T> T method_10392(ItemProvider itemProvider, ConditionConsumerBuilder<T> conditionConsumerBuilder) {
 		return !field_11340.contains(itemProvider.getItem())
-			? conditionConsumerBuilder.withCondition(SurvivesExplosionLootCondition.method_871())
+			? conditionConsumerBuilder.withCondition(SurvivesExplosionLootCondition.builder())
 			: conditionConsumerBuilder.getThis();
 	}
 
 	private static LootSupplier.Builder method_10394(ItemProvider itemProvider) {
-		return LootSupplier.create()
-			.withPool(method_10392(itemProvider, LootPool.create().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemProvider))));
+		return LootSupplier.builder()
+			.withPool(method_10392(itemProvider, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemProvider))));
 	}
 
 	private static LootSupplier.Builder method_10381(Block block, LootCondition.Builder builder, LootEntry.Builder<?> builder2) {
-		return LootSupplier.create()
-			.withPool(LootPool.create().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(block).method_421(builder).withChild(builder2)));
+		return LootSupplier.builder()
+			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(block).method_421(builder).withChild(builder2)));
 	}
 
 	private static LootSupplier.Builder method_10397(Block block, LootEntry.Builder<?> builder) {
@@ -154,9 +154,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private static LootSupplier.Builder method_10384(ItemProvider itemProvider, LootTableRange lootTableRange) {
-		return LootSupplier.create()
+		return LootSupplier.builder()
 			.withPool(
-				LootPool.create()
+				LootPool.builder()
 					.withRolls(ConstantLootTableRange.create(1))
 					.withEntry((LootEntry.Builder<?>)method_10393(itemProvider, ItemEntry.builder(itemProvider).method_438(SetCountLootFunction.builder(lootTableRange))))
 			);
@@ -169,20 +169,20 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private static LootSupplier.Builder method_10373(ItemProvider itemProvider) {
-		return LootSupplier.create()
-			.withPool(LootPool.create().method_356(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemProvider)));
+		return LootSupplier.builder()
+			.withPool(LootPool.builder().method_356(field_11336).withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemProvider)));
 	}
 
 	private static LootSupplier.Builder method_10389(ItemProvider itemProvider) {
-		return LootSupplier.create()
-			.withPool(method_10392(Blocks.field_10495, LootPool.create().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Blocks.field_10495))))
-			.withPool(method_10392(itemProvider, LootPool.create().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemProvider))));
+		return LootSupplier.builder()
+			.withPool(method_10392(Blocks.field_10495, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(Blocks.field_10495))))
+			.withPool(method_10392(itemProvider, LootPool.builder().withRolls(ConstantLootTableRange.create(1)).withEntry(ItemEntry.builder(itemProvider))));
 	}
 
 	private static LootSupplier.Builder method_10383(Block block) {
-		return LootSupplier.create()
+		return LootSupplier.builder()
 			.withPool(
-				LootPool.create()
+				LootPool.builder()
 					.withRolls(ConstantLootTableRange.create(1))
 					.withEntry(
 						(LootEntry.Builder<?>)method_10393(
@@ -190,7 +190,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							ItemEntry.builder(block)
 								.method_438(
 									SetCountLootFunction.builder(ConstantLootTableRange.create(2))
-										.method_524(BlockStatePropertyLootCondition.method_900(block).method_907(SlabBlock.TYPE, SlabType.field_12682))
+										.method_524(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(SlabBlock.TYPE, SlabType.field_12682))
 								)
 						)
 					)
@@ -198,62 +198,62 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private static <T extends Comparable<T>> LootSupplier.Builder method_10375(Block block, Property<T> property, T comparable) {
-		return LootSupplier.create()
+		return LootSupplier.builder()
 			.withPool(
 				method_10392(
 					block,
-					LootPool.create()
+					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(block).method_421(BlockStatePropertyLootCondition.method_900(block).method_907(property, comparable)))
+						.withEntry(ItemEntry.builder(block).method_421(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(property, comparable)))
 				)
 			);
 	}
 
 	private static LootSupplier.Builder method_10396(Block block) {
-		return LootSupplier.create()
+		return LootSupplier.builder()
 			.withPool(
 				method_10392(
 					block,
-					LootPool.create()
+					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
-						.withEntry(ItemEntry.builder(block).method_438(CopyNameLootFunction.create(CopyNameLootFunction.Source.BLOCK_ENTITY)))
+						.withEntry(ItemEntry.builder(block).method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY)))
 				)
 			);
 	}
 
 	private static LootSupplier.Builder method_16876(Block block) {
-		return LootSupplier.create()
+		return LootSupplier.builder()
 			.withPool(
 				method_10392(
 					block,
-					LootPool.create()
+					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(block)
-								.method_438(CopyNameLootFunction.create(CopyNameLootFunction.Source.BLOCK_ENTITY))
+								.method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
 								.method_438(
-									CopyNbtLootFunction.method_16848(CopyNbtLootFunction.Source.field_17027)
-										.method_16856("Lock", "BlockEntityTag.Lock")
-										.method_16856("LootTable", "BlockEntityTag.LootTable")
-										.method_16856("LootTableSeed", "BlockEntityTag.LootTableSeed")
+									CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027)
+										.withOperation("Lock", "BlockEntityTag.Lock")
+										.withOperation("LootTable", "BlockEntityTag.LootTable")
+										.withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed")
 								)
-								.method_438(SetContentsLootFunction.method_601().method_602(DynamicEntry.create(ShulkerBoxBlock.field_11495)))
+								.method_438(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.field_11495)))
 						)
 				)
 			);
 	}
 
 	private static LootSupplier.Builder method_16877(Block block) {
-		return LootSupplier.create()
+		return LootSupplier.builder()
 			.withPool(
 				method_10392(
 					block,
-					LootPool.create()
+					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(block)
-								.method_438(CopyNameLootFunction.create(CopyNameLootFunction.Source.BLOCK_ENTITY))
-								.method_438(CopyNbtLootFunction.method_16848(CopyNbtLootFunction.Source.field_17027).method_16856("Patterns", "BlockEntityTag.Patterns"))
+								.method_438(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
+								.method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027).withOperation("Patterns", "BlockEntityTag.Patterns"))
 						)
 				)
 			);
@@ -272,7 +272,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				block,
 				ItemEntry.builder(itemProvider)
 					.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(-6.0F, 2.0F)))
-					.method_438(LimitCountLootFunction.method_506(BoundedIntUnaryOperator.createMin(0)))
+					.method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMin(0)))
 			)
 		);
 	}
@@ -283,52 +283,52 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			(LootEntry.Builder<?>)method_10393(
 				block,
 				ItemEntry.builder(Items.field_8317)
-					.method_421(RandomChanceLootCondition.method_932(0.125F))
-					.method_438(ApplyBonusLootFunction.builder(Enchantments.field_9130, 2))
+					.method_421(RandomChanceLootCondition.builder(0.125F))
+					.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130, 2))
 			)
 		);
 	}
 
 	private static LootSupplier.Builder method_10387(Block block, Item item) {
-		return LootSupplier.create()
+		return LootSupplier.builder()
 			.withPool(
 				method_10393(
 					block,
-					LootPool.create()
+					LootPool.builder()
 						.withRolls(ConstantLootTableRange.create(1))
 						.withEntry(
 							ItemEntry.builder(item)
 								.method_438(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.06666667F))
-										.method_524(BlockStatePropertyLootCondition.method_900(block).method_907(StemBlock.AGE, 0))
+										.method_524(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(StemBlock.AGE, 0))
 								)
 								.method_438(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.13333334F))
-										.method_524(BlockStatePropertyLootCondition.method_900(block).method_907(StemBlock.AGE, 1))
+										.method_524(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(StemBlock.AGE, 1))
 								)
 								.method_438(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.2F))
-										.method_524(BlockStatePropertyLootCondition.method_900(block).method_907(StemBlock.AGE, 2))
+										.method_524(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(StemBlock.AGE, 2))
 								)
 								.method_438(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.26666668F))
-										.method_524(BlockStatePropertyLootCondition.method_900(block).method_907(StemBlock.AGE, 3))
+										.method_524(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(StemBlock.AGE, 3))
 								)
 								.method_438(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.33333334F))
-										.method_524(BlockStatePropertyLootCondition.method_900(block).method_907(StemBlock.AGE, 4))
+										.method_524(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(StemBlock.AGE, 4))
 								)
 								.method_438(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.4F))
-										.method_524(BlockStatePropertyLootCondition.method_900(block).method_907(StemBlock.AGE, 5))
+										.method_524(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(StemBlock.AGE, 5))
 								)
 								.method_438(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.46666667F))
-										.method_524(BlockStatePropertyLootCondition.method_900(block).method_907(StemBlock.AGE, 6))
+										.method_524(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(StemBlock.AGE, 6))
 								)
 								.method_438(
 									SetCountLootFunction.builder(BinomialLootTableRange.create(3, 0.53333336F))
-										.method_524(BlockStatePropertyLootCondition.method_900(block).method_907(StemBlock.AGE, 7))
+										.method_524(BlockStatePropertyLootCondition.builder(block).withBlockStateProperty(StemBlock.AGE, 7))
 								)
 						)
 				)
@@ -336,23 +336,23 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	private static LootSupplier.Builder method_10372(ItemProvider itemProvider) {
-		return LootSupplier.create()
-			.withPool(LootPool.create().withRolls(ConstantLootTableRange.create(1)).method_356(field_11343).withEntry(ItemEntry.builder(itemProvider)));
+		return LootSupplier.builder()
+			.withPool(LootPool.builder().withRolls(ConstantLootTableRange.create(1)).method_356(field_11343).withEntry(ItemEntry.builder(itemProvider)));
 	}
 
 	private static LootSupplier.Builder method_10390(Block block, Block block2, float... fs) {
 		return method_10388(
-				block, ((LeafEntry.Builder)method_10392(block, ItemEntry.builder(block2))).method_421(TableBonusLootCondition.method_800(Enchantments.field_9130, fs))
+				block, ((LeafEntry.Builder)method_10392(block, ItemEntry.builder(block2))).method_421(TableBonusLootCondition.builder(Enchantments.field_9130, fs))
 			)
 			.withPool(
-				LootPool.create()
+				LootPool.builder()
 					.withRolls(ConstantLootTableRange.create(1))
 					.method_356(field_11341)
 					.withEntry(
 						((LeafEntry.Builder)method_10393(
 								block, ItemEntry.builder(Items.field_8600).method_438(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
 							))
-							.method_421(TableBonusLootCondition.method_800(Enchantments.field_9130, 0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F))
+							.method_421(TableBonusLootCondition.builder(Enchantments.field_9130, 0.02F, 0.022222223F, 0.025F, 0.033333335F, 0.1F))
 					)
 			);
 	}
@@ -360,12 +360,12 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	private static LootSupplier.Builder method_10378(Block block, Block block2, float... fs) {
 		return method_10390(block, block2, fs)
 			.withPool(
-				LootPool.create()
+				LootPool.builder()
 					.withRolls(ConstantLootTableRange.create(1))
 					.method_356(field_11341)
 					.withEntry(
 						((LeafEntry.Builder)method_10392(block, ItemEntry.builder(Items.field_8279)))
-							.method_421(TableBonusLootCondition.method_800(Enchantments.field_9130, 0.005F, 0.0055555557F, 0.00625F, 0.008333334F, 0.025F))
+							.method_421(TableBonusLootCondition.builder(Enchantments.field_9130, 0.005F, 0.0055555557F, 0.00625F, 0.008333334F, 0.025F))
 					)
 			);
 	}
@@ -373,10 +373,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	private static LootSupplier.Builder method_10391(Block block, Item item, Item item2, LootCondition.Builder builder) {
 		return method_10393(
 			block,
-			LootSupplier.create()
-				.withPool(LootPool.create().withEntry(ItemEntry.builder(item).method_421(builder).withChild(ItemEntry.builder(item2))))
+			LootSupplier.builder()
+				.withPool(LootPool.builder().withEntry(ItemEntry.builder(item).method_421(builder).withChild(ItemEntry.builder(item2))))
 				.withPool(
-					LootPool.create()
+					LootPool.builder()
 						.method_356(builder)
 						.withEntry(ItemEntry.builder(item2).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.field_9130, 0.5714286F, 3)))
 				)
@@ -384,7 +384,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 	}
 
 	public static LootSupplier.Builder method_10395() {
-		return LootSupplier.create();
+		return LootSupplier.builder();
 	}
 
 	public void method_10379(BiConsumer<Identifier, LootSupplier.Builder> biConsumer) {
@@ -840,9 +840,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.method_16293(Blocks.field_10375, blockx -> method_10375(blockx, TntBlock.UNSTABLE, false));
 		this.method_16293(
 			Blocks.field_10302,
-			blockx -> LootSupplier.create()
+			blockx -> LootSupplier.builder()
 					.withPool(
-						LootPool.create()
+						LootPool.builder()
 							.withRolls(ConstantLootTableRange.create(1))
 							.withEntry(
 								(LootEntry.Builder<?>)method_10393(
@@ -850,7 +850,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 									ItemEntry.builder(Items.field_8116)
 										.method_438(
 											SetCountLootFunction.builder(ConstantLootTableRange.create(3))
-												.method_524(BlockStatePropertyLootCondition.method_900(blockx).method_907(CocoaBlock.AGE, 2))
+												.method_524(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(CocoaBlock.AGE, 2))
 										)
 								)
 							)
@@ -858,9 +858,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		this.method_16293(
 			Blocks.field_10476,
-			blockx -> LootSupplier.create()
+			blockx -> LootSupplier.builder()
 					.withPool(
-						LootPool.create()
+						LootPool.builder()
 							.withRolls(ConstantLootTableRange.create(1))
 							.withEntry(
 								(LootEntry.Builder<?>)method_10393(
@@ -868,15 +868,15 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 									ItemEntry.builder(blockx)
 										.method_438(
 											SetCountLootFunction.builder(ConstantLootTableRange.create(2))
-												.method_524(BlockStatePropertyLootCondition.method_900(blockx).method_907(SeaPickleBlock.PICKLES, 2))
+												.method_524(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SeaPickleBlock.PICKLES, 2))
 										)
 										.method_438(
 											SetCountLootFunction.builder(ConstantLootTableRange.create(3))
-												.method_524(BlockStatePropertyLootCondition.method_900(blockx).method_907(SeaPickleBlock.PICKLES, 3))
+												.method_524(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SeaPickleBlock.PICKLES, 3))
 										)
 										.method_438(
 											SetCountLootFunction.builder(ConstantLootTableRange.create(4))
-												.method_524(BlockStatePropertyLootCondition.method_900(blockx).method_907(SeaPickleBlock.PICKLES, 4))
+												.method_524(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SeaPickleBlock.PICKLES, 4))
 										)
 								)
 							)
@@ -884,12 +884,12 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		this.method_16293(
 			Blocks.field_17563,
-			blockx -> LootSupplier.create()
-					.withPool(LootPool.create().withEntry((LootEntry.Builder<?>)method_10393(blockx, ItemEntry.builder(Items.COMPOSTER))))
+			blockx -> LootSupplier.builder()
+					.withPool(LootPool.builder().withEntry((LootEntry.Builder<?>)method_10393(blockx, ItemEntry.builder(Items.COMPOSTER))))
 					.withPool(
-						LootPool.create()
+						LootPool.builder()
 							.withEntry(ItemEntry.builder(Items.field_8324))
-							.method_356(BlockStatePropertyLootCondition.method_900(blockx).method_907(ComposterBlock.LEVEL, 8))
+							.method_356(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(ComposterBlock.LEVEL, 8))
 					)
 		);
 		this.method_16293(Blocks.field_10327, BlockLootTableGenerator::method_10396);
@@ -947,14 +947,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.method_16293(Blocks.field_10547, BlockLootTableGenerator::method_16877);
 		this.method_16293(
 			Blocks.field_10432,
-			blockx -> LootSupplier.create()
+			blockx -> LootSupplier.builder()
 					.withPool(
 						method_10392(
 							blockx,
-							LootPool.create()
+							LootPool.builder()
 								.withRolls(ConstantLootTableRange.create(1))
 								.withEntry(
-									ItemEntry.builder(blockx).method_438(CopyNbtLootFunction.method_16848(CopyNbtLootFunction.Source.field_17027).method_16856("Owner", "SkullOwner"))
+									ItemEntry.builder(blockx).method_438(CopyNbtLootFunction.builder(CopyNbtLootFunction.Source.field_17027).withOperation("Owner", "SkullOwner"))
 								)
 						)
 					)
@@ -965,57 +965,57 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.method_16293(Blocks.field_9988, blockx -> method_10390(blockx, Blocks.field_10217, field_11339));
 		this.method_16293(Blocks.field_10503, blockx -> method_10378(blockx, Blocks.field_10394, field_11339));
 		this.method_16293(Blocks.field_10035, blockx -> method_10378(blockx, Blocks.field_10160, field_11339));
-		LootCondition.Builder builder = BlockStatePropertyLootCondition.method_900(Blocks.field_10341).method_907(BeetrootsBlock.AGE, 3);
+		LootCondition.Builder builder = BlockStatePropertyLootCondition.builder(Blocks.field_10341).withBlockStateProperty(BeetrootsBlock.AGE, 3);
 		this.method_16293(Blocks.field_10341, blockx -> method_10391(blockx, Items.field_8186, Items.field_8309, builder));
-		LootCondition.Builder builder2 = BlockStatePropertyLootCondition.method_900(Blocks.field_10293).method_907(CropBlock.AGE, 7);
+		LootCondition.Builder builder2 = BlockStatePropertyLootCondition.builder(Blocks.field_10293).withBlockStateProperty(CropBlock.AGE, 7);
 		this.method_16293(Blocks.field_10293, blockx -> method_10391(blockx, Items.field_8861, Items.field_8317, builder2));
-		LootCondition.Builder builder3 = BlockStatePropertyLootCondition.method_900(Blocks.field_10609).method_907(CarrotsBlock.AGE, 7);
+		LootCondition.Builder builder3 = BlockStatePropertyLootCondition.builder(Blocks.field_10609).withBlockStateProperty(CarrotsBlock.AGE, 7);
 		this.method_16293(
 			Blocks.field_10609,
 			blockx -> method_10393(
 					blockx,
-					LootSupplier.create()
-						.withPool(LootPool.create().withEntry(ItemEntry.builder(Items.field_8179)))
+					LootSupplier.builder()
+						.withPool(LootPool.builder().withEntry(ItemEntry.builder(Items.field_8179)))
 						.withPool(
-							LootPool.create()
+							LootPool.builder()
 								.method_356(builder3)
 								.withEntry(ItemEntry.builder(Items.field_8179).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.field_9130, 0.5714286F, 3)))
 						)
 				)
 		);
-		LootCondition.Builder builder4 = BlockStatePropertyLootCondition.method_900(Blocks.field_10247).method_907(PotatoesBlock.AGE, 7);
+		LootCondition.Builder builder4 = BlockStatePropertyLootCondition.builder(Blocks.field_10247).withBlockStateProperty(PotatoesBlock.AGE, 7);
 		this.method_16293(
 			Blocks.field_10247,
 			blockx -> method_10393(
 					blockx,
-					LootSupplier.create()
-						.withPool(LootPool.create().withEntry(ItemEntry.builder(Items.field_8567)))
+					LootSupplier.builder()
+						.withPool(LootPool.builder().withEntry(ItemEntry.builder(Items.field_8567)))
 						.withPool(
-							LootPool.create()
+							LootPool.builder()
 								.method_356(builder4)
 								.withEntry(ItemEntry.builder(Items.field_8567).method_438(ApplyBonusLootFunction.binomialWithBonusCount(Enchantments.field_9130, 0.5714286F, 3)))
 						)
-						.withPool(LootPool.create().method_356(builder4).withEntry(ItemEntry.builder(Items.field_8635).method_421(RandomChanceLootCondition.method_932(0.02F))))
+						.withPool(LootPool.builder().method_356(builder4).withEntry(ItemEntry.builder(Items.field_8635).method_421(RandomChanceLootCondition.builder(0.02F))))
 				)
 		);
 		this.method_16293(
 			Blocks.field_16999,
 			blockx -> method_10393(
 					blockx,
-					LootSupplier.create()
+					LootSupplier.builder()
 						.withPool(
-							LootPool.create()
-								.method_356(BlockStatePropertyLootCondition.method_900(Blocks.field_16999).method_907(SweetBerryBushBlock.AGE, 3))
+							LootPool.builder()
+								.method_356(BlockStatePropertyLootCondition.builder(Blocks.field_16999).withBlockStateProperty(SweetBerryBushBlock.AGE, 3))
 								.withEntry(ItemEntry.builder(Items.field_16998))
 								.method_353(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 3.0F)))
-								.method_353(ApplyBonusLootFunction.one(Enchantments.field_9130))
+								.method_353(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
 						)
 						.withPool(
-							LootPool.create()
-								.method_356(BlockStatePropertyLootCondition.method_900(Blocks.field_16999).method_907(SweetBerryBushBlock.AGE, 2))
+							LootPool.builder()
+								.method_356(BlockStatePropertyLootCondition.builder(Blocks.field_16999).withBlockStateProperty(SweetBerryBushBlock.AGE, 2))
 								.withEntry(ItemEntry.builder(Items.field_16998))
 								.method_353(SetCountLootFunction.builder(UniformLootTableRange.between(1.0F, 2.0F)))
-								.method_353(ApplyBonusLootFunction.one(Enchantments.field_9130))
+								.method_353(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
 						)
 				)
 		);
@@ -1056,21 +1056,20 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			blockx -> method_10380(
 					Blocks.field_10479,
 					((LeafEntry.Builder)((LeafEntry.Builder)method_10392(blockx, ItemEntry.builder(Items.field_8317)))
-							.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(TallPlantBlock.HALF, DoubleBlockHalf.field_12607)))
-						.method_421(RandomChanceLootCondition.method_932(0.125F))
+							.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(TallPlantBlock.HALF, DoubleBlockHalf.field_12607)))
+						.method_421(RandomChanceLootCondition.builder(0.125F))
 				)
 		);
 		this.method_16293(Blocks.field_10168, blockx -> method_10387(blockx, Items.field_8188));
 		this.method_16293(Blocks.field_9984, blockx -> method_10387(blockx, Items.field_8706));
 		this.method_16293(
 			Blocks.field_10528,
-			blockx -> LootSupplier.create()
+			blockx -> LootSupplier.builder()
 					.withPool(
-						LootPool.create()
+						LootPool.builder()
 							.withRolls(ConstantLootTableRange.create(1))
 							.withEntry(
-								((LeafEntry.Builder)method_10392(blockx, ItemEntry.builder(blockx)))
-									.method_421(EntityPropertiesLootCondition.method_15972(LootContext.EntityTarget.THIS))
+								((LeafEntry.Builder)method_10392(blockx, ItemEntry.builder(blockx))).method_421(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
 							)
 					)
 		);
@@ -1084,8 +1083,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						blockx,
 						ItemEntry.builder(Items.field_8601)
 							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F)))
-							.method_438(ApplyBonusLootFunction.one(Enchantments.field_9130))
-							.method_438(LimitCountLootFunction.method_506(BoundedIntUnaryOperator.create(1, 4)))
+							.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
+							.method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 4)))
 					)
 				)
 		);
@@ -1097,8 +1096,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						blockx,
 						ItemEntry.builder(Items.field_8497)
 							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(3.0F, 7.0F)))
-							.method_438(ApplyBonusLootFunction.one(Enchantments.field_9130))
-							.method_438(LimitCountLootFunction.method_506(BoundedIntUnaryOperator.createMax(9)))
+							.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
+							.method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.createMax(9)))
 					)
 				)
 		);
@@ -1110,7 +1109,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						blockx,
 						ItemEntry.builder(Items.field_8725)
 							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(4.0F, 5.0F)))
-							.method_438(ApplyBonusLootFunction.one(Enchantments.field_9130))
+							.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
 					)
 				)
 		);
@@ -1122,28 +1121,28 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						blockx,
 						ItemEntry.builder(Items.field_8434)
 							.method_438(SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 3.0F)))
-							.method_438(ApplyBonusLootFunction.one(Enchantments.field_9130))
-							.method_438(LimitCountLootFunction.method_506(BoundedIntUnaryOperator.create(1, 5)))
+							.method_438(ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130))
+							.method_438(LimitCountLootFunction.builder(BoundedIntUnaryOperator.create(1, 5)))
 					)
 				)
 		);
 		this.method_16293(
 			Blocks.field_9974,
-			blockx -> LootSupplier.create()
+			blockx -> LootSupplier.builder()
 					.withPool(
 						method_10393(
 							blockx,
-							LootPool.create()
+							LootPool.builder()
 								.withRolls(ConstantLootTableRange.create(1))
 								.withEntry(
 									ItemEntry.builder(Items.field_8790)
 										.method_438(
 											SetCountLootFunction.builder(UniformLootTableRange.between(2.0F, 4.0F))
-												.method_524(BlockStatePropertyLootCondition.method_900(blockx).method_907(NetherWartBlock.AGE, 3))
+												.method_524(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(NetherWartBlock.AGE, 3))
 										)
 										.method_438(
-											ApplyBonusLootFunction.one(Enchantments.field_9130)
-												.method_524(BlockStatePropertyLootCondition.method_900(blockx).method_907(NetherWartBlock.AGE, 3))
+											ApplyBonusLootFunction.uniformBonusCount(Enchantments.field_9130)
+												.method_524(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(NetherWartBlock.AGE, 3))
 										)
 								)
 						)
@@ -1151,55 +1150,55 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		this.method_16293(
 			Blocks.field_10477,
-			blockx -> LootSupplier.create()
+			blockx -> LootSupplier.builder()
 					.withPool(
-						LootPool.create()
-							.method_356(EntityPropertiesLootCondition.method_15972(LootContext.EntityTarget.THIS))
+						LootPool.builder()
+							.method_356(EntityPropertiesLootCondition.create(LootContext.EntityTarget.THIS))
 							.withEntry(
-								AlternativeEntry.create(
-									AlternativeEntry.create(
-											ItemEntry.builder(Items.field_8543).method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 1)),
+								AlternativeEntry.builder(
+									AlternativeEntry.builder(
+											ItemEntry.builder(Items.field_8543).method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 1)),
 											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 2))
+												.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 2))
 												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2))),
 											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 3))
+												.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 3))
 												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(3))),
 											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 4))
+												.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 4))
 												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(4))),
 											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 5))
+												.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 5))
 												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(5))),
 											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 6))
+												.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 6))
 												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(6))),
 											ItemEntry.builder(Items.field_8543)
-												.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 7))
+												.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 7))
 												.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(7))),
 											ItemEntry.builder(Items.field_8543).method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(8)))
 										)
 										.method_421(field_11337),
-									AlternativeEntry.create(
-										ItemEntry.builder(blockx).method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 1)),
+									AlternativeEntry.builder(
+										ItemEntry.builder(blockx).method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 1)),
 										ItemEntry.builder(blockx)
 											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(2)))
-											.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 2)),
+											.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 2)),
 										ItemEntry.builder(blockx)
 											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(3)))
-											.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 3)),
+											.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 3)),
 										ItemEntry.builder(blockx)
 											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(4)))
-											.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 4)),
+											.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 4)),
 										ItemEntry.builder(blockx)
 											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(5)))
-											.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 5)),
+											.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 5)),
 										ItemEntry.builder(blockx)
 											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(6)))
-											.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 6)),
+											.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 6)),
 										ItemEntry.builder(blockx)
 											.method_438(SetCountLootFunction.builder(ConstantLootTableRange.create(7)))
-											.method_421(BlockStatePropertyLootCondition.method_900(blockx).method_907(SnowBlock.LAYERS, 7)),
+											.method_421(BlockStatePropertyLootCondition.builder(blockx).withBlockStateProperty(SnowBlock.LAYERS, 7)),
 										ItemEntry.builder(Blocks.field_10491)
 									)
 								)
@@ -1213,7 +1212,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					method_10392(
 						blockx,
 						ItemEntry.builder(Items.field_8145)
-							.method_421(TableBonusLootCondition.method_800(Enchantments.field_9130, 0.1F, 0.14285715F, 0.25F, 1.0F))
+							.method_421(TableBonusLootCondition.builder(Enchantments.field_9130, 0.1F, 0.14285715F, 0.25F, 1.0F))
 							.withChild(ItemEntry.builder(blockx))
 					)
 				)

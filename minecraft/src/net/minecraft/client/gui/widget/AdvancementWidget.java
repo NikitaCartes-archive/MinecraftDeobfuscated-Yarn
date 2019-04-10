@@ -109,18 +109,18 @@ public class AdvancementWidget extends DrawableHelper {
 			int o = j + this.yPos + 13;
 			int p = bl ? -16777216 : -1;
 			if (bl) {
-				this.drawHorizontalLine(l, k, m - 1, p);
-				this.drawHorizontalLine(l + 1, k, m, p);
-				this.drawHorizontalLine(l, k, m + 1, p);
-				this.drawHorizontalLine(n, l - 1, o - 1, p);
-				this.drawHorizontalLine(n, l - 1, o, p);
-				this.drawHorizontalLine(n, l - 1, o + 1, p);
-				this.drawVerticalLine(l - 1, o, m, p);
-				this.drawVerticalLine(l + 1, o, m, p);
+				this.hLine(l, k, m - 1, p);
+				this.hLine(l + 1, k, m, p);
+				this.hLine(l, k, m + 1, p);
+				this.hLine(n, l - 1, o - 1, p);
+				this.hLine(n, l - 1, o, p);
+				this.hLine(n, l - 1, o + 1, p);
+				this.vLine(l - 1, o, m, p);
+				this.vLine(l + 1, o, m, p);
 			} else {
-				this.drawHorizontalLine(l, k, m, p);
-				this.drawHorizontalLine(n, l, o, p);
-				this.drawVerticalLine(l, o, m, p);
+				this.hLine(l, k, m, p);
+				this.hLine(n, l, o, p);
+				this.vLine(l, o, m, p);
 			}
 		}
 
@@ -142,7 +142,7 @@ public class AdvancementWidget extends DrawableHelper {
 			this.client.getTextureManager().bindTexture(WIDGETS_TEX);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.enableBlend();
-			this.drawTexturedRect(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + achievementObtainedStatus.getSpriteIndex() * 26, 26, 26);
+			this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + achievementObtainedStatus.getSpriteIndex() * 26, 26, 26);
 			GuiLighting.enableForItems();
 			this.client.getItemRenderer().renderGuiItem(null, this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 		}
@@ -161,7 +161,7 @@ public class AdvancementWidget extends DrawableHelper {
 	}
 
 	public void method_2331(int i, int j, float f, int k, int l) {
-		boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tree.method_2312().screenWidth;
+		boolean bl = k + i + this.xPos + this.field_2715 + 26 >= this.tree.method_2312().width;
 		String string = this.field_2714 == null ? null : this.field_2714.getProgressBarFraction();
 		int m = string == null ? 0 : this.client.textRenderer.getStringWidth(string);
 		boolean bl2 = 113 - j - this.yPos - 26 <= 6 + this.field_2705.size() * 9;
@@ -212,9 +212,9 @@ public class AdvancementWidget extends DrawableHelper {
 			}
 		}
 
-		this.drawTexturedRect(q, p, 0, achievementObtainedStatus.getSpriteIndex() * 26, n, 26);
-		this.drawTexturedRect(q + n, p, 200 - o, achievementObtainedStatus2.getSpriteIndex() * 26, o, 26);
-		this.drawTexturedRect(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + achievementObtainedStatus3.getSpriteIndex() * 26, 26, 26);
+		this.blit(q, p, 0, achievementObtainedStatus.getSpriteIndex() * 26, n, 26);
+		this.blit(q + n, p, 200 - o, achievementObtainedStatus2.getSpriteIndex() * 26, o, 26);
+		this.blit(i + this.xPos + 3, j + this.yPos, this.display.getFrame().texV(), 128 + achievementObtainedStatus3.getSpriteIndex() * 26, 26, 26);
 		if (bl) {
 			this.client.textRenderer.drawWithShadow(this.field_2713, (float)(q + 5), (float)(j + this.yPos + 9), -1);
 			if (string != null) {
@@ -242,12 +242,12 @@ public class AdvancementWidget extends DrawableHelper {
 	}
 
 	protected void method_2324(int i, int j, int k, int l, int m, int n, int o, int p, int q) {
-		this.drawTexturedRect(i, j, p, q, m, m);
+		this.blit(i, j, p, q, m, m);
 		this.method_2321(i + m, j, k - m - m, m, p + m, q, n - m - m, o);
-		this.drawTexturedRect(i + k - m, j, p + n - m, q, m, m);
-		this.drawTexturedRect(i, j + l - m, p, q + o - m, m, m);
+		this.blit(i + k - m, j, p + n - m, q, m, m);
+		this.blit(i, j + l - m, p, q + o - m, m, m);
 		this.method_2321(i + m, j + l - m, k - m - m, m, p + m, q + o - m, n - m - m, o);
-		this.drawTexturedRect(i + k - m, j + l - m, p + n - m, q + o - m, m, m);
+		this.blit(i + k - m, j + l - m, p + n - m, q + o - m, m, m);
 		this.method_2321(i, j + m, m, l - m - m, p, q + m, n, o - m - m);
 		this.method_2321(i + m, j + m, k - m - m, l - m - m, p + m, q + m, n - m - m, o - m - m);
 		this.method_2321(i + k - m, j + m, m, l - m - m, p + n - m, q + m, n, o - m - m);
@@ -264,7 +264,7 @@ public class AdvancementWidget extends DrawableHelper {
 			while (t < l) {
 				int u = j + t;
 				int v = Math.min(p, l - t);
-				this.drawTexturedRect(r, u, m, n, s, v);
+				this.blit(r, u, m, n, s, v);
 				t += p;
 			}
 

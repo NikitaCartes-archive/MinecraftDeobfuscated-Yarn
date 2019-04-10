@@ -24,18 +24,18 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 		this.field_3792 = false;
 		this.collidesWithWorld = false;
 		this.field_17793 = spriteProvider;
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17793);
+			this.setSpriteForAge(this.field_17793);
 			if (this.onGround) {
 				this.velocityY = 0.0;
 				this.field_3792 = true;
@@ -46,7 +46,7 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 			}
 
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.posY == this.prevPosY) {
+			if (this.y == this.prevPosY) {
 				this.velocityX *= 1.1;
 				this.velocityZ *= 1.1;
 			}

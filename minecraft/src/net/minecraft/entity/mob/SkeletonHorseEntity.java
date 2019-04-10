@@ -33,11 +33,11 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 		super.initAttributes();
 		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(15.0);
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.2F);
-		this.getAttributeInstance(ATTR_JUMP_STRENGTH).setBaseValue(this.method_6774());
+		this.getAttributeInstance(JUMP_STRENGTH).setBaseValue(this.getChildJumpStrengthBonus());
 	}
 
 	@Override
-	protected void method_6764() {
+	protected void initCustomGoals() {
 	}
 
 	@Override
@@ -65,12 +65,12 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 				return SoundEvents.field_15182;
 			}
 
-			this.field_6975++;
-			if (this.field_6975 > 5 && this.field_6975 % 3 == 0) {
+			this.soundTicks++;
+			if (this.soundTicks > 5 && this.soundTicks % 3 == 0) {
 				return SoundEvents.field_15108;
 			}
 
-			if (this.field_6975 <= 5) {
+			if (this.soundTicks <= 5) {
 				return SoundEvents.field_15182;
 			}
 		}
@@ -79,20 +79,20 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	protected void method_5734(float f) {
+	protected void playSwimSound(float f) {
 		if (this.onGround) {
-			super.method_5734(0.3F);
+			super.playSwimSound(0.3F);
 		} else {
-			super.method_5734(Math.min(0.1F, f * 25.0F));
+			super.playSwimSound(Math.min(0.1F, f * 25.0F));
 		}
 	}
 
 	@Override
-	protected void method_6723() {
+	protected void playJumpSound() {
 		if (this.isInsideWater()) {
 			this.playSound(SoundEvents.field_14901, 0.4F, 1.0F);
 		} else {
-			super.method_6723();
+			super.playJumpSound();
 		}
 	}
 
@@ -110,7 +110,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	public void updateMovement() {
 		super.updateMovement();
 		if (this.method_6812() && this.field_7004++ >= 18000) {
-			this.invalidate();
+			this.remove();
 		}
 	}
 
@@ -129,12 +129,12 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public boolean method_5788() {
+	public boolean canBeRiddenInWater() {
 		return true;
 	}
 
 	@Override
-	protected float method_6120() {
+	protected float getBaseMovementSpeedMultiplier() {
 		return 0.96F;
 	}
 
@@ -169,14 +169,14 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 		} else if (this.isChild()) {
 			return super.interactMob(playerEntity, hand);
 		} else if (playerEntity.isSneaking()) {
-			this.method_6722(playerEntity);
+			this.openInventory(playerEntity);
 			return true;
 		} else if (this.hasPassengers()) {
 			return super.interactMob(playerEntity, hand);
 		} else {
 			if (!itemStack.isEmpty()) {
 				if (itemStack.getItem() == Items.field_8175 && !this.isSaddled()) {
-					this.method_6722(playerEntity);
+					this.openInventory(playerEntity);
 					return true;
 				}
 
@@ -185,7 +185,7 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 				}
 			}
 
-			this.method_6726(playerEntity);
+			this.putPlayerOnBack(playerEntity);
 			return true;
 		}
 	}

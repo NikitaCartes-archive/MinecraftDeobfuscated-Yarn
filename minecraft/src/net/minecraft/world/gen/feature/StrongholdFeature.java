@@ -91,7 +91,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 
 			for (ChunkPos chunkPos : this.startPositions) {
 				mutable.set((chunkPos.x << 4) + 8, 32, (chunkPos.z << 4) + 8);
-				double e = mutable.squaredDistanceTo(blockPos);
+				double e = mutable.getSquaredDistance(blockPos);
 				if (blockPos2 == null) {
 					blockPos2 = new BlockPos(mutable);
 					d = e;
@@ -173,6 +173,7 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 
 			StrongholdGenerator.Start start;
 			do {
+				this.children.clear();
 				this.boundingBox = MutableIntBoundingBox.empty();
 				this.random.setStructureSeed(l + (long)(k++), i, j);
 				StrongholdGenerator.method_14855();

@@ -54,7 +54,7 @@ public interface WorldBorderListener {
 
 		@Override
 		public void onSafeZoneChanged(WorldBorder worldBorder, double d) {
-			this.border.setSafeZone(d);
+			this.border.setBuffer(d);
 		}
 	}
 }

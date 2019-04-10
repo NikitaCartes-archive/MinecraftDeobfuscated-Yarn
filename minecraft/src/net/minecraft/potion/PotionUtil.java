@@ -157,7 +157,7 @@ public class PotionUtil {
 			for (StatusEffectInstance statusEffectInstance : list2) {
 				TextComponent textComponent = new TranslatableTextComponent(statusEffectInstance.getTranslationKey());
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
-				Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.method_5565();
+				Map<EntityAttribute, EntityAttributeModifier> map = statusEffect.getAttributeModifiers();
 				if (!map.isEmpty()) {
 					for (Entry<EntityAttribute, EntityAttributeModifier> entry : map.entrySet()) {
 						EntityAttributeModifier entityAttributeModifier = (EntityAttributeModifier)entry.getValue();
@@ -178,7 +178,7 @@ public class PotionUtil {
 					textComponent.append(" (").append(StatusEffectUtil.durationToString(statusEffectInstance, f)).append(")");
 				}
 
-				list.add(textComponent.applyFormat(statusEffect.method_18792().getFormatting()));
+				list.add(textComponent.applyFormat(statusEffect.getType().getFormatting()));
 			}
 		}
 

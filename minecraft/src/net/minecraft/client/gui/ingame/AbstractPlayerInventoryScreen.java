@@ -25,17 +25,17 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 	}
 
 	@Override
-	protected void onInitialized() {
-		super.onInitialized();
+	protected void init() {
+		super.init();
 		this.method_2476();
 	}
 
 	protected void method_2476() {
-		if (this.client.player.getPotionEffects().isEmpty()) {
-			this.left = (this.screenWidth - this.width) / 2;
+		if (this.minecraft.player.getStatusEffects().isEmpty()) {
+			this.left = (this.width - this.containerWidth) / 2;
 			this.offsetGuiForEffects = false;
 		} else {
-			this.left = 160 + (this.screenWidth - this.width - 200) / 2;
+			this.left = 160 + (this.width - this.containerWidth - 200) / 2;
 			this.offsetGuiForEffects = true;
 		}
 	}
@@ -50,7 +50,7 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 
 	private void drawPotionEffects() {
 		int i = this.left - 124;
-		Collection<StatusEffectInstance> collection = this.client.player.getPotionEffects();
+		Collection<StatusEffectInstance> collection = this.minecraft.player.getStatusEffects();
 		if (!collection.isEmpty()) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GlStateManager.disableLighting();
@@ -67,24 +67,24 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 	}
 
 	private void method_18642(int i, int j, Iterable<StatusEffectInstance> iterable) {
-		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+		this.minecraft.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
 		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.drawTexturedRect(i, k, 0, 166, 140, 32);
+			this.blit(i, k, 0, 166, 140, 32);
 			k += j;
 		}
 	}
 
 	private void method_18643(int i, int j, Iterable<StatusEffectInstance> iterable) {
-		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
-		StatusEffectSpriteManager statusEffectSpriteManager = this.client.method_18505();
+		this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.STATUS_EFFECT_ATLAS_TEX);
+		StatusEffectSpriteManager statusEffectSpriteManager = this.minecraft.getStatusEffectSpriteManager();
 		int k = this.top;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
-			this.drawTexturedRect(i + 6, k + 7, statusEffectSpriteManager.getSprite(statusEffect), 18, 18);
+			blit(i + 6, k + 7, this.blitOffset, 18, 18, statusEffectSpriteManager.getSprite(statusEffect));
 			k += j;
 		}
 	}
@@ -98,9 +98,9 @@ public abstract class AbstractPlayerInventoryScreen<T extends Container> extends
 				string = string + ' ' + I18n.translate("enchantment.level." + (statusEffectInstance.getAmplifier() + 1));
 			}
 
-			this.fontRenderer.drawWithShadow(string, (float)(i + 10 + 18), (float)(k + 6), 16777215);
+			this.font.drawWithShadow(string, (float)(i + 10 + 18), (float)(k + 6), 16777215);
 			String string2 = StatusEffectUtil.durationToString(statusEffectInstance, 1.0F);
-			this.fontRenderer.drawWithShadow(string2, (float)(i + 10 + 18), (float)(k + 6 + 10), 8355711);
+			this.font.drawWithShadow(string2, (float)(i + 10 + 18), (float)(k + 6 + 10), 8355711);
 			k += j;
 		}
 	}

@@ -18,13 +18,13 @@ import net.minecraft.world.loot.context.LootContextParameter;
 import net.minecraft.world.loot.context.LootContextParameters;
 
 public class LootingEnchantLootFunction extends ConditionalLootFunction {
-	private final UniformLootTableRange range;
-	private final int amount;
+	private final UniformLootTableRange countRange;
+	private final int limit;
 
 	private LootingEnchantLootFunction(LootCondition[] lootConditions, UniformLootTableRange uniformLootTableRange, int i) {
 		super(lootConditions);
-		this.range = uniformLootTableRange;
-		this.amount = i;
+		this.countRange = uniformLootTableRange;
+		this.limit = i;
 	}
 
 	@Override
@@ -32,8 +32,8 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 		return ImmutableSet.of(LootContextParameters.field_1230);
 	}
 
-	private boolean method_549() {
-		return this.amount > 0;
+	private boolean hasLimit() {
+		return this.limit > 0;
 	}
 
 	@Override
@@ -45,18 +45,41 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 				return itemStack;
 			}
 
-			float f = (float)i * this.range.nextFloat(lootContext.getRandom());
+			float f = (float)i * this.countRange.nextFloat(lootContext.getRandom());
 			itemStack.addAmount(Math.round(f));
-			if (this.method_549() && itemStack.getAmount() > this.amount) {
-				itemStack.setAmount(this.amount);
+			if (this.hasLimit() && itemStack.getAmount() > this.limit) {
+				itemStack.setAmount(this.limit);
 			}
 		}
 
 		return itemStack;
 	}
 
-	public static LootingEnchantLootFunction.class_126 method_547(UniformLootTableRange uniformLootTableRange) {
-		return new LootingEnchantLootFunction.class_126(uniformLootTableRange);
+	public static LootingEnchantLootFunction.Builder builder(UniformLootTableRange uniformLootTableRange) {
+		return new LootingEnchantLootFunction.Builder(uniformLootTableRange);
+	}
+
+	public static class Builder extends ConditionalLootFunction.Builder<LootingEnchantLootFunction.Builder> {
+		private final UniformLootTableRange countRange;
+		private int limit = 0;
+
+		public Builder(UniformLootTableRange uniformLootTableRange) {
+			this.countRange = uniformLootTableRange;
+		}
+
+		protected LootingEnchantLootFunction.Builder method_552() {
+			return this;
+		}
+
+		public LootingEnchantLootFunction.Builder withLimit(int i) {
+			this.limit = i;
+			return this;
+		}
+
+		@Override
+		public LootFunction build() {
+			return new LootingEnchantLootFunction(this.getConditions(), this.countRange, this.limit);
+		}
 	}
 
 	public static class Factory extends ConditionalLootFunction.Factory<LootingEnchantLootFunction> {
@@ -66,9 +89,9 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 
 		public void method_553(JsonObject jsonObject, LootingEnchantLootFunction lootingEnchantLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.method_529(jsonObject, lootingEnchantLootFunction, jsonSerializationContext);
-			jsonObject.add("count", jsonSerializationContext.serialize(lootingEnchantLootFunction.range));
-			if (lootingEnchantLootFunction.method_549()) {
-				jsonObject.add("limit", jsonSerializationContext.serialize(lootingEnchantLootFunction.amount));
+			jsonObject.add("count", jsonSerializationContext.serialize(lootingEnchantLootFunction.countRange));
+			if (lootingEnchantLootFunction.hasLimit()) {
+				jsonObject.add("limit", jsonSerializationContext.serialize(lootingEnchantLootFunction.limit));
 			}
 		}
 
@@ -77,29 +100,6 @@ public class LootingEnchantLootFunction extends ConditionalLootFunction {
 			return new LootingEnchantLootFunction(
 				lootConditions, JsonHelper.deserialize(jsonObject, "count", jsonDeserializationContext, UniformLootTableRange.class), i
 			);
-		}
-	}
-
-	public static class class_126 extends ConditionalLootFunction.Builder<LootingEnchantLootFunction.class_126> {
-		private final UniformLootTableRange field_1084;
-		private int field_1085 = 0;
-
-		public class_126(UniformLootTableRange uniformLootTableRange) {
-			this.field_1084 = uniformLootTableRange;
-		}
-
-		protected LootingEnchantLootFunction.class_126 method_552() {
-			return this;
-		}
-
-		public LootingEnchantLootFunction.class_126 method_551(int i) {
-			this.field_1085 = i;
-			return this;
-		}
-
-		@Override
-		public LootFunction build() {
-			return new LootingEnchantLootFunction(this.getConditions(), this.field_1084, this.field_1085);
 		}
 	}
 }

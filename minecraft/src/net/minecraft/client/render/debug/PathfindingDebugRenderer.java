@@ -20,10 +20,10 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
-	private final Map<Integer, Path> field_4616 = Maps.<Integer, Path>newHashMap();
+	private final Map<Integer, Path> paths = Maps.<Integer, Path>newHashMap();
 	private final Map<Integer, Float> field_4617 = Maps.<Integer, Float>newHashMap();
-	private final Map<Integer, Long> field_4615 = Maps.<Integer, Long>newHashMap();
-	private Camera field_4618;
+	private final Map<Integer, Long> pathTimes = Maps.<Integer, Long>newHashMap();
+	private Camera camera;
 	private double field_4621;
 	private double field_4620;
 	private double field_4619;
@@ -32,19 +32,19 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		this.client = minecraftClient;
 	}
 
-	public void method_3869(int i, Path path, float f) {
-		this.field_4616.put(i, path);
-		this.field_4615.put(i, SystemUtil.getMeasuringTimeMs());
+	public void addPath(int i, Path path, float f) {
+		this.paths.put(i, path);
+		this.pathTimes.put(i, SystemUtil.getMeasuringTimeMs());
 		this.field_4617.put(i, f);
 	}
 
 	@Override
 	public void render(long l) {
-		if (!this.field_4616.isEmpty()) {
-			this.field_4618 = this.client.gameRenderer.getCamera();
-			this.field_4621 = this.field_4618.getPos().x;
-			this.field_4620 = this.field_4618.getPos().y;
-			this.field_4619 = this.field_4618.getPos().z;
+		if (!this.paths.isEmpty()) {
+			this.camera = this.client.gameRenderer.getCamera();
+			this.field_4621 = this.camera.getPos().x;
+			this.field_4620 = this.camera.getPos().y;
+			this.field_4619 = this.camera.getPos().z;
 			GlStateManager.pushMatrix();
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(
@@ -63,8 +63,8 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	private void method_19698() {
 		long l = SystemUtil.getMeasuringTimeMs();
 
-		for (Integer integer : this.field_4616.keySet()) {
-			Path path = (Path)this.field_4616.get(integer);
+		for (Integer integer : this.paths.keySet()) {
+			Path path = (Path)this.paths.get(integer);
 			float f = (Float)this.field_4617.get(integer);
 			this.method_3868(path);
 			PathNode pathNode = path.method_48();
@@ -110,8 +110,8 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		for (Integer integerx : this.field_4616.keySet()) {
-			Path path = (Path)this.field_4616.get(integerx);
+		for (Integer integerx : this.paths.keySet()) {
+			Path path = (Path)this.paths.get(integerx);
 
 			for (PathNode pathNode2 : path.method_37()) {
 				if (!(this.method_3867(pathNode2) > 40.0F)) {
@@ -144,10 +144,10 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		for (Integer integer2 : (Integer[])this.field_4615.keySet().toArray(new Integer[0])) {
-			if (l - (Long)this.field_4615.get(integer2) > 20000L) {
-				this.field_4616.remove(integer2);
-				this.field_4615.remove(integer2);
+		for (Integer integer2 : (Integer[])this.pathTimes.keySet().toArray(new Integer[0])) {
+			if (l - (Long)this.pathTimes.get(integer2) > 20000L) {
+				this.paths.remove(integer2);
+				this.pathTimes.remove(integer2);
 			}
 		}
 	}
@@ -176,9 +176,9 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 	private float method_3867(PathNode pathNode) {
 		return (float)(
-			Math.abs((double)pathNode.x - this.field_4618.getPos().x)
-				+ Math.abs((double)pathNode.y - this.field_4618.getPos().y)
-				+ Math.abs((double)pathNode.z - this.field_4618.getPos().z)
+			Math.abs((double)pathNode.x - this.camera.getPos().x)
+				+ Math.abs((double)pathNode.y - this.camera.getPos().y)
+				+ Math.abs((double)pathNode.z - this.camera.getPos().z)
 		);
 	}
 }

@@ -6,35 +6,35 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 
 public class RaidGoal<T extends LivingEntity> extends FollowTargetGoal<T> {
-	private int field_17282 = 0;
+	private int cooldown = 0;
 
 	public RaidGoal(RaiderEntity raiderEntity, Class<T> class_, boolean bl, @Nullable Predicate<LivingEntity> predicate) {
 		super(raiderEntity, class_, 500, bl, false, predicate);
 	}
 
-	public int method_17352() {
-		return this.field_17282;
+	public int getCooldown() {
+		return this.cooldown;
 	}
 
-	public void method_17353() {
-		this.field_17282--;
+	public void decreaseCooldown() {
+		this.cooldown--;
 	}
 
 	@Override
 	public boolean canStart() {
-		if (this.field_17282 > 0 || !this.entity.getRand().nextBoolean()) {
+		if (this.cooldown > 0 || !this.entity.getRand().nextBoolean()) {
 			return false;
 		} else if (!((RaiderEntity)this.entity).hasActiveRaid()) {
 			return false;
 		} else {
-			this.method_18415();
-			return this.field_6644 != null;
+			this.findClosestTarget();
+			return this.targetEntity != null;
 		}
 	}
 
 	@Override
 	public void start() {
-		this.field_17282 = 200;
+		this.cooldown = 200;
 		super.start();
 	}
 }

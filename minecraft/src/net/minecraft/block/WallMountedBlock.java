@@ -19,16 +19,12 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Direction direction = getDirection(blockState).getOpposite();
+		return method_20046(viewableWorld, blockPos, getDirection(blockState).getOpposite());
+	}
+
+	public static boolean method_20046(ViewableWorld viewableWorld, BlockPos blockPos, Direction direction) {
 		BlockPos blockPos2 = blockPos.offset(direction);
-		BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
-		Block block = blockState2.getBlock();
-		if (method_9553(block)) {
-			return false;
-		} else {
-			boolean bl = Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos2), direction.getOpposite());
-			return direction == Direction.UP ? block == Blocks.field_10312 || bl : !method_9581(block) && bl;
-		}
+		return Block.isSolidFullSquare(viewableWorld.getBlockState(blockPos2), viewableWorld, blockPos2, direction.getOpposite());
 	}
 
 	@Nullable

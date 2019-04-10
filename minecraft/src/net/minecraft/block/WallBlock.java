@@ -58,18 +58,7 @@ public class WallBlock extends HorizontalConnectedBlock {
 	private boolean shouldConnectTo(BlockState blockState, boolean bl, Direction direction) {
 		Block block = blockState.getBlock();
 		boolean bl2 = block.matches(BlockTags.field_15504) || block instanceof FenceGateBlock && FenceGateBlock.canWallConnect(blockState, direction);
-		return !cannotConnectTo(block) && bl || bl2;
-	}
-
-	public static boolean cannotConnectTo(Block block) {
-		return Block.method_9581(block)
-			|| block == Blocks.field_10499
-			|| block == Blocks.field_10545
-			|| block == Blocks.field_10261
-			|| block == Blocks.field_10147
-			|| block == Blocks.field_10009
-			|| block == Blocks.field_10110
-			|| block == Blocks.field_10375;
+		return !canConnect(block) && bl || bl2;
 	}
 
 	@Override
@@ -85,18 +74,10 @@ public class WallBlock extends HorizontalConnectedBlock {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos3);
 		BlockState blockState3 = viewableWorld.getBlockState(blockPos4);
 		BlockState blockState4 = viewableWorld.getBlockState(blockPos5);
-		boolean bl = this.shouldConnectTo(
-			blockState, Block.isFaceFullSquare(blockState.getCollisionShape(viewableWorld, blockPos2), Direction.SOUTH), Direction.SOUTH
-		);
-		boolean bl2 = this.shouldConnectTo(
-			blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(viewableWorld, blockPos3), Direction.WEST), Direction.WEST
-		);
-		boolean bl3 = this.shouldConnectTo(
-			blockState3, Block.isFaceFullSquare(blockState3.getCollisionShape(viewableWorld, blockPos4), Direction.NORTH), Direction.NORTH
-		);
-		boolean bl4 = this.shouldConnectTo(
-			blockState4, Block.isFaceFullSquare(blockState4.getCollisionShape(viewableWorld, blockPos5), Direction.EAST), Direction.EAST
-		);
+		boolean bl = this.shouldConnectTo(blockState, Block.isSolidFullSquare(blockState, viewableWorld, blockPos2, Direction.SOUTH), Direction.SOUTH);
+		boolean bl2 = this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, viewableWorld, blockPos3, Direction.WEST), Direction.WEST);
+		boolean bl3 = this.shouldConnectTo(blockState3, Block.isSolidFullSquare(blockState3, viewableWorld, blockPos4, Direction.NORTH), Direction.NORTH);
+		boolean bl4 = this.shouldConnectTo(blockState4, Block.isSolidFullSquare(blockState4, viewableWorld, blockPos5, Direction.EAST), Direction.EAST);
 		boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);
 		return this.getDefaultState()
 			.with(UP, Boolean.valueOf(bl5 || !viewableWorld.isAir(blockPos.up())))
@@ -120,16 +101,16 @@ public class WallBlock extends HorizontalConnectedBlock {
 		} else {
 			Direction direction2 = direction.getOpposite();
 			boolean bl = direction == Direction.NORTH
-				? this.shouldConnectTo(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(iWorld, blockPos2), direction2), direction2)
+				? this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction2), direction2)
 				: (Boolean)blockState.get(NORTH);
 			boolean bl2 = direction == Direction.EAST
-				? this.shouldConnectTo(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(iWorld, blockPos2), direction2), direction2)
+				? this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction2), direction2)
 				: (Boolean)blockState.get(EAST);
 			boolean bl3 = direction == Direction.SOUTH
-				? this.shouldConnectTo(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(iWorld, blockPos2), direction2), direction2)
+				? this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction2), direction2)
 				: (Boolean)blockState.get(SOUTH);
 			boolean bl4 = direction == Direction.WEST
-				? this.shouldConnectTo(blockState2, Block.isFaceFullSquare(blockState2.getCollisionShape(iWorld, blockPos2), direction2), direction2)
+				? this.shouldConnectTo(blockState2, Block.isSolidFullSquare(blockState2, iWorld, blockPos2, direction2), direction2)
 				: (Boolean)blockState.get(WEST);
 			boolean bl5 = (!bl || bl2 || !bl3 || bl4) && (bl || !bl2 || bl3 || !bl4);
 			return blockState.with(UP, Boolean.valueOf(bl5 || !iWorld.isAir(blockPos.up())))

@@ -57,7 +57,7 @@ public class EntityModelTurtle<T extends TurtleEntity> extends QuadrupedEntityMo
 			GlStateManager.popMatrix();
 		} else {
 			GlStateManager.pushMatrix();
-			if (turtleEntity.getHasEgg()) {
+			if (turtleEntity.hasEgg()) {
 				GlStateManager.translatef(0.0F, -0.08F, 0.0F);
 			}
 
@@ -69,7 +69,7 @@ public class EntityModelTurtle<T extends TurtleEntity> extends QuadrupedEntityMo
 			GlStateManager.popMatrix();
 			this.leg3.render(k);
 			this.leg4.render(k);
-			if (turtleEntity.getHasEgg()) {
+			if (turtleEntity.hasEgg()) {
 				this.field_3594.render(k);
 			}
 
@@ -91,8 +91,8 @@ public class EntityModelTurtle<T extends TurtleEntity> extends QuadrupedEntityMo
 		this.leg2.yaw = 0.0F;
 		this.field_3594.pitch = (float) (Math.PI / 2);
 		if (!turtleEntity.isInsideWater() && turtleEntity.onGround) {
-			float l = turtleEntity.method_6695() ? 4.0F : 1.0F;
-			float m = turtleEntity.method_6695() ? 2.0F : 1.0F;
+			float l = turtleEntity.isDiggingSand() ? 4.0F : 1.0F;
+			float m = turtleEntity.isDiggingSand() ? 2.0F : 1.0F;
 			float n = 5.0F;
 			this.leg3.yaw = MathHelper.cos(l * f * 5.0F + (float) Math.PI) * 8.0F * g * m;
 			this.leg3.roll = 0.0F;

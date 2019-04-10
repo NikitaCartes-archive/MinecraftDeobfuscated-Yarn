@@ -21,14 +21,14 @@ public class ParticleCommand {
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
 		commandDispatcher.register(
-			ServerCommandManager.literal("particle")
+			CommandManager.literal("particle")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					ServerCommandManager.argument("name", ParticleArgumentType.create())
+					CommandManager.argument("name", ParticleArgumentType.create())
 						.executes(
-							commandContext -> method_13491(
+							commandContext -> execute(
 									commandContext.getSource(),
-									ParticleArgumentType.getParticleArgument(commandContext, "name"),
+									ParticleArgumentType.getParticle(commandContext, "name"),
 									commandContext.getSource().getPosition(),
 									Vec3d.ZERO,
 									0.0F,
@@ -38,12 +38,12 @@ public class ParticleCommand {
 								)
 						)
 						.then(
-							ServerCommandManager.argument("pos", Vec3ArgumentType.create())
+							CommandManager.argument("pos", Vec3ArgumentType.create())
 								.executes(
-									commandContext -> method_13491(
+									commandContext -> execute(
 											commandContext.getSource(),
-											ParticleArgumentType.getParticleArgument(commandContext, "name"),
-											Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
+											ParticleArgumentType.getParticle(commandContext, "name"),
+											Vec3ArgumentType.getVec3(commandContext, "pos"),
 											Vec3d.ZERO,
 											0.0F,
 											0,
@@ -52,17 +52,17 @@ public class ParticleCommand {
 										)
 								)
 								.then(
-									ServerCommandManager.argument("delta", Vec3ArgumentType.create(false))
+									CommandManager.argument("delta", Vec3ArgumentType.create(false))
 										.then(
-											ServerCommandManager.argument("speed", FloatArgumentType.floatArg(0.0F))
+											CommandManager.argument("speed", FloatArgumentType.floatArg(0.0F))
 												.then(
-													ServerCommandManager.argument("count", IntegerArgumentType.integer(0))
+													CommandManager.argument("count", IntegerArgumentType.integer(0))
 														.executes(
-															commandContext -> method_13491(
+															commandContext -> execute(
 																	commandContext.getSource(),
-																	ParticleArgumentType.getParticleArgument(commandContext, "name"),
-																	Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
-																	Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
+																	ParticleArgumentType.getParticle(commandContext, "name"),
+																	Vec3ArgumentType.getVec3(commandContext, "pos"),
+																	Vec3ArgumentType.getVec3(commandContext, "delta"),
 																	FloatArgumentType.getFloat(commandContext, "speed"),
 																	IntegerArgumentType.getInteger(commandContext, "count"),
 																	false,
@@ -70,13 +70,13 @@ public class ParticleCommand {
 																)
 														)
 														.then(
-															ServerCommandManager.literal("force")
+															CommandManager.literal("force")
 																.executes(
-																	commandContext -> method_13491(
+																	commandContext -> execute(
 																			commandContext.getSource(),
-																			ParticleArgumentType.getParticleArgument(commandContext, "name"),
-																			Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
-																			Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
+																			ParticleArgumentType.getParticle(commandContext, "name"),
+																			Vec3ArgumentType.getVec3(commandContext, "pos"),
+																			Vec3ArgumentType.getVec3(commandContext, "delta"),
 																			FloatArgumentType.getFloat(commandContext, "speed"),
 																			IntegerArgumentType.getInteger(commandContext, "count"),
 																			true,
@@ -84,29 +84,29 @@ public class ParticleCommand {
 																		)
 																)
 																.then(
-																	ServerCommandManager.argument("viewers", EntityArgumentType.multiplePlayer())
+																	CommandManager.argument("viewers", EntityArgumentType.players())
 																		.executes(
-																			commandContext -> method_13491(
+																			commandContext -> execute(
 																					commandContext.getSource(),
-																					ParticleArgumentType.getParticleArgument(commandContext, "name"),
-																					Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
-																					Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
+																					ParticleArgumentType.getParticle(commandContext, "name"),
+																					Vec3ArgumentType.getVec3(commandContext, "pos"),
+																					Vec3ArgumentType.getVec3(commandContext, "delta"),
 																					FloatArgumentType.getFloat(commandContext, "speed"),
 																					IntegerArgumentType.getInteger(commandContext, "count"),
 																					true,
-																					EntityArgumentType.method_9312(commandContext, "viewers")
+																					EntityArgumentType.getPlayers(commandContext, "viewers")
 																				)
 																		)
 																)
 														)
 														.then(
-															ServerCommandManager.literal("normal")
+															CommandManager.literal("normal")
 																.executes(
-																	commandContext -> method_13491(
+																	commandContext -> execute(
 																			commandContext.getSource(),
-																			ParticleArgumentType.getParticleArgument(commandContext, "name"),
-																			Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
-																			Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
+																			ParticleArgumentType.getParticle(commandContext, "name"),
+																			Vec3ArgumentType.getVec3(commandContext, "pos"),
+																			Vec3ArgumentType.getVec3(commandContext, "delta"),
 																			FloatArgumentType.getFloat(commandContext, "speed"),
 																			IntegerArgumentType.getInteger(commandContext, "count"),
 																			false,
@@ -114,17 +114,17 @@ public class ParticleCommand {
 																		)
 																)
 																.then(
-																	ServerCommandManager.argument("viewers", EntityArgumentType.multiplePlayer())
+																	CommandManager.argument("viewers", EntityArgumentType.players())
 																		.executes(
-																			commandContext -> method_13491(
+																			commandContext -> execute(
 																					commandContext.getSource(),
-																					ParticleArgumentType.getParticleArgument(commandContext, "name"),
-																					Vec3ArgumentType.getVec3Argument(commandContext, "pos"),
-																					Vec3ArgumentType.getVec3Argument(commandContext, "delta"),
+																					ParticleArgumentType.getParticle(commandContext, "name"),
+																					Vec3ArgumentType.getVec3(commandContext, "pos"),
+																					Vec3ArgumentType.getVec3(commandContext, "delta"),
 																					FloatArgumentType.getFloat(commandContext, "speed"),
 																					IntegerArgumentType.getInteger(commandContext, "count"),
 																					false,
-																					EntityArgumentType.method_9312(commandContext, "viewers")
+																					EntityArgumentType.getPlayers(commandContext, "viewers")
 																				)
 																		)
 																)
@@ -137,7 +137,7 @@ public class ParticleCommand {
 		);
 	}
 
-	private static int method_13491(
+	private static int execute(
 		ServerCommandSource serverCommandSource,
 		ParticleParameters particleParameters,
 		Vec3d vec3d,
@@ -151,7 +151,7 @@ public class ParticleCommand {
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
 			if (serverCommandSource.getWorld()
-				.method_14166(serverPlayerEntity, particleParameters, bl, vec3d.x, vec3d.y, vec3d.z, i, vec3d2.x, vec3d2.y, vec3d2.z, (double)f)) {
+				.spawnParticles(serverPlayerEntity, particleParameters, bl, vec3d.x, vec3d.y, vec3d.z, i, vec3d2.x, vec3d2.y, vec3d2.z, (double)f)) {
 				j++;
 			}
 		}

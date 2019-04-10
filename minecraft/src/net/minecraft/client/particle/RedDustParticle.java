@@ -25,7 +25,7 @@ public class RedDustParticle extends SpriteBillboardParticle {
 		this.scale = this.scale * 0.75F * dustParticleParameters.getAlpha();
 		int k = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 		this.maxAge = (int)Math.max((float)k * dustParticleParameters.getAlpha(), 1.0F);
-		this.method_18142(spriteProvider);
+		this.setSpriteForAge(spriteProvider);
 	}
 
 	@Override
@@ -40,15 +40,15 @@ public class RedDustParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void update() {
-		this.prevPosX = this.posX;
-		this.prevPosY = this.posY;
-		this.prevPosZ = this.posZ;
+		this.prevPosX = this.x;
+		this.prevPosY = this.y;
+		this.prevPosZ = this.z;
 		if (this.age++ >= this.maxAge) {
 			this.markDead();
 		} else {
-			this.method_18142(this.field_17801);
+			this.setSpriteForAge(this.field_17801);
 			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.posY == this.prevPosY) {
+			if (this.y == this.prevPosY) {
 				this.velocityX *= 1.1;
 				this.velocityZ *= 1.1;
 			}

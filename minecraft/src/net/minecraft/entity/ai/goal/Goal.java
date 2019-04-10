@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.goal;
 import java.util.EnumSet;
 
 public abstract class Goal {
-	private final EnumSet<Goal.class_4134> controlBits = EnumSet.noneOf(Goal.class_4134.class);
+	private final EnumSet<Goal.Control> controls = EnumSet.noneOf(Goal.Control.class);
 
 	public abstract boolean canStart();
 
@@ -18,22 +18,22 @@ public abstract class Goal {
 	public void start() {
 	}
 
-	public void onRemove() {
+	public void stop() {
 	}
 
 	public void tick() {
 	}
 
-	public void setControlBits(EnumSet<Goal.class_4134> enumSet) {
-		this.controlBits.clear();
-		this.controlBits.addAll(enumSet);
+	public void setControls(EnumSet<Goal.Control> enumSet) {
+		this.controls.clear();
+		this.controls.addAll(enumSet);
 	}
 
-	public EnumSet<Goal.class_4134> getControlBits() {
-		return this.controlBits;
+	public EnumSet<Goal.Control> getControls() {
+		return this.controls;
 	}
 
-	public static enum class_4134 {
+	public static enum Control {
 		field_18405,
 		field_18406,
 		field_18407,

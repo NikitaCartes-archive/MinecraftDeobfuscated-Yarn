@@ -72,7 +72,7 @@ public class PigEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean method_5956() {
+	public boolean canBeControlledByRider() {
 		Entity entity = this.getPrimaryPassenger();
 		if (!(entity instanceof PlayerEntity)) {
 			return false;
@@ -188,14 +188,14 @@ public class PigEntity extends AnimalEntity {
 		}
 
 		this.world.spawnEntity(zombiePigmanEntity);
-		this.invalidate();
+		this.remove();
 	}
 
 	@Override
 	public void travel(Vec3d vec3d) {
-		if (this.isValid()) {
+		if (this.isAlive()) {
 			Entity entity = this.getPassengerList().isEmpty() ? null : (Entity)this.getPassengerList().get(0);
-			if (this.hasPassengers() && this.method_5956()) {
+			if (this.hasPassengers() && this.canBeControlledByRider()) {
 				this.yaw = entity.yaw;
 				this.prevYaw = this.yaw;
 				this.pitch = entity.pitch * 0.5F;
@@ -208,7 +208,7 @@ public class PigEntity extends AnimalEntity {
 					this.field_6814 = false;
 				}
 
-				if (this.method_5787()) {
+				if (this.isLogicalSideForUpdatingMovement()) {
 					float f = (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue() * 0.225F;
 					if (this.field_6814) {
 						f += f * 1.15F * MathHelper.sin((float)this.field_6812 / (float)this.field_6813 * (float) Math.PI);
@@ -220,7 +220,7 @@ public class PigEntity extends AnimalEntity {
 					this.setVelocity(Vec3d.ZERO);
 				}
 
-				this.field_6211 = this.field_6225;
+				this.lastLimbDistance = this.limbDistance;
 				double d = this.x - this.prevX;
 				double e = this.z - this.prevZ;
 				float g = MathHelper.sqrt(d * d + e * e) * 4.0F;
@@ -228,8 +228,8 @@ public class PigEntity extends AnimalEntity {
 					g = 1.0F;
 				}
 
-				this.field_6225 = this.field_6225 + (g - this.field_6225) * 0.4F;
-				this.field_6249 = this.field_6249 + this.field_6225;
+				this.limbDistance = this.limbDistance + (g - this.limbDistance) * 0.4F;
+				this.limbAngle = this.limbAngle + this.limbDistance;
 			} else {
 				this.stepHeight = 0.5F;
 				this.field_6281 = 0.02F;

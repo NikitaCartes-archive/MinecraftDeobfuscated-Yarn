@@ -29,7 +29,7 @@ public class GlassBottleItem extends Item {
 		List<AreaEffectCloudEntity> list = world.getEntities(
 			AreaEffectCloudEntity.class,
 			playerEntity.getBoundingBox().expand(2.0),
-			areaEffectCloudEntity -> areaEffectCloudEntity != null && areaEffectCloudEntity.isValid() && areaEffectCloudEntity.getOwner() instanceof EnderDragonEntity
+			areaEffectCloudEntity -> areaEffectCloudEntity != null && areaEffectCloudEntity.isAlive() && areaEffectCloudEntity.getOwner() instanceof EnderDragonEntity
 		);
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (!list.isEmpty()) {

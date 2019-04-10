@@ -47,7 +47,7 @@ public class TallPlantBlock extends PlantBlock {
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
-		return blockPos.getY() < 255 && itemPlacementContext.getWorld().getBlockState(blockPos.up()).method_11587(itemPlacementContext)
+		return blockPos.getY() < 255 && itemPlacementContext.getWorld().getBlockState(blockPos.up()).canReplace(itemPlacementContext)
 			? super.getPlacementState(itemPlacementContext)
 			: null;
 	}
@@ -86,7 +86,7 @@ public class TallPlantBlock extends PlantBlock {
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
 			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
-			world.playEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
+			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			if (!world.isClient && !playerEntity.isCreative()) {
 				dropStacks(blockState, world, blockPos, null, playerEntity, playerEntity.getMainHandStack());
 				dropStacks(blockState2, world, blockPos2, null, playerEntity, playerEntity.getMainHandStack());

@@ -22,7 +22,7 @@ import net.minecraft.world.World;
 
 public class LlamaSpitEntity extends Entity implements Projectile {
 	public LlamaEntity owner;
-	private CompoundTag field_7623;
+	private CompoundTag tag;
 
 	public LlamaSpitEntity(EntityType<? extends LlamaSpitEntity> entityType, World world) {
 		super(entityType, world);
@@ -54,17 +54,13 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	@Override
 	public void tick() {
 		super.tick();
-		if (this.field_7623 != null) {
-			this.method_7479();
+		if (this.tag != null) {
+			this.readTag();
 		}
 
 		Vec3d vec3d = this.getVelocity();
-		HitResult hitResult = ProjectileUtil.method_18074(
-			this,
-			this.getBoundingBox().method_18804(vec3d).expand(1.0),
-			entity -> !entity.isSpectator() && entity != this.owner,
-			RayTraceContext.ShapeType.field_17559,
-			true
+		HitResult hitResult = ProjectileUtil.getCollision(
+			this, this.getBoundingBox().stretch(vec3d).expand(1.0), entity -> !entity.isSpectator() && entity != this.owner, RayTraceContext.ShapeType.field_17559, true
 		);
 		if (hitResult != null) {
 			this.method_7481(hitResult);
@@ -98,9 +94,9 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		float g = 0.99F;
 		float h = 0.06F;
 		if (!this.world.containsBlockWithMaterial(this.getBoundingBox(), Material.AIR)) {
-			this.invalidate();
+			this.remove();
 		} else if (this.isInsideWaterOrBubbleColumn()) {
-			this.invalidate();
+			this.remove();
 		} else {
 			this.setVelocity(vec3d.multiply(0.99F));
 			if (!this.isUnaffectedByGravity()) {
@@ -144,7 +140,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		if (type == HitResult.Type.ENTITY && this.owner != null) {
 			((EntityHitResult)hitResult).getEntity().damage(DamageSource.mobProjectile(this, this.owner).setProjectile(), 1.0F);
 		} else if (type == HitResult.Type.BLOCK && !this.world.isClient) {
-			this.invalidate();
+			this.remove();
 		}
 	}
 
@@ -155,7 +151,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 	@Override
 	protected void readCustomDataFromTag(CompoundTag compoundTag) {
 		if (compoundTag.containsKey("Owner", 10)) {
-			this.field_7623 = compoundTag.getCompound("Owner");
+			this.tag = compoundTag.getCompound("Owner");
 		}
 	}
 
@@ -169,11 +165,11 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 		}
 	}
 
-	private void method_7479() {
-		if (this.field_7623 != null && this.field_7623.hasUuid("OwnerUUID")) {
-			UUID uUID = this.field_7623.getUuid("OwnerUUID");
+	private void readTag() {
+		if (this.tag != null && this.tag.hasUuid("OwnerUUID")) {
+			UUID uUID = this.tag.getUuid("OwnerUUID");
 
-			for (LlamaEntity llamaEntity : this.world.method_18467(LlamaEntity.class, this.getBoundingBox().expand(15.0))) {
+			for (LlamaEntity llamaEntity : this.world.getEntities(LlamaEntity.class, this.getBoundingBox().expand(15.0))) {
 				if (llamaEntity.getUuid().equals(uUID)) {
 					this.owner = llamaEntity;
 					break;
@@ -181,7 +177,7 @@ public class LlamaSpitEntity extends Entity implements Projectile {
 			}
 		}
 
-		this.field_7623 = null;
+		this.tag = null;
 	}
 
 	@Override

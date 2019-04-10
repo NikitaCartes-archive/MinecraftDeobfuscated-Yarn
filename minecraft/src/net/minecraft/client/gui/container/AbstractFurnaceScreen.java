@@ -34,28 +34,28 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	}
 
 	@Override
-	public void onInitialized() {
-		super.onInitialized();
-		this.narrow = this.screenWidth < 379;
-		this.recipeBook.initialize(this.screenWidth, this.screenHeight, this.client, this.narrow, this.container);
-		this.left = this.recipeBook.findLeftEdge(this.narrow, this.screenWidth, this.width);
-		this.addButton(new RecipeBookButtonWidget(this.left + 20, this.screenHeight / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
+	public void init() {
+		super.init();
+		this.narrow = this.width < 379;
+		this.recipeBook.initialize(this.width, this.height, this.minecraft, this.narrow, this.container);
+		this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+		this.addButton(new RecipeBookButtonWidget(this.left + 20, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEXTURE, buttonWidget -> {
 			this.recipeBook.reset(this.narrow);
 			this.recipeBook.toggleOpen();
-			this.left = this.recipeBook.findLeftEdge(this.narrow, this.screenWidth, this.width);
-			((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 20, this.screenHeight / 2 - 49);
+			this.left = this.recipeBook.findLeftEdge(this.narrow, this.width, this.containerWidth);
+			((RecipeBookButtonWidget)buttonWidget).setPos(this.left + 20, this.height / 2 - 49);
 		}));
 	}
 
 	@Override
-	public void update() {
-		super.update();
+	public void tick() {
+		super.tick();
 		this.recipeBook.update();
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
+		this.renderBackground();
 		if (this.recipeBook.isOpen() && this.narrow) {
 			this.drawBackground(f, i, j);
 			this.recipeBook.render(i, j, f);
@@ -72,24 +72,24 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	@Override
 	protected void drawForeground(int i, int j) {
 		String string = this.title.getFormattedText();
-		this.fontRenderer.draw(string, (float)(this.width / 2 - this.fontRenderer.getStringWidth(string) / 2), 6.0F, 4210752);
-		this.fontRenderer.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.height - 96 + 2), 4210752);
+		this.font.draw(string, (float)(this.containerWidth / 2 - this.font.getStringWidth(string) / 2), 6.0F, 4210752);
+		this.font.draw(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.containerHeight - 96 + 2), 4210752);
 	}
 
 	@Override
 	protected void drawBackground(float f, int i, int j) {
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(this.field_18975);
+		this.minecraft.getTextureManager().bindTexture(this.field_18975);
 		int k = this.left;
 		int l = this.top;
-		this.drawTexturedRect(k, l, 0, 0, this.width, this.height);
+		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
 		if (this.container.isBurning()) {
 			int m = this.container.getFuelProgress();
-			this.drawTexturedRect(k + 56, l + 36 + 12 - m, 176, 12 - m, 14, m + 1);
+			this.blit(k + 56, l + 36 + 12 - m, 176, 12 - m, 14, m + 1);
 		}
 
 		int m = this.container.getCookProgress();
-		this.drawTexturedRect(k + 79, l + 34, 176, 14, m + 1, 16);
+		this.blit(k + 79, l + 34, 176, 14, m + 1, 16);
 	}
 
 	@Override
@@ -114,8 +114,8 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 
 	@Override
 	protected boolean isClickOutsideBounds(double d, double e, int i, int j, int k) {
-		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.width) || e >= (double)(j + this.height);
-		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.width, this.height, k) && bl;
+		boolean bl = d < (double)i || e < (double)j || d >= (double)(i + this.containerWidth) || e >= (double)(j + this.containerHeight);
+		return this.recipeBook.isClickOutsideBounds(d, e, this.left, this.top, this.containerWidth, this.containerHeight, k) && bl;
 	}
 
 	@Override
@@ -134,8 +134,8 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceContainer> 
 	}
 
 	@Override
-	public void onClosed() {
+	public void removed() {
 		this.recipeBook.close();
-		super.onClosed();
+		super.removed();
 	}
 }

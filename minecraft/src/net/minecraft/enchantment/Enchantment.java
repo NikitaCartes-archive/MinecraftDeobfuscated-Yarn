@@ -1,7 +1,7 @@
 package net.minecraft.enchantment;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import com.google.common.collect.Maps;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -37,17 +37,17 @@ public abstract class Enchantment {
 		this.slotTypes = equipmentSlots;
 	}
 
-	public List<ItemStack> getEquipment(LivingEntity livingEntity) {
-		List<ItemStack> list = Lists.<ItemStack>newArrayList();
+	public Map<EquipmentSlot, ItemStack> getEquipment(LivingEntity livingEntity) {
+		Map<EquipmentSlot, ItemStack> map = Maps.newEnumMap(EquipmentSlot.class);
 
 		for (EquipmentSlot equipmentSlot : this.slotTypes) {
 			ItemStack itemStack = livingEntity.getEquippedStack(equipmentSlot);
 			if (!itemStack.isEmpty()) {
-				list.add(itemStack);
+				map.put(equipmentSlot, itemStack);
 			}
 		}
 
-		return list;
+		return map;
 	}
 
 	public Enchantment.Weight getWeight() {
@@ -119,7 +119,7 @@ public abstract class Enchantment {
 	public void onUserDamaged(LivingEntity livingEntity, Entity entity, int i) {
 	}
 
-	public boolean isLootOnly() {
+	public boolean isTreasure() {
 		return false;
 	}
 

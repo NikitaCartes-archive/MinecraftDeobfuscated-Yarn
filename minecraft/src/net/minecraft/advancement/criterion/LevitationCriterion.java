@@ -58,8 +58,8 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 
 	public LevitationCriterion.Conditions method_9006(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 		DistancePredicate distancePredicate = DistancePredicate.deserialize(jsonObject.get("distance"));
-		NumberRange.Integer integer = NumberRange.Integer.fromJson(jsonObject.get("duration"));
-		return new LevitationCriterion.Conditions(distancePredicate, integer);
+		NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("duration"));
+		return new LevitationCriterion.Conditions(distancePredicate, intRange);
 	}
 
 	public void handle(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
@@ -71,27 +71,27 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final DistancePredicate distance;
-		private final NumberRange.Integer duration;
+		private final NumberRange.IntRange field_9676;
 
-		public Conditions(DistancePredicate distancePredicate, NumberRange.Integer integer) {
+		public Conditions(DistancePredicate distancePredicate, NumberRange.IntRange intRange) {
 			super(LevitationCriterion.ID);
 			this.distance = distancePredicate;
-			this.duration = integer;
+			this.field_9676 = intRange;
 		}
 
 		public static LevitationCriterion.Conditions method_9013(DistancePredicate distancePredicate) {
-			return new LevitationCriterion.Conditions(distancePredicate, NumberRange.Integer.ANY);
+			return new LevitationCriterion.Conditions(distancePredicate, NumberRange.IntRange.ANY);
 		}
 
 		public boolean matches(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-			return !this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z) ? false : this.duration.test(i);
+			return !this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z) ? false : this.field_9676.test(i);
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("distance", this.distance.serialize());
-			jsonObject.add("duration", this.duration.serialize());
+			jsonObject.add("duration", this.field_9676.serialize());
 			return jsonObject;
 		}
 	}

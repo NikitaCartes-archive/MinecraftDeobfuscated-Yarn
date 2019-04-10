@@ -15,11 +15,11 @@ public class DifficultyCommand {
 	);
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
-		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = ServerCommandManager.literal("difficulty");
+		LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("difficulty");
 
 		for (Difficulty difficulty : Difficulty.values()) {
 			literalArgumentBuilder.then(
-				ServerCommandManager.literal(difficulty.getTranslationKey()).executes(commandContext -> method_13173(commandContext.getSource(), difficulty))
+				CommandManager.literal(difficulty.getTranslationKey()).executes(commandContext -> execute(commandContext.getSource(), difficulty))
 			);
 		}
 
@@ -30,7 +30,7 @@ public class DifficultyCommand {
 		}));
 	}
 
-	public static int method_13173(ServerCommandSource serverCommandSource, Difficulty difficulty) throws CommandSyntaxException {
+	public static int execute(ServerCommandSource serverCommandSource, Difficulty difficulty) throws CommandSyntaxException {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		if (minecraftServer.getWorld(DimensionType.field_13072).getDifficulty() == difficulty) {
 			throw FAILURE_EXCEPTION.create(difficulty.getTranslationKey());

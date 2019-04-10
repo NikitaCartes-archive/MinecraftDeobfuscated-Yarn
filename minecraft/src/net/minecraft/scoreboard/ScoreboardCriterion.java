@@ -17,12 +17,12 @@ public class ScoreboardCriterion {
 	public static final ScoreboardCriterion DEATH_COUNT = new ScoreboardCriterion("deathCount");
 	public static final ScoreboardCriterion PLAYER_KILL_COUNT = new ScoreboardCriterion("playerKillCount");
 	public static final ScoreboardCriterion TOTAL_KILL_COUNT = new ScoreboardCriterion("totalKillCount");
-	public static final ScoreboardCriterion HEALTH = new ScoreboardCriterion("health", true, ScoreboardCriterion.Type.HEARTS);
-	public static final ScoreboardCriterion FOOD = new ScoreboardCriterion("food", true, ScoreboardCriterion.Type.INTEGER);
-	public static final ScoreboardCriterion AIR = new ScoreboardCriterion("air", true, ScoreboardCriterion.Type.INTEGER);
-	public static final ScoreboardCriterion ARMOR = new ScoreboardCriterion("armor", true, ScoreboardCriterion.Type.INTEGER);
-	public static final ScoreboardCriterion XP = new ScoreboardCriterion("xp", true, ScoreboardCriterion.Type.INTEGER);
-	public static final ScoreboardCriterion LEVEL = new ScoreboardCriterion("level", true, ScoreboardCriterion.Type.INTEGER);
+	public static final ScoreboardCriterion HEALTH = new ScoreboardCriterion("health", true, ScoreboardCriterion.RenderType.HEARTS);
+	public static final ScoreboardCriterion FOOD = new ScoreboardCriterion("food", true, ScoreboardCriterion.RenderType.INTEGER);
+	public static final ScoreboardCriterion AIR = new ScoreboardCriterion("air", true, ScoreboardCriterion.RenderType.INTEGER);
+	public static final ScoreboardCriterion ARMOR = new ScoreboardCriterion("armor", true, ScoreboardCriterion.RenderType.INTEGER);
+	public static final ScoreboardCriterion XP = new ScoreboardCriterion("xp", true, ScoreboardCriterion.RenderType.INTEGER);
+	public static final ScoreboardCriterion LEVEL = new ScoreboardCriterion("level", true, ScoreboardCriterion.RenderType.INTEGER);
 	public static final ScoreboardCriterion[] TEAM_KILLS = new ScoreboardCriterion[]{
 		new ScoreboardCriterion("teamkill." + TextFormat.BLACK.getFormatName()),
 		new ScoreboardCriterion("teamkill." + TextFormat.field_1058.getFormatName()),
@@ -61,16 +61,16 @@ public class ScoreboardCriterion {
 	};
 	private final String name;
 	private final boolean readOnly;
-	private final ScoreboardCriterion.Type criterionType;
+	private final ScoreboardCriterion.RenderType criterionType;
 
 	public ScoreboardCriterion(String string) {
-		this(string, false, ScoreboardCriterion.Type.INTEGER);
+		this(string, false, ScoreboardCriterion.RenderType.INTEGER);
 	}
 
-	protected ScoreboardCriterion(String string, boolean bl, ScoreboardCriterion.Type type) {
+	protected ScoreboardCriterion(String string, boolean bl, ScoreboardCriterion.RenderType renderType) {
 		this.name = string;
 		this.readOnly = bl;
-		this.criterionType = type;
+		this.criterionType = renderType;
 		OBJECTIVES.put(string, this);
 	}
 
@@ -99,18 +99,18 @@ public class ScoreboardCriterion {
 		return this.readOnly;
 	}
 
-	public ScoreboardCriterion.Type getCriterionType() {
+	public ScoreboardCriterion.RenderType getCriterionType() {
 		return this.criterionType;
 	}
 
-	public static enum Type {
+	public static enum RenderType {
 		INTEGER("integer"),
 		HEARTS("hearts");
 
 		private final String name;
-		private static final Map<String, ScoreboardCriterion.Type> field_1470;
+		private static final Map<String, ScoreboardCriterion.RenderType> CRITERION_TYPES;
 
-		private Type(String string2) {
+		private RenderType(String string2) {
 			this.name = string2;
 		}
 
@@ -118,18 +118,18 @@ public class ScoreboardCriterion {
 			return this.name;
 		}
 
-		public static ScoreboardCriterion.Type method_1229(String string) {
-			return (ScoreboardCriterion.Type)field_1470.getOrDefault(string, INTEGER);
+		public static ScoreboardCriterion.RenderType getType(String string) {
+			return (ScoreboardCriterion.RenderType)CRITERION_TYPES.getOrDefault(string, INTEGER);
 		}
 
 		static {
-			Builder<String, ScoreboardCriterion.Type> builder = ImmutableMap.builder();
+			Builder<String, ScoreboardCriterion.RenderType> builder = ImmutableMap.builder();
 
-			for (ScoreboardCriterion.Type type : values()) {
-				builder.put(type.name, type);
+			for (ScoreboardCriterion.RenderType renderType : values()) {
+				builder.put(renderType.name, renderType);
 			}
 
-			field_1470 = builder.build();
+			CRITERION_TYPES = builder.build();
 		}
 	}
 }

@@ -13,14 +13,14 @@ public class DownloadingTerrainScreen extends Screen {
 	}
 
 	@Override
-	public boolean doesEscapeKeyClose() {
+	public boolean shouldCloseOnEsc() {
 		return false;
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawTextureBackground(0);
-		this.drawStringCentered(this.fontRenderer, I18n.translate("multiplayer.downloadingTerrain"), this.screenWidth / 2, this.screenHeight / 2 - 50, 16777215);
+		this.renderDirtBackground(0);
+		this.drawCenteredString(this.font, I18n.translate("multiplayer.downloadingTerrain"), this.width / 2, this.height / 2 - 50, 16777215);
 		super.render(i, j, f);
 	}
 

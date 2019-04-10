@@ -34,14 +34,14 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	protected void onCollision(HitResult hitResult) {
 		if (hitResult.getType() != HitResult.Type.ENTITY || !((EntityHitResult)hitResult).getEntity().isPartOf(this.owner)) {
 			if (!this.world.isClient) {
-				List<LivingEntity> list = this.world.method_18467(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
+				List<LivingEntity> list = this.world.getEntities(LivingEntity.class, this.getBoundingBox().expand(4.0, 2.0, 4.0));
 				AreaEffectCloudEntity areaEffectCloudEntity = new AreaEffectCloudEntity(this.world, this.x, this.y, this.z);
 				areaEffectCloudEntity.setOwner(this.owner);
 				areaEffectCloudEntity.setParticleType(ParticleTypes.field_11216);
 				areaEffectCloudEntity.setRadius(3.0F);
 				areaEffectCloudEntity.setDuration(600);
 				areaEffectCloudEntity.setRadiusGrowth((7.0F - areaEffectCloudEntity.getRadius()) / (float)areaEffectCloudEntity.getDuration());
-				areaEffectCloudEntity.setPotionEffect(new StatusEffectInstance(StatusEffects.field_5921, 1, 1));
+				areaEffectCloudEntity.addEffect(new StatusEffectInstance(StatusEffects.field_5921, 1, 1));
 				if (!list.isEmpty()) {
 					for (LivingEntity livingEntity : list) {
 						double d = this.squaredDistanceTo(livingEntity);
@@ -52,15 +52,15 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 					}
 				}
 
-				this.world.playEvent(2006, new BlockPos(this.x, this.y, this.z), 0);
+				this.world.method_20290(2006, new BlockPos(this.x, this.y, this.z), 0);
 				this.world.spawnEntity(areaEffectCloudEntity);
-				this.invalidate();
+				this.remove();
 			}
 		}
 	}
 
 	@Override
-	public boolean doesCollide() {
+	public boolean collides() {
 		return false;
 	}
 
@@ -75,7 +75,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 	}
 
 	@Override
-	protected boolean method_7468() {
+	protected boolean isBurning() {
 		return false;
 	}
 }

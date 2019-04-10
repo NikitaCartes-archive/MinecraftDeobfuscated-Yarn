@@ -36,7 +36,7 @@ public class TridentRiptideFeatureRenderer<T extends LivingEntity> extends Featu
 	}
 
 	@Override
-	public boolean method_4200() {
+	public boolean hasHurtOverlay() {
 		return false;
 	}
 

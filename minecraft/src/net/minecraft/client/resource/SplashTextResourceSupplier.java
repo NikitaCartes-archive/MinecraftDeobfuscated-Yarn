@@ -12,14 +12,15 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 import java.util.stream.Collectors;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.util.Session;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SupplyingResourceReloadListener;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Session;
 import net.minecraft.util.profiler.Profiler;
 
 @Environment(EnvType.CLIENT)
@@ -89,6 +90,7 @@ public class SplashTextResourceSupplier extends SupplyingResourceReloadListener<
 		this.splashTexts.addAll(list);
 	}
 
+	@Nullable
 	public String get() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
@@ -99,7 +101,7 @@ public class SplashTextResourceSupplier extends SupplyingResourceReloadListener<
 		} else if (calendar.get(2) + 1 == 10 && calendar.get(5) == 31) {
 			return "OOoooOOOoooo! Spooky!";
 		} else if (this.splashTexts.isEmpty()) {
-			return "missingno";
+			return null;
 		} else {
 			return this.field_18934 != null && RANDOM.nextInt(this.splashTexts.size()) == 42
 				? this.field_18934.getUsername().toUpperCase(Locale.ROOT) + " IS YOU"

@@ -60,7 +60,7 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 			float h = (float)(blockPos3.getY() * 128 % 256) / 256.0F;
 			float i = (float)(blockPos3.getZ() * 128 % 256) / 256.0F;
 			float j = (Float)this.field_4508.get(blockPos2);
-			if (blockPos.method_19771(blockPos2, 160.0)) {
+			if (blockPos.isWithinDistance(blockPos2, 160.0)) {
 				WorldRenderer.buildBox(
 					bufferBuilder,
 					(double)((float)blockPos2.getX() + 0.5F) - d - (double)j,
@@ -78,7 +78,7 @@ public class CaveDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		for (BlockPos blockPos4 : this.field_4506) {
-			if (blockPos.method_19771(blockPos4, 160.0)) {
+			if (blockPos.isWithinDistance(blockPos4, 160.0)) {
 				WorldRenderer.buildBox(
 					bufferBuilder,
 					(double)blockPos4.getX() - d,

@@ -92,17 +92,17 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 					world.setBlockState(blockPos, blockState, 4);
 				}
 
-				playerEntity.trySleep(blockPos).ifLeft(sleepResult -> {
-					if (sleepResult != null) {
-						playerEntity.addChatMessage(sleepResult.method_19206(), true);
+				playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
+					if (sleepFailureReason != null) {
+						playerEntity.addChatMessage(sleepFailureReason.getText(), true);
 					}
 				});
 				return true;
 			} else {
-				world.clearBlockState(blockPos);
+				world.clearBlockState(blockPos, false);
 				BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(field_11177)).getOpposite());
 				if (world.getBlockState(blockPos2).getBlock() == this) {
-					world.clearBlockState(blockPos2);
+					world.clearBlockState(blockPos2, false);
 				}
 
 				world.createExplosion(
@@ -113,7 +113,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 					(double)blockPos.getZ() + 0.5,
 					5.0F,
 					true,
-					Explosion.class_4179.field_18687
+					Explosion.DestructionType.field_18687
 				);
 				return true;
 			}
@@ -185,7 +185,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(PART) != bedPart) {
 			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
-			world.playEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
+			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			if (!world.isClient && !playerEntity.isCreative()) {
 				ItemStack itemStack = playerEntity.getMainHandStack();
 				dropStacks(blockState, world, blockPos, null, playerEntity, itemStack);
@@ -204,9 +204,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		Direction direction = itemPlacementContext.getPlayerHorizontalFacing();
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		BlockPos blockPos2 = blockPos.offset(direction);
-		return itemPlacementContext.getWorld().getBlockState(blockPos2).method_11587(itemPlacementContext)
-			? this.getDefaultState().with(field_11177, direction)
-			: null;
+		return itemPlacementContext.getWorld().getBlockState(blockPos2).canReplace(itemPlacementContext) ? this.getDefaultState().with(field_11177, direction) : null;
 	}
 
 	@Override
@@ -263,9 +261,10 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 
 	protected static boolean method_9486(BlockView blockView, BlockPos blockPos) {
 		BlockPos blockPos2 = blockPos.down();
-		return Block.isFaceFullSquare(blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2), Direction.UP)
-			&& !blockView.getBlockState(blockPos).isAir()
-			&& !blockView.getBlockState(blockPos.up()).isAir();
+		BlockPos blockPos3 = blockPos.up();
+		return Block.isSolidFullSquare(blockView.getBlockState(blockPos2), blockView, blockPos2, Direction.UP)
+			&& blockView.getBlockState(blockPos).getCollisionShape(blockView, blockPos).isEmpty()
+			&& blockView.getBlockState(blockPos3).getCollisionShape(blockView, blockPos3).isEmpty();
 	}
 
 	@Override

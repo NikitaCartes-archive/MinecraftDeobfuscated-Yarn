@@ -12,17 +12,17 @@ import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.util.math.Vec3d;
 
 public class FleeEntityGoal<T extends LivingEntity> extends Goal {
-	protected final MobEntityWithAi field_6391;
-	private final double field_6385;
-	private final double field_6395;
-	protected T field_6390;
-	protected final float field_6386;
-	protected Path field_6387;
-	protected final EntityNavigation field_6394;
-	protected final Class<T> field_6392;
+	protected final MobEntityWithAi fleeingEntity;
+	private final double fleeSlowSpeed;
+	private final double fleeFastSpeed;
+	protected T targetEntity;
+	protected final float fleeDistance;
+	protected Path fleePath;
+	protected final EntityNavigation fleeingEntityNavigation;
+	protected final Class<T> classToFleeFrom;
 	protected final Predicate<LivingEntity> field_6393;
 	protected final Predicate<LivingEntity> field_6388;
-	private final TargetPredicate field_18084;
+	private final TargetPredicate withinRangePredicate;
 
 	public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e) {
 		this(mobEntityWithAi, class_, livingEntity -> true, f, d, e, EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR::test);
@@ -31,16 +31,16 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 	public FleeEntityGoal(
 		MobEntityWithAi mobEntityWithAi, Class<T> class_, Predicate<LivingEntity> predicate, float f, double d, double e, Predicate<LivingEntity> predicate2
 	) {
-		this.field_6391 = mobEntityWithAi;
-		this.field_6392 = class_;
+		this.fleeingEntity = mobEntityWithAi;
+		this.classToFleeFrom = class_;
 		this.field_6393 = predicate;
-		this.field_6386 = f;
-		this.field_6385 = d;
-		this.field_6395 = e;
+		this.fleeDistance = f;
+		this.fleeSlowSpeed = d;
+		this.fleeFastSpeed = e;
 		this.field_6388 = predicate2;
-		this.field_6394 = mobEntityWithAi.getNavigation();
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
-		this.field_18084 = new TargetPredicate().setBaseMaxDistance((double)f).setPredicate(predicate2.and(predicate));
+		this.fleeingEntityNavigation = mobEntityWithAi.getNavigation();
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
+		this.withinRangePredicate = new TargetPredicate().setBaseMaxDistance((double)f).setPredicate(predicate2.and(predicate));
 	}
 
 	public FleeEntityGoal(MobEntityWithAi mobEntityWithAi, Class<T> class_, float f, double d, double e, Predicate<LivingEntity> predicate) {
@@ -49,53 +49,53 @@ public class FleeEntityGoal<T extends LivingEntity> extends Goal {
 
 	@Override
 	public boolean canStart() {
-		this.field_6390 = this.field_6391
+		this.targetEntity = this.fleeingEntity
 			.world
-			.method_18465(
-				this.field_6392,
-				this.field_18084,
-				this.field_6391,
-				this.field_6391.x,
-				this.field_6391.y,
-				this.field_6391.z,
-				this.field_6391.getBoundingBox().expand((double)this.field_6386, 3.0, (double)this.field_6386)
+			.getClosestEntity(
+				this.classToFleeFrom,
+				this.withinRangePredicate,
+				this.fleeingEntity,
+				this.fleeingEntity.x,
+				this.fleeingEntity.y,
+				this.fleeingEntity.z,
+				this.fleeingEntity.getBoundingBox().expand((double)this.fleeDistance, 3.0, (double)this.fleeDistance)
 			);
-		if (this.field_6390 == null) {
+		if (this.targetEntity == null) {
 			return false;
 		} else {
-			Vec3d vec3d = PathfindingUtil.method_6379(this.field_6391, 16, 7, new Vec3d(this.field_6390.x, this.field_6390.y, this.field_6390.z));
+			Vec3d vec3d = PathfindingUtil.method_6379(this.fleeingEntity, 16, 7, new Vec3d(this.targetEntity.x, this.targetEntity.y, this.targetEntity.z));
 			if (vec3d == null) {
 				return false;
-			} else if (this.field_6390.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.field_6390.squaredDistanceTo(this.field_6391)) {
+			} else if (this.targetEntity.squaredDistanceTo(vec3d.x, vec3d.y, vec3d.z) < this.targetEntity.squaredDistanceTo(this.fleeingEntity)) {
 				return false;
 			} else {
-				this.field_6387 = this.field_6394.findPathTo(vec3d.x, vec3d.y, vec3d.z);
-				return this.field_6387 != null;
+				this.fleePath = this.fleeingEntityNavigation.findPathTo(vec3d.x, vec3d.y, vec3d.z);
+				return this.fleePath != null;
 			}
 		}
 	}
 
 	@Override
 	public boolean shouldContinue() {
-		return !this.field_6394.isIdle();
+		return !this.fleeingEntityNavigation.isIdle();
 	}
 
 	@Override
 	public void start() {
-		this.field_6394.startMovingAlong(this.field_6387, this.field_6385);
+		this.fleeingEntityNavigation.startMovingAlong(this.fleePath, this.fleeSlowSpeed);
 	}
 
 	@Override
-	public void onRemove() {
-		this.field_6390 = null;
+	public void stop() {
+		this.targetEntity = null;
 	}
 
 	@Override
 	public void tick() {
-		if (this.field_6391.squaredDistanceTo(this.field_6390) < 49.0) {
-			this.field_6391.getNavigation().setSpeed(this.field_6395);
+		if (this.fleeingEntity.squaredDistanceTo(this.targetEntity) < 49.0) {
+			this.fleeingEntity.getNavigation().setSpeed(this.fleeFastSpeed);
 		} else {
-			this.field_6391.getNavigation().setSpeed(this.field_6385);
+			this.fleeingEntity.getNavigation().setSpeed(this.fleeSlowSpeed);
 		}
 	}
 }

@@ -88,7 +88,7 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.world.isClient && this.isValid() && this.isEnabled()) {
+		if (!this.world.isClient && this.isAlive() && this.isEnabled()) {
 			BlockPos blockPos = new BlockPos(this);
 			if (blockPos.equals(this.currentBlockPos)) {
 				this.transferCooldown--;

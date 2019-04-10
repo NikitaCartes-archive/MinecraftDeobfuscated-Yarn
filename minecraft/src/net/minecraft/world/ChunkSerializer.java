@@ -95,6 +95,8 @@ public class ChunkSerializer {
 		ChunkSection[] chunkSections = new ChunkSection[16];
 		boolean bl2 = world.getDimension().hasSkyLight();
 		ChunkManager chunkManager = world.getChunkManager();
+		LightingProvider lightingProvider = chunkManager.getLightingProvider();
+		lightingProvider.suppressLight(chunkPos, true);
 
 		for (int l = 0; l < listTag.size(); l++) {
 			CompoundTag compoundTag3 = listTag.getCompoundTag(l);
@@ -107,18 +109,16 @@ public class ChunkSerializer {
 					chunkSections[m] = chunkSection;
 				}
 
-				pointOfInterestStorage.method_19510(chunkPos, chunkSection);
+				pointOfInterestStorage.initForPalette(chunkPos, chunkSection);
 			}
 
 			if (bl) {
 				if (compoundTag3.containsKey("BlockLight", 7)) {
-					chunkManager.getLightingProvider()
-						.setSection(LightType.BLOCK, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
+					lightingProvider.queueData(LightType.BLOCK, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("BlockLight")));
 				}
 
 				if (bl2 && compoundTag3.containsKey("SkyLight", 7)) {
-					chunkManager.getLightingProvider()
-						.setSection(LightType.SKY, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
+					lightingProvider.queueData(LightType.SKY, ChunkSectionPos.from(chunkPos, m), new ChunkNibbleArray(compoundTag3.getByteArray("SkyLight")));
 				}
 			}
 		}
@@ -144,7 +144,11 @@ public class ChunkSerializer {
 			protoChunk.setBiomeArray(biomes);
 			protoChunk.setInhabitedTime(n);
 			protoChunk.setStatus(ChunkStatus.get(compoundTag2.getString("Status")));
-			if (!bl && protoChunk.getStatus().isAfter(ChunkStatus.LIGHT)) {
+			if (protoChunk.getStatus().isAtLeast(ChunkStatus.FEATURES)) {
+				protoChunk.setLightingProvider(lightingProvider);
+			}
+
+			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
 				for (BlockPos blockPos : BlockPos.iterateBoxPositions(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 255, chunkPos.getEndZ())) {
 					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
 						protoChunk.addLightSource(blockPos);
@@ -157,13 +161,11 @@ public class ChunkSerializer {
 		CompoundTag compoundTag4 = compoundTag2.getCompound("Heightmaps");
 		EnumSet<Heightmap.Type> enumSet = EnumSet.noneOf(Heightmap.Type.class);
 
-		for (Heightmap.Type type : Heightmap.Type.values()) {
+		for (Heightmap.Type type : chunk.getStatus().isSurfaceGenerated()) {
 			String string = type.getName();
 			if (compoundTag4.containsKey(string, 12)) {
-				if (chunkType == ChunkStatus.ChunkType.PROTOCHUNK || type.method_16136()) {
-					chunk.setHeightmap(type, compoundTag4.getLongArray(string));
-				}
-			} else if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK && type.method_16136()) {
+				chunk.setHeightmap(type, compoundTag4.getLongArray(string));
+			} else {
 				enumSet.add(type);
 			}
 		}
@@ -370,7 +372,7 @@ public class ChunkSerializer {
 		CompoundTag compoundTag6 = new CompoundTag();
 
 		for (Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
-			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.PROTOCHUNK || ((Heightmap.Type)entry.getKey()).method_16136()) {
+			if (chunk.getStatus().isSurfaceGenerated().contains(entry.getKey())) {
 				compoundTag6.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
 			}
 		}

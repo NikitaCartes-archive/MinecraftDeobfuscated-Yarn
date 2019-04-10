@@ -67,23 +67,23 @@ public class Vec3i implements Comparable<Vec3i> {
 		);
 	}
 
-	public boolean method_19771(Vec3i vec3i, double d) {
-		return this.squaredDistanceToCenter((double)vec3i.x, (double)vec3i.y, (double)vec3i.z, false) < d * d;
+	public boolean isWithinDistance(Vec3i vec3i, double d) {
+		return this.getSquaredDistance((double)vec3i.x, (double)vec3i.y, (double)vec3i.z, false) < d * d;
 	}
 
-	public boolean method_19769(Position position, double d) {
-		return this.squaredDistanceToCenter(position.getX(), position.getY(), position.getZ(), true) < d * d;
+	public boolean isWithinDistance(Position position, double d) {
+		return this.getSquaredDistance(position.getX(), position.getY(), position.getZ(), true) < d * d;
 	}
 
-	public double squaredDistanceTo(Vec3i vec3i) {
-		return this.squaredDistanceToCenter((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ(), true);
+	public double getSquaredDistance(Vec3i vec3i) {
+		return this.getSquaredDistance((double)vec3i.getX(), (double)vec3i.getY(), (double)vec3i.getZ(), true);
 	}
 
-	public double method_19770(Position position, boolean bl) {
-		return this.squaredDistanceToCenter(position.getX(), position.getY(), position.getZ(), bl);
+	public double getSquaredDistance(Position position, boolean bl) {
+		return this.getSquaredDistance(position.getX(), position.getY(), position.getZ(), bl);
 	}
 
-	public double squaredDistanceToCenter(double d, double e, double f, boolean bl) {
+	public double getSquaredDistance(double d, double e, double f, boolean bl) {
 		double g = bl ? 0.5 : 0.0;
 		double h = (double)this.getX() + g - d;
 		double i = (double)this.getY() + g - e;
@@ -91,7 +91,7 @@ public class Vec3i implements Comparable<Vec3i> {
 		return h * h + i * i + j * j;
 	}
 
-	public int method_19455(Vec3i vec3i) {
+	public int getManhattanDistance(Vec3i vec3i) {
 		float f = (float)Math.abs(vec3i.getX() - this.x);
 		float g = (float)Math.abs(vec3i.getY() - this.y);
 		float h = (float)Math.abs(vec3i.getZ() - this.z);

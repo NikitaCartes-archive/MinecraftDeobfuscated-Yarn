@@ -15,7 +15,7 @@ public class FormCaravanGoal extends Goal {
 	public FormCaravanGoal(LlamaEntity llamaEntity, double d) {
 		this.owner = llamaEntity;
 		this.speed = d;
-		this.setControlBits(EnumSet.of(Goal.class_4134.field_18405));
+		this.setControls(EnumSet.of(Goal.Control.field_18405));
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class FormCaravanGoal extends Goal {
 
 	@Override
 	public boolean shouldContinue() {
-		if (this.owner.isFollowing() && this.owner.getFollowing().isValid() && this.canFollow(this.owner, 0)) {
+		if (this.owner.isFollowing() && this.owner.getFollowing().isAlive() && this.canFollow(this.owner, 0)) {
 			double d = this.owner.squaredDistanceTo(this.owner.getFollowing());
 			if (d > 676.0) {
 				if (this.speed <= 3.0) {
@@ -94,7 +94,7 @@ public class FormCaravanGoal extends Goal {
 	}
 
 	@Override
-	public void onRemove() {
+	public void stop() {
 		this.owner.method_6797();
 		this.speed = 2.1;
 	}

@@ -97,24 +97,24 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 	protected void method_10740(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, boolean bl) {
 		if (bl) {
 			int i = this.material == Material.METAL ? 1037 : 1007;
-			world.playEvent(playerEntity, i, blockPos, 0);
+			world.playLevelEvent(playerEntity, i, blockPos, 0);
 		} else {
 			int i = this.material == Material.METAL ? 1036 : 1013;
-			world.playEvent(playerEntity, i, blockPos, 0);
+			world.playLevelEvent(playerEntity, i, blockPos, 0);
 		}
 	}
 
 	@Override
-	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2) {
+	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
 		if (!world.isClient) {
-			boolean bl = world.isReceivingRedstonePower(blockPos);
-			if (bl != (Boolean)blockState.get(POWERED)) {
-				if ((Boolean)blockState.get(OPEN) != bl) {
-					blockState = blockState.with(OPEN, Boolean.valueOf(bl));
-					this.method_10740(null, world, blockPos, bl);
+			boolean bl2 = world.isReceivingRedstonePower(blockPos);
+			if (bl2 != (Boolean)blockState.get(POWERED)) {
+				if ((Boolean)blockState.get(OPEN) != bl2) {
+					blockState = blockState.with(OPEN, Boolean.valueOf(bl2));
+					this.method_10740(null, world, blockPos, bl2);
 				}
 
-				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl)), 2);
+				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl2)), 2);
 				if ((Boolean)blockState.get(WATERLOGGED)) {
 					world.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 				}

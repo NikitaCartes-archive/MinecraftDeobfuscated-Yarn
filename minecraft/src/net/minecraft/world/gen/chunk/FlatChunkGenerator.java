@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.IWorld;
@@ -14,19 +15,24 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.ProtoChunk;
+import net.minecraft.world.gen.CatSpawner;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.PhantomSpawner;
+import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorConfig;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
+import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
+import net.minecraft.world.gen.feature.FillLayerFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 
 public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig> {
 	private final Biome biome;
 	private final PhantomSpawner phantomSpawner = new PhantomSpawner();
+	private final CatSpawner catSpawner = new CatSpawner();
 
 	public FlatChunkGenerator(IWorld iWorld, BiomeSource biomeSource, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
 		super(iWorld, biomeSource, flatChunkGeneratorConfig);
@@ -81,6 +87,19 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 			}
 		}
 
+		BlockState[] blockStates = this.config.getLayerBlocks();
+
+		for (int i = 0; i < blockStates.length; i++) {
+			BlockState blockState = blockStates[i];
+			if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
+				this.config.method_20314(i);
+				flatChunkGeneratorBiome.addFeature(
+					GenerationStep.Feature.TOP_LAYER_MODIFICATION,
+					Biome.configureFeature(Feature.field_19201, new FillLayerFeatureConfig(i, blockState), Decorator.NOPE, DecoratorConfig.DEFAULT)
+				);
+			}
+		}
+
 		return flatChunkGeneratorBiome;
 	}
 
@@ -100,7 +119,7 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	protected Biome getDecorationBiome(ChunkRegion chunkRegion, int i, int j) {
+	protected Biome getDecorationBiome(ChunkRegion chunkRegion, BlockPos blockPos) {
 		return this.biome;
 	}
 
@@ -108,8 +127,8 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	public void populateNoise(IWorld iWorld, Chunk chunk) {
 		BlockState[] blockStates = this.config.getLayerBlocks();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		Heightmap heightmap = ((ProtoChunk)chunk).getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
-		Heightmap heightmap2 = ((ProtoChunk)chunk).getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
+		Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
+		Heightmap heightmap2 = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
 
 		for (int i = 0; i < blockStates.length; i++) {
 			BlockState blockState = blockStates[i];
@@ -140,8 +159,9 @@ public class FlatChunkGenerator extends ChunkGenerator<FlatChunkGeneratorConfig>
 	}
 
 	@Override
-	public void spawnEntities(World world, boolean bl, boolean bl2) {
-		this.phantomSpawner.spawn(world, bl, bl2);
+	public void spawnEntities(ServerWorld serverWorld, boolean bl, boolean bl2) {
+		this.phantomSpawner.spawn(serverWorld, bl, bl2);
+		this.catSpawner.spawn(serverWorld, bl, bl2);
 	}
 
 	@Override

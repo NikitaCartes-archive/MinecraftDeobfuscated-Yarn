@@ -54,7 +54,7 @@ public class PortalBlock extends Block {
 				blockPos = blockPos.down();
 			}
 
-			if (Block.isFaceFullSquare(world.getBlockState(blockPos).getCollisionShape(world, blockPos), Direction.UP)) {
+			if (world.getBlockState(blockPos).allowsSpawning(world, blockPos, EntityType.ZOMBIE_PIGMAN)) {
 				Entity entity = EntityType.ZOMBIE_PIGMAN.spawn(world, null, null, null, blockPos.up(), SpawnType.field_16474, false, false);
 				if (entity != null) {
 					entity.portalCooldown = entity.getDefaultPortalCooldown();

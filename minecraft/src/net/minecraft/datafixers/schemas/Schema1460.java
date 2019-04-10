@@ -414,5 +414,6 @@ public class Schema1460 extends SchemaIdentifierNormalize {
 		);
 		schema.registerType(false, TypeReferences.BIOME, () -> DSL.constType(DSL.namespacedString()));
 		schema.registerType(false, TypeReferences.ENTITY_NAME, () -> DSL.constType(DSL.namespacedString()));
+		schema.registerType(false, TypeReferences.POI_CHUNK, DSL::remainder);
 	}
 }
