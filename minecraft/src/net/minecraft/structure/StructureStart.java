@@ -25,7 +25,7 @@ public abstract class StructureStart {
 		}
 	};
 	private final StructureFeature<?> feature;
-	public final List<StructurePiece> children = Lists.<StructurePiece>newArrayList();
+	protected final List<StructurePiece> children = Lists.<StructurePiece>newArrayList();
 	protected MutableIntBoundingBox boundingBox;
 	private final int chunkX;
 	private final int chunkZ;

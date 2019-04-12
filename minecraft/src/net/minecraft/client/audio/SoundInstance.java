@@ -19,7 +19,7 @@ public interface SoundInstance {
 
 	boolean isRepeatable();
 
-	boolean method_4787();
+	boolean isLooping();
 
 	int getRepeatDelay();
 
@@ -35,7 +35,7 @@ public interface SoundInstance {
 
 	SoundInstance.AttenuationType getAttenuationType();
 
-	default boolean method_4785() {
+	default boolean shouldAlwaysPlay() {
 		return false;
 	}
 

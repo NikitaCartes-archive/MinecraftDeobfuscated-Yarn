@@ -17,7 +17,7 @@ public class ServerEntry {
 	public long ping;
 	public int protocolVersion = SharedConstants.getGameVersion().getProtocolVersion();
 	public String version = SharedConstants.getGameVersion().getName();
-	public boolean field_3754;
+	public boolean online;
 	public String playerListSummary;
 	private ServerEntry.ResourcePackState resourcePackState = ServerEntry.ResourcePackState.PROMPT;
 	private String icon;

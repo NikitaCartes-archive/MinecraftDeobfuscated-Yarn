@@ -40,6 +40,8 @@ public class Criterions {
 	public static final ChanneledLightningCriterion CHANNELED_LIGHTNING = register(new ChanneledLightningCriterion());
 	public static final ShotCrossbowCriterion SHOT_CROSSBOW = register(new ShotCrossbowCriterion());
 	public static final KilledByCrossbowCriterion KILLED_BY_CROSSBOW = register(new KilledByCrossbowCriterion());
+	public static final LocationArrivalCriterion HERO_OF_THE_VILLAGE = register(new LocationArrivalCriterion(new Identifier("hero_of_the_village")));
+	public static final LocationArrivalCriterion VOLUNTARY_EXILE = register(new LocationArrivalCriterion(new Identifier("voluntary_exile")));
 
 	private static <T extends Criterion<?>> T register(T criterion) {
 		if (VALUES.containsKey(criterion.getId())) {

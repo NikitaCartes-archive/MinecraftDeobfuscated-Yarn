@@ -20,7 +20,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Session;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.sortme.ChatMessageType;
+import net.minecraft.text.ChatMessageType;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;

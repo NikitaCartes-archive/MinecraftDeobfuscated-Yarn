@@ -19,8 +19,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.sortme.JsonLikeTagParser;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.BlockTags;
@@ -93,23 +93,23 @@ public class BlockArgumentParser {
 		this.suggestions = this::suggestBlockOrTagId;
 		if (this.reader.canRead() && this.reader.peek() == '#') {
 			this.parseTagId();
-			this.suggestions = this::suggestMojangsonOrTagProperties;
+			this.suggestions = this::suggestSnbtOrTagProperties;
 			if (this.reader.canRead() && this.reader.peek() == '[') {
 				this.parseTagProperties();
-				this.suggestions = this::suggestMojangson;
+				this.suggestions = this::suggestSnbt;
 			}
 		} else {
 			this.parseBlockId();
-			this.suggestions = this::suggestMojangsonOrBlockProperties;
+			this.suggestions = this::suggestSnbtOrBlockProperties;
 			if (this.reader.canRead() && this.reader.peek() == '[') {
 				this.parseBlockProperties();
-				this.suggestions = this::suggestMojangson;
+				this.suggestions = this::suggestSnbt;
 			}
 		}
 
 		if (bl && this.reader.canRead() && this.reader.peek() == '{') {
 			this.suggestions = SUGGEST_DEFAULT;
-			this.parseMojangson();
+			this.parseSnbt();
 		}
 
 		return this;
@@ -161,7 +161,7 @@ public class BlockArgumentParser {
 		return suggestionsBuilder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestMojangson(SuggestionsBuilder suggestionsBuilder) {
+	private CompletableFuture<Suggestions> suggestSnbt(SuggestionsBuilder suggestionsBuilder) {
 		if (suggestionsBuilder.getRemaining().isEmpty() && this.hasTileEntity()) {
 			suggestionsBuilder.suggest(String.valueOf('{'));
 		}
@@ -251,7 +251,7 @@ public class BlockArgumentParser {
 		return suggestionsBuilder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestMojangsonOrTagProperties(SuggestionsBuilder suggestionsBuilder) {
+	private CompletableFuture<Suggestions> suggestSnbtOrTagProperties(SuggestionsBuilder suggestionsBuilder) {
 		if (suggestionsBuilder.getRemaining().isEmpty()) {
 			Tag<Block> tag = BlockTags.getContainer().get(this.tagId);
 			if (tag != null) {
@@ -279,7 +279,7 @@ public class BlockArgumentParser {
 		return this.suggestIdentifiers(suggestionsBuilder);
 	}
 
-	private CompletableFuture<Suggestions> suggestMojangsonOrBlockProperties(SuggestionsBuilder suggestionsBuilder) {
+	private CompletableFuture<Suggestions> suggestSnbtOrBlockProperties(SuggestionsBuilder suggestionsBuilder) {
 		if (suggestionsBuilder.getRemaining().isEmpty()) {
 			if (!this.blockState.getBlock().getStateFactory().getProperties().isEmpty()) {
 				suggestionsBuilder.suggest(String.valueOf('['));
@@ -434,8 +434,8 @@ public class BlockArgumentParser {
 		}
 	}
 
-	public void parseMojangson() throws CommandSyntaxException {
-		this.data = new JsonLikeTagParser(this.reader).parseCompoundTag();
+	public void parseSnbt() throws CommandSyntaxException {
+		this.data = new StringNbtReader(this.reader).parseCompoundTag();
 	}
 
 	private <T extends Comparable<T>> void parsePropertyValue(Property<T> property, String string, int i) throws CommandSyntaxException {

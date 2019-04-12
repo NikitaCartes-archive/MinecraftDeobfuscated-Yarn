@@ -12,7 +12,7 @@ import net.minecraft.util.PacketByteBuf;
 public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	private String serverId;
 	private PublicKey publicKey;
-	private byte[] field_13210;
+	private byte[] nonce;
 
 	public LoginHelloS2CPacket() {
 	}
@@ -20,21 +20,21 @@ public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	public LoginHelloS2CPacket(String string, PublicKey publicKey, byte[] bs) {
 		this.serverId = string;
 		this.publicKey = publicKey;
-		this.field_13210 = bs;
+		this.nonce = bs;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.serverId = packetByteBuf.readString(20);
 		this.publicKey = NetworkEncryptionUtils.readEncodedPublicKey(packetByteBuf.readByteArray());
-		this.field_13210 = packetByteBuf.readByteArray();
+		this.nonce = packetByteBuf.readByteArray();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeString(this.serverId);
 		packetByteBuf.writeByteArray(this.publicKey.getEncoded());
-		packetByteBuf.writeByteArray(this.field_13210);
+		packetByteBuf.writeByteArray(this.nonce);
 	}
 
 	public void method_12612(ClientLoginPacketListener clientLoginPacketListener) {
@@ -52,7 +52,7 @@ public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public byte[] method_12613() {
-		return this.field_13210;
+	public byte[] getNonce() {
+		return this.nonce;
 	}
 }

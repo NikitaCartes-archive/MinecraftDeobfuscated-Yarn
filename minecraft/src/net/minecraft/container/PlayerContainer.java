@@ -105,7 +105,7 @@ public class PlayerContainer extends CraftingContainer<CraftingInventory> {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		CraftingTableContainer.method_17399(this.syncId, this.owner.world, this.owner, this.invCrafting, this.invCraftingResult);
+		CraftingTableContainer.updateResult(this.syncId, this.owner.world, this.owner, this.invCrafting, this.invCraftingResult);
 	}
 
 	@Override

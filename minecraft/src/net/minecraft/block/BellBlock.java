@@ -12,6 +12,7 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -51,16 +52,18 @@ public class BellBlock extends BlockWithEntity {
 	@Override
 	public void method_19286(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
 		if (entity instanceof ProjectileEntity) {
-			this.ring(world, blockState, world.getBlockEntity(blockHitResult.getBlockPos()), blockHitResult);
+			Entity entity2 = ((ProjectileEntity)entity).getOwner();
+			PlayerEntity playerEntity = entity2 instanceof PlayerEntity ? (PlayerEntity)entity2 : null;
+			this.ring(world, blockState, world.getBlockEntity(blockHitResult.getBlockPos()), blockHitResult, playerEntity);
 		}
 	}
 
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		return this.ring(world, blockState, world.getBlockEntity(blockPos), blockHitResult);
+		return this.ring(world, blockState, world.getBlockEntity(blockPos), blockHitResult, playerEntity);
 	}
 
-	public boolean ring(World world, BlockState blockState, @Nullable BlockEntity blockEntity, BlockHitResult blockHitResult) {
+	public boolean ring(World world, BlockState blockState, @Nullable BlockEntity blockEntity, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity) {
 		Direction direction = blockHitResult.getSide();
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		if (!world.isClient
@@ -68,6 +71,10 @@ public class BellBlock extends BlockWithEntity {
 			&& this.isPointOnBell(blockState, direction, blockHitResult.getPos().y - (double)blockPos.getY())) {
 			((BellBlockEntity)blockEntity).activate(direction);
 			this.ring(world, blockPos);
+			if (playerEntity != null) {
+				playerEntity.incrementStat(Stats.field_19255);
+			}
+
 			return true;
 		} else {
 			return true;
@@ -174,7 +181,7 @@ public class BellBlock extends BlockWithEntity {
 		Attachment attachment = blockState.get(ATTACHMENT);
 		Direction direction2 = method_16115(blockState).getOpposite();
 		if (direction2 == direction && !blockState.canPlaceAt(iWorld, blockPos) && attachment != Attachment.field_17101) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			if (direction.getAxis() == ((Direction)blockState.get(FACING)).getAxis()) {
 				if (attachment == Attachment.field_17101 && !isSolidFullSquare(blockState2, iWorld, blockPos2, direction)) {

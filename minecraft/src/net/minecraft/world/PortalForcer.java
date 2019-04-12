@@ -230,7 +230,7 @@ public class PortalForcer {
 						int y = s + (u - 1) * ag - t * af;
 						boolean bl = v < 0;
 						mutable.set(w, x, y);
-						this.world.setBlockState(mutable, bl ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState());
+						this.world.setBlockState(mutable, bl ? Blocks.field_10540.getDefaultState() : Blocks.AIR.getDefaultState());
 					}
 				}
 			}

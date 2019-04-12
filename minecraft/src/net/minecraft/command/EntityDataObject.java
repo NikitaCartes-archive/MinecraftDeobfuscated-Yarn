@@ -74,7 +74,7 @@ public class EntityDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public TextComponent getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
-		return new TranslatableTextComponent("commands.data.entity.get", nbtPath, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
+	public TextComponent getGetFeedback(NbtPathArgumentType.class_2209 arg, double d, int i) {
+		return new TranslatableTextComponent("commands.data.entity.get", arg, this.field_13801.getDisplayName(), String.format(Locale.ROOT, "%.2f", d), i);
 	}
 }

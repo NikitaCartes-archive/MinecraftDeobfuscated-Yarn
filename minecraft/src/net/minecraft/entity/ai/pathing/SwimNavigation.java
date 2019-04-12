@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.pathing;
 
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.DolphinEntity;
-import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;

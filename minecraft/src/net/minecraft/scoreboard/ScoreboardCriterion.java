@@ -24,40 +24,40 @@ public class ScoreboardCriterion {
 	public static final ScoreboardCriterion XP = new ScoreboardCriterion("xp", true, ScoreboardCriterion.RenderType.INTEGER);
 	public static final ScoreboardCriterion LEVEL = new ScoreboardCriterion("level", true, ScoreboardCriterion.RenderType.INTEGER);
 	public static final ScoreboardCriterion[] TEAM_KILLS = new ScoreboardCriterion[]{
-		new ScoreboardCriterion("teamkill." + TextFormat.BLACK.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1058.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1077.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1062.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1079.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1064.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1065.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1080.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1063.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1078.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1060.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1075.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1061.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1076.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1054.getFormatName()),
-		new ScoreboardCriterion("teamkill." + TextFormat.field_1068.getFormatName())
+		new ScoreboardCriterion("teamkill." + TextFormat.BLACK.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1058.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1077.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1062.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1079.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1064.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1065.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1080.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1063.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1078.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1060.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1075.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1061.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1076.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1054.getName()),
+		new ScoreboardCriterion("teamkill." + TextFormat.field_1068.getName())
 	};
 	public static final ScoreboardCriterion[] KILLED_BY_TEAMS = new ScoreboardCriterion[]{
-		new ScoreboardCriterion("killedByTeam." + TextFormat.BLACK.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1058.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1077.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1062.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1079.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1064.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1065.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1080.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1063.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1078.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1060.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1075.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1061.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1076.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1054.getFormatName()),
-		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1068.getFormatName())
+		new ScoreboardCriterion("killedByTeam." + TextFormat.BLACK.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1058.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1077.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1062.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1079.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1064.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1065.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1080.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1063.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1078.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1060.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1075.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1061.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1076.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1054.getName()),
+		new ScoreboardCriterion("killedByTeam." + TextFormat.field_1068.getName())
 	};
 	private final String name;
 	private final boolean readOnly;
@@ -74,7 +74,7 @@ public class ScoreboardCriterion {
 		OBJECTIVES.put(string, this);
 	}
 
-	public static Optional<ScoreboardCriterion> method_1224(String string) {
+	public static Optional<ScoreboardCriterion> createStatCriterion(String string) {
 		if (OBJECTIVES.containsKey(string)) {
 			return Optional.of(OBJECTIVES.get(string));
 		} else {
@@ -83,11 +83,11 @@ public class ScoreboardCriterion {
 				? Optional.empty()
 				: Registry.STAT_TYPE
 					.getOrEmpty(Identifier.createSplit(string.substring(0, i), '.'))
-					.flatMap(statType -> method_1223(statType, Identifier.createSplit(string.substring(i + 1), '.')));
+					.flatMap(statType -> createStatCriterion(statType, Identifier.createSplit(string.substring(i + 1), '.')));
 		}
 	}
 
-	private static <T> Optional<ScoreboardCriterion> method_1223(StatType<T> statType, Identifier identifier) {
+	private static <T> Optional<ScoreboardCriterion> createStatCriterion(StatType<T> statType, Identifier identifier) {
 		return statType.getRegistry().getOrEmpty(identifier).map(statType::getOrCreateStat);
 	}
 

@@ -11,14 +11,14 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.util.PacketByteBuf;
 
 public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int location;
+	private int slot;
 	private String name;
 
 	public ScoreboardDisplayS2CPacket() {
 	}
 
 	public ScoreboardDisplayS2CPacket(int i, @Nullable ScoreboardObjective scoreboardObjective) {
-		this.location = i;
+		this.slot = i;
 		if (scoreboardObjective == null) {
 			this.name = "";
 		} else {
@@ -28,13 +28,13 @@ public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListen
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.location = packetByteBuf.readByte();
+		this.slot = packetByteBuf.readByte();
 		this.name = packetByteBuf.readString(16);
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeByte(this.location);
+		packetByteBuf.writeByte(this.slot);
 		packetByteBuf.writeString(this.name);
 	}
 
@@ -43,13 +43,13 @@ public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListen
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getLocation() {
-		return this.location;
+	public int getSlot() {
+		return this.slot;
 	}
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public String method_11804() {
+	public String getName() {
 		return Objects.equals(this.name, "") ? null : this.name;
 	}
 }

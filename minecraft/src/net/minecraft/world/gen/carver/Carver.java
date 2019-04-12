@@ -27,7 +27,7 @@ public abstract class Carver<C extends CarverConfig> {
 	public static final Carver<ProbabilityConfig> RAVINE = register("canyon", new RavineCarver(ProbabilityConfig::deserialize));
 	public static final Carver<ProbabilityConfig> UNDERWATER_RAVINE = register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig::deserialize));
 	public static final Carver<ProbabilityConfig> UNDERWATER_CAVE = register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig::deserialize));
-	protected static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState CAVE_AIR = Blocks.field_10543.getDefaultState();
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
 	protected static final FluidState LAVA = Fluids.LAVA.getDefaultState();

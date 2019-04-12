@@ -174,7 +174,7 @@ public class Tag<T> {
 			}
 		}
 
-		public Collection<T> method_15159() {
+		public Collection<T> getValues() {
 			return this.values;
 		}
 	}

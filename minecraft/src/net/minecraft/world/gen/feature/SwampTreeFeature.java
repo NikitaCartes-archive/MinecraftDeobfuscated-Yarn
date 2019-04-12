@@ -9,8 +9,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.VineBlock;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.Heightmap;
 
 public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 	private static final BlockState LOG = Blocks.field_10431.getDefaultState();

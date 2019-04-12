@@ -6,8 +6,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.sortme.MobSpawnerLogic;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.MobSpawnerLogic;
 
 @Environment(EnvType.CLIENT)
 public class MobSpawnerBlockEntityRenderer extends BlockEntityRenderer<MobSpawnerBlockEntity> {

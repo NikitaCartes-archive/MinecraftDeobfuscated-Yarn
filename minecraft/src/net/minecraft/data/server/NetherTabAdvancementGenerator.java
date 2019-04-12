@@ -76,7 +76,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("fortress", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9017(Feature.NETHER_BRIDGE)))
+			.criterion("fortress", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.feature(Feature.NETHER_BRIDGE)))
 			.build(consumer, "nether/find_fortress");
 		SimpleAdvancement simpleAdvancement4 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement)
@@ -91,7 +91,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(100))
-			.criterion("travelled", NetherTravelCriterion.Conditions.distance(DistancePredicate.method_8860(NumberRange.FloatRange.atLeast(7000.0F))))
+			.criterion("travelled", NetherTravelCriterion.Conditions.distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(7000.0F))))
 			.build(consumer, "nether/fast_travel");
 		SimpleAdvancement simpleAdvancement5 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement2)
@@ -109,7 +109,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 			.criterion(
 				"killed_ghast",
 				OnKilledCriterion.Conditions.createKill(
-					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.method_9016(DimensionType.field_13072))
+					EntityPredicate.Builder.create().type(EntityType.GHAST).location(LocationPredicate.dimension(DimensionType.field_13072))
 				)
 			)
 			.build(consumer, "nether/uneasy_alliance");
@@ -167,7 +167,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("beacon", ConstructBeaconCriterion.Conditions.method_8818(NumberRange.IntRange.atLeast(1)))
+			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.IntRange.atLeast(1)))
 			.build(consumer, "nether/create_beacon");
 		SimpleAdvancement simpleAdvancement10 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement9)
@@ -181,7 +181,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<SimpleAd
 				true,
 				false
 			)
-			.criterion("beacon", ConstructBeaconCriterion.Conditions.method_8818(NumberRange.IntRange.exactly(4)))
+			.criterion("beacon", ConstructBeaconCriterion.Conditions.level(NumberRange.IntRange.exactly(4)))
 			.build(consumer, "nether/create_full_beacon");
 		SimpleAdvancement simpleAdvancement11 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement8)

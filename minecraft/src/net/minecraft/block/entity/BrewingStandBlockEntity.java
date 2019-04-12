@@ -16,10 +16,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.recipe.BrewingRecipeRegistry;
-import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.DefaultedList;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -187,7 +187,7 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 
 		this.inventory.set(3, itemStack);
-		this.world.method_20290(1035, blockPos, 0);
+		this.world.playLevelEvent(1035, blockPos, 0);
 	}
 
 	@Override

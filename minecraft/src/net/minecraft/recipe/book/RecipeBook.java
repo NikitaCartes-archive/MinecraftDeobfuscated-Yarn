@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.container.BlastFurnaceContainer;
 import net.minecraft.container.CraftingContainer;
 import net.minecraft.container.FurnaceContainer;
+import net.minecraft.container.SmokerContainer;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.util.Identifier;
 
@@ -84,8 +85,10 @@ public class RecipeBook {
 	public boolean isFilteringCraftable(CraftingContainer<?> craftingContainer) {
 		if (craftingContainer instanceof FurnaceContainer) {
 			return this.furnaceFilteringCraftable;
+		} else if (craftingContainer instanceof BlastFurnaceContainer) {
+			return this.blastFurnaceFilteringCraftable;
 		} else {
-			return craftingContainer instanceof BlastFurnaceContainer ? this.blastFurnaceFilteringCraftable : this.filteringCraftable;
+			return craftingContainer instanceof SmokerContainer ? this.smokerFilteringCraftable : this.filteringCraftable;
 		}
 	}
 

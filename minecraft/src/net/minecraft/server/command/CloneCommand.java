@@ -43,7 +43,7 @@ public class CloneCommand {
 								.then(
 									CommandManager.argument("destination", BlockPosArgumentType.create())
 										.executes(
-											commandContext -> method_13090(
+											commandContext -> execute(
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -55,7 +55,7 @@ public class CloneCommand {
 										.then(
 											CommandManager.literal("replace")
 												.executes(
-													commandContext -> method_13090(
+													commandContext -> execute(
 															commandContext.getSource(),
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -67,7 +67,7 @@ public class CloneCommand {
 												.then(
 													CommandManager.literal("force")
 														.executes(
-															commandContext -> method_13090(
+															commandContext -> execute(
 																	commandContext.getSource(),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -80,7 +80,7 @@ public class CloneCommand {
 												.then(
 													CommandManager.literal("move")
 														.executes(
-															commandContext -> method_13090(
+															commandContext -> execute(
 																	commandContext.getSource(),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -93,7 +93,7 @@ public class CloneCommand {
 												.then(
 													CommandManager.literal("normal")
 														.executes(
-															commandContext -> method_13090(
+															commandContext -> execute(
 																	commandContext.getSource(),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -107,7 +107,7 @@ public class CloneCommand {
 										.then(
 											CommandManager.literal("masked")
 												.executes(
-													commandContext -> method_13090(
+													commandContext -> execute(
 															commandContext.getSource(),
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -119,7 +119,7 @@ public class CloneCommand {
 												.then(
 													CommandManager.literal("force")
 														.executes(
-															commandContext -> method_13090(
+															commandContext -> execute(
 																	commandContext.getSource(),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -132,7 +132,7 @@ public class CloneCommand {
 												.then(
 													CommandManager.literal("move")
 														.executes(
-															commandContext -> method_13090(
+															commandContext -> execute(
 																	commandContext.getSource(),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -145,7 +145,7 @@ public class CloneCommand {
 												.then(
 													CommandManager.literal("normal")
 														.executes(
-															commandContext -> method_13090(
+															commandContext -> execute(
 																	commandContext.getSource(),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -161,7 +161,7 @@ public class CloneCommand {
 												.then(
 													CommandManager.argument("filter", BlockPredicateArgumentType.create())
 														.executes(
-															commandContext -> method_13090(
+															commandContext -> execute(
 																	commandContext.getSource(),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -173,7 +173,7 @@ public class CloneCommand {
 														.then(
 															CommandManager.literal("force")
 																.executes(
-																	commandContext -> method_13090(
+																	commandContext -> execute(
 																			commandContext.getSource(),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -186,7 +186,7 @@ public class CloneCommand {
 														.then(
 															CommandManager.literal("move")
 																.executes(
-																	commandContext -> method_13090(
+																	commandContext -> execute(
 																			commandContext.getSource(),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -199,7 +199,7 @@ public class CloneCommand {
 														.then(
 															CommandManager.literal("normal")
 																.executes(
-																	commandContext -> method_13090(
+																	commandContext -> execute(
 																			commandContext.getSource(),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "begin"),
 																			BlockPosArgumentType.getLoadedBlockPos(commandContext, "end"),
@@ -217,7 +217,7 @@ public class CloneCommand {
 		);
 	}
 
-	private static int method_13090(
+	private static int execute(
 		ServerCommandSource serverCommandSource,
 		BlockPos blockPos,
 		BlockPos blockPos2,
@@ -280,7 +280,7 @@ public class CloneCommand {
 						}
 
 						for(BlockPos blockPos8 : deque) {
-							serverWorld.setBlockState(blockPos8, Blocks.field_10124.getDefaultState(), 3);
+							serverWorld.setBlockState(blockPos8, Blocks.AIR.getDefaultState(), 3);
 						}
 					}
 

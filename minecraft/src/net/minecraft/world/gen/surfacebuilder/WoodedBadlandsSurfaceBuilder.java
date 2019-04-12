@@ -54,7 +54,7 @@ public class WoodedBadlandsSurfaceBuilder extends BadlandsSurfaceBuilder {
 					if (q == -1) {
 						bl2 = false;
 						if (p <= 0) {
-							blockState3 = Blocks.field_10124.getDefaultState();
+							blockState3 = Blocks.AIR.getDefaultState();
 							blockState4 = blockState;
 						} else if (s >= l - 4 && s <= l + 1) {
 							blockState3 = WHITE_TERRACOTTA;

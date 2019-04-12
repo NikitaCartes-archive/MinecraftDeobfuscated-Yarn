@@ -536,7 +536,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 			return true;
 		} else {
 			if (i == 256 || this.minecraft.options.keyInventory.matchesKey(i, j)) {
-				this.minecraft.player.closeGui();
+				this.minecraft.player.closeContainer();
 			}
 
 			this.handleHotbarKeyPressed(i, j);
@@ -581,7 +581,7 @@ public abstract class ContainerScreen<T extends Container> extends Screen implem
 	public void tick() {
 		super.tick();
 		if (!this.minecraft.player.isAlive() || this.minecraft.player.removed) {
-			this.minecraft.player.closeGui();
+			this.minecraft.player.closeContainer();
 		}
 	}
 

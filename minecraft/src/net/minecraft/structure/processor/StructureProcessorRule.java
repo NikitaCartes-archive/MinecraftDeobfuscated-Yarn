@@ -8,8 +8,8 @@ import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sortme.rule.AbstractRuleTest;
-import net.minecraft.sortme.rule.AlwaysTrueRuleTest;
+import net.minecraft.structure.rule.AbstractRuleTest;
+import net.minecraft.structure.rule.AlwaysTrueRuleTest;
 import net.minecraft.util.DynamicDeserializer;
 import net.minecraft.util.registry.Registry;
 

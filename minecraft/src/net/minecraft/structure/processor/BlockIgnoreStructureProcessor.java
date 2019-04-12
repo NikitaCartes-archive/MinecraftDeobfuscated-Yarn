@@ -16,9 +16,9 @@ import net.minecraft.world.ViewableWorld;
 
 public class BlockIgnoreStructureProcessor extends StructureProcessor {
 	public static final BlockIgnoreStructureProcessor IGNORE_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.field_10465));
-	public static final BlockIgnoreStructureProcessor IGNORE_AIR = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.field_10124));
+	public static final BlockIgnoreStructureProcessor IGNORE_AIR = new BlockIgnoreStructureProcessor(ImmutableList.of(Blocks.AIR));
 	public static final BlockIgnoreStructureProcessor IGNORE_AIR_AND_STRUCTURE_BLOCKS = new BlockIgnoreStructureProcessor(
-		ImmutableList.of(Blocks.field_10124, Blocks.field_10465)
+		ImmutableList.of(Blocks.AIR, Blocks.field_10465)
 	);
 	private final ImmutableList<Block> blocks;
 

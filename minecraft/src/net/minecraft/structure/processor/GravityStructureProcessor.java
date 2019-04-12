@@ -7,8 +7,8 @@ import javax.annotation.Nullable;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.ViewableWorld;
-import net.minecraft.world.gen.Heightmap;
 
 public class GravityStructureProcessor extends StructureProcessor {
 	private final Heightmap.Type heightmap;

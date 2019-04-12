@@ -29,7 +29,7 @@ public class SetBlockCommand {
 						.then(
 							CommandManager.argument("block", BlockStateArgumentType.create())
 								.executes(
-									commandContext -> method_13620(
+									commandContext -> execute(
 											commandContext.getSource(),
 											BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 											BlockStateArgumentType.getBlockState(commandContext, "block"),
@@ -40,7 +40,7 @@ public class SetBlockCommand {
 								.then(
 									CommandManager.literal("destroy")
 										.executes(
-											commandContext -> method_13620(
+											commandContext -> execute(
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
@@ -52,7 +52,7 @@ public class SetBlockCommand {
 								.then(
 									CommandManager.literal("keep")
 										.executes(
-											commandContext -> method_13620(
+											commandContext -> execute(
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
@@ -64,7 +64,7 @@ public class SetBlockCommand {
 								.then(
 									CommandManager.literal("replace")
 										.executes(
-											commandContext -> method_13620(
+											commandContext -> execute(
 													commandContext.getSource(),
 													BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
@@ -78,7 +78,7 @@ public class SetBlockCommand {
 		);
 	}
 
-	private static int method_13620(
+	private static int execute(
 		ServerCommandSource serverCommandSource,
 		BlockPos blockPos,
 		BlockStateArgument blockStateArgument,

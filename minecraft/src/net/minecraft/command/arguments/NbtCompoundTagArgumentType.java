@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sortme.JsonLikeTagParser;
+import net.minecraft.nbt.StringNbtReader;
 
 public class NbtCompoundTagArgumentType implements ArgumentType<CompoundTag> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("{}", "{foo=bar}");
@@ -24,7 +24,7 @@ public class NbtCompoundTagArgumentType implements ArgumentType<CompoundTag> {
 	}
 
 	public CompoundTag method_9286(StringReader stringReader) throws CommandSyntaxException {
-		return new JsonLikeTagParser(stringReader).parseCompoundTag();
+		return new StringNbtReader(stringReader).parseCompoundTag();
 	}
 
 	@Override

@@ -17,7 +17,7 @@ import net.minecraft.util.ChatUtil;
 @Environment(EnvType.CLIENT)
 public class AddServerScreen extends Screen {
 	private ButtonWidget buttonAdd;
-	private final BooleanConsumer field_19236;
+	private final BooleanConsumer callback;
 	private final ServerEntry serverEntry;
 	private TextFieldWidget addressField;
 	private TextFieldWidget serverNameField;
@@ -42,7 +42,7 @@ public class AddServerScreen extends Screen {
 
 	public AddServerScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
 		super(new TranslatableTextComponent("addServer.title"));
-		this.field_19236 = booleanConsumer;
+		this.callback = booleanConsumer;
 		this.serverEntry = serverEntry;
 	}
 
@@ -58,13 +58,13 @@ public class AddServerScreen extends Screen {
 		this.serverNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 66, 200, 20);
 		this.serverNameField.setFocused(true);
 		this.serverNameField.setText(this.serverEntry.name);
-		this.serverNameField.setChangedListener(this::method_2171);
+		this.serverNameField.setChangedListener(this::onClose);
 		this.children.add(this.serverNameField);
 		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20);
 		this.addressField.setMaxLength(128);
 		this.addressField.setText(this.serverEntry.address);
 		this.addressField.method_1890(this.field_2475);
-		this.addressField.setChangedListener(this::method_2171);
+		this.addressField.setChangedListener(this::onClose);
 		this.children.add(this.addressField);
 		this.resourcePackOptionButton = this.addButton(
 			new ButtonWidget(
@@ -87,7 +87,7 @@ public class AddServerScreen extends Screen {
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, I18n.translate("addServer.add"), buttonWidget -> this.addAndClose())
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.field_19236.accept(false))
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.callback.accept(false))
 		);
 		this.onClose();
 	}
@@ -101,7 +101,7 @@ public class AddServerScreen extends Screen {
 		this.serverNameField.setText(string2);
 	}
 
-	private void method_2171(String string) {
+	private void onClose(String string) {
 		this.onClose();
 	}
 
@@ -113,7 +113,7 @@ public class AddServerScreen extends Screen {
 	private void addAndClose() {
 		this.serverEntry.name = this.serverNameField.getText();
 		this.serverEntry.address = this.addressField.getText();
-		this.field_19236.accept(true);
+		this.callback.accept(true);
 	}
 
 	@Override

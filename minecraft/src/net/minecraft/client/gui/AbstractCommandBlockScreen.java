@@ -27,11 +27,11 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
 import net.minecraft.server.command.CommandSource;
-import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TextFormatter;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
+import net.minecraft.world.CommandBlockExecutor;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractCommandBlockScreen extends Screen {

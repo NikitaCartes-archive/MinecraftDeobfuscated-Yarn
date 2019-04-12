@@ -92,7 +92,7 @@ public class PortalBlock extends Block {
 		Direction.Axis axis2 = blockState.get(AXIS);
 		boolean bl = axis2 != axis && axis.isHorizontal();
 		return !bl && blockState2.getBlock() != this && !new PortalBlock.class_2424(iWorld, blockPos, axis2).method_10362()
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 

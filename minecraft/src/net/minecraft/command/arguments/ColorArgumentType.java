@@ -44,7 +44,7 @@ public class ColorArgumentType implements ArgumentType<TextFormat> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> commandContext, SuggestionsBuilder suggestionsBuilder) {
-		return CommandSource.suggestMatching(TextFormat.method_540(true, false), suggestionsBuilder);
+		return CommandSource.suggestMatching(TextFormat.getNames(true, false), suggestionsBuilder);
 	}
 
 	@Override

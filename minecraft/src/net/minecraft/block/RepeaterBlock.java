@@ -39,7 +39,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 		if (!playerEntity.abilities.allowModifyWorld) {
 			return false;
 		} else {
-			world.setBlockState(blockPos, blockState.method_11572(DELAY), 3);
+			world.setBlockState(blockPos, blockState.cycle(DELAY), 3);
 			return true;
 		}
 	}

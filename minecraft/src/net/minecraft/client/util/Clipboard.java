@@ -16,7 +16,7 @@ public class Clipboard {
 	public String getClipboard(long l, GLFWErrorCallbackI gLFWErrorCallbackI) {
 		GLFWErrorCallback gLFWErrorCallback = GLFW.glfwSetErrorCallback(gLFWErrorCallbackI);
 		String string = GLFW.glfwGetClipboardString(l);
-		string = string != null ? SharedConstants.method_16885(string) : "";
+		string = string != null ? SharedConstants.stripSupplementaryChars(string) : "";
 		GLFWErrorCallback gLFWErrorCallback2 = GLFW.glfwSetErrorCallback(gLFWErrorCallback);
 		if (gLFWErrorCallback2 != null) {
 			gLFWErrorCallback2.free();

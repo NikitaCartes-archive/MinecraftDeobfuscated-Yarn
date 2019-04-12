@@ -49,7 +49,7 @@ public class SimpleBlockFeatureConfig implements FeatureConfig {
 	}
 
 	public static <T> SimpleBlockFeatureConfig deserialize(Dynamic<T> dynamic) {
-		BlockState blockState = (BlockState)dynamic.get("to_place").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("to_place").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
 		List<BlockState> list = dynamic.get("place_on").asList(BlockState::deserialize);
 		List<BlockState> list2 = dynamic.get("place_in").asList(BlockState::deserialize);
 		List<BlockState> list3 = dynamic.get("place_under").asList(BlockState::deserialize);

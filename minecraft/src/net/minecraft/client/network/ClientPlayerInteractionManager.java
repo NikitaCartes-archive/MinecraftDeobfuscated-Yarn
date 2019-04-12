@@ -19,8 +19,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.network.ButtonClickServerPacket;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.server.network.packet.ButtonClickC2SPacket;
 import net.minecraft.server.network.packet.ClickWindowC2SPacket;
 import net.minecraft.server.network.packet.CraftRequestC2SPacket;
 import net.minecraft.server.network.packet.CreativeInventoryActionC2SPacket;
@@ -50,7 +50,7 @@ public class ClientPlayerInteractionManager {
 	private final MinecraftClient client;
 	private final ClientPlayNetworkHandler networkHandler;
 	private BlockPos currentBreakingPos = new BlockPos(-1, -1, -1);
-	private ItemStack field_3718 = ItemStack.EMPTY;
+	private ItemStack selectedStack = ItemStack.EMPTY;
 	private float currentBreakingProgress;
 	private float field_3713;
 	private int field_3716;
@@ -172,7 +172,7 @@ public class ClientPlayerInteractionManager {
 				} else {
 					this.breakingBlock = true;
 					this.currentBreakingPos = blockPos;
-					this.field_3718 = this.client.player.getMainHandStack();
+					this.selectedStack = this.client.player.getMainHandStack();
 					this.currentBreakingProgress = 0.0F;
 					this.field_3713 = 0.0F;
 					this.client.world.setBlockBreakingProgress(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
@@ -259,11 +259,11 @@ public class ClientPlayerInteractionManager {
 
 	private boolean isCurrentlyBreaking(BlockPos blockPos) {
 		ItemStack itemStack = this.client.player.getMainHandStack();
-		boolean bl = this.field_3718.isEmpty() && itemStack.isEmpty();
-		if (!this.field_3718.isEmpty() && !itemStack.isEmpty()) {
-			bl = itemStack.getItem() == this.field_3718.getItem()
-				&& ItemStack.areTagsEqual(itemStack, this.field_3718)
-				&& (itemStack.hasDurability() || itemStack.getDamage() == this.field_3718.getDamage());
+		boolean bl = this.selectedStack.isEmpty() && itemStack.isEmpty();
+		if (!this.selectedStack.isEmpty() && !itemStack.isEmpty()) {
+			bl = itemStack.getItem() == this.selectedStack.getItem()
+				&& ItemStack.areTagsEqual(itemStack, this.selectedStack)
+				&& (itemStack.hasDurability() || itemStack.getDamage() == this.selectedStack.getDamage());
 		}
 
 		return blockPos.equals(this.currentBreakingPos) && bl;
@@ -376,16 +376,16 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public void clickButton(int i, int j) {
-		this.networkHandler.sendPacket(new ButtonClickServerPacket(i, j));
+		this.networkHandler.sendPacket(new ButtonClickC2SPacket(i, j));
 	}
 
-	public void method_2909(ItemStack itemStack, int i) {
+	public void clickCreativeStack(ItemStack itemStack, int i) {
 		if (this.gameMode.isCreative()) {
 			this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(i, itemStack));
 		}
 	}
 
-	public void method_2915(ItemStack itemStack) {
+	public void dropCreativeStack(ItemStack itemStack) {
 		if (this.gameMode.isCreative() && !itemStack.isEmpty()) {
 			this.networkHandler.sendPacket(new CreativeInventoryActionC2SPacket(-1, itemStack));
 		}
@@ -394,7 +394,7 @@ public class ClientPlayerInteractionManager {
 	public void stopUsingItem(PlayerEntity playerEntity) {
 		this.syncSelectedSlot();
 		this.networkHandler.sendPacket(new PlayerActionC2SPacket(PlayerActionC2SPacket.Action.field_12974, BlockPos.ORIGIN, Direction.DOWN));
-		playerEntity.method_6075();
+		playerEntity.stopUsingItem();
 	}
 
 	public boolean hasExperienceBar() {

@@ -7,6 +7,6 @@ public abstract class FallibleItemDispenserBehavior extends ItemDispenserBehavio
 
 	@Override
 	protected void playSound(BlockPointer blockPointer) {
-		blockPointer.getWorld().method_20290(this.success ? 1000 : 1001, blockPointer.getBlockPos(), 0);
+		blockPointer.getWorld().playLevelEvent(this.success ? 1000 : 1001, blockPointer.getBlockPos(), 0);
 	}
 }

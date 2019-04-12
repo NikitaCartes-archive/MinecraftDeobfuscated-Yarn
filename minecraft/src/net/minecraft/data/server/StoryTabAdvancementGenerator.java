@@ -242,7 +242,7 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9017(Feature.STRONGHOLD)))
+			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.feature(Feature.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
 		SimpleAdvancement simpleAdvancement16 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement15)

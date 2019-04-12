@@ -22,7 +22,7 @@ public abstract class BillboardParticle extends Particle {
 
 	@Override
 	public void buildGeometry(BufferBuilder bufferBuilder, Camera camera, float f, float g, float h, float i, float j, float k) {
-		float l = this.method_18132(f);
+		float l = this.getSize(f);
 		float m = this.getMinU();
 		float n = this.getMaxU();
 		float o = this.getMinV();
@@ -76,7 +76,7 @@ public abstract class BillboardParticle extends Particle {
 			.next();
 	}
 
-	public float method_18132(float f) {
+	public float getSize(float f) {
 		return this.scale;
 	}
 

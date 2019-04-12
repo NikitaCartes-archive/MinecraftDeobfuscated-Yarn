@@ -29,10 +29,10 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.Items;
 import net.minecraft.network.NetworkEncryptionUtils;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.WorldGenerationProgressListenerFactory;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.config.ServerConfigHandler;
 import net.minecraft.server.dedicated.gui.DedicatedServerGui;
 import net.minecraft.server.rcon.QueryResponseHandler;
 import net.minecraft.server.rcon.RconServer;
@@ -169,7 +169,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		LOGGER_DEDICATED.info("Starting Minecraft server on {}:{}", this.getServerIp().isEmpty() ? "*" : this.getServerIp(), this.getServerPort());
 
 		try {
-			this.getNetworkIO().bind(inetAddress, this.getServerPort());
+			this.getNetworkIo().bind(inetAddress, this.getServerPort());
 		} catch (IOException var17) {
 			LOGGER_DEDICATED.warn("**** FAILED TO BIND TO PORT!");
 			LOGGER_DEDICATED.warn("The exception was: {}", var17.toString());

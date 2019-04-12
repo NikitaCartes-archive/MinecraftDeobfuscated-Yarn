@@ -39,7 +39,7 @@ public class KeybindTextComponent extends AbstractTextComponent {
 
 	@Override
 	public String toString() {
-		return "KeybindComponent{keybind='" + this.keybind + '\'' + ", siblings=" + this.children + ", style=" + this.getStyle() + '}';
+		return "KeybindComponent{keybind='" + this.keybind + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
 	}
 
 	public String getKeybind() {

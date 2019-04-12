@@ -35,8 +35,15 @@ public class PointOfInterestSet implements DynamicSerializable {
 
 	public <T> PointOfInterestSet(Runnable runnable, Dynamic<T> dynamic) {
 		this.updateListener = runnable;
-		this.valid = dynamic.get("Valid").asBoolean(false);
-		dynamic.get("Records").asStream().forEach(dynamicx -> this.add(new PointOfInterest(dynamicx, runnable)));
+
+		try {
+			this.valid = dynamic.get("Valid").asBoolean(false);
+			dynamic.get("Records").asStream().forEach(dynamicx -> this.add(new PointOfInterest(dynamicx, runnable)));
+		} catch (Exception var4) {
+			LOGGER.error("Failed to load POI chunk", var4);
+			this.clear();
+			this.valid = false;
+		}
 	}
 
 	public Stream<PointOfInterest> get(Predicate<PointOfInterestType> predicate, PointOfInterestStorage.OccupationStatus occupationStatus) {
@@ -118,8 +125,7 @@ public class PointOfInterestSet implements DynamicSerializable {
 	public void updatePointsOfInterest(Consumer<BiConsumer<BlockPos, PointOfInterestType>> consumer) {
 		if (!this.valid) {
 			Short2ObjectMap<PointOfInterest> short2ObjectMap = new Short2ObjectOpenHashMap<>(this.pointsOfInterestByPos);
-			this.pointsOfInterestByPos.clear();
-			this.pointsOfInterestByType.clear();
+			this.clear();
 			consumer.accept((BiConsumer)(blockPos, pointOfInterestType) -> {
 				short s = ChunkSectionPos.packToShort(blockPos);
 				PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(s, i -> new PointOfInterest(blockPos, pointOfInterestType, this.updateListener));
@@ -128,5 +134,10 @@ public class PointOfInterestSet implements DynamicSerializable {
 			this.valid = true;
 			this.updateListener.run();
 		}
+	}
+
+	private void clear() {
+		this.pointsOfInterestByPos.clear();
+		this.pointsOfInterestByType.clear();
 	}
 }

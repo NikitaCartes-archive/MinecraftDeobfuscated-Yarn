@@ -233,7 +233,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		}
 
 		if (bl && this.blockPos != null) {
-			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.field_10124);
+			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.AIR);
 		}
 	}
 
@@ -268,7 +268,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	private void setRotation(int i, boolean bl) {
 		this.getDataTracker().set(ROTATION, i % 8);
 		if (bl && this.blockPos != null) {
-			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.field_10124);
+			this.world.updateHorizontalAdjacent(this.blockPos, Blocks.AIR);
 		}
 	}
 

@@ -39,7 +39,11 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 			int i = random.nextInt(this.effects.size());
 			Entry<StatusEffect, UniformLootTableRange> entry = Iterables.get(this.effects.entrySet(), i);
 			StatusEffect statusEffect = (StatusEffect)entry.getKey();
-			int j = ((UniformLootTableRange)entry.getValue()).next(random) * 20;
+			int j = ((UniformLootTableRange)entry.getValue()).next(random);
+			if (!statusEffect.isInstant()) {
+				j *= 20;
+			}
+
 			SuspiciousStewItem.addEffectToStew(itemStack, statusEffect, j);
 			return itemStack;
 		} else {

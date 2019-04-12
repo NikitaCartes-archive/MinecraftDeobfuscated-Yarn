@@ -45,7 +45,7 @@ public class OggAudioStream implements AudioStream {
 				this.buffer.position(i);
 				int j = intBuffer2.get(0);
 				if (j == 1) {
-					this.method_19678();
+					this.increaseBufferSize();
 				} else if (j != 0) {
 					throw new IOException("Failed to read Ogg file " + j);
 				}
@@ -79,7 +79,7 @@ public class OggAudioStream implements AudioStream {
 		}
 	}
 
-	private void method_19678() {
+	private void increaseBufferSize() {
 		boolean bl = this.buffer.position() == 0;
 		boolean bl2 = this.buffer.position() == this.buffer.limit();
 		if (bl2 && !bl) {
@@ -108,7 +108,7 @@ public class OggAudioStream implements AudioStream {
 					this.buffer.position(this.buffer.position() + i);
 					int j = STBVorbis.stb_vorbis_get_error(this.pointer);
 					if (j == 1) {
-						this.method_19678();
+						this.increaseBufferSize();
 						if (!this.readHeader()) {
 							return false;
 						}

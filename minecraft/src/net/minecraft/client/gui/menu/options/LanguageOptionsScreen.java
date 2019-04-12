@@ -125,7 +125,7 @@ public class LanguageOptionsScreen extends Screen {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public class LanguageItem extends AlwaysSelectedItemListWidget.class_4281<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem> {
+		public class LanguageItem extends AlwaysSelectedItemListWidget.Item<LanguageOptionsScreen.LanguageSelectionListWidget.LanguageItem> {
 			private final LanguageDefinition languageDefinition;
 
 			public LanguageItem(LanguageDefinition languageDefinition) {

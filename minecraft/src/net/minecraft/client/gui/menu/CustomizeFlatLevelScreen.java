@@ -28,7 +28,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	private FlatChunkGeneratorConfig config = FlatChunkGeneratorConfig.getDefaultConfig();
 	private String tileText;
 	private String heightText;
-	private CustomizeFlatLevelScreen.SuperflatLayersListWidget field_2424;
+	private CustomizeFlatLevelScreen.SuperflatLayersListWidget layerList;
 	private ButtonWidget widgetButtonRemoveLayer;
 
 	public CustomizeFlatLevelScreen(NewLevelScreen newLevelScreen, CompoundTag compoundTag) {
@@ -57,8 +57,8 @@ public class CustomizeFlatLevelScreen extends Screen {
 	protected void init() {
 		this.tileText = I18n.translate("createWorld.customize.flat.tile");
 		this.heightText = I18n.translate("createWorld.customize.flat.height");
-		this.field_2424 = new CustomizeFlatLevelScreen.SuperflatLayersListWidget();
-		this.children.add(this.field_2424);
+		this.layerList = new CustomizeFlatLevelScreen.SuperflatLayersListWidget();
+		this.children.add(this.layerList);
 		this.widgetButtonRemoveLayer = this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 155,
@@ -69,14 +69,14 @@ public class CustomizeFlatLevelScreen extends Screen {
 				buttonWidget -> {
 					if (this.method_2147()) {
 						List<FlatChunkGeneratorLayer> list = this.config.getLayers();
-						int i = this.field_2424.children().indexOf(this.field_2424.getSelectedItem());
+						int i = this.layerList.children().indexOf(this.layerList.getSelectedItem());
 						int j = list.size() - i - 1;
 						list.remove(j);
-						this.field_2424
+						this.layerList
 							.method_20094(
 								list.isEmpty()
 									? null
-									: (CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem)this.field_2424.children().get(Math.min(i, list.size() - 1))
+									: (CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem)this.layerList.children().get(Math.min(i, list.size() - 1))
 							);
 						this.config.updateLayerBlocks();
 						this.method_2145();
@@ -90,7 +90,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 			this.method_2145();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, I18n.translate("gui.done"), buttonWidget -> {
-			this.parent.field_18979 = this.method_2140();
+			this.parent.generatorOptionsTag = this.method_2140();
 			this.minecraft.openScreen(this.parent);
 			this.config.updateLayerBlocks();
 			this.method_2145();
@@ -106,17 +106,17 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	public void method_2145() {
 		this.widgetButtonRemoveLayer.active = this.method_2147();
-		this.field_2424.method_19372();
+		this.layerList.method_19372();
 	}
 
 	private boolean method_2147() {
-		return this.field_2424.getSelectedItem() != null;
+		return this.layerList.getSelectedItem() != null;
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.field_2424.render(i, j, f);
+		this.layerList.render(i, j, f);
 		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 16777215);
 		int k = this.width / 2 - 92 - 16;
 		this.drawString(this.font, this.tileText, k, 32, 16777215);
@@ -185,7 +185,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 		}
 
 		@Environment(EnvType.CLIENT)
-		class SuperflatLayerItem extends AlwaysSelectedItemListWidget.class_4281<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem> {
+		class SuperflatLayerItem extends AlwaysSelectedItemListWidget.Item<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem> {
 			private SuperflatLayerItem() {
 			}
 

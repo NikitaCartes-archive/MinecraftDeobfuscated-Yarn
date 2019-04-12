@@ -42,9 +42,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.TheEndDimension;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.EndPortalFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -439,7 +439,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 		if (bl2) {
 			BlockPos blockPos2 = new BlockPos(i + this.random.nextInt(l - i + 1), j + this.random.nextInt(m - j + 1), k + this.random.nextInt(n - k + 1));
-			this.world.method_20290(2008, blockPos2, 0);
+			this.world.playLevelEvent(2008, blockPos2, 0);
 		}
 
 		return bl;

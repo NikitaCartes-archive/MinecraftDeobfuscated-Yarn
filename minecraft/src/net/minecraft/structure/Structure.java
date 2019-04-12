@@ -712,7 +712,7 @@ public class Structure {
 	}
 
 	static class class_3500 implements Iterable<BlockState> {
-		public static final BlockState field_15590 = Blocks.field_10124.getDefaultState();
+		public static final BlockState field_15590 = Blocks.AIR.getDefaultState();
 		private final IdList<BlockState> field_15591 = new IdList<>(16);
 		private int field_15592;
 

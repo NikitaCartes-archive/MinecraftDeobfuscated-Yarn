@@ -3,6 +3,7 @@ package net.minecraft.entity.vehicle;
 import java.util.List;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.entity.Hopper;
 import net.minecraft.block.entity.HopperBlockEntity;
 import net.minecraft.container.Container;
 import net.minecraft.container.HopperContainer;
@@ -12,7 +13,6 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.sortme.Hopper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 

@@ -67,7 +67,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		int j = this.dataStorage.heightMap.get(m);
 		if (j < i + 1) {
 			this.dataStorage.heightMap.put(m, i + 1);
-			if (!this.field_15817.contains(m)) {
+			if (this.field_15817.contains(m)) {
 				this.field_15815.add(l);
 				this.field_15816.remove(l);
 				if (j > this.dataStorage.defaultHeight) {
@@ -89,7 +89,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	protected void onChunkRemoved(long l) {
 		long m = ChunkSectionPos.method_18693(l);
 		boolean bl = this.field_15817.contains(m);
-		if (!bl) {
+		if (bl) {
 			this.field_15816.add(l);
 			this.field_15815.remove(l);
 		}
@@ -103,7 +103,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 			if (this.hasChunk(n)) {
 				this.dataStorage.heightMap.put(m, i + 1);
-				if (!bl) {
+				if (bl) {
 					this.field_15815.add(n);
 					this.field_15816.remove(n);
 				}
@@ -112,7 +112,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			}
 		}
 
-		if (!bl) {
+		if (bl) {
 			this.checkForUpdates();
 		}
 	}
@@ -123,16 +123,16 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			int i = this.dataStorage.heightMap.get(l);
 			if (i != this.dataStorage.defaultHeight) {
 				long m = ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), i - 1, ChunkSectionPos.unpackLongZ(l));
-				this.field_15816.add(m);
-				this.field_15815.remove(m);
+				this.field_15815.add(m);
+				this.field_15816.remove(m);
 				this.checkForUpdates();
 			}
 		} else if (!bl && this.field_15817.remove(l)) {
 			int i = this.dataStorage.heightMap.get(l);
 			if (i != this.dataStorage.defaultHeight) {
 				long m = ChunkSectionPos.asLong(ChunkSectionPos.unpackLongX(l), i - 1, ChunkSectionPos.unpackLongZ(l));
-				this.field_15815.add(m);
-				this.field_15816.remove(m);
+				this.field_15816.add(m);
+				this.field_15815.remove(m);
 				this.checkForUpdates();
 			}
 		}
@@ -264,7 +264,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		} else {
 			long m = ChunkSectionPos.toChunkLong(l);
 			long n = ChunkSectionPos.method_18693(m);
-			if (this.field_15817.contains(n)) {
+			if (!this.field_15817.contains(n)) {
 				return false;
 			} else {
 				int j = this.dataStorage.heightMap.get(n);

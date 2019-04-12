@@ -16,5 +16,5 @@ public interface UnbakedModel {
 	Collection<Identifier> getTextureDependencies(Function<Identifier, UnbakedModel> function, Set<String> set);
 
 	@Nullable
-	BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelRotationContainer modelRotationContainer);
+	BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings);
 }

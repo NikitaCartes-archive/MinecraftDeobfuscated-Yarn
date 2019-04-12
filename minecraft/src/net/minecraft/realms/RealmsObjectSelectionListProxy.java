@@ -7,7 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.menu.AlwaysSelectedItemListWidget;
 
 @Environment(EnvType.CLIENT)
-public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidget.class_4281<E>> extends AlwaysSelectedItemListWidget<E> {
+public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidget.Item<E>> extends AlwaysSelectedItemListWidget<E> {
 	private final RealmsObjectSelectionList realmsObjectSelectionList;
 
 	public RealmsObjectSelectionListProxy(RealmsObjectSelectionList realmsObjectSelectionList, int i, int j, int k, int l, int m) {
@@ -31,9 +31,9 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 		}
 	}
 
-	public void setSelected(@Nullable E arg) {
-		super.selectItem(arg);
-		this.realmsObjectSelectionList.selectItem(super.children().indexOf(arg));
+	public void setSelected(@Nullable E item) {
+		super.selectItem(item);
+		this.realmsObjectSelectionList.selectItem(super.children().indexOf(item));
 	}
 
 	@Override
@@ -80,8 +80,8 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 		return this.realmsObjectSelectionList.mouseDragged(d, e, i, f, g) ? true : super.mouseDragged(d, e, i, f, g);
 	}
 
-	protected final int addEntry(E arg) {
-		return super.addItem(arg);
+	protected final int addEntry(E item) {
+		return super.addItem(item);
 	}
 
 	public E remove(int i) {

@@ -291,7 +291,7 @@ public class DebugHud extends DrawableHelper {
 				list.add(String.format("Looking at liquid: %d %d %d", blockPos2.getX(), blockPos2.getY(), blockPos2.getZ()));
 			}
 
-			list.add(this.client.getSoundManager().method_20305());
+			list.add(this.client.getSoundManager().getDebugString());
 			return list;
 		}
 	}

@@ -415,9 +415,9 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 				if (!this.world.isClient && entity2 instanceof ServerPlayerEntity) {
 					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity2;
 					if (this.piercingKilledEntities != null && this.isShotFromCrossbow()) {
-						Criterions.KILLED_BY_CROSSBOW.method_8980(serverPlayerEntity, this.piercingKilledEntities, this.piercingKilledEntities.size());
+						Criterions.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, this.piercingKilledEntities, this.piercingKilledEntities.size());
 					} else if (!entity.isAlive() && this.isShotFromCrossbow()) {
-						Criterions.KILLED_BY_CROSSBOW.method_8980(serverPlayerEntity, Arrays.asList(entity), 0);
+						Criterions.KILLED_BY_CROSSBOW.trigger(serverPlayerEntity, Arrays.asList(entity), 0);
 					}
 				}
 			}

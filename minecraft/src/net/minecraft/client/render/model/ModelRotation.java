@@ -12,7 +12,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public enum ModelRotation implements ModelRotationContainer {
+public enum ModelRotation implements ModelBakeSettings {
 	X0_Y0(0, 0),
 	X0_Y90(0, 90),
 	X0_Y180(0, 180),

@@ -34,6 +34,6 @@ public class StringTextComponent extends AbstractTextComponent {
 
 	@Override
 	public String toString() {
-		return "TextComponent{text='" + this.text + '\'' + ", siblings=" + this.children + ", style=" + this.getStyle() + '}';
+		return "TextComponent{text='" + this.text + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
 	}
 }

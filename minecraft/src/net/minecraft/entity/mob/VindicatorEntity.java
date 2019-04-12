@@ -149,7 +149,7 @@ public class VindicatorEntity extends IllagerEntity {
 		if (super.isTeammate(entity)) {
 			return true;
 		} else if (entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER) {
-			return this.method_5781() == null && entity.method_5781() == null;
+			return this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null;
 		} else {
 			return false;
 		}

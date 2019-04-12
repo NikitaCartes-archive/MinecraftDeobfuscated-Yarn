@@ -7,8 +7,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.server.network.packet.UpdateCommandBlockC2SPacket;
-import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.CommandBlockExecutor;
 
 @Environment(EnvType.CLIENT)
 public class CommandBlockScreen extends AbstractCommandBlockScreen {

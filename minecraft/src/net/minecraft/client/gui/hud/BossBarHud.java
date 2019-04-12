@@ -47,14 +47,14 @@ public class BossBarHud extends DrawableHelper {
 
 	private void drawBossBar(int i, int j, BossBar bossBar) {
 		this.blit(i, j, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
-		if (bossBar.getOverlay() != BossBar.Overlay.field_5795) {
+		if (bossBar.getOverlay() != BossBar.Style.field_5795) {
 			this.blit(i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
 		}
 
 		int k = (int)(bossBar.getPercent() * 183.0F);
 		if (k > 0) {
 			this.blit(i, j, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, k, 5);
-			if (bossBar.getOverlay() != BossBar.Overlay.field_5795) {
+			if (bossBar.getOverlay() != BossBar.Style.field_5795) {
 				this.blit(i, j, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, k, 5);
 			}
 		}

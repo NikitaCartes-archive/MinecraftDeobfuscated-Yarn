@@ -156,7 +156,7 @@ public class LecternBlock extends BlockWithEntity {
 	public static void setPowered(World world, BlockPos blockPos, BlockState blockState) {
 		setPowered(world, blockPos, blockState, true);
 		world.getBlockTickScheduler().schedule(blockPos, blockState.getBlock(), 2);
-		world.method_20290(1043, blockPos, 0);
+		world.playLevelEvent(1043, blockPos, 0);
 	}
 
 	private static void setPowered(World world, BlockPos blockPos, BlockState blockState, boolean bl) {

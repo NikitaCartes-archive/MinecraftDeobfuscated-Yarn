@@ -18,5 +18,5 @@ public interface ResourceReloadMonitor {
 	boolean isApplyStageComplete();
 
 	@Environment(EnvType.CLIENT)
-	void method_18849();
+	void throwExceptions();
 }

@@ -53,7 +53,7 @@ public class ProtectionEnchantment extends Enchantment {
 		}
 	}
 
-	public static int method_8238(LivingEntity livingEntity, int i) {
+	public static int transformFireDuration(LivingEntity livingEntity, int i) {
 		int j = EnchantmentHelper.getEquipmentLevel(Enchantments.field_9095, livingEntity);
 		if (j > 0) {
 			i -= MathHelper.floor((float)i * (float)j * 0.15F);
@@ -62,7 +62,7 @@ public class ProtectionEnchantment extends Enchantment {
 		return i;
 	}
 
-	public static double method_8237(LivingEntity livingEntity, double d) {
+	public static double transformExplosionKnockback(LivingEntity livingEntity, double d) {
 		int i = EnchantmentHelper.getEquipmentLevel(Enchantments.field_9107, livingEntity);
 		if (i > 0) {
 			d -= (double)MathHelper.floor(d * (double)((float)i * 0.15F));

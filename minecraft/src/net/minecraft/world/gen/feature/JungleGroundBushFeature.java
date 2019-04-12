@@ -6,8 +6,8 @@ import java.util.Set;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.gen.Heightmap;
 
 public class JungleGroundBushFeature extends AbstractTreeFeature<DefaultFeatureConfig> {
 	private final BlockState leaves;

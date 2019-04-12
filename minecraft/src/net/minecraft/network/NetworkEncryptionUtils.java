@@ -53,7 +53,7 @@ public class NetworkEncryptionUtils {
 		}
 	}
 
-	public static byte[] method_15240(String string, PublicKey publicKey, SecretKey secretKey) {
+	public static byte[] generateServerId(String string, PublicKey publicKey, SecretKey secretKey) {
 		try {
 			return hash("SHA-1", string.getBytes("ISO_8859_1"), secretKey.getEncoded(), publicKey.getEncoded());
 		} catch (UnsupportedEncodingException var4) {
@@ -90,7 +90,7 @@ public class NetworkEncryptionUtils {
 		return null;
 	}
 
-	public static SecretKey method_15234(PrivateKey privateKey, byte[] bs) {
+	public static SecretKey decryptSecretKey(PrivateKey privateKey, byte[] bs) {
 		return new SecretKeySpec(decrypt(privateKey, bs), "AES");
 	}
 

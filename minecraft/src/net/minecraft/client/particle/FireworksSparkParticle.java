@@ -354,7 +354,7 @@ public class FireworksSparkParticle {
 		}
 
 		@Override
-		public float method_18132(float f) {
+		public float getSize(float f) {
 			return 7.1F * MathHelper.sin(((float)this.age + f - 1.0F) * 0.25F * (float) Math.PI);
 		}
 	}

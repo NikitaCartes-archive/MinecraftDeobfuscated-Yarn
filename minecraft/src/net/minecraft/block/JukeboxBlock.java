@@ -52,7 +52,7 @@ public class JukeboxBlock extends BlockWithEntity {
 				JukeboxBlockEntity jukeboxBlockEntity = (JukeboxBlockEntity)blockEntity;
 				ItemStack itemStack = jukeboxBlockEntity.getRecord();
 				if (!itemStack.isEmpty()) {
-					world.method_20290(1010, blockPos, 0);
+					world.playLevelEvent(1010, blockPos, 0);
 					jukeboxBlockEntity.clear();
 					float f = 0.7F;
 					double d = (double)(world.random.nextFloat() * 0.7F) + 0.15F;

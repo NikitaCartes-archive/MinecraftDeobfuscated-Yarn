@@ -5,8 +5,8 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.command.arguments.ItemStackArgument;
+import net.minecraft.command.arguments.ItemStringReader;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sortme.ItemStringReader;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.registry.Registry;
 
@@ -15,7 +15,7 @@ public class ItemStackParticleParameters implements ParticleParameters {
 		public ItemStackParticleParameters method_10290(ParticleType<ItemStackParticleParameters> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
-			ItemStack itemStack = new ItemStackArgument(itemStringReader.getItem(), itemStringReader.method_9797()).method_9781(1, false);
+			ItemStack itemStack = new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getTag()).method_9781(1, false);
 			return new ItemStackParticleParameters(particleType, itemStack);
 		}
 

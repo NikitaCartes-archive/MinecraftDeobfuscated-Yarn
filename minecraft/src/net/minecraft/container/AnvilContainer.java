@@ -91,13 +91,13 @@ public class AnvilContainer extends Container {
 							BlockState blockState2 = AnvilBlock.getLandingState(blockState);
 							if (blockState2 == null) {
 								world.clearBlockState(blockPos, false);
-								world.method_20290(1029, blockPos, 0);
+								world.playLevelEvent(1029, blockPos, 0);
 							} else {
 								world.setBlockState(blockPos, blockState2, 2);
-								world.method_20290(1030, blockPos, 0);
+								world.playLevelEvent(1030, blockPos, 0);
 							}
 						} else {
-							world.method_20290(1030, blockPos, 0);
+							world.playLevelEvent(1030, blockPos, 0);
 						}
 					}));
 					return itemStack;
@@ -120,11 +120,11 @@ public class AnvilContainer extends Container {
 	public void onContentChanged(Inventory inventory) {
 		super.onContentChanged(inventory);
 		if (inventory == this.inventory) {
-			this.setLevelCost();
+			this.updateResult();
 		}
 	}
 
-	public void setLevelCost() {
+	public void updateResult() {
 		ItemStack itemStack = this.inventory.getInvStack(0);
 		this.levelCost.set(1);
 		int i = 0;
@@ -278,7 +278,7 @@ public class AnvilContainer extends Container {
 				}
 
 				if (k != i || k == 0) {
-					t = t * 2 + 1;
+					t = getNextCost(t);
 				}
 
 				itemStack2.setRepairCost(t);
@@ -288,6 +288,10 @@ public class AnvilContainer extends Container {
 			this.result.setInvStack(0, itemStack2);
 			this.sendContentUpdates();
 		}
+	}
+
+	public static int getNextCost(int i) {
+		return i * 2 + 1;
 	}
 
 	@Override
@@ -355,7 +359,7 @@ public class AnvilContainer extends Container {
 			}
 		}
 
-		this.setLevelCost();
+		this.updateResult();
 	}
 
 	@Environment(EnvType.CLIENT)

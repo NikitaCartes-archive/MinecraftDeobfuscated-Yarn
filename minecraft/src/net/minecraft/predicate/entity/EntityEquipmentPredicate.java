@@ -7,12 +7,22 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.raid.Raid;
+import net.minecraft.item.Items;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.util.JsonHelper;
 
 public class EntityEquipmentPredicate {
 	public static final EntityEquipmentPredicate ANY = new EntityEquipmentPredicate(
 		ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY, ItemPredicate.ANY
+	);
+	public static final EntityEquipmentPredicate field_19240 = new EntityEquipmentPredicate(
+		ItemPredicate.Builder.create().item(Items.field_8539).nbt(Raid.OMINOUS_BANNER.getTag()).build(),
+		ItemPredicate.ANY,
+		ItemPredicate.ANY,
+		ItemPredicate.ANY,
+		ItemPredicate.ANY,
+		ItemPredicate.ANY
 	);
 	private final ItemPredicate head;
 	private final ItemPredicate chest;

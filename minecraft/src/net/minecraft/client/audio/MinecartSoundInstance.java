@@ -25,7 +25,7 @@ public class MinecartSoundInstance extends MovingSoundInstance {
 	}
 
 	@Override
-	public boolean method_4785() {
+	public boolean shouldAlwaysPlay() {
 		return true;
 	}
 

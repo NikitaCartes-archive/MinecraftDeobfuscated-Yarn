@@ -108,7 +108,7 @@ public class EvokerEntity extends SpellcastingIllagerEntity {
 		} else if (entity instanceof VexEntity) {
 			return this.isTeammate(((VexEntity)entity).getOwner());
 		} else if (entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER) {
-			return this.method_5781() == null && entity.method_5781() == null;
+			return this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null;
 		} else {
 			return false;
 		}

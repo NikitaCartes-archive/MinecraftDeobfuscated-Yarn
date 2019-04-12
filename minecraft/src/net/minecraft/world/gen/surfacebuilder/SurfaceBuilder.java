@@ -10,7 +10,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
 public abstract class SurfaceBuilder<C extends SurfaceConfig> {
-	public static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	public static final BlockState AIR = Blocks.AIR.getDefaultState();
 	public static final BlockState DIRT = Blocks.field_10566.getDefaultState();
 	public static final BlockState GRASS_BLOCK = Blocks.field_10219.getDefaultState();
 	public static final BlockState PODZOL = Blocks.field_10520.getDefaultState();

@@ -31,13 +31,13 @@ public class ServerQueryNetworkHandler implements ServerQueryPacketListener {
 			this.client.disconnect(REQUEST_HANDLED);
 		} else {
 			this.responseSent = true;
-			this.client.sendPacket(new QueryResponseS2CPacket(this.server.getServerMetadata()));
+			this.client.send(new QueryResponseS2CPacket(this.server.getServerMetadata()));
 		}
 	}
 
 	@Override
 	public void onPing(QueryPingC2SPacket queryPingC2SPacket) {
-		this.client.sendPacket(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
+		this.client.send(new QueryPongS2CPacket(queryPingC2SPacket.getStartTime()));
 		this.client.disconnect(REQUEST_HANDLED);
 	}
 }

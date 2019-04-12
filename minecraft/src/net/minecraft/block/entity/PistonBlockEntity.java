@@ -276,7 +276,7 @@ public class PistonBlockEntity extends BlockEntity implements Tickable {
 			if (this.world.getBlockState(this.pos).getBlock() == Blocks.field_10008) {
 				BlockState blockState;
 				if (this.source) {
-					blockState = Blocks.field_10124.getDefaultState();
+					blockState = Blocks.AIR.getDefaultState();
 				} else {
 					blockState = Block.getRenderingState(this.pushedBlock, this.world, this.pos);
 				}

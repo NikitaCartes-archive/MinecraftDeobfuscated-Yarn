@@ -27,7 +27,7 @@ public class Listener {
 		return this.volume;
 	}
 
-	public void method_19673() {
+	public void init() {
 		this.setPosition(Vec3d.ZERO);
 		this.setOrientation(new Vec3d(0.0, 0.0, -1.0), field_18905);
 	}

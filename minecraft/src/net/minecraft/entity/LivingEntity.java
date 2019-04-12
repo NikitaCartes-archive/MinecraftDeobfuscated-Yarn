@@ -135,8 +135,6 @@ public abstract class LivingEntity extends Entity {
 	public float limbDistance;
 	public float limbAngle;
 	public final int field_6269 = 20;
-	public float field_6286;
-	public float field_6223;
 	public final float field_6244;
 	public final float field_6262;
 	public float field_6283;
@@ -330,7 +328,6 @@ public abstract class LivingEntity extends Entity {
 			this.extinguish();
 		}
 
-		this.field_6286 = this.field_6223;
 		if (this.hurtTime > 0) {
 			--this.hurtTime;
 		}
@@ -1097,6 +1094,10 @@ public abstract class LivingEntity extends Entity {
 
 			if (entity != null) {
 				entity.method_5874(this);
+			}
+
+			if (this.isSleeping()) {
+				this.wakeUp();
 			}
 
 			this.dead = true;
@@ -2239,7 +2240,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void doPushLogic() {
-		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), EntityPredicates.method_5911(this));
+		List<Entity> list = this.world.getEntities(this, this.getBoundingBox(), EntityPredicates.canBePushedBy(this));
 		if (!list.isEmpty()) {
 			int i = this.world.getGameRules().getInteger("maxEntityCramming");
 			if (i > 0 && list.size() > i - 1 && this.random.nextInt(4) == 0) {
@@ -2443,7 +2444,7 @@ public abstract class LivingEntity extends Entity {
 			if (this.getStackInHand(this.getActiveHand()) == this.activeItemStack) {
 				this.activeItemStack.method_7949(this.world, this, this.method_6014());
 				if (this.method_6014() <= 25 && this.method_6014() % 4 == 0) {
-					this.spawnEatingParticlesAndPlayEatingSoundOrPlayDrinkingSound(this.activeItemStack, 5);
+					this.spawnConsumptionEffects(this.activeItemStack, 5);
 				}
 
 				if (--this.field_6222 == 0 && !this.world.isClient && !this.activeItemStack.method_7967()) {
@@ -2515,7 +2516,7 @@ public abstract class LivingEntity extends Entity {
 		this.field_6220 = this.field_6283;
 	}
 
-	protected void spawnEatingParticlesAndPlayEatingSoundOrPlayDrinkingSound(ItemStack itemStack, int i) {
+	protected void spawnConsumptionEffects(ItemStack itemStack, int i) {
 		if (!itemStack.isEmpty() && this.isUsingItem()) {
 			if (itemStack.getUseAction() == UseAction.field_8946) {
 				this.playSound(this.getDrinkSound(itemStack), 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
@@ -2545,7 +2546,7 @@ public abstract class LivingEntity extends Entity {
 
 	protected void method_6040() {
 		if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
-			this.spawnEatingParticlesAndPlayEatingSoundOrPlayDrinkingSound(this.activeItemStack, 16);
+			this.spawnConsumptionEffects(this.activeItemStack, 16);
 			this.setStackInHand(this.getActiveHand(), this.activeItemStack.onItemFinishedUsing(this.world, this));
 			this.method_6021();
 		}
@@ -2563,7 +2564,7 @@ public abstract class LivingEntity extends Entity {
 		return this.isUsingItem() ? this.activeItemStack.getMaxUseTime() - this.method_6014() : 0;
 	}
 
-	public void method_6075() {
+	public void stopUsingItem() {
 		if (!this.activeItemStack.isEmpty()) {
 			this.activeItemStack.onItemStopUsing(this.world, this, this.method_6014());
 			if (this.activeItemStack.method_7967()) {

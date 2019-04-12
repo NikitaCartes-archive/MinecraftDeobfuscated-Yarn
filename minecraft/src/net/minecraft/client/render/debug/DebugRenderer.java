@@ -68,6 +68,23 @@ public class DebugRenderer {
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(minecraftClient);
 	}
 
+	public void method_20413() {
+		this.pathfindingDebugRenderer.method_20414();
+		this.waterDebugRenderer.method_20414();
+		this.chunkBorderDebugRenderer.method_20414();
+		this.heightmapDebugRenderer.method_20414();
+		this.voxelDebugRenderer.method_20414();
+		this.neighborUpdateDebugRenderer.method_20414();
+		this.caveDebugRenderer.method_20414();
+		this.structureDebugRenderer.method_20414();
+		this.skyLightDebugRenderer.method_20414();
+		this.worldGenAttemptDebugRenderer.method_20414();
+		this.blockOutlineDebugRenderer.method_20414();
+		this.chunkLoadingDebugRenderer.method_20414();
+		this.pointsOfInterestDebugRenderer.method_20414();
+		this.goalSelectorDebugRenderer.method_20414();
+	}
+
 	public boolean shouldRender() {
 		return this.showChunkBorder
 			|| this.showPathfinding
@@ -234,5 +251,8 @@ public class DebugRenderer {
 	@Environment(EnvType.CLIENT)
 	public interface Renderer {
 		void render(long l);
+
+		default void method_20414() {
+		}
 	}
 }

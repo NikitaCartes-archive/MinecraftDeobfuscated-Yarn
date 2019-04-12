@@ -16,8 +16,8 @@ public class ServerBossBar extends BossBar {
 	private final Set<ServerPlayerEntity> field_13914 = Collections.unmodifiableSet(this.players);
 	private boolean visible = true;
 
-	public ServerBossBar(TextComponent textComponent, BossBar.Color color, BossBar.Overlay overlay) {
-		super(MathHelper.randomUUID(), textComponent, color, overlay);
+	public ServerBossBar(TextComponent textComponent, BossBar.Color color, BossBar.Style style) {
+		super(MathHelper.randomUUID(), textComponent, color, style);
 	}
 
 	@Override
@@ -37,9 +37,9 @@ public class ServerBossBar extends BossBar {
 	}
 
 	@Override
-	public void setOverlay(BossBar.Overlay overlay) {
-		if (overlay != this.overlay) {
-			super.setOverlay(overlay);
+	public void setOverlay(BossBar.Style style) {
+		if (style != this.style) {
+			super.setOverlay(style);
 			this.sendPacket(BossBarS2CPacket.Type.UPDATE_STYLE);
 		}
 	}

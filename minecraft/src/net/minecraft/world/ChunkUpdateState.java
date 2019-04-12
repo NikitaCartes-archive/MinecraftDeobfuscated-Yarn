@@ -34,7 +34,7 @@ public class ChunkUpdateState extends PersistentState {
 		return this.all.contains(l);
 	}
 
-	public boolean isRemaing(long l) {
+	public boolean isRemaining(long l) {
 		return this.remaining.contains(l);
 	}
 

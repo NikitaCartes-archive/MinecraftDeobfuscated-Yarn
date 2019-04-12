@@ -15,6 +15,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.NbtPredicate;
@@ -31,8 +32,8 @@ public class ItemPredicate {
 	private final Tag<Item> tag;
 	@Nullable
 	private final Item item;
-	private final NumberRange.IntRange field_9641;
-	private final NumberRange.IntRange field_9646;
+	private final NumberRange.IntRange count;
+	private final NumberRange.IntRange durability;
 	private final EnchantmentPredicate[] enchantments;
 	@Nullable
 	private final Potion potion;
@@ -42,8 +43,8 @@ public class ItemPredicate {
 		this.tag = null;
 		this.item = null;
 		this.potion = null;
-		this.field_9641 = NumberRange.IntRange.ANY;
-		this.field_9646 = NumberRange.IntRange.ANY;
+		this.count = NumberRange.IntRange.ANY;
+		this.durability = NumberRange.IntRange.ANY;
 		this.enchantments = new EnchantmentPredicate[0];
 		this.nbt = NbtPredicate.ANY;
 	}
@@ -59,8 +60,8 @@ public class ItemPredicate {
 	) {
 		this.tag = tag;
 		this.item = item;
-		this.field_9641 = intRange;
-		this.field_9646 = intRange2;
+		this.count = intRange;
+		this.durability = intRange2;
 		this.enchantments = enchantmentPredicates;
 		this.potion = potion;
 		this.nbt = nbtPredicate;
@@ -73,11 +74,11 @@ public class ItemPredicate {
 			return false;
 		} else if (this.item != null && itemStack.getItem() != this.item) {
 			return false;
-		} else if (!this.field_9641.test(itemStack.getAmount())) {
+		} else if (!this.count.test(itemStack.getAmount())) {
 			return false;
-		} else if (!this.field_9646.isDummy() && !itemStack.hasDurability()) {
+		} else if (!this.durability.isDummy() && !itemStack.hasDurability()) {
 			return false;
-		} else if (!this.field_9646.test(itemStack.getDurability() - itemStack.getDamage())) {
+		} else if (!this.durability.test(itemStack.getDurability() - itemStack.getDamage())) {
 			return false;
 		} else if (!this.nbt.test(itemStack)) {
 			return false;
@@ -146,8 +147,8 @@ public class ItemPredicate {
 				jsonObject.addProperty("tag", this.tag.getId().toString());
 			}
 
-			jsonObject.add("count", this.field_9641.serialize());
-			jsonObject.add("durability", this.field_9646.serialize());
+			jsonObject.add("count", this.count.serialize());
+			jsonObject.add("durability", this.durability.serialize());
 			jsonObject.add("nbt", this.nbt.serialize());
 			if (this.enchantments.length > 0) {
 				JsonArray jsonArray = new JsonArray();
@@ -188,8 +189,8 @@ public class ItemPredicate {
 		private Item item;
 		@Nullable
 		private Tag<Item> tag;
-		private NumberRange.IntRange field_9648 = NumberRange.IntRange.ANY;
-		private NumberRange.IntRange field_9653 = NumberRange.IntRange.ANY;
+		private NumberRange.IntRange count = NumberRange.IntRange.ANY;
+		private NumberRange.IntRange durability = NumberRange.IntRange.ANY;
 		@Nullable
 		private Potion potion;
 		private NbtPredicate nbt = NbtPredicate.ANY;
@@ -211,8 +212,13 @@ public class ItemPredicate {
 			return this;
 		}
 
-		public ItemPredicate.Builder method_8974(NumberRange.IntRange intRange) {
-			this.field_9648 = intRange;
+		public ItemPredicate.Builder count(NumberRange.IntRange intRange) {
+			this.count = intRange;
+			return this;
+		}
+
+		public ItemPredicate.Builder nbt(CompoundTag compoundTag) {
+			this.nbt = new NbtPredicate(compoundTag);
 			return this;
 		}
 
@@ -223,13 +229,7 @@ public class ItemPredicate {
 
 		public ItemPredicate build() {
 			return new ItemPredicate(
-				this.tag,
-				this.item,
-				this.field_9648,
-				this.field_9653,
-				(EnchantmentPredicate[])this.enchantments.toArray(new EnchantmentPredicate[0]),
-				this.potion,
-				this.nbt
+				this.tag, this.item, this.count, this.durability, (EnchantmentPredicate[])this.enchantments.toArray(new EnchantmentPredicate[0]), this.potion, this.nbt
 			);
 		}
 	}

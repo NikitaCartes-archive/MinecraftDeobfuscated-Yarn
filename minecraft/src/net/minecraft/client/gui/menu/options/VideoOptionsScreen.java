@@ -3,8 +3,8 @@ package net.minecraft.client.gui.menu.options;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.VideoSettingsListWidget;
 import net.minecraft.client.options.GameOption;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.resource.language.I18n;
@@ -15,7 +15,7 @@ import net.minecraft.text.TranslatableTextComponent;
 public class VideoOptionsScreen extends Screen {
 	private final Screen parent;
 	private final GameOptions options;
-	private VideoSettingsListWidget list;
+	private ButtonListWidget list;
 	private static final GameOption[] OPTIONS = new GameOption[]{
 		GameOption.GRAPHICS,
 		GameOption.RENDER_DISTANCE,
@@ -33,7 +33,7 @@ public class VideoOptionsScreen extends Screen {
 		GameOption.ENTITY_SHADOWS,
 		GameOption.BIOME_BLEND_RADIUS
 	};
-	private int field_19186;
+	private int mipmapLevels;
 
 	public VideoOptionsScreen(Screen screen, GameOptions gameOptions) {
 		super(new TranslatableTextComponent("options.videoTitle"));
@@ -43,8 +43,10 @@ public class VideoOptionsScreen extends Screen {
 
 	@Override
 	protected void init() {
-		this.field_19186 = this.options.mipmapLevels;
-		this.list = new VideoSettingsListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25, OPTIONS);
+		this.mipmapLevels = this.options.mipmapLevels;
+		this.list = new ButtonListWidget(this.minecraft, this.width, this.height, 32, this.height - 32, 25);
+		this.list.method_20406(GameOption.FULLSCREEN_RESOLUTION);
+		this.list.addAll(OPTIONS);
 		this.children.add(this.list);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height - 27, 200, 20, I18n.translate("gui.done"), buttonWidget -> {
 			this.minecraft.options.write();
@@ -55,7 +57,7 @@ public class VideoOptionsScreen extends Screen {
 
 	@Override
 	public void removed() {
-		if (this.options.mipmapLevels != this.field_19186) {
+		if (this.options.mipmapLevels != this.mipmapLevels) {
 			this.minecraft.getSpriteAtlas().setMipLevel(this.options.mipmapLevels);
 			this.minecraft.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			this.minecraft.getSpriteAtlas().setFilter(false, this.options.mipmapLevels > 0);

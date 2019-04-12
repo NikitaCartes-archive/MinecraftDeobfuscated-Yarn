@@ -185,7 +185,7 @@ public class EnderEyeEntity extends Entity implements FlyingItemEntity {
 				if (this.field_7621) {
 					this.world.spawnEntity(new ItemEntity(this.world, this.x, this.y, this.z, this.getStack()));
 				} else {
-					this.world.method_20290(2003, new BlockPos(this), 0);
+					this.world.playLevelEvent(2003, new BlockPos(this), 0);
 				}
 			}
 		}

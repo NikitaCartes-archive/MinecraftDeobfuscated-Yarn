@@ -85,13 +85,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.network.packet.ClientSettingsC2SPacket;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stat;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.text.ChatMessageType;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.Style;
 import net.minecraft.text.TextComponent;
@@ -165,7 +165,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		this.interactionManager = serverPlayerInteractionManager;
 		this.server = minecraftServer;
 		this.recipeBook = new ServerRecipeBook(minecraftServer.getRecipeManager());
-		this.statHandler = minecraftServer.getPlayerManager().method_14583(this);
+		this.statHandler = minecraftServer.getPlayerManager().createStatHandler(this);
 		this.advancementManager = minecraftServer.getPlayerManager().getAdvancementManager(this);
 		this.stepHeight = 1.0F;
 		this.method_14245(serverWorld);
@@ -326,7 +326,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 		this.container.sendContentUpdates();
 		if (!this.world.isClient && !this.container.canUse(this)) {
-			this.closeGui();
+			this.closeContainer();
 			this.container = this.playerContainer;
 		}
 
@@ -437,7 +437,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	private void method_14212(ScoreboardCriterion scoreboardCriterion, int i) {
-		this.getScoreboard().method_1162(scoreboardCriterion, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.setScore(i));
+		this.getScoreboard().forEachScore(scoreboardCriterion, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.setScore(i));
 	}
 
 	@Override
@@ -461,7 +461,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 						}
 					}
 				);
-			AbstractTeam abstractTeam = this.method_5781();
+			AbstractTeam abstractTeam = this.getScoreboardTeam();
 			if (abstractTeam == null || abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.ALWAYS) {
 				this.server.getPlayerManager().sendToAll(textComponent);
 			} else if (abstractTeam.getDeathMessageVisibilityRule() == AbstractTeam.VisibilityRule.HIDDEN_FOR_OTHER_TEAMS) {
@@ -478,7 +478,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.drop(damageSource);
 		}
 
-		this.getScoreboard().method_1162(ScoreboardCriterion.DEATH_COUNT, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
+		this.getScoreboard().forEachScore(ScoreboardCriterion.DEATH_COUNT, this.getEntityName(), ScoreboardPlayerScore::incrementScore);
 		LivingEntity livingEntity = this.method_6124();
 		if (livingEntity != null) {
 			this.incrementStat(Stats.field_15411.getOrCreateStat(livingEntity.getType()));
@@ -516,10 +516,10 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.addScore(i);
 			String string = this.getEntityName();
 			String string2 = entity.getEntityName();
-			this.getScoreboard().method_1162(ScoreboardCriterion.TOTAL_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
+			this.getScoreboard().forEachScore(ScoreboardCriterion.TOTAL_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
 			if (entity instanceof PlayerEntity) {
 				this.incrementStat(Stats.field_15404);
-				this.getScoreboard().method_1162(ScoreboardCriterion.PLAYER_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
+				this.getScoreboard().forEachScore(ScoreboardCriterion.PLAYER_KILL_COUNT, string, ScoreboardPlayerScore::incrementScore);
 			} else {
 				this.incrementStat(Stats.field_15414);
 			}
@@ -535,7 +535,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		if (team != null) {
 			int i = team.getColor().getId();
 			if (i >= 0 && i < scoreboardCriterions.length) {
-				this.getScoreboard().method_1162(scoreboardCriterions[i], string, ScoreboardPlayerScore::incrementScore);
+				this.getScoreboard().forEachScore(scoreboardCriterions[i], string, ScoreboardPlayerScore::incrementScore);
 			}
 		}
 	}
@@ -601,7 +601,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(dimensionType, levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
 			PlayerManager playerManager = this.server.getPlayerManager();
-			playerManager.method_14576(this);
+			playerManager.sendCommandTree(this);
 			serverWorld.removePlayer(this);
 			this.removed = false;
 			double d = this.x;
@@ -652,7 +652,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 							int x = p + v;
 							int y = q + u * 0 - t * 1;
 							boolean bl = v < 0;
-							serverWorld2.setBlockState(new BlockPos(w, x, y), bl ? Blocks.field_10540.getDefaultState() : Blocks.field_10124.getDefaultState());
+							serverWorld2.setBlockState(new BlockPos(w, x, y), bl ? Blocks.field_10540.getDefaultState() : Blocks.AIR.getDefaultState());
 						}
 					}
 				}
@@ -821,7 +821,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			return OptionalInt.empty();
 		} else {
 			if (this.container != this.playerContainer) {
-				this.closeGui();
+				this.closeContainer();
 			}
 
 			this.incrementContainerSyncId();
@@ -849,7 +849,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void openHorseInventory(HorseBaseEntity horseBaseEntity, Inventory inventory) {
 		if (this.container != this.playerContainer) {
-			this.closeGui();
+			this.closeContainer();
 		}
 
 		this.incrementContainerSyncId();
@@ -905,7 +905,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void closeGui() {
+	public void closeContainer() {
 		this.networkHandler.sendPacket(new GuiCloseS2CPacket(this.container.syncId));
 		this.method_14247();
 	}
@@ -939,13 +939,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	@Override
 	public void increaseStat(Stat<?> stat, int i) {
 		this.statHandler.increaseStat(this, stat, i);
-		this.getScoreboard().method_1162(stat, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.incrementScore(i));
+		this.getScoreboard().forEachScore(stat, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.incrementScore(i));
 	}
 
 	@Override
 	public void resetStat(Stat<?> stat) {
 		this.statHandler.setStat(this, stat, 0);
-		this.getScoreboard().method_1162(stat, this.getEntityName(), ScoreboardPlayerScore::clearScore);
+		this.getScoreboard().forEachScore(stat, this.getEntityName(), ScoreboardPlayerScore::clearScore);
 	}
 
 	@Override
@@ -1294,7 +1294,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			LevelProperties levelProperties = serverWorld.getLevelProperties();
 			this.networkHandler.sendPacket(new PlayerRespawnS2CPacket(this.dimension, levelProperties.getGeneratorType(), this.interactionManager.getGameMode()));
 			this.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
-			this.server.getPlayerManager().method_14576(this);
+			this.server.getPlayerManager().sendCommandTree(this);
 			serverWorld2.removePlayer(this);
 			this.removed = false;
 			this.setPositionAndAngles(d, e, f, g, h);

@@ -53,7 +53,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements TextCom
 		return this.text;
 	}
 
-	private void method_10926(ServerCommandSource serverCommandSource) {
+	private void resolve(ServerCommandSource serverCommandSource) {
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		if (minecraftServer != null && minecraftServer.method_3814() && ChatUtil.isEmpty(this.text)) {
 			Scoreboard scoreboard = minecraftServer.getScoreboard();
@@ -97,7 +97,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements TextCom
 			String string2 = entity != null && string.equals("*") ? entity.getEntityName() : string;
 			ScoreTextComponent scoreTextComponent = new ScoreTextComponent(string2, this.objective);
 			scoreTextComponent.setText(this.text);
-			scoreTextComponent.method_10926(serverCommandSource);
+			scoreTextComponent.resolve(serverCommandSource);
 			return scoreTextComponent;
 		}
 	}
@@ -123,7 +123,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements TextCom
 			+ this.objective
 			+ '\''
 			+ ", siblings="
-			+ this.children
+			+ this.siblings
 			+ ", style="
 			+ this.getStyle()
 			+ '}';

@@ -53,7 +53,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 		}
 	}
 
-	protected static void method_17399(
+	protected static void updateResult(
 		int i, World world, PlayerEntity playerEntity, CraftingInventory craftingInventory, CraftingResultInventory craftingResultInventory
 	) {
 		if (!world.isClient) {
@@ -74,7 +74,7 @@ public class CraftingTableContainer extends CraftingContainer<CraftingInventory>
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> method_17399(this.syncId, world, this.player, this.craftingInv, this.resultInv)));
+		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> updateResult(this.syncId, world, this.player, this.craftingInv, this.resultInv)));
 	}
 
 	@Override

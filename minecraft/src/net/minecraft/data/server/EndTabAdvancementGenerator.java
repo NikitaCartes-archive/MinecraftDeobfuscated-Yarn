@@ -92,7 +92,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 				true,
 				false
 			)
-			.criterion("in_city", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9017(Feature.END_CITY)))
+			.criterion("in_city", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.feature(Feature.END_CITY)))
 			.build(consumer, "end/find_end_city");
 		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement2)
@@ -121,7 +121,7 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
-			.criterion("levitated", LevitationCriterion.Conditions.method_9013(DistancePredicate.method_8856(NumberRange.FloatRange.atLeast(50.0F))))
+			.criterion("levitated", LevitationCriterion.Conditions.method_9013(DistancePredicate.y(NumberRange.FloatRange.atLeast(50.0F))))
 			.build(consumer, "end/levitate");
 		SimpleAdvancement simpleAdvancement8 = SimpleAdvancement.Task.create()
 			.parent(simpleAdvancement5)

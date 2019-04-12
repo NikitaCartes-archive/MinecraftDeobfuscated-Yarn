@@ -95,7 +95,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 				int i = this.entity.method_6048();
 				ItemStack itemStack = this.entity.getActiveItem();
 				if (i >= CrossbowItem.getPullTime(itemStack)) {
-					this.entity.method_6075();
+					this.entity.stopUsingItem();
 					this.stage = CrossbowAttackGoal.Stage.field_16532;
 					this.field_16529 = 20 + this.entity.getRand().nextInt(20);
 					this.entity.setCharging(false);

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -31,7 +33,6 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.level.LevelProperties;
 import org.apache.logging.log4j.LogManager;
@@ -176,7 +177,7 @@ public class ChunkRegion implements IWorld {
 				Block.dropStacks(blockState, this.world, blockPos, blockEntity);
 			}
 
-			return this.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
+			return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
 		}
 	}
 
@@ -260,7 +261,7 @@ public class ChunkRegion implements IWorld {
 
 	@Override
 	public boolean clearBlockState(BlockPos blockPos, boolean bl) {
-		return this.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
+		return this.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
 	}
 
 	@Override
@@ -353,6 +354,7 @@ public class ChunkRegion implements IWorld {
 	public void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j) {
 	}
 
+	@Environment(EnvType.CLIENT)
 	@Override
 	public BlockPos getSpawnPos() {
 		return this.world.getSpawnPos();

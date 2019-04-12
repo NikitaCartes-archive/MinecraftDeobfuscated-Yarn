@@ -102,6 +102,7 @@ public class GameOptions {
 	public boolean entityShadows = true;
 	public boolean forceUnicodeFont;
 	public boolean invertYMouse;
+	public boolean discreteMouseScroll;
 	public boolean realmsNotifications = true;
 	public boolean reducedDebugInfo;
 	public boolean snooperEnabled = true;
@@ -549,6 +550,7 @@ public class GameOptions {
 				printWriter.println("enableVsync:" + GameOption.VSYNC.get(this));
 				printWriter.println("entityShadows:" + GameOption.ENTITY_SHADOWS.get(this));
 				printWriter.println("forceUnicodeFont:" + GameOption.FORCE_UNICODE_FONT.get(this));
+				printWriter.println("discrete_mouse_scroll:" + GameOption.DISCRETE_MOUSE_SCROLL.get(this));
 				printWriter.println("invertYMouse:" + GameOption.INVERT_MOUSE.get(this));
 				printWriter.println("realmsNotifications:" + GameOption.REALMS_NOTIFICATIONS.get(this));
 				printWriter.println("reducedDebugInfo:" + GameOption.REDUCED_DEBUG_INFO.get(this));

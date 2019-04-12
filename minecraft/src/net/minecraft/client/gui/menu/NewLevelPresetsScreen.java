@@ -207,7 +207,7 @@ public class NewLevelPresetsScreen extends Screen {
 			Blocks.field_10499,
 			Biomes.field_9473,
 			Arrays.asList("decoration"),
-			new FlatChunkGeneratorLayer(1, Blocks.field_10124)
+			new FlatChunkGeneratorLayer(1, Blocks.AIR)
 		);
 	}
 
@@ -274,7 +274,7 @@ public class NewLevelPresetsScreen extends Screen {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public class SuperflatPresetItem extends AlwaysSelectedItemListWidget.class_4281<NewLevelPresetsScreen.SuperflatPresetsListWidget.SuperflatPresetItem> {
+		public class SuperflatPresetItem extends AlwaysSelectedItemListWidget.Item<NewLevelPresetsScreen.SuperflatPresetsListWidget.SuperflatPresetItem> {
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 				NewLevelPresetsScreen.SuperflatPreset superflatPreset = (NewLevelPresetsScreen.SuperflatPreset)NewLevelPresetsScreen.presets.get(i);

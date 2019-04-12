@@ -11,9 +11,9 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DoubleGameOption extends GameOption {
-	private final float interval;
-	private final double min;
-	private double max;
+	protected final float interval;
+	protected final double min;
+	protected double max;
 	private final Function<GameOptions, Double> getter;
 	private final BiConsumer<GameOptions, Double> setter;
 	private final BiFunction<GameOptions, DoubleGameOption, String> displayStringGetter;

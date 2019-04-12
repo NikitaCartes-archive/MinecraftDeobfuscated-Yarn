@@ -7,7 +7,7 @@ import com.google.gson.JsonSyntaxException;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sortme.JsonLikeTagParser;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.world.loot.condition.LootCondition;
@@ -43,7 +43,7 @@ public class SetNbtLootFunction extends ConditionalLootFunction {
 
 		public SetNbtLootFunction method_679(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
 			try {
-				CompoundTag compoundTag = JsonLikeTagParser.parse(JsonHelper.getString(jsonObject, "tag"));
+				CompoundTag compoundTag = StringNbtReader.parse(JsonHelper.getString(jsonObject, "tag"));
 				return new SetNbtLootFunction(lootConditions, compoundTag);
 			} catch (CommandSyntaxException var5) {
 				throw new JsonSyntaxException(var5.getMessage());

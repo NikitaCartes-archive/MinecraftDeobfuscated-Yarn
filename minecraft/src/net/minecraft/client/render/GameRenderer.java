@@ -61,10 +61,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -331,7 +331,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		float f = 1.0F;
 		if (this.client.getCameraEntity() instanceof AbstractClientPlayerEntity) {
 			AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)this.client.getCameraEntity();
-			f = abstractClientPlayerEntity.method_3118();
+			f = abstractClientPlayerEntity.getSpeed();
 		}
 
 		this.lastMovementFovMultiplier = this.movementFovMultiplier;
@@ -397,11 +397,9 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			float g = playerEntity.field_5973 - playerEntity.field_6039;
 			float h = -(playerEntity.field_5973 + g * f);
 			float i = MathHelper.lerp(f, playerEntity.field_7505, playerEntity.field_7483);
-			float j = MathHelper.lerp(f, playerEntity.field_6286, playerEntity.field_6223);
 			GlStateManager.translatef(MathHelper.sin(h * (float) Math.PI) * i * 0.5F, -Math.abs(MathHelper.cos(h * (float) Math.PI) * i), 0.0F);
 			GlStateManager.rotatef(MathHelper.sin(h * (float) Math.PI) * i * 3.0F, 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F, 1.0F, 0.0F, 0.0F);
-			GlStateManager.rotatef(j, 1.0F, 0.0F, 0.0F);
 		}
 	}
 
@@ -791,7 +789,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 		this.enableLightmap();
 		this.backgroundRenderer.applyFog(camera, 0);
 		this.client.getProfiler().swap("particles");
-		particleManager.renderUnlitParticles(camera, f);
+		particleManager.renderParticles(camera, f);
 		this.disableLightmap();
 		GlStateManager.depthMask(false);
 		GlStateManager.enableCull();

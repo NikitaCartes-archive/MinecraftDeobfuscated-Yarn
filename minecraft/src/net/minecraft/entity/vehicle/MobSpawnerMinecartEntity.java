@@ -6,8 +6,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sortme.MobSpawnerLogic;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
 
 public class MobSpawnerMinecartEntity extends AbstractMinecartEntity {

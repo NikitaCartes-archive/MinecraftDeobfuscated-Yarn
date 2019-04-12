@@ -69,7 +69,7 @@ public class FireBlock extends Block {
 	) {
 		return this.canPlaceAt(blockState, iWorld, blockPos)
 			? this.getStateForPosition(iWorld, blockPos).with(AGE, blockState.get(AGE))
-			: Blocks.field_10124.getDefaultState();
+			: Blocks.AIR.getDefaultState();
 	}
 
 	@Nullable

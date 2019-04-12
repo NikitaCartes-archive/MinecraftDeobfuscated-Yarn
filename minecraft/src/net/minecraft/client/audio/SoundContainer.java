@@ -9,5 +9,5 @@ public interface SoundContainer<T> {
 
 	T getSound();
 
-	void addTo(SoundSystem soundSystem);
+	void preload(SoundSystem soundSystem);
 }

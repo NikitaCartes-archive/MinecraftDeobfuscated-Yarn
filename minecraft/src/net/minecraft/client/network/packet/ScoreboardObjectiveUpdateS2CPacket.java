@@ -22,7 +22,7 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 	public ScoreboardObjectiveUpdateS2CPacket(ScoreboardObjective scoreboardObjective, int i) {
 		this.name = scoreboardObjective.getName();
 		this.displayName = scoreboardObjective.getDisplayName();
-		this.type = scoreboardObjective.method_1118();
+		this.type = scoreboardObjective.getRenderType();
 		this.mode = i;
 	}
 

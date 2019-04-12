@@ -64,7 +64,7 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 			if (world.isClient) {
 				return true;
 			} else {
-				BlockState blockState2 = blockState.method_11572(INVERTED);
+				BlockState blockState2 = blockState.cycle(INVERTED);
 				world.setBlockState(blockPos, blockState2, 4);
 				updateState(blockState2, world, blockPos);
 				return true;

@@ -117,7 +117,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		}
 
 		if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10211 && blockState2.get(AGE) > blockState.get(AGE)) {
-			iWorld.setBlockState(blockPos, blockState.method_11572(AGE), 2);
+			iWorld.setBlockState(blockPos, blockState.cycle(AGE), 2);
 		}
 
 		return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);

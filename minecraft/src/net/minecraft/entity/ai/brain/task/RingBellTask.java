@@ -39,7 +39,7 @@ public class RingBellTask extends Task<LivingEntity> {
 
 				for(Direction direction : Direction.Type.HORIZONTAL) {
 					if (bellBlock.ring(
-						serverWorld, blockState, serverWorld.getBlockEntity(blockPos), new BlockHitResult(new Vec3d(0.5, 0.5, 0.5), direction, blockPos, false)
+						serverWorld, blockState, serverWorld.getBlockEntity(blockPos), new BlockHitResult(new Vec3d(0.5, 0.5, 0.5), direction, blockPos, false), null
 					)) {
 						break;
 					}

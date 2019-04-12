@@ -1,9 +1,9 @@
 package net.minecraft.network.listener;
 
-import net.minecraft.network.ButtonClickServerPacket;
 import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
 import net.minecraft.server.network.packet.BoatPaddleStateC2SPacket;
 import net.minecraft.server.network.packet.BookUpdateC2SPacket;
+import net.minecraft.server.network.packet.ButtonClickC2SPacket;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.server.network.packet.ClickWindowC2SPacket;
 import net.minecraft.server.network.packet.ClientCommandC2SPacket;
@@ -55,7 +55,7 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onConfirmTransaction(GuiActionConfirmC2SPacket guiActionConfirmC2SPacket);
 
-	void onButtonClick(ButtonClickServerPacket buttonClickServerPacket);
+	void onButtonClick(ButtonClickC2SPacket buttonClickC2SPacket);
 
 	void onClickWindow(ClickWindowC2SPacket clickWindowC2SPacket);
 

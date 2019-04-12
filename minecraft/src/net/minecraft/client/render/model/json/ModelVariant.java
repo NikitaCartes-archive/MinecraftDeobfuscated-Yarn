@@ -8,12 +8,12 @@ import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.render.model.ModelRotationContainer;
+import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
 @Environment(EnvType.CLIENT)
-public class ModelVariant implements ModelRotationContainer {
+public class ModelVariant implements ModelBakeSettings {
 	private final Identifier location;
 	private final net.minecraft.client.render.model.ModelRotation rotation;
 	private final boolean uvLock;

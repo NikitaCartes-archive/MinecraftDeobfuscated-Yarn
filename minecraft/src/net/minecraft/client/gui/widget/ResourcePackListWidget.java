@@ -63,7 +63,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedItemListWidge
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class ResourcePackItem extends AlwaysSelectedItemListWidget.class_4281<ResourcePackListWidget.ResourcePackItem> {
+	public static class ResourcePackItem extends AlwaysSelectedItemListWidget.Item<ResourcePackListWidget.ResourcePackItem> {
 		private ResourcePackListWidget field_19130;
 		protected final MinecraftClient field_19128;
 		protected final ResourcePackOptionsScreen field_19129;

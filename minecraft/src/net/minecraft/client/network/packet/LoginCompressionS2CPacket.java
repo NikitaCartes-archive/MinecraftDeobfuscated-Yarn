@@ -8,23 +8,23 @@ import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.util.PacketByteBuf;
 
 public class LoginCompressionS2CPacket implements Packet<ClientLoginPacketListener> {
-	private int field_13232;
+	private int compressionThreshold;
 
 	public LoginCompressionS2CPacket() {
 	}
 
 	public LoginCompressionS2CPacket(int i) {
-		this.field_13232 = i;
+		this.compressionThreshold = i;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_13232 = packetByteBuf.readVarInt();
+		this.compressionThreshold = packetByteBuf.readVarInt();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.field_13232);
+		packetByteBuf.writeVarInt(this.compressionThreshold);
 	}
 
 	public void method_12633(ClientLoginPacketListener clientLoginPacketListener) {
@@ -32,7 +32,7 @@ public class LoginCompressionS2CPacket implements Packet<ClientLoginPacketListen
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getMinCompressedSize() {
-		return this.field_13232;
+	public int getCompressionThreshold() {
+		return this.compressionThreshold;
 	}
 }

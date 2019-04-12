@@ -52,18 +52,18 @@ public class ClickEvent {
 		SUGGEST_COMMAND("suggest_command", true),
 		CHANGE_PAGE("change_page", true);
 
-		private static final Map<String, ClickEvent.Action> field_11743 = (Map<String, ClickEvent.Action>)Arrays.stream(values())
+		private static final Map<String, ClickEvent.Action> ACTIONS = (Map<String, ClickEvent.Action>)Arrays.stream(values())
 			.collect(Collectors.toMap(ClickEvent.Action::getName, action -> action));
-		private final boolean field_11744;
+		private final boolean safe;
 		private final String name;
 
 		private Action(String string2, boolean bl) {
 			this.name = string2;
-			this.field_11744 = bl;
+			this.safe = bl;
 		}
 
-		public boolean method_10847() {
-			return this.field_11744;
+		public boolean isSafe() {
+			return this.safe;
 		}
 
 		public String getName() {
@@ -71,7 +71,7 @@ public class ClickEvent {
 		}
 
 		public static ClickEvent.Action get(String string) {
-			return (ClickEvent.Action)field_11743.get(string);
+			return (ClickEvent.Action)ACTIONS.get(string);
 		}
 	}
 }

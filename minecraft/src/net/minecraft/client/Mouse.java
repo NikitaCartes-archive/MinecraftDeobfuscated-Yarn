@@ -110,7 +110,7 @@ public class Mouse {
 
 	private void onMouseScroll(long l, double d, double e) {
 		if (l == MinecraftClient.getInstance().window.getHandle()) {
-			double f = e * this.client.options.mouseWheelSensitivity;
+			double f = (this.client.options.discreteMouseScroll ? Math.signum(e) : e) * this.client.options.mouseWheelSensitivity;
 			if (this.client.overlay == null) {
 				if (this.client.currentScreen != null) {
 					double g = this.x * (double)this.client.window.getScaledWidth() / (double)this.client.window.getWidth();

@@ -72,7 +72,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 			if (bl) {
 				world.setBlockState(blockPos, blockState.with(LIT, Boolean.valueOf(false)), 3);
 				if (method_10489(world, blockPos, true)) {
-					world.method_20290(1502, blockPos, 0);
+					world.playLevelEvent(1502, blockPos, 0);
 					world.getBlockTickScheduler().schedule(blockPos, world.getBlockState(blockPos).getBlock(), 160);
 				}
 			}

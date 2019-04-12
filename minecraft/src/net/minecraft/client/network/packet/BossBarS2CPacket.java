@@ -16,7 +16,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	private TextComponent name;
 	private float percent;
 	private BossBar.Color color;
-	private BossBar.Overlay overlay;
+	private BossBar.Style overlay;
 	private boolean darkenSky;
 	private boolean dragonMusic;
 	private boolean thickenFog;
@@ -45,7 +45,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 				this.name = packetByteBuf.readTextComponent();
 				this.percent = packetByteBuf.readFloat();
 				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
-				this.overlay = packetByteBuf.readEnumConstant(BossBar.Overlay.class);
+				this.overlay = packetByteBuf.readEnumConstant(BossBar.Style.class);
 				this.setFlagBitfield(packetByteBuf.readUnsignedByte());
 			case REMOVE:
 			default:
@@ -58,7 +58,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 				break;
 			case UPDATE_STYLE:
 				this.color = packetByteBuf.readEnumConstant(BossBar.Color.class);
-				this.overlay = packetByteBuf.readEnumConstant(BossBar.Overlay.class);
+				this.overlay = packetByteBuf.readEnumConstant(BossBar.Style.class);
 				break;
 			case UPDATE_FLAGS:
 				this.setFlagBitfield(packetByteBuf.readUnsignedByte());
@@ -147,7 +147,7 @@ public class BossBarS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public BossBar.Overlay getOverlay() {
+	public BossBar.Style getOverlay() {
 		return this.overlay;
 	}
 

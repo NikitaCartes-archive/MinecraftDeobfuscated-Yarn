@@ -66,7 +66,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	protected int getOutlineColor(T entity) {
-		Team team = (Team)entity.method_5781();
+		Team team = (Team)entity.getScoreboardTeam();
 		return team != null && team.getColor().getColor() != null ? team.getColor().getColor() : 16777215;
 	}
 
@@ -104,8 +104,8 @@ public abstract class EntityRenderer<T extends Entity> {
 	private void renderEntityOnFire(Entity entity, double d, double e, double f, float g) {
 		GlStateManager.disableLighting();
 		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
-		Sprite sprite = spriteAtlasTexture.getSprite(ModelLoader.field_5397);
-		Sprite sprite2 = spriteAtlasTexture.getSprite(ModelLoader.field_5370);
+		Sprite sprite = spriteAtlasTexture.getSprite(ModelLoader.FIRE_0);
+		Sprite sprite2 = spriteAtlasTexture.getSprite(ModelLoader.FIRE_1);
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef((float)d, (float)e, (float)f);
 		float h = entity.getWidth() * 1.4F;

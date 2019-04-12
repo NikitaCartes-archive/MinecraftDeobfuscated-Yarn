@@ -55,7 +55,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, world);
 				if (mapState == null) {
 					return false;
-				} else if (this.method_8120(mapState)) {
+				} else if (this.matches(mapState)) {
 					return false;
 				} else {
 					return mapState.scale < 4;
@@ -64,7 +64,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 		}
 	}
 
-	private boolean method_8120(MapState mapState) {
+	private boolean matches(MapState mapState) {
 		if (mapState.icons != null) {
 			for(MapIcon mapIcon : mapState.icons.values()) {
 				if (mapIcon.getType() == MapIcon.Type.field_88 || mapIcon.getType() == MapIcon.Type.field_98) {
