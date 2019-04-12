@@ -81,9 +81,9 @@ public class BlockDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public TextComponent getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i) {
+	public TextComponent getGetFeedback(NbtPathArgumentType.class_2209 arg, double d, int i) {
 		return new TranslatableTextComponent(
-			"commands.data.block.get", nbtPath, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", d), i
+			"commands.data.block.get", arg, this.pos.getX(), this.pos.getY(), this.pos.getZ(), String.format(Locale.ROOT, "%.2f", d), i
 		);
 	}
 }

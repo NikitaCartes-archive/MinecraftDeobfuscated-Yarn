@@ -33,13 +33,13 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 						this.setBlockState(iWorld, blockPos2, Blocks.field_10471.getDefaultState());
 					}
 				} else if (blockPos2.getY() > blockPos.getY()) {
-					this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+					this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
 				} else if (!bl) {
 					this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
 				} else if (this.open) {
 					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10027.getDefaultState());
 				} else {
-					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.field_10124.getDefaultState());
+					this.setBlockState(iWorld, new BlockPos(blockPos2), Blocks.AIR.getDefaultState());
 				}
 			}
 		}

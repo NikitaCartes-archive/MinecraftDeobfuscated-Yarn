@@ -42,7 +42,7 @@ public class PortalParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float method_18132(float f) {
+	public float getSize(float f) {
 		float g = ((float)this.age + f) / (float)this.maxAge;
 		g = 1.0F - g;
 		g *= g;

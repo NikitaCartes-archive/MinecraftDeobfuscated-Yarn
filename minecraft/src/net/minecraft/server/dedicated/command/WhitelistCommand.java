@@ -7,11 +7,11 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.WhitelistEntry;
+import net.minecraft.server.WhitelistList;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.config.WhitelistEntry;
-import net.minecraft.server.config.WhitelistList;
 import net.minecraft.text.TextFormatter;
 import net.minecraft.text.TranslatableTextComponent;
 

@@ -51,7 +51,7 @@ public class UnderwaterCaveCarver extends CaveCarver {
 			Blocks.field_10382,
 			Blocks.field_10164,
 			Blocks.field_10540,
-			Blocks.field_10124,
+			Blocks.AIR,
 			Blocks.field_10543,
 			Blocks.field_10225
 		);

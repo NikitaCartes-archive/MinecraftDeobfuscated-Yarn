@@ -50,8 +50,8 @@ public class WitherSkullBlock extends SkullBlock {
 					for (int i = 0; i < blockPattern.getWidth(); i++) {
 						for (int j = 0; j < blockPattern.getHeight(); j++) {
 							CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
-							world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
-							world.method_20290(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
+							world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
+							world.playLevelEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 						}
 					}
 
@@ -75,7 +75,7 @@ public class WitherSkullBlock extends SkullBlock {
 
 					for (int k = 0; k < blockPattern.getWidth(); k++) {
 						for (int l = 0; l < blockPattern.getHeight(); l++) {
-							world.updateNeighbors(result.translate(k, l, 0).getBlockPos(), Blocks.field_10124);
+							world.updateNeighbors(result.translate(k, l, 0).getBlockPos(), Blocks.AIR);
 						}
 					}
 				}

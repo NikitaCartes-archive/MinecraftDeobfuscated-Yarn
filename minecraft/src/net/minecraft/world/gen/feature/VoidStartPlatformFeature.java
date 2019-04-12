@@ -6,32 +6,36 @@ import java.util.function.Function;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IWorld;
+import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 
 public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
+	private static final BlockPos field_19241 = new BlockPos(8, 3, 8);
+	private static final ChunkPos field_19242 = new ChunkPos(field_19241);
+
 	public VoidStartPlatformFeature(Function<Dynamic<?>, ? extends DefaultFeatureConfig> function) {
 		super(function);
+	}
+
+	private static int method_20403(int i, int j, int k, int l) {
+		return Math.max(Math.abs(i - k), Math.abs(j - l));
 	}
 
 	public boolean method_14165(
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		BlockPos blockPos2 = iWorld.getSpawnPos();
-		int i = 16;
-		double d = blockPos2.getSquaredDistance(blockPos.add(8, blockPos2.getY(), 8));
-		if (d > 1024.0) {
+		ChunkPos chunkPos = new ChunkPos(blockPos);
+		if (method_20403(chunkPos.x, chunkPos.z, field_19242.x, field_19242.z) > 1) {
 			return true;
 		} else {
-			BlockPos blockPos3 = new BlockPos(blockPos2.getX() - 16, Math.max(blockPos2.getY(), 4) - 1, blockPos2.getZ() - 16);
-			BlockPos blockPos4 = new BlockPos(blockPos2.getX() + 16, Math.max(blockPos2.getY(), 4) - 1, blockPos2.getZ() + 16);
-			BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos3);
+			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (int j = blockPos.getZ(); j < blockPos.getZ() + 16; j++) {
-				for (int k = blockPos.getX(); k < blockPos.getX() + 16; k++) {
-					if (j >= blockPos3.getZ() && j <= blockPos4.getZ() && k >= blockPos3.getX() && k <= blockPos4.getX()) {
-						mutable.set(k, mutable.getY(), j);
-						if (blockPos2.getX() == k && blockPos2.getZ() == j) {
+			for (int i = chunkPos.getStartZ(); i <= chunkPos.getEndZ(); i++) {
+				for (int j = chunkPos.getStartX(); j <= chunkPos.getEndX(); j++) {
+					if (method_20403(field_19241.getX(), field_19241.getZ(), j, i) <= 16) {
+						mutable.set(j, field_19241.getY(), i);
+						if (mutable.equals(field_19241)) {
 							iWorld.setBlockState(mutable, Blocks.field_10445.getDefaultState(), 2);
 						} else {
 							iWorld.setBlockState(mutable, Blocks.field_10340.getDefaultState(), 2);

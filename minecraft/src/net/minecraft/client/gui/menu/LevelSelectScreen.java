@@ -6,7 +6,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.LevelListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.TranslatableTextComponent;
@@ -14,12 +13,12 @@ import net.minecraft.text.TranslatableTextComponent;
 @Environment(EnvType.CLIENT)
 public class LevelSelectScreen extends Screen {
 	protected final Screen parent;
-	private String field_3222;
+	private String tooltipText;
 	private ButtonWidget deleteButton;
 	private ButtonWidget selectButton;
 	private ButtonWidget editButton;
 	private ButtonWidget recreateButton;
-	public TextFieldWidget searchBox;
+	protected TextFieldWidget searchBox;
 	private LevelListWidget levelList;
 
 	public LevelSelectScreen(Screen screen) {
@@ -93,7 +92,7 @@ public class LevelSelectScreen extends Screen {
 		this.addButton(
 			new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
-		this.method_19940(false);
+		this.worldSelected(false);
 		this.method_20085(this.searchBox);
 	}
 
@@ -109,21 +108,21 @@ public class LevelSelectScreen extends Screen {
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.field_3222 = null;
+		this.tooltipText = null;
 		this.levelList.render(i, j, f);
 		this.searchBox.render(i, j, f);
 		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 16777215);
 		super.render(i, j, f);
-		if (this.field_3222 != null) {
-			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.field_3222)), i, j);
+		if (this.tooltipText != null) {
+			this.renderTooltip(Lists.<String>newArrayList(Splitter.on("\n").split(this.tooltipText)), i, j);
 		}
 	}
 
-	public void method_2739(String string) {
-		this.field_3222 = string;
+	public void setTooltip(String string) {
+		this.tooltipText = string;
 	}
 
-	public void method_19940(boolean bl) {
+	public void worldSelected(boolean bl) {
 		this.selectButton.active = bl;
 		this.deleteButton.active = bl;
 		this.editButton.active = bl;

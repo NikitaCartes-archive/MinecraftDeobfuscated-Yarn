@@ -34,7 +34,7 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 		int i = packetByteBuf.readVarInt();
 
 		for (int j = 0; j < i; j++) {
-			this.recipes.add(method_17817(packetByteBuf));
+			this.recipes.add(readRecipe(packetByteBuf));
 		}
 	}
 
@@ -43,7 +43,7 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 		packetByteBuf.writeVarInt(this.recipes.size());
 
 		for (Recipe<?> recipe : this.recipes) {
-			method_17816(recipe, packetByteBuf);
+			writeRecipe(recipe, packetByteBuf);
 		}
 	}
 
@@ -52,7 +52,7 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 		return this.recipes;
 	}
 
-	public static Recipe<?> method_17817(PacketByteBuf packetByteBuf) {
+	public static Recipe<?> readRecipe(PacketByteBuf packetByteBuf) {
 		Identifier identifier = packetByteBuf.readIdentifier();
 		Identifier identifier2 = packetByteBuf.readIdentifier();
 		return ((RecipeSerializer)Registry.RECIPE_SERIALIZER
@@ -61,7 +61,7 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 			.read(identifier2, packetByteBuf);
 	}
 
-	public static <T extends Recipe<?>> void method_17816(T recipe, PacketByteBuf packetByteBuf) {
+	public static <T extends Recipe<?>> void writeRecipe(T recipe, PacketByteBuf packetByteBuf) {
 		packetByteBuf.writeIdentifier(Registry.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
 		packetByteBuf.writeIdentifier(recipe.getId());
 		((RecipeSerializer<T>)recipe.getSerializer()).write(packetByteBuf, recipe);

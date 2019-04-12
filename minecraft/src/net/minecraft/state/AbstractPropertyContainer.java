@@ -22,30 +22,30 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 				return "<NULL>";
 			} else {
 				Property<?> property = (Property<?>)entry.getKey();
-				return property.getName() + "=" + this.method_11575(property, (Comparable<?>)entry.getValue());
+				return property.getName() + "=" + this.valueToString(property, (Comparable<?>)entry.getValue());
 			}
 		}
 
-		private <T extends Comparable<T>> String method_11575(Property<T> property, Comparable<?> comparable) {
+		private <T extends Comparable<T>> String valueToString(Property<T> property, Comparable<?> comparable) {
 			return property.getValueAsString((T)comparable);
 		}
 	};
 	protected final O owner;
 	private final ImmutableMap<Property<?>, Comparable<?>> entries;
-	private final int computedHashCode;
-	private Table<Property<?>, Comparable<?>, S> entryWithTable;
+	private final int hashCode;
+	private Table<Property<?>, Comparable<?>, S> withTable;
 
 	protected AbstractPropertyContainer(O object, ImmutableMap<Property<?>, Comparable<?>> immutableMap) {
 		this.owner = object;
 		this.entries = immutableMap;
-		this.computedHashCode = immutableMap.hashCode();
+		this.hashCode = immutableMap.hashCode();
 	}
 
-	public <T extends Comparable<T>> S method_11572(Property<T> property) {
-		return this.with(property, method_11574(property.getValues(), this.get(property)));
+	public <T extends Comparable<T>> S cycle(Property<T> property) {
+		return this.with(property, getNext(property.getValues(), this.get(property)));
 	}
 
-	protected static <T> T method_11574(Collection<T> collection, T object) {
+	protected static <T> T getNext(Collection<T> collection, T object) {
 		Iterator<T> iterator = collection.iterator();
 
 		while (iterator.hasNext()) {
@@ -99,7 +99,7 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 		} else if (comparable2 == comparable) {
 			return (S)this;
 		} else {
-			S object = this.entryWithTable.get(property, comparable);
+			S object = this.withTable.get(property, comparable);
 			if (object == null) {
 				throw new IllegalArgumentException("Cannot set property " + property + " to " + comparable + " on " + this.owner + ", it is not an allowed value");
 			} else {
@@ -108,8 +108,8 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 		}
 	}
 
-	public void method_11571(Map<Map<Property<?>, Comparable<?>>, S> map) {
-		if (this.entryWithTable != null) {
+	public void createWithTable(Map<Map<Property<?>, Comparable<?>>, S> map) {
+		if (this.withTable != null) {
 			throw new IllegalStateException();
 		} else {
 			Table<Property<?>, Comparable<?>, S> table = HashBasedTable.create();
@@ -119,16 +119,16 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 
 				for (Comparable<?> comparable : property.getValues()) {
 					if (comparable != entry.getValue()) {
-						table.put(property, comparable, (S)map.get(this.method_11573(property, comparable)));
+						table.put(property, comparable, (S)map.get(this.toMapWith(property, comparable)));
 					}
 				}
 			}
 
-			this.entryWithTable = (Table<Property<?>, Comparable<?>, S>)(table.isEmpty() ? table : ArrayTable.create(table));
+			this.withTable = (Table<Property<?>, Comparable<?>, S>)(table.isEmpty() ? table : ArrayTable.create(table));
 		}
 	}
 
-	private Map<Property<?>, Comparable<?>> method_11573(Property<?> property, Comparable<?> comparable) {
+	private Map<Property<?>, Comparable<?>> toMapWith(Property<?> property, Comparable<?> comparable) {
 		Map<Property<?>, Comparable<?>> map = Maps.<Property<?>, Comparable<?>>newHashMap(this.entries);
 		map.put(property, comparable);
 		return map;
@@ -144,6 +144,6 @@ public abstract class AbstractPropertyContainer<O, S> implements PropertyContain
 	}
 
 	public int hashCode() {
-		return this.computedHashCode;
+		return this.hashCode;
 	}
 }

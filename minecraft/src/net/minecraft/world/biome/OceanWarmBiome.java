@@ -2,8 +2,8 @@ package net.minecraft.world.biome;
 
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.entity.EntityType;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapNoiseBiasedDecoratorConfig;

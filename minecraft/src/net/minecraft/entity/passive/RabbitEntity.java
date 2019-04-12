@@ -561,11 +561,11 @@ public class RabbitEntity extends AnimalEntity {
 				if (this.field_6861 && block instanceof CarrotsBlock) {
 					Integer integer = blockState.get(CarrotsBlock.AGE);
 					if (integer == 0) {
-						world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 2);
+						world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 2);
 						world.breakBlock(blockPos, true);
 					} else {
 						world.setBlockState(blockPos, blockState.with(CarrotsBlock.AGE, Integer.valueOf(integer - 1)), 2);
-						world.method_20290(2001, blockPos, Block.getRawIdFromState(blockState));
+						world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 					}
 
 					this.rabbit.moreCarrotTicks = 40;

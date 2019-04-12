@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.network.packet.PlaySoundS2CPacket;
@@ -19,6 +20,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
@@ -31,10 +33,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.SpawnHelper;
-import net.minecraft.sortme.SpawnRestriction;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
@@ -43,18 +44,19 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.Heightmap;
 
 public class Raid {
-	public static final ItemStack ILLAGER_BANNER = getIllagerBanner();
+	public static final ItemStack OMINOUS_BANNER = getIllagerBanner();
 	private static final TranslatableTextComponent EVENT_TEXT = new TranslatableTextComponent("event.minecraft.raid");
 	private static final TranslatableTextComponent VICTORY_SUFFIX_TEXT = new TranslatableTextComponent("event.minecraft.raid.victory");
 	private static final TranslatableTextComponent DEFEAT_SUFFIX_TEXT = new TranslatableTextComponent("event.minecraft.raid.defeat");
 	private static final TextComponent VICTORY_TITLE = EVENT_TEXT.method_11020().append(" - ").append(VICTORY_SUFFIX_TEXT);
 	private static final TextComponent DEFEAT_TITLE = EVENT_TEXT.method_11020().append(" - ").append(DEFEAT_SUFFIX_TEXT);
-	private final Map<Integer, RaiderEntity> waveToLeader = Maps.<Integer, RaiderEntity>newHashMap();
+	private final Map<Integer, RaiderEntity> waveToCaptain = Maps.<Integer, RaiderEntity>newHashMap();
 	private final Map<Integer, Set<RaiderEntity>> waveToRaiders = Maps.<Integer, Set<RaiderEntity>>newHashMap();
 	private final Set<UUID> heroesOfTheVillage = Sets.<UUID>newHashSet();
 	private long ticksActive;
@@ -66,7 +68,7 @@ public class Raid {
 	private int badOmenLevel;
 	private boolean active;
 	private int wavesSpawned;
-	private final ServerBossBar bar = new ServerBossBar(EVENT_TEXT, BossBar.Color.field_5784, BossBar.Overlay.field_5791);
+	private final ServerBossBar bar = new ServerBossBar(EVENT_TEXT, BossBar.Color.field_5784, BossBar.Style.field_5791);
 	private int postRaidTicks;
 	private int preRaidTicks;
 	private final Random random = new Random();
@@ -294,24 +296,26 @@ public class Raid {
 						this.postRaidTicks++;
 					} else {
 						this.status = Raid.Status.field_19027;
+
+						for (UUID uUID : this.heroesOfTheVillage) {
+							Entity entity = this.world.getEntity(uUID);
+							if (entity instanceof LivingEntity && !entity.isSpectator()) {
+								LivingEntity livingEntity = (LivingEntity)entity;
+								livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_18980, 48000, this.badOmenLevel - 1));
+								if (livingEntity instanceof ServerPlayerEntity) {
+									ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
+									serverPlayerEntity.incrementStat(Stats.field_19257);
+									Criterions.HERO_OF_THE_VILLAGE.handle(serverPlayerEntity);
+								}
+							}
+						}
 					}
 				}
 
 				this.markDirty();
 			} else if (this.isFinished()) {
 				this.finishCooldown++;
-				boolean blx = this.hasWon();
 				if (this.finishCooldown >= 600) {
-					if (blx) {
-						for (UUID uUID : this.heroesOfTheVillage) {
-							Entity entity = this.world.getEntity(uUID);
-							if (entity instanceof LivingEntity && !entity.isSpectator()) {
-								LivingEntity livingEntity = (LivingEntity)entity;
-								livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_18980, 48000, this.badOmenLevel - 1));
-							}
-						}
-					}
-
 					this.invalidate();
 					return;
 				}
@@ -319,7 +323,7 @@ public class Raid {
 				if (this.finishCooldown % 20 == 0) {
 					this.updateBarToPlayers();
 					this.bar.setVisible(true);
-					if (blx) {
+					if (this.hasWon()) {
 						this.bar.setPercent(0.0F);
 						this.bar.setName(VICTORY_TITLE);
 					} else {
@@ -426,7 +430,7 @@ public class Raid {
 				this.addRaider(i, raiderEntity, blockPos, false);
 				if (!bl && raiderEntity.canLead()) {
 					raiderEntity.setPatrolLeader(true);
-					this.setRaidLeader(i, raiderEntity);
+					this.setWaveCaptain(i, raiderEntity);
 					bl = true;
 				}
 
@@ -533,13 +537,13 @@ public class Raid {
 			.with(BannerPattern.BORDER, DyeColor.BLACK)
 			.build();
 		compoundTag.put("Patterns", listTag);
-		itemStack.setDisplayName(new TranslatableTextComponent("block.minecraft.illager_banner").applyFormat(TextFormat.field_1065));
+		itemStack.setDisplayName(new TranslatableTextComponent("block.minecraft.ominous_banner").applyFormat(TextFormat.field_1065));
 		return itemStack;
 	}
 
 	@Nullable
-	public RaiderEntity getLeader(int i) {
-		return (RaiderEntity)this.waveToLeader.get(i);
+	public RaiderEntity getCaptain(int i) {
+		return (RaiderEntity)this.waveToCaptain.get(i);
 	}
 
 	@Nullable
@@ -597,14 +601,14 @@ public class Raid {
 		return true;
 	}
 
-	public void setRaidLeader(int i, RaiderEntity raiderEntity) {
-		this.waveToLeader.put(i, raiderEntity);
-		raiderEntity.setEquippedStack(EquipmentSlot.HEAD, ILLAGER_BANNER);
+	public void setWaveCaptain(int i, RaiderEntity raiderEntity) {
+		this.waveToCaptain.put(i, raiderEntity);
+		raiderEntity.setEquippedStack(EquipmentSlot.HEAD, OMINOUS_BANNER);
 		raiderEntity.setEquipmentDropChance(EquipmentSlot.HEAD, 2.0F);
 	}
 
 	public void removeLeader(int i) {
-		this.waveToLeader.remove(i);
+		this.waveToCaptain.remove(i);
 	}
 
 	public BlockPos getCenter() {

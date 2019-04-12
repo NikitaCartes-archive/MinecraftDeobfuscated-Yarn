@@ -9,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class FoxModel<T extends FoxEntity> extends EntityModel<T> {
-	private final Cuboid head;
+	public final Cuboid head;
 	private final Cuboid leftEar;
 	private final Cuboid rightEar;
 	private final Cuboid nose;
@@ -83,11 +83,11 @@ public class FoxModel<T extends FoxEntity> extends EntityModel<T> {
 			this.head.setRotationPoint(-1.0F, 16.5F + i, -3.0F);
 		} else if (foxEntity.isSleeping()) {
 			this.body.roll = (float) (-Math.PI / 2);
-			this.body.setRotationPoint(0.0F, 19.0F + foxEntity.getBodyRotationHeightOffset(h), -6.0F);
+			this.body.setRotationPoint(0.0F, 21.0F + foxEntity.getBodyRotationHeightOffset(h), -6.0F);
 			this.tail.pitch = (float) (-Math.PI * 5.0 / 6.0);
 			if (this.isChild) {
 				this.tail.pitch = -2.1816616F;
-				this.body.setRotationPoint(0.0F, 19.0F + foxEntity.getBodyRotationHeightOffset(h), -2.0F);
+				this.body.setRotationPoint(0.0F, 21.0F + foxEntity.getBodyRotationHeightOffset(h), -2.0F);
 			}
 
 			this.head.setRotationPoint(1.0F, 19.49F, -3.0F);
@@ -123,13 +123,13 @@ public class FoxModel<T extends FoxEntity> extends EntityModel<T> {
 			GlStateManager.pushMatrix();
 			float l = 0.75F;
 			GlStateManager.scalef(0.75F, 0.75F, 0.75F);
-			GlStateManager.translatef(2.0F * k, 8.0F * k, 3.35F * k);
+			GlStateManager.translatef(0.0F, 8.0F * k, 3.35F * k);
 			this.head.render(k);
 			GlStateManager.popMatrix();
 			GlStateManager.pushMatrix();
 			float m = 0.5F;
 			GlStateManager.scalef(0.5F, 0.5F, 0.5F);
-			GlStateManager.translatef(2.0F * k, 24.0F * k, 0.0F);
+			GlStateManager.translatef(0.0F, 24.0F * k, 0.0F);
 			this.body.render(k);
 			this.frontLeftLeg.render(k);
 			this.frontRightLeg.render(k);
@@ -150,6 +150,11 @@ public class FoxModel<T extends FoxEntity> extends EntityModel<T> {
 
 	public void method_18332(T foxEntity, float f, float g, float h, float i, float j, float k) {
 		super.setAngles(foxEntity, f, g, h, i, j, k);
+		if (!foxEntity.isSleeping() && !foxEntity.isWalking() && !foxEntity.isCrouching()) {
+			this.head.pitch = j * (float) (Math.PI / 180.0);
+			this.head.yaw = i * (float) (Math.PI / 180.0);
+		}
+
 		if (foxEntity.isSleeping()) {
 			this.head.roll = MathHelper.cos(h * 0.027F) / 22.0F;
 		}

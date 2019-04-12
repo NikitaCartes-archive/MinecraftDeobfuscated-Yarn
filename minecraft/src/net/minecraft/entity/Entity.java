@@ -90,13 +90,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.gen.Heightmap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -416,7 +416,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public void setOnFireFor(int i) {
 		int j = i * 20;
 		if (this instanceof LivingEntity) {
-			j = ProtectionEnchantment.method_8238((LivingEntity)this, j);
+			j = ProtectionEnchantment.transformFireDuration((LivingEntity)this, j);
 		}
 
 		if (this.fireTime < j) {
@@ -923,7 +923,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public boolean method_5713() {
 		if (this.getRiddenEntity() instanceof BoatEntity) {
 			this.insideWater = false;
-		} else if (this.isInsideFluid(FluidTags.field_15517)) {
+		} else if (this.updateMovementInFluid(FluidTags.field_15517)) {
 			if (!this.insideWater && !this.field_5953) {
 				this.onSwimmingStart();
 			}
@@ -1823,24 +1823,24 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (playerEntity.isSpectator()) {
 			return false;
 		} else {
-			AbstractTeam abstractTeam = this.method_5781();
-			return abstractTeam != null && playerEntity != null && playerEntity.method_5781() == abstractTeam && abstractTeam.shouldShowFriendlyInvisibles()
+			AbstractTeam abstractTeam = this.getScoreboardTeam();
+			return abstractTeam != null && playerEntity != null && playerEntity.getScoreboardTeam() == abstractTeam && abstractTeam.shouldShowFriendlyInvisibles()
 				? false
 				: this.isInvisible();
 		}
 	}
 
 	@Nullable
-	public AbstractTeam method_5781() {
+	public AbstractTeam getScoreboardTeam() {
 		return this.world.getScoreboard().getPlayerTeam(this.getEntityName());
 	}
 
 	public boolean isTeammate(Entity entity) {
-		return this.method_5645(entity.method_5781());
+		return this.isTeamPlayer(entity.getScoreboardTeam());
 	}
 
-	public boolean method_5645(AbstractTeam abstractTeam) {
-		return this.method_5781() != null ? this.method_5781().isEqual(abstractTeam) : false;
+	public boolean isTeamPlayer(AbstractTeam abstractTeam) {
+		return this.getScoreboardTeam() != null ? this.getScoreboardTeam().isEqual(abstractTeam) : false;
 	}
 
 	public void setInvisible(boolean bl) {
@@ -1946,7 +1946,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	private static void method_5856(TextComponent textComponent) {
-		textComponent.modifyStyle(style -> style.setClickEvent(null)).getChildren().forEach(Entity::method_5856);
+		textComponent.modifyStyle(style -> style.setClickEvent(null)).getSiblings().forEach(Entity::method_5856);
 	}
 
 	@Override
@@ -2172,7 +2172,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	@Override
 	public TextComponent getDisplayName() {
-		return Team.method_1142(this.method_5781(), this.getName())
+		return Team.modifyText(this.getScoreboardTeam(), this.getName())
 			.modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
 	}
 
@@ -2203,7 +2203,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		if (this.world instanceof ServerWorld) {
 			this.field_5966 = true;
 			this.setPositionAndAngles(d, e, f, this.yaw, this.pitch);
-			((ServerWorld)this.world).method_18767(this);
+			((ServerWorld)this.world).checkChunk(this);
 		}
 	}
 
@@ -2543,7 +2543,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevYaw = this.yaw;
 	}
 
-	public boolean isInsideFluid(Tag<Fluid> tag) {
+	public boolean updateMovementInFluid(Tag<Fluid> tag) {
 		BoundingBox boundingBox = this.getBoundingBox().contract(0.001);
 		int i = MathHelper.floor(boundingBox.minX);
 		int j = MathHelper.ceil(boundingBox.maxX);

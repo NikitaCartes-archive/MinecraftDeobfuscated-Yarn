@@ -9,6 +9,7 @@ import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.container.Container;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
@@ -123,7 +124,20 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
-			((ShulkerBoxBlockEntity)blockEntity).checkLootInteraction(playerEntity);
+			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
+			if (!world.isClient && playerEntity.isCreative()) {
+				ItemStack itemStack = getItemStack(this.getColor());
+				CompoundTag compoundTag = shulkerBoxBlockEntity.method_11317(new CompoundTag());
+				if (!compoundTag.isEmpty()) {
+					itemStack.setChildTag("BlockEntityTag", compoundTag);
+				}
+
+				ItemEntity itemEntity = new ItemEntity(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack);
+				itemEntity.setToDefaultPickupDelay();
+				world.spawnEntity(itemEntity);
+			} else {
+				shulkerBoxBlockEntity.checkLootInteraction(playerEntity);
+			}
 		}
 
 		super.onBreak(world, blockPos, blockState, playerEntity);
@@ -254,7 +268,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 		return block instanceof ShulkerBoxBlock ? ((ShulkerBoxBlock)block).getColor() : null;
 	}
 
-	public static Block get(DyeColor dyeColor) {
+	public static Block get(@Nullable DyeColor dyeColor) {
 		if (dyeColor == null) {
 			return Blocks.field_10603;
 		} else {
@@ -297,12 +311,11 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public DyeColor getColor() {
 		return this.color;
 	}
 
-	public static ItemStack getItemStack(DyeColor dyeColor) {
+	public static ItemStack getItemStack(@Nullable DyeColor dyeColor) {
 		return new ItemStack(get(dyeColor));
 	}
 

@@ -23,10 +23,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.chunk.ChunkPos;
-import net.minecraft.world.gen.Heightmap;
 
 public abstract class StructurePiece {
 	protected static final BlockState AIR = Blocks.field_10543.getDefaultState();
@@ -35,7 +35,7 @@ public abstract class StructurePiece {
 	private Direction facing;
 	private Mirror mirror;
 	private Rotation rotation;
-	public int field_15316;
+	protected int field_15316;
 	private final StructurePieceType type;
 	private static final Set<Block> BLOCKS_NEEDING_POST_PROCESSING = ImmutableSet.<Block>builder()
 		.add(Blocks.field_10364)
@@ -226,7 +226,7 @@ public abstract class StructurePiece {
 		int m = this.applyYTransform(j);
 		int n = this.applyZTransform(i, k);
 		BlockPos blockPos = new BlockPos(l, m, n);
-		return !mutableIntBoundingBox.contains(blockPos) ? Blocks.field_10124.getDefaultState() : blockView.getBlockState(blockPos);
+		return !mutableIntBoundingBox.contains(blockPos) ? Blocks.AIR.getDefaultState() : blockView.getBlockState(blockPos);
 	}
 
 	protected boolean isUnderSeaLevel(ViewableWorld viewableWorld, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
@@ -241,7 +241,7 @@ public abstract class StructurePiece {
 		for (int o = j; o <= m; o++) {
 			for (int p = i; p <= l; p++) {
 				for (int q = k; q <= n; q++) {
-					this.addBlock(iWorld, Blocks.field_10124.getDefaultState(), p, o, q, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.AIR.getDefaultState(), p, o, q, mutableIntBoundingBox);
 				}
 			}
 		}
@@ -511,7 +511,7 @@ public abstract class StructurePiece {
 	}
 
 	public abstract static class class_3444 {
-		protected BlockState block = Blocks.field_10124.getDefaultState();
+		protected BlockState block = Blocks.AIR.getDefaultState();
 
 		protected class_3444() {
 		}

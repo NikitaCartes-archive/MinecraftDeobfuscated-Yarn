@@ -15,7 +15,7 @@ import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 
-public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.FunctionArgument> {
+public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.class_2285> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo:bar", "#foo");
 	private static final DynamicCommandExceptionType UNKNOWN_FUNCTION_TAG_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("arguments.function.tag.unknown", object)
@@ -28,32 +28,32 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 		return new FunctionArgumentType();
 	}
 
-	public FunctionArgumentType.FunctionArgument getFunction(StringReader stringReader) throws CommandSyntaxException {
+	public FunctionArgumentType.class_2285 method_9764(StringReader stringReader) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '#') {
 			stringReader.skip();
 			final Identifier identifier = Identifier.parse(stringReader);
-			return new FunctionArgumentType.FunctionArgument() {
+			return new FunctionArgumentType.class_2285() {
 				@Override
-				public Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+				public Collection<CommandFunction> method_9771(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
 					Tag<CommandFunction> tag = FunctionArgumentType.getFunctionTag(commandContext, identifier);
 					return tag.values();
 				}
 
 				@Override
-				public Either<CommandFunction, Tag<CommandFunction>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+				public Either<CommandFunction, Tag<CommandFunction>> method_9770(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
 					return Either.right(FunctionArgumentType.getFunctionTag(commandContext, identifier));
 				}
 			};
 		} else {
 			final Identifier identifier = Identifier.parse(stringReader);
-			return new FunctionArgumentType.FunctionArgument() {
+			return new FunctionArgumentType.class_2285() {
 				@Override
-				public Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+				public Collection<CommandFunction> method_9771(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
 					return Collections.singleton(FunctionArgumentType.getFunction(commandContext, identifier));
 				}
 
 				@Override
-				public Either<CommandFunction, Tag<CommandFunction>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
+				public Either<CommandFunction, Tag<CommandFunction>> method_9770(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException {
 					return Either.left(FunctionArgumentType.getFunction(commandContext, identifier));
 				}
 			};
@@ -78,12 +78,11 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 	}
 
 	public static Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<FunctionArgumentType.FunctionArgument>getArgument(string, FunctionArgumentType.FunctionArgument.class).getFunctions(commandContext);
+		return commandContext.<FunctionArgumentType.class_2285>getArgument(string, FunctionArgumentType.class_2285.class).method_9771(commandContext);
 	}
 
 	public static Either<CommandFunction, Tag<CommandFunction>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
-		return commandContext.<FunctionArgumentType.FunctionArgument>getArgument(string, FunctionArgumentType.FunctionArgument.class)
-			.getFunctionOrTag(commandContext);
+		return commandContext.<FunctionArgumentType.class_2285>getArgument(string, FunctionArgumentType.class_2285.class).method_9770(commandContext);
 	}
 
 	@Override
@@ -91,9 +90,9 @@ public class FunctionArgumentType implements ArgumentType<FunctionArgumentType.F
 		return EXAMPLES;
 	}
 
-	public interface FunctionArgument {
-		Collection<CommandFunction> getFunctions(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
+	public interface class_2285 {
+		Collection<CommandFunction> method_9771(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
 
-		Either<CommandFunction, Tag<CommandFunction>> getFunctionOrTag(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
+		Either<CommandFunction, Tag<CommandFunction>> method_9770(CommandContext<ServerCommandSource> commandContext) throws CommandSyntaxException;
 	}
 }

@@ -24,7 +24,7 @@ public abstract class AlwaysSelectedItemListWidget<E extends ItemListWidget.Item
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class class_4281<E extends AlwaysSelectedItemListWidget.class_4281<E>> extends ItemListWidget.Item<E> {
+	public abstract static class Item<E extends AlwaysSelectedItemListWidget.Item<E>> extends ItemListWidget.Item<E> {
 		@Override
 		public boolean changeFocus(boolean bl) {
 			return false;

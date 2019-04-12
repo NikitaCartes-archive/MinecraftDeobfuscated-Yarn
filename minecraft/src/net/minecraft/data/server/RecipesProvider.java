@@ -4838,7 +4838,7 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private InventoryChangedCriterion.Conditions method_10424(NumberRange.IntRange intRange, ItemProvider itemProvider) {
-		return this.method_10423(ItemPredicate.Builder.create().item(itemProvider).method_8974(intRange).build());
+		return this.method_10423(ItemPredicate.Builder.create().item(itemProvider).count(intRange).build());
 	}
 
 	private InventoryChangedCriterion.Conditions method_10426(ItemProvider itemProvider) {

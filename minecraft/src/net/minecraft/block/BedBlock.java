@@ -24,7 +24,6 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -81,24 +80,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 				}
 			}
 
-			if (world.dimension.canPlayersSleep() && world.getBiome(blockPos) != Biomes.field_9461) {
-				if ((Boolean)blockState.get(OCCUPIED)) {
-					if (!this.method_18477(world, blockPos)) {
-						playerEntity.addChatMessage(new TranslatableTextComponent("block.minecraft.bed.occupied"), true);
-						return true;
-					}
-
-					blockState = blockState.with(OCCUPIED, Boolean.valueOf(false));
-					world.setBlockState(blockPos, blockState, 4);
-				}
-
-				playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
-					if (sleepFailureReason != null) {
-						playerEntity.addChatMessage(sleepFailureReason.getText(), true);
-					}
-				});
-				return true;
-			} else {
+			if (!world.dimension.canPlayersSleep() || world.getBiome(blockPos) == Biomes.field_9461) {
 				world.clearBlockState(blockPos, false);
 				BlockPos blockPos2 = blockPos.offset(((Direction)blockState.get(field_11177)).getOpposite());
 				if (world.getBlockState(blockPos2).getBlock() == this) {
@@ -116,24 +98,18 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 					Explosion.DestructionType.field_18687
 				);
 				return true;
+			} else if ((Boolean)blockState.get(OCCUPIED)) {
+				playerEntity.addChatMessage(new TranslatableTextComponent("block.minecraft.bed.occupied"), true);
+				return true;
+			} else {
+				playerEntity.trySleep(blockPos).ifLeft(sleepFailureReason -> {
+					if (sleepFailureReason != null) {
+						playerEntity.addChatMessage(sleepFailureReason.getText(), true);
+					}
+				});
+				return true;
 			}
 		}
-	}
-
-	private boolean method_18477(World world, BlockPos blockPos) {
-		return world.getEntities(
-				LivingEntity.class,
-				new BoundingBox(
-					(double)blockPos.getX(),
-					(double)blockPos.getY(),
-					(double)blockPos.getZ(),
-					(double)(blockPos.getX() + 1),
-					(double)(blockPos.getY() + 2),
-					(double)(blockPos.getZ() + 1)
-				),
-				LivingEntity::isSleeping
-			)
-			.isEmpty();
 	}
 
 	@Override
@@ -161,7 +137,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		if (direction == method_9488(blockState.get(PART), blockState.get(field_11177))) {
 			return blockState2.getBlock() == this && blockState2.get(PART) != blockState.get(PART)
 				? blockState.with(OCCUPIED, blockState2.get(OCCUPIED))
-				: Blocks.field_10124.getDefaultState();
+				: Blocks.AIR.getDefaultState();
 		} else {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		}
@@ -175,7 +151,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		super.afterBreak(world, playerEntity, blockPos, Blocks.field_10124.getDefaultState(), blockEntity, itemStack);
+		super.afterBreak(world, playerEntity, blockPos, Blocks.AIR.getDefaultState(), blockEntity, itemStack);
 	}
 
 	@Override
@@ -184,7 +160,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		BlockPos blockPos2 = blockPos.offset(method_9488(bedPart, blockState.get(field_11177)));
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(PART) != bedPart) {
-			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
+			world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
 			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			if (!world.isClient && !playerEntity.isCreative()) {
 				ItemStack itemStack = playerEntity.getMainHandStack();
@@ -298,7 +274,7 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		if (!world.isClient) {
 			BlockPos blockPos2 = blockPos.offset(blockState.get(field_11177));
 			world.setBlockState(blockPos2, blockState.with(PART, BedPart.field_12560), 3);
-			world.updateNeighbors(blockPos, Blocks.field_10124);
+			world.updateNeighbors(blockPos, Blocks.AIR);
 			blockState.updateNeighborStates(world, blockPos, 3);
 		}
 	}

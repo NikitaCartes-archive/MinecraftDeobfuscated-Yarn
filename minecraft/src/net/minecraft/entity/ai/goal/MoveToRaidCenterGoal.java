@@ -11,7 +11,7 @@ import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.Heightmap;
 
 public class MoveToRaidCenterGoal<T extends RaiderEntity> extends Goal {
 	private final T owner;

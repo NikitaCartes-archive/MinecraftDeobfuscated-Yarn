@@ -230,7 +230,7 @@ public final class ItemStack {
 				int k = 0;
 
 				for (int l = 0; j > 0 && l < i; l++) {
-					if (UnbreakingEnchantment.method_8176(this, j, random)) {
+					if (UnbreakingEnchantment.shouldPreventDamage(this, j, random)) {
 						k++;
 					}
 				}

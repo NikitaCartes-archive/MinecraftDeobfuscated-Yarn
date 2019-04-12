@@ -21,14 +21,12 @@ public class Team extends AbstractTeam {
 	private TextComponent suffix = new StringTextComponent("");
 	private boolean friendlyFire = true;
 	private boolean showFriendlyInvisibles = true;
-	private AbstractTeam.VisibilityRule field_1423 = AbstractTeam.VisibilityRule.ALWAYS;
-	private AbstractTeam.VisibilityRule field_1422 = AbstractTeam.VisibilityRule.ALWAYS;
-	private TextFormat color;
-	private AbstractTeam.CollisionRule field_1425;
+	private AbstractTeam.VisibilityRule nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
+	private AbstractTeam.VisibilityRule deathMessageVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS;
+	private TextFormat color = TextFormat.RESET;
+	private AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.ALWAYS;
 
 	public Team(Scoreboard scoreboard, String string) {
-		this.color = TextFormat.color;
-		this.field_1425 = AbstractTeam.CollisionRule.ALWAYS;
 		this.scoreboard = scoreboard;
 		this.name = string;
 		this.displayName = new StringTextComponent(string);
@@ -43,14 +41,14 @@ public class Team extends AbstractTeam {
 		return this.displayName;
 	}
 
-	public TextComponent method_1148() {
+	public TextComponent getFormattedName() {
 		TextComponent textComponent = TextFormatter.bracketed(
 			this.displayName
 				.copy()
 				.modifyStyle(style -> style.setInsertion(this.name).setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new StringTextComponent(this.name))))
 		);
 		TextFormat textFormat = this.getColor();
-		if (textFormat != TextFormat.color) {
+		if (textFormat != TextFormat.RESET) {
 			textComponent.applyFormat(textFormat);
 		}
 
@@ -93,14 +91,14 @@ public class Team extends AbstractTeam {
 	public TextComponent modifyText(TextComponent textComponent) {
 		TextComponent textComponent2 = new StringTextComponent("").append(this.prefix).append(textComponent).append(this.suffix);
 		TextFormat textFormat = this.getColor();
-		if (textFormat != TextFormat.color) {
+		if (textFormat != TextFormat.RESET) {
 			textComponent2.applyFormat(textFormat);
 		}
 
 		return textComponent2;
 	}
 
-	public static TextComponent method_1142(@Nullable AbstractTeam abstractTeam, TextComponent textComponent) {
+	public static TextComponent modifyText(@Nullable AbstractTeam abstractTeam, TextComponent textComponent) {
 		return abstractTeam == null ? textComponent.copy() : abstractTeam.modifyText(textComponent);
 	}
 
@@ -126,31 +124,31 @@ public class Team extends AbstractTeam {
 
 	@Override
 	public AbstractTeam.VisibilityRule getNameTagVisibilityRule() {
-		return this.field_1423;
+		return this.nameTagVisibilityRule;
 	}
 
 	@Override
 	public AbstractTeam.VisibilityRule getDeathMessageVisibilityRule() {
-		return this.field_1422;
+		return this.deathMessageVisibilityRule;
 	}
 
-	public void method_1149(AbstractTeam.VisibilityRule visibilityRule) {
-		this.field_1423 = visibilityRule;
+	public void setNameTagVisibilityRule(AbstractTeam.VisibilityRule visibilityRule) {
+		this.nameTagVisibilityRule = visibilityRule;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
-	public void method_1133(AbstractTeam.VisibilityRule visibilityRule) {
-		this.field_1422 = visibilityRule;
+	public void setDeathMessageVisibilityRule(AbstractTeam.VisibilityRule visibilityRule) {
+		this.deathMessageVisibilityRule = visibilityRule;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 
 	@Override
 	public AbstractTeam.CollisionRule getCollisionRule() {
-		return this.field_1425;
+		return this.collisionRule;
 	}
 
-	public void method_1145(AbstractTeam.CollisionRule collisionRule) {
-		this.field_1425 = collisionRule;
+	public void setCollisionRule(AbstractTeam.CollisionRule collisionRule) {
+		this.collisionRule = collisionRule;
 		this.scoreboard.updateScoreboardTeam(this);
 	}
 

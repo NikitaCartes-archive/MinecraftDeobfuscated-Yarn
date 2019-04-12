@@ -1049,7 +1049,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 		this.method_16293(Blocks.field_10376, BlockLootTableGenerator::method_10372);
 		this.method_16293(Blocks.field_10597, BlockLootTableGenerator::method_10372);
-		this.method_16293(Blocks.field_10238, BlockLootTableGenerator::method_10372);
+		this.method_16258(Blocks.field_10238, method_10372(Blocks.field_10376));
 		this.method_16258(Blocks.field_10313, method_10372(Blocks.field_10112));
 		this.method_16293(
 			Blocks.field_10214,

@@ -63,7 +63,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		if (i == 256) {
-			this.minecraft.player.closeGui();
+			this.minecraft.player.closeContainer();
 		}
 
 		return !this.nameField.keyPressed(i, j, k) && !this.nameField.method_20315() ? super.keyPressed(i, j, k) : true;

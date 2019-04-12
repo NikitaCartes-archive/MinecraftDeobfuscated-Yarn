@@ -14,7 +14,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int id;
 	private byte scale;
 	private boolean showIcons;
-	private boolean field_17433;
+	private boolean locked;
 	private MapIcon[] icons;
 	private int updateLeft;
 	private int updateTop;
@@ -29,7 +29,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.id = i;
 		this.scale = b;
 		this.showIcons = bl;
-		this.field_17433 = bl2;
+		this.locked = bl2;
 		this.icons = (MapIcon[])collection.toArray(new MapIcon[collection.size()]);
 		this.updateLeft = j;
 		this.updateTop = k;
@@ -49,7 +49,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.id = packetByteBuf.readVarInt();
 		this.scale = packetByteBuf.readByte();
 		this.showIcons = packetByteBuf.readBoolean();
-		this.field_17433 = packetByteBuf.readBoolean();
+		this.locked = packetByteBuf.readBoolean();
 		this.icons = new MapIcon[packetByteBuf.readVarInt()];
 
 		for (int i = 0; i < this.icons.length; i++) {
@@ -77,7 +77,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeVarInt(this.id);
 		packetByteBuf.writeByte(this.scale);
 		packetByteBuf.writeBoolean(this.showIcons);
-		packetByteBuf.writeBoolean(this.field_17433);
+		packetByteBuf.writeBoolean(this.locked);
 		packetByteBuf.writeVarInt(this.icons.length);
 
 		for (MapIcon mapIcon : this.icons) {
@@ -115,7 +115,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void apply(MapState mapState) {
 		mapState.scale = this.scale;
 		mapState.showIcons = this.showIcons;
-		mapState.locked = this.field_17433;
+		mapState.locked = this.locked;
 		mapState.icons.clear();
 
 		for (int i = 0; i < this.icons.length; i++) {

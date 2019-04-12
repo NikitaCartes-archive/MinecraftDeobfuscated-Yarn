@@ -116,7 +116,7 @@ public class ResourceReloadHandler<S> implements ResourceReloadMonitor {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void method_18849() {
+	public void throwExceptions() {
 		if (this.applyStageFuture.isCompletedExceptionally()) {
 			this.applyStageFuture.join();
 		}

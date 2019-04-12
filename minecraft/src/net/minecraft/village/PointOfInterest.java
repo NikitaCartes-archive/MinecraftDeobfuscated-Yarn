@@ -16,7 +16,7 @@ public class PointOfInterest implements DynamicSerializable {
 	private final Runnable updateListener;
 
 	private PointOfInterest(BlockPos blockPos, PointOfInterestType pointOfInterestType, int i, Runnable runnable) {
-		this.pos = blockPos;
+		this.pos = blockPos.toImmutable();
 		this.type = pointOfInterestType;
 		this.freeTickets = i;
 		this.updateListener = runnable;

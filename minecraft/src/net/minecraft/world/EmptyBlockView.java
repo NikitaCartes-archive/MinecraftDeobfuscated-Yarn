@@ -19,7 +19,7 @@ public enum EmptyBlockView implements BlockView {
 
 	@Override
 	public BlockState getBlockState(BlockPos blockPos) {
-		return Blocks.field_10124.getDefaultState();
+		return Blocks.AIR.getDefaultState();
 	}
 
 	@Override

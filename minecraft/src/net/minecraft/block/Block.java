@@ -12,6 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -22,14 +23,13 @@ import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.block.BlockItem;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
@@ -116,11 +116,11 @@ public class Block implements ItemProvider {
 
 	public static BlockState getStateFromRawId(int i) {
 		BlockState blockState = STATE_IDS.get(i);
-		return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
+		return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
 	}
 
 	public static Block getBlockFromItem(@Nullable Item item) {
-		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.field_10124;
+		return item instanceof BlockItem ? ((BlockItem)item).getBlock() : Blocks.AIR;
 	}
 
 	public static BlockState pushEntitiesUpBeforeBlockChange(BlockState blockState, BlockState blockState2, World world, BlockPos blockPos) {

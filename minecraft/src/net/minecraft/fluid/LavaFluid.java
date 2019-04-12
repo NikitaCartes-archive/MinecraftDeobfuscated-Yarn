@@ -185,7 +185,7 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	private void method_15818(IWorld iWorld, BlockPos blockPos) {
-		iWorld.method_20290(1501, blockPos, 0);
+		iWorld.playLevelEvent(1501, blockPos, 0);
 	}
 
 	@Override

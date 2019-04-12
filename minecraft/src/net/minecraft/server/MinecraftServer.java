@@ -67,8 +67,6 @@ import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.config.OperatorEntry;
-import net.minecraft.server.config.WhitelistList;
 import net.minecraft.server.dedicated.EulaReader;
 import net.minecraft.server.dedicated.MinecraftDedicatedServer;
 import net.minecraft.server.dedicated.ServerPropertiesLoader;
@@ -129,7 +127,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	private final File gameDir;
 	private final List<Runnable> tickables = Lists.<Runnable>newArrayList();
 	private final DisableableProfiler profiler = new DisableableProfiler(this::getTicks);
-	private final ServerNetworkIO networkIO;
+	private final ServerNetworkIo networkIo;
 	protected final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
 	private final ServerMetadata metadata = new ServerMetadata();
 	private final Random random = new Random();
@@ -182,6 +180,8 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		new Thread(this, "Server thread"), thread -> thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error(throwable))
 	);
 	private long timeReference = SystemUtil.getMeasuringTimeMs();
+	private long field_19248;
+	private boolean field_19249;
 	@Environment(EnvType.CLIENT)
 	private boolean iconFilePresent;
 	private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.DATA, this.serverThread);
@@ -225,7 +225,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		this.gameProfileRepo = gameProfileRepository;
 		this.userCache = userCache;
 		this.gameDir = file;
-		this.networkIO = new ServerNetworkIO(this);
+		this.networkIo = new ServerNetworkIo(this);
 		this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
 		this.levelStorage = new LevelStorage(file.toPath(), file.toPath().resolve("../backups"), dataFixer);
 		this.dataFixer = dataFixer;
@@ -241,7 +241,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	private void method_17976(PersistentStateManager persistentStateManager) {
 		ScoreboardState scoreboardState = persistentStateManager.getOrCreate(ScoreboardState::new, "scoreboard");
 		scoreboardState.setScoreboard(this.getScoreboard());
-		this.getScoreboard().method_12935(new ScoreboardSynchronizer(scoreboardState));
+		this.getScoreboard().addUpdateListener(new ScoreboardSynchronizer(scoreboardState));
 	}
 
 	protected abstract boolean setupServer() throws IOException;
@@ -529,8 +529,8 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 
 	protected void shutdown() {
 		LOGGER.info("Stopping server");
-		if (this.getNetworkIO() != null) {
-			this.getNetworkIO().stop();
+		if (this.getNetworkIo() != null) {
+			this.getNetworkIo().stop();
 		}
 
 		if (this.playerManager != null) {
@@ -614,6 +614,8 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 					this.profiler.push("tick");
 					this.method_3748(this::shouldKeepTicking);
 					this.profiler.swap("nextTickWait");
+					this.field_19249 = true;
+					this.field_19248 = Math.max(SystemUtil.getMeasuringTimeMs() + 20L, this.timeReference);
 					this.method_16208();
 					this.profiler.pop();
 					this.profiler.endTick();
@@ -654,7 +656,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	}
 
 	private boolean shouldKeepTicking() {
-		return this.method_18860() || SystemUtil.getMeasuringTimeMs() < this.timeReference;
+		return this.method_18860() || SystemUtil.getMeasuringTimeMs() < (this.field_19249 ? this.field_19248 : this.timeReference);
 	}
 
 	protected void method_16208() {
@@ -672,6 +674,12 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 
 	@Override
 	public boolean executeQueuedTask() {
+		boolean bl = this.method_20415();
+		this.field_19249 = bl;
+		return bl;
+	}
+
+	private boolean method_20415() {
 		if (super.executeQueuedTask()) {
 			return true;
 		} else {
@@ -750,7 +758,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 			this.metadata.getPlayers().setSample(gameProfiles);
 		}
 
-		if (this.ticks % 900 == 0) {
+		if (this.ticks % 6000 == 0) {
 			LOGGER.debug("Autosave started");
 			this.profiler.push("save");
 			this.playerManager.saveAllPlayerData();
@@ -816,7 +824,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 		}
 
 		this.profiler.swap("connection");
-		this.getNetworkIO().tick();
+		this.getNetworkIo().tick();
 		this.profiler.swap("players");
 		this.playerManager.updatePlayerLatency();
 		this.profiler.swap("server gui refresh");
@@ -1272,8 +1280,8 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	}
 
 	@Nullable
-	public ServerNetworkIO getNetworkIO() {
-		return this.networkIO;
+	public ServerNetworkIo getNetworkIo() {
+		return this.networkIo;
 	}
 
 	@Environment(EnvType.CLIENT)

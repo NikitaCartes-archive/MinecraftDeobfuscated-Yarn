@@ -28,7 +28,7 @@ import org.apache.commons.io.FileUtils;
 public class EditLevelScreen extends Screen {
 	private ButtonWidget saveButton;
 	private final BooleanConsumer callback;
-	private TextFieldWidget field_3170;
+	private TextFieldWidget levelNameTextField;
 	private final String levelName;
 
 	public EditLevelScreen(BooleanConsumer booleanConsumer, String string) {
@@ -39,7 +39,7 @@ public class EditLevelScreen extends Screen {
 
 	@Override
 	public void tick() {
-		this.field_3170.tick();
+		this.levelNameTextField.tick();
 	}
 
 	@Override
@@ -99,18 +99,18 @@ public class EditLevelScreen extends Screen {
 		LevelStorage levelStorage = this.minecraft.getLevelStorage();
 		LevelProperties levelProperties = levelStorage.getLevelProperties(this.levelName);
 		String string = levelProperties == null ? "" : levelProperties.getLevelName();
-		this.field_3170 = new TextFieldWidget(this.font, this.width / 2 - 100, 53, 200, 20);
-		this.field_3170.setText(string);
-		this.field_3170.setChangedListener(stringx -> this.saveButton.active = !stringx.trim().isEmpty());
-		this.children.add(this.field_3170);
-		this.method_20085(this.field_3170);
+		this.levelNameTextField = new TextFieldWidget(this.font, this.width / 2 - 100, 53, 200, 20);
+		this.levelNameTextField.setText(string);
+		this.levelNameTextField.setChangedListener(stringx -> this.saveButton.active = !stringx.trim().isEmpty());
+		this.children.add(this.levelNameTextField);
+		this.method_20085(this.levelNameTextField);
 	}
 
 	@Override
 	public void resize(MinecraftClient minecraftClient, int i, int j) {
-		String string = this.field_3170.getText();
+		String string = this.levelNameTextField.getText();
 		this.init(minecraftClient, i, j);
-		this.field_3170.setText(string);
+		this.levelNameTextField.setText(string);
 	}
 
 	@Override
@@ -120,7 +120,7 @@ public class EditLevelScreen extends Screen {
 
 	private void commit() {
 		LevelStorage levelStorage = this.minecraft.getLevelStorage();
-		levelStorage.renameLevel(this.levelName, this.field_3170.getText().trim());
+		levelStorage.renameLevel(this.levelName, this.levelNameTextField.getText().trim());
 		this.callback.accept(true);
 	}
 
@@ -153,7 +153,7 @@ public class EditLevelScreen extends Screen {
 		this.renderBackground();
 		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 20, 16777215);
 		this.drawString(this.font, I18n.translate("selectWorld.enterName"), this.width / 2 - 100, 40, 10526880);
-		this.field_3170.render(i, j, f);
+		this.levelNameTextField.render(i, j, f);
 		super.render(i, j, f);
 	}
 }

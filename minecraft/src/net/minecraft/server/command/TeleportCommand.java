@@ -69,7 +69,7 @@ public class TeleportCommand {
 																	commandContext.getSource().getWorld(),
 																	Vec3ArgumentType.getPosArgument(commandContext, "location"),
 																	null,
-																	new TeleportCommand.LookTarget(EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.field_9853)
+																	new TeleportCommand.class_3144(EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.EntityAnchor.field_9853)
 																)
 														)
 														.then(
@@ -81,7 +81,7 @@ public class TeleportCommand {
 																			commandContext.getSource().getWorld(),
 																			Vec3ArgumentType.getPosArgument(commandContext, "location"),
 																			null,
-																			new TeleportCommand.LookTarget(
+																			new TeleportCommand.class_3144(
 																				EntityArgumentType.getEntity(commandContext, "facingEntity"), EntityAnchorArgumentType.getEntityAnchor(commandContext, "facingAnchor")
 																			)
 																		)
@@ -98,7 +98,7 @@ public class TeleportCommand {
 															commandContext.getSource().getWorld(),
 															Vec3ArgumentType.getPosArgument(commandContext, "location"),
 															null,
-															new TeleportCommand.LookTarget(Vec3ArgumentType.getVec3(commandContext, "facingLocation"))
+															new TeleportCommand.class_3144(Vec3ArgumentType.getVec3(commandContext, "facingLocation"))
 														)
 												)
 										)
@@ -178,7 +178,7 @@ public class TeleportCommand {
 		ServerWorld serverWorld,
 		PosArgument posArgument,
 		@Nullable PosArgument posArgument2,
-		@Nullable TeleportCommand.LookTarget lookTarget
+		@Nullable TeleportCommand.class_3144 arg
 	) throws CommandSyntaxException {
 		Vec3d vec3d = posArgument.toAbsolutePos(serverCommandSource);
 		Vec2f vec2f = posArgument2 == null ? null : posArgument2.toAbsoluteRotation(serverCommandSource);
@@ -210,9 +210,9 @@ public class TeleportCommand {
 
 		for (Entity entity : collection) {
 			if (posArgument2 == null) {
-				teleport(serverCommandSource, entity, serverWorld, vec3d.x, vec3d.y, vec3d.z, set, entity.yaw, entity.pitch, lookTarget);
+				teleport(serverCommandSource, entity, serverWorld, vec3d.x, vec3d.y, vec3d.z, set, entity.yaw, entity.pitch, arg);
 			} else {
-				teleport(serverCommandSource, entity, serverWorld, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, lookTarget);
+				teleport(serverCommandSource, entity, serverWorld, vec3d.x, vec3d.y, vec3d.z, set, vec2f.y, vec2f.x, arg);
 			}
 		}
 
@@ -242,7 +242,7 @@ public class TeleportCommand {
 		Set<PlayerPositionLookS2CPacket.Flag> set,
 		float g,
 		float h,
-		@Nullable TeleportCommand.LookTarget lookTarget
+		@Nullable TeleportCommand.class_3144 arg
 	) {
 		if (entity instanceof ServerPlayerEntity) {
 			entity.stopRiding();
@@ -281,8 +281,8 @@ public class TeleportCommand {
 			}
 		}
 
-		if (lookTarget != null) {
-			lookTarget.look(serverCommandSource, entity);
+		if (arg != null) {
+			arg.method_13772(serverCommandSource, entity);
 		}
 
 		if (!(entity instanceof LivingEntity) || !((LivingEntity)entity).isFallFlying()) {
@@ -291,32 +291,32 @@ public class TeleportCommand {
 		}
 	}
 
-	static class LookTarget {
-		private final Vec3d pos;
-		private final Entity entity;
-		private final EntityAnchorArgumentType.EntityAnchor anchor;
+	static class class_3144 {
+		private final Vec3d field_13760;
+		private final Entity field_13758;
+		private final EntityAnchorArgumentType.EntityAnchor field_13759;
 
-		public LookTarget(Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
-			this.entity = entity;
-			this.anchor = entityAnchor;
-			this.pos = entityAnchor.positionAt(entity);
+		public class_3144(Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
+			this.field_13758 = entity;
+			this.field_13759 = entityAnchor;
+			this.field_13760 = entityAnchor.positionAt(entity);
 		}
 
-		public LookTarget(Vec3d vec3d) {
-			this.entity = null;
-			this.pos = vec3d;
-			this.anchor = null;
+		public class_3144(Vec3d vec3d) {
+			this.field_13758 = null;
+			this.field_13760 = vec3d;
+			this.field_13759 = null;
 		}
 
-		public void look(ServerCommandSource serverCommandSource, Entity entity) {
-			if (this.entity != null) {
+		public void method_13772(ServerCommandSource serverCommandSource, Entity entity) {
+			if (this.field_13758 != null) {
 				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).method_14222(serverCommandSource.getEntityAnchor(), this.entity, this.anchor);
+					((ServerPlayerEntity)entity).method_14222(serverCommandSource.getEntityAnchor(), this.field_13758, this.field_13759);
 				} else {
-					entity.lookAt(serverCommandSource.getEntityAnchor(), this.pos);
+					entity.lookAt(serverCommandSource.getEntityAnchor(), this.field_13760);
 				}
 			} else {
-				entity.lookAt(serverCommandSource.getEntityAnchor(), this.pos);
+				entity.lookAt(serverCommandSource.getEntityAnchor(), this.field_13760);
 			}
 		}
 	}

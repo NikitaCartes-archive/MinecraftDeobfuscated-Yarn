@@ -71,12 +71,12 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final DistancePredicate distance;
-		private final NumberRange.IntRange field_9676;
+		private final NumberRange.IntRange duration;
 
 		public Conditions(DistancePredicate distancePredicate, NumberRange.IntRange intRange) {
 			super(LevitationCriterion.ID);
 			this.distance = distancePredicate;
-			this.field_9676 = intRange;
+			this.duration = intRange;
 		}
 
 		public static LevitationCriterion.Conditions method_9013(DistancePredicate distancePredicate) {
@@ -84,14 +84,14 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 		}
 
 		public boolean matches(ServerPlayerEntity serverPlayerEntity, Vec3d vec3d, int i) {
-			return !this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z) ? false : this.field_9676.test(i);
+			return !this.distance.test(vec3d.x, vec3d.y, vec3d.z, serverPlayerEntity.x, serverPlayerEntity.y, serverPlayerEntity.z) ? false : this.duration.test(i);
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("distance", this.distance.serialize());
-			jsonObject.add("duration", this.field_9676.serialize());
+			jsonObject.add("duration", this.duration.serialize());
 			return jsonObject;
 		}
 	}

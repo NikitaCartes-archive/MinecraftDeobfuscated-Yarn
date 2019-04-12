@@ -61,7 +61,7 @@ public class FeatureUpdater {
 	public void markResolved(long l) {
 		for (String string : this.field_17658) {
 			ChunkUpdateState chunkUpdateState = (ChunkUpdateState)this.updateStates.get(string);
-			if (chunkUpdateState != null && chunkUpdateState.isRemaing(l)) {
+			if (chunkUpdateState != null && chunkUpdateState.isRemaining(l)) {
 				chunkUpdateState.markResolved(l);
 				chunkUpdateState.markDirty();
 			}
@@ -113,7 +113,7 @@ public class FeatureUpdater {
 			return false;
 		} else {
 			for (String string : this.field_17659) {
-				if (this.featureIdToChunkTag.get(string) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaing(ChunkPos.toLong(i, j))) {
+				if (this.featureIdToChunkTag.get(string) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(ChunkPos.toLong(i, j))) {
 					return true;
 				}
 			}
@@ -131,7 +131,7 @@ public class FeatureUpdater {
 			Long2ObjectMap<CompoundTag> long2ObjectMap = (Long2ObjectMap<CompoundTag>)this.featureIdToChunkTag.get(string);
 			if (long2ObjectMap != null) {
 				long l = chunkPos.toLong();
-				if (((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaing(l)) {
+				if (((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(l)) {
 					CompoundTag compoundTag5 = long2ObjectMap.get(l);
 					if (compoundTag5 != null) {
 						compoundTag4.put(string, compoundTag5);

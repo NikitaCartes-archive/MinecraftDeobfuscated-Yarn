@@ -198,7 +198,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 		if (i < 8 && ITEM_TO_LEVEL_INCREASE_CHANCE.containsKey(itemStack.getItem())) {
 			if (i < 7 && !world.isClient) {
 				boolean bl = addToComposter(blockState, world, blockPos, itemStack);
-				world.method_20290(1500, blockPos, bl ? 1 : 0);
+				world.playLevelEvent(1500, blockPos, bl ? 1 : 0);
 				if (!playerEntity.abilities.creativeMode) {
 					itemStack.subtractAmount(1);
 				}
@@ -249,7 +249,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((Integer)blockState.get(LEVEL) == 7) {
-			world.setBlockState(blockPos, blockState.method_11572(LEVEL), 3);
+			world.setBlockState(blockPos, blockState.cycle(LEVEL), 3);
 			world.playSound(null, blockPos, SoundEvents.field_17609, SoundCategory.field_15245, 1.0F, 1.0F);
 		}
 

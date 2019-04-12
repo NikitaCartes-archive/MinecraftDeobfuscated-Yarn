@@ -83,7 +83,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		if (this.material == Material.METAL) {
 			return false;
 		} else {
-			blockState = blockState.method_11572(OPEN);
+			blockState = blockState.cycle(OPEN);
 			world.setBlockState(blockPos, blockState, 2);
 			if ((Boolean)blockState.get(WATERLOGGED)) {
 				world.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(world));

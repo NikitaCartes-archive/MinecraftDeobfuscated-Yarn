@@ -51,12 +51,12 @@ public class StatisticsS2CPacket implements Packet<ClientPlayPacketListener> {
 		for (Entry<Stat<?>> entry : this.stats.object2IntEntrySet()) {
 			Stat<?> stat = (Stat<?>)entry.getKey();
 			packetByteBuf.writeVarInt(Registry.STAT_TYPE.getRawId(stat.getType()));
-			packetByteBuf.writeVarInt(this.method_11272(stat));
+			packetByteBuf.writeVarInt(this.getStatId(stat));
 			packetByteBuf.writeVarInt(entry.getIntValue());
 		}
 	}
 
-	private <T> int method_11272(Stat<T> stat) {
+	private <T> int getStatId(Stat<T> stat) {
 		return stat.getType().getRegistry().getRawId(stat.getValue());
 	}
 

@@ -12,11 +12,11 @@ public class DistancePredicate {
 	public static final DistancePredicate ANY = new DistancePredicate(
 		NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY
 	);
-	private final NumberRange.FloatRange field_9554;
-	private final NumberRange.FloatRange field_9555;
-	private final NumberRange.FloatRange field_9552;
-	private final NumberRange.FloatRange field_9557;
-	private final NumberRange.FloatRange field_9556;
+	private final NumberRange.FloatRange x;
+	private final NumberRange.FloatRange y;
+	private final NumberRange.FloatRange z;
+	private final NumberRange.FloatRange horizontal;
+	private final NumberRange.FloatRange absolute;
 
 	public DistancePredicate(
 		NumberRange.FloatRange floatRange,
@@ -25,18 +25,18 @@ public class DistancePredicate {
 		NumberRange.FloatRange floatRange4,
 		NumberRange.FloatRange floatRange5
 	) {
-		this.field_9554 = floatRange;
-		this.field_9555 = floatRange2;
-		this.field_9552 = floatRange3;
-		this.field_9557 = floatRange4;
-		this.field_9556 = floatRange5;
+		this.x = floatRange;
+		this.y = floatRange2;
+		this.z = floatRange3;
+		this.horizontal = floatRange4;
+		this.absolute = floatRange5;
 	}
 
-	public static DistancePredicate method_8860(NumberRange.FloatRange floatRange) {
+	public static DistancePredicate horizontal(NumberRange.FloatRange floatRange) {
 		return new DistancePredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, floatRange, NumberRange.FloatRange.ANY);
 	}
 
-	public static DistancePredicate method_8856(NumberRange.FloatRange floatRange) {
+	public static DistancePredicate y(NumberRange.FloatRange floatRange) {
 		return new DistancePredicate(NumberRange.FloatRange.ANY, floatRange, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY);
 	}
 
@@ -44,10 +44,10 @@ public class DistancePredicate {
 		float j = (float)(d - g);
 		float k = (float)(e - h);
 		float l = (float)(f - i);
-		if (!this.field_9554.matches(MathHelper.abs(j)) || !this.field_9555.matches(MathHelper.abs(k)) || !this.field_9552.matches(MathHelper.abs(l))) {
+		if (!this.x.matches(MathHelper.abs(j)) || !this.y.matches(MathHelper.abs(k)) || !this.z.matches(MathHelper.abs(l))) {
 			return false;
 		} else {
-			return !this.field_9557.matchesSquared((double)(j * j + l * l)) ? false : this.field_9556.matchesSquared((double)(j * j + k * k + l * l));
+			return !this.horizontal.matchesSquared((double)(j * j + l * l)) ? false : this.absolute.matchesSquared((double)(j * j + k * k + l * l));
 		}
 	}
 
@@ -70,11 +70,11 @@ public class DistancePredicate {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("x", this.field_9554.serialize());
-			jsonObject.add("y", this.field_9555.serialize());
-			jsonObject.add("z", this.field_9552.serialize());
-			jsonObject.add("horizontal", this.field_9557.serialize());
-			jsonObject.add("absolute", this.field_9556.serialize());
+			jsonObject.add("x", this.x.serialize());
+			jsonObject.add("y", this.y.serialize());
+			jsonObject.add("z", this.z.serialize());
+			jsonObject.add("horizontal", this.horizontal.serialize());
+			jsonObject.add("absolute", this.absolute.serialize());
 			return jsonObject;
 		}
 	}

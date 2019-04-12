@@ -54,7 +54,7 @@ public class BrewingRecipeRegistry {
 		return false;
 	}
 
-	public static boolean method_20361(Potion potion) {
+	public static boolean isBrewable(Potion potion) {
 		int i = 0;
 
 		for (int j = POTION_RECIPES.size(); i < j; i++) {

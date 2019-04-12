@@ -56,13 +56,13 @@ public class MapExtendingRecipe extends ShapedRecipe {
 				if (mapState == null) {
 					return false;
 				} else {
-					return this.method_8120(mapState) ? false : mapState.scale < 4;
+					return this.matches(mapState) ? false : mapState.scale < 4;
 				}
 			}
 		}
 	}
 
-	private boolean method_8120(MapState mapState) {
+	private boolean matches(MapState mapState) {
 		if (mapState.icons != null) {
 			for (MapIcon mapIcon : mapState.icons.values()) {
 				if (mapIcon.getType() == MapIcon.Type.field_88 || mapIcon.getType() == MapIcon.Type.field_98) {

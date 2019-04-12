@@ -12,7 +12,7 @@ public class ScoreboardObjective {
 	private final String name;
 	private final ScoreboardCriterion criterion;
 	private TextComponent displayName;
-	private ScoreboardCriterion.RenderType field_1403;
+	private ScoreboardCriterion.RenderType renderType;
 
 	public ScoreboardObjective(
 		Scoreboard scoreboard, String string, ScoreboardCriterion scoreboardCriterion, TextComponent textComponent, ScoreboardCriterion.RenderType renderType
@@ -21,7 +21,7 @@ public class ScoreboardObjective {
 		this.name = string;
 		this.criterion = scoreboardCriterion;
 		this.displayName = textComponent;
-		this.field_1403 = renderType;
+		this.renderType = renderType;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -52,12 +52,12 @@ public class ScoreboardObjective {
 		this.scoreboard.updateExistingObjective(this);
 	}
 
-	public ScoreboardCriterion.RenderType method_1118() {
-		return this.field_1403;
+	public ScoreboardCriterion.RenderType getRenderType() {
+		return this.renderType;
 	}
 
-	public void method_1115(ScoreboardCriterion.RenderType renderType) {
-		this.field_1403 = renderType;
+	public void setRenderType(ScoreboardCriterion.RenderType renderType) {
+		this.renderType = renderType;
 		this.scoreboard.updateExistingObjective(this);
 	}
 }

@@ -45,7 +45,7 @@ public class BakedModelManager extends SupplyingResourceReloadListener<ModelLoad
 	protected void method_18179(ModelLoader modelLoader, ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
 		profiler.push("upload");
-		modelLoader.method_18177(profiler);
+		modelLoader.upload(profiler);
 		this.modelMap = modelLoader.getBakedModelMap();
 		this.missingModel = (BakedModel)this.modelMap.get(ModelLoader.MISSING);
 		profiler.swap("cache");

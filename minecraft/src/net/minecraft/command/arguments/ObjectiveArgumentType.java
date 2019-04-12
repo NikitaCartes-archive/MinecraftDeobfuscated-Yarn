@@ -52,7 +52,7 @@ public class ObjectiveArgumentType implements ArgumentType<String> {
 		}
 	}
 
-	public String readName(StringReader stringReader) throws CommandSyntaxException {
+	public String method_9396(StringReader stringReader) throws CommandSyntaxException {
 		String string = stringReader.readUnquotedString();
 		if (string.length() > 16) {
 			throw LONG_NAME_EXCEPTION.create(16);

@@ -31,15 +31,12 @@ public class ControlsOptionsScreen extends Screen {
 
 	@Override
 	protected void init() {
-		int i = 0;
-
-		for (GameOption gameOption : OPTIONS) {
-			int j = this.width / 2 - 155 + i % 2 * 160;
-			int k = 18 + 24 * (i >> 1);
-			this.addButton(gameOption.createOptionButton(this.minecraft.options, j, k, 150));
-			i++;
-		}
-
+		this.addButton(
+			new ButtonWidget(
+				this.width / 2 - 155, 18, 150, 20, I18n.translate("options.mouse_settings"), buttonWidget -> this.minecraft.openScreen(new MouseOptionsScreen(this))
+			)
+		);
+		this.addButton(GameOption.AUTO_JUMP.createOptionButton(this.minecraft.options, this.width / 2 - 155 + 160, 18, 150));
 		this.keyBindingListWidget = new KeyBindingListWidget(this, this.minecraft);
 		this.children.add(this.keyBindingListWidget);
 		this.resetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 29, 150, 20, I18n.translate("controls.resetAll"), buttonWidget -> {

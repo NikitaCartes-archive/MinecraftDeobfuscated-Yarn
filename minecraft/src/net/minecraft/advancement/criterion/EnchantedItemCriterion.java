@@ -71,12 +71,12 @@ public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final ItemPredicate item;
-		private final NumberRange.IntRange field_9568;
+		private final NumberRange.IntRange levels;
 
 		public Conditions(ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
 			super(EnchantedItemCriterion.ID);
 			this.item = itemPredicate;
-			this.field_9568 = intRange;
+			this.levels = intRange;
 		}
 
 		public static EnchantedItemCriterion.Conditions any() {
@@ -84,14 +84,14 @@ public class EnchantedItemCriterion implements Criterion<EnchantedItemCriterion.
 		}
 
 		public boolean matches(ItemStack itemStack, int i) {
-			return !this.item.test(itemStack) ? false : this.field_9568.test(i);
+			return !this.item.test(itemStack) ? false : this.levels.test(i);
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("item", this.item.serialize());
-			jsonObject.add("levels", this.field_9568.serialize());
+			jsonObject.add("levels", this.levels.serialize());
 			return jsonObject;
 		}
 	}

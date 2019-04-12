@@ -8,12 +8,12 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class SoundEntry {
 	private final List<Sound> sounds;
-	private final boolean replaceable;
+	private final boolean replace;
 	private final String subtitle;
 
 	public SoundEntry(List<Sound> list, boolean bl, String string) {
 		this.sounds = list;
-		this.replaceable = bl;
+		this.replace = bl;
 		this.subtitle = string;
 	}
 
@@ -21,8 +21,8 @@ public class SoundEntry {
 		return this.sounds;
 	}
 
-	public boolean isReplaceable() {
-		return this.replaceable;
+	public boolean canReplace() {
+		return this.replace;
 	}
 
 	@Nullable

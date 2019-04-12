@@ -20,11 +20,11 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 		JsonObject jsonObject = JsonHelper.asObject(jsonElement, "entry");
 		boolean bl = JsonHelper.getBoolean(jsonObject, "replace", false);
 		String string = JsonHelper.getString(jsonObject, "subtitle", null);
-		List<Sound> list = this.method_4792(jsonObject);
+		List<Sound> list = this.deserializeSounds(jsonObject);
 		return new SoundEntry(list, bl, string);
 	}
 
-	private List<Sound> method_4792(JsonObject jsonObject) {
+	private List<Sound> deserializeSounds(JsonObject jsonObject) {
 		List<Sound> list = Lists.<Sound>newArrayList();
 		if (jsonObject.has("sounds")) {
 			JsonArray jsonArray = JsonHelper.getArray(jsonObject, "sounds");
@@ -35,7 +35,7 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 					String string = JsonHelper.asString(jsonElement, "sound");
 					list.add(new Sound(string, 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16));
 				} else {
-					list.add(this.method_4790(JsonHelper.asObject(jsonElement, "sound")));
+					list.add(this.deserializeSound(JsonHelper.asObject(jsonElement, "sound")));
 				}
 			}
 		}
@@ -43,9 +43,9 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 		return list;
 	}
 
-	private Sound method_4790(JsonObject jsonObject) {
+	private Sound deserializeSound(JsonObject jsonObject) {
 		String string = JsonHelper.getString(jsonObject, "name");
-		Sound.RegistrationType registrationType = this.method_4789(jsonObject, Sound.RegistrationType.FILE);
+		Sound.RegistrationType registrationType = this.deserializeType(jsonObject, Sound.RegistrationType.FILE);
 		float f = JsonHelper.getFloat(jsonObject, "volume", 1.0F);
 		Validate.isTrue(f > 0.0F, "Invalid volume");
 		float g = JsonHelper.getFloat(jsonObject, "pitch", 1.0F);
@@ -58,7 +58,7 @@ public class SoundEntryDeserializer implements JsonDeserializer<SoundEntry> {
 		return new Sound(string, f, g, i, registrationType, bl2, bl, j);
 	}
 
-	private Sound.RegistrationType method_4789(JsonObject jsonObject, Sound.RegistrationType registrationType) {
+	private Sound.RegistrationType deserializeType(JsonObject jsonObject, Sound.RegistrationType registrationType) {
 		Sound.RegistrationType registrationType2 = registrationType;
 		if (jsonObject.has("type")) {
 			registrationType2 = Sound.RegistrationType.getByName(JsonHelper.getString(jsonObject, "type"));

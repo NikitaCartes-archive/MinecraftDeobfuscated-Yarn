@@ -16,12 +16,15 @@ import net.minecraft.advancement.criterion.UsedTotemCriterion;
 import net.minecraft.advancement.criterion.VillagerTradeCriterion;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.raid.Raid;
 import net.minecraft.item.Items;
 import net.minecraft.predicate.DamagePredicate;
 import net.minecraft.predicate.entity.DamageSourcePredicate;
 import net.minecraft.predicate.entity.DistancePredicate;
+import net.minecraft.predicate.entity.EntityEquipmentPredicate;
 import net.minecraft.predicate.entity.EntityPredicate;
 import net.minecraft.predicate.entity.LocationPredicate;
+import net.minecraft.tag.EntityTags;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.NumberRange;
@@ -272,7 +275,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			.criterion(
 				"killed_skeleton",
 				OnKilledCriterion.Conditions.method_9001(
-					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.method_8860(NumberRange.FloatRange.atLeast(50.0F))),
+					EntityPredicate.Builder.create().type(EntityType.SKELETON).distance(DistancePredicate.horizontal(NumberRange.FloatRange.atLeast(50.0F))),
 					DamageSourcePredicate.Builder.create().projectile(true)
 				)
 			)
@@ -354,6 +357,38 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 			.rewards(AdvancementRewards.Builder.experience(85))
 			.criterion("arbalistic", KilledByCrossbowCriterion.Conditions.method_8987(NumberRange.IntRange.exactly(5)))
 			.build(consumer, "adventure/arbalistic");
+		SimpleAdvancement simpleAdvancement17 = SimpleAdvancement.Task.create()
+			.parent(simpleAdvancement)
+			.method_20416(
+				Raid.OMINOUS_BANNER,
+				new TranslatableTextComponent("advancements.adventure.voluntary_exile.title"),
+				new TranslatableTextComponent("advancements.adventure.voluntary_exile.description"),
+				null,
+				AdvancementFrame.TASK,
+				true,
+				true,
+				true
+			)
+			.criterion(
+				"voluntary_exile",
+				OnKilledCriterion.Conditions.createKill(EntityPredicate.Builder.create().type(EntityTags.field_19168).equipment(EntityEquipmentPredicate.field_19240))
+			)
+			.build(consumer, "adventure/voluntary_exile");
+		SimpleAdvancement simpleAdvancement18 = SimpleAdvancement.Task.create()
+			.parent(simpleAdvancement17)
+			.method_20416(
+				Raid.OMINOUS_BANNER,
+				new TranslatableTextComponent("advancements.adventure.hero_of_the_village.title"),
+				new TranslatableTextComponent("advancements.adventure.hero_of_the_village.description"),
+				null,
+				AdvancementFrame.CHALLENGE,
+				true,
+				true,
+				true
+			)
+			.rewards(AdvancementRewards.Builder.experience(100))
+			.criterion("hero_of_the_village", LocationArrivalCriterion.Conditions.method_20400())
+			.build(consumer, "adventure/hero_of_the_village");
 	}
 
 	private SimpleAdvancement.Task method_10336(SimpleAdvancement.Task task) {
@@ -366,7 +401,7 @@ public class AdventureTabAdvancementGenerator implements Consumer<Consumer<Simpl
 
 	private SimpleAdvancement.Task method_10337(SimpleAdvancement.Task task) {
 		for (Biome biome : BIOMES) {
-			task.criterion(Registry.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.method_9022(biome)));
+			task.criterion(Registry.BIOME.getId(biome).toString(), LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.biome(biome)));
 		}
 
 		return task;

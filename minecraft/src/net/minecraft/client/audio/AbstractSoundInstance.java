@@ -23,7 +23,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected int repeatDelay;
 	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.LINEAR;
 	protected boolean field_18935;
-	protected boolean field_18936;
+	protected boolean looping;
 
 	protected AbstractSoundInstance(SoundEvent soundEvent, SoundCategory soundCategory) {
 		this(soundEvent.getId(), soundCategory);
@@ -102,7 +102,7 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	}
 
 	@Override
-	public boolean method_4787() {
-		return this.field_18936;
+	public boolean isLooping() {
+		return this.looping;
 	}
 }

@@ -76,7 +76,7 @@ public class LeverBlock extends WallMountedBlock {
 
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		blockState = blockState.method_11572(POWERED);
+		blockState = blockState.cycle(POWERED);
 		boolean bl = (Boolean)blockState.get(POWERED);
 		if (world.isClient) {
 			if (bl) {

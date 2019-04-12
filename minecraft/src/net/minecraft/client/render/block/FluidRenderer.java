@@ -32,10 +32,10 @@ public class FluidRenderer {
 	protected void onResourceReload() {
 		SpriteAtlasTexture spriteAtlasTexture = MinecraftClient.getInstance().getSpriteAtlas();
 		this.lavaSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockStateMaps().getModel(Blocks.field_10164.getDefaultState()).getSprite();
-		this.lavaSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.field_5381);
+		this.lavaSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.LAVA_FLOW);
 		this.waterSprites[0] = MinecraftClient.getInstance().getBakedModelManager().getBlockStateMaps().getModel(Blocks.field_10382.getDefaultState()).getSprite();
-		this.waterSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.field_5391);
-		this.waterOverlaySprite = spriteAtlasTexture.getSprite(ModelLoader.field_5388);
+		this.waterSprites[1] = spriteAtlasTexture.getSprite(ModelLoader.WATER_FLOW);
+		this.waterOverlaySprite = spriteAtlasTexture.getSprite(ModelLoader.WATER_OVERLAY);
 	}
 
 	private static boolean method_3348(BlockView blockView, BlockPos blockPos, Direction direction, FluidState fluidState) {

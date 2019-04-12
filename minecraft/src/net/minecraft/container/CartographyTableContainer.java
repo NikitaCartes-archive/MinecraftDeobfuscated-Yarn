@@ -58,7 +58,8 @@ public class CartographyTableContainer extends Container {
 				}
 
 				@Override
-				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+				public ItemStack takeStack(int i) {
+					ItemStack itemStack = super.takeStack(i);
 					ItemStack itemStack2 = (ItemStack)blockContext.run((BiFunction)((world, blockPos) -> {
 						if (!CartographyTableContainer.this.field_17295 && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 							ItemStack itemStack2x = FilledMapItem.method_17442(world, CartographyTableContainer.this.field_17296);
@@ -72,11 +73,16 @@ public class CartographyTableContainer extends Container {
 					})).orElse(itemStack);
 					this.inventory.takeInvStack(0, 1);
 					this.inventory.takeInvStack(1, 1);
-					itemStack2.getItem().onCrafted(itemStack2, playerEntity.world, playerEntity);
+					return itemStack2;
+				}
+
+				@Override
+				public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
+					itemStack.getItem().onCrafted(itemStack, playerEntity.world, playerEntity);
 					blockContext.run(
 						(BiConsumer<World, BlockPos>)((world, blockPos) -> world.playSound(null, blockPos, SoundEvents.field_17484, SoundCategory.field_15245, 1.0F, 1.0F))
 					);
-					return super.onTakeItem(playerEntity, itemStack2);
+					return super.onTakeItem(playerEntity, itemStack);
 				}
 			}
 		);
@@ -109,7 +115,7 @@ public class CartographyTableContainer extends Container {
 			ItemStack itemStack3 = this.inventory.getInvStack(2);
 			if (itemStack3.isEmpty() || !itemStack.isEmpty() && !itemStack2.isEmpty()) {
 				if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
-					this.method_17381(itemStack, itemStack2, itemStack3);
+					this.updateResult(itemStack, itemStack2, itemStack3);
 				}
 			} else {
 				this.inventory.removeInvStack(2);
@@ -117,7 +123,7 @@ public class CartographyTableContainer extends Container {
 		}
 	}
 
-	private void method_17381(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3) {
+	private void updateResult(ItemStack itemStack, ItemStack itemStack2, ItemStack itemStack3) {
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
 			Item item = itemStack2.getItem();
 			MapState mapState = FilledMapItem.getMapState(itemStack, world);
@@ -127,9 +133,11 @@ public class CartographyTableContainer extends Container {
 					itemStack4 = itemStack.copy();
 					itemStack4.setAmount(1);
 					itemStack4.getOrCreateTag().putInt("map_scale_direction", 1);
+					this.sendContentUpdates();
 				} else if (item == Items.GLASS_PANE && !mapState.locked) {
 					itemStack4 = itemStack.copy();
 					itemStack4.setAmount(1);
+					this.sendContentUpdates();
 				} else {
 					if (item != Items.field_8895) {
 						this.inventory.removeInvStack(2);
@@ -139,6 +147,7 @@ public class CartographyTableContainer extends Container {
 
 					itemStack4 = itemStack.copy();
 					itemStack4.setAmount(2);
+					this.sendContentUpdates();
 				}
 
 				if (!ItemStack.areEqual(itemStack4, itemStack3)) {

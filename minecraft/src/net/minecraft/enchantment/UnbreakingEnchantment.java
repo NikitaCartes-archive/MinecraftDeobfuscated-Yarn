@@ -25,7 +25,7 @@ public class UnbreakingEnchantment extends Enchantment {
 		return itemStack.hasDurability() ? true : super.isAcceptableItem(itemStack);
 	}
 
-	public static boolean method_8176(ItemStack itemStack, int i, Random random) {
+	public static boolean shouldPreventDamage(ItemStack itemStack, int i, Random random) {
 		return itemStack.getItem() instanceof ArmorItem && random.nextFloat() < 0.6F ? false : random.nextInt(i + 1) > 0;
 	}
 }

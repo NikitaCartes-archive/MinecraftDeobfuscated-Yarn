@@ -117,7 +117,7 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 						if (bl) {
 							this.setBlockState(iWorld, blockPos3, Blocks.field_10382.getDefaultState());
 						} else {
-							this.setBlockState(iWorld, blockPos3, Blocks.field_10124.getDefaultState());
+							this.setBlockState(iWorld, blockPos3, Blocks.AIR.getDefaultState());
 							this.method_13422(iWorld, blockPos3);
 						}
 					}
@@ -128,7 +128,7 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 
 	private void method_13422(IWorld iWorld, BlockPos blockPos) {
 		if (iWorld.getBlockState(blockPos.up()).getBlock() == Blocks.field_10477) {
-			this.setBlockState(iWorld, blockPos.up(), Blocks.field_10124.getDefaultState());
+			this.setBlockState(iWorld, blockPos.up(), Blocks.AIR.getDefaultState());
 		}
 	}
 
@@ -222,8 +222,8 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 					Block block = iWorld.getBlockState(blockPos2).getBlock();
 					if (this.method_13420(block) || block == Blocks.field_10477) {
 						if (this.method_13414(iWorld, blockPos2)) {
-							this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
-							this.setBlockState(iWorld, blockPos2.up(), Blocks.field_10124.getDefaultState());
+							this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
+							this.setBlockState(iWorld, blockPos2.up(), Blocks.AIR.getDefaultState());
 						} else if (this.method_13420(block)) {
 							Block[] blocks = new Block[]{
 								iWorld.getBlockState(blockPos2.west()).getBlock(),
@@ -240,7 +240,7 @@ public class IcebergFeature extends Feature<IcebergFeatureConfig> {
 							}
 
 							if (p >= 3) {
-								this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+								this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
 							}
 						}
 					}

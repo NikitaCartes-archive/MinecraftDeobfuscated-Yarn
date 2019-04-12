@@ -78,7 +78,7 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 			this.scoreboardEntries = Lists.<PlayerListEntry>newArrayList();
 
 			for (String string : team.getPlayerList()) {
-				PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntry(string);
+				PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(string);
 				if (playerListEntry != null) {
 					this.scoreboardEntries.add(playerListEntry);
 				}

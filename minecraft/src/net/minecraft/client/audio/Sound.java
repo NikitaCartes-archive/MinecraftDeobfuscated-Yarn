@@ -12,8 +12,8 @@ public class Sound implements SoundContainer<Sound> {
 	private final int weight;
 	private final Sound.RegistrationType registrationType;
 	private final boolean stream;
-	private final boolean field_5465;
-	private final int field_5463;
+	private final boolean preload;
+	private final int attenuation;
 
 	public Sound(String string, float f, float g, int i, Sound.RegistrationType registrationType, boolean bl, boolean bl2, int j) {
 		this.id = new Identifier(string);
@@ -22,8 +22,8 @@ public class Sound implements SoundContainer<Sound> {
 		this.weight = i;
 		this.registrationType = registrationType;
 		this.stream = bl;
-		this.field_5465 = bl2;
-		this.field_5463 = j;
+		this.preload = bl2;
+		this.attenuation = j;
 	}
 
 	public Identifier getIdentifier() {
@@ -52,9 +52,9 @@ public class Sound implements SoundContainer<Sound> {
 	}
 
 	@Override
-	public void addTo(SoundSystem soundSystem) {
-		if (this.field_5465) {
-			soundSystem.addStreamedSound(this);
+	public void preload(SoundSystem soundSystem) {
+		if (this.preload) {
+			soundSystem.addPreloadedSound(this);
 		}
 	}
 
@@ -66,12 +66,12 @@ public class Sound implements SoundContainer<Sound> {
 		return this.stream;
 	}
 
-	public boolean method_4764() {
-		return this.field_5465;
+	public boolean isPreloaded() {
+		return this.preload;
 	}
 
-	public int method_4770() {
-		return this.field_5463;
+	public int getAttenuation() {
+		return this.attenuation;
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -16,12 +16,12 @@ import net.minecraft.util.PacketByteBuf;
 
 public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	private String teamName = "";
-	private TextComponent field_12603 = new StringTextComponent("");
-	private TextComponent field_12601 = new StringTextComponent("");
-	private TextComponent field_12597 = new StringTextComponent("");
+	private TextComponent displayName = new StringTextComponent("");
+	private TextComponent prefix = new StringTextComponent("");
+	private TextComponent suffix = new StringTextComponent("");
 	private String nameTagVisibilityRule = AbstractTeam.VisibilityRule.ALWAYS.name;
 	private String collisionRule = AbstractTeam.CollisionRule.ALWAYS.name;
-	private TextFormat field_12598 = TextFormat.color;
+	private TextFormat color = TextFormat.RESET;
 	private final Collection<String> playerList = Lists.<String>newArrayList();
 	private int mode;
 	private int flags;
@@ -33,13 +33,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.teamName = team.getName();
 		this.mode = i;
 		if (i == 0 || i == 2) {
-			this.field_12603 = team.getDisplayName();
+			this.displayName = team.getDisplayName();
 			this.flags = team.getFriendlyFlagsBitwise();
 			this.nameTagVisibilityRule = team.getNameTagVisibilityRule().name;
 			this.collisionRule = team.getCollisionRule().name;
-			this.field_12598 = team.getColor();
-			this.field_12601 = team.getPrefix();
-			this.field_12597 = team.getSuffix();
+			this.color = team.getColor();
+			this.prefix = team.getPrefix();
+			this.suffix = team.getSuffix();
 		}
 
 		if (i == 0) {
@@ -64,13 +64,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.teamName = packetByteBuf.readString(16);
 		this.mode = packetByteBuf.readByte();
 		if (this.mode == 0 || this.mode == 2) {
-			this.field_12603 = packetByteBuf.readTextComponent();
+			this.displayName = packetByteBuf.readTextComponent();
 			this.flags = packetByteBuf.readByte();
 			this.nameTagVisibilityRule = packetByteBuf.readString(40);
 			this.collisionRule = packetByteBuf.readString(40);
-			this.field_12598 = packetByteBuf.readEnumConstant(TextFormat.class);
-			this.field_12601 = packetByteBuf.readTextComponent();
-			this.field_12597 = packetByteBuf.readTextComponent();
+			this.color = packetByteBuf.readEnumConstant(TextFormat.class);
+			this.prefix = packetByteBuf.readTextComponent();
+			this.suffix = packetByteBuf.readTextComponent();
 		}
 
 		if (this.mode == 0 || this.mode == 3 || this.mode == 4) {
@@ -87,13 +87,13 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeString(this.teamName);
 		packetByteBuf.writeByte(this.mode);
 		if (this.mode == 0 || this.mode == 2) {
-			packetByteBuf.writeTextComponent(this.field_12603);
+			packetByteBuf.writeTextComponent(this.displayName);
 			packetByteBuf.writeByte(this.flags);
 			packetByteBuf.writeString(this.nameTagVisibilityRule);
 			packetByteBuf.writeString(this.collisionRule);
-			packetByteBuf.writeEnumConstant(this.field_12598);
-			packetByteBuf.writeTextComponent(this.field_12601);
-			packetByteBuf.writeTextComponent(this.field_12597);
+			packetByteBuf.writeEnumConstant(this.color);
+			packetByteBuf.writeTextComponent(this.prefix);
+			packetByteBuf.writeTextComponent(this.suffix);
 		}
 
 		if (this.mode == 0 || this.mode == 3 || this.mode == 4) {
@@ -116,7 +116,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Environment(EnvType.CLIENT)
 	public TextComponent getDisplayName() {
-		return this.field_12603;
+		return this.displayName;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -136,7 +136,7 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	@Environment(EnvType.CLIENT)
 	public TextFormat getPlayerPrefix() {
-		return this.field_12598;
+		return this.color;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -150,12 +150,12 @@ public class TeamS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent method_11856() {
-		return this.field_12601;
+	public TextComponent getPrefix() {
+		return this.prefix;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public TextComponent method_11854() {
-		return this.field_12597;
+	public TextComponent getSuffix() {
+		return this.suffix;
 	}
 }

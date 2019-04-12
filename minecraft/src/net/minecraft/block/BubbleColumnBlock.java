@@ -175,7 +175,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
-		iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
+		iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
 		return Fluids.WATER;
 	}
 }

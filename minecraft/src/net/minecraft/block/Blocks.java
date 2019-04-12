@@ -13,7 +13,7 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.registry.Registry;
 
 public class Blocks {
-	public static final Block field_10124 = register("air", new AirBlock(Block.Settings.of(Material.AIR).noCollision().dropsNothing()));
+	public static final Block AIR = register("air", new AirBlock(Block.Settings.of(Material.AIR).noCollision().dropsNothing()));
 	public static final Block field_10340 = register("stone", new Block(Block.Settings.of(Material.STONE, MaterialColor.STONE).strength(1.5F, 6.0F)));
 	public static final Block field_10474 = register("granite", new Block(Block.Settings.of(Material.STONE, MaterialColor.DIRT).strength(1.5F, 6.0F)));
 	public static final Block field_10289 = register("polished_granite", new Block(Block.Settings.of(Material.STONE, MaterialColor.DIRT).strength(1.5F, 6.0F)));
@@ -759,7 +759,7 @@ public class Blocks {
 	);
 	public static final Block field_10625 = register("cobblestone_wall", new WallBlock(Block.Settings.copy(field_10445)));
 	public static final Block field_9990 = register("mossy_cobblestone_wall", new WallBlock(Block.Settings.copy(field_10445)));
-	public static final Block field_10495 = register("flower_pot", new FlowerPotBlock(field_10124, Block.Settings.of(Material.PART).breakInstantly()));
+	public static final Block field_10495 = register("flower_pot", new FlowerPotBlock(AIR, Block.Settings.of(Material.PART).breakInstantly()));
 	public static final Block field_10468 = register("potted_oak_sapling", new FlowerPotBlock(field_10394, Block.Settings.of(Material.PART).breakInstantly()));
 	public static final Block field_10192 = register("potted_spruce_sapling", new FlowerPotBlock(field_10217, Block.Settings.of(Material.PART).breakInstantly()));
 	public static final Block field_10577 = register("potted_birch_sapling", new FlowerPotBlock(field_10575, Block.Settings.of(Material.PART).breakInstantly()));

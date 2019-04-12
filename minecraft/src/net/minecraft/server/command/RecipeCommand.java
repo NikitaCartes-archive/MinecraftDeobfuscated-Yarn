@@ -32,7 +32,7 @@ public class RecipeCommand {
 									CommandManager.argument("recipe", IdentifierArgumentType.create())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
-											commandContext -> give(
+											commandContext -> executeGive(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													Collections.singleton(IdentifierArgumentType.getRecipeArgument(commandContext, "recipe"))
@@ -42,7 +42,7 @@ public class RecipeCommand {
 								.then(
 									CommandManager.literal("*")
 										.executes(
-											commandContext -> give(
+											commandContext -> executeGive(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													commandContext.getSource().getMinecraftServer().getRecipeManager().values()
@@ -59,7 +59,7 @@ public class RecipeCommand {
 									CommandManager.argument("recipe", IdentifierArgumentType.create())
 										.suggests(SuggestionProviders.ALL_RECIPES)
 										.executes(
-											commandContext -> take(
+											commandContext -> executeTake(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													Collections.singleton(IdentifierArgumentType.getRecipeArgument(commandContext, "recipe"))
@@ -69,7 +69,7 @@ public class RecipeCommand {
 								.then(
 									CommandManager.literal("*")
 										.executes(
-											commandContext -> take(
+											commandContext -> executeTake(
 													commandContext.getSource(),
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													commandContext.getSource().getMinecraftServer().getRecipeManager().values()
@@ -81,7 +81,7 @@ public class RecipeCommand {
 		);
 	}
 
-	private static int give(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe<?>> collection2) throws CommandSyntaxException {
+	private static int executeGive(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe<?>> collection2) throws CommandSyntaxException {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
@@ -106,7 +106,7 @@ public class RecipeCommand {
 		}
 	}
 
-	private static int take(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe<?>> collection2) throws CommandSyntaxException {
+	private static int executeTake(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, Collection<Recipe<?>> collection2) throws CommandSyntaxException {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : collection) {

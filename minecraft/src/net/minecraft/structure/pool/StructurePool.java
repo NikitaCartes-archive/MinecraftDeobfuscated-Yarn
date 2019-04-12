@@ -15,7 +15,7 @@ import net.minecraft.structure.processor.StructureProcessor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.Heightmap;
 
 public class StructurePool {
 	public static final StructurePool EMPTY = new StructurePool(

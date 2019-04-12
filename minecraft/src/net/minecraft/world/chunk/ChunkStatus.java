@@ -17,8 +17,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ChunkStatus {
@@ -37,11 +37,6 @@ public class ChunkStatus {
 		PRE_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.PROTOCHUNK,
 		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> {
-			if (!chunk.getStatus().isAtLeast(getLightStatus()) || !chunk.isLightOn()) {
-				ChunkPos chunkPos = chunk.getPos();
-				serverLightingProvider.suppressLight(chunkPos, true);
-			}
-
 			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
 				if (serverWorld.getLevelProperties().hasStructures()) {
 					chunkGenerator.setStructureStarts(chunk, chunkGenerator, structureManager);
@@ -214,10 +209,6 @@ public class ChunkStatus {
 		list.add(chunkStatus);
 		Collections.reverse(list);
 		return list;
-	}
-
-	private static ChunkStatus getLightStatus() {
-		return LIGHT;
 	}
 
 	public static ChunkStatus getTargetGenerationStatus(int i) {

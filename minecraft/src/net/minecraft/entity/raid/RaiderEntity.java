@@ -45,9 +45,9 @@ import net.minecraft.world.World;
 
 public abstract class RaiderEntity extends PatrolEntity {
 	protected static final TrackedData<Boolean> CELEBRATING = DataTracker.registerData(RaiderEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
-	private static final Predicate<ItemEntity> OBTAINABLE_ILLAGER_BANNER_ITEM = itemEntity -> !itemEntity.cannotPickup()
+	private static final Predicate<ItemEntity> OBTAINABLE_OMINOUS_BANNER_PREDICATE = itemEntity -> !itemEntity.cannotPickup()
 			&& itemEntity.isAlive()
-			&& ItemStack.areEqual(itemEntity.getStack(), Raid.ILLAGER_BANNER);
+			&& ItemStack.areEqual(itemEntity.getStack(), Raid.OMINOUS_BANNER);
 	@Nullable
 	protected Raid raid;
 	private int wave;
@@ -141,7 +141,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 					}
 				}
 
-				if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.ILLAGER_BANNER) && playerEntity != null) {
+				if (!itemStack.isEmpty() && ItemStack.areEqual(itemStack, Raid.OMINOUS_BANNER) && playerEntity != null) {
 					StatusEffectInstance statusEffectInstance = playerEntity.getStatusEffect(StatusEffects.field_16595);
 					int i = 1;
 					if (statusEffectInstance != null) {
@@ -219,7 +219,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.raid != null) {
 				this.raid.addToWave(this.wave, this, false);
 				if (this.isPatrolLeader()) {
-					this.raid.setRaidLeader(this.wave, this);
+					this.raid.setWaveCaptain(this.wave, this);
 				}
 			}
 		}
@@ -228,8 +228,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 	@Override
 	protected void loot(ItemEntity itemEntity) {
 		ItemStack itemStack = itemEntity.getStack();
-		boolean bl = this.hasActiveRaid() && this.getRaid().getLeader(this.getWave()) != null;
-		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.ILLAGER_BANNER)) {
+		boolean bl = this.hasActiveRaid() && this.getRaid().getCaptain(this.getWave()) != null;
+		if (this.hasActiveRaid() && !bl && ItemStack.areEqual(itemStack, Raid.OMINOUS_BANNER)) {
 			EquipmentSlot equipmentSlot = EquipmentSlot.HEAD;
 			ItemStack itemStack2 = this.getEquippedStack(equipmentSlot);
 			double d = (double)this.getDropChance(equipmentSlot);
@@ -240,7 +240,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			this.setEquippedStack(equipmentSlot, itemStack);
 			this.sendPickup(itemEntity, itemStack.getAmount());
 			itemEntity.remove();
-			this.getRaid().setRaidLeader(this.getWave(), this);
+			this.getRaid().setWaveCaptain(this.getWave(), this);
 			this.setPatrolLeader(true);
 		} else {
 			super.loot(itemEntity);
@@ -518,12 +518,12 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.field_16603.hasActiveRaid()
 				&& !this.field_16603.getRaid().isFinished()
 				&& this.field_16603.canLead()
-				&& !ItemStack.areEqual(this.field_16603.getEquippedStack(EquipmentSlot.HEAD), Raid.ILLAGER_BANNER)) {
-				RaiderEntity raiderEntity = raid.getLeader(this.field_16603.getWave());
+				&& !ItemStack.areEqual(this.field_16603.getEquippedStack(EquipmentSlot.HEAD), Raid.OMINOUS_BANNER)) {
+				RaiderEntity raiderEntity = raid.getCaptain(this.field_16603.getWave());
 				if (raiderEntity == null || !raiderEntity.isAlive()) {
 					List<ItemEntity> list = this.field_16603
 						.world
-						.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
+						.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(16.0, 8.0, 16.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
 					if (!list.isEmpty()) {
 						return this.field_16603.getNavigation().startMovingTo((Entity)list.get(0), 1.15F);
 					}
@@ -540,7 +540,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			if (this.field_16603.getNavigation().getTargetPos().isWithinDistance(this.field_16603.getPos(), 1.414)) {
 				List<ItemEntity> list = this.field_16603
 					.world
-					.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_ILLAGER_BANNER_ITEM);
+					.getEntities(ItemEntity.class, this.field_16603.getBoundingBox().expand(4.0, 4.0, 4.0), RaiderEntity.OBTAINABLE_OMINOUS_BANNER_PREDICATE);
 				if (!list.isEmpty()) {
 					this.field_16603.loot((ItemEntity)list.get(0));
 				}

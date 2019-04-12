@@ -17,20 +17,20 @@ import net.minecraft.util.SystemUtil;
 
 @Environment(EnvType.CLIENT)
 public class SoundLoader {
-	private final ResourceManager field_18943;
-	private final Map<Identifier, CompletableFuture<SoundData>> loadedSounds = Maps.<Identifier, CompletableFuture<SoundData>>newHashMap();
+	private final ResourceManager resourceManager;
+	private final Map<Identifier, CompletableFuture<StaticSound>> loadedSounds = Maps.<Identifier, CompletableFuture<StaticSound>>newHashMap();
 
 	public SoundLoader(ResourceManager resourceManager) {
-		this.field_18943 = resourceManager;
+		this.resourceManager = resourceManager;
 	}
 
-	public CompletableFuture<SoundData> method_19743(Identifier identifier) {
-		return (CompletableFuture<SoundData>)this.loadedSounds.computeIfAbsent(identifier, identifierx -> CompletableFuture.supplyAsync(() -> {
+	public CompletableFuture<StaticSound> loadStatic(Identifier identifier) {
+		return (CompletableFuture<StaticSound>)this.loadedSounds.computeIfAbsent(identifier, identifierx -> CompletableFuture.supplyAsync(() -> {
 				try {
-					Resource resource = this.field_18943.getResource(identifierx);
+					Resource resource = this.resourceManager.getResource(identifierx);
 					Throwable var3 = null;
 
-					SoundData var9;
+					StaticSound var9;
 					try {
 						InputStream inputStream = resource.getInputStream();
 						Throwable var5 = null;
@@ -41,7 +41,7 @@ public class SoundLoader {
 
 							try {
 								ByteBuffer byteBuffer = audioStream.getBuffer();
-								var9 = new SoundData(byteBuffer, audioStream.getFormat());
+								var9 = new StaticSound(byteBuffer, audioStream.getFormat());
 							} catch (Throwable var56) {
 								var7 = var56;
 								throw var56;
@@ -98,10 +98,10 @@ public class SoundLoader {
 			}, SystemUtil.getServerWorkerExecutor()));
 	}
 
-	public CompletableFuture<AudioStream> method_19744(Identifier identifier) {
+	public CompletableFuture<AudioStream> loadStreamed(Identifier identifier) {
 		return CompletableFuture.supplyAsync(() -> {
 			try {
-				Resource resource = this.field_18943.getResource(identifier);
+				Resource resource = this.resourceManager.getResource(identifier);
 				InputStream inputStream = resource.getInputStream();
 				return new OggAudioStream(inputStream);
 			} catch (IOException var4) {
@@ -110,14 +110,12 @@ public class SoundLoader {
 		}, SystemUtil.getServerWorkerExecutor());
 	}
 
-	public void method_19738() {
-		this.loadedSounds.values().forEach(completableFuture -> completableFuture.thenAccept(SoundData::close));
+	public void close() {
+		this.loadedSounds.values().forEach(completableFuture -> completableFuture.thenAccept(StaticSound::close));
 		this.loadedSounds.clear();
 	}
 
-	public CompletableFuture<?> method_19741(Collection<Sound> collection) {
-		return CompletableFuture.allOf(
-			(CompletableFuture[])collection.stream().map(sound -> this.method_19743(sound.getLocation())).toArray(CompletableFuture[]::new)
-		);
+	public CompletableFuture<?> loadStatic(Collection<Sound> collection) {
+		return CompletableFuture.allOf((CompletableFuture[])collection.stream().map(sound -> this.loadStatic(sound.getLocation())).toArray(CompletableFuture[]::new));
 	}
 }

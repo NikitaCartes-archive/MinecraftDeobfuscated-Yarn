@@ -39,13 +39,13 @@ public class BrewingStandScreen extends ContainerScreen<BrewingStandContainer> {
 		int k = (this.width - this.containerWidth) / 2;
 		int l = (this.height - this.containerHeight) / 2;
 		this.blit(k, l, 0, 0, this.containerWidth, this.containerHeight);
-		int m = this.container.method_17377();
+		int m = this.container.getFuel();
 		int n = MathHelper.clamp((18 * m + 20 - 1) / 20, 0, 18);
 		if (n > 0) {
 			this.blit(k + 60, l + 44, 176, 29, n, 4);
 		}
 
-		int o = this.container.method_17378();
+		int o = this.container.getBrewTime();
 		if (o > 0) {
 			int p = (int)(28.0F * (1.0F - (float)o / 400.0F));
 			if (p > 0) {

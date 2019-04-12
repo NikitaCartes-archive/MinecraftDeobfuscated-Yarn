@@ -44,7 +44,7 @@ public class MainMenuScreen extends Screen {
 	private String splashText;
 	private ButtonWidget buttonResetDemo;
 	private final Object mutex = new Object();
-	public static final String OUTDATED_GL_TEXT = "Please click " + TextFormat.field_1073 + "here" + TextFormat.color + " for more information.";
+	public static final String OUTDATED_GL_TEXT = "Please click " + TextFormat.field_1073 + "here" + TextFormat.RESET + " for more information.";
 	private int warningTextWidth;
 	private int warningTitleWidth;
 	private int warningAlignLeft;

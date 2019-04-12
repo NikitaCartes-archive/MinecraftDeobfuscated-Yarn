@@ -400,7 +400,7 @@ public class Style {
 							ClickEvent.Action action = jsonPrimitive == null ? null : ClickEvent.Action.get(jsonPrimitive.getAsString());
 							JsonPrimitive jsonPrimitive2 = jsonObject2.getAsJsonPrimitive("value");
 							String string = jsonPrimitive2 == null ? null : jsonPrimitive2.getAsString();
-							if (action != null && string != null && action.method_10847()) {
+							if (action != null && string != null && action.isSafe()) {
 								style.clickEvent = new ClickEvent(action, string);
 							}
 						}
@@ -412,7 +412,7 @@ public class Style {
 							JsonPrimitive jsonPrimitive = jsonObject2.getAsJsonPrimitive("action");
 							HoverEvent.Action action2 = jsonPrimitive == null ? null : HoverEvent.Action.get(jsonPrimitive.getAsString());
 							TextComponent textComponent = jsonDeserializationContext.deserialize(jsonObject2.get("value"), TextComponent.class);
-							if (action2 != null && textComponent != null && action2.method_10895()) {
+							if (action2 != null && textComponent != null && action2.isSafe()) {
 								style.hoverEvent = new HoverEvent(action2, textComponent);
 							}
 						}

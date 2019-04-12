@@ -63,12 +63,12 @@ public class ElytraEntityModel<T extends LivingEntity> extends EntityModel<T> {
 		this.field_3365.rotationPointY = n;
 		if (livingEntity instanceof AbstractClientPlayerEntity) {
 			AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
-			abstractClientPlayerEntity.field_3900 = (float)((double)abstractClientPlayerEntity.field_3900 + (double)(l - abstractClientPlayerEntity.field_3900) * 0.1);
-			abstractClientPlayerEntity.field_3899 = (float)((double)abstractClientPlayerEntity.field_3899 + (double)(o - abstractClientPlayerEntity.field_3899) * 0.1);
-			abstractClientPlayerEntity.field_3898 = (float)((double)abstractClientPlayerEntity.field_3898 + (double)(m - abstractClientPlayerEntity.field_3898) * 0.1);
-			this.field_3365.pitch = abstractClientPlayerEntity.field_3900;
-			this.field_3365.yaw = abstractClientPlayerEntity.field_3899;
-			this.field_3365.roll = abstractClientPlayerEntity.field_3898;
+			abstractClientPlayerEntity.elytraPitch = (float)((double)abstractClientPlayerEntity.elytraPitch + (double)(l - abstractClientPlayerEntity.elytraPitch) * 0.1);
+			abstractClientPlayerEntity.elytraYaw = (float)((double)abstractClientPlayerEntity.elytraYaw + (double)(o - abstractClientPlayerEntity.elytraYaw) * 0.1);
+			abstractClientPlayerEntity.elytraRoll = (float)((double)abstractClientPlayerEntity.elytraRoll + (double)(m - abstractClientPlayerEntity.elytraRoll) * 0.1);
+			this.field_3365.pitch = abstractClientPlayerEntity.elytraPitch;
+			this.field_3365.yaw = abstractClientPlayerEntity.elytraYaw;
+			this.field_3365.roll = abstractClientPlayerEntity.elytraRoll;
 		} else {
 			this.field_3365.pitch = l;
 			this.field_3365.roll = m;

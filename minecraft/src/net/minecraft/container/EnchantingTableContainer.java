@@ -225,13 +225,13 @@ public class EnchantingTableContainer extends Container {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_7638() {
+	public int getLapisCount() {
 		ItemStack itemStack = this.inventory.getInvStack(1);
 		return itemStack.isEmpty() ? 0 : itemStack.getAmount();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17413() {
+	public int getSeed() {
 		return this.seed.get();
 	}
 

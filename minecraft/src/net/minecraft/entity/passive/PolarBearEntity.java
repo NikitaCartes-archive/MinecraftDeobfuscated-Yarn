@@ -119,7 +119,7 @@ public class PolarBearEntity extends AnimalEntity {
 
 	protected void playWarningSound() {
 		if (this.warningSoundCooldown <= 0) {
-			this.playSound(SoundEvents.field_14937, 1.0F, 1.0F);
+			this.playSound(SoundEvents.field_14937, 1.0F, this.getSoundPitch());
 			this.warningSoundCooldown = 40;
 		}
 	}

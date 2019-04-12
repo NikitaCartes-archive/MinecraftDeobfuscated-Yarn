@@ -15,13 +15,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.sortme.ItemScatterer;
 import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
+import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.Rotation;
 import net.minecraft.util.SystemUtil;
@@ -81,7 +81,7 @@ public class DispenserBlock extends BlockWithEntity {
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			world.method_20290(1001, blockPos, 0);
+			world.playLevelEvent(1001, blockPos, 0);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getInvStack(i);
 			DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);

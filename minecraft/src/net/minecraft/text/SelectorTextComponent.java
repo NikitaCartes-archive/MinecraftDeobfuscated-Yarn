@@ -64,6 +64,6 @@ public class SelectorTextComponent extends AbstractTextComponent implements Text
 
 	@Override
 	public String toString() {
-		return "SelectorComponent{pattern='" + this.pattern + '\'' + ", siblings=" + this.children + ", style=" + this.getStyle() + '}';
+		return "SelectorComponent{pattern='" + this.pattern + '\'' + ", siblings=" + this.siblings + ", style=" + this.getStyle() + '}';
 	}
 }

@@ -42,7 +42,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	private final Screen parentGui;
 	private final Consumer<TextComponent> statusConsumer;
 	private final ClientConnection connection;
-	private GameProfile playerProfile;
+	private GameProfile profile;
 
 	public ClientLoginNetworkHandler(ClientConnection clientConnection, MinecraftClient minecraftClient, @Nullable Screen screen, Consumer<TextComponent> consumer) {
 		this.connection = clientConnection;
@@ -55,8 +55,8 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	public void onHello(LoginHelloS2CPacket loginHelloS2CPacket) {
 		SecretKey secretKey = NetworkEncryptionUtils.generateKey();
 		PublicKey publicKey = loginHelloS2CPacket.getPublicKey();
-		String string = new BigInteger(NetworkEncryptionUtils.method_15240(loginHelloS2CPacket.getServerId(), publicKey, secretKey)).toString(16);
-		LoginKeyC2SPacket loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, loginHelloS2CPacket.method_12613());
+		String string = new BigInteger(NetworkEncryptionUtils.generateServerId(loginHelloS2CPacket.getServerId(), publicKey, secretKey)).toString(16);
+		LoginKeyC2SPacket loginKeyC2SPacket = new LoginKeyC2SPacket(secretKey, publicKey, loginHelloS2CPacket.getNonce());
 		this.statusConsumer.accept(new TranslatableTextComponent("connect.authorizing"));
 		NetworkUtils.downloadExecutor.submit((Runnable)(() -> {
 			TextComponent textComponent = this.joinServerSession(string);
@@ -70,7 +70,7 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 			}
 
 			this.statusConsumer.accept(new TranslatableTextComponent("connect.encrypting"));
-			this.connection.sendPacket(loginKeyC2SPacket, future -> this.connection.setupEncryption(secretKey));
+			this.connection.send(loginKeyC2SPacket, future -> this.connection.setupEncryption(secretKey));
 		}));
 	}
 
@@ -95,9 +95,9 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onLoginSuccess(LoginSuccessS2CPacket loginSuccessS2CPacket) {
 		this.statusConsumer.accept(new TranslatableTextComponent("connect.joining"));
-		this.playerProfile = loginSuccessS2CPacket.getPlayerProfile();
-		this.connection.setState(NetworkState.GAME);
-		this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentGui, this.connection, this.playerProfile));
+		this.profile = loginSuccessS2CPacket.getProfile();
+		this.connection.setState(NetworkState.PLAY);
+		this.connection.setPacketListener(new ClientPlayNetworkHandler(this.client, this.parentGui, this.connection, this.profile));
 	}
 
 	@Override
@@ -117,13 +117,13 @@ public class ClientLoginNetworkHandler implements ClientLoginPacketListener {
 	@Override
 	public void onCompression(LoginCompressionS2CPacket loginCompressionS2CPacket) {
 		if (!this.connection.isLocal()) {
-			this.connection.setMinCompressedSize(loginCompressionS2CPacket.getMinCompressedSize());
+			this.connection.setMinCompressedSize(loginCompressionS2CPacket.getCompressionThreshold());
 		}
 	}
 
 	@Override
 	public void onQueryRequest(LoginQueryRequestS2CPacket loginQueryRequestS2CPacket) {
 		this.statusConsumer.accept(new TranslatableTextComponent("connect.negotiating"));
-		this.connection.sendPacket(new LoginQueryResponseC2SPacket(loginQueryRequestS2CPacket.getQueryId(), null));
+		this.connection.send(new LoginQueryResponseC2SPacket(loginQueryRequestS2CPacket.getQueryId(), null));
 	}
 }

@@ -79,7 +79,6 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -102,6 +101,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
@@ -218,7 +218,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.updateInWater();
 		super.tick();
 		if (!this.world.isClient && this.container != null && !this.container.canUse(this)) {
-			this.closeGui();
+			this.closeContainer();
 			this.container = this.playerContainer;
 		}
 
@@ -432,7 +432,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	protected void closeGui() {
+	protected void closeContainer() {
 		this.container = this.playerContainer;
 	}
 
@@ -512,15 +512,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			f = 0.0F;
 		}
 
-		float g;
-		if (!this.onGround && !(this.getHealth() <= 0.0F)) {
-			g = (float)(Math.atan(-this.getVelocity().y * 0.2F) * 15.0);
-		} else {
-			g = 0.0F;
-		}
-
 		this.field_7483 = this.field_7483 + (f - this.field_7483) * 0.4F;
-		this.field_6223 = this.field_6223 + (g - this.field_6223) * 0.8F;
 		if (this.getHealth() > 0.0F && !this.isSpectator()) {
 			BoundingBox boundingBox;
 			if (this.hasVehicle() && !this.getRiddenEntity().removed) {
@@ -836,8 +828,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public boolean shouldDamagePlayer(PlayerEntity playerEntity) {
-		AbstractTeam abstractTeam = this.method_5781();
-		AbstractTeam abstractTeam2 = playerEntity.method_5781();
+		AbstractTeam abstractTeam = this.getScoreboardTeam();
+		AbstractTeam abstractTeam2 = playerEntity.getScoreboardTeam();
 		if (abstractTeam == null) {
 			return true;
 		} else {
@@ -1746,8 +1738,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		} else if (playerEntity.isSpectator()) {
 			return false;
 		} else {
-			AbstractTeam abstractTeam = this.method_5781();
-			return abstractTeam == null || playerEntity == null || playerEntity.method_5781() != abstractTeam || !abstractTeam.shouldShowFriendlyInvisibles();
+			AbstractTeam abstractTeam = this.getScoreboardTeam();
+			return abstractTeam == null || playerEntity == null || playerEntity.getScoreboardTeam() != abstractTeam || !abstractTeam.shouldShowFriendlyInvisibles();
 		}
 	}
 
@@ -1772,7 +1764,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public TextComponent getDisplayName() {
-		TextComponent textComponent = Team.method_1142(this.method_5781(), this.getName());
+		TextComponent textComponent = Team.modifyText(this.getScoreboardTeam(), this.getName());
 		return this.addTellClickEvent(textComponent);
 	}
 

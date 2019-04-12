@@ -34,7 +34,7 @@ public enum TextFormat {
 	field_1055("STRIKETHROUGH", 'm', true),
 	field_1073("UNDERLINE", 'n', true),
 	field_1056("ITALIC", 'o', true),
-	color("RESET", 'r', -1, null);
+	RESET("RESET", 'r', -1, null);
 
 	private static final Map<String, TextFormat> field_1052 = (Map<String, TextFormat>)Arrays.stream(values())
 		.collect(Collectors.toMap(textFormat -> sanitizeName(textFormat.field_1057), textFormat -> textFormat));
@@ -82,7 +82,7 @@ public enum TextFormat {
 						stringBuilder.setLength(0);
 					}
 
-					if (textFormat != color) {
+					if (textFormat != RESET) {
 						stringBuilder.append(textFormat);
 					}
 				}
@@ -101,7 +101,7 @@ public enum TextFormat {
 	}
 
 	public boolean isColor() {
-		return !this.modifier && this != color;
+		return !this.modifier && this != RESET;
 	}
 
 	@Nullable
@@ -115,7 +115,7 @@ public enum TextFormat {
 		return !this.modifier;
 	}
 
-	public String getFormatName() {
+	public String getName() {
 		return this.name().toLowerCase(Locale.ROOT);
 	}
 
@@ -136,7 +136,7 @@ public enum TextFormat {
 	@Nullable
 	public static TextFormat byId(int i) {
 		if (i < 0) {
-			return color;
+			return RESET;
 		} else {
 			for (TextFormat textFormat : values()) {
 				if (textFormat.getId() == i) {
@@ -162,12 +162,12 @@ public enum TextFormat {
 		return null;
 	}
 
-	public static Collection<String> method_540(boolean bl, boolean bl2) {
+	public static Collection<String> getNames(boolean bl, boolean bl2) {
 		List<String> list = Lists.<String>newArrayList();
 
 		for (TextFormat textFormat : values()) {
 			if ((!textFormat.isColor() || bl) && (!textFormat.isModifier() || bl2)) {
-				list.add(textFormat.getFormatName());
+				list.add(textFormat.getName());
 			}
 		}
 

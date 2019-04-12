@@ -93,14 +93,14 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			if (!playerInventory.getCursorStack().isEmpty() && this.field_2887) {
 				if (j == 0) {
 					this.minecraft.player.dropItem(playerInventory.getCursorStack(), true);
-					this.minecraft.interactionManager.method_2915(playerInventory.getCursorStack());
+					this.minecraft.interactionManager.dropCreativeStack(playerInventory.getCursorStack());
 					playerInventory.setCursorStack(ItemStack.EMPTY);
 				}
 
 				if (j == 1) {
 					ItemStack itemStack2 = playerInventory.getCursorStack().split(1);
 					this.minecraft.player.dropItem(itemStack2, true);
-					this.minecraft.interactionManager.method_2915(itemStack2);
+					this.minecraft.interactionManager.dropCreativeStack(itemStack2);
 				}
 			}
 		} else {
@@ -110,7 +110,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 
 			if (slot == this.deleteItemSlot && bl) {
 				for (int k = 0; k < this.minecraft.player.playerContainer.getStacks().size(); k++) {
-					this.minecraft.interactionManager.method_2909(ItemStack.EMPTY, k);
+					this.minecraft.interactionManager.clickCreativeStack(ItemStack.EMPTY, k);
 				}
 			} else if (selectedTab == ItemGroup.INVENTORY.getIndex()) {
 				if (slot == this.deleteItemSlot) {
@@ -119,11 +119,11 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 					ItemStack itemStack = slot.takeStack(j == 0 ? 1 : slot.getStack().getMaxAmount());
 					ItemStack itemStack2 = slot.getStack();
 					this.minecraft.player.dropItem(itemStack, true);
-					this.minecraft.interactionManager.method_2915(itemStack);
-					this.minecraft.interactionManager.method_2909(itemStack2, ((CreativePlayerInventoryScreen.CreativeSlot)slot).slot.id);
+					this.minecraft.interactionManager.dropCreativeStack(itemStack);
+					this.minecraft.interactionManager.clickCreativeStack(itemStack2, ((CreativePlayerInventoryScreen.CreativeSlot)slot).slot.id);
 				} else if (slotActionType == SlotActionType.field_7795 && !this.minecraft.player.inventory.getCursorStack().isEmpty()) {
 					this.minecraft.player.dropItem(this.minecraft.player.inventory.getCursorStack(), true);
-					this.minecraft.interactionManager.method_2915(this.minecraft.player.inventory.getCursorStack());
+					this.minecraft.interactionManager.dropCreativeStack(this.minecraft.player.inventory.getCursorStack());
 					this.minecraft.player.inventory.setCursorStack(ItemStack.EMPTY);
 				} else {
 					this.minecraft
@@ -162,7 +162,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 						ItemStack itemStack4 = itemStack3.copy();
 						itemStack4.setAmount(j == 0 ? 1 : itemStack4.getMaxAmount());
 						this.minecraft.player.dropItem(itemStack4, true);
-						this.minecraft.interactionManager.method_2915(itemStack4);
+						this.minecraft.interactionManager.dropCreativeStack(itemStack4);
 					}
 
 					return;
@@ -194,19 +194,19 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 				this.container.onSlotClick(slot == null ? i : slot.id, j, slotActionType, this.minecraft.player);
 				if (Container.unpackButtonId(j) == 2) {
 					for (int l = 0; l < 9; l++) {
-						this.minecraft.interactionManager.method_2909(this.container.getSlot(45 + l).getStack(), 36 + l);
+						this.minecraft.interactionManager.clickCreativeStack(this.container.getSlot(45 + l).getStack(), 36 + l);
 					}
 				} else if (slot != null) {
 					ItemStack itemStack2x = this.container.getSlot(slot.id).getStack();
-					this.minecraft.interactionManager.method_2909(itemStack2x, slot.id - this.container.slotList.size() + 9 + 36);
+					this.minecraft.interactionManager.clickCreativeStack(itemStack2x, slot.id - this.container.slotList.size() + 9 + 36);
 					int m = 45 + j;
 					if (slotActionType == SlotActionType.field_7791) {
-						this.minecraft.interactionManager.method_2909(itemStack, m - this.container.slotList.size() + 9 + 36);
+						this.minecraft.interactionManager.clickCreativeStack(itemStack, m - this.container.slotList.size() + 9 + 36);
 					} else if (slotActionType == SlotActionType.field_7795 && !itemStack.isEmpty()) {
 						ItemStack itemStack4 = itemStack.copy();
 						itemStack4.setAmount(j == 0 ? 1 : itemStack4.getMaxAmount());
 						this.minecraft.player.dropItem(itemStack4, true);
-						this.minecraft.interactionManager.method_2915(itemStack4);
+						this.minecraft.interactionManager.dropCreativeStack(itemStack4);
 					}
 
 					this.minecraft.player.playerContainer.sendContentUpdates();
@@ -763,7 +763,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			for (int j = 0; j < PlayerInventory.getHotbarSize(); j++) {
 				ItemStack itemStack = hotbarStorageEntry.get(j).copy();
 				clientPlayerEntity.inventory.setInvStack(j, itemStack);
-				minecraftClient.interactionManager.method_2909(itemStack, 36 + j);
+				minecraftClient.interactionManager.clickCreativeStack(itemStack, 36 + j);
 			}
 
 			clientPlayerEntity.playerContainer.sendContentUpdates();

@@ -22,7 +22,7 @@ public class CommandBossBar extends ServerBossBar {
 	private int maxValue = 100;
 
 	public CommandBossBar(Identifier identifier, TextComponent textComponent) {
-		super(textComponent, BossBar.Color.field_5786, BossBar.Overlay.field_5795);
+		super(textComponent, BossBar.Color.field_5786, BossBar.Style.field_5795);
 		this.id = identifier;
 		this.setPercent(0.0F);
 	}
@@ -159,7 +159,7 @@ public class CommandBossBar extends ServerBossBar {
 		commandBossBar.setValue(compoundTag.getInt("Value"));
 		commandBossBar.setMaxValue(compoundTag.getInt("Max"));
 		commandBossBar.setColor(BossBar.Color.byName(compoundTag.getString("Color")));
-		commandBossBar.setOverlay(BossBar.Overlay.byName(compoundTag.getString("Overlay")));
+		commandBossBar.setOverlay(BossBar.Style.byName(compoundTag.getString("Overlay")));
 		commandBossBar.setDarkenSky(compoundTag.getBoolean("DarkenScreen"));
 		commandBossBar.setDragonMusic(compoundTag.getBoolean("PlayBossMusic"));
 		commandBossBar.setThickenFog(compoundTag.getBoolean("CreateWorldFog"));

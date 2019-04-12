@@ -12,11 +12,11 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.World;
 
 public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
@@ -24,8 +24,8 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 	private static final TrackedData<TextComponent> LAST_OUTPUT = DataTracker.registerData(
 		CommandBlockMinecartEntity.class, TrackedDataHandlerRegistry.TEXT_COMPONENT
 	);
-	private final CommandBlockExecutor commandExecutor = new CommandBlockMinecartEntity.class_1698();
-	private int field_7742;
+	private final CommandBlockExecutor commandExecutor = new CommandBlockMinecartEntity.CommandExecutor();
+	private int lastExecuted;
 
 	public CommandBlockMinecartEntity(EntityType<? extends CommandBlockMinecartEntity> entityType, World world) {
 		super(entityType, world);
@@ -72,9 +72,9 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 
 	@Override
 	public void onActivatorRail(int i, int j, int k, boolean bl) {
-		if (bl && this.age - this.field_7742 >= 4) {
+		if (bl && this.age - this.lastExecuted >= 4) {
 			this.getCommandExecutor().execute(this.world);
-			this.field_7742 = this.age;
+			this.lastExecuted = this.age;
 		}
 	}
 
@@ -102,14 +102,14 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		return true;
 	}
 
-	public class class_1698 extends CommandBlockExecutor {
+	public class CommandExecutor extends CommandBlockExecutor {
 		@Override
 		public ServerWorld getWorld() {
 			return (ServerWorld)CommandBlockMinecartEntity.this.world;
 		}
 
 		@Override
-		public void method_8295() {
+		public void markDirty() {
 			CommandBlockMinecartEntity.this.getDataTracker().set(CommandBlockMinecartEntity.COMMAND, this.getCommand());
 			CommandBlockMinecartEntity.this.getDataTracker().set(CommandBlockMinecartEntity.LAST_OUTPUT, this.getLastOutput());
 		}
@@ -121,12 +121,12 @@ public class CommandBlockMinecartEntity extends AbstractMinecartEntity {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public CommandBlockMinecartEntity method_7569() {
+		public CommandBlockMinecartEntity getMinecart() {
 			return CommandBlockMinecartEntity.this;
 		}
 
 		@Override
-		public ServerCommandSource markDirty() {
+		public ServerCommandSource getSource() {
 			return new ServerCommandSource(
 				this,
 				new Vec3d(CommandBlockMinecartEntity.this.x, CommandBlockMinecartEntity.this.y, CommandBlockMinecartEntity.this.z),

@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class Channel {
-	private final Set<Channel.SourceManager> sourceLists = Sets.newIdentityHashSet();
+	private final Set<Channel.SourceManager> sources = Sets.newIdentityHashSet();
 	private final SoundEngine soundEngine;
 	private final Executor executor;
 
@@ -21,29 +21,29 @@ public class Channel {
 		this.executor = executor;
 	}
 
-	public Channel.SourceManager method_19723(SoundEngine.RunMode runMode) {
+	public Channel.SourceManager createSource(SoundEngine.RunMode runMode) {
 		Channel.SourceManager sourceManager = new Channel.SourceManager();
 		this.executor.execute(() -> {
-			Source source = this.soundEngine.method_19663(runMode);
+			Source source = this.soundEngine.createSource(runMode);
 			if (source != null) {
 				sourceManager.source = source;
-				this.sourceLists.add(sourceManager);
+				this.sources.add(sourceManager);
 			}
 		});
 		return sourceManager;
 	}
 
 	public void execute(Consumer<Stream<Source>> consumer) {
-		this.executor.execute(() -> consumer.accept(this.sourceLists.stream().map(sourceManager -> sourceManager.source).filter(Objects::nonNull)));
+		this.executor.execute(() -> consumer.accept(this.sources.stream().map(sourceManager -> sourceManager.source).filter(Objects::nonNull)));
 	}
 
 	public void tick() {
 		this.executor.execute(() -> {
-			Iterator<Channel.SourceManager> iterator = this.sourceLists.iterator();
+			Iterator<Channel.SourceManager> iterator = this.sources.iterator();
 
 			while (iterator.hasNext()) {
 				Channel.SourceManager sourceManager = (Channel.SourceManager)iterator.next();
-				sourceManager.source.method_19658();
+				sourceManager.source.tick();
 				if (sourceManager.source.isStopped()) {
 					sourceManager.close();
 					iterator.remove();
@@ -53,8 +53,8 @@ public class Channel {
 	}
 
 	public void close() {
-		this.sourceLists.forEach(Channel.SourceManager::close);
-		this.sourceLists.clear();
+		this.sources.forEach(Channel.SourceManager::close);
+		this.sources.clear();
 	}
 
 	@Environment(EnvType.CLIENT)

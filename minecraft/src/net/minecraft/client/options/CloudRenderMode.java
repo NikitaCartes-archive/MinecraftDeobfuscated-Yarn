@@ -13,25 +13,25 @@ public enum CloudRenderMode {
 	field_18164(2, "options.clouds.fancy");
 
 	private static final CloudRenderMode[] RENDER_MODES = (CloudRenderMode[])Arrays.stream(values())
-		.sorted(Comparator.comparingInt(CloudRenderMode::getRenderModeId))
+		.sorted(Comparator.comparingInt(CloudRenderMode::getValue))
 		.toArray(CloudRenderMode[]::new);
-	private final int renderModeId;
-	private final String renderMode;
+	private final int value;
+	private final String translationKey;
 
 	private CloudRenderMode(int j, String string2) {
-		this.renderModeId = j;
-		this.renderMode = string2;
+		this.value = j;
+		this.translationKey = string2;
 	}
 
-	public int getRenderModeId() {
-		return this.renderModeId;
+	public int getValue() {
+		return this.value;
 	}
 
-	public String getRenderMode() {
-		return this.renderMode;
+	public String getTranslationKey() {
+		return this.translationKey;
 	}
 
-	public static CloudRenderMode fromId(int i) {
+	public static CloudRenderMode getOption(int i) {
 		return RENDER_MODES[MathHelper.floorMod(i, RENDER_MODES.length)];
 	}
 }

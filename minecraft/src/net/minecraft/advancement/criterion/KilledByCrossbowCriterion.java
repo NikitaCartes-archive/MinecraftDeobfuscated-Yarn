@@ -21,7 +21,7 @@ import net.minecraft.util.NumberRange;
 
 public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("killed_by_crossbow");
-	private final Map<PlayerAdvancementTracker, KilledByCrossbowCriterion.class_2077> field_9656 = Maps.<PlayerAdvancementTracker, KilledByCrossbowCriterion.class_2077>newHashMap();
+	private final Map<PlayerAdvancementTracker, KilledByCrossbowCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, KilledByCrossbowCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -32,31 +32,31 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 	public void beginTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer
 	) {
-		KilledByCrossbowCriterion.class_2077 lv = (KilledByCrossbowCriterion.class_2077)this.field_9656.get(playerAdvancementTracker);
-		if (lv == null) {
-			lv = new KilledByCrossbowCriterion.class_2077(playerAdvancementTracker);
-			this.field_9656.put(playerAdvancementTracker, lv);
+		KilledByCrossbowCriterion.Handler handler = (KilledByCrossbowCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+		if (handler == null) {
+			handler = new KilledByCrossbowCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		lv.method_8982(conditionsContainer);
+		handler.add(conditionsContainer);
 	}
 
 	@Override
 	public void endTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer
 	) {
-		KilledByCrossbowCriterion.class_2077 lv = (KilledByCrossbowCriterion.class_2077)this.field_9656.get(playerAdvancementTracker);
-		if (lv != null) {
-			lv.method_8985(conditionsContainer);
-			if (lv.method_8984()) {
-				this.field_9656.remove(playerAdvancementTracker);
+		KilledByCrossbowCriterion.Handler handler = (KilledByCrossbowCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+		if (handler != null) {
+			handler.remove(conditionsContainer);
+			if (handler.isEmpty()) {
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
 	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-		this.field_9656.remove(playerAdvancementTracker);
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public KilledByCrossbowCriterion.Conditions method_8979(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -65,21 +65,21 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 		return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
 	}
 
-	public void method_8980(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
-		KilledByCrossbowCriterion.class_2077 lv = (KilledByCrossbowCriterion.class_2077)this.field_9656.get(serverPlayerEntity.getAdvancementManager());
-		if (lv != null) {
-			lv.method_8983(serverPlayerEntity, collection, i);
+	public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
+		KilledByCrossbowCriterion.Handler handler = (KilledByCrossbowCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
+		if (handler != null) {
+			handler.trigger(serverPlayerEntity, collection, i);
 		}
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
 		private final EntityPredicate[] victims;
-		private final NumberRange.IntRange field_9659;
+		private final NumberRange.IntRange uniqueEntityTypes;
 
 		public Conditions(EntityPredicate[] entityPredicates, NumberRange.IntRange intRange) {
 			super(KilledByCrossbowCriterion.ID);
 			this.victims = entityPredicates;
-			this.field_9659 = intRange;
+			this.uniqueEntityTypes = intRange;
 		}
 
 		public static KilledByCrossbowCriterion.Conditions method_8986(EntityPredicate.Builder... builders) {
@@ -121,7 +121,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 				}
 			}
 
-			if (this.field_9659 == NumberRange.IntRange.ANY) {
+			if (this.uniqueEntityTypes == NumberRange.IntRange.ANY) {
 				return true;
 			} else {
 				Set<EntityType<?>> set = Sets.<EntityType<?>>newHashSet();
@@ -130,7 +130,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 					set.add(entity2.getType());
 				}
 
-				return this.field_9659.test(set.size()) && this.field_9659.test(i);
+				return this.uniqueEntityTypes.test(set.size()) && this.uniqueEntityTypes.test(i);
 			}
 		}
 
@@ -138,35 +138,35 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("victims", EntityPredicate.serializeAll(this.victims));
-			jsonObject.add("unique_entity_types", this.field_9659.serialize());
+			jsonObject.add("unique_entity_types", this.uniqueEntityTypes.serialize());
 			return jsonObject;
 		}
 	}
 
-	static class class_2077 {
-		private final PlayerAdvancementTracker field_9658;
-		private final Set<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>> field_9657 = Sets.<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>>newHashSet();
+	static class Handler {
+		private final PlayerAdvancementTracker tracker;
+		private final Set<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>>newHashSet();
 
-		public class_2077(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9658 = playerAdvancementTracker;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.tracker = playerAdvancementTracker;
 		}
 
-		public boolean method_8984() {
-			return this.field_9657.isEmpty();
+		public boolean isEmpty() {
+			return this.conditions.isEmpty();
 		}
 
-		public void method_8982(Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer) {
-			this.field_9657.add(conditionsContainer);
+		public void add(Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer) {
+			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_8985(Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer) {
-			this.field_9657.remove(conditionsContainer);
+		public void remove(Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer) {
+			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_8983(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
+		public void trigger(ServerPlayerEntity serverPlayerEntity, Collection<Entity> collection, int i) {
 			List<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>> list = null;
 
-			for (Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer : this.field_9657) {
+			for (Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainer : this.conditions) {
 				if (conditionsContainer.getConditions().matches(serverPlayerEntity, collection, i)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions>>newArrayList();
@@ -178,7 +178,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<KilledByCrossbowCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_9658);
+					conditionsContainerx.apply(this.tracker);
 				}
 			}
 		}

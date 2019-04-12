@@ -46,7 +46,7 @@ public class StateFactory<O, S extends PropertyContainer<S>> {
 		});
 
 		for (A abstractPropertyContainer : list) {
-			abstractPropertyContainer.method_11571(map2);
+			abstractPropertyContainer.createWithTable(map2);
 		}
 
 		this.states = ImmutableList.copyOf(list);

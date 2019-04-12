@@ -63,7 +63,7 @@ public class ChunkCache implements ExtendedBlockView {
 	@Override
 	public BlockState getBlockState(BlockPos blockPos) {
 		if (World.isHeightInvalid(blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			Chunk chunk = this.method_18474(blockPos);
 			return chunk != null ? chunk.getBlockState(blockPos) : Blocks.field_9987.getDefaultState();

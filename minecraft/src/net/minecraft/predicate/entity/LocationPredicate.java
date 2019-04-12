@@ -20,9 +20,9 @@ public class LocationPredicate {
 	public static final LocationPredicate ANY = new LocationPredicate(
 		NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, null, null
 	);
-	private final NumberRange.FloatRange field_9682;
-	private final NumberRange.FloatRange field_9684;
-	private final NumberRange.FloatRange field_9681;
+	private final NumberRange.FloatRange x;
+	private final NumberRange.FloatRange y;
+	private final NumberRange.FloatRange z;
 	@Nullable
 	private final Biome biome;
 	@Nullable
@@ -38,23 +38,23 @@ public class LocationPredicate {
 		@Nullable StructureFeature<?> structureFeature,
 		@Nullable DimensionType dimensionType
 	) {
-		this.field_9682 = floatRange;
-		this.field_9684 = floatRange2;
-		this.field_9681 = floatRange3;
+		this.x = floatRange;
+		this.y = floatRange2;
+		this.z = floatRange3;
 		this.biome = biome;
 		this.feature = structureFeature;
 		this.dimension = dimensionType;
 	}
 
-	public static LocationPredicate method_9022(Biome biome) {
+	public static LocationPredicate biome(Biome biome) {
 		return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, biome, null, null);
 	}
 
-	public static LocationPredicate method_9016(DimensionType dimensionType) {
+	public static LocationPredicate dimension(DimensionType dimensionType) {
 		return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, null, dimensionType);
 	}
 
-	public static LocationPredicate method_9017(StructureFeature<?> structureFeature) {
+	public static LocationPredicate feature(StructureFeature<?> structureFeature) {
 		return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, structureFeature, null);
 	}
 
@@ -63,11 +63,11 @@ public class LocationPredicate {
 	}
 
 	public boolean test(ServerWorld serverWorld, float f, float g, float h) {
-		if (!this.field_9682.matches(f)) {
+		if (!this.x.matches(f)) {
 			return false;
-		} else if (!this.field_9684.matches(g)) {
+		} else if (!this.y.matches(g)) {
 			return false;
-		} else if (!this.field_9681.matches(h)) {
+		} else if (!this.z.matches(h)) {
 			return false;
 		} else if (this.dimension != null && this.dimension != serverWorld.dimension.getType()) {
 			return false;
@@ -84,11 +84,11 @@ public class LocationPredicate {
 			return JsonNull.INSTANCE;
 		} else {
 			JsonObject jsonObject = new JsonObject();
-			if (!this.field_9682.isDummy() || !this.field_9684.isDummy() || !this.field_9681.isDummy()) {
+			if (!this.x.isDummy() || !this.y.isDummy() || !this.z.isDummy()) {
 				JsonObject jsonObject2 = new JsonObject();
-				jsonObject2.add("x", this.field_9682.serialize());
-				jsonObject2.add("y", this.field_9684.serialize());
-				jsonObject2.add("z", this.field_9681.serialize());
+				jsonObject2.add("x", this.x.serialize());
+				jsonObject2.add("y", this.y.serialize());
+				jsonObject2.add("z", this.z.serialize());
 				jsonObject.add("position", jsonObject2);
 			}
 
@@ -132,9 +132,9 @@ public class LocationPredicate {
 	}
 
 	public static class Builder {
-		private NumberRange.FloatRange field_9693 = NumberRange.FloatRange.ANY;
-		private NumberRange.FloatRange field_9689 = NumberRange.FloatRange.ANY;
-		private NumberRange.FloatRange field_9692 = NumberRange.FloatRange.ANY;
+		private NumberRange.FloatRange x = NumberRange.FloatRange.ANY;
+		private NumberRange.FloatRange y = NumberRange.FloatRange.ANY;
+		private NumberRange.FloatRange z = NumberRange.FloatRange.ANY;
 		@Nullable
 		private Biome biome;
 		@Nullable
@@ -148,7 +148,7 @@ public class LocationPredicate {
 		}
 
 		public LocationPredicate build() {
-			return new LocationPredicate(this.field_9693, this.field_9689, this.field_9692, this.biome, this.feature, this.dimension);
+			return new LocationPredicate(this.x, this.y, this.z, this.biome, this.feature, this.dimension);
 		}
 	}
 }

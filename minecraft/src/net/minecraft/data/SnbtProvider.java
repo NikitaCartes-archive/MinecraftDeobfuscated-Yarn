@@ -9,7 +9,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Objects;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.sortme.JsonLikeTagParser;
+import net.minecraft.nbt.StringNbtReader;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,7 +58,7 @@ public class SnbtProvider implements DataProvider {
 					Throwable var11 = null;
 
 					try {
-						NbtIo.writeCompressed(JsonLikeTagParser.parse(string2), outputStream);
+						NbtIo.writeCompressed(StringNbtReader.parse(string2), outputStream);
 					} catch (Throwable var38) {
 						var11 = var38;
 						throw var38;

@@ -5,5 +5,5 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public interface ModelWithHat {
-	void method_17150(boolean bl);
+	void setHatVisible(boolean bl);
 }

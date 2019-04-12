@@ -212,7 +212,7 @@ public interface DispenserBehavior {
 
 			@Override
 			protected void playSound(BlockPointer blockPointer) {
-				blockPointer.getWorld().method_20290(1004, blockPointer.getBlockPos(), 0);
+				blockPointer.getWorld().playLevelEvent(1004, blockPointer.getBlockPos(), 0);
 			}
 		});
 		DispenserBlock.registerBehavior(Items.field_8814, new ItemDispenserBehavior() {
@@ -235,7 +235,7 @@ public interface DispenserBehavior {
 
 			@Override
 			protected void playSound(BlockPointer blockPointer) {
-				blockPointer.getWorld().method_20290(1018, blockPointer.getBlockPos(), 0);
+				blockPointer.getWorld().playLevelEvent(1018, blockPointer.getBlockPos(), 0);
 			}
 		});
 		DispenserBlock.registerBehavior(Items.field_8533, new BoatDispenserBehavior(BoatEntity.Type.OAK));
@@ -331,7 +331,7 @@ public interface DispenserBehavior {
 				if (!BoneMealItem.method_7720(itemStack, world, blockPos) && !BoneMealItem.method_7719(itemStack, world, blockPos, null)) {
 					this.success = false;
 				} else if (!world.isClient) {
-					world.method_20290(2005, blockPos, 0);
+					world.playLevelEvent(2005, blockPos, 0);
 				}
 
 				return itemStack;

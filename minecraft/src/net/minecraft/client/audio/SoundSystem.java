@@ -34,20 +34,20 @@ public class SoundSystem {
 	private static final Set<Identifier> unknownSounds = Sets.<Identifier>newHashSet();
 	private final SoundManager loader;
 	private final GameOptions settings;
-	private boolean initialized;
+	private boolean started;
 	private final SoundEngine soundEngine = new SoundEngine();
 	private final Listener listener = this.soundEngine.getListener();
 	private final SoundLoader soundLoader;
 	private final SoundExecutor taskQueue = new SoundExecutor();
 	private final Channel channel = new Channel(this.soundEngine, this.taskQueue);
 	private int ticks;
-	private final Map<SoundInstance, Channel.SourceManager> field_18950 = Maps.<SoundInstance, Channel.SourceManager>newHashMap();
-	private final Multimap<SoundCategory, SoundInstance> lastPlayedSounds = HashMultimap.create();
+	private final Map<SoundInstance, Channel.SourceManager> sources = Maps.<SoundInstance, Channel.SourceManager>newHashMap();
+	private final Multimap<SoundCategory, SoundInstance> sounds = HashMultimap.create();
 	private final List<TickableSoundInstance> tickingSounds = Lists.<TickableSoundInstance>newArrayList();
-	private final Map<SoundInstance, Integer> field_5566 = Maps.<SoundInstance, Integer>newHashMap();
-	private final Map<SoundInstance, Integer> field_18952 = Maps.<SoundInstance, Integer>newHashMap();
+	private final Map<SoundInstance, Integer> startTicks = Maps.<SoundInstance, Integer>newHashMap();
+	private final Map<SoundInstance, Integer> soundEndTicks = Maps.<SoundInstance, Integer>newHashMap();
 	private final List<ListenerSoundInstance> listeners = Lists.<ListenerSoundInstance>newArrayList();
-	private final List<Sound> streamedSounds = Lists.<Sound>newArrayList();
+	private final List<Sound> preloadedSounds = Lists.<Sound>newArrayList();
 
 	public SoundSystem(SoundManager soundManager, GameOptions gameOptions, ResourceManager resourceManager) {
 		this.loader = soundManager;
@@ -66,18 +66,18 @@ public class SoundSystem {
 			}
 		}
 
-		this.close();
-		this.initializeSystem();
+		this.stop();
+		this.start();
 	}
 
-	private synchronized void initializeSystem() {
-		if (!this.initialized) {
+	private synchronized void start() {
+		if (!this.started) {
 			try {
 				this.soundEngine.init();
-				this.listener.method_19673();
+				this.listener.init();
 				this.listener.setVolume(this.settings.getSoundVolume(SoundCategory.field_15250));
-				this.soundLoader.method_19741(this.streamedSounds).thenRun(this.streamedSounds::clear);
-				this.initialized = true;
+				this.soundLoader.loadStatic(this.preloadedSounds).thenRun(this.preloadedSounds::clear);
+				this.started = true;
 				LOGGER.info(MARKER, "Sound engine started");
 			} catch (RuntimeException var2) {
 				LOGGER.error(MARKER, "Error starting SoundSystem. Turning off sounds & music", (Throwable)var2);
@@ -90,11 +90,11 @@ public class SoundSystem {
 	}
 
 	public void updateSoundVolume(SoundCategory soundCategory, float f) {
-		if (this.initialized) {
+		if (this.started) {
 			if (soundCategory == SoundCategory.field_15250) {
 				this.listener.setVolume(f);
 			} else {
-				this.field_18950.forEach((soundInstance, sourceManager) -> {
+				this.sources.forEach((soundInstance, sourceManager) -> {
 					float fx = this.getAdjustedVolume(soundInstance);
 					sourceManager.run(source -> {
 						if (fx <= 0.0F) {
@@ -108,35 +108,35 @@ public class SoundSystem {
 		}
 	}
 
-	public void close() {
-		if (this.initialized) {
+	public void stop() {
+		if (this.started) {
 			this.stopAll();
-			this.soundLoader.method_19738();
+			this.soundLoader.close();
 			this.soundEngine.close();
-			this.initialized = false;
+			this.started = false;
 		}
 	}
 
 	public void stop(SoundInstance soundInstance) {
-		if (this.initialized) {
-			Channel.SourceManager sourceManager = (Channel.SourceManager)this.field_18950.remove(soundInstance);
+		if (this.started) {
+			Channel.SourceManager sourceManager = (Channel.SourceManager)this.sources.remove(soundInstance);
 			if (sourceManager != null) {
-				this.field_18952.remove(soundInstance);
+				this.soundEndTicks.remove(soundInstance);
 				sourceManager.run(Source::stop);
 			}
 		}
 	}
 
 	public void stopAll() {
-		if (this.initialized) {
+		if (this.started) {
 			this.taskQueue.restart();
-			this.field_18950.values().forEach(sourceManager -> sourceManager.run(Source::stop));
-			this.field_18950.clear();
+			this.sources.values().forEach(sourceManager -> sourceManager.run(Source::stop));
+			this.sources.clear();
 			this.channel.close();
-			this.field_5566.clear();
+			this.startTicks.clear();
 			this.tickingSounds.clear();
-			this.lastPlayedSounds.clear();
-			this.field_18952.clear();
+			this.sounds.clear();
+			this.soundEndTicks.clear();
 		}
 	}
 
@@ -148,7 +148,7 @@ public class SoundSystem {
 		this.listeners.remove(listenerSoundInstance);
 	}
 
-	public void method_20185(boolean bl) {
+	public void tick(boolean bl) {
 		if (!bl) {
 			this.tick();
 		}
@@ -167,7 +167,7 @@ public class SoundSystem {
 				float f = this.getAdjustedVolume(tickableSoundInstance);
 				float g = this.getAdjustedPitch(tickableSoundInstance);
 				Vec3d vec3d = new Vec3d((double)tickableSoundInstance.getX(), (double)tickableSoundInstance.getY(), (double)tickableSoundInstance.getZ());
-				Channel.SourceManager sourceManager = (Channel.SourceManager)this.field_18950.get(tickableSoundInstance);
+				Channel.SourceManager sourceManager = (Channel.SourceManager)this.sources.get(tickableSoundInstance);
 				if (sourceManager != null) {
 					sourceManager.run(source -> {
 						source.setVolume(f);
@@ -178,7 +178,7 @@ public class SoundSystem {
 			}
 		}
 
-		Iterator<Entry<SoundInstance, Channel.SourceManager>> iterator = this.field_18950.entrySet().iterator();
+		Iterator<Entry<SoundInstance, Channel.SourceManager>> iterator = this.sources.entrySet().iterator();
 
 		while (iterator.hasNext()) {
 			Entry<SoundInstance, Channel.SourceManager> entry = (Entry<SoundInstance, Channel.SourceManager>)iterator.next();
@@ -189,19 +189,19 @@ public class SoundSystem {
 				sourceManager2.run(Source::stop);
 				iterator.remove();
 			} else if (sourceManager2.isStopped()) {
-				int i = (Integer)this.field_18952.get(soundInstance);
+				int i = (Integer)this.soundEndTicks.get(soundInstance);
 				if (i <= this.ticks) {
 					int j = soundInstance.getRepeatDelay();
 					if (soundInstance.isRepeatable() && j > 0) {
-						this.field_5566.put(soundInstance, this.ticks + j);
+						this.startTicks.put(soundInstance, this.ticks + j);
 					}
 
 					iterator.remove();
 					LOGGER.debug(MARKER, "Removed channel {} because it's not playing anymore", sourceManager2);
-					this.field_18952.remove(soundInstance);
+					this.soundEndTicks.remove(soundInstance);
 
 					try {
-						this.lastPlayedSounds.remove(soundInstance.getCategory(), sourceManager2);
+						this.sounds.remove(soundInstance.getCategory(), sourceManager2);
 					} catch (RuntimeException var9) {
 					}
 
@@ -212,7 +212,7 @@ public class SoundSystem {
 			}
 		}
 
-		Iterator<Entry<SoundInstance, Integer>> iterator2 = this.field_5566.entrySet().iterator();
+		Iterator<Entry<SoundInstance, Integer>> iterator2 = this.startTicks.entrySet().iterator();
 
 		while (iterator2.hasNext()) {
 			Entry<SoundInstance, Integer> entry2 = (Entry<SoundInstance, Integer>)iterator2.next();
@@ -229,15 +229,15 @@ public class SoundSystem {
 	}
 
 	public boolean isPlaying(SoundInstance soundInstance) {
-		if (!this.initialized) {
+		if (!this.started) {
 			return false;
 		} else {
-			return this.field_18952.containsKey(soundInstance) && this.field_18952.get(soundInstance) <= this.ticks ? true : this.field_18950.containsKey(soundInstance);
+			return this.soundEndTicks.containsKey(soundInstance) && this.soundEndTicks.get(soundInstance) <= this.ticks ? true : this.sources.containsKey(soundInstance);
 		}
 	}
 
 	public void play(SoundInstance soundInstance) {
-		if (this.initialized) {
+		if (this.started) {
 			WeightedSoundSet weightedSoundSet = soundInstance.getSoundSet(this.loader);
 			Identifier identifier = soundInstance.getId();
 			if (weightedSoundSet == null) {
@@ -261,29 +261,29 @@ public class SoundSystem {
 						}
 					} else {
 						float f = soundInstance.getVolume();
-						float g = Math.max(f, 1.0F) * (float)sound.method_4770();
+						float g = Math.max(f, 1.0F) * (float)sound.getAttenuation();
 						SoundCategory soundCategory = soundInstance.getCategory();
 						float h = this.getAdjustedVolume(soundInstance);
 						float i = this.getAdjustedPitch(soundInstance);
 						SoundInstance.AttenuationType attenuationType = soundInstance.getAttenuationType();
-						boolean bl = soundInstance.method_4787();
-						if (h == 0.0F && !soundInstance.method_4785()) {
+						boolean bl = soundInstance.isLooping();
+						if (h == 0.0F && !soundInstance.shouldAlwaysPlay()) {
 							LOGGER.debug(MARKER, "Skipped playing sound {}, volume was zero.", sound.getIdentifier());
 						} else {
 							boolean bl2 = soundInstance.isRepeatable() && soundInstance.getRepeatDelay() == 0;
 							Vec3d vec3d = new Vec3d((double)soundInstance.getX(), (double)soundInstance.getY(), (double)soundInstance.getZ());
-							Channel.SourceManager sourceManager = this.channel.method_19723(sound.isStreamed() ? SoundEngine.RunMode.field_18353 : SoundEngine.RunMode.field_18352);
+							Channel.SourceManager sourceManager = this.channel.createSource(sound.isStreamed() ? SoundEngine.RunMode.field_18353 : SoundEngine.RunMode.field_18352);
 							LOGGER.debug(MARKER, "Playing sound {} for event {}", sound.getIdentifier(), identifier);
-							this.field_18952.put(soundInstance, this.ticks + 20);
-							this.field_18950.put(soundInstance, sourceManager);
-							this.lastPlayedSounds.put(soundCategory, soundInstance);
+							this.soundEndTicks.put(soundInstance, this.ticks + 20);
+							this.sources.put(soundInstance, sourceManager);
+							this.sounds.put(soundCategory, soundInstance);
 							sourceManager.run(source -> {
 								source.setPitch(i);
 								source.setVolume(h);
 								if (attenuationType == SoundInstance.AttenuationType.LINEAR) {
-									source.method_19651(g);
+									source.setAttenuation(g);
 								} else {
-									source.method_19657();
+									source.disableAttenuation();
 								}
 
 								source.setLooping(bl2);
@@ -291,14 +291,14 @@ public class SoundSystem {
 								source.setRelative(bl);
 							});
 							if (!sound.isStreamed()) {
-								this.soundLoader.method_19743(sound.getLocation()).thenAccept(soundData -> sourceManager.run(source -> {
-										source.method_19642(soundData);
-										source.method_19650();
+								this.soundLoader.loadStatic(sound.getLocation()).thenAccept(staticSound -> sourceManager.run(source -> {
+										source.setBuffer(staticSound);
+										source.play();
 									}));
 							} else {
-								this.soundLoader.method_19744(sound.getLocation()).thenAccept(audioStream -> sourceManager.run(source -> {
-										source.method_19643(audioStream);
-										source.method_19650();
+								this.soundLoader.loadStreamed(sound.getLocation()).thenAccept(audioStream -> sourceManager.run(source -> {
+										source.setStream(audioStream);
+										source.play();
 									}));
 							}
 
@@ -312,8 +312,8 @@ public class SoundSystem {
 		}
 	}
 
-	public void addStreamedSound(Sound sound) {
-		this.streamedSounds.add(sound);
+	public void addPreloadedSound(Sound sound) {
+		this.preloadedSounds.add(sound);
 	}
 
 	private float getAdjustedPitch(SoundInstance soundInstance) {
@@ -325,23 +325,23 @@ public class SoundSystem {
 	}
 
 	public void pauseAll() {
-		if (this.initialized) {
+		if (this.started) {
 			this.channel.execute(stream -> stream.forEach(Source::pause));
 		}
 	}
 
-	public void playAll() {
-		if (this.initialized) {
-			this.channel.execute(stream -> stream.forEach(Source::play));
+	public void resumeAll() {
+		if (this.started) {
+			this.channel.execute(stream -> stream.forEach(Source::resume));
 		}
 	}
 
 	public void play(SoundInstance soundInstance, int i) {
-		this.field_5566.put(soundInstance, this.ticks + i);
+		this.startTicks.put(soundInstance, this.ticks + i);
 	}
 
 	public void updateListenerPosition(Camera camera) {
-		if (this.initialized && camera.isReady()) {
+		if (this.started && camera.isReady()) {
 			Vec3d vec3d = camera.getPos();
 			Vec3d vec3d2 = camera.method_19335();
 			Vec3d vec3d3 = camera.method_19336();
@@ -354,7 +354,7 @@ public class SoundSystem {
 
 	public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
 		if (soundCategory != null) {
-			for (SoundInstance soundInstance : this.lastPlayedSounds.get(soundCategory)) {
+			for (SoundInstance soundInstance : this.sounds.get(soundCategory)) {
 				if (identifier == null || soundInstance.getId().equals(identifier)) {
 					this.stop(soundInstance);
 				}
@@ -362,7 +362,7 @@ public class SoundSystem {
 		} else if (identifier == null) {
 			this.stopAll();
 		} else {
-			for (SoundInstance soundInstancex : this.field_18950.keySet()) {
+			for (SoundInstance soundInstancex : this.sources.keySet()) {
 				if (soundInstancex.getId().equals(identifier)) {
 					this.stop(soundInstancex);
 				}
@@ -370,7 +370,7 @@ public class SoundSystem {
 		}
 	}
 
-	public String method_20304() {
-		return this.soundEngine.method_20296();
+	public String getDebugString() {
+		return this.soundEngine.getDebugString();
 	}
 }

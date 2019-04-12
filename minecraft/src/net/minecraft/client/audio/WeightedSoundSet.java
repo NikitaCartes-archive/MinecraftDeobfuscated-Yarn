@@ -61,9 +61,9 @@ public class WeightedSoundSet implements SoundContainer<Sound> {
 	}
 
 	@Override
-	public void addTo(SoundSystem soundSystem) {
+	public void preload(SoundSystem soundSystem) {
 		for (SoundContainer<Sound> soundContainer : this.sounds) {
-			soundContainer.addTo(soundSystem);
+			soundContainer.preload(soundSystem);
 		}
 	}
 }

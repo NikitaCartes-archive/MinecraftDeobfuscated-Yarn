@@ -25,64 +25,64 @@ import net.minecraft.world.GameMode;
 @Environment(EnvType.CLIENT)
 public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 	private PlayerListEntry cachedScoreboardEntry;
-	public float field_3900;
-	public float field_3899;
-	public float field_3898;
-	public final ClientWorld field_17892;
+	public float elytraPitch;
+	public float elytraYaw;
+	public float elytraRoll;
+	public final ClientWorld clientWorld;
 
 	public AbstractClientPlayerEntity(ClientWorld clientWorld, GameProfile gameProfile) {
 		super(clientWorld, gameProfile);
-		this.field_17892 = clientWorld;
+		this.clientWorld = clientWorld;
 	}
 
 	@Override
 	public boolean isSpectator() {
-		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntry(this.getGameProfile().getId());
+		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
 		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9219;
 	}
 
 	@Override
 	public boolean isCreative() {
-		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntry(this.getGameProfile().getId());
+		PlayerListEntry playerListEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getGameProfile().getId());
 		return playerListEntry != null && playerListEntry.getGameMode() == GameMode.field_9220;
 	}
 
-	public boolean hasScoreboardEntry() {
-		return this.getScoreboardEntry() != null;
+	public boolean canRenderCapeTexture() {
+		return this.getPlayerListEntry() != null;
 	}
 
 	@Nullable
-	protected PlayerListEntry getScoreboardEntry() {
+	protected PlayerListEntry getPlayerListEntry() {
 		if (this.cachedScoreboardEntry == null) {
-			this.cachedScoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().getScoreboardEntry(this.getUuid());
+			this.cachedScoreboardEntry = MinecraftClient.getInstance().getNetworkHandler().getPlayerListEntry(this.getUuid());
 		}
 
 		return this.cachedScoreboardEntry;
 	}
 
 	public boolean hasSkinTexture() {
-		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+		PlayerListEntry playerListEntry = this.getPlayerListEntry();
 		return playerListEntry != null && playerListEntry.hasSkinTexture();
 	}
 
 	public Identifier getSkinTexture() {
-		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+		PlayerListEntry playerListEntry = this.getPlayerListEntry();
 		return playerListEntry == null ? DefaultSkinHelper.getTexture(this.getUuid()) : playerListEntry.getSkinTexture();
 	}
 
 	@Nullable
-	public Identifier method_3119() {
-		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+	public Identifier getCapeTexture() {
+		PlayerListEntry playerListEntry = this.getPlayerListEntry();
 		return playerListEntry == null ? null : playerListEntry.getCapeTexture();
 	}
 
-	public boolean method_3126() {
-		return this.getScoreboardEntry() != null;
+	public boolean canRenderElytraTexture() {
+		return this.getPlayerListEntry() != null;
 	}
 
 	@Nullable
-	public Identifier method_3122() {
-		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+	public Identifier getElytraTexture() {
+		PlayerListEntry playerListEntry = this.getPlayerListEntry();
 		return playerListEntry == null ? null : playerListEntry.getElytraTexture();
 	}
 
@@ -106,12 +106,12 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		return new Identifier("skins/" + Hashing.sha1().hashUnencodedChars(ChatUtil.stripTextFormat(string)));
 	}
 
-	public String method_3121() {
-		PlayerListEntry playerListEntry = this.getScoreboardEntry();
+	public String getModel() {
+		PlayerListEntry playerListEntry = this.getPlayerListEntry();
 		return playerListEntry == null ? DefaultSkinHelper.getModel(this.getUuid()) : playerListEntry.getModel();
 	}
 
-	public float method_3118() {
+	public float getSpeed() {
 		float f = 1.0F;
 		if (this.abilities.flying) {
 			f *= 1.1F;

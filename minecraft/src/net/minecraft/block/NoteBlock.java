@@ -68,7 +68,7 @@ public class NoteBlock extends Block {
 		if (world.isClient) {
 			return true;
 		} else {
-			blockState = blockState.method_11572(NOTE);
+			blockState = blockState.cycle(NOTE);
 			world.setBlockState(blockPos, blockState, 3);
 			this.playNote(world, blockPos);
 			playerEntity.incrementStat(Stats.field_15393);

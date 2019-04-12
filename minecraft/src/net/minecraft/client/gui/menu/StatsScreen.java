@@ -19,8 +19,8 @@ import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.EntityType;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.block.BlockItem;
 import net.minecraft.server.network.packet.ClientStatusC2SPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
@@ -37,9 +37,9 @@ import net.minecraft.util.registry.Registry;
 @Environment(EnvType.CLIENT)
 public class StatsScreen extends Screen implements StatsListener {
 	protected final Screen parent;
-	private StatsScreen.CustomStatsListWidget field_2644;
-	private StatsScreen.ItemStatsListWidget field_2642;
-	private StatsScreen.EntityStatsListWidget field_2646;
+	private StatsScreen.CustomStatsListWidget generalButton;
+	private StatsScreen.ItemStatsListWidget itemsButton;
+	private StatsScreen.EntityStatsListWidget mobsButton;
 	private final StatHandler statHandler;
 	@Nullable
 	private AlwaysSelectedItemListWidget<?> listWidget;
@@ -58,29 +58,31 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	public void method_2270() {
-		this.field_2644 = new StatsScreen.CustomStatsListWidget(this.minecraft);
-		this.field_2642 = new StatsScreen.ItemStatsListWidget(this.minecraft);
-		this.field_2646 = new StatsScreen.EntityStatsListWidget(this.minecraft);
+		this.generalButton = new StatsScreen.CustomStatsListWidget(this.minecraft);
+		this.itemsButton = new StatsScreen.ItemStatsListWidget(this.minecraft);
+		this.mobsButton = new StatsScreen.EntityStatsListWidget(this.minecraft);
 	}
 
 	public void method_2267() {
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 120, this.height - 52, 80, 20, I18n.translate("stat.generalButton"), buttonWidgetx -> this.method_19390(this.field_2644))
+			new ButtonWidget(
+				this.width / 2 - 120, this.height - 52, 80, 20, I18n.translate("stat.generalButton"), buttonWidgetx -> this.method_19390(this.generalButton)
+			)
 		);
 		ButtonWidget buttonWidget = this.addButton(
-			new ButtonWidget(this.width / 2 - 40, this.height - 52, 80, 20, I18n.translate("stat.itemsButton"), buttonWidgetx -> this.method_19390(this.field_2642))
+			new ButtonWidget(this.width / 2 - 40, this.height - 52, 80, 20, I18n.translate("stat.itemsButton"), buttonWidgetx -> this.method_19390(this.itemsButton))
 		);
 		ButtonWidget buttonWidget2 = this.addButton(
-			new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton"), buttonWidgetx -> this.method_19390(this.field_2646))
+			new ButtonWidget(this.width / 2 + 40, this.height - 52, 80, 20, I18n.translate("stat.mobsButton"), buttonWidgetx -> this.method_19390(this.mobsButton))
 		);
 		this.addButton(
 			new ButtonWidget(this.width / 2 - 100, this.height - 28, 200, 20, I18n.translate("gui.done"), buttonWidgetx -> this.minecraft.openScreen(this.parent))
 		);
-		if (this.field_2642.children().isEmpty()) {
+		if (this.itemsButton.children().isEmpty()) {
 			buttonWidget.active = false;
 		}
 
-		if (this.field_2646.children().isEmpty()) {
+		if (this.mobsButton.children().isEmpty()) {
 			buttonWidget2.active = false;
 		}
 	}
@@ -109,7 +111,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		if (this.field_2645) {
 			this.method_2270();
 			this.method_2267();
-			this.method_19390(this.field_2644);
+			this.method_19390(this.generalButton);
 			this.field_2645 = false;
 		}
 	}
@@ -125,9 +127,9 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	public void method_19390(@Nullable AlwaysSelectedItemListWidget<?> alwaysSelectedItemListWidget) {
-		this.children.remove(this.field_2644);
-		this.children.remove(this.field_2642);
-		this.children.remove(this.field_2646);
+		this.children.remove(this.generalButton);
+		this.children.remove(this.itemsButton);
+		this.children.remove(this.mobsButton);
 		if (alwaysSelectedItemListWidget != null) {
 			this.children.add(0, alwaysSelectedItemListWidget);
 			this.listWidget = alwaysSelectedItemListWidget;
@@ -169,7 +171,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Environment(EnvType.CLIENT)
-		class CustomStatItem extends AlwaysSelectedItemListWidget.class_4281<StatsScreen.CustomStatsListWidget.CustomStatItem> {
+		class CustomStatItem extends AlwaysSelectedItemListWidget.Item<StatsScreen.CustomStatsListWidget.CustomStatItem> {
 			private final Stat<Identifier> field_18749;
 
 			private CustomStatItem(Stat<Identifier> stat) {
@@ -208,7 +210,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Environment(EnvType.CLIENT)
-		class EntityStatItem extends AlwaysSelectedItemListWidget.class_4281<StatsScreen.EntityStatsListWidget.EntityStatItem> {
+		class EntityStatItem extends AlwaysSelectedItemListWidget.Item<StatsScreen.EntityStatsListWidget.EntityStatItem> {
 			private final EntityType<?> field_18762;
 
 			public EntityStatItem(EntityType<?> entityType) {
@@ -423,19 +425,19 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Environment(EnvType.CLIENT)
-		class ItemStatItem extends AlwaysSelectedItemListWidget.class_4281<StatsScreen.ItemStatsListWidget.ItemStatItem> {
+		class ItemStatItem extends AlwaysSelectedItemListWidget.Item<StatsScreen.ItemStatsListWidget.ItemStatItem> {
 			private ItemStatItem() {
 			}
 
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				net.minecraft.item.Item item = (net.minecraft.item.Item)StatsScreen.this.field_2642.field_18757.get(i);
+				net.minecraft.item.Item item = (net.minecraft.item.Item)StatsScreen.this.itemsButton.field_18757.get(i);
 				StatsScreen.this.method_2289(k + 40, j, item);
 
-				for (int p = 0; p < StatsScreen.this.field_2642.field_18754.size(); p++) {
+				for (int p = 0; p < StatsScreen.this.itemsButton.field_18754.size(); p++) {
 					Stat<Block> stat;
 					if (item instanceof BlockItem) {
-						stat = ((StatType)StatsScreen.this.field_2642.field_18754.get(p)).getOrCreateStat(((BlockItem)item).getBlock());
+						stat = ((StatType)StatsScreen.this.itemsButton.field_18754.get(p)).getOrCreateStat(((BlockItem)item).getBlock());
 					} else {
 						stat = null;
 					}
@@ -443,10 +445,10 @@ public class StatsScreen extends Screen implements StatsListener {
 					this.method_19405(stat, k + StatsScreen.this.method_2285(p), j, i % 2 == 0);
 				}
 
-				for (int p = 0; p < StatsScreen.this.field_2642.field_18755.size(); p++) {
+				for (int p = 0; p < StatsScreen.this.itemsButton.field_18755.size(); p++) {
 					this.method_19405(
-						((StatType)StatsScreen.this.field_2642.field_18755.get(p)).getOrCreateStat(item),
-						k + StatsScreen.this.method_2285(p + StatsScreen.this.field_2642.field_18754.size()),
+						((StatType)StatsScreen.this.itemsButton.field_18755.get(p)).getOrCreateStat(item),
+						k + StatsScreen.this.method_2285(p + StatsScreen.this.itemsButton.field_18754.size()),
 						j,
 						i % 2 == 0
 					);
@@ -472,12 +474,12 @@ public class StatsScreen extends Screen implements StatsListener {
 					j = 0;
 				} else if (ItemStatsListWidget.this.field_18754.contains(ItemStatsListWidget.this.field_18759)) {
 					StatType<Block> statType = (StatType<Block>)ItemStatsListWidget.this.field_18759;
-					i = item instanceof BlockItem ? StatsScreen.this.statHandler.method_15024(statType, ((BlockItem)item).getBlock()) : -1;
-					j = item2 instanceof BlockItem ? StatsScreen.this.statHandler.method_15024(statType, ((BlockItem)item2).getBlock()) : -1;
+					i = item instanceof BlockItem ? StatsScreen.this.statHandler.getStat(statType, ((BlockItem)item).getBlock()) : -1;
+					j = item2 instanceof BlockItem ? StatsScreen.this.statHandler.getStat(statType, ((BlockItem)item2).getBlock()) : -1;
 				} else {
 					StatType<net.minecraft.item.Item> statType = (StatType<net.minecraft.item.Item>)ItemStatsListWidget.this.field_18759;
-					i = StatsScreen.this.statHandler.method_15024(statType, item);
-					j = StatsScreen.this.statHandler.method_15024(statType, item2);
+					i = StatsScreen.this.statHandler.getStat(statType, item);
+					j = StatsScreen.this.statHandler.getStat(statType, item2);
 				}
 
 				return i == j

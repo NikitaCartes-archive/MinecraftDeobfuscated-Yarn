@@ -9,16 +9,16 @@ public abstract class BossBar {
 	protected TextComponent name;
 	protected float percent;
 	protected BossBar.Color color;
-	protected BossBar.Overlay overlay;
+	protected BossBar.Style style;
 	protected boolean darkenSky;
 	protected boolean dragonMusic;
 	protected boolean thickenFog;
 
-	public BossBar(UUID uUID, TextComponent textComponent, BossBar.Color color, BossBar.Overlay overlay) {
+	public BossBar(UUID uUID, TextComponent textComponent, BossBar.Color color, BossBar.Style style) {
 		this.uuid = uUID;
 		this.name = textComponent;
 		this.color = color;
-		this.overlay = overlay;
+		this.style = style;
 		this.percent = 1.0F;
 	}
 
@@ -50,12 +50,12 @@ public abstract class BossBar {
 		this.color = color;
 	}
 
-	public BossBar.Overlay getOverlay() {
-		return this.overlay;
+	public BossBar.Style getOverlay() {
+		return this.style;
 	}
 
-	public void setOverlay(BossBar.Overlay overlay) {
-		this.overlay = overlay;
+	public void setOverlay(BossBar.Style style) {
+		this.style = style;
 	}
 
 	public boolean getDarkenSky() {
@@ -121,7 +121,7 @@ public abstract class BossBar {
 		}
 	}
 
-	public static enum Overlay {
+	public static enum Style {
 		field_5795("progress"),
 		field_5796("notched_6"),
 		field_5791("notched_10"),
@@ -130,7 +130,7 @@ public abstract class BossBar {
 
 		private final String name;
 
-		private Overlay(String string2) {
+		private Style(String string2) {
 			this.name = string2;
 		}
 
@@ -138,10 +138,10 @@ public abstract class BossBar {
 			return this.name;
 		}
 
-		public static BossBar.Overlay byName(String string) {
-			for (BossBar.Overlay overlay : values()) {
-				if (overlay.name.equals(string)) {
-					return overlay;
+		public static BossBar.Style byName(String string) {
+			for (BossBar.Style style : values()) {
+				if (style.name.equals(string)) {
+					return style;
 				}
 			}
 

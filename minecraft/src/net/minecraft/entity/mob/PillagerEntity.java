@@ -41,11 +41,11 @@ import net.minecraft.entity.projectile.Projectile;
 import net.minecraft.entity.raid.Raid;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.inventory.BasicInventory;
+import net.minecraft.item.BannerItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.block.BannerItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.sound.SoundEvent;
@@ -200,7 +200,7 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser, Range
 			return true;
 		} else {
 			return entity instanceof LivingEntity && ((LivingEntity)entity).getGroup() == EntityGroup.ILLAGER
-				? this.method_5781() == null && entity.method_5781() == null
+				? this.getScoreboardTeam() == null && entity.getScoreboardTeam() == null
 				: false;
 		}
 	}

@@ -65,7 +65,7 @@ public class TurtleEggBlock extends Block {
 			world.breakBlock(blockPos, false);
 		} else {
 			world.setBlockState(blockPos, blockState.with(EGGS, Integer.valueOf(i - 1)), 2);
-			world.method_20290(2001, blockPos, Block.getRawIdFromState(blockState));
+			world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 		}
 	}
 
@@ -81,7 +81,7 @@ public class TurtleEggBlock extends Block {
 				world.clearBlockState(blockPos, false);
 				if (!world.isClient) {
 					for (int j = 0; j < blockState.get(EGGS); j++) {
-						world.method_20290(2001, blockPos, Block.getRawIdFromState(blockState));
+						world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 						TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
 						turtleEntity.setBreedingAge(-24000);
 						turtleEntity.setHomePos(blockPos);
@@ -100,7 +100,7 @@ public class TurtleEggBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (this.method_10831(world, blockPos) && !world.isClient) {
-			world.method_20290(2005, blockPos, 0);
+			world.playLevelEvent(2005, blockPos, 0);
 		}
 	}
 

@@ -40,7 +40,7 @@ public class Scoreboard {
 		return (ScoreboardObjective)this.objectives.get(string);
 	}
 
-	public ScoreboardObjective method_1168(
+	public ScoreboardObjective addObjective(
 		String string, ScoreboardCriterion scoreboardCriterion, TextComponent textComponent, ScoreboardCriterion.RenderType renderType
 	) {
 		if (string.length() > 16) {
@@ -56,7 +56,7 @@ public class Scoreboard {
 		}
 	}
 
-	public final void method_1162(ScoreboardCriterion scoreboardCriterion, String string, Consumer<ScoreboardPlayerScore> consumer) {
+	public final void forEachScore(ScoreboardCriterion scoreboardCriterion, String string, Consumer<ScoreboardPlayerScore> consumer) {
 		((List)this.objectivesByCriterion.getOrDefault(scoreboardCriterion, Collections.emptyList()))
 			.forEach(scoreboardObjective -> consumer.accept(this.getPlayerScore(string, scoreboardObjective)));
 	}
@@ -285,8 +285,8 @@ public class Scoreboard {
 			default:
 				if (i >= 3 && i <= 18) {
 					TextFormat textFormat = TextFormat.byId(i - 3);
-					if (textFormat != null && textFormat != TextFormat.color) {
-						return "sidebar.team." + textFormat.getFormatName();
+					if (textFormat != null && textFormat != TextFormat.RESET) {
+						return "sidebar.team." + textFormat.getName();
 					}
 				}
 

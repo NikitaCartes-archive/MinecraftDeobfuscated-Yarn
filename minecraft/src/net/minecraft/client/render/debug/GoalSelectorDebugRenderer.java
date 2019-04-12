@@ -15,6 +15,11 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 	private final Map<Integer, List<GoalSelectorDebugRenderer.class_4206>> goalSelectors = Maps.<Integer, List<GoalSelectorDebugRenderer.class_4206>>newHashMap();
 
+	@Override
+	public void method_20414() {
+		this.goalSelectors.clear();
+	}
+
 	public void setGoalSelectorList(int i, List<GoalSelectorDebugRenderer.class_4206> list) {
 		this.goalSelectors.put(i, list);
 	}

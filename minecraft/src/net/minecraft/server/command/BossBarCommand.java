@@ -134,23 +134,23 @@ public class BossBarCommand {
 									CommandManager.literal("style")
 										.then(
 											CommandManager.literal("progress")
-												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5795))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5795))
 										)
 										.then(
 											CommandManager.literal("notched_6")
-												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5796))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5796))
 										)
 										.then(
 											CommandManager.literal("notched_10")
-												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5791))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5791))
 										)
 										.then(
 											CommandManager.literal("notched_12")
-												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5793))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5793))
 										)
 										.then(
 											CommandManager.literal("notched_20")
-												.executes(commandContext -> setOverlay(commandContext.getSource(), createBossBar(commandContext), BossBar.Overlay.field_5790))
+												.executes(commandContext -> setStyle(commandContext.getSource(), createBossBar(commandContext), BossBar.Style.field_5790))
 										)
 								)
 								.then(
@@ -299,11 +299,11 @@ public class BossBarCommand {
 		}
 	}
 
-	private static int setOverlay(ServerCommandSource serverCommandSource, CommandBossBar commandBossBar, BossBar.Overlay overlay) throws CommandSyntaxException {
-		if (commandBossBar.getOverlay().equals(overlay)) {
+	private static int setStyle(ServerCommandSource serverCommandSource, CommandBossBar commandBossBar, BossBar.Style style) throws CommandSyntaxException {
+		if (commandBossBar.getOverlay().equals(style)) {
 			throw SET_STYLE_UNCHANGED_EXCEPTION.create();
 		} else {
-			commandBossBar.setOverlay(overlay);
+			commandBossBar.setOverlay(style);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.set.style.success", commandBossBar.getTextComponent()), true);
 			return 0;
 		}

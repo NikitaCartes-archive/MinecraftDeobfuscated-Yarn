@@ -10,8 +10,8 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.gen.Heightmap;
 
 @Environment(EnvType.CLIENT)
 public class HeightmapDebugRenderer implements DebugRenderer.Renderer {

@@ -23,6 +23,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -30,7 +31,6 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.server.ServerAdvancementLoader;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sortme.JsonLikeTagParser;
 import net.minecraft.tag.EntityTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TextComponent;
@@ -266,7 +266,7 @@ public class EntitySelectorOptions {
 					if (!(entity instanceof LivingEntity)) {
 						return false;
 					} else {
-						AbstractTeam abstractTeam = entity.method_5781();
+						AbstractTeam abstractTeam = entity.getScoreboardTeam();
 						String string2 = abstractTeam == null ? "" : abstractTeam.getName();
 						return string2.equals(string) != bl;
 					}
@@ -338,7 +338,7 @@ public class EntitySelectorOptions {
 			);
 			putOption("nbt", entitySelectorReader -> {
 				boolean bl = entitySelectorReader.readNegationCharacter();
-				CompoundTag compoundTag = new JsonLikeTagParser(entitySelectorReader.getReader()).parseCompoundTag();
+				CompoundTag compoundTag = new StringNbtReader(entitySelectorReader.getReader()).parseCompoundTag();
 				entitySelectorReader.setPredicate(entity -> {
 					CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
 					if (entity instanceof ServerPlayerEntity) {

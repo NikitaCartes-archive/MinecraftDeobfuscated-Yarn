@@ -53,12 +53,12 @@ public class RealmsConnect {
 							return;
 						}
 
-						RealmsConnect.this.connection.sendPacket(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
+						RealmsConnect.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
 						if (RealmsConnect.this.aborted) {
 							return;
 						}
 
-						RealmsConnect.this.connection.sendPacket(new LoginHelloC2SPacket(MinecraftClient.getInstance().getSession().getProfile()));
+						RealmsConnect.this.connection.send(new LoginHelloC2SPacket(MinecraftClient.getInstance().getSession().getProfile()));
 					} catch (UnknownHostException var5) {
 						Realms.clearResourcePack();
 						if (RealmsConnect.this.aborted) {

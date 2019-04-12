@@ -7,26 +7,26 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public abstract class AbstractTextComponent implements TextComponent {
-	protected final List<TextComponent> children = Lists.<TextComponent>newArrayList();
+	protected final List<TextComponent> siblings = Lists.<TextComponent>newArrayList();
 	private Style style;
 
 	@Override
 	public TextComponent append(TextComponent textComponent) {
 		textComponent.getStyle().setParent(this.getStyle());
-		this.children.add(textComponent);
+		this.siblings.add(textComponent);
 		return this;
 	}
 
 	@Override
-	public List<TextComponent> getChildren() {
-		return this.children;
+	public List<TextComponent> getSiblings() {
+		return this.siblings;
 	}
 
 	@Override
 	public TextComponent setStyle(Style style) {
 		this.style = style;
 
-		for (TextComponent textComponent : this.children) {
+		for (TextComponent textComponent : this.siblings) {
 			textComponent.getStyle().setParent(this.getStyle());
 		}
 
@@ -38,7 +38,7 @@ public abstract class AbstractTextComponent implements TextComponent {
 		if (this.style == null) {
 			this.style = new Style();
 
-			for (TextComponent textComponent : this.children) {
+			for (TextComponent textComponent : this.siblings) {
 				textComponent.getStyle().setParent(this.style);
 			}
 		}
@@ -48,7 +48,7 @@ public abstract class AbstractTextComponent implements TextComponent {
 
 	@Override
 	public Stream<TextComponent> stream() {
-		return Streams.concat(Stream.of(this), this.children.stream().flatMap(TextComponent::stream));
+		return Streams.concat(Stream.of(this), this.siblings.stream().flatMap(TextComponent::stream));
 	}
 
 	public boolean equals(Object object) {
@@ -58,15 +58,15 @@ public abstract class AbstractTextComponent implements TextComponent {
 			return false;
 		} else {
 			AbstractTextComponent abstractTextComponent = (AbstractTextComponent)object;
-			return this.children.equals(abstractTextComponent.children) && this.getStyle().equals(abstractTextComponent.getStyle());
+			return this.siblings.equals(abstractTextComponent.siblings) && this.getStyle().equals(abstractTextComponent.getStyle());
 		}
 	}
 
 	public int hashCode() {
-		return Objects.hash(new Object[]{this.getStyle(), this.children});
+		return Objects.hash(new Object[]{this.getStyle(), this.siblings});
 	}
 
 	public String toString() {
-		return "BaseComponent{style=" + this.style + ", siblings=" + this.children + '}';
+		return "BaseComponent{style=" + this.style + ", siblings=" + this.siblings + '}';
 	}
 }

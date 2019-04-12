@@ -425,8 +425,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 		ClientPlayerEntity clientPlayerEntity = MinecraftClient.getInstance().player;
 		boolean bl = !livingEntity.canSeePlayer(clientPlayerEntity);
 		if (livingEntity != clientPlayerEntity) {
-			AbstractTeam abstractTeam = livingEntity.method_5781();
-			AbstractTeam abstractTeam2 = clientPlayerEntity.method_5781();
+			AbstractTeam abstractTeam = livingEntity.getScoreboardTeam();
+			AbstractTeam abstractTeam2 = clientPlayerEntity.getScoreboardTeam();
 			if (abstractTeam != null) {
 				AbstractTeam.VisibilityRule visibilityRule = abstractTeam.getNameTagVisibilityRule();
 				switch (visibilityRule) {

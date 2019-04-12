@@ -286,7 +286,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 		return block.matches(BlockTags.field_15503)
 			|| block == Blocks.field_10479
 			|| block instanceof LogBlock
-			|| block == Blocks.field_10124 && super.canSpawn(iWorld, spawnType);
+			|| block == Blocks.AIR && super.canSpawn(iWorld, spawnType);
 	}
 
 	@Override

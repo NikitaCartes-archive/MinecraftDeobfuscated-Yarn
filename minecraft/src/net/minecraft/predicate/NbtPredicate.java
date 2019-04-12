@@ -10,8 +10,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
-import net.minecraft.sortme.JsonLikeTagParser;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.TagHelper;
 
@@ -44,7 +44,7 @@ public class NbtPredicate {
 		if (jsonElement != null && !jsonElement.isJsonNull()) {
 			CompoundTag compoundTag;
 			try {
-				compoundTag = JsonLikeTagParser.parse(JsonHelper.asString(jsonElement, "nbt"));
+				compoundTag = StringNbtReader.parse(JsonHelper.asString(jsonElement, "nbt"));
 			} catch (CommandSyntaxException var3) {
 				throw new JsonSyntaxException("Invalid nbt tag: " + var3.getMessage());
 			}

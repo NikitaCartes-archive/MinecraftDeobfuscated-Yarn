@@ -37,7 +37,7 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 		return commandContext.getArgument(string, ScoreboardCriterion.class);
 	}
 
-	public ScoreboardCriterion getCriteria(StringReader stringReader) throws CommandSyntaxException {
+	public ScoreboardCriterion method_9403(StringReader stringReader) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 
 		while (stringReader.canRead() && stringReader.peek() != ' ') {
@@ -45,7 +45,7 @@ public class ObjectiveCriteriaArgumentType implements ArgumentType<ScoreboardCri
 		}
 
 		String string = stringReader.getString().substring(i, stringReader.getCursor());
-		return (ScoreboardCriterion)ScoreboardCriterion.method_1224(string).orElseThrow(() -> {
+		return (ScoreboardCriterion)ScoreboardCriterion.createStatCriterion(string).orElseThrow(() -> {
 			stringReader.setCursor(i);
 			return INVALID_CRITERIA_EXCEPTION.create(string);
 		});

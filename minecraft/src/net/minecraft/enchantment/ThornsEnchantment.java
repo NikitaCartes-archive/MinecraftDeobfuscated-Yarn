@@ -33,9 +33,9 @@ public class ThornsEnchantment extends Enchantment {
 	public void onUserDamaged(LivingEntity livingEntity, Entity entity, int i) {
 		Random random = livingEntity.getRand();
 		Entry<EquipmentSlot, ItemStack> entry = EnchantmentHelper.getRandomEnchantedEquipment(Enchantments.field_9097, livingEntity);
-		if (method_8243(i, random)) {
+		if (shouldDamageAttacker(i, random)) {
 			if (entity != null) {
-				entity.damage(DamageSource.thorns(livingEntity), (float)method_8242(i, random));
+				entity.damage(DamageSource.thorns(livingEntity), (float)getDamageAmount(i, random));
 			}
 
 			if (entry != null) {
@@ -46,11 +46,11 @@ public class ThornsEnchantment extends Enchantment {
 		}
 	}
 
-	public static boolean method_8243(int i, Random random) {
+	public static boolean shouldDamageAttacker(int i, Random random) {
 		return i <= 0 ? false : random.nextFloat() < 0.15F * (float)i;
 	}
 
-	public static int method_8242(int i, Random random) {
+	public static int getDamageAmount(int i, Random random) {
 		return i > 10 ? i - 10 : 1 + random.nextInt(4);
 	}
 }

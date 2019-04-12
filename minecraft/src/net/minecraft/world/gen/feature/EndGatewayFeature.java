@@ -40,13 +40,13 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 					}
 				});
 			} else if (bl2) {
-				this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
 			} else if (bl4 && bl && bl3) {
 				this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
 			} else if ((bl || bl3) && !bl4) {
 				this.setBlockState(iWorld, blockPos2, Blocks.field_9987.getDefaultState());
 			} else {
-				this.setBlockState(iWorld, blockPos2, Blocks.field_10124.getDefaultState());
+				this.setBlockState(iWorld, blockPos2, Blocks.AIR.getDefaultState());
 			}
 		}
 

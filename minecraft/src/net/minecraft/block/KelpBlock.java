@@ -62,7 +62,7 @@ public class KelpBlock extends Block implements FluidFillable {
 			BlockPos blockPos2 = blockPos.up();
 			BlockState blockState2 = world.getBlockState(blockPos2);
 			if (blockState2.getBlock() == Blocks.field_10382 && (Integer)blockState.get(AGE) < 25 && random.nextDouble() < 0.14) {
-				world.setBlockState(blockPos2, blockState.method_11572(AGE));
+				world.setBlockState(blockPos2, blockState.cycle(AGE));
 			}
 		}
 	}
@@ -83,7 +83,7 @@ public class KelpBlock extends Block implements FluidFillable {
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
 			if (direction == Direction.DOWN) {
-				return Blocks.field_10124.getDefaultState();
+				return Blocks.AIR.getDefaultState();
 			}
 
 			iWorld.getBlockTickScheduler().schedule(blockPos, this, 1);

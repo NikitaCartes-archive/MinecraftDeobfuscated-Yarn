@@ -10,14 +10,14 @@ import net.minecraft.world.Difficulty;
 
 public class DifficultyS2CPacket implements Packet<ClientPlayPacketListener> {
 	private Difficulty difficulty;
-	private boolean field_12091;
+	private boolean difficultyLocked;
 
 	public DifficultyS2CPacket() {
 	}
 
 	public DifficultyS2CPacket(Difficulty difficulty, boolean bl) {
 		this.difficulty = difficulty;
-		this.field_12091 = bl;
+		this.difficultyLocked = bl;
 	}
 
 	public void method_11341(ClientPlayPacketListener clientPlayPacketListener) {
@@ -27,18 +27,18 @@ public class DifficultyS2CPacket implements Packet<ClientPlayPacketListener> {
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
 		this.difficulty = Difficulty.getDifficulty(packetByteBuf.readUnsignedByte());
-		this.field_12091 = packetByteBuf.readBoolean();
+		this.difficultyLocked = packetByteBuf.readBoolean();
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		packetByteBuf.writeByte(this.difficulty.getId());
-		packetByteBuf.writeBoolean(this.field_12091);
+		packetByteBuf.writeBoolean(this.difficultyLocked);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_11340() {
-		return this.field_12091;
+	public boolean isDifficultyLocked() {
+		return this.difficultyLocked;
 	}
 
 	@Environment(EnvType.CLIENT)

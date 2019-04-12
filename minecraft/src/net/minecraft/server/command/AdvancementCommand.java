@@ -358,16 +358,16 @@ public class AdvancementCommand {
 
 		list.add(simpleAdvancement);
 		if (selection.after) {
-			searchAndAdd(simpleAdvancement, list);
+			addChildrenRecursivelyToList(simpleAdvancement, list);
 		}
 
 		return list;
 	}
 
-	private static void searchAndAdd(SimpleAdvancement simpleAdvancement, List<SimpleAdvancement> list) {
+	private static void addChildrenRecursivelyToList(SimpleAdvancement simpleAdvancement, List<SimpleAdvancement> list) {
 		for (SimpleAdvancement simpleAdvancement2 : simpleAdvancement.getChildren()) {
 			list.add(simpleAdvancement2);
-			searchAndAdd(simpleAdvancement2, list);
+			addChildrenRecursivelyToList(simpleAdvancement2, list);
 		}
 	}
 

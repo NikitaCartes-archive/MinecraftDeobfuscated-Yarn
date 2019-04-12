@@ -498,7 +498,7 @@ public class FoxEntity extends AnimalEntity {
 			if (this.isWalking() && this.world.random.nextFloat() < 0.2F) {
 				BlockPos blockPos = new BlockPos(this.x, this.y, this.z);
 				BlockState blockState = this.world.getBlockState(blockPos);
-				this.world.method_20290(2001, blockPos, Block.getRawIdFromState(blockState));
+				this.world.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 			}
 		}
 
@@ -665,6 +665,17 @@ public class FoxEntity extends AnimalEntity {
 
 	private boolean canTrust(UUID uUID) {
 		return this.getTrustedUuids().contains(uUID);
+	}
+
+	@Override
+	protected void drop(DamageSource damageSource) {
+		ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HAND_MAIN);
+		if (!itemStack.isEmpty()) {
+			this.dropStack(itemStack);
+			this.setEquippedStack(EquipmentSlot.HAND_MAIN, ItemStack.EMPTY);
+		}
+
+		super.drop(damageSource);
 	}
 
 	public static boolean canJumpChase(FoxEntity foxEntity, LivingEntity livingEntity) {
@@ -1175,6 +1186,7 @@ public class FoxEntity extends AnimalEntity {
 			} else {
 				LivingEntity livingEntity = FoxEntity.this.getTarget();
 				return livingEntity != null
+					&& livingEntity.isAlive()
 					&& FoxEntity.CHICKEN_AND_RABBIT_FILTER.test(livingEntity)
 					&& FoxEntity.this.squaredDistanceTo(livingEntity) > 36.0
 					&& !FoxEntity.this.isCrouching()

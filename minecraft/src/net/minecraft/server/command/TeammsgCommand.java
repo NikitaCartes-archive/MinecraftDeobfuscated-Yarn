@@ -34,15 +34,15 @@ public class TeammsgCommand {
 
 	private static int execute(ServerCommandSource serverCommandSource, TextComponent textComponent) throws CommandSyntaxException {
 		Entity entity = serverCommandSource.getEntityOrThrow();
-		Team team = (Team)entity.method_5781();
+		Team team = (Team)entity.getScoreboardTeam();
 		if (team == null) {
 			throw NO_TEAM_EXCEPTION.create();
 		} else {
 			Consumer<Style> consumer = style -> style.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TranslatableTextComponent("chat.type.team.hover")))
 					.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/teammsg "));
-			TextComponent textComponent2 = team.method_1148().modifyStyle(consumer);
+			TextComponent textComponent2 = team.getFormattedName().modifyStyle(consumer);
 
-			for (TextComponent textComponent3 : textComponent2.getChildren()) {
+			for (TextComponent textComponent3 : textComponent2.getSiblings()) {
 				textComponent3.modifyStyle(consumer);
 			}
 
@@ -53,7 +53,7 @@ public class TeammsgCommand {
 					serverPlayerEntity.appendCommandFeedback(
 						new TranslatableTextComponent("chat.type.team.sent", textComponent2, serverCommandSource.getDisplayName(), textComponent.copy())
 					);
-				} else if (serverPlayerEntity.method_5781() == team) {
+				} else if (serverPlayerEntity.getScoreboardTeam() == team) {
 					serverPlayerEntity.appendCommandFeedback(
 						new TranslatableTextComponent("chat.type.team.text", textComponent2, serverCommandSource.getDisplayName(), textComponent.copy())
 					);

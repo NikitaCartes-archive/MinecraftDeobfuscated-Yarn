@@ -4,10 +4,10 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.CommandDispatcher;
 import java.util.Collection;
+import net.minecraft.server.BanEntry;
 import net.minecraft.server.PlayerManager;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.config.BanEntry;
 import net.minecraft.text.TranslatableTextComponent;
 
 public class BanListCommand {

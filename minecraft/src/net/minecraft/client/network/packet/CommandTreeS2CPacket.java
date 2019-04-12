@@ -26,32 +26,32 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.util.PacketByteBuf;
 
 public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
-	private RootCommandNode<CommandSource> field_12123;
+	private RootCommandNode<CommandSource> commandTree;
 
 	public CommandTreeS2CPacket() {
 	}
 
 	public CommandTreeS2CPacket(RootCommandNode<CommandSource> rootCommandNode) {
-		this.field_12123 = rootCommandNode;
+		this.commandTree = rootCommandNode;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		CommandTreeS2CPacket.class_2642[] lvs = new CommandTreeS2CPacket.class_2642[packetByteBuf.readVarInt()];
-		Deque<CommandTreeS2CPacket.class_2642> deque = new ArrayDeque(lvs.length);
+		CommandTreeS2CPacket.CommandNodeData[] commandNodeDatas = new CommandTreeS2CPacket.CommandNodeData[packetByteBuf.readVarInt()];
+		Deque<CommandTreeS2CPacket.CommandNodeData> deque = new ArrayDeque(commandNodeDatas.length);
 
-		for (int i = 0; i < lvs.length; i++) {
-			lvs[i] = this.method_11405(packetByteBuf);
-			deque.add(lvs[i]);
+		for (int i = 0; i < commandNodeDatas.length; i++) {
+			commandNodeDatas[i] = this.readCommandNode(packetByteBuf);
+			deque.add(commandNodeDatas[i]);
 		}
 
 		while (!deque.isEmpty()) {
 			boolean bl = false;
-			Iterator<CommandTreeS2CPacket.class_2642> iterator = deque.iterator();
+			Iterator<CommandTreeS2CPacket.CommandNodeData> iterator = deque.iterator();
 
 			while (iterator.hasNext()) {
-				CommandTreeS2CPacket.class_2642 lv = (CommandTreeS2CPacket.class_2642)iterator.next();
-				if (lv.method_11406(lvs)) {
+				CommandTreeS2CPacket.CommandNodeData commandNodeData = (CommandTreeS2CPacket.CommandNodeData)iterator.next();
+				if (commandNodeData.build(commandNodeDatas)) {
 					iterator.remove();
 					bl = true;
 				}
@@ -62,14 +62,14 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 			}
 		}
 
-		this.field_12123 = (RootCommandNode<CommandSource>)lvs[packetByteBuf.readVarInt()].field_12128;
+		this.commandTree = (RootCommandNode<CommandSource>)commandNodeDatas[packetByteBuf.readVarInt()].node;
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
 		Map<CommandNode<CommandSource>, Integer> map = Maps.<CommandNode<CommandSource>, Integer>newHashMap();
 		Deque<CommandNode<CommandSource>> deque = new ArrayDeque();
-		deque.add(this.field_12123);
+		deque.add(this.commandTree);
 
 		while (!deque.isEmpty()) {
 			CommandNode<CommandSource> commandNode = (CommandNode<CommandSource>)deque.pollFirst();
@@ -92,22 +92,22 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeVarInt(commandNodes.length);
 
 		for (CommandNode<CommandSource> commandNode2 : commandNodes) {
-			this.method_11401(packetByteBuf, commandNode2, map);
+			this.writeNode(packetByteBuf, commandNode2, map);
 		}
 
-		packetByteBuf.writeVarInt((Integer)map.get(this.field_12123));
+		packetByteBuf.writeVarInt((Integer)map.get(this.commandTree));
 	}
 
-	private CommandTreeS2CPacket.class_2642 method_11405(PacketByteBuf packetByteBuf) {
+	private CommandTreeS2CPacket.CommandNodeData readCommandNode(PacketByteBuf packetByteBuf) {
 		byte b = packetByteBuf.readByte();
 		int[] is = packetByteBuf.readIntArray();
 		int i = (b & 8) != 0 ? packetByteBuf.readVarInt() : 0;
-		ArgumentBuilder<CommandSource, ?> argumentBuilder = this.method_11402(packetByteBuf, b);
-		return new CommandTreeS2CPacket.class_2642(argumentBuilder, b, i, is);
+		ArgumentBuilder<CommandSource, ?> argumentBuilder = this.readArgumentBuilder(packetByteBuf, b);
+		return new CommandTreeS2CPacket.CommandNodeData(argumentBuilder, b, i, is);
 	}
 
 	@Nullable
-	private ArgumentBuilder<CommandSource, ?> method_11402(PacketByteBuf packetByteBuf, byte b) {
+	private ArgumentBuilder<CommandSource, ?> readArgumentBuilder(PacketByteBuf packetByteBuf, byte b) {
 		int i = b & 3;
 		if (i == 2) {
 			String string = packetByteBuf.readString(32767);
@@ -127,7 +127,7 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	private void method_11401(PacketByteBuf packetByteBuf, CommandNode<CommandSource> commandNode, Map<CommandNode<CommandSource>, Integer> map) {
+	private void writeNode(PacketByteBuf packetByteBuf, CommandNode<CommandSource> commandNode, Map<CommandNode<CommandSource>, Integer> map) {
 		byte b = 0;
 		if (commandNode.getRedirect() != null) {
 			b = (byte)(b | 8);
@@ -180,56 +180,56 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public RootCommandNode<CommandSource> method_11403() {
-		return this.field_12123;
+	public RootCommandNode<CommandSource> getCommandTree() {
+		return this.commandTree;
 	}
 
-	static class class_2642 {
+	static class CommandNodeData {
 		@Nullable
-		private final ArgumentBuilder<CommandSource, ?> field_12127;
-		private final byte field_12124;
-		private final int field_12126;
-		private final int[] field_12125;
-		private CommandNode<CommandSource> field_12128;
+		private final ArgumentBuilder<CommandSource, ?> argumentBuilder;
+		private final byte flags;
+		private final int redirectNodeIndex;
+		private final int[] childNodeIndices;
+		private CommandNode<CommandSource> node;
 
-		private class_2642(@Nullable ArgumentBuilder<CommandSource, ?> argumentBuilder, byte b, int i, int[] is) {
-			this.field_12127 = argumentBuilder;
-			this.field_12124 = b;
-			this.field_12126 = i;
-			this.field_12125 = is;
+		private CommandNodeData(@Nullable ArgumentBuilder<CommandSource, ?> argumentBuilder, byte b, int i, int[] is) {
+			this.argumentBuilder = argumentBuilder;
+			this.flags = b;
+			this.redirectNodeIndex = i;
+			this.childNodeIndices = is;
 		}
 
-		public boolean method_11406(CommandTreeS2CPacket.class_2642[] args) {
-			if (this.field_12128 == null) {
-				if (this.field_12127 == null) {
-					this.field_12128 = new RootCommandNode<>();
+		public boolean build(CommandTreeS2CPacket.CommandNodeData[] commandNodeDatas) {
+			if (this.node == null) {
+				if (this.argumentBuilder == null) {
+					this.node = new RootCommandNode<>();
 				} else {
-					if ((this.field_12124 & 8) != 0) {
-						if (args[this.field_12126].field_12128 == null) {
+					if ((this.flags & 8) != 0) {
+						if (commandNodeDatas[this.redirectNodeIndex].node == null) {
 							return false;
 						}
 
-						this.field_12127.redirect(args[this.field_12126].field_12128);
+						this.argumentBuilder.redirect(commandNodeDatas[this.redirectNodeIndex].node);
 					}
 
-					if ((this.field_12124 & 4) != 0) {
-						this.field_12127.executes(commandContext -> 0);
+					if ((this.flags & 4) != 0) {
+						this.argumentBuilder.executes(commandContext -> 0);
 					}
 
-					this.field_12128 = this.field_12127.build();
+					this.node = this.argumentBuilder.build();
 				}
 			}
 
-			for (int i : this.field_12125) {
-				if (args[i].field_12128 == null) {
+			for (int i : this.childNodeIndices) {
+				if (commandNodeDatas[i].node == null) {
 					return false;
 				}
 			}
 
-			for (int ix : this.field_12125) {
-				CommandNode<CommandSource> commandNode = args[ix].field_12128;
+			for (int ix : this.childNodeIndices) {
+				CommandNode<CommandSource> commandNode = commandNodeDatas[ix].node;
 				if (!(commandNode instanceof RootCommandNode)) {
-					this.field_12128.addChild(commandNode);
+					this.node.addChild(commandNode);
 				}
 			}
 

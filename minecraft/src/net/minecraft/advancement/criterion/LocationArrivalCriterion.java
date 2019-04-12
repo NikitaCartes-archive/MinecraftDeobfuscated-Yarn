@@ -87,6 +87,10 @@ public class LocationArrivalCriterion implements Criterion<LocationArrivalCriter
 			return new LocationArrivalCriterion.Conditions(Criterions.SLEPT_IN_BED.id, LocationPredicate.ANY);
 		}
 
+		public static LocationArrivalCriterion.Conditions method_20400() {
+			return new LocationArrivalCriterion.Conditions(Criterions.HERO_OF_THE_VILLAGE.id, LocationPredicate.ANY);
+		}
+
 		public boolean matches(ServerWorld serverWorld, double d, double e, double f) {
 			return this.location.test(serverWorld, d, e, f);
 		}

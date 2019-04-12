@@ -63,7 +63,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	private final int[] field_7091 = new int[2];
 	private final int[] field_7092 = new int[2];
 	private int field_7082;
-	private final ServerBossBar field_7093 = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.field_5783, BossBar.Overlay.field_5795)
+	private final ServerBossBar field_7093 = (ServerBossBar)new ServerBossBar(this.getDisplayName(), BossBar.Color.field_5783, BossBar.Style.field_5795)
 		.setDarkenSky(true);
 	private static final Predicate<LivingEntity> field_7086 = livingEntity -> livingEntity.getGroup() != EntityGroup.UNDEAD && livingEntity.method_6102();
 

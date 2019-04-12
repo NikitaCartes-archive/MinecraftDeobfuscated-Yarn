@@ -15,7 +15,7 @@ import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.datafixers.Schemas;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.sortme.JsonLikeTagParser;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.structure.Structure;
 import net.minecraft.util.TagHelper;
 import org.apache.commons.io.IOUtils;
@@ -94,7 +94,7 @@ public class StructureValidatorProvider implements DataProvider {
 		CompoundTag compoundTag;
 		try {
 			String string = IOUtils.toString(inputStream, Charsets.UTF_8);
-			compoundTag = JsonLikeTagParser.parse(string);
+			compoundTag = StringNbtReader.parse(string);
 		} catch (Throwable var13) {
 			var4 = var13;
 			throw var13;

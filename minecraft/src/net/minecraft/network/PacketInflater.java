@@ -45,7 +45,7 @@ public class PacketInflater extends ByteToMessageDecoder {
 		}
 	}
 
-	public void setMinCompressedSize(int i) {
+	public void setCompressionThreshold(int i) {
 		this.minCompressedSize = i;
 	}
 }

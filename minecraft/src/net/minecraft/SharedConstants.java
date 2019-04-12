@@ -14,7 +14,7 @@ public class SharedConstants {
 	public static final Level RESOURCE_LEAK_DETECTOR_DISABLED = Level.DISABLED;
 	public static boolean isDevelopment;
 	public static final char[] INVALID_CHARS_LEVEL_NAME = new char[]{'/', '\n', '\r', '\t', '\u0000', '\f', '`', '?', '*', '\\', '<', '>', '|', '"', ':'};
-	private static GameVersion version;
+	private static GameVersion gameVersion;
 
 	public static boolean isValidChar(char c) {
 		return c != 167 && c >= ' ' && c != 127;
@@ -33,7 +33,7 @@ public class SharedConstants {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static String method_16885(String string) {
+	public static String stripSupplementaryChars(String string) {
 		StringBuilder stringBuilder = new StringBuilder();
 		int i = 0;
 
@@ -52,11 +52,11 @@ public class SharedConstants {
 	}
 
 	public static GameVersion getGameVersion() {
-		if (version == null) {
-			version = MinecraftVersion.create();
+		if (gameVersion == null) {
+			gameVersion = MinecraftVersion.create();
 		}
 
-		return version;
+		return gameVersion;
 	}
 
 	static {

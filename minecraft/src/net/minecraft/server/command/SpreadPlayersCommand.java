@@ -89,7 +89,7 @@ public class SpreadPlayersCommand {
 
 		for (Entity entity : collection) {
 			if (entity instanceof PlayerEntity) {
-				set.add(entity.method_5781());
+				set.add(entity.getScoreboardTeam());
 			} else {
 				set.add(null);
 			}
@@ -130,10 +130,10 @@ public class SpreadPlayersCommand {
 				if (l > 0) {
 					pile2.x = pile2.x / (double)l;
 					pile2.z = pile2.z / (double)l;
-					double o = (double)pile2.method_13668();
+					double o = (double)pile2.absolute();
 					if (o > 0.0) {
-						pile2.method_13671();
-						pile.method_13670(pile2);
+						pile2.normalize();
+						pile.subtract(pile2);
 					} else {
 						pile.setPileLocation(random, e, f, g, h);
 					}
@@ -141,7 +141,7 @@ public class SpreadPlayersCommand {
 					bl2 = true;
 				}
 
-				if (pile.method_13666(e, f, g, h)) {
+				if (pile.clamp(e, f, g, h)) {
 					bl2 = true;
 				}
 			}
@@ -177,7 +177,7 @@ public class SpreadPlayersCommand {
 		for (Entity entity : collection) {
 			SpreadPlayersCommand.Pile pile;
 			if (bl) {
-				AbstractTeam abstractTeam = entity instanceof PlayerEntity ? entity.method_5781() : null;
+				AbstractTeam abstractTeam = entity instanceof PlayerEntity ? entity.getScoreboardTeam() : null;
 				if (!map.containsKey(abstractTeam)) {
 					map.put(abstractTeam, piles[i++]);
 				}
@@ -187,7 +187,7 @@ public class SpreadPlayersCommand {
 				pile = piles[i++];
 			}
 
-			entity.requestTeleport((double)((float)MathHelper.floor(pile.x) + 0.5F), (double)pile.method_13669(serverWorld), (double)MathHelper.floor(pile.z) + 0.5);
+			entity.requestTeleport((double)((float)MathHelper.floor(pile.x) + 0.5F), (double)pile.getY(serverWorld), (double)MathHelper.floor(pile.z) + 0.5);
 			double e = Double.MAX_VALUE;
 
 			for (SpreadPlayersCommand.Pile pile2 : piles) {
@@ -225,22 +225,22 @@ public class SpreadPlayersCommand {
 			return Math.sqrt(d * d + e * e);
 		}
 
-		void method_13671() {
-			double d = (double)this.method_13668();
+		void normalize() {
+			double d = (double)this.absolute();
 			this.x /= d;
 			this.z /= d;
 		}
 
-		float method_13668() {
+		float absolute() {
 			return MathHelper.sqrt(this.x * this.x + this.z * this.z);
 		}
 
-		public void method_13670(SpreadPlayersCommand.Pile pile) {
+		public void subtract(SpreadPlayersCommand.Pile pile) {
 			this.x = this.x - pile.x;
 			this.z = this.z - pile.z;
 		}
 
-		public boolean method_13666(double d, double e, double f, double g) {
+		public boolean clamp(double d, double e, double f, double g) {
 			boolean bl = false;
 			if (this.x < d) {
 				this.x = d;
@@ -261,7 +261,7 @@ public class SpreadPlayersCommand {
 			return bl;
 		}
 
-		public int method_13669(BlockView blockView) {
+		public int getY(BlockView blockView) {
 			BlockPos blockPos = new BlockPos(this.x, 256.0, this.z);
 
 			while (blockPos.getY() > 0) {

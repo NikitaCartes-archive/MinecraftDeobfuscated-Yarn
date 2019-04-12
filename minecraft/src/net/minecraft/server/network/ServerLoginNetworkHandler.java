@@ -36,7 +36,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	private static final AtomicInteger authenticatorThreadId = new AtomicInteger(0);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Random RANDOM = new Random();
-	private final byte[] field_14167 = new byte[4];
+	private final byte[] nonce = new byte[4];
 	private final MinecraftServer server;
 	public final ClientConnection client;
 	private ServerLoginNetworkHandler.State state = ServerLoginNetworkHandler.State.field_14170;
@@ -49,7 +49,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	public ServerLoginNetworkHandler(MinecraftServer minecraftServer, ClientConnection clientConnection) {
 		this.server = minecraftServer;
 		this.client = clientConnection;
-		RANDOM.nextBytes(this.field_14167);
+		RANDOM.nextBytes(this.nonce);
 	}
 
 	public void method_18785() {
@@ -72,7 +72,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	public void disconnect(TextComponent textComponent) {
 		try {
 			LOGGER.info("Disconnecting {}: {}", this.method_14383(), textComponent.getString());
-			this.client.sendPacket(new LoginDisconnectS2CPacket(textComponent));
+			this.client.send(new LoginDisconnectS2CPacket(textComponent));
 			this.client.disconnect(textComponent);
 		} catch (Exception var3) {
 			LOGGER.error("Error whilst disconnecting player", (Throwable)var3);
@@ -91,13 +91,13 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			this.state = ServerLoginNetworkHandler.State.field_14172;
 			if (this.server.getNetworkCompressionThreshold() >= 0 && !this.client.isLocal()) {
 				this.client
-					.sendPacket(
+					.send(
 						new LoginCompressionS2CPacket(this.server.getNetworkCompressionThreshold()),
 						channelFuture -> this.client.setMinCompressedSize(this.server.getNetworkCompressionThreshold())
 					);
 			}
 
-			this.client.sendPacket(new LoginSuccessS2CPacket(this.profile));
+			this.client.send(new LoginSuccessS2CPacket(this.profile));
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity != null) {
 				this.state = ServerLoginNetworkHandler.State.field_14171;
@@ -123,7 +123,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		this.profile = loginHelloC2SPacket.getProfile();
 		if (this.server.isOnlineMode() && !this.client.isLocal()) {
 			this.state = ServerLoginNetworkHandler.State.field_14175;
-			this.client.sendPacket(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic(), this.field_14167));
+			this.client.send(new LoginHelloS2CPacket("", this.server.getKeyPair().getPublic(), this.nonce));
 		} else {
 			this.state = ServerLoginNetworkHandler.State.field_14168;
 		}
@@ -133,10 +133,10 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	public void onKey(LoginKeyC2SPacket loginKeyC2SPacket) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14175, "Unexpected key packet");
 		PrivateKey privateKey = this.server.getKeyPair().getPrivate();
-		if (!Arrays.equals(this.field_14167, loginKeyC2SPacket.method_12655(privateKey))) {
+		if (!Arrays.equals(this.nonce, loginKeyC2SPacket.method_12655(privateKey))) {
 			throw new IllegalStateException("Invalid nonce!");
 		} else {
-			this.secretKey = loginKeyC2SPacket.method_12654(privateKey);
+			this.secretKey = loginKeyC2SPacket.decryptSecretKey(privateKey);
 			this.state = ServerLoginNetworkHandler.State.field_14169;
 			this.client.setupEncryption(this.secretKey);
 			Thread thread = new Thread("User Authenticator #" + authenticatorThreadId.incrementAndGet()) {
@@ -145,7 +145,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 
 					try {
 						String string = new BigInteger(
-								NetworkEncryptionUtils.method_15240("", ServerLoginNetworkHandler.this.server.getKeyPair().getPublic(), ServerLoginNetworkHandler.this.secretKey)
+								NetworkEncryptionUtils.generateServerId("", ServerLoginNetworkHandler.this.server.getKeyPair().getPublic(), ServerLoginNetworkHandler.this.secretKey)
 							)
 							.toString(16);
 						ServerLoginNetworkHandler.this.profile = ServerLoginNetworkHandler.this.server

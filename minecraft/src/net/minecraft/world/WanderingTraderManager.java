@@ -4,18 +4,17 @@ import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.SpawnType;
 import net.minecraft.entity.passive.TraderLlamaEntity;
 import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.SpawnHelper;
-import net.minecraft.sortme.SpawnRestriction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.biome.Biomes;
 import net.minecraft.world.level.LevelProperties;
 
 public class WanderingTraderManager {
@@ -77,6 +76,10 @@ public class WanderingTraderManager {
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.method_18017(blockPos2, 48);
 			if (blockPos3 != null) {
+				if (this.world.getBiome(blockPos3) == Biomes.field_9473) {
+					return false;
+				}
+
 				WanderingTraderEntity wanderingTraderEntity = EntityType.field_17713.spawn(this.world, null, null, null, blockPos3, SpawnType.field_16467, false, false);
 				if (wanderingTraderEntity != null) {
 					for (int j = 0; j < 2; j++) {

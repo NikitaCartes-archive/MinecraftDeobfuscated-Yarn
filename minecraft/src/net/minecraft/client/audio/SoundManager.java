@@ -33,7 +33,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class SoundManager extends SupplyingResourceReloadListener<SoundManager.Result> {
+public class SoundManager extends SupplyingResourceReloadListener<SoundManager.SoundList> {
 	public static final Sound SOUND_MISSING = new Sound("meta:missing_sound", 1.0F, 1.0F, 1, Sound.RegistrationType.FILE, false, false, 16);
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder()
@@ -60,8 +60,8 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 		this.soundSystem = new SoundSystem(this, gameOptions, resourceManager);
 	}
 
-	protected SoundManager.Result method_18180(ResourceManager resourceManager, Profiler profiler) {
-		SoundManager.Result result = new SoundManager.Result();
+	protected SoundManager.SoundList method_18180(ResourceManager resourceManager, Profiler profiler) {
+		SoundManager.SoundList soundList = new SoundManager.SoundList();
 		profiler.startTick();
 
 		for (String string : resourceManager.getAllNamespaces()) {
@@ -77,7 +77,7 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 						profiler.swap("register");
 
 						for (Entry<String, SoundEntry> entry : map.entrySet()) {
-							result.method_18187(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
+							soundList.register(new Identifier(string, (String)entry.getKey()), (SoundEntry)entry.getValue(), resourceManager);
 						}
 
 						profiler.pop();
@@ -94,11 +94,11 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 		}
 
 		profiler.endTick();
-		return result;
+		return soundList;
 	}
 
-	protected void method_18182(SoundManager.Result result, ResourceManager resourceManager, Profiler profiler) {
-		result.addTo(this.sounds, this.soundSystem);
+	protected void method_18182(SoundManager.SoundList soundList, ResourceManager resourceManager, Profiler profiler) {
+		soundList.addTo(this.sounds, this.soundSystem);
 
 		for (Identifier identifier : this.sounds.keySet()) {
 			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.sounds.get(identifier);
@@ -173,15 +173,15 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 	}
 
 	public void close() {
-		this.soundSystem.close();
+		this.soundSystem.stop();
 	}
 
 	public void tick(boolean bl) {
-		this.soundSystem.method_20185(bl);
+		this.soundSystem.tick(bl);
 	}
 
-	public void playAll() {
-		this.soundSystem.playAll();
+	public void resumeAll() {
+		this.soundSystem.resumeAll();
 	}
 
 	public void updateSoundVolume(SoundCategory soundCategory, float f) {
@@ -212,21 +212,21 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 		this.soundSystem.stopSounds(identifier, soundCategory);
 	}
 
-	public String method_20305() {
-		return this.soundSystem.method_20304();
+	public String getDebugString() {
+		return this.soundSystem.getDebugString();
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Result {
+	public static class SoundList {
 		private final Map<Identifier, WeightedSoundSet> loadedSounds = Maps.<Identifier, WeightedSoundSet>newHashMap();
 
-		protected Result() {
+		protected SoundList() {
 		}
 
-		private void method_18187(Identifier identifier, SoundEntry soundEntry, ResourceManager resourceManager) {
+		private void register(Identifier identifier, SoundEntry soundEntry, ResourceManager resourceManager) {
 			WeightedSoundSet weightedSoundSet = (WeightedSoundSet)this.loadedSounds.get(identifier);
 			boolean bl = weightedSoundSet == null;
-			if (bl || soundEntry.isReplaceable()) {
+			if (bl || soundEntry.canReplace()) {
 				if (!bl) {
 					SoundManager.LOGGER.debug("Replaced sound event location {}", identifier);
 				}
@@ -250,12 +250,12 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 						soundContainer = new SoundContainer<Sound>() {
 							@Override
 							public int getWeight() {
-								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)Result.this.loadedSounds.get(identifier2);
+								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier2);
 								return weightedSoundSet == null ? 0 : weightedSoundSet.getWeight();
 							}
 
 							public Sound method_4883() {
-								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)Result.this.loadedSounds.get(identifier2);
+								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier2);
 								if (weightedSoundSet == null) {
 									return SoundManager.SOUND_MISSING;
 								} else {
@@ -267,17 +267,17 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 										sound.getWeight(),
 										Sound.RegistrationType.FILE,
 										sound.isStreamed() || sound.isStreamed(),
-										sound.method_4764(),
-										sound.method_4770()
+										sound.isPreloaded(),
+										sound.getAttenuation()
 									);
 								}
 							}
 
 							@Override
-							public void addTo(SoundSystem soundSystem) {
-								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)Result.this.loadedSounds.get(identifier2);
+							public void preload(SoundSystem soundSystem) {
+								WeightedSoundSet weightedSoundSet = (WeightedSoundSet)SoundList.this.loadedSounds.get(identifier2);
 								if (weightedSoundSet != null) {
-									weightedSoundSet.addTo(soundSystem);
+									weightedSoundSet.preload(soundSystem);
 								}
 							}
 						};
@@ -295,7 +295,7 @@ public class SoundManager extends SupplyingResourceReloadListener<SoundManager.R
 
 			for (Entry<Identifier, WeightedSoundSet> entry : this.loadedSounds.entrySet()) {
 				map.put(entry.getKey(), entry.getValue());
-				((WeightedSoundSet)entry.getValue()).addTo(soundSystem);
+				((WeightedSoundSet)entry.getValue()).preload(soundSystem);
 			}
 		}
 	}

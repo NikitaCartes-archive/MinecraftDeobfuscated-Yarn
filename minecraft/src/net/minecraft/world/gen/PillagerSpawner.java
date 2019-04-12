@@ -10,6 +10,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.WeightedPicker;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 
@@ -86,7 +87,7 @@ public class PillagerSpawner {
 			BlockPos blockPos2 = patrolEntity.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(d, (double)blockPos.getY(), e));
 			if (bl) {
 				patrolEntity.setPatrolLeader(true);
-				patrolEntity.setRandomRaidCenter();
+				patrolEntity.setRandomPatrolTarget();
 			}
 
 			patrolEntity.setPosition((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ());

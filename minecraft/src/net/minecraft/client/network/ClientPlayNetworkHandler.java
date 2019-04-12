@@ -300,7 +300,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	private MinecraftClient client;
 	private ClientWorld world;
 	private boolean field_3698;
-	private final Map<UUID, PlayerListEntry> scoreboardEntries = Maps.<UUID, PlayerListEntry>newHashMap();
+	private final Map<UUID, PlayerListEntry> playerListEntries = Maps.<UUID, PlayerListEntry>newHashMap();
 	private final ClientAdvancementManager advancementHandler;
 	private final ClientCommandSource commandSource;
 	private TagManager tagManager = new TagManager();
@@ -354,6 +354,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			}
 		}
 
+		this.client.debugRenderer.method_20413();
 		this.client.player.method_5823();
 		int i = gameJoinS2CPacket.getEntityId();
 		this.world.addPlayer(i, this.client.player);
@@ -367,9 +368,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.interactionManager.setGameMode(gameJoinS2CPacket.getGameMode());
 		this.client.options.onPlayerModelPartChange();
 		this.connection
-			.sendPacket(
-				new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName()))
-			);
+			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
 		this.client.getGame().onStartGameSession();
 	}
 
@@ -569,7 +568,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		float h = (float)(playerSpawnS2CPacket.getPitch() * 360) / 256.0F;
 		int i = playerSpawnS2CPacket.getId();
 		OtherClientPlayerEntity otherClientPlayerEntity = new OtherClientPlayerEntity(
-			this.client.world, this.getScoreboardEntry(playerSpawnS2CPacket.getPlayerUuid()).getProfile()
+			this.client.world, this.getPlayerListEntry(playerSpawnS2CPacket.getPlayerUuid()).getProfile()
 		);
 		otherClientPlayerEntity.setEntityId(i);
 		otherClientPlayerEntity.prevX = d;
@@ -703,11 +702,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		}
 
 		playerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
-		this.connection.sendPacket(new TeleportConfirmC2SPacket(playerPositionLookS2CPacket.getTeleportId()));
+		this.connection.send(new TeleportConfirmC2SPacket(playerPositionLookS2CPacket.getTeleportId()));
 		this.connection
-			.sendPacket(
-				new PlayerMoveServerMessage.Both(playerEntity.x, playerEntity.getBoundingBox().minY, playerEntity.z, playerEntity.yaw, playerEntity.pitch, false)
-			);
+			.send(new PlayerMoveServerMessage.Both(playerEntity.x, playerEntity.getBoundingBox().minY, playerEntity.z, playerEntity.yaw, playerEntity.pitch, false));
 		if (!this.field_3698) {
 			this.client.player.prevX = this.client.player.x;
 			this.client.player.prevY = this.client.player.y;
@@ -738,7 +735,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				i,
 				j,
 				chunkDataS2CPacket.getReadBuffer(),
-				chunkDataS2CPacket.method_16123(),
+				chunkDataS2CPacket.getHeightmaps(),
 				chunkDataS2CPacket.getVerticalStripBitmask(),
 				chunkDataS2CPacket.isFullChunk()
 			);
@@ -797,7 +794,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	public void sendPacket(Packet<?> packet) {
-		this.connection.sendPacket(packet);
+		this.connection.send(packet);
 	}
 
 	@Override
@@ -1223,7 +1220,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onGuiClose(GuiCloseS2CPacket guiCloseS2CPacket) {
 		NetworkThreadUtils.forceMainThread(guiCloseS2CPacket, this, this.client);
-		this.client.player.method_3137();
+		this.client.player.closeScreen();
 	}
 
 	@Override
@@ -1349,7 +1346,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (worldEventS2CPacket.isGlobal()) {
 			this.client.world.playGlobalEvent(worldEventS2CPacket.getEventId(), worldEventS2CPacket.getPos(), worldEventS2CPacket.getEffectData());
 		} else {
-			this.client.world.method_20290(worldEventS2CPacket.getEventId(), worldEventS2CPacket.getPos(), worldEventS2CPacket.getEffectData());
+			this.client.world.playLevelEvent(worldEventS2CPacket.getEventId(), worldEventS2CPacket.getPos(), worldEventS2CPacket.getEffectData());
 		}
 	}
 
@@ -1374,7 +1371,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onCommandTree(CommandTreeS2CPacket commandTreeS2CPacket) {
 		NetworkThreadUtils.forceMainThread(commandTreeS2CPacket, this, this.client);
-		this.commandDispatcher = new CommandDispatcher<>(commandTreeS2CPacket.method_11403());
+		this.commandDispatcher = new CommandDispatcher<>(commandTreeS2CPacket.getCommandTree());
 	}
 
 	@Override
@@ -1386,7 +1383,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onCommandSuggestions(CommandSuggestionsS2CPacket commandSuggestionsS2CPacket) {
 		NetworkThreadUtils.forceMainThread(commandSuggestionsS2CPacket, this, this.client);
-		this.commandSource.method_2931(commandSuggestionsS2CPacket.method_11399(), commandSuggestionsS2CPacket.getSuggestions());
+		this.commandSource.onCommandSuggestions(commandSuggestionsS2CPacket.getCompletionId(), commandSuggestionsS2CPacket.getSuggestions());
 	}
 
 	@Override
@@ -1481,19 +1478,19 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onEntityPotionEffect(EntityPotionEffectS2CPacket entityPotionEffectS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityPotionEffectS2CPacket, this, this.client);
-		Entity entity = this.world.getEntityById(entityPotionEffectS2CPacket.method_11943());
+		Entity entity = this.world.getEntityById(entityPotionEffectS2CPacket.getEntityId());
 		if (entity instanceof LivingEntity) {
-			StatusEffect statusEffect = StatusEffect.byRawId(entityPotionEffectS2CPacket.method_11946());
+			StatusEffect statusEffect = StatusEffect.byRawId(entityPotionEffectS2CPacket.getEffectId());
 			if (statusEffect != null) {
 				StatusEffectInstance statusEffectInstance = new StatusEffectInstance(
 					statusEffect,
-					entityPotionEffectS2CPacket.method_11944(),
-					entityPotionEffectS2CPacket.method_11945(),
-					entityPotionEffectS2CPacket.method_11950(),
-					entityPotionEffectS2CPacket.method_11949(),
-					entityPotionEffectS2CPacket.method_11942()
+					entityPotionEffectS2CPacket.getDuration(),
+					entityPotionEffectS2CPacket.getAmplifier(),
+					entityPotionEffectS2CPacket.isAmbient(),
+					entityPotionEffectS2CPacket.shouldShowParticles(),
+					entityPotionEffectS2CPacket.shouldShowIcon()
 				);
-				statusEffectInstance.setPermanent(entityPotionEffectS2CPacket.method_11947());
+				statusEffectInstance.setPermanent(entityPotionEffectS2CPacket.isPermanent());
 				((LivingEntity)entity).addPotionEffect(statusEffectInstance);
 			}
 		}
@@ -1528,7 +1525,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onDifficulty(DifficultyS2CPacket difficultyS2CPacket) {
 		NetworkThreadUtils.forceMainThread(difficultyS2CPacket, this, this.client);
 		this.client.world.getLevelProperties().setDifficulty(difficultyS2CPacket.getDifficulty());
-		this.client.world.getLevelProperties().setDifficultyLocked(difficultyS2CPacket.method_11340());
+		this.client.world.getLevelProperties().setDifficultyLocked(difficultyS2CPacket.isDifficultyLocked());
 	}
 
 	@Override
@@ -1576,12 +1573,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPlayerListHeader(PlayerListHeaderS2CPacket playerListHeaderS2CPacket) {
 		this.client
 			.inGameHud
-			.getScoreboardWidget()
-			.method_1925(playerListHeaderS2CPacket.getHeader().getFormattedText().isEmpty() ? null : playerListHeaderS2CPacket.getHeader());
+			.getPlayerListWidget()
+			.setHeader(playerListHeaderS2CPacket.getHeader().getFormattedText().isEmpty() ? null : playerListHeaderS2CPacket.getHeader());
 		this.client
 			.inGameHud
-			.getScoreboardWidget()
-			.method_1924(playerListHeaderS2CPacket.getFooter().getFormattedText().isEmpty() ? null : playerListHeaderS2CPacket.getFooter());
+			.getPlayerListWidget()
+			.setFooter(playerListHeaderS2CPacket.getFooter().getFormattedText().isEmpty() ? null : playerListHeaderS2CPacket.getFooter());
 	}
 
 	@Override
@@ -1599,12 +1596,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 		for (PlayerListS2CPacket.Entry entry : playerListS2CPacket.getEntries()) {
 			if (playerListS2CPacket.getAction() == PlayerListS2CPacket.Action.REMOVE) {
-				this.scoreboardEntries.remove(entry.getProfile().getId());
+				this.playerListEntries.remove(entry.getProfile().getId());
 			} else {
-				PlayerListEntry playerListEntry = (PlayerListEntry)this.scoreboardEntries.get(entry.getProfile().getId());
+				PlayerListEntry playerListEntry = (PlayerListEntry)this.playerListEntries.get(entry.getProfile().getId());
 				if (playerListS2CPacket.getAction() == PlayerListS2CPacket.Action.ADD) {
 					playerListEntry = new PlayerListEntry(entry);
-					this.scoreboardEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
+					this.playerListEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
 				}
 
 				if (playerListEntry != null) {
@@ -1630,7 +1627,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	@Override
 	public void onKeepAlive(KeepAliveS2CPacket keepAliveS2CPacket) {
-		this.sendPacket(new KeepAliveC2SPacket(keepAliveS2CPacket.method_11517()));
+		this.sendPacket(new KeepAliveC2SPacket(keepAliveS2CPacket.getId()));
 	}
 
 	@Override
@@ -1782,7 +1779,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	private void sendResourcePackStatus(ResourcePackStatusC2SPacket.Status status) {
-		this.connection.sendPacket(new ResourcePackStatusC2SPacket(status));
+		this.connection.send(new ResourcePackStatusC2SPacket(status));
 	}
 
 	@Override
@@ -1809,7 +1806,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			entity.setPositionAnglesAndUpdate(
 				vehicleMoveS2CPacket.getX(), vehicleMoveS2CPacket.getY(), vehicleMoveS2CPacket.getZ(), vehicleMoveS2CPacket.getYaw(), vehicleMoveS2CPacket.getPitch()
 			);
-			this.connection.sendPacket(new VehicleMoveC2SPacket(entity));
+			this.connection.send(new VehicleMoveC2SPacket(entity));
 		}
 	}
 
@@ -1882,7 +1879,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						packetByteBuf.readFloat(),
 						packetByteBuf.readFloat()
 					);
-			} else if (CustomPayloadS2CPacket.field_18960.equals(identifier)) {
+			} else if (CustomPayloadS2CPacket.DEBUG_VILLAGE_SECTIONS.equals(identifier)) {
 				int i = packetByteBuf.readInt();
 
 				for (int j = 0; j < i; j++) {
@@ -1894,16 +1891,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				for (int m = 0; m < j; m++) {
 					this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19435(packetByteBuf.readChunkSectionPos());
 				}
-			} else if (CustomPayloadS2CPacket.field_18958.equals(identifier)) {
+			} else if (CustomPayloadS2CPacket.DEBUG_POI_ADDED.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				String string = packetByteBuf.readString();
 				int m = packetByteBuf.readInt();
 				PointOfInterestDebugRenderer.class_4233 lv = new PointOfInterestDebugRenderer.class_4233(blockPos2, string, m);
 				this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19701(lv);
-			} else if (CustomPayloadS2CPacket.field_18959.equals(identifier)) {
+			} else if (CustomPayloadS2CPacket.DEBUG_POI_REMOVED.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				this.client.debugRenderer.pointsOfInterestDebugRenderer.removePointOfInterest(blockPos2);
-			} else if (CustomPayloadS2CPacket.field_18957.equals(identifier)) {
+			} else if (CustomPayloadS2CPacket.DEBUG_POI_TICKET_COUNT.equals(identifier)) {
 				BlockPos blockPos2 = packetByteBuf.readBlockPos();
 				int j = packetByteBuf.readInt();
 				this.client.debugRenderer.pointsOfInterestDebugRenderer.method_19702(blockPos2, j);
@@ -1976,13 +1973,13 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		Scoreboard scoreboard = this.world.getScoreboard();
 		String string = scoreboardObjectiveUpdateS2CPacket.getName();
 		if (scoreboardObjectiveUpdateS2CPacket.getMode() == 0) {
-			scoreboard.method_1168(string, ScoreboardCriterion.DUMMY, scoreboardObjectiveUpdateS2CPacket.getDisplayName(), scoreboardObjectiveUpdateS2CPacket.getType());
+			scoreboard.addObjective(string, ScoreboardCriterion.DUMMY, scoreboardObjectiveUpdateS2CPacket.getDisplayName(), scoreboardObjectiveUpdateS2CPacket.getType());
 		} else if (scoreboard.containsObjective(string)) {
 			ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string);
 			if (scoreboardObjectiveUpdateS2CPacket.getMode() == 1) {
 				scoreboard.removeObjective(scoreboardObjective);
 			} else if (scoreboardObjectiveUpdateS2CPacket.getMode() == 2) {
-				scoreboardObjective.method_1115(scoreboardObjectiveUpdateS2CPacket.getType());
+				scoreboardObjective.setRenderType(scoreboardObjectiveUpdateS2CPacket.getType());
 				scoreboardObjective.setDisplayName(scoreboardObjectiveUpdateS2CPacket.getDisplayName());
 			}
 		}
@@ -2008,9 +2005,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onScoreboardDisplay(ScoreboardDisplayS2CPacket scoreboardDisplayS2CPacket) {
 		NetworkThreadUtils.forceMainThread(scoreboardDisplayS2CPacket, this, this.client);
 		Scoreboard scoreboard = this.world.getScoreboard();
-		String string = scoreboardDisplayS2CPacket.method_11804();
+		String string = scoreboardDisplayS2CPacket.getName();
 		ScoreboardObjective scoreboardObjective = string == null ? null : scoreboard.getObjective(string);
-		scoreboard.setObjectiveSlot(scoreboardDisplayS2CPacket.getLocation(), scoreboardObjective);
+		scoreboard.setObjectiveSlot(scoreboardDisplayS2CPacket.getSlot(), scoreboardObjective);
 	}
 
 	@Override
@@ -2030,16 +2027,16 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			team.setFriendlyFlagsBitwise(teamS2CPacket.getFlags());
 			AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(teamS2CPacket.getNameTagVisibilityRule());
 			if (visibilityRule != null) {
-				team.method_1149(visibilityRule);
+				team.setNameTagVisibilityRule(visibilityRule);
 			}
 
 			AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(teamS2CPacket.getCollisionRule());
 			if (collisionRule != null) {
-				team.method_1145(collisionRule);
+				team.setCollisionRule(collisionRule);
 			}
 
-			team.setPrefix(teamS2CPacket.method_11856());
-			team.setSuffix(teamS2CPacket.method_11854());
+			team.setPrefix(teamS2CPacket.getPrefix());
+			team.setSuffix(teamS2CPacket.getSuffix());
 		}
 
 		if (teamS2CPacket.getMode() == 0 || teamS2CPacket.getMode() == 3) {
@@ -2062,15 +2059,15 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onParticle(ParticleS2CPacket particleS2CPacket) {
 		NetworkThreadUtils.forceMainThread(particleS2CPacket, this, this.client);
-		if (particleS2CPacket.getParticleCount() == 0) {
-			double d = (double)(particleS2CPacket.method_11543() * particleS2CPacket.getOffsetX());
-			double e = (double)(particleS2CPacket.method_11543() * particleS2CPacket.getOffsetY());
-			double f = (double)(particleS2CPacket.method_11543() * particleS2CPacket.getOffsetZ());
+		if (particleS2CPacket.getCount() == 0) {
+			double d = (double)(particleS2CPacket.getSpeed() * particleS2CPacket.getOffsetX());
+			double e = (double)(particleS2CPacket.getSpeed() * particleS2CPacket.getOffsetY());
+			double f = (double)(particleS2CPacket.getSpeed() * particleS2CPacket.getOffsetZ());
 
 			try {
 				this.world
 					.addParticle(
-						particleS2CPacket.method_11551(),
+						particleS2CPacket.getParameters(),
 						particleS2CPacket.isLongDistance(),
 						particleS2CPacket.getX(),
 						particleS2CPacket.getY(),
@@ -2080,21 +2077,21 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 						f
 					);
 			} catch (Throwable var17) {
-				LOGGER.warn("Could not spawn particle effect {}", particleS2CPacket.method_11551());
+				LOGGER.warn("Could not spawn particle effect {}", particleS2CPacket.getParameters());
 			}
 		} else {
-			for (int i = 0; i < particleS2CPacket.getParticleCount(); i++) {
+			for (int i = 0; i < particleS2CPacket.getCount(); i++) {
 				double g = this.random.nextGaussian() * (double)particleS2CPacket.getOffsetX();
 				double h = this.random.nextGaussian() * (double)particleS2CPacket.getOffsetY();
 				double j = this.random.nextGaussian() * (double)particleS2CPacket.getOffsetZ();
-				double k = this.random.nextGaussian() * (double)particleS2CPacket.method_11543();
-				double l = this.random.nextGaussian() * (double)particleS2CPacket.method_11543();
-				double m = this.random.nextGaussian() * (double)particleS2CPacket.method_11543();
+				double k = this.random.nextGaussian() * (double)particleS2CPacket.getSpeed();
+				double l = this.random.nextGaussian() * (double)particleS2CPacket.getSpeed();
+				double m = this.random.nextGaussian() * (double)particleS2CPacket.getSpeed();
 
 				try {
 					this.world
 						.addParticle(
-							particleS2CPacket.method_11551(),
+							particleS2CPacket.getParameters(),
 							particleS2CPacket.isLongDistance(),
 							particleS2CPacket.getX() + g,
 							particleS2CPacket.getY() + h,
@@ -2104,7 +2101,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 							m
 						);
 				} catch (Throwable var16) {
-					LOGGER.warn("Could not spawn particle effect {}", particleS2CPacket.method_11551());
+					LOGGER.warn("Could not spawn particle effect {}", particleS2CPacket.getParameters());
 					return;
 				}
 			}
@@ -2114,7 +2111,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onEntityAttributes(EntityAttributesS2CPacket entityAttributesS2CPacket) {
 		NetworkThreadUtils.forceMainThread(entityAttributesS2CPacket, this, this.client);
-		Entity entity = this.world.getEntityById(entityAttributesS2CPacket.method_11937());
+		Entity entity = this.world.getEntityById(entityAttributesS2CPacket.getEntityId());
 		if (entity != null) {
 			if (!(entity instanceof LivingEntity)) {
 				throw new IllegalStateException("Server tried to update attributes of a non-living entity (actually: " + entity + ")");
@@ -2122,17 +2119,17 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				AbstractEntityAttributeContainer abstractEntityAttributeContainer = ((LivingEntity)entity).getAttributeContainer();
 
 				for (EntityAttributesS2CPacket.Entry entry : entityAttributesS2CPacket.getEntries()) {
-					EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get(entry.method_11940());
+					EntityAttributeInstance entityAttributeInstance = abstractEntityAttributeContainer.get(entry.getId());
 					if (entityAttributeInstance == null) {
 						entityAttributeInstance = abstractEntityAttributeContainer.register(
-							new ClampedEntityAttribute(null, entry.method_11940(), 0.0, Double.MIN_NORMAL, Double.MAX_VALUE)
+							new ClampedEntityAttribute(null, entry.getId(), 0.0, Double.MIN_NORMAL, Double.MAX_VALUE)
 						);
 					}
 
-					entityAttributeInstance.setBaseValue(entry.method_11941());
+					entityAttributeInstance.setBaseValue(entry.getBaseValue());
 					entityAttributeInstance.clearModifiers();
 
-					for (EntityAttributeModifier entityAttributeModifier : entry.method_11939()) {
+					for (EntityAttributeModifier entityAttributeModifier : entry.getModifiers()) {
 						entityAttributeInstance.addModifier(entityAttributeModifier);
 					}
 				}
@@ -2213,18 +2210,18 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		return this.connection;
 	}
 
-	public Collection<PlayerListEntry> getScoreboardEntries() {
-		return this.scoreboardEntries.values();
+	public Collection<PlayerListEntry> getPlayerList() {
+		return this.playerListEntries.values();
 	}
 
 	@Nullable
-	public PlayerListEntry getScoreboardEntry(UUID uUID) {
-		return (PlayerListEntry)this.scoreboardEntries.get(uUID);
+	public PlayerListEntry getPlayerListEntry(UUID uUID) {
+		return (PlayerListEntry)this.playerListEntries.get(uUID);
 	}
 
 	@Nullable
-	public PlayerListEntry getScoreboardEntry(String string) {
-		for (PlayerListEntry playerListEntry : this.scoreboardEntries.values()) {
+	public PlayerListEntry getPlayerListEntry(String string) {
+		for (PlayerListEntry playerListEntry : this.playerListEntries.values()) {
 			if (playerListEntry.getProfile().getName().equals(string)) {
 				return playerListEntry;
 			}

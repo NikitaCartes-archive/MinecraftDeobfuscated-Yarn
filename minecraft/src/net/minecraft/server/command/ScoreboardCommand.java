@@ -606,8 +606,8 @@ public class ScoreboardCommand {
 	private static int executeModifyRenderType(
 		ServerCommandSource serverCommandSource, ScoreboardObjective scoreboardObjective, ScoreboardCriterion.RenderType renderType
 	) {
-		if (scoreboardObjective.method_1118() != renderType) {
-			scoreboardObjective.method_1115(renderType);
+		if (scoreboardObjective.getRenderType() != renderType) {
+			scoreboardObjective.setRenderType(renderType);
 			serverCommandSource.sendFeedback(
 				new TranslatableTextComponent("commands.scoreboard.objectives.modify.rendertype", scoreboardObjective.getTextComponent()), true
 			);
@@ -632,7 +632,7 @@ public class ScoreboardCommand {
 		} else if (string.length() > 16) {
 			throw ObjectiveArgumentType.LONG_NAME_EXCEPTION.create(16);
 		} else {
-			scoreboard.method_1168(string, scoreboardCriterion, textComponent, scoreboardCriterion.getCriterionType());
+			scoreboard.addObjective(string, scoreboardCriterion, textComponent, scoreboardCriterion.getCriterionType());
 			ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.objectives.add.success", scoreboardObjective.getTextComponent()), true);
 			return scoreboard.getObjectives().size();

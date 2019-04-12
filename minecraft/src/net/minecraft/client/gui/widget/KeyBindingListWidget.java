@@ -20,7 +20,7 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 	private int field_2733;
 
 	public KeyBindingListWidget(ControlsOptionsScreen controlsOptionsScreen, MinecraftClient minecraftClient) {
-		super(minecraftClient, controlsOptionsScreen.width + 45, controlsOptionsScreen.height, 63, controlsOptionsScreen.height - 32, 20);
+		super(minecraftClient, controlsOptionsScreen.width + 45, controlsOptionsScreen.height, 43, controlsOptionsScreen.height - 32, 20);
 		this.gui = controlsOptionsScreen;
 		KeyBinding[] keyBindings = ArrayUtils.clone(minecraftClient.options.keysAll);
 		Arrays.sort(keyBindings);

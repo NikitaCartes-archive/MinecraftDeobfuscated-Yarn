@@ -100,7 +100,7 @@ public class DefaultResourcePack implements ResourcePack {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 		if (RESOURCE_PATH != null) {
 			try {
-				set.addAll(this.method_14418(i, "minecraft", RESOURCE_PATH.resolve(resourceType.getName()).resolve("minecraft"), string, predicate));
+				set.addAll(this.getIdentifiers(i, "minecraft", RESOURCE_PATH.resolve(resourceType.getName()).resolve("minecraft"), string, predicate));
 			} catch (IOException var14) {
 			}
 
@@ -116,7 +116,7 @@ public class DefaultResourcePack implements ResourcePack {
 					try {
 						URI uRI = ((URL)enumeration.nextElement()).toURI();
 						if ("file".equals(uRI.getScheme())) {
-							set.addAll(this.method_14418(i, "minecraft", Paths.get(uRI), string, predicate));
+							set.addAll(this.getIdentifiers(i, "minecraft", Paths.get(uRI), string, predicate));
 						}
 					} catch (IOException | URISyntaxException var12) {
 					}
@@ -139,10 +139,10 @@ public class DefaultResourcePack implements ResourcePack {
 				}
 
 				Path path = Paths.get(uRL2.toURI());
-				set.addAll(this.method_14418(i, "minecraft", path, string, predicate));
+				set.addAll(this.getIdentifiers(i, "minecraft", path, string, predicate));
 			} else if ("jar".equals(uRI.getScheme())) {
 				Path path2 = ((FileSystem)field_17917.get(resourceType)).getPath("/" + resourceType.getName() + "/minecraft");
-				set.addAll(this.method_14418(i, "minecraft", path2, string, predicate));
+				set.addAll(this.getIdentifiers(i, "minecraft", path2, string, predicate));
 			} else {
 				LOGGER.error("Unsupported scheme {} trying to list vanilla resources (NYI?)", uRI);
 			}
@@ -154,7 +154,7 @@ public class DefaultResourcePack implements ResourcePack {
 		return set;
 	}
 
-	private Collection<Identifier> method_14418(int i, String string, Path path, String string2, Predicate<String> predicate) throws IOException {
+	private Collection<Identifier> getIdentifiers(int i, String string, Path path, String string2, Predicate<String> predicate) throws IOException {
 		List<Identifier> list = Lists.<Identifier>newArrayList();
 		Iterator<Path> iterator = Files.walk(path.resolve(string2), i, new FileVisitOption[0]).iterator();
 

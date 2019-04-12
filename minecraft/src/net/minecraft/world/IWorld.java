@@ -60,6 +60,7 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 
 	void updateNeighbors(BlockPos blockPos, Block block);
 
+	@Environment(EnvType.CLIENT)
 	BlockPos getSpawnPos();
 
 	void playSound(@Nullable PlayerEntity playerEntity, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory, float f, float g);
@@ -68,7 +69,7 @@ public interface IWorld extends EntityView, ViewableWorld, ModifiableTestableWor
 
 	void playLevelEvent(@Nullable PlayerEntity playerEntity, int i, BlockPos blockPos, int j);
 
-	default void method_20290(int i, BlockPos blockPos, int j) {
+	default void playLevelEvent(int i, BlockPos blockPos, int j) {
 		this.playLevelEvent(null, i, blockPos, j);
 	}
 

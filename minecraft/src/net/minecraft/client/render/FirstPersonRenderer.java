@@ -571,7 +571,7 @@ public class FirstPersonRenderer {
 
 		for (int i = 0; i < 2; i++) {
 			GlStateManager.pushMatrix();
-			Sprite sprite = this.client.getSpriteAtlas().getSprite(ModelLoader.field_5370);
+			Sprite sprite = this.client.getSpriteAtlas().getSprite(ModelLoader.FIRE_1);
 			this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEX);
 			float g = sprite.getMinU();
 			float h = sprite.getMaxU();

@@ -27,7 +27,7 @@ public class FillCommand {
 	private static final Dynamic2CommandExceptionType TOOBIG_EXCEPTION = new Dynamic2CommandExceptionType(
 		(object, object2) -> new TranslatableTextComponent("commands.fill.toobig", object, object2)
 	);
-	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.field_10124.getDefaultState(), Collections.emptySet(), null);
+	private static final BlockStateArgument AIR_BLOCK_ARGUMENT = new BlockStateArgument(Blocks.AIR.getDefaultState(), Collections.emptySet(), null);
 	private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableTextComponent("commands.fill.failed"));
 
 	public static void register(CommandDispatcher<ServerCommandSource> commandDispatcher) {
@@ -165,7 +165,7 @@ public class FillCommand {
 				mutableIntBoundingBox.maxZ
 			)) {
 				if (predicate == null || predicate.test(new CachedBlockPosition(serverWorld, blockPos, true))) {
-					BlockStateArgument blockStateArgument2 = mode.field_13654.filter(mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld);
+					BlockStateArgument blockStateArgument2 = mode.filter.filter(mutableIntBoundingBox, blockPos, blockStateArgument, serverWorld);
 					if (blockStateArgument2 != null) {
 						BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 						Clearable.clear(blockEntity);
@@ -218,10 +218,10 @@ public class FillCommand {
 			return blockStateArgument;
 		});
 
-		public final SetBlockCommand.Filter field_13654;
+		public final SetBlockCommand.Filter filter;
 
 		private Mode(SetBlockCommand.Filter filter) {
-			this.field_13654 = filter;
+			this.filter = filter;
 		}
 	}
 }

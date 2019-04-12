@@ -75,15 +75,13 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 			g = 0.0F;
 		}
 
-		float h;
 		if (!this.onGround && !(this.getHealth() <= 0.0F)) {
-			h = (float)Math.atan(-this.getVelocity().y * 0.2F) * 15.0F;
+			float h = (float)Math.atan(-this.getVelocity().y * 0.2F) * 15.0F;
 		} else {
-			h = 0.0F;
+			float h = 0.0F;
 		}
 
 		this.field_7483 = this.field_7483 + (g - this.field_7483) * 0.4F;
-		this.field_6223 = this.field_6223 + (h - this.field_6223) * 0.8F;
 		this.world.getProfiler().push("push");
 		this.doPushLogic();
 		this.world.getProfiler().pop();

@@ -286,7 +286,7 @@ public class CrossbowItem extends BaseBowItem {
 		if (livingEntity instanceof ServerPlayerEntity) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 			if (!world.isClient) {
-				Criterions.SHOT_CROSSBOW.method_9115(serverPlayerEntity, itemStack);
+				Criterions.SHOT_CROSSBOW.trigger(serverPlayerEntity, itemStack);
 			}
 
 			serverPlayerEntity.incrementStat(Stats.field_15372.getOrCreateStat(itemStack.getItem()));

@@ -437,7 +437,7 @@ public abstract class BaseFluid extends Fluid {
 			int i = this.method_15753(world, blockPos, fluidState, fluidState2);
 			if (fluidState2.isEmpty()) {
 				fluidState = fluidState2;
-				world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
+				world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
 			} else if (!fluidState2.equals(fluidState)) {
 				fluidState = fluidState2;
 				BlockState blockState = fluidState2.getBlockState();

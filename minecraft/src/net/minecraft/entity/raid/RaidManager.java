@@ -6,12 +6,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.stat.Stats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
@@ -97,6 +99,8 @@ public class RaidManager extends PersistentState {
 			if (bl) {
 				raid.start(serverPlayerEntity);
 				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
+				serverPlayerEntity.incrementStat(Stats.field_19256);
+				Criterions.VOLUNTARY_EXILE.handle(serverPlayerEntity);
 			}
 
 			this.markDirty();

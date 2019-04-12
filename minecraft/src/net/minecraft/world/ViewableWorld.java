@@ -25,7 +25,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.Dimension;
-import net.minecraft.world.gen.Heightmap;
 
 public interface ViewableWorld extends ExtendedBlockView {
 	default boolean isAir(BlockPos blockPos) {

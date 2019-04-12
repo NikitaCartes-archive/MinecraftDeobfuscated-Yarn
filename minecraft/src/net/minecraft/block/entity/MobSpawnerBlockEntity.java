@@ -5,10 +5,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sortme.MobSpawnerEntry;
-import net.minecraft.sortme.MobSpawnerLogic;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.MobSpawnerEntry;
+import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.World;
 
 public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {

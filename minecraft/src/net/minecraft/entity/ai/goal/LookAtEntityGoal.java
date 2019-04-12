@@ -33,7 +33,7 @@ public class LookAtEntityGoal extends Goal {
 				.includeTeammates()
 				.includeInvulnerable()
 				.ignoreEntityTargetRules()
-				.setPredicate(livingEntity -> EntityPredicates.getBottommostEntity(mobEntity).test(livingEntity));
+				.setPredicate(livingEntity -> EntityPredicates.rides(mobEntity).test(livingEntity));
 		} else {
 			this.targetPredicate = new TargetPredicate().setBaseMaxDistance((double)f).includeTeammates().includeInvulnerable().ignoreEntityTargetRules();
 		}

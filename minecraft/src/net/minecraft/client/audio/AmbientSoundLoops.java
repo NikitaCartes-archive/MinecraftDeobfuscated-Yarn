@@ -20,7 +20,7 @@ public class AmbientSoundLoops {
 			this.repeatDelay = 0;
 			this.volume = 1.0F;
 			this.field_18935 = true;
-			this.field_18936 = true;
+			this.looping = true;
 		}
 
 		@Override
@@ -43,7 +43,7 @@ public class AmbientSoundLoops {
 			this.repeatDelay = 0;
 			this.volume = 1.0F;
 			this.field_18935 = true;
-			this.field_18936 = true;
+			this.looping = true;
 		}
 
 		@Override

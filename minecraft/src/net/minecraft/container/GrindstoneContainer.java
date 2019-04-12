@@ -58,7 +58,7 @@ public class GrindstoneContainer extends Container {
 			@Override
 			public ItemStack onTakeItem(PlayerEntity playerEntity, ItemStack itemStack) {
 				blockContext.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
-					int i = this.method_17416(world);
+					int i = this.getExperience(world);
 
 					while (i > 0) {
 						int j = ExperienceOrbEntity.roundToOrbSize(i);
@@ -66,17 +66,17 @@ public class GrindstoneContainer extends Container {
 						world.spawnEntity(new ExperienceOrbEntity(world, (double)blockPos.getX(), (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, j));
 					}
 
-					world.method_20290(1042, blockPos, 0);
+					world.playLevelEvent(1042, blockPos, 0);
 				}));
 				GrindstoneContainer.this.craftingInventory.setInvStack(0, ItemStack.EMPTY);
 				GrindstoneContainer.this.craftingInventory.setInvStack(1, ItemStack.EMPTY);
 				return itemStack;
 			}
 
-			private int method_17416(World world) {
+			private int getExperience(World world) {
 				int i = 0;
-				i += this.method_16696(GrindstoneContainer.this.craftingInventory.getInvStack(0));
-				i += this.method_16696(GrindstoneContainer.this.craftingInventory.getInvStack(1));
+				i += this.getExperience(GrindstoneContainer.this.craftingInventory.getInvStack(0));
+				i += this.getExperience(GrindstoneContainer.this.craftingInventory.getInvStack(1));
 				if (i > 0) {
 					int j = (int)Math.ceil((double)i / 2.0);
 					return j + world.random.nextInt(j);
@@ -85,7 +85,7 @@ public class GrindstoneContainer extends Container {
 				}
 			}
 
-			private int method_16696(ItemStack itemStack) {
+			private int getExperience(ItemStack itemStack) {
 				int i = 0;
 				Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack);
 
@@ -116,17 +116,20 @@ public class GrindstoneContainer extends Container {
 	public void onContentChanged(Inventory inventory) {
 		super.onContentChanged(inventory);
 		if (inventory == this.craftingInventory) {
-			this.method_16695();
+			this.updateResult();
 		}
 	}
 
-	private void method_16695() {
+	private void updateResult() {
 		ItemStack itemStack = this.craftingInventory.getInvStack(0);
 		ItemStack itemStack2 = this.craftingInventory.getInvStack(1);
 		boolean bl = !itemStack.isEmpty() || !itemStack2.isEmpty();
 		boolean bl2 = !itemStack.isEmpty() && !itemStack2.isEmpty();
-		if (bl) {
-			if (itemStack.getAmount() > 1 || itemStack2.getAmount() > 1) {
+		if (!bl) {
+			this.resultInventory.setInvStack(0, ItemStack.EMPTY);
+		} else {
+			boolean bl3 = !itemStack.isEmpty() && !itemStack.hasEnchantments() || !itemStack2.isEmpty() && !itemStack2.hasEnchantments();
+			if (itemStack.getAmount() > 1 || itemStack2.getAmount() > 1 || !bl2 && bl3) {
 				this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 				this.sendContentUpdates();
 				return;
@@ -147,7 +150,7 @@ public class GrindstoneContainer extends Container {
 				int k = item.getDurability() - itemStack2.getDamage();
 				int l = j + k + item.getDurability() * 5 / 100;
 				m = Math.max(item.getDurability() - l, 0);
-				itemStack3 = this.method_20268(itemStack, itemStack2);
+				itemStack3 = this.transferEnchantments(itemStack, itemStack2);
 				if (!itemStack3.hasDurability()) {
 					if (!ItemStack.areEqual(itemStack, itemStack2)) {
 						this.resultInventory.setInvStack(0, ItemStack.EMPTY);
@@ -158,20 +161,18 @@ public class GrindstoneContainer extends Container {
 					i = 2;
 				}
 			} else {
-				boolean bl3 = !itemStack.isEmpty();
-				m = bl3 ? itemStack.getDamage() : itemStack2.getDamage();
-				itemStack3 = bl3 ? itemStack : itemStack2;
+				boolean bl4 = !itemStack.isEmpty();
+				m = bl4 ? itemStack.getDamage() : itemStack2.getDamage();
+				itemStack3 = bl4 ? itemStack : itemStack2;
 			}
 
-			this.resultInventory.setInvStack(0, this.method_16693(itemStack3, m, i));
-		} else {
-			this.resultInventory.setInvStack(0, ItemStack.EMPTY);
+			this.resultInventory.setInvStack(0, this.grind(itemStack3, m, i));
 		}
 
 		this.sendContentUpdates();
 	}
 
-	private ItemStack method_20268(ItemStack itemStack, ItemStack itemStack2) {
+	private ItemStack transferEnchantments(ItemStack itemStack, ItemStack itemStack2) {
 		ItemStack itemStack3 = itemStack.copy();
 		Map<Enchantment, Integer> map = EnchantmentHelper.getEnchantments(itemStack2);
 
@@ -185,7 +186,7 @@ public class GrindstoneContainer extends Container {
 		return itemStack3;
 	}
 
-	private ItemStack method_16693(ItemStack itemStack, int i, int j) {
+	private ItemStack grind(ItemStack itemStack, int i, int j) {
 		ItemStack itemStack2 = itemStack.copy();
 		itemStack2.removeSubTag("Enchantments");
 		itemStack2.removeSubTag("StoredEnchantments");
@@ -204,6 +205,12 @@ public class GrindstoneContainer extends Container {
 		EnchantmentHelper.set(map, itemStack2);
 		if (itemStack2.getItem() == Items.field_8598 && map.size() == 0) {
 			itemStack2 = new ItemStack(Items.field_8529);
+		}
+
+		itemStack2.setRepairCost(0);
+
+		for (int k = 0; k < map.size(); k++) {
+			itemStack2.setRepairCost(AnvilContainer.getNextCost(itemStack2.getRepairCost()));
 		}
 
 		return itemStack2;

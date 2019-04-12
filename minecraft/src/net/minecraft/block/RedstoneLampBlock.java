@@ -40,7 +40,7 @@ public class RedstoneLampBlock extends Block {
 				if (bl2) {
 					world.getBlockTickScheduler().schedule(blockPos, this, 4);
 				} else {
-					world.setBlockState(blockPos, blockState.method_11572(LIT), 2);
+					world.setBlockState(blockPos, blockState.cycle(LIT), 2);
 				}
 			}
 		}
@@ -50,7 +50,7 @@ public class RedstoneLampBlock extends Block {
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (!world.isClient) {
 			if ((Boolean)blockState.get(LIT) && !world.isReceivingRedstonePower(blockPos)) {
-				world.setBlockState(blockPos, blockState.method_11572(LIT), 2);
+				world.setBlockState(blockPos, blockState.cycle(LIT), 2);
 			}
 		}
 	}

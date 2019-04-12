@@ -71,7 +71,7 @@ public class ParticleManager implements ResourceReloadListener {
 	private final Random random = new Random();
 	private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap<>();
 	private final Queue<Particle> newParticles = Queues.<Particle>newArrayDeque();
-	private final Map<Identifier, ParticleManager.class_4090> field_18300 = Maps.<Identifier, ParticleManager.class_4090>newHashMap();
+	private final Map<Identifier, ParticleManager.SimpleSpriteProvider> field_18300 = Maps.<Identifier, ParticleManager.SimpleSpriteProvider>newHashMap();
 	private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture("textures/particle");
 
 	public ParticleManager(World world, TextureManager textureManager) {
@@ -147,9 +147,9 @@ public class ParticleManager implements ResourceReloadListener {
 	}
 
 	private <T extends ParticleParameters> void method_18834(ParticleType<T> particleType, ParticleManager.class_4091<T> arg) {
-		ParticleManager.class_4090 lv = new ParticleManager.class_4090();
-		this.field_18300.put(Registry.PARTICLE_TYPE.getId(particleType), lv);
-		this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), arg.create(lv));
+		ParticleManager.SimpleSpriteProvider simpleSpriteProvider = new ParticleManager.SimpleSpriteProvider();
+		this.field_18300.put(Registry.PARTICLE_TYPE.getId(particleType), simpleSpriteProvider);
+		this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), arg.create(simpleSpriteProvider));
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class ParticleManager implements ResourceReloadListener {
 							ImmutableList<Sprite> immutableList = list.isEmpty()
 								? ImmutableList.of(sprite)
 								: (ImmutableList)list.stream().map(this.particleAtlasTexture::getSprite).collect(ImmutableList.toImmutableList());
-							((ParticleManager.class_4090)this.field_18300.get(identifier)).method_18838(immutableList);
+							((ParticleManager.SimpleSpriteProvider)this.field_18300.get(identifier)).setSprites(immutableList);
 						}
 					);
 					profiler2.pop();
@@ -345,7 +345,7 @@ public class ParticleManager implements ResourceReloadListener {
 		}
 	}
 
-	public void renderUnlitParticles(Camera camera, float f) {
+	public void renderParticles(Camera camera, float f) {
 		float g = MathHelper.cos(camera.getYaw() * (float) (Math.PI / 180.0));
 		float h = MathHelper.sin(camera.getYaw() * (float) (Math.PI / 180.0));
 		float i = -h * MathHelper.sin(camera.getPitch() * (float) (Math.PI / 180.0));
@@ -470,24 +470,24 @@ public class ParticleManager implements ResourceReloadListener {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class class_4090 implements SpriteProvider {
-		private List<Sprite> field_18303;
+	class SimpleSpriteProvider implements SpriteProvider {
+		private List<Sprite> sprites;
 
-		private class_4090() {
+		private SimpleSpriteProvider() {
 		}
 
 		@Override
 		public Sprite getSprite(int i, int j) {
-			return (Sprite)this.field_18303.get(i * (this.field_18303.size() - 1) / j);
+			return (Sprite)this.sprites.get(i * (this.sprites.size() - 1) / j);
 		}
 
 		@Override
 		public Sprite getSprite(Random random) {
-			return (Sprite)this.field_18303.get(random.nextInt(this.field_18303.size()));
+			return (Sprite)this.sprites.get(random.nextInt(this.sprites.size()));
 		}
 
-		public void method_18838(List<Sprite> list) {
-			this.field_18303 = ImmutableList.copyOf(list);
+		public void setSprites(List<Sprite> list) {
+			this.sprites = ImmutableList.copyOf(list);
 		}
 	}
 

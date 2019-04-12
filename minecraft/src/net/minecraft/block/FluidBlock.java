@@ -94,7 +94,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (this.method_10316(world, blockPos, blockState)) {
+		if (this.receiveNeighborFluids(world, blockPos, blockState)) {
 			world.getFluidTickScheduler().schedule(blockPos, blockState.getFluidState().getFluid(), this.getTickRate(world));
 		}
 	}
@@ -112,12 +112,12 @@ public class FluidBlock extends Block implements FluidDrainable {
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		if (this.method_10316(world, blockPos, blockState)) {
+		if (this.receiveNeighborFluids(world, blockPos, blockState)) {
 			world.getFluidTickScheduler().schedule(blockPos, blockState.getFluidState().getFluid(), this.getTickRate(world));
 		}
 	}
 
-	public boolean method_10316(World world, BlockPos blockPos, BlockState blockState) {
+	public boolean receiveNeighborFluids(World world, BlockPos blockPos, BlockState blockState) {
 		if (this.fluid.matches(FluidTags.field_15518)) {
 			boolean bl = false;
 
@@ -132,13 +132,13 @@ public class FluidBlock extends Block implements FluidDrainable {
 				FluidState fluidState = world.getFluidState(blockPos);
 				if (fluidState.isStill()) {
 					world.setBlockState(blockPos, Blocks.field_10540.getDefaultState());
-					this.method_10318(world, blockPos);
+					this.playExtinguishSound(world, blockPos);
 					return false;
 				}
 
 				if (fluidState.getHeight(world, blockPos) >= 0.44444445F) {
 					world.setBlockState(blockPos, Blocks.field_10445.getDefaultState());
-					this.method_10318(world, blockPos);
+					this.playExtinguishSound(world, blockPos);
 					return false;
 				}
 			}
@@ -147,8 +147,8 @@ public class FluidBlock extends Block implements FluidDrainable {
 		return true;
 	}
 
-	private void method_10318(IWorld iWorld, BlockPos blockPos) {
-		iWorld.method_20290(1501, blockPos, 0);
+	private void playExtinguishSound(IWorld iWorld, BlockPos blockPos) {
+		iWorld.playLevelEvent(1501, blockPos, 0);
 	}
 
 	@Override
@@ -159,7 +159,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	@Override
 	public Fluid tryDrainFluid(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
 		if ((Integer)blockState.get(LEVEL) == 0) {
-			iWorld.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 11);
+			iWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 11);
 			return this.fluid;
 		} else {
 			return Fluids.EMPTY;

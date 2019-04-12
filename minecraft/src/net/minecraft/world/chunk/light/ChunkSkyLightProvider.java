@@ -141,7 +141,7 @@ public final class ChunkSkyLightProvider extends ChunkLightProvider<SkyLightStor
 					if (chunkNibbleArray3 != null) {
 						r = this.getPropagatedLevel(o, l, this.getCurrentLevelFromArray(chunkNibbleArray3, o));
 					} else {
-						r = this.lightStorage.method_15566(p) ? 15 : 0;
+						r = this.lightStorage.method_15566(p) ? 0 : 15;
 					}
 
 					if (j > r) {

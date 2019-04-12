@@ -9,10 +9,10 @@ import net.minecraft.text.TextComponent;
 
 public final class ClientDummyContainerProvider implements NameableContainerProvider {
 	private final TextComponent name;
-	private final ContainerProvider field_17280;
+	private final ContainerProvider containerProvider;
 
 	public ClientDummyContainerProvider(ContainerProvider containerProvider, TextComponent textComponent) {
-		this.field_17280 = containerProvider;
+		this.containerProvider = containerProvider;
 		this.name = textComponent;
 	}
 
@@ -23,6 +23,6 @@ public final class ClientDummyContainerProvider implements NameableContainerProv
 
 	@Override
 	public Container createMenu(int i, PlayerInventory playerInventory, PlayerEntity playerEntity) {
-		return this.field_17280.createMenu(i, playerInventory, playerEntity);
+		return this.containerProvider.createMenu(i, playerInventory, playerEntity);
 	}
 }

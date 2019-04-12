@@ -570,7 +570,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		@Override
 		public boolean canStart() {
-			return this.entity.method_5781() == null ? false : super.canStart();
+			return this.entity.getScoreboardTeam() == null ? false : super.canStart();
 		}
 
 		@Override

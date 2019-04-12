@@ -8,17 +8,6 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.block.AirBlockItem;
-import net.minecraft.item.block.BannerItem;
-import net.minecraft.item.block.BedItem;
-import net.minecraft.item.block.BlockItem;
-import net.minecraft.item.block.CommandBlockItem;
-import net.minecraft.item.block.LilyPadItem;
-import net.minecraft.item.block.ScaffoldingItem;
-import net.minecraft.item.block.SignItem;
-import net.minecraft.item.block.SkullItem;
-import net.minecraft.item.block.TallBlockItem;
-import net.minecraft.item.block.WallStandingBlockItem;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
@@ -26,7 +15,7 @@ import net.minecraft.util.Rarity;
 import net.minecraft.util.registry.Registry;
 
 public class Items {
-	public static final Item AIR = register(Blocks.field_10124, new AirBlockItem(Blocks.field_10124, new Item.Settings()));
+	public static final Item AIR = register(Blocks.AIR, new AirBlockItem(Blocks.AIR, new Item.Settings()));
 	public static final Item STONE = registerBlock(Blocks.field_10340, ItemGroup.BUILDING_BLOCKS);
 	public static final Item GRANITE = registerBlock(Blocks.field_10474, ItemGroup.BUILDING_BLOCKS);
 	public static final Item POLISHED_GRANITE = registerBlock(Blocks.field_10289, ItemGroup.BUILDING_BLOCKS);

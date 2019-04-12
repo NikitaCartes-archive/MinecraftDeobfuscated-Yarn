@@ -16,16 +16,16 @@ import net.minecraft.util.registry.Registry;
 public class EnchantmentPredicate {
 	public static final EnchantmentPredicate ANY = new EnchantmentPredicate();
 	private final Enchantment enchantment;
-	private final NumberRange.IntRange field_9570;
+	private final NumberRange.IntRange levels;
 
 	public EnchantmentPredicate() {
 		this.enchantment = null;
-		this.field_9570 = NumberRange.IntRange.ANY;
+		this.levels = NumberRange.IntRange.ANY;
 	}
 
 	public EnchantmentPredicate(@Nullable Enchantment enchantment, NumberRange.IntRange intRange) {
 		this.enchantment = enchantment;
-		this.field_9570 = intRange;
+		this.levels = intRange;
 	}
 
 	public boolean test(Map<Enchantment, Integer> map) {
@@ -35,12 +35,12 @@ public class EnchantmentPredicate {
 			}
 
 			int i = (Integer)map.get(this.enchantment);
-			if (this.field_9570 != null && !this.field_9570.test(i)) {
+			if (this.levels != null && !this.levels.test(i)) {
 				return false;
 			}
-		} else if (this.field_9570 != null) {
+		} else if (this.levels != null) {
 			for (Integer integer : map.values()) {
-				if (this.field_9570.test(integer)) {
+				if (this.levels.test(integer)) {
 					return true;
 				}
 			}
@@ -60,7 +60,7 @@ public class EnchantmentPredicate {
 				jsonObject.addProperty("enchantment", Registry.ENCHANTMENT.getId(this.enchantment).toString());
 			}
 
-			jsonObject.add("levels", this.field_9570.serialize());
+			jsonObject.add("levels", this.levels.serialize());
 			return jsonObject;
 		}
 	}

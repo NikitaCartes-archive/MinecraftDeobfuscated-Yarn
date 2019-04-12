@@ -54,7 +54,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		if (!blockState.canPlaceAt(iWorld, blockPos)) {
-			return Blocks.field_10124.getDefaultState();
+			return Blocks.AIR.getDefaultState();
 		} else {
 			if (direction == Direction.UP && blockState2.getBlock() == Blocks.field_10211) {
 				iWorld.setBlockState(blockPos, Blocks.field_10211.getDefaultState(), 2);

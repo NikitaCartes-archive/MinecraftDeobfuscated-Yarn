@@ -36,6 +36,14 @@ public class PointOfInterestDebugRenderer implements DebugRenderer.Renderer {
 		this.field_18786 = minecraftClient;
 	}
 
+	@Override
+	public void method_20414() {
+		this.pointsOfInterest.clear();
+		this.field_18788.clear();
+		this.field_18921.clear();
+		this.field_18922 = null;
+	}
+
 	public void method_19701(PointOfInterestDebugRenderer.class_4233 arg) {
 		this.pointsOfInterest.put(arg.field_18931, arg);
 	}

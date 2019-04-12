@@ -45,8 +45,8 @@ public abstract class TrackTargetGoal extends Goal {
 		} else if (!livingEntity.isAlive()) {
 			return false;
 		} else {
-			AbstractTeam abstractTeam = this.entity.method_5781();
-			AbstractTeam abstractTeam2 = livingEntity.method_5781();
+			AbstractTeam abstractTeam = this.entity.getScoreboardTeam();
+			AbstractTeam abstractTeam2 = livingEntity.getScoreboardTeam();
 			if (abstractTeam != null && abstractTeam2 == abstractTeam) {
 				return false;
 			} else {

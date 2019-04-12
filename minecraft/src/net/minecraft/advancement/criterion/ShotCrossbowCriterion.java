@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("shot_crossbow");
-	private final Map<PlayerAdvancementTracker, ShotCrossbowCriterion.class_2124> field_9744 = Maps.<PlayerAdvancementTracker, ShotCrossbowCriterion.class_2124>newHashMap();
+	private final Map<PlayerAdvancementTracker, ShotCrossbowCriterion.Handler> handlers = Maps.<PlayerAdvancementTracker, ShotCrossbowCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -29,31 +29,31 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 	public void beginTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer
 	) {
-		ShotCrossbowCriterion.class_2124 lv = (ShotCrossbowCriterion.class_2124)this.field_9744.get(playerAdvancementTracker);
-		if (lv == null) {
-			lv = new ShotCrossbowCriterion.class_2124(playerAdvancementTracker);
-			this.field_9744.put(playerAdvancementTracker, lv);
+		ShotCrossbowCriterion.Handler handler = (ShotCrossbowCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+		if (handler == null) {
+			handler = new ShotCrossbowCriterion.Handler(playerAdvancementTracker);
+			this.handlers.put(playerAdvancementTracker, handler);
 		}
 
-		lv.method_9116(conditionsContainer);
+		handler.add(conditionsContainer);
 	}
 
 	@Override
 	public void endTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer
 	) {
-		ShotCrossbowCriterion.class_2124 lv = (ShotCrossbowCriterion.class_2124)this.field_9744.get(playerAdvancementTracker);
-		if (lv != null) {
-			lv.method_9119(conditionsContainer);
-			if (lv.method_9117()) {
-				this.field_9744.remove(playerAdvancementTracker);
+		ShotCrossbowCriterion.Handler handler = (ShotCrossbowCriterion.Handler)this.handlers.get(playerAdvancementTracker);
+		if (handler != null) {
+			handler.remove(conditionsContainer);
+			if (handler.isEmpty()) {
+				this.handlers.remove(playerAdvancementTracker);
 			}
 		}
 	}
 
 	@Override
 	public void endTracking(PlayerAdvancementTracker playerAdvancementTracker) {
-		this.field_9744.remove(playerAdvancementTracker);
+		this.handlers.remove(playerAdvancementTracker);
 	}
 
 	public ShotCrossbowCriterion.Conditions method_9114(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
@@ -61,10 +61,10 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 		return new ShotCrossbowCriterion.Conditions(itemPredicate);
 	}
 
-	public void method_9115(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-		ShotCrossbowCriterion.class_2124 lv = (ShotCrossbowCriterion.class_2124)this.field_9744.get(serverPlayerEntity.getAdvancementManager());
-		if (lv != null) {
-			lv.method_9118(itemStack);
+	public void trigger(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
+		ShotCrossbowCriterion.Handler handler = (ShotCrossbowCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
+		if (handler != null) {
+			handler.trigger(itemStack);
 		}
 	}
 
@@ -92,30 +92,30 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 		}
 	}
 
-	static class class_2124 {
-		private final PlayerAdvancementTracker field_9746;
-		private final Set<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>> field_9745 = Sets.<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>>newHashSet();
+	static class Handler {
+		private final PlayerAdvancementTracker tracker;
+		private final Set<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>>newHashSet();
 
-		public class_2124(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9746 = playerAdvancementTracker;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.tracker = playerAdvancementTracker;
 		}
 
-		public boolean method_9117() {
-			return this.field_9745.isEmpty();
+		public boolean isEmpty() {
+			return this.conditions.isEmpty();
 		}
 
-		public void method_9116(Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer) {
-			this.field_9745.add(conditionsContainer);
+		public void add(Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer) {
+			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_9119(Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer) {
-			this.field_9745.remove(conditionsContainer);
+		public void remove(Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer) {
+			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_9118(ItemStack itemStack) {
+		public void trigger(ItemStack itemStack) {
 			List<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>> list = null;
 
-			for (Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer : this.field_9745) {
+			for (Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainer : this.conditions) {
 				if (conditionsContainer.getConditions().matches(itemStack)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions>>newArrayList();
@@ -127,7 +127,7 @@ public class ShotCrossbowCriterion implements Criterion<ShotCrossbowCriterion.Co
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<ShotCrossbowCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_9746);
+					conditionsContainerx.apply(this.tracker);
 				}
 			}
 		}

@@ -15,7 +15,7 @@ import net.minecraft.world.gen.ChunkRandom;
 public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> {
 	protected static final BlockState PACKED_ICE = Blocks.field_10225.getDefaultState();
 	protected static final BlockState SNOW_BLOCK = Blocks.field_10491.getDefaultState();
-	private static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	private static final BlockState AIR = Blocks.AIR.getDefaultState();
 	private static final BlockState GRAVEL = Blocks.field_10255.getDefaultState();
 	private static final BlockState ICE = Blocks.field_10295.getDefaultState();
 	private OctaveSimplexNoiseSampler field_15644;

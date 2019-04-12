@@ -43,7 +43,7 @@ public class OreFeatureConfig implements FeatureConfig {
 	public static OreFeatureConfig deserialize(Dynamic<?> dynamic) {
 		int i = dynamic.get("size").asInt(0);
 		OreFeatureConfig.Target target = OreFeatureConfig.Target.byName(dynamic.get("target").asString(""));
-		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.field_10124.getDefaultState());
+		BlockState blockState = (BlockState)dynamic.get("state").map(BlockState::deserialize).orElse(Blocks.AIR.getDefaultState());
 		return new OreFeatureConfig(target, blockState, i);
 	}
 

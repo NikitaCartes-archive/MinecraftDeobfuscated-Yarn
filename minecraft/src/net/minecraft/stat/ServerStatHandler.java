@@ -37,8 +37,8 @@ public class ServerStatHandler extends StatHandler {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftServer server;
 	private final File file;
-	private final Set<Stat<?>> field_15307 = Sets.<Stat<?>>newHashSet();
-	private int field_15306 = -300;
+	private final Set<Stat<?>> pendingStats = Sets.<Stat<?>>newHashSet();
+	private int lastStatsUpdate = -300;
 
 	public ServerStatHandler(MinecraftServer minecraftServer, File file) {
 		this.server = minecraftServer;
@@ -65,12 +65,12 @@ public class ServerStatHandler extends StatHandler {
 	@Override
 	public void setStat(PlayerEntity playerEntity, Stat<?> stat, int i) {
 		super.setStat(playerEntity, stat, i);
-		this.field_15307.add(stat);
+		this.pendingStats.add(stat);
 	}
 
-	private Set<Stat<?>> method_14909() {
-		Set<Stat<?>> set = Sets.<Stat<?>>newHashSet(this.field_15307);
-		this.field_15307.clear();
+	private Set<Stat<?>> takePendingStats() {
+		Set<Stat<?>> set = Sets.<Stat<?>>newHashSet(this.pendingStats);
+		this.pendingStats.clear();
 		return set;
 	}
 
@@ -102,7 +102,7 @@ public class ServerStatHandler extends StatHandler {
 										for (String string2x : compoundTag2x.getKeys()) {
 											if (compoundTag2x.containsKey(string2x, 99)) {
 												SystemUtil.ifPresentOrElse(
-													this.method_14905(statType, string2x),
+													this.createStat(statType, string2x),
 													stat -> this.statMap.put(stat, compoundTag2x.getInt(string2x)),
 													() -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string2x)
 												);
@@ -142,7 +142,7 @@ public class ServerStatHandler extends StatHandler {
 		}
 	}
 
-	private <T> Optional<Stat<T>> method_14905(StatType<T> statType, String string) {
+	private <T> Optional<Stat<T>> createStat(StatType<T> statType, String string) {
 		return Optional.ofNullable(Identifier.create(string)).flatMap(statType.getRegistry()::getOrEmpty).map(statType::getOrCreateStat);
 	}
 
@@ -169,7 +169,7 @@ public class ServerStatHandler extends StatHandler {
 
 		for (it.unimi.dsi.fastutil.objects.Object2IntMap.Entry<Stat<?>> entry : this.statMap.object2IntEntrySet()) {
 			Stat<?> stat = (Stat<?>)entry.getKey();
-			((JsonObject)map.computeIfAbsent(stat.getType(), statType -> new JsonObject())).addProperty(method_14907(stat).toString(), entry.getIntValue());
+			((JsonObject)map.computeIfAbsent(stat.getType(), statType -> new JsonObject())).addProperty(getStatId(stat).toString(), entry.getIntValue());
 		}
 
 		JsonObject jsonObject = new JsonObject();
@@ -184,21 +184,21 @@ public class ServerStatHandler extends StatHandler {
 		return jsonObject2.toString();
 	}
 
-	private static <T> Identifier method_14907(Stat<T> stat) {
+	private static <T> Identifier getStatId(Stat<T> stat) {
 		return stat.getType().getRegistry().getId(stat.getValue());
 	}
 
-	public void method_14914() {
-		this.field_15307.addAll(this.statMap.keySet());
+	public void updateStatSet() {
+		this.pendingStats.addAll(this.statMap.keySet());
 	}
 
-	public void method_14910(ServerPlayerEntity serverPlayerEntity) {
+	public void sendStats(ServerPlayerEntity serverPlayerEntity) {
 		int i = this.server.getTicks();
 		Object2IntMap<Stat<?>> object2IntMap = new Object2IntOpenHashMap<>();
-		if (i - this.field_15306 > 300) {
-			this.field_15306 = i;
+		if (i - this.lastStatsUpdate > 300) {
+			this.lastStatsUpdate = i;
 
-			for (Stat<?> stat : this.method_14909()) {
+			for (Stat<?> stat : this.takePendingStats()) {
 				object2IntMap.put(stat, this.getStat(stat));
 			}
 		}

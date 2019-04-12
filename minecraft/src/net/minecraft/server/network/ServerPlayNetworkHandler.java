@@ -58,7 +58,6 @@ import net.minecraft.item.WritableBookItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
-import net.minecraft.network.ButtonClickServerPacket;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
@@ -68,6 +67,7 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.packet.AdvancementTabC2SPacket;
 import net.minecraft.server.network.packet.BoatPaddleStateC2SPacket;
 import net.minecraft.server.network.packet.BookUpdateC2SPacket;
+import net.minecraft.server.network.packet.ButtonClickC2SPacket;
 import net.minecraft.server.network.packet.ChatMessageC2SPacket;
 import net.minecraft.server.network.packet.ClickWindowC2SPacket;
 import net.minecraft.server.network.packet.ClientCommandC2SPacket;
@@ -108,8 +108,7 @@ import net.minecraft.server.network.packet.UpdateSignC2SPacket;
 import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
 import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.ChatMessageType;
-import net.minecraft.sortme.CommandBlockExecutor;
+import net.minecraft.text.ChatMessageType;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
@@ -127,6 +126,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.dimension.DimensionType;
 import org.apache.commons.lang3.StringUtils;
@@ -264,7 +264,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	public void disconnect(TextComponent textComponent) {
-		this.client.sendPacket(new DisconnectS2CPacket(textComponent), future -> this.client.disconnect(textComponent));
+		this.client.send(new DisconnectS2CPacket(textComponent), future -> this.client.disconnect(textComponent));
 		this.client.disableAutoRead();
 		this.server.method_19537(this.client::handleDisconnection);
 	}
@@ -320,7 +320,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				double p = l * l + m * m + n * n;
 				if (p - o > 100.0 && !this.method_19507()) {
 					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
-					this.client.sendPacket(new VehicleMoveS2CPacket(entity));
+					this.client.send(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
@@ -347,7 +347,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				boolean bl3 = serverWorld.doesNotCollide(entity, entity.getBoundingBox().contract(0.0625));
 				if (bl && (bl2 || !bl3)) {
 					entity.setPositionAnglesAndUpdate(d, e, f, j, k);
-					this.client.sendPacket(new VehicleMoveS2CPacket(entity));
+					this.client.send(new VehicleMoveS2CPacket(entity));
 					return;
 				}
 
@@ -422,7 +422,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			.getCommandManager()
 			.getDispatcher()
 			.getCompletionSuggestions(parseResults)
-			.thenAccept(suggestions -> this.client.sendPacket(new CommandSuggestionsS2CPacket(requestCommandCompletionsC2SPacket.getCompletionId(), suggestions)));
+			.thenAccept(suggestions -> this.client.send(new CommandSuggestionsS2CPacket(requestCommandCompletionsC2SPacket.getCompletionId(), suggestions)));
 	}
 
 	@Override
@@ -491,7 +491,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 
 				commandBlockBlockEntity.setAuto(updateCommandBlockC2SPacket.isAlwaysActive());
-				commandBlockExecutor.method_8295();
+				commandBlockExecutor.markDirty();
 				if (!ChatUtil.isEmpty(string)) {
 					this.player.appendCommandFeedback(new TranslatableTextComponent("advMode.setCommand.success", string));
 				}
@@ -515,7 +515,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 					commandBlockExecutor.setLastOutput(null);
 				}
 
-				commandBlockExecutor.method_8295();
+				commandBlockExecutor.markDirty();
 				this.player.appendCommandFeedback(new TranslatableTextComponent("advMode.setCommand.success", updateCommandBlockMinecartC2SPacket.getCommand()));
 			}
 		}
@@ -866,7 +866,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 
 				return;
 			case field_12974:
-				this.player.method_6075();
+				this.player.stopUsingItem();
 				return;
 			case field_12968:
 			case field_12971:
@@ -1003,7 +1003,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		}
 
 		try {
-			this.client.sendPacket(packet, genericFutureListener);
+			this.client.send(packet, genericFutureListener);
 		} catch (Throwable var6) {
 			CrashReport crashReport = CrashReport.create(var6, "Sending packet");
 			CrashReportSection crashReportSection = crashReport.addElement("Packet being sent");
@@ -1180,7 +1180,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				}
 				break;
 			case field_12775:
-				this.player.getStatHandler().method_14910(this.player);
+				this.player.getStatHandler().sendStats(this.player);
 		}
 	}
 
@@ -1246,11 +1246,11 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	}
 
 	@Override
-	public void onButtonClick(ButtonClickServerPacket buttonClickServerPacket) {
-		NetworkThreadUtils.forceMainThread(buttonClickServerPacket, this, this.player.getServerWorld());
+	public void onButtonClick(ButtonClickC2SPacket buttonClickC2SPacket) {
+		NetworkThreadUtils.forceMainThread(buttonClickC2SPacket, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.container.syncId == buttonClickServerPacket.getSyncId() && this.player.container.isRestricted(this.player) && !this.player.isSpectator()) {
-			this.player.container.onButtonClick(this.player, buttonClickServerPacket.method_12186());
+		if (this.player.container.syncId == buttonClickC2SPacket.getSyncId() && this.player.container.isRestricted(this.player) && !this.player.isSpectator()) {
+			this.player.container.onButtonClick(this.player, buttonClickC2SPacket.getButtonId());
 			this.player.container.sendContentUpdates();
 		}
 	}

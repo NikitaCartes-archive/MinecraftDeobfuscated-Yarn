@@ -185,6 +185,19 @@ public class SimpleAdvancement {
 			return this;
 		}
 
+		public SimpleAdvancement.Task method_20416(
+			ItemStack itemStack,
+			TextComponent textComponent,
+			TextComponent textComponent2,
+			@Nullable Identifier identifier,
+			AdvancementFrame advancementFrame,
+			boolean bl,
+			boolean bl2,
+			boolean bl3
+		) {
+			return this.display(new AdvancementDisplay(itemStack, textComponent, textComponent2, identifier, advancementFrame, bl, bl2, bl3));
+		}
+
 		public SimpleAdvancement.Task display(
 			ItemProvider itemProvider,
 			TextComponent textComponent,

@@ -9,11 +9,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.Heightmap;
 
 public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfig> {
 	private static final List<BlockState> BLOCK_STATES = (List<BlockState>)StreamSupport.stream(Registry.BLOCK.spliterator(), false)
@@ -21,7 +21,7 @@ public class DebugChunkGenerator extends ChunkGenerator<DebugChunkGeneratorConfi
 		.collect(Collectors.toList());
 	private static final int X_SIDE_LENGTH = MathHelper.ceil(MathHelper.sqrt((float)BLOCK_STATES.size()));
 	private static final int Z_SIDE_LENGTH = MathHelper.ceil((float)BLOCK_STATES.size() / (float)X_SIDE_LENGTH);
-	protected static final BlockState AIR = Blocks.field_10124.getDefaultState();
+	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState BARRIER = Blocks.field_10499.getDefaultState();
 
 	public DebugChunkGenerator(IWorld iWorld, BiomeSource biomeSource, DebugChunkGeneratorConfig debugChunkGeneratorConfig) {

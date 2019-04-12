@@ -93,7 +93,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunkPos.x,
 			chunkPos.z,
 			ServerLightingProvider.class_3901.field_17261,
-			SystemUtil.method_18839(() -> super.suppressLight(chunkPos, bl), () -> "suppresLight " + chunkPos + " " + bl)
+			SystemUtil.method_18839(() -> super.suppressLight(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl)
 		);
 	}
 
@@ -124,7 +124,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		ChunkPos chunkPos = chunk.getPos();
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, SystemUtil.method_18839(() -> {
 			if (!bl) {
-				super.suppressLight(chunkPos, false);
+				super.suppressLight(chunkPos, true);
 			}
 
 			ChunkSection[] chunkSections = chunk.getSectionArray();

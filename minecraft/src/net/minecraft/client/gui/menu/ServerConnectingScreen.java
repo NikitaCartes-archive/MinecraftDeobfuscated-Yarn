@@ -74,8 +74,8 @@ public class ServerConnectingScreen extends Screen {
 								textComponent -> ServerConnectingScreen.this.setStatus(textComponent)
 							)
 						);
-					ServerConnectingScreen.this.connection.sendPacket(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
-					ServerConnectingScreen.this.connection.sendPacket(new LoginHelloC2SPacket(ServerConnectingScreen.this.minecraft.getSession().getProfile()));
+					ServerConnectingScreen.this.connection.send(new HandshakeC2SPacket(string, i, NetworkState.LOGIN));
+					ServerConnectingScreen.this.connection.send(new LoginHelloC2SPacket(ServerConnectingScreen.this.minecraft.getSession().getProfile()));
 				} catch (UnknownHostException var4) {
 					if (ServerConnectingScreen.this.field_2409) {
 						return;

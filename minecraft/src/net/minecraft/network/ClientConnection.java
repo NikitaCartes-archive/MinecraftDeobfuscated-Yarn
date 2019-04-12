@@ -64,7 +64,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		() -> new DefaultEventLoopGroup(0, new ThreadFactoryBuilder().setNameFormat("Netty Local Client IO #%d").setDaemon(true).build())
 	);
 	private final NetworkSide side;
-	private final Queue<ClientConnection.class_2536> field_11644 = Queues.<ClientConnection.class_2536>newConcurrentLinkedQueue();
+	private final Queue<ClientConnection.PacketWrapper> packetQueue = Queues.<ClientConnection.PacketWrapper>newConcurrentLinkedQueue();
 	private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 	private Channel channel;
 	private SocketAddress address;
@@ -90,7 +90,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.address = this.channel.remoteAddress();
 
 		try {
-			this.setState(NetworkState.HANDSHAKE);
+			this.setState(NetworkState.HANDSHAKING);
 		} catch (Throwable var3) {
 			LOGGER.fatal(var3);
 		}
@@ -122,7 +122,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 					TextComponent textComponent = new TranslatableTextComponent("disconnect.genericReason", "Internal Exception: " + throwable);
 					if (bl) {
 						LOGGER.debug("Failed to sent packet", throwable);
-						this.sendPacket(new DisconnectS2CPacket(textComponent), future -> this.disconnect(textComponent));
+						this.send(new DisconnectS2CPacket(textComponent), future -> this.disconnect(textComponent));
 						this.disableAutoRead();
 					} else {
 						LOGGER.debug("Double fault", throwable);
@@ -133,10 +133,10 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 	}
 
-	protected void method_10770(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
+	protected void handlePacket(ChannelHandlerContext channelHandlerContext, Packet<?> packet) throws Exception {
 		if (this.channel.isOpen()) {
 			try {
-				method_10759(packet, this.packetListener);
+				handlePacket(packet, this.packetListener);
 			} catch (OffThreadException var4) {
 			}
 
@@ -144,7 +144,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 	}
 
-	private static <T extends PacketListener> void method_10759(Packet<T> packet, PacketListener packetListener) {
+	private static <T extends PacketListener> void handlePacket(Packet<T> packet, PacketListener packetListener) {
 		packet.apply((T)packetListener);
 	}
 
@@ -154,26 +154,26 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		this.packetListener = packetListener;
 	}
 
-	public void sendPacket(Packet<?> packet) {
-		this.sendPacket(packet, null);
+	public void send(Packet<?> packet) {
+		this.send(packet, null);
 	}
 
-	public void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+	public void send(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
 		if (this.isOpen()) {
-			this.method_10751();
-			this.method_10764(packet, genericFutureListener);
+			this.sendQueuedPackets();
+			this.sendImmediately(packet, genericFutureListener);
 		} else {
 			this.lock.writeLock().lock();
 
 			try {
-				this.field_11644.add(new ClientConnection.class_2536(packet, genericFutureListener));
+				this.packetQueue.add(new ClientConnection.PacketWrapper(packet, genericFutureListener));
 			} finally {
 				this.lock.writeLock().unlock();
 			}
 		}
 	}
 
-	private void method_10764(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+	private void sendImmediately(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
 		NetworkState networkState = NetworkState.getPacketHandlerState(packet);
 		NetworkState networkState2 = this.channel.attr(ATTR_KEY_PROTOCOL).get();
 		this.packetsSentCounter++;
@@ -209,14 +209,14 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		}
 	}
 
-	private void method_10751() {
+	private void sendQueuedPackets() {
 		if (this.channel != null && this.channel.isOpen()) {
 			this.lock.readLock().lock();
 
 			try {
-				while (!this.field_11644.isEmpty()) {
-					ClientConnection.class_2536 lv = (ClientConnection.class_2536)this.field_11644.poll();
-					this.method_10764(lv.field_11661, lv.field_11662);
+				while (!this.packetQueue.isEmpty()) {
+					ClientConnection.PacketWrapper packetWrapper = (ClientConnection.PacketWrapper)this.packetQueue.poll();
+					this.sendImmediately(packetWrapper.packet, packetWrapper.listener);
 				}
 			} finally {
 				this.lock.readLock().unlock();
@@ -225,7 +225,7 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	}
 
 	public void tick() {
-		this.method_10751();
+		this.sendQueuedPackets();
 		if (this.packetListener instanceof ServerLoginNetworkHandler) {
 			((ServerLoginNetworkHandler)this.packetListener).method_18785();
 		}
@@ -348,13 +348,13 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	public void setMinCompressedSize(int i) {
 		if (i >= 0) {
 			if (this.channel.pipeline().get("decompress") instanceof PacketInflater) {
-				((PacketInflater)this.channel.pipeline().get("decompress")).setMinCompressedSize(i);
+				((PacketInflater)this.channel.pipeline().get("decompress")).setCompressionThreshold(i);
 			} else {
 				this.channel.pipeline().addBefore("decoder", "decompress", new PacketInflater(i));
 			}
 
 			if (this.channel.pipeline().get("compress") instanceof PacketDeflater) {
-				((PacketDeflater)this.channel.pipeline().get("compress")).setMinCompressedSize(i);
+				((PacketDeflater)this.channel.pipeline().get("compress")).setCompressionThreshold(i);
 			} else {
 				this.channel.pipeline().addBefore("encoder", "compress", new PacketDeflater(i));
 			}
@@ -394,14 +394,14 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 		return this.avgPacketsSent;
 	}
 
-	static class class_2536 {
-		private final Packet<?> field_11661;
+	static class PacketWrapper {
+		private final Packet<?> packet;
 		@Nullable
-		private final GenericFutureListener<? extends Future<? super Void>> field_11662;
+		private final GenericFutureListener<? extends Future<? super Void>> listener;
 
-		public class_2536(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
-			this.field_11661 = packet;
-			this.field_11662 = genericFutureListener;
+		public PacketWrapper(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> genericFutureListener) {
+			this.packet = packet;
+			this.listener = genericFutureListener;
 		}
 	}
 }

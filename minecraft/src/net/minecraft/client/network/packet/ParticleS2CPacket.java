@@ -18,16 +18,16 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	private float offsetX;
 	private float offsetY;
 	private float offsetZ;
-	private float field_12260;
-	private int particleCount;
+	private float speed;
+	private int count;
 	private boolean longDistance;
-	private ParticleParameters field_12259;
+	private ParticleParameters parameters;
 
 	public ParticleS2CPacket() {
 	}
 
 	public <T extends ParticleParameters> ParticleS2CPacket(T particleParameters, boolean bl, float f, float g, float h, float i, float j, float k, float l, int m) {
-		this.field_12259 = particleParameters;
+		this.parameters = particleParameters;
 		this.longDistance = bl;
 		this.x = f;
 		this.y = g;
@@ -35,8 +35,8 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.offsetX = i;
 		this.offsetY = j;
 		this.offsetZ = k;
-		this.field_12260 = l;
-		this.particleCount = m;
+		this.speed = l;
+		this.count = m;
 	}
 
 	@Override
@@ -53,18 +53,18 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.offsetX = packetByteBuf.readFloat();
 		this.offsetY = packetByteBuf.readFloat();
 		this.offsetZ = packetByteBuf.readFloat();
-		this.field_12260 = packetByteBuf.readFloat();
-		this.particleCount = packetByteBuf.readInt();
-		this.field_12259 = this.method_11542(packetByteBuf, (ParticleType<ParticleParameters>)particleType);
+		this.speed = packetByteBuf.readFloat();
+		this.count = packetByteBuf.readInt();
+		this.parameters = this.readParticleParameters(packetByteBuf, (ParticleType<ParticleParameters>)particleType);
 	}
 
-	private <T extends ParticleParameters> T method_11542(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
+	private <T extends ParticleParameters> T readParticleParameters(PacketByteBuf packetByteBuf, ParticleType<T> particleType) {
 		return particleType.getParametersFactory().read(particleType, packetByteBuf);
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleParameters>)this.field_12259.getType()));
+		packetByteBuf.writeInt(Registry.PARTICLE_TYPE.getRawId((ParticleType<? extends ParticleParameters>)this.parameters.getType()));
 		packetByteBuf.writeBoolean(this.longDistance);
 		packetByteBuf.writeFloat(this.x);
 		packetByteBuf.writeFloat(this.y);
@@ -72,9 +72,9 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeFloat(this.offsetX);
 		packetByteBuf.writeFloat(this.offsetY);
 		packetByteBuf.writeFloat(this.offsetZ);
-		packetByteBuf.writeFloat(this.field_12260);
-		packetByteBuf.writeInt(this.particleCount);
-		this.field_12259.write(packetByteBuf);
+		packetByteBuf.writeFloat(this.speed);
+		packetByteBuf.writeInt(this.count);
+		this.parameters.write(packetByteBuf);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -113,18 +113,18 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float method_11543() {
-		return this.field_12260;
+	public float getSpeed() {
+		return this.speed;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getParticleCount() {
-		return this.particleCount;
+	public int getCount() {
+		return this.count;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ParticleParameters method_11551() {
-		return this.field_12259;
+	public ParticleParameters getParameters() {
+		return this.parameters;
 	}
 
 	public void method_11553(ClientPlayPacketListener clientPlayPacketListener) {

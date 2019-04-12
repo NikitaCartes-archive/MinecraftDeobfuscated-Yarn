@@ -10,13 +10,13 @@ import net.minecraft.network.listener.ClientLoginPacketListener;
 import net.minecraft.util.PacketByteBuf;
 
 public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> {
-	private GameProfile field_13190;
+	private GameProfile profile;
 
 	public LoginSuccessS2CPacket() {
 	}
 
 	public LoginSuccessS2CPacket(GameProfile gameProfile) {
-		this.field_13190 = gameProfile;
+		this.profile = gameProfile;
 	}
 
 	@Override
@@ -24,14 +24,14 @@ public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> 
 		String string = packetByteBuf.readString(36);
 		String string2 = packetByteBuf.readString(16);
 		UUID uUID = UUID.fromString(string);
-		this.field_13190 = new GameProfile(uUID, string2);
+		this.profile = new GameProfile(uUID, string2);
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		UUID uUID = this.field_13190.getId();
+		UUID uUID = this.profile.getId();
 		packetByteBuf.writeString(uUID == null ? "" : uUID.toString());
-		packetByteBuf.writeString(this.field_13190.getName());
+		packetByteBuf.writeString(this.profile.getName());
 	}
 
 	public void method_12594(ClientLoginPacketListener clientLoginPacketListener) {
@@ -39,7 +39,7 @@ public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> 
 	}
 
 	@Environment(EnvType.CLIENT)
-	public GameProfile getPlayerProfile() {
-		return this.field_13190;
+	public GameProfile getProfile() {
+		return this.profile;
 	}
 }

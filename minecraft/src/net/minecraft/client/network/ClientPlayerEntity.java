@@ -60,7 +60,6 @@ import net.minecraft.server.network.packet.PlayerMoveServerMessage;
 import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.server.network.packet.UpdatePlayerAbilitiesC2SPacket;
 import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
-import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -75,6 +74,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.CommandBlockExecutor;
 import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
@@ -286,14 +286,14 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void closeGui() {
+	public void closeContainer() {
 		this.networkHandler.sendPacket(new GuiCloseC2SPacket(this.container.syncId));
-		this.method_3137();
+		this.closeScreen();
 	}
 
-	public void method_3137() {
+	public void closeScreen() {
 		this.inventory.setCursorStack(ItemStack.EMPTY);
-		super.closeGui();
+		super.closeContainer();
 		this.client.openScreen(null);
 	}
 
@@ -765,7 +765,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (this.inPortal) {
 			if (this.client.currentScreen != null && !this.client.currentScreen.isPauseScreen()) {
 				if (this.client.currentScreen instanceof ContainerScreen) {
-					this.closeGui();
+					this.closeContainer();
 				}
 
 				this.client.openScreen(null);
@@ -833,12 +833,12 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.method_3148((float)(this.x - d), (float)(this.z - e));
 	}
 
-	public boolean method_3149() {
+	public boolean getLastAutoJump() {
 		return this.lastAutoJump;
 	}
 
 	protected void method_3148(float f, float g) {
-		if (this.method_3149()) {
+		if (this.getLastAutoJump()) {
 			if (this.field_3934 <= 0 && this.onGround && !this.isSneaking() && !this.hasVehicle()) {
 				Vec2f vec2f = this.input.getMovementInput();
 				if (vec2f.x != 0.0F || vec2f.y != 0.0F) {

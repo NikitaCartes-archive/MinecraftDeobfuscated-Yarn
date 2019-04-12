@@ -80,16 +80,16 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final NumberRange.IntRange field_9629;
-		private final NumberRange.IntRange field_9630;
-		private final NumberRange.IntRange field_9631;
+		private final NumberRange.IntRange occupied;
+		private final NumberRange.IntRange full;
+		private final NumberRange.IntRange empty;
 		private final ItemPredicate[] items;
 
 		public Conditions(NumberRange.IntRange intRange, NumberRange.IntRange intRange2, NumberRange.IntRange intRange3, ItemPredicate[] itemPredicates) {
 			super(InventoryChangedCriterion.ID);
-			this.field_9629 = intRange;
-			this.field_9630 = intRange2;
-			this.field_9631 = intRange3;
+			this.occupied = intRange;
+			this.full = intRange2;
+			this.empty = intRange3;
 			this.items = itemPredicates;
 		}
 
@@ -112,11 +112,11 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			if (!this.field_9629.isDummy() || !this.field_9630.isDummy() || !this.field_9631.isDummy()) {
+			if (!this.occupied.isDummy() || !this.full.isDummy() || !this.empty.isDummy()) {
 				JsonObject jsonObject2 = new JsonObject();
-				jsonObject2.add("occupied", this.field_9629.serialize());
-				jsonObject2.add("full", this.field_9630.serialize());
-				jsonObject2.add("empty", this.field_9631.serialize());
+				jsonObject2.add("occupied", this.occupied.serialize());
+				jsonObject2.add("full", this.full.serialize());
+				jsonObject2.add("empty", this.empty.serialize());
 				jsonObject.add("slots", jsonObject2);
 			}
 
@@ -160,12 +160,12 @@ public class InventoryChangedCriterion implements Criterion<InventoryChangedCrit
 				}
 			}
 
-			if (!this.field_9630.test(i)) {
+			if (!this.full.test(i)) {
 				return false;
-			} else if (!this.field_9631.test(j)) {
+			} else if (!this.empty.test(j)) {
 				return false;
 			} else {
-				return !this.field_9629.test(k) ? false : list.isEmpty();
+				return !this.occupied.test(k) ? false : list.isEmpty();
 			}
 		}
 	}

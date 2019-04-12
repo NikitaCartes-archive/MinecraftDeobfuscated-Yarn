@@ -52,7 +52,7 @@ public class LecternScreen extends WrittenBookScreen implements ContainerProvide
 
 	@Override
 	public void onClose() {
-		this.minecraft.player.closeGui();
+		this.minecraft.player.closeContainer();
 		super.onClose();
 	}
 

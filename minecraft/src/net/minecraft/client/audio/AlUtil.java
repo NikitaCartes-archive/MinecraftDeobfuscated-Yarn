@@ -18,11 +18,11 @@ public class AlUtil {
 			case 40961:
 				return "Invalid name parameter.";
 			case 40962:
-				return "Invalid parameter.";
-			case 40963:
 				return "Invalid enumerated parameter value.";
+			case 40963:
+				return "Invalid parameter parameter value.";
 			case 40964:
-				return "Illegal call.";
+				return "Invalid operation.";
 			case 40965:
 				return "Unable to allocate memory.";
 			default:
@@ -40,7 +40,7 @@ public class AlUtil {
 		}
 	}
 
-	private static String method_20052(int i) {
+	private static String getAlcErrorMessage(int i) {
 		switch (i) {
 			case 40961:
 				return "Invalid device.";
@@ -57,10 +57,10 @@ public class AlUtil {
 		}
 	}
 
-	static boolean method_20051(long l, String string) {
+	static boolean checkAlcErrors(long l, String string) {
 		int i = ALC10.alcGetError(l);
 		if (i != 0) {
-			LOGGER.error("{}{}: {}", string, l, method_20052(i));
+			LOGGER.error("{}{}: {}", string, l, getAlcErrorMessage(i));
 			return true;
 		} else {
 			return false;

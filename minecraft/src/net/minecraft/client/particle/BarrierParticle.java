@@ -24,7 +24,7 @@ public class BarrierParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float method_18132(float f) {
+	public float getSize(float f) {
 		return 0.5F;
 	}
 

@@ -72,12 +72,12 @@ public class AnvilBlock extends FallingBlock {
 
 	@Override
 	public void onLanding(World world, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
-		world.method_20290(1031, blockPos, 0);
+		world.playLevelEvent(1031, blockPos, 0);
 	}
 
 	@Override
 	public void onDestroyedOnLanding(World world, BlockPos blockPos) {
-		world.method_20290(1029, blockPos, 0);
+		world.playLevelEvent(1029, blockPos, 0);
 	}
 
 	@Nullable

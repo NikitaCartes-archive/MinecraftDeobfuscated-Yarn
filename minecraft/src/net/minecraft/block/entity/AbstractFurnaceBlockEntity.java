@@ -435,19 +435,16 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	public void dropExperience(PlayerEntity playerEntity) {
-		if (!this.world.getGameRules().getBoolean("doLimitedCrafting")) {
-			List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
+		List<Recipe<?>> list = Lists.<Recipe<?>>newArrayList();
 
-			for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
-				playerEntity.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
-					list.add(recipe);
-					dropExperience(playerEntity, (Integer)entry.getValue(), ((CookingRecipe)recipe).getExperience());
-				});
-			}
-
-			playerEntity.unlockRecipes(list);
+		for (Entry<Identifier, Integer> entry : this.recipesUsed.entrySet()) {
+			playerEntity.world.getRecipeManager().get((Identifier)entry.getKey()).ifPresent(recipe -> {
+				list.add(recipe);
+				dropExperience(playerEntity, (Integer)entry.getValue(), ((CookingRecipe)recipe).getExperience());
+			});
 		}
 
+		playerEntity.unlockRecipes(list);
 		this.recipesUsed.clear();
 	}
 

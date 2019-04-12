@@ -6,14 +6,15 @@ import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map.Entry;
 import javax.annotation.Nullable;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.entity.EntityCategory;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -22,7 +23,6 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
@@ -190,6 +190,10 @@ public abstract class ChunkGenerator<C extends ChunkGeneratorConfig> {
 	}
 
 	public abstract int getHeightOnGround(int i, int j, Heightmap.Type type);
+
+	public int method_20402(int i, int j, Heightmap.Type type) {
+		return this.getHeightOnGround(i, j, type);
+	}
 
 	public int getHeightInGround(int i, int j, Heightmap.Type type) {
 		return this.getHeightOnGround(i, j, type) - 1;

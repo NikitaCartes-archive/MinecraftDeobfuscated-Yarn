@@ -19,9 +19,9 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class SimpleStructurePiece extends StructurePiece {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public Structure structure;
-	public StructurePlacementData placementData;
-	public BlockPos pos;
+	protected Structure structure;
+	protected StructurePlacementData placementData;
+	protected BlockPos pos;
 
 	public SimpleStructurePiece(StructurePieceType structurePieceType, int i) {
 		super(structurePieceType, i);
@@ -64,7 +64,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 				if (structureBlockInfo2.tag != null) {
 					String string = structureBlockInfo2.tag.getString("final_state");
 					BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), false);
-					BlockState blockState = Blocks.field_10124.getDefaultState();
+					BlockState blockState = Blocks.AIR.getDefaultState();
 
 					try {
 						blockArgumentParser.parse(true);

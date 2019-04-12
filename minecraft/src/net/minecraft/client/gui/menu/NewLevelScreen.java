@@ -11,8 +11,8 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sortme.WorldNameProvider;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.FileNameUtil;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelInfo;
@@ -47,7 +47,7 @@ public class NewLevelScreen extends Screen {
 	private String seed;
 	private String levelName;
 	private int generatorType;
-	public CompoundTag field_18979 = new CompoundTag();
+	public CompoundTag generatorOptionsTag = new CompoundTag();
 
 	public NewLevelScreen(Screen screen) {
 		super(new TranslatableTextComponent("selectWorld.create"));
@@ -134,18 +134,18 @@ public class NewLevelScreen extends Screen {
 				}
 			}
 
-			this.field_18979 = new CompoundTag();
+			this.generatorOptionsTag = new CompoundTag();
 			this.method_2722();
 			this.method_2710(this.field_3202);
 		}));
 		this.buttonMapTypeSwitch.visible = false;
 		this.buttonCustomizeType = this.addButton(new ButtonWidget(this.width / 2 + 5, 120, 150, 20, I18n.translate("selectWorld.customizeType"), buttonWidget -> {
 			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.FLAT) {
-				this.minecraft.openScreen(new CustomizeFlatLevelScreen(this, this.field_18979));
+				this.minecraft.openScreen(new CustomizeFlatLevelScreen(this, this.generatorOptionsTag));
 			}
 
 			if (LevelGeneratorType.TYPES[this.generatorType] == LevelGeneratorType.BUFFET) {
-				this.minecraft.openScreen(new CustomizeBuffetLevelScreen(this, this.field_18979));
+				this.minecraft.openScreen(new CustomizeBuffetLevelScreen(this, this.generatorOptionsTag));
 			}
 		}));
 		this.buttonCustomizeType.visible = false;
@@ -184,12 +184,12 @@ public class NewLevelScreen extends Screen {
 		}
 
 		try {
-			this.field_3196 = WorldNameProvider.transformWorldName(this.minecraft.getLevelStorage().method_19636(), this.field_3196, "");
+			this.field_3196 = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().method_19636(), this.field_3196, "");
 		} catch (Exception var4) {
 			this.field_3196 = "World";
 
 			try {
-				this.field_3196 = WorldNameProvider.transformWorldName(this.minecraft.getLevelStorage().method_19636(), this.field_3196, "");
+				this.field_3196 = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().method_19636(), this.field_3196, "");
 			} catch (Exception var3) {
 				throw new RuntimeException("Could not create save folder", var3);
 			}
@@ -232,7 +232,7 @@ public class NewLevelScreen extends Screen {
 			}
 
 			LevelInfo levelInfo = new LevelInfo(l, GameMode.byName(this.gameMode), this.structures, this.field_3178, LevelGeneratorType.TYPES[this.generatorType]);
-			levelInfo.setGeneratorOptions(Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, this.field_18979));
+			levelInfo.setGeneratorOptions(Dynamic.convert(NbtOps.INSTANCE, JsonOps.INSTANCE, this.generatorOptionsTag));
 			if (this.enableBonusItems && !this.field_3178) {
 				levelInfo.setBonusChest();
 			}
@@ -354,7 +354,7 @@ public class NewLevelScreen extends Screen {
 			? LevelGeneratorType.DEFAULT
 			: levelProperties.getGeneratorType();
 		this.generatorType = levelGeneratorType.getId();
-		this.field_18979 = levelProperties.getGeneratorOptions();
+		this.generatorOptionsTag = levelProperties.getGeneratorOptions();
 		this.structures = levelProperties.hasStructures();
 		this.commandsAllowed = levelProperties.areCommandsAllowed();
 		if (levelProperties.isHardcore()) {

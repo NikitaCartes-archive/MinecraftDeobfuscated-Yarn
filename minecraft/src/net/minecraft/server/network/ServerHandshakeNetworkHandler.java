@@ -26,18 +26,18 @@ public class ServerHandshakeNetworkHandler implements ServerHandshakePacketListe
 				this.client.setState(NetworkState.LOGIN);
 				if (handshakeC2SPacket.getProtocolVersion() > SharedConstants.getGameVersion().getProtocolVersion()) {
 					TextComponent textComponent = new TranslatableTextComponent("multiplayer.disconnect.outdated_server", SharedConstants.getGameVersion().getName());
-					this.client.sendPacket(new LoginDisconnectS2CPacket(textComponent));
+					this.client.send(new LoginDisconnectS2CPacket(textComponent));
 					this.client.disconnect(textComponent);
 				} else if (handshakeC2SPacket.getProtocolVersion() < SharedConstants.getGameVersion().getProtocolVersion()) {
 					TextComponent textComponent = new TranslatableTextComponent("multiplayer.disconnect.outdated_client", SharedConstants.getGameVersion().getName());
-					this.client.sendPacket(new LoginDisconnectS2CPacket(textComponent));
+					this.client.send(new LoginDisconnectS2CPacket(textComponent));
 					this.client.disconnect(textComponent);
 				} else {
 					this.client.setPacketListener(new ServerLoginNetworkHandler(this.server, this.client));
 				}
 				break;
-			case QUERY:
-				this.client.setState(NetworkState.QUERY);
+			case STATUS:
+				this.client.setState(NetworkState.STATUS);
 				this.client.setPacketListener(new ServerQueryNetworkHandler(this.server, this.client));
 				break;
 			default:

@@ -2,21 +2,6 @@ package net.minecraft.structure;
 
 import java.util.Locale;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.structure.generator.BuriedTreasureGenerator;
-import net.minecraft.structure.generator.DesertTempleGenerator;
-import net.minecraft.structure.generator.EndCityGenerator;
-import net.minecraft.structure.generator.IglooGenerator;
-import net.minecraft.structure.generator.JungleTempleGenerator;
-import net.minecraft.structure.generator.MineshaftGenerator;
-import net.minecraft.structure.generator.NetherFortressGenerator;
-import net.minecraft.structure.generator.OceanMonumentGenerator;
-import net.minecraft.structure.generator.OceanTempleGenerator;
-import net.minecraft.structure.generator.PillagerOutpostGenerator;
-import net.minecraft.structure.generator.ShipwreckGenerator;
-import net.minecraft.structure.generator.StrongholdGenerator;
-import net.minecraft.structure.generator.SwampHutGenerator;
-import net.minecraft.structure.generator.WoodlandMansionGenerator;
-import net.minecraft.structure.generator.village.VillageGenerator;
 import net.minecraft.util.registry.Registry;
 
 public interface StructurePieceType {

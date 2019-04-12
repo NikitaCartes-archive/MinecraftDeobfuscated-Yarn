@@ -6,6 +6,7 @@ import net.minecraft.container.LoomContainer;
 import net.minecraft.container.NameableContainerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.stat.Stats;
 import net.minecraft.state.StateFactory;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Hand;
@@ -26,6 +27,7 @@ public class LoomBlock extends HorizontalFacingBlock {
 			return true;
 		} else {
 			playerEntity.openContainer(blockState.createContainerProvider(world, blockPos));
+			playerEntity.incrementStat(Stats.field_19253);
 			return true;
 		}
 	}

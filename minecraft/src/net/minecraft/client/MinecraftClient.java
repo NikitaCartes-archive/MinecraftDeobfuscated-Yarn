@@ -111,8 +111,8 @@ import net.minecraft.client.search.IdentifierSearchableContainer;
 import net.minecraft.client.search.SearchManager;
 import net.minecraft.client.search.SearchableContainer;
 import net.minecraft.client.search.TextSearchableContainer;
-import net.minecraft.client.sortme.PlayerSkinProvider;
 import net.minecraft.client.texture.PaintingManager;
+import net.minecraft.client.texture.PlayerSkinProvider;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
@@ -138,8 +138,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.SkullItem;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.item.block.SkullItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -754,7 +754,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			this.skipGameRender = false;
 			NarratorManager.INSTANCE.method_19788(screen.getNarrationMessage());
 		} else {
-			this.soundManager.playAll();
+			this.soundManager.resumeAll();
 			this.mouse.lockCursor();
 		}
 	}
@@ -1529,12 +1529,12 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			}
 		}
 
-		SocketAddress socketAddress = this.server.getNetworkIO().method_14353();
+		SocketAddress socketAddress = this.server.getNetworkIo().method_14353();
 		ClientConnection clientConnection = ClientConnection.connect(socketAddress);
 		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, textComponent -> {
 		}));
-		clientConnection.sendPacket(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
-		clientConnection.sendPacket(new LoginHelloC2SPacket(this.getSession().getProfile()));
+		clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
+		clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
 		this.clientConnection = clientConnection;
 	}
 
@@ -1731,7 +1731,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 				int i = playerInventory.getSlotWithStack(itemStack);
 				if (bl) {
 					playerInventory.addPickBlock(itemStack);
-					this.interactionManager.method_2909(this.player.getStackInHand(Hand.MAIN), 36 + playerInventory.selectedSlot);
+					this.interactionManager.clickCreativeStack(this.player.getStackInHand(Hand.MAIN), 36 + playerInventory.selectedSlot);
 				} else if (i != -1) {
 					if (PlayerInventory.isValidHotbarIndex(i)) {
 						playerInventory.selectedSlot = i;

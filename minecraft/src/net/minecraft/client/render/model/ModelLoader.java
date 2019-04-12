@@ -52,11 +52,11 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ModelLoader {
-	public static final Identifier field_5397 = new Identifier("block/fire_0");
-	public static final Identifier field_5370 = new Identifier("block/fire_1");
-	public static final Identifier field_5381 = new Identifier("block/lava_flow");
-	public static final Identifier field_5391 = new Identifier("block/water_flow");
-	public static final Identifier field_5388 = new Identifier("block/water_overlay");
+	public static final Identifier FIRE_0 = new Identifier("block/fire_0");
+	public static final Identifier FIRE_1 = new Identifier("block/fire_1");
+	public static final Identifier LAVA_FLOW = new Identifier("block/lava_flow");
+	public static final Identifier WATER_FLOW = new Identifier("block/water_flow");
+	public static final Identifier WATER_OVERLAY = new Identifier("block/water_overlay");
 	public static final Identifier DESTROY_STAGE_0 = new Identifier("block/destroy_stage_0");
 	public static final Identifier DESTROY_STAGE_1 = new Identifier("block/destroy_stage_1");
 	public static final Identifier DESTROY_STAGE_2 = new Identifier("block/destroy_stage_2");
@@ -68,11 +68,11 @@ public class ModelLoader {
 	public static final Identifier DESTROY_STAGE_8 = new Identifier("block/destroy_stage_8");
 	public static final Identifier DESTROY_STAGE_9 = new Identifier("block/destroy_stage_9");
 	private static final Set<Identifier> DEFAULT_TEXTURES = Sets.<Identifier>newHashSet(
-		field_5391,
-		field_5381,
-		field_5388,
-		field_5397,
-		field_5370,
+		WATER_FLOW,
+		LAVA_FLOW,
+		WATER_OVERLAY,
+		FIRE_0,
+		FIRE_1,
 		DESTROY_STAGE_0,
 		DESTROY_STAGE_1,
 		DESTROY_STAGE_2,
@@ -107,11 +107,11 @@ public class ModelLoader {
 	public static final JsonUnbakedModel BLOCK_ENTITY_MARKER = SystemUtil.consume(
 		JsonUnbakedModel.deserialize("{}"), jsonUnbakedModel -> jsonUnbakedModel.id = "block entity marker"
 	);
-	private static final StateFactory<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateFactory.Builder<Block, BlockState>(Blocks.field_10124)
+	private static final StateFactory<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateFactory.Builder<Block, BlockState>(Blocks.AIR)
 		.with(BooleanProperty.create("map"))
 		.build(BlockState::new);
 	private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
-	private static final Map<Identifier, StateFactory<Block, BlockState>> BLOCK_STATE_FACTORY_OVERRIDES = ImmutableMap.of(
+	private static final Map<Identifier, StateFactory<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(
 		new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY
 	);
 	private final ResourceManager resourceManager;
@@ -119,10 +119,10 @@ public class ModelLoader {
 	private final Set<Identifier> modelsToLoad = Sets.<Identifier>newHashSet();
 	private final ModelVariantMap.DeserializationContext variantMapDeserializationContext = new ModelVariantMap.DeserializationContext();
 	private final Map<Identifier, UnbakedModel> unbakedModels = Maps.<Identifier, UnbakedModel>newHashMap();
-	private final Map<Triple<Identifier, ModelRotation, Boolean>, BakedModel> modelRotationCache = Maps.<Triple<Identifier, ModelRotation, Boolean>, BakedModel>newHashMap();
+	private final Map<Triple<Identifier, ModelRotation, Boolean>, BakedModel> bakedModelCache = Maps.<Triple<Identifier, ModelRotation, Boolean>, BakedModel>newHashMap();
 	private final Map<Identifier, UnbakedModel> modelsToBake = Maps.<Identifier, UnbakedModel>newHashMap();
 	private final Map<Identifier, BakedModel> bakedModels = Maps.<Identifier, BakedModel>newHashMap();
-	private final SpriteAtlasTexture.Data field_17907;
+	private final SpriteAtlasTexture.Data spriteAtlasData;
 
 	public ModelLoader(ResourceManager resourceManager, SpriteAtlasTexture spriteAtlasTexture, Profiler profiler) {
 		this.resourceManager = resourceManager;
@@ -138,7 +138,7 @@ public class ModelLoader {
 		}
 
 		profiler.swap("static_definitions");
-		BLOCK_STATE_FACTORY_OVERRIDES.forEach(
+		STATIC_DEFINITIONS.forEach(
 			(identifier, stateFactory) -> stateFactory.getStates().forEach(blockState -> this.addModel(BlockModels.getModelId(identifier, blockState)))
 		);
 		profiler.swap("blocks");
@@ -165,13 +165,13 @@ public class ModelLoader {
 		set2.addAll(DEFAULT_TEXTURES);
 		set.forEach(string -> LOGGER.warn("Unable to resolve texture reference: {}", string));
 		profiler.swap("stitching");
-		this.field_17907 = this.spriteAtlas.stitch(this.resourceManager, set2, profiler);
+		this.spriteAtlasData = this.spriteAtlas.stitch(this.resourceManager, set2, profiler);
 		profiler.pop();
 	}
 
-	public void method_18177(Profiler profiler) {
+	public void upload(Profiler profiler) {
 		profiler.push("atlas");
-		this.spriteAtlas.upload(this.field_17907);
+		this.spriteAtlas.upload(this.spriteAtlasData);
 		profiler.swap("baking");
 		this.modelsToBake.keySet().forEach(identifier -> {
 			BakedModel bakedModel = null;
@@ -275,7 +275,7 @@ public class ModelLoader {
 				this.unbakedModels.put(identifier2, jsonUnbakedModel);
 			} else {
 				Identifier identifier2 = new Identifier(identifier.getNamespace(), identifier.getPath());
-				StateFactory<Block, BlockState> stateFactory = (StateFactory<Block, BlockState>)Optional.ofNullable(BLOCK_STATE_FACTORY_OVERRIDES.get(identifier2))
+				StateFactory<Block, BlockState> stateFactory = (StateFactory<Block, BlockState>)Optional.ofNullable(STATIC_DEFINITIONS.get(identifier2))
 					.orElseGet(() -> Registry.BLOCK.get(identifier2).getStateFactory());
 				this.variantMapDeserializationContext.setStateFactory(stateFactory);
 				ImmutableList<BlockState> immutableList = stateFactory.getStates();
@@ -420,22 +420,22 @@ public class ModelLoader {
 	}
 
 	@Nullable
-	public BakedModel bake(Identifier identifier, ModelRotationContainer modelRotationContainer) {
-		Triple<Identifier, ModelRotation, Boolean> triple = Triple.of(identifier, modelRotationContainer.getRotation(), modelRotationContainer.isUvLocked());
-		if (this.modelRotationCache.containsKey(triple)) {
-			return (BakedModel)this.modelRotationCache.get(triple);
+	public BakedModel bake(Identifier identifier, ModelBakeSettings modelBakeSettings) {
+		Triple<Identifier, ModelRotation, Boolean> triple = Triple.of(identifier, modelBakeSettings.getRotation(), modelBakeSettings.isUvLocked());
+		if (this.bakedModelCache.containsKey(triple)) {
+			return (BakedModel)this.bakedModelCache.get(triple);
 		} else {
 			UnbakedModel unbakedModel = this.getOrLoadModel(identifier);
 			if (unbakedModel instanceof JsonUnbakedModel) {
 				JsonUnbakedModel jsonUnbakedModel = (JsonUnbakedModel)unbakedModel;
 				if (jsonUnbakedModel.getRootModel() == GENERATION_MARKER) {
 					return ITEM_MODEL_GENERATOR.create(this.spriteAtlas::getSprite, jsonUnbakedModel)
-						.bake(this, jsonUnbakedModel, this.spriteAtlas::getSprite, modelRotationContainer);
+						.bake(this, jsonUnbakedModel, this.spriteAtlas::getSprite, modelBakeSettings);
 				}
 			}
 
-			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlas::getSprite, modelRotationContainer);
-			this.modelRotationCache.put(triple, bakedModel);
+			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlas::getSprite, modelBakeSettings);
+			this.bakedModelCache.put(triple, bakedModel);
 			return bakedModel;
 		}
 	}

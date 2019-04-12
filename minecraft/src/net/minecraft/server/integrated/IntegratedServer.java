@@ -225,7 +225,7 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public boolean openToLan(GameMode gameMode, boolean bl, int i) {
 		try {
-			this.getNetworkIO().bind(null, i);
+			this.getNetworkIo().bind(null, i);
 			LOGGER.info("Started serving on {}", i);
 			this.lanPort = i;
 			this.lanPinger = new LanServerPinger(this.getServerMotd(), i + "");

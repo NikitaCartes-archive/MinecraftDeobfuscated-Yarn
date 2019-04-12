@@ -3,7 +3,7 @@ package net.minecraft.world.gen.decorator;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.datafixers.Dynamic;
 import com.mojang.datafixers.types.DynamicOps;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.Heightmap;
 
 public class TopSolidHeightmapNoiseBiasedDecoratorConfig implements DecoratorConfig {
 	public final int noiseToCountRatio;

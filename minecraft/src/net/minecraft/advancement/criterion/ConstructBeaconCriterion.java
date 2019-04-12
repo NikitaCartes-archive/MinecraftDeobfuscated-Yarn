@@ -68,25 +68,25 @@ public class ConstructBeaconCriterion implements Criterion<ConstructBeaconCriter
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
-		private final NumberRange.IntRange field_9508;
+		private final NumberRange.IntRange level;
 
 		public Conditions(NumberRange.IntRange intRange) {
 			super(ConstructBeaconCriterion.ID);
-			this.field_9508 = intRange;
+			this.level = intRange;
 		}
 
-		public static ConstructBeaconCriterion.Conditions method_8818(NumberRange.IntRange intRange) {
+		public static ConstructBeaconCriterion.Conditions level(NumberRange.IntRange intRange) {
 			return new ConstructBeaconCriterion.Conditions(intRange);
 		}
 
 		public boolean matches(BeaconBlockEntity beaconBlockEntity) {
-			return this.field_9508.test(beaconBlockEntity.getLevel());
+			return this.level.test(beaconBlockEntity.getLevel());
 		}
 
 		@Override
 		public JsonElement toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.add("level", this.field_9508.serialize());
+			jsonObject.add("level", this.level.serialize());
 			return jsonObject;
 		}
 	}

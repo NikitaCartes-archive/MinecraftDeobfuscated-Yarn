@@ -59,7 +59,6 @@ import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.Dimension;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
 import net.minecraft.world.level.LevelProperties;
@@ -246,7 +245,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 			return false;
 		} else {
 			FluidState fluidState = this.getFluidState(blockPos);
-			this.method_20290(2001, blockPos, Block.getRawIdFromState(blockState));
+			this.playLevelEvent(2001, blockPos, Block.getRawIdFromState(blockState));
 			if (bl) {
 				BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? this.getBlockEntity(blockPos) : null;
 				Block.dropStacks(blockState, this, blockPos, blockEntity);
@@ -529,6 +528,10 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	}
 
 	public boolean addBlockEntity(BlockEntity blockEntity) {
+		if (this.iteratingTickingBlockEntities) {
+			LOGGER.error("Adding block entity while ticking: {} @ {}", () -> Registry.BLOCK_ENTITY.getId(blockEntity.getType()), blockEntity::getPos);
+		}
+
 		boolean bl = this.blockEntities.add(blockEntity);
 		if (bl && blockEntity instanceof Tickable) {
 			this.tickingBlockEntities.add(blockEntity);

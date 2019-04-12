@@ -76,7 +76,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 				String string3 = textComponent.getStyle().getFormatString();
 				if (!string3.equals(string)) {
 					if (!string.isEmpty()) {
-						stringBuilder.append(TextFormat.color);
+						stringBuilder.append(TextFormat.RESET);
 					}
 
 					stringBuilder.append(string3);
@@ -88,13 +88,13 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 		}
 
 		if (!string.isEmpty()) {
-			stringBuilder.append(TextFormat.color);
+			stringBuilder.append(TextFormat.RESET);
 		}
 
 		return stringBuilder.toString();
 	}
 
-	List<TextComponent> getChildren();
+	List<TextComponent> getSiblings();
 
 	Stream<TextComponent> stream();
 
@@ -112,7 +112,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 		TextComponent textComponent = this.copyShallow();
 		textComponent.setStyle(this.getStyle().clone());
 
-		for (TextComponent textComponent2 : this.getChildren()) {
+		for (TextComponent textComponent2 : this.getSiblings()) {
 			textComponent.append(textComponent2.copy());
 		}
 
@@ -232,7 +232,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 							objects[i] = this.method_10871(jsonArray.get(i), type, jsonDeserializationContext);
 							if (objects[i] instanceof StringTextComponent) {
 								StringTextComponent stringTextComponent = (StringTextComponent)objects[i];
-								if (stringTextComponent.getStyle().isEmpty() && stringTextComponent.getChildren().isEmpty()) {
+								if (stringTextComponent.getStyle().isEmpty() && stringTextComponent.getSiblings().isEmpty()) {
 									objects[i] = stringTextComponent.getTextField();
 								}
 							}
@@ -290,7 +290,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 			}
 		}
 
-		private void method_10875(Style style, JsonObject jsonObject, JsonSerializationContext jsonSerializationContext) {
+		private void addStyle(Style style, JsonObject jsonObject, JsonSerializationContext jsonSerializationContext) {
 			JsonElement jsonElement = jsonSerializationContext.serialize(style);
 			if (jsonElement.isJsonObject()) {
 				JsonObject jsonObject2 = (JsonObject)jsonElement;
@@ -304,13 +304,13 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 		public JsonElement method_10874(TextComponent textComponent, Type type, JsonSerializationContext jsonSerializationContext) {
 			JsonObject jsonObject = new JsonObject();
 			if (!textComponent.getStyle().isEmpty()) {
-				this.method_10875(textComponent.getStyle(), jsonObject, jsonSerializationContext);
+				this.addStyle(textComponent.getStyle(), jsonObject, jsonSerializationContext);
 			}
 
-			if (!textComponent.getChildren().isEmpty()) {
+			if (!textComponent.getSiblings().isEmpty()) {
 				JsonArray jsonArray = new JsonArray();
 
-				for (TextComponent textComponent2 : textComponent.getChildren()) {
+				for (TextComponent textComponent2 : textComponent.getSiblings()) {
 					jsonArray.add(this.method_10874(textComponent2, textComponent2.getClass(), jsonSerializationContext));
 				}
 

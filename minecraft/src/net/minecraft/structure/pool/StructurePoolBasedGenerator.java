@@ -10,6 +10,7 @@ import net.minecraft.block.JigsawBlock;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.Structure;
+import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.util.BooleanBiFunction;
@@ -21,9 +22,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.feature.StructureFeatures;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -113,7 +113,7 @@ public class StructurePoolBasedGenerator {
 			MutableIntBoundingBox mutableIntBoundingBox = poolStructurePiece.getBoundingBox();
 			int j = (mutableIntBoundingBox.maxX + mutableIntBoundingBox.minX) / 2;
 			int k = (mutableIntBoundingBox.maxZ + mutableIntBoundingBox.minZ) / 2;
-			int l = chunkGenerator.getHeightInGround(j, k, Heightmap.Type.WORLD_SURFACE_WG);
+			int l = chunkGenerator.method_20402(j, k, Heightmap.Type.WORLD_SURFACE_WG);
 			poolStructurePiece.translate(0, l - (mutableIntBoundingBox.minY + poolStructurePiece.getGroundLevelDelta()), 0);
 			list.add(poolStructurePiece);
 			if (i > 0) {
@@ -222,10 +222,10 @@ public class StructurePoolBasedGenerator {
 										s = k + r;
 									} else {
 										if (m == -1) {
-											m = this.field_18702.getHeightInGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
+											m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
 										}
 
-										s = m + r;
+										s = m - q;
 									}
 
 									int t = s - p;
@@ -259,7 +259,7 @@ public class StructurePoolBasedGenerator {
 											w = s + q;
 										} else {
 											if (m == -1) {
-												m = this.field_18702.getHeightInGround(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
+												m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
 											}
 
 											w = m + r / 2;

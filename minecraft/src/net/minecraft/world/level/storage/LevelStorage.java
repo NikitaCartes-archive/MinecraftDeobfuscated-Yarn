@@ -29,8 +29,8 @@ import net.minecraft.datafixers.DataFixTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.sortme.WorldNameProvider;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.TagHelper;
 import net.minecraft.world.WorldSaveHandler;
@@ -276,7 +276,7 @@ public class LevelStorage {
 			throw new RuntimeException(var18);
 		}
 
-		Path path3 = path2.resolve(WorldNameProvider.transformWorldName(path2, string2, ".zip"));
+		Path path3 = path2.resolve(FileNameUtil.getNextUniqueName(path2, string2, ".zip"));
 		final ZipOutputStream zipOutputStream = new ZipOutputStream(new BufferedOutputStream(Files.newOutputStream(path3)));
 		Throwable var7 = null;
 

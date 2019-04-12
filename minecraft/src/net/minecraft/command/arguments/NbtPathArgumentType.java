@@ -20,14 +20,14 @@ import java.util.function.Supplier;
 import net.minecraft.nbt.AbstractListTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.sortme.JsonLikeTagParser;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.NbtPath> {
+public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.class_2209> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar", "foo[0]", "[0]", "[]", "{foo=bar}");
 	public static final SimpleCommandExceptionType INVALID_NBT_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableTextComponent("arguments.nbtpath.node.invalid")
@@ -40,18 +40,18 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		return new NbtPathArgumentType();
 	}
 
-	public static NbtPathArgumentType.NbtPath method_9358(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, NbtPathArgumentType.NbtPath.class);
+	public static NbtPathArgumentType.class_2209 getNbtPath(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, NbtPathArgumentType.class_2209.class);
 	}
 
-	public NbtPathArgumentType.NbtPath method_9362(StringReader stringReader) throws CommandSyntaxException {
+	public NbtPathArgumentType.class_2209 method_9362(StringReader stringReader) throws CommandSyntaxException {
 		List<NbtPathArgumentType.NbtPathNode> list = Lists.<NbtPathArgumentType.NbtPathNode>newArrayList();
 		int i = stringReader.getCursor();
 		Object2IntMap<NbtPathArgumentType.NbtPathNode> object2IntMap = new Object2IntOpenHashMap<>();
 		boolean bl = true;
 
 		while (stringReader.canRead() && stringReader.peek() != ' ') {
-			NbtPathArgumentType.NbtPathNode nbtPathNode = method_9361(stringReader, bl);
+			NbtPathArgumentType.NbtPathNode nbtPathNode = parseNode(stringReader, bl);
 			list.add(nbtPathNode);
 			object2IntMap.put(nbtPathNode, stringReader.getCursor() - i);
 			bl = false;
@@ -63,14 +63,14 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 			}
 		}
 
-		return new NbtPathArgumentType.NbtPath(
+		return new NbtPathArgumentType.class_2209(
 			stringReader.getString().substring(i, stringReader.getCursor()),
 			(NbtPathArgumentType.NbtPathNode[])list.toArray(new NbtPathArgumentType.NbtPathNode[0]),
 			object2IntMap
 		);
 	}
 
-	private static NbtPathArgumentType.NbtPathNode method_9361(StringReader stringReader, boolean bl) throws CommandSyntaxException {
+	private static NbtPathArgumentType.NbtPathNode parseNode(StringReader stringReader, boolean bl) throws CommandSyntaxException {
 		switch (stringReader.peek()) {
 			case '"': {
 				String string = stringReader.readString();
@@ -80,7 +80,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 				stringReader.skip();
 				int i = stringReader.peek();
 				if (i == 123) {
-					CompoundTag compoundTag2 = new JsonLikeTagParser(stringReader).parseCompoundTag();
+					CompoundTag compoundTag2 = new StringNbtReader(stringReader).parseCompoundTag();
 					stringReader.expect(']');
 					return new NbtPathArgumentType.class_2207(compoundTag2);
 				} else {
@@ -98,7 +98,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 					throw INVALID_NBT_PATH_NODE_EXCEPTION.createWithContext(stringReader);
 				}
 
-				CompoundTag compoundTag = new JsonLikeTagParser(stringReader).parseCompoundTag();
+				CompoundTag compoundTag = new StringNbtReader(stringReader).parseCompoundTag();
 				return new NbtPathArgumentType.class_3707(compoundTag);
 			default: {
 				String string = method_9357(stringReader);
@@ -109,7 +109,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 	private static NbtPathArgumentType.NbtPathNode method_9352(StringReader stringReader, String string) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '{') {
-			CompoundTag compoundTag = new JsonLikeTagParser(stringReader).parseCompoundTag();
+			CompoundTag compoundTag = new StringNbtReader(stringReader).parseCompoundTag();
 			return new NbtPathArgumentType.class_2208(string, compoundTag);
 		} else {
 			return new NbtPathArgumentType.class_2205(string);
@@ -141,95 +141,6 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 
 	private static Predicate<Tag> method_9359(CompoundTag compoundTag) {
 		return tag -> TagHelper.areTagsEqual(compoundTag, tag, true);
-	}
-
-	public static class NbtPath {
-		private final String field_9909;
-		private final Object2IntMap<NbtPathArgumentType.NbtPathNode> field_9910;
-		private final NbtPathArgumentType.NbtPathNode[] field_9911;
-
-		public NbtPath(String string, NbtPathArgumentType.NbtPathNode[] nbtPathNodes, Object2IntMap<NbtPathArgumentType.NbtPathNode> object2IntMap) {
-			this.field_9909 = string;
-			this.field_9911 = nbtPathNodes;
-			this.field_9910 = object2IntMap;
-		}
-
-		public List<Tag> get(Tag tag) throws CommandSyntaxException {
-			List<Tag> list = Collections.singletonList(tag);
-
-			for (NbtPathArgumentType.NbtPathNode nbtPathNode : this.field_9911) {
-				list = nbtPathNode.method_9381(list);
-				if (list.isEmpty()) {
-					throw this.method_9375(nbtPathNode);
-				}
-			}
-
-			return list;
-		}
-
-		public int count(Tag tag) {
-			List<Tag> list = Collections.singletonList(tag);
-
-			for (NbtPathArgumentType.NbtPathNode nbtPathNode : this.field_9911) {
-				list = nbtPathNode.method_9381(list);
-				if (list.isEmpty()) {
-					return 0;
-				}
-			}
-
-			return list.size();
-		}
-
-		private List<Tag> method_9369(Tag tag) throws CommandSyntaxException {
-			List<Tag> list = Collections.singletonList(tag);
-
-			for (int i = 0; i < this.field_9911.length - 1; i++) {
-				NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[i];
-				int j = i + 1;
-				list = nbtPathNode.method_9377(list, this.field_9911[j]::method_9382);
-				if (list.isEmpty()) {
-					throw this.method_9375(nbtPathNode);
-				}
-			}
-
-			return list;
-		}
-
-		public List<Tag> method_9367(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
-			List<Tag> list = this.method_9369(tag);
-			NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[this.field_9911.length - 1];
-			return nbtPathNode.method_9377(list, supplier);
-		}
-
-		private static int method_9371(List<Tag> list, Function<Tag, Integer> function) {
-			return (Integer)list.stream().map(function).reduce(0, (integer, integer2) -> integer + integer2);
-		}
-
-		public int method_9368(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
-			List<Tag> list = this.method_9369(tag);
-			NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[this.field_9911.length - 1];
-			return method_9371(list, tagx -> nbtPathNode.method_9376(tagx, supplier));
-		}
-
-		public int method_9372(Tag tag) {
-			List<Tag> list = Collections.singletonList(tag);
-
-			for (int i = 0; i < this.field_9911.length - 1; i++) {
-				list = this.field_9911[i].method_9381(list);
-			}
-
-			NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[this.field_9911.length - 1];
-			return method_9371(list, nbtPathNode::method_9383);
-		}
-
-		private CommandSyntaxException method_9375(NbtPathArgumentType.NbtPathNode nbtPathNode) {
-			int i = this.field_9910.getInt(nbtPathNode);
-			return NbtPathArgumentType.NBT_PATH_NOT_FOUND_EXCEPTION.create(this.field_9909.substring(0, i));
-		}
-
-		public String toString() {
-			return this.field_9909;
-		}
 	}
 
 	interface NbtPathNode {
@@ -622,6 +533,95 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 			}
 
 			return 0;
+		}
+	}
+
+	public static class class_2209 {
+		private final String field_9909;
+		private final Object2IntMap<NbtPathArgumentType.NbtPathNode> field_9910;
+		private final NbtPathArgumentType.NbtPathNode[] field_9911;
+
+		public class_2209(String string, NbtPathArgumentType.NbtPathNode[] nbtPathNodes, Object2IntMap<NbtPathArgumentType.NbtPathNode> object2IntMap) {
+			this.field_9909 = string;
+			this.field_9911 = nbtPathNodes;
+			this.field_9910 = object2IntMap;
+		}
+
+		public List<Tag> method_9366(Tag tag) throws CommandSyntaxException {
+			List<Tag> list = Collections.singletonList(tag);
+
+			for (NbtPathArgumentType.NbtPathNode nbtPathNode : this.field_9911) {
+				list = nbtPathNode.method_9381(list);
+				if (list.isEmpty()) {
+					throw this.method_9375(nbtPathNode);
+				}
+			}
+
+			return list;
+		}
+
+		public int method_9374(Tag tag) {
+			List<Tag> list = Collections.singletonList(tag);
+
+			for (NbtPathArgumentType.NbtPathNode nbtPathNode : this.field_9911) {
+				list = nbtPathNode.method_9381(list);
+				if (list.isEmpty()) {
+					return 0;
+				}
+			}
+
+			return list.size();
+		}
+
+		private List<Tag> method_9369(Tag tag) throws CommandSyntaxException {
+			List<Tag> list = Collections.singletonList(tag);
+
+			for (int i = 0; i < this.field_9911.length - 1; i++) {
+				NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[i];
+				int j = i + 1;
+				list = nbtPathNode.method_9377(list, this.field_9911[j]::method_9382);
+				if (list.isEmpty()) {
+					throw this.method_9375(nbtPathNode);
+				}
+			}
+
+			return list;
+		}
+
+		public List<Tag> method_9367(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
+			List<Tag> list = this.method_9369(tag);
+			NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[this.field_9911.length - 1];
+			return nbtPathNode.method_9377(list, supplier);
+		}
+
+		private static int method_9371(List<Tag> list, Function<Tag, Integer> function) {
+			return (Integer)list.stream().map(function).reduce(0, (integer, integer2) -> integer + integer2);
+		}
+
+		public int method_9368(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
+			List<Tag> list = this.method_9369(tag);
+			NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[this.field_9911.length - 1];
+			return method_9371(list, tagx -> nbtPathNode.method_9376(tagx, supplier));
+		}
+
+		public int method_9372(Tag tag) {
+			List<Tag> list = Collections.singletonList(tag);
+
+			for (int i = 0; i < this.field_9911.length - 1; i++) {
+				list = this.field_9911[i].method_9381(list);
+			}
+
+			NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[this.field_9911.length - 1];
+			return method_9371(list, nbtPathNode::method_9383);
+		}
+
+		private CommandSyntaxException method_9375(NbtPathArgumentType.NbtPathNode nbtPathNode) {
+			int i = this.field_9910.getInt(nbtPathNode);
+			return NbtPathArgumentType.NBT_PATH_NOT_FOUND_EXCEPTION.create(this.field_9909.substring(0, i));
+		}
+
+		public String toString() {
+			return this.field_9909;
 		}
 	}
 

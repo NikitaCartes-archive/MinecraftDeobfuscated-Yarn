@@ -41,11 +41,11 @@ import net.minecraft.util.Void;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.EndGatewayFeatureConfig;
@@ -60,7 +60,7 @@ public class EnderDragonFight {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Predicate<Entity> VALID_ENTITY = EntityPredicates.VALID_ENTITY.and(EntityPredicates.maximumDistance(0.0, 128.0, 0.0, 192.0));
 	private final ServerBossBar bossBar = (ServerBossBar)new ServerBossBar(
-			new TranslatableTextComponent("entity.minecraft.ender_dragon"), BossBar.Color.field_5788, BossBar.Overlay.field_5795
+			new TranslatableTextComponent("entity.minecraft.ender_dragon"), BossBar.Color.field_5788, BossBar.Style.field_5795
 		)
 		.setDragonMusic(true)
 		.setThickenFog(true);
@@ -371,7 +371,7 @@ public class EnderDragonFight {
 	}
 
 	private void generateEndGateway(BlockPos blockPos) {
-		this.world.method_20290(3000, blockPos, 0);
+		this.world.playLevelEvent(3000, blockPos, 0);
 		Feature.field_13564
 			.generate(
 				this.world,

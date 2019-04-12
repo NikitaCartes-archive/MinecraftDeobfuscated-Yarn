@@ -59,7 +59,7 @@ public class EmptyFluid extends Fluid {
 
 	@Override
 	protected BlockState toBlockState(FluidState fluidState) {
-		return Blocks.field_10124.getDefaultState();
+		return Blocks.AIR.getDefaultState();
 	}
 
 	@Override

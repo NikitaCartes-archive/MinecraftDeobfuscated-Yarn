@@ -78,7 +78,7 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 	}
 
 	@Override
-	public void method_17150(boolean bl) {
+	public void setHatVisible(boolean bl) {
 		this.head.visible = bl;
 		this.headwear.visible = bl;
 		this.hat.visible = bl;

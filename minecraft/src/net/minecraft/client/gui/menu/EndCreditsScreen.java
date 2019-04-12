@@ -29,8 +29,8 @@ public class EndCreditsScreen extends Screen {
 	private static final Identifier MINECRAFT_TITLE_TEXTURE = new Identifier("textures/gui/title/minecraft.png");
 	private static final Identifier EDITION_TITLE_TEXTURE = new Identifier("textures/gui/title/edition.png");
 	private static final Identifier VIGNETTE_TEXTURE = new Identifier("textures/misc/vignette.png");
-	private final boolean field_2627;
-	private final Runnable field_2630;
+	private final boolean inGame;
+	private final Runnable respawn;
 	private float field_2628;
 	private List<String> field_2634;
 	private int field_2629;
@@ -38,8 +38,8 @@ public class EndCreditsScreen extends Screen {
 
 	public EndCreditsScreen(boolean bl, Runnable runnable) {
 		super(NarratorManager.field_18967);
-		this.field_2627 = bl;
-		this.field_2630 = runnable;
+		this.inGame = bl;
+		this.respawn = runnable;
 		if (!bl) {
 			this.field_2635 = 0.75F;
 		}
@@ -51,17 +51,17 @@ public class EndCreditsScreen extends Screen {
 		this.minecraft.getSoundManager().tick(false);
 		float f = (float)(this.field_2629 + this.height + this.height + 24) / this.field_2635;
 		if (this.field_2628 > f) {
-			this.method_2257();
+			this.respawn();
 		}
 	}
 
 	@Override
 	public void onClose() {
-		this.method_2257();
+		this.respawn();
 	}
 
-	private void method_2257() {
-		this.field_2630.run();
+	private void respawn() {
+		this.respawn.run();
 		this.minecraft.openScreen(null);
 	}
 
@@ -74,7 +74,7 @@ public class EndCreditsScreen extends Screen {
 			try {
 				String string = "" + TextFormat.field_1068 + TextFormat.field_1051 + TextFormat.field_1060 + TextFormat.field_1075;
 				int i = 274;
-				if (this.field_2627) {
+				if (this.inGame) {
 					resource = this.minecraft.getResourceManager().getResource(new Identifier("texts/end.txt"));
 					InputStream inputStream = resource.getInputStream();
 					BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));

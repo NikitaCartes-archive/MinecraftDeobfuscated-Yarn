@@ -14,6 +14,7 @@ import net.minecraft.block.CropBlock;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
+import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.inventory.BasicInventory;
 import net.minecraft.item.ItemStack;
@@ -29,11 +30,14 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 	private boolean field_18859;
 	private boolean field_18860;
 	private long field_18861;
+	private int field_19239;
 
 	@Override
 	protected Set<Pair<MemoryModuleType<?>, MemoryModuleState>> getRequiredMemoryState() {
 		return ImmutableSet.of(
-			Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18457), Pair.of(MemoryModuleType.field_18873, MemoryModuleState.field_18456)
+			Pair.of(MemoryModuleType.field_18446, MemoryModuleState.field_18457),
+			Pair.of(MemoryModuleType.field_18445, MemoryModuleState.field_18457),
+			Pair.of(MemoryModuleType.field_18873, MemoryModuleState.field_18456)
 		);
 	}
 
@@ -52,10 +56,14 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 				.stream()
 				.filter(set::contains)
 				.collect(Collectors.toList());
-			if (!list.isEmpty()) {
-				this.field_18858 = (BlockPos)list.get(serverWorld.getRandom().nextInt(list.size()));
-				this.field_18859 = villagerEntity.hasSeedToPlant();
-				this.field_18860 = villagerEntity.canBreed();
+			this.field_18859 = villagerEntity.hasSeedToPlant();
+			this.field_18860 = villagerEntity.canBreed();
+			List<BlockPos> list2 = (List<BlockPos>)list.stream()
+				.map(BlockPos::up)
+				.filter(blockPosx -> this.method_20391(serverWorld.getBlockState(blockPosx)))
+				.collect(Collectors.toList());
+			if (!list2.isEmpty()) {
+				this.field_18858 = (BlockPos)list2.get(serverWorld.getRandom().nextInt(list2.size()));
 				return true;
 			} else {
 				return false;
@@ -63,14 +71,31 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 		}
 	}
 
-	protected void method_19565(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+	private boolean method_20391(BlockState blockState) {
+		Block block = blockState.getBlock();
+		return block instanceof CropBlock && ((CropBlock)block).isValidState(blockState) && this.field_18860 || blockState.isAir() && this.field_18859;
+	}
+
+	protected void method_20392(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
 		if (l > this.field_18861 && this.field_18858 != null) {
 			villagerEntity.getBrain().putMemory(MemoryModuleType.field_18446, new BlockPosLookTarget(this.field_18858));
-			BlockPos blockPos = this.field_18858.up();
-			BlockState blockState = serverWorld.getBlockState(blockPos);
+			villagerEntity.getBrain().putMemory(MemoryModuleType.field_18445, new WalkTarget(new BlockPosLookTarget(this.field_18858), 0.5F, 1));
+		}
+	}
+
+	protected void method_19566(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		villagerEntity.getBrain().forget(MemoryModuleType.field_18446);
+		villagerEntity.getBrain().forget(MemoryModuleType.field_18445);
+		this.field_19239 = 0;
+		this.field_18861 = l + 40L;
+	}
+
+	protected void method_19565(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		if (this.field_19239 > 15 && this.field_18858 != null && l > this.field_18861) {
+			BlockState blockState = serverWorld.getBlockState(this.field_18858);
 			Block block = blockState.getBlock();
 			if (block instanceof CropBlock && ((CropBlock)block).isValidState(blockState) && this.field_18860) {
-				serverWorld.breakBlock(blockPos, true);
+				serverWorld.breakBlock(this.field_18858, true);
 			} else if (blockState.isAir() && this.field_18859) {
 				BasicInventory basicInventory = villagerEntity.getInventory();
 
@@ -79,16 +104,16 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					boolean bl = false;
 					if (!itemStack.isEmpty()) {
 						if (itemStack.getItem() == Items.field_8317) {
-							serverWorld.setBlockState(blockPos, Blocks.field_10293.getDefaultState(), 3);
+							serverWorld.setBlockState(this.field_18858, Blocks.field_10293.getDefaultState(), 3);
 							bl = true;
 						} else if (itemStack.getItem() == Items.field_8567) {
-							serverWorld.setBlockState(blockPos, Blocks.field_10247.getDefaultState(), 3);
+							serverWorld.setBlockState(this.field_18858, Blocks.field_10247.getDefaultState(), 3);
 							bl = true;
 						} else if (itemStack.getItem() == Items.field_8179) {
-							serverWorld.setBlockState(blockPos, Blocks.field_10609.getDefaultState(), 3);
+							serverWorld.setBlockState(this.field_18858, Blocks.field_10609.getDefaultState(), 3);
 							bl = true;
 						} else if (itemStack.getItem() == Items.field_8309) {
-							serverWorld.setBlockState(blockPos, Blocks.field_10341.getDefaultState(), 3);
+							serverWorld.setBlockState(this.field_18858, Blocks.field_10341.getDefaultState(), 3);
 							bl = true;
 						}
 					}
@@ -102,12 +127,12 @@ public class FarmerVillagerTask extends Task<VillagerEntity> {
 					}
 				}
 			}
-
-			this.field_18861 = l + 20L;
 		}
+
+		this.field_19239++;
 	}
 
-	protected void method_19566(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
-		villagerEntity.getBrain().forget(MemoryModuleType.field_18446);
+	protected boolean method_20394(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
+		return this.field_19239 < 30;
 	}
 }

@@ -71,7 +71,7 @@ public class CoralParentBlock extends Block implements Waterloggable {
 		}
 
 		return direction == Direction.DOWN && !this.canPlaceAt(blockState, iWorld, blockPos)
-			? Blocks.field_10124.getDefaultState()
+			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
 

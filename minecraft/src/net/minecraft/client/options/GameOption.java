@@ -137,17 +137,16 @@ public abstract class GameOption {
 			return d == 0.0 ? string + I18n.translate("options.off") : string + (int)d;
 		}
 	);
-	public static final DoubleGameOption MOUSE_WHEEL_SENSITIVITY = new DoubleGameOption(
+	public static final DoubleGameOption MOUSE_WHEEL_SENSITIVITY = new LogarithmicGameOption(
 		"options.mouseWheelSensitivity",
-		1.0,
+		0.01,
 		10.0,
-		0.5F,
+		0.01F,
 		gameOptions -> gameOptions.mouseWheelSensitivity,
 		(gameOptions, double_) -> gameOptions.mouseWheelSensitivity = double_,
 		(gameOptions, doubleGameOption) -> {
 			double d = doubleGameOption.method_18611(doubleGameOption.get(gameOptions));
-			String string = doubleGameOption.getDisplayPrefix();
-			return d == 1.0 ? string + I18n.translate("options.mouseWheelSensitivity.default") : string + "+" + (int)d + "." + (int)(d * 10.0) % 10;
+			return doubleGameOption.getDisplayPrefix() + String.format("%.2f", doubleGameOption.method_18616(d));
 		}
 	);
 	public static final DoubleGameOption RENDER_DISTANCE = new DoubleGameOption(
@@ -249,8 +248,8 @@ public abstract class GameOption {
 	);
 	public static final StringGameOption CLOUDS = new StringGameOption(
 		"options.renderClouds",
-		(gameOptions, integer) -> gameOptions.cloudRenderMode = CloudRenderMode.fromId(gameOptions.cloudRenderMode.getRenderModeId() + integer),
-		(gameOptions, stringGameOption) -> stringGameOption.getDisplayPrefix() + I18n.translate(gameOptions.cloudRenderMode.getRenderMode())
+		(gameOptions, integer) -> gameOptions.cloudRenderMode = CloudRenderMode.getOption(gameOptions.cloudRenderMode.getValue() + integer),
+		(gameOptions, stringGameOption) -> stringGameOption.getDisplayPrefix() + I18n.translate(gameOptions.cloudRenderMode.getTranslationKey())
 	);
 	public static final StringGameOption TEXT_BACKGROUND = new StringGameOption(
 		"options.accessibility.text_background",
@@ -272,6 +271,9 @@ public abstract class GameOption {
 	);
 	public static final BooleanGameOption CHAT_LINKS_PROMPT = new BooleanGameOption(
 		"options.chat.links.prompt", gameOptions -> gameOptions.chatLinksPrompt, (gameOptions, boolean_) -> gameOptions.chatLinksPrompt = boolean_
+	);
+	public static final BooleanGameOption DISCRETE_MOUSE_SCROLL = new BooleanGameOption(
+		"options.discrete_mouse_scroll", gameOptions -> gameOptions.discreteMouseScroll, (gameOptions, boolean_) -> gameOptions.discreteMouseScroll = boolean_
 	);
 	public static final BooleanGameOption VSYNC = new BooleanGameOption("options.vsync", gameOptions -> gameOptions.enableVsync, (gameOptions, boolean_) -> {
 		gameOptions.enableVsync = boolean_;

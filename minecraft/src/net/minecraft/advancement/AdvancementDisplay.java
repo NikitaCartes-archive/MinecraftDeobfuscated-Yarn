@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sortme.JsonLikeTagParser;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
@@ -129,7 +129,7 @@ public class AdvancementDisplay {
 				ItemStack itemStack = new ItemStack(item);
 				if (jsonObject.has("nbt")) {
 					try {
-						CompoundTag compoundTag = JsonLikeTagParser.parse(JsonHelper.asString(jsonObject.get("nbt"), "nbt"));
+						CompoundTag compoundTag = StringNbtReader.parse(JsonHelper.asString(jsonObject.get("nbt"), "nbt"));
 						itemStack.setTag(compoundTag);
 					} catch (CommandSyntaxException var4) {
 						throw new JsonSyntaxException("Invalid nbt tag: " + var4.getMessage());
@@ -201,6 +201,10 @@ public class AdvancementDisplay {
 	private JsonObject iconToJson() {
 		JsonObject jsonObject = new JsonObject();
 		jsonObject.addProperty("item", Registry.ITEM.getId(this.icon.getItem()).toString());
+		if (this.icon.hasTag()) {
+			jsonObject.addProperty("nbt", this.icon.getTag().toString());
+		}
+
 		return jsonObject;
 	}
 }

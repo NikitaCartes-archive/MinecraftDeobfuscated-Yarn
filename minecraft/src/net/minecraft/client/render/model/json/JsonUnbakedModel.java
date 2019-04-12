@@ -30,8 +30,8 @@ import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.render.model.BakedQuadFactory;
 import net.minecraft.client.render.model.BasicBakedModel;
 import net.minecraft.client.render.model.BuiltinBakedModel;
+import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelLoader;
-import net.minecraft.client.render.model.ModelRotationContainer;
 import net.minecraft.client.render.model.UnbakedModel;
 import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.Sprite;
@@ -194,13 +194,11 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	@Override
-	public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelRotationContainer modelRotationContainer) {
-		return this.bake(modelLoader, this, function, modelRotationContainer);
+	public BakedModel bake(ModelLoader modelLoader, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings) {
+		return this.bake(modelLoader, this, function, modelBakeSettings);
 	}
 
-	public BakedModel bake(
-		ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<Identifier, Sprite> function, ModelRotationContainer modelRotationContainer
-	) {
+	public BakedModel bake(ModelLoader modelLoader, JsonUnbakedModel jsonUnbakedModel, Function<Identifier, Sprite> function, ModelBakeSettings modelBakeSettings) {
 		Sprite sprite = (Sprite)function.apply(new Identifier(this.resolveTexture("particle")));
 		if (this.getRootModel() == ModelLoader.BLOCK_ENTITY_MARKER) {
 			return new BuiltinBakedModel(this.getTransformations(), this.compileOverrides(modelLoader, jsonUnbakedModel), sprite);
@@ -212,11 +210,10 @@ public class JsonUnbakedModel implements UnbakedModel {
 					ModelElementFace modelElementFace = (ModelElementFace)modelElement.faces.get(direction);
 					Sprite sprite2 = (Sprite)function.apply(new Identifier(this.resolveTexture(modelElementFace.textureId)));
 					if (modelElementFace.cullFace == null) {
-						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, modelRotationContainer));
+						builder.addQuad(createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings));
 					} else {
 						builder.addQuad(
-							modelRotationContainer.getRotation().apply(modelElementFace.cullFace),
-							createQuad(modelElement, modelElementFace, sprite2, direction, modelRotationContainer)
+							modelBakeSettings.getRotation().apply(modelElementFace.cullFace), createQuad(modelElement, modelElementFace, sprite2, direction, modelBakeSettings)
 						);
 					}
 				}
@@ -227,10 +224,10 @@ public class JsonUnbakedModel implements UnbakedModel {
 	}
 
 	private static BakedQuad createQuad(
-		ModelElement modelElement, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelRotationContainer modelRotationContainer
+		ModelElement modelElement, ModelElementFace modelElementFace, Sprite sprite, Direction direction, ModelBakeSettings modelBakeSettings
 	) {
 		return QUAD_FACTORY.bake(
-			modelElement.from, modelElement.to, modelElementFace, sprite, direction, modelRotationContainer, modelElement.rotation, modelElement.shade
+			modelElement.from, modelElement.to, modelElementFace, sprite, direction, modelBakeSettings, modelElement.rotation, modelElement.shade
 		);
 	}
 

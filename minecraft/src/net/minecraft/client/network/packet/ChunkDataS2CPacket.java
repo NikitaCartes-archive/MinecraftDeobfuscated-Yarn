@@ -16,19 +16,19 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.gen.Heightmap;
 
 public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int chunkX;
 	private int chunkZ;
 	private int verticalStripBitmask;
-	private CompoundTag field_16416;
+	private CompoundTag heightmaps;
 	private byte[] data;
-	private List<CompoundTag> blockEntityList;
+	private List<CompoundTag> blockEntities;
 	private boolean isFullChunk;
 
 	public ChunkDataS2CPacket() {
@@ -39,17 +39,17 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.chunkX = chunkPos.x;
 		this.chunkZ = chunkPos.z;
 		this.isFullChunk = i == 65535;
-		this.field_16416 = new CompoundTag();
+		this.heightmaps = new CompoundTag();
 
 		for (Entry<Heightmap.Type, Heightmap> entry : worldChunk.getHeightmaps()) {
-			if (((Heightmap.Type)entry.getKey()).method_16137()) {
-				this.field_16416.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
+			if (((Heightmap.Type)entry.getKey()).shouldSendToClient()) {
+				this.heightmaps.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
 			}
 		}
 
-		this.data = new byte[this.method_11522(worldChunk, i)];
-		this.verticalStripBitmask = this.method_11529(new PacketByteBuf(this.method_11527()), worldChunk, i);
-		this.blockEntityList = Lists.<CompoundTag>newArrayList();
+		this.data = new byte[this.getDataSize(worldChunk, i)];
+		this.verticalStripBitmask = this.writeData(new PacketByteBuf(this.getWriteBuffer()), worldChunk, i);
+		this.blockEntities = Lists.<CompoundTag>newArrayList();
 
 		for (Entry<BlockPos, BlockEntity> entryx : worldChunk.getBlockEntities().entrySet()) {
 			BlockPos blockPos = (BlockPos)entryx.getKey();
@@ -57,7 +57,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 			int j = blockPos.getY() >> 4;
 			if (this.isFullChunk() || (i & 1 << j) != 0) {
 				CompoundTag compoundTag = blockEntity.toInitialChunkDataTag();
-				this.blockEntityList.add(compoundTag);
+				this.blockEntities.add(compoundTag);
 			}
 		}
 	}
@@ -68,7 +68,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.chunkZ = packetByteBuf.readInt();
 		this.isFullChunk = packetByteBuf.readBoolean();
 		this.verticalStripBitmask = packetByteBuf.readVarInt();
-		this.field_16416 = packetByteBuf.readCompoundTag();
+		this.heightmaps = packetByteBuf.readCompoundTag();
 		int i = packetByteBuf.readVarInt();
 		if (i > 2097152) {
 			throw new RuntimeException("Chunk Packet trying to allocate too much memory on read.");
@@ -76,10 +76,10 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.data = new byte[i];
 			packetByteBuf.readBytes(this.data);
 			int j = packetByteBuf.readVarInt();
-			this.blockEntityList = Lists.<CompoundTag>newArrayList();
+			this.blockEntities = Lists.<CompoundTag>newArrayList();
 
 			for (int k = 0; k < j; k++) {
-				this.blockEntityList.add(packetByteBuf.readCompoundTag());
+				this.blockEntities.add(packetByteBuf.readCompoundTag());
 			}
 		}
 	}
@@ -90,12 +90,12 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		packetByteBuf.writeInt(this.chunkZ);
 		packetByteBuf.writeBoolean(this.isFullChunk);
 		packetByteBuf.writeVarInt(this.verticalStripBitmask);
-		packetByteBuf.writeCompoundTag(this.field_16416);
+		packetByteBuf.writeCompoundTag(this.heightmaps);
 		packetByteBuf.writeVarInt(this.data.length);
 		packetByteBuf.writeBytes(this.data);
-		packetByteBuf.writeVarInt(this.blockEntityList.size());
+		packetByteBuf.writeVarInt(this.blockEntities.size());
 
-		for (CompoundTag compoundTag : this.blockEntityList) {
+		for (CompoundTag compoundTag : this.blockEntities) {
 			packetByteBuf.writeCompoundTag(compoundTag);
 		}
 	}
@@ -109,13 +109,13 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		return new PacketByteBuf(Unpooled.wrappedBuffer(this.data));
 	}
 
-	private ByteBuf method_11527() {
+	private ByteBuf getWriteBuffer() {
 		ByteBuf byteBuf = Unpooled.wrappedBuffer(this.data);
 		byteBuf.writerIndex(0);
 		return byteBuf;
 	}
 
-	public int method_11529(PacketByteBuf packetByteBuf, WorldChunk worldChunk, int i) {
+	public int writeData(PacketByteBuf packetByteBuf, WorldChunk worldChunk, int i) {
 		int j = 0;
 		ChunkSection[] chunkSections = worldChunk.getSectionArray();
 		int k = 0;
@@ -139,7 +139,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		return j;
 	}
 
-	protected int method_11522(WorldChunk worldChunk, int i) {
+	protected int getDataSize(WorldChunk worldChunk, int i) {
 		int j = 0;
 		ChunkSection[] chunkSections = worldChunk.getSectionArray();
 		int k = 0;
@@ -178,12 +178,12 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public CompoundTag method_16123() {
-		return this.field_16416;
+	public CompoundTag getHeightmaps() {
+		return this.heightmaps;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public List<CompoundTag> getBlockEntityTagList() {
-		return this.blockEntityList;
+		return this.blockEntities;
 	}
 }

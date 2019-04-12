@@ -2,6 +2,7 @@ package net.minecraft.client.audio;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
 import net.fabricmc.api.EnvType;
@@ -15,13 +16,13 @@ import org.lwjgl.openal.AL10;
 public class Source {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final int pointer;
-	private boolean playing;
-	private int field_18895 = 16384;
+	private AtomicBoolean playing = new AtomicBoolean(true);
+	private int bufferSize = 16384;
 	@Nullable
-	private AudioStream field_18896;
+	private AudioStream stream;
 
 	@Nullable
-	static Source method_19638() {
+	static Source create() {
 		int[] is = new int[1];
 		AL10.alGenSources(is);
 		return AlUtil.checkErrors("Allocate new source") ? null : new Source(is[0]);
@@ -29,35 +30,34 @@ public class Source {
 
 	private Source(int i) {
 		this.pointer = i;
-		this.playing = true;
 	}
 
 	public void close() {
-		if (this.playing) {
+		if (this.playing.compareAndSet(true, false)) {
 			AL10.alSourceStop(this.pointer);
-			if (this.field_18896 != null) {
+			AlUtil.checkErrors("Stop");
+			if (this.stream != null) {
 				try {
-					this.field_18896.close();
+					this.stream.close();
 				} catch (IOException var2) {
 					LOGGER.error("Failed to close audio stream", (Throwable)var2);
 				}
 
-				this.method_19660();
-				this.field_18896 = null;
+				this.removeProcessedBuffers();
+				this.stream = null;
 			}
 
 			AL10.alDeleteSources(new int[]{this.pointer});
 			AlUtil.checkErrors("Cleanup");
-			this.playing = false;
 		}
 	}
 
-	public void method_19650() {
+	public void play() {
 		AL10.alSourcePlay(this.pointer);
 	}
 
 	private int getSourceState() {
-		return AL10.alGetSourcei(this.pointer, 4112);
+		return !this.playing.get() ? 4116 : AL10.alGetSourcei(this.pointer, 4112);
 	}
 
 	public void pause() {
@@ -66,14 +66,17 @@ public class Source {
 		}
 	}
 
-	public void play() {
+	public void resume() {
 		if (this.getSourceState() == 4115) {
 			AL10.alSourcePlay(this.pointer);
 		}
 	}
 
 	public void stop() {
-		AL10.alSourceStop(this.pointer);
+		if (this.playing.get()) {
+			AL10.alSourceStop(this.pointer);
+			AlUtil.checkErrors("Stop");
+		}
 	}
 
 	public boolean isStopped() {
@@ -96,11 +99,11 @@ public class Source {
 		AL10.alSourcef(this.pointer, 4106, f);
 	}
 
-	public void method_19657() {
+	public void disableAttenuation() {
 		AL10.alSourcei(this.pointer, 53248, 0);
 	}
 
-	public void method_19651(float f) {
+	public void setAttenuation(float f) {
 		AL10.alSourcei(this.pointer, 53248, 53251);
 		AL10.alSourcef(this.pointer, 4131, f);
 		AL10.alSourcef(this.pointer, 4129, 1.0F);
@@ -111,28 +114,28 @@ public class Source {
 		AL10.alSourcei(this.pointer, 514, bl ? 1 : 0);
 	}
 
-	public void method_19642(SoundData soundData) {
-		soundData.getBufferPointer().ifPresent(i -> AL10.alSourcei(this.pointer, 4105, i));
+	public void setBuffer(StaticSound staticSound) {
+		staticSound.getStreamBufferPointer().ifPresent(i -> AL10.alSourcei(this.pointer, 4105, i));
 	}
 
-	public void method_19643(AudioStream audioStream) {
-		this.field_18896 = audioStream;
+	public void setStream(AudioStream audioStream) {
+		this.stream = audioStream;
 		AudioFormat audioFormat = audioStream.getFormat();
-		this.field_18895 = method_19644(audioFormat, 1);
+		this.bufferSize = getBufferSize(audioFormat, 1);
 		this.method_19640(4);
 	}
 
-	private static int method_19644(AudioFormat audioFormat, int i) {
+	private static int getBufferSize(AudioFormat audioFormat, int i) {
 		return (int)((float)(i * audioFormat.getSampleSizeInBits()) / 8.0F * (float)audioFormat.getChannels() * audioFormat.getSampleRate());
 	}
 
 	private void method_19640(int i) {
-		if (this.field_18896 != null) {
+		if (this.stream != null) {
 			try {
 				for (int j = 0; j < i; j++) {
-					ByteBuffer byteBuffer = this.field_18896.method_19720(this.field_18895);
+					ByteBuffer byteBuffer = this.stream.method_19720(this.bufferSize);
 					if (byteBuffer != null) {
-						new SoundData(byteBuffer, this.field_18896.getFormat()).method_19688().ifPresent(ix -> AL10.alSourceQueueBuffers(this.pointer, new int[]{ix}));
+						new StaticSound(byteBuffer, this.stream.getFormat()).takeStreamBufferPointer().ifPresent(ix -> AL10.alSourceQueueBuffers(this.pointer, new int[]{ix}));
 					}
 				}
 			} catch (IOException var4) {
@@ -141,14 +144,14 @@ public class Source {
 		}
 	}
 
-	public void method_19658() {
-		if (this.field_18896 != null) {
-			int i = this.method_19660();
+	public void tick() {
+		if (this.stream != null) {
+			int i = this.removeProcessedBuffers();
 			this.method_19640(i);
 		}
 	}
 
-	private int method_19660() {
+	private int removeProcessedBuffers() {
 		int i = AL10.alGetSourcei(this.pointer, 4118);
 		if (i > 0) {
 			int[] is = new int[i];

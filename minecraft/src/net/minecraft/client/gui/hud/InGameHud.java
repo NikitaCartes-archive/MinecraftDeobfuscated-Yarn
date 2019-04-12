@@ -16,8 +16,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.ContainerScreen;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.GameInfoChatListener;
 import net.minecraft.client.options.AttackIndicator;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
@@ -27,8 +29,6 @@ import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.client.sortme.ClientChatListener;
-import net.minecraft.client.sortme.GameInfoChatListener;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.StatusEffectSpriteManager;
@@ -48,8 +48,8 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.text.ChatMessageType;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
@@ -85,7 +85,7 @@ public class InGameHud extends DrawableHelper {
 	private final DebugHud debugHud;
 	private final SubtitlesHud subtitlesHud;
 	private final SpectatorHud spectatorHud;
-	private final ScoreboardHud scoreboardHud;
+	private final PlayerListHud playerListHud;
 	private final BossBarHud bossBarHud;
 	private int titleTotalTicks;
 	private String title = "";
@@ -107,7 +107,7 @@ public class InGameHud extends DrawableHelper {
 		this.debugHud = new DebugHud(minecraftClient);
 		this.spectatorHud = new SpectatorHud(minecraftClient);
 		this.chatHud = new ChatHud(minecraftClient);
-		this.scoreboardHud = new ScoreboardHud(minecraftClient, this);
+		this.playerListHud = new PlayerListHud(minecraftClient, this);
 		this.bossBarHud = new BossBarHud(minecraftClient);
 		this.subtitlesHud = new SubtitlesHud(minecraftClient);
 
@@ -327,11 +327,11 @@ public class InGameHud extends DrawableHelper {
 			GlStateManager.popMatrix();
 			scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
 			if (!this.client.options.keyPlayerList.isPressed()
-				|| this.client.isInSingleplayer() && this.client.player.networkHandler.getScoreboardEntries().size() <= 1 && scoreboardObjective2 == null) {
-				this.scoreboardHud.method_1921(false);
+				|| this.client.isInSingleplayer() && this.client.player.networkHandler.getPlayerList().size() <= 1 && scoreboardObjective2 == null) {
+				this.playerListHud.tick(false);
 			} else {
-				this.scoreboardHud.method_1921(true);
-				this.scoreboardHud.method_1919(this.scaledWidth, scoreboard, scoreboardObjective2);
+				this.playerListHud.tick(true);
+				this.playerListHud.draw(this.scaledWidth, scoreboard, scoreboardObjective2);
 			}
 		}
 
@@ -644,7 +644,7 @@ public class InGameHud extends DrawableHelper {
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
 			Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-			String string2 = Team.method_1142(team, new StringTextComponent(scoreboardPlayerScore.getPlayerName())).getFormattedText()
+			String string2 = Team.modifyText(team, new StringTextComponent(scoreboardPlayerScore.getPlayerName())).getFormattedText()
 				+ ": "
 				+ TextFormat.field_1061
 				+ scoreboardPlayerScore.getScore();
@@ -662,7 +662,7 @@ public class InGameHud extends DrawableHelper {
 		for (ScoreboardPlayerScore scoreboardPlayerScore2 : collection) {
 			o++;
 			Team team2 = scoreboard.getPlayerTeam(scoreboardPlayerScore2.getPlayerName());
-			String string3 = Team.method_1142(team2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
+			String string3 = Team.modifyText(team2, new StringTextComponent(scoreboardPlayerScore2.getPlayerName())).getFormattedText();
 			String string4 = TextFormat.field_1061 + "" + scoreboardPlayerScore2.getScore();
 			int s = l - o * 9;
 			int t = this.scaledWidth - 3 + 2;
@@ -1152,12 +1152,12 @@ public class InGameHud extends DrawableHelper {
 		return this.spectatorHud;
 	}
 
-	public ScoreboardHud getScoreboardWidget() {
-		return this.scoreboardHud;
+	public PlayerListHud getPlayerListWidget() {
+		return this.playerListHud;
 	}
 
 	public void clear() {
-		this.scoreboardHud.clear();
+		this.playerListHud.clear();
 		this.bossBarHud.clear();
 		this.client.getToastManager().clear();
 	}

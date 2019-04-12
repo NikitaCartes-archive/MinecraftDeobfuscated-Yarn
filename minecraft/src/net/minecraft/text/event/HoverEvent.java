@@ -51,18 +51,18 @@ public class HoverEvent {
 		SHOW_ITEM("show_item", true),
 		SHOW_ENTITY("show_entity", true);
 
-		private static final Map<String, HoverEvent.Action> field_11758 = (Map<String, HoverEvent.Action>)Arrays.stream(values())
+		private static final Map<String, HoverEvent.Action> ACTIONS = (Map<String, HoverEvent.Action>)Arrays.stream(values())
 			.collect(Collectors.toMap(HoverEvent.Action::getName, action -> action));
-		private final boolean field_11759;
+		private final boolean safe;
 		private final String name;
 
 		private Action(String string2, boolean bl) {
 			this.name = string2;
-			this.field_11759 = bl;
+			this.safe = bl;
 		}
 
-		public boolean method_10895() {
-			return this.field_11759;
+		public boolean isSafe() {
+			return this.safe;
 		}
 
 		public String getName() {
@@ -70,7 +70,7 @@ public class HoverEvent {
 		}
 
 		public static HoverEvent.Action get(String string) {
-			return (HoverEvent.Action)field_11758.get(string);
+			return (HoverEvent.Action)ACTIONS.get(string);
 		}
 	}
 }

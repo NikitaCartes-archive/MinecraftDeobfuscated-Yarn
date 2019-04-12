@@ -38,7 +38,7 @@ public class ClientCommandSource implements CommandSource {
 	public Collection<String> getPlayerNames() {
 		List<String> list = Lists.<String>newArrayList();
 
-		for (PlayerListEntry playerListEntry : this.networkHandler.getScoreboardEntries()) {
+		for (PlayerListEntry playerListEntry : this.networkHandler.getPlayerList()) {
 			list.add(playerListEntry.getProfile().getName());
 		}
 
@@ -115,7 +115,7 @@ public class ClientCommandSource implements CommandSource {
 		}
 	}
 
-	public void method_2931(int i, Suggestions suggestions) {
+	public void onCommandSuggestions(int i, Suggestions suggestions) {
 		if (i == this.completionId) {
 			this.pendingCompletion.complete(suggestions);
 			this.pendingCompletion = null;

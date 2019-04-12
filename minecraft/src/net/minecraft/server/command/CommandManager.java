@@ -119,7 +119,7 @@ public class CommandManager {
 						"Ambiguity between arguments {} and {} with inputs: {}", this.dispatcher.getPath(commandNode2), this.dispatcher.getPath(commandNode3), collection
 					)
 			);
-		this.dispatcher.setConsumer((commandContext, blx, i) -> commandContext.getSource().method_9215(commandContext, blx, i));
+		this.dispatcher.setConsumer((commandContext, blx, i) -> commandContext.getSource().onCommandComplete(commandContext, blx, i));
 	}
 
 	public int execute(ServerCommandSource serverCommandSource, String string) {

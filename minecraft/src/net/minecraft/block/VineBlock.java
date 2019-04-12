@@ -153,7 +153,7 @@ public class VineBlock extends Block {
 			return super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			BlockState blockState3 = this.getPlacementShape(blockState, iWorld, blockPos);
-			return !this.hasAdjacentBlocks(blockState3) ? Blocks.field_10124.getDefaultState() : blockState3;
+			return !this.hasAdjacentBlocks(blockState3) ? Blocks.AIR.getDefaultState() : blockState3;
 		}
 	}
 

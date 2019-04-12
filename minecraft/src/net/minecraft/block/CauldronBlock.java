@@ -4,12 +4,12 @@ import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BannerItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.DyeableItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.block.BannerItem;
-import net.minecraft.item.block.BlockItem;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -211,7 +211,7 @@ public class CauldronBlock extends Block {
 			if (!(f < 0.15F)) {
 				BlockState blockState = world.getBlockState(blockPos);
 				if ((Integer)blockState.get(LEVEL) < 3) {
-					world.setBlockState(blockPos, blockState.method_11572(LEVEL), 2);
+					world.setBlockState(blockPos, blockState.cycle(LEVEL), 2);
 				}
 			}
 		}

@@ -76,7 +76,7 @@ public class TradeOffers {
 							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.field_5911, 140, 15),
 							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.field_5919, 120, 15),
 							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.field_5899, 280, 15),
-							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.field_5922, 160, 15)
+							new TradeOffers.SellSuspiciousStewFactory(StatusEffects.field_5922, 7, 15)
 						},
 						5,
 						new TradeOffers.Factory[]{new TradeOffers.SellItemFactory(Items.field_8071, 3, 3, 30), new TradeOffers.SellItemFactory(Items.field_8597, 4, 3, 30)}
@@ -937,7 +937,7 @@ public class TradeOffers {
 			ItemStack itemStack = new ItemStack(Items.field_8687, this.price);
 			List<Potion> list = (List<Potion>)Registry.POTION
 				.stream()
-				.filter(potionx -> !potionx.getEffects().isEmpty() && BrewingRecipeRegistry.method_20361(potionx))
+				.filter(potionx -> !potionx.getEffects().isEmpty() && BrewingRecipeRegistry.isBrewable(potionx))
 				.collect(Collectors.toList());
 			Potion potion = (Potion)list.get(random.nextInt(list.size()));
 			ItemStack itemStack2 = PotionUtil.setPotion(new ItemStack(this.sell.getItem(), this.sellCount), potion);

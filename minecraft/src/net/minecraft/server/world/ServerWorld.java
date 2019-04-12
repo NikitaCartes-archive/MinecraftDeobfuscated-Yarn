@@ -34,6 +34,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.client.network.packet.BlockActionS2CPacket;
 import net.minecraft.client.network.packet.BlockBreakingProgressS2CPacket;
 import net.minecraft.client.network.packet.EntitySpawnGlobalS2CPacket;
@@ -74,7 +75,6 @@ import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureManager;
@@ -99,6 +99,7 @@ import net.minecraft.village.PointOfInterestType;
 import net.minecraft.village.ZombieSiegeManager;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.IdCountsState;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
@@ -117,7 +118,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.ChunkGeneratorConfig;
 import net.minecraft.world.gen.feature.BonusChestFeature;
@@ -575,7 +575,7 @@ public class ServerWorld extends World {
 				this.getProfiler().pop();
 			}
 
-			this.method_18767(entity);
+			this.checkChunk(entity);
 			if (entity.field_6016) {
 				for (Entity entity2 : entity.getPassengerList()) {
 					this.method_18763(entity, entity2);
@@ -598,7 +598,7 @@ public class ServerWorld extends World {
 				entity2.tickRiding();
 			}
 
-			this.method_18767(entity2);
+			this.checkChunk(entity2);
 			if (entity2.field_6016) {
 				for (Entity entity3 : entity2.getPassengerList()) {
 					this.method_18763(entity2, entity3);
@@ -607,7 +607,7 @@ public class ServerWorld extends World {
 		}
 	}
 
-	public void method_18767(Entity entity) {
+	public void checkChunk(Entity entity) {
 		this.getProfiler().push("chunkCheck");
 		int i = MathHelper.floor(entity.x / 16.0);
 		int j = MathHelper.floor(entity.y / 16.0);
@@ -804,17 +804,17 @@ public class ServerWorld extends World {
 		entity.teleporting = true;
 		this.method_18768(entity);
 		entity.teleporting = bl;
-		this.method_18767(entity);
+		this.checkChunk(entity);
 	}
 
 	public void method_18207(ServerPlayerEntity serverPlayerEntity) {
 		this.addPlayer(serverPlayerEntity);
-		this.method_18767(serverPlayerEntity);
+		this.checkChunk(serverPlayerEntity);
 	}
 
 	public void method_18211(ServerPlayerEntity serverPlayerEntity) {
 		this.addPlayer(serverPlayerEntity);
-		this.method_18767(serverPlayerEntity);
+		this.checkChunk(serverPlayerEntity);
 	}
 
 	public void method_18213(ServerPlayerEntity serverPlayerEntity) {

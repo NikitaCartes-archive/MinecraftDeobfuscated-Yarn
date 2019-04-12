@@ -23,7 +23,7 @@ public class StatHandler {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public <T> int method_15024(StatType<T> statType, T object) {
+	public <T> int getStat(StatType<T> statType, T object) {
 		return statType.hasStat(object) ? this.getStat(statType.getOrCreateStat(object)) : 0;
 	}
 

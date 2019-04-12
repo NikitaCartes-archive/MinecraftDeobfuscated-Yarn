@@ -16,7 +16,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.sortme.ItemStringReader;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
@@ -35,18 +34,16 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 	public ItemPredicateArgumentType.ItemPredicateArgument method_9800(StringReader stringReader) throws CommandSyntaxException {
 		ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
 		if (itemStringReader.getItem() != null) {
-			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(
-				itemStringReader.getItem(), itemStringReader.method_9797()
-			);
+			ItemPredicateArgumentType.ItemPredicate itemPredicate = new ItemPredicateArgumentType.ItemPredicate(itemStringReader.getItem(), itemStringReader.getTag());
 			return commandContext -> itemPredicate;
 		} else {
-			Identifier identifier = itemStringReader.method_9790();
+			Identifier identifier = itemStringReader.getId();
 			return commandContext -> {
 				Tag<Item> tag = commandContext.getSource().getMinecraftServer().getTagManager().items().get(identifier);
 				if (tag == null) {
 					throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
 				} else {
-					return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.method_9797());
+					return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.getTag());
 				}
 			};
 		}

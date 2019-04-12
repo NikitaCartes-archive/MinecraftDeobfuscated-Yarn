@@ -34,7 +34,7 @@ public class RedDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public float method_18132(float f) {
+	public float getSize(float f) {
 		return this.scale * MathHelper.clamp(((float)this.age + f) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
 	}
 

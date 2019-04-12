@@ -9,17 +9,17 @@ import net.minecraft.util.PacketByteBuf;
 public class PacketDeflater extends MessageToByteEncoder<ByteBuf> {
 	private final byte[] deflateBuffer = new byte[8192];
 	private final Deflater deflater;
-	private int minCompressedSize;
+	private int compressionThreshold;
 
 	public PacketDeflater(int i) {
-		this.minCompressedSize = i;
+		this.compressionThreshold = i;
 		this.deflater = new Deflater();
 	}
 
 	protected void method_10741(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
 		int i = byteBuf.readableBytes();
 		PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf2);
-		if (i < this.minCompressedSize) {
+		if (i < this.compressionThreshold) {
 			packetByteBuf.writeVarInt(0);
 			packetByteBuf.writeBytes(byteBuf);
 		} else {
@@ -38,7 +38,7 @@ public class PacketDeflater extends MessageToByteEncoder<ByteBuf> {
 		}
 	}
 
-	public void setMinCompressedSize(int i) {
-		this.minCompressedSize = i;
+	public void setCompressionThreshold(int i) {
+		this.compressionThreshold = i;
 	}
 }

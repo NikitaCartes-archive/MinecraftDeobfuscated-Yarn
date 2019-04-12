@@ -15,20 +15,20 @@ import net.minecraft.text.TextFormatter;
 import net.minecraft.util.PacketByteBuf;
 
 public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int field_12122;
+	private int completionId;
 	private Suggestions suggestions;
 
 	public CommandSuggestionsS2CPacket() {
 	}
 
 	public CommandSuggestionsS2CPacket(int i, Suggestions suggestions) {
-		this.field_12122 = i;
+		this.completionId = i;
 		this.suggestions = suggestions;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_12122 = packetByteBuf.readVarInt();
+		this.completionId = packetByteBuf.readVarInt();
 		int i = packetByteBuf.readVarInt();
 		int j = packetByteBuf.readVarInt();
 		StringRange stringRange = StringRange.between(i, i + j);
@@ -46,7 +46,7 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.field_12122);
+		packetByteBuf.writeVarInt(this.completionId);
 		packetByteBuf.writeVarInt(this.suggestions.getRange().getStart());
 		packetByteBuf.writeVarInt(this.suggestions.getRange().getLength());
 		packetByteBuf.writeVarInt(this.suggestions.getList().size());
@@ -65,8 +65,8 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_11399() {
-		return this.field_12122;
+	public int getCompletionId() {
+		return this.completionId;
 	}
 
 	@Environment(EnvType.CLIENT)

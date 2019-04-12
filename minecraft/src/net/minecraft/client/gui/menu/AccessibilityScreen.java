@@ -13,29 +13,29 @@ import net.minecraft.text.TranslatableTextComponent;
 
 @Environment(EnvType.CLIENT)
 public class AccessibilityScreen extends Screen {
-	private static final GameOption[] field_18730 = new GameOption[]{
+	private static final GameOption[] OPTIONS = new GameOption[]{
 		GameOption.NARRATOR, GameOption.SUBTITLES, GameOption.TEXT_BACKGROUND_OPACITY, GameOption.TEXT_BACKGROUND, GameOption.CHAT_OPACITY, GameOption.AUTO_JUMP
 	};
-	private final Screen field_18731;
-	private final GameOptions field_18732;
-	private AbstractButtonWidget field_18734;
+	private final Screen parent;
+	private final GameOptions gameOptions;
+	private AbstractButtonWidget narratorButton;
 
 	public AccessibilityScreen(Screen screen, GameOptions gameOptions) {
 		super(new TranslatableTextComponent("options.accessibility.title"));
-		this.field_18731 = screen;
-		this.field_18732 = gameOptions;
+		this.parent = screen;
+		this.gameOptions = gameOptions;
 	}
 
 	@Override
 	protected void init() {
 		int i = 0;
 
-		for (GameOption gameOption : field_18730) {
+		for (GameOption gameOption : OPTIONS) {
 			int j = this.width / 2 - 155 + i % 2 * 160;
 			int k = this.height / 6 + 24 * (i >> 1);
 			AbstractButtonWidget abstractButtonWidget = this.addButton(gameOption.createOptionButton(this.minecraft.options, j, k, 150));
 			if (gameOption == GameOption.NARRATOR) {
-				this.field_18734 = abstractButtonWidget;
+				this.narratorButton = abstractButtonWidget;
 				abstractButtonWidget.active = NarratorManager.INSTANCE.isActive();
 			}
 
@@ -43,9 +43,7 @@ public class AccessibilityScreen extends Screen {
 		}
 
 		this.addButton(
-			new ButtonWidget(
-				this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.field_18731)
-			)
+			new ButtonWidget(this.width / 2 - 100, this.height / 6 + 144, 200, 20, I18n.translate("gui.done"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 	}
 
@@ -62,6 +60,6 @@ public class AccessibilityScreen extends Screen {
 	}
 
 	public void method_19366() {
-		this.field_18734.setMessage(GameOption.NARRATOR.get(this.field_18732));
+		this.narratorButton.setMessage(GameOption.NARRATOR.get(this.gameOptions));
 	}
 }

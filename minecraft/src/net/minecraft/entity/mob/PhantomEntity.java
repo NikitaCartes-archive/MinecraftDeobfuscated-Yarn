@@ -34,10 +34,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.IWorld;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.gen.Heightmap;
 
 public class PhantomEntity extends FlyingEntity implements Monster {
 	private static final TrackedData<Integer> SIZE = DataTracker.registerData(PhantomEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -525,7 +525,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 			if (PhantomEntity.this.getBoundingBox().expand(0.2F).intersects(livingEntity.getBoundingBox())) {
 				PhantomEntity.this.attack(livingEntity);
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
-				PhantomEntity.this.world.method_20290(1039, new BlockPos(PhantomEntity.this), 0);
+				PhantomEntity.this.world.playLevelEvent(1039, new BlockPos(PhantomEntity.this), 0);
 			} else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
 				PhantomEntity.this.movementType = PhantomEntity.PhantomMovementType.field_7318;
 			}

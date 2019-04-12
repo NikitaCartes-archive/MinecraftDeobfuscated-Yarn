@@ -41,7 +41,7 @@ public class EnderEyeItem extends Item {
 			world.setBlockState(blockPos, blockState2, 2);
 			world.updateHorizontalAdjacent(blockPos, Blocks.field_10398);
 			itemUsageContext.getItemStack().subtractAmount(1);
-			world.method_20290(1503, blockPos, 0);
+			world.playLevelEvent(1503, blockPos, 0);
 			BlockPattern.Result result = EndPortalFrameBlock.getCompletedFramePattern().searchAround(world, blockPos);
 			if (result != null) {
 				BlockPos blockPos2 = result.getFrontTopLeft().add(-3, 0, -3);

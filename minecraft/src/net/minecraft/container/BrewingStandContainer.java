@@ -109,12 +109,12 @@ public class BrewingStandContainer extends Container {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17377() {
+	public int getFuel() {
 		return this.propertyDelegate.get(1);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_17378() {
+	public int getBrewTime() {
 		return this.propertyDelegate.get(0);
 	}
 

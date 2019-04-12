@@ -88,7 +88,7 @@ public class SplashScreen extends Overlay {
 		}
 
 		if (this.field_17771 == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.field_18219 || h >= 2.0F)) {
-			this.reloadMonitor.method_18849();
+			this.reloadMonitor.throwExceptions();
 			this.field_17771 = SystemUtil.getMeasuringTimeMs();
 			this.field_18218.run();
 			if (this.client.currentScreen != null) {

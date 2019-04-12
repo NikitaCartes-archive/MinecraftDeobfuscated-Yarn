@@ -93,7 +93,8 @@ public class ItemEntity extends Entity {
 
 			this.move(MovementType.field_6308, this.getVelocity());
 			boolean bl = (int)this.prevX != (int)this.x || (int)this.prevY != (int)this.y || (int)this.prevZ != (int)this.z;
-			if (bl || this.age % 25 == 0) {
+			int i = bl ? 2 : 40;
+			if (this.age % i == 0) {
 				if (this.world.getFluidState(new BlockPos(this)).matches(FluidTags.field_15518)) {
 					this.setVelocity(
 						(double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F), 0.2F, (double)((this.random.nextFloat() - this.random.nextFloat()) * 0.2F)
@@ -101,7 +102,7 @@ public class ItemEntity extends Entity {
 					this.playSound(SoundEvents.field_14821, 0.4F, 2.0F + this.random.nextFloat() * 0.4F);
 				}
 
-				if (!this.world.isClient) {
+				if (!this.world.isClient && this.method_20397()) {
 					this.tryMerge();
 				}
 			}
@@ -140,7 +141,8 @@ public class ItemEntity extends Entity {
 	}
 
 	private void tryMerge() {
-		List<ItemEntity> list = this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5));
+		List<ItemEntity> list = this.world
+			.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntityx -> itemEntityx != this && itemEntityx.method_20397());
 		if (!list.isEmpty()) {
 			for (ItemEntity itemEntity : list) {
 				this.tryMerge(itemEntity);
@@ -148,39 +150,26 @@ public class ItemEntity extends Entity {
 		}
 	}
 
-	private boolean tryMerge(ItemEntity itemEntity) {
-		if (itemEntity == this) {
-			return false;
-		} else if (!itemEntity.isAlive() || !this.isAlive()) {
-			return false;
-		} else if (this.pickupDelay == 32767 || itemEntity.pickupDelay == 32767) {
-			return false;
-		} else if (this.age != -32768 && itemEntity.age != -32768) {
-			ItemStack itemStack = this.getStack();
-			if (itemStack.getAmount() == itemStack.getMaxAmount()) {
-				return false;
-			} else {
-				ItemStack itemStack2 = itemEntity.getStack();
-				if (itemStack2.getItem() != itemStack.getItem()) {
-					return false;
-				} else if (itemStack2.getAmount() + itemStack.getAmount() > itemStack2.getMaxAmount()) {
-					return false;
-				} else if (itemStack2.hasTag() ^ itemStack.hasTag()) {
-					return false;
-				} else if (itemStack2.hasTag() && !itemStack2.getTag().equals(itemStack.getTag())) {
-					return false;
-				} else {
-					if (itemStack2.getAmount() < itemStack.getAmount()) {
-						method_18006(this, itemStack, itemEntity, itemStack2);
-					} else {
-						method_18006(itemEntity, itemStack2, this, itemStack);
-					}
+	private boolean method_20397() {
+		ItemStack itemStack = this.getStack();
+		return !this.isAlive() && this.pickupDelay != 32767 && this.age != -32768 && this.age < 6000 && itemStack.getAmount() < itemStack.getMaxAmount();
+	}
 
-					return true;
+	private void tryMerge(ItemEntity itemEntity) {
+		ItemStack itemStack = this.getStack();
+		ItemStack itemStack2 = itemEntity.getStack();
+		if (itemStack2.getItem() == itemStack.getItem()) {
+			if (itemStack2.getAmount() + itemStack.getAmount() <= itemStack2.getMaxAmount()) {
+				if (!(itemStack2.hasTag() ^ itemStack.hasTag())) {
+					if (!itemStack2.hasTag() || itemStack2.getTag().equals(itemStack.getTag())) {
+						if (itemStack2.getAmount() < itemStack.getAmount()) {
+							method_18006(this, itemStack, itemEntity, itemStack2);
+						} else {
+							method_18006(itemEntity, itemStack2, this, itemStack);
+						}
+					}
 				}
 			}
-		} else {
-			return false;
 		}
 	}
 

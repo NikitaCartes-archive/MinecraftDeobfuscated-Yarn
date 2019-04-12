@@ -46,11 +46,11 @@ import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkTickScheduler;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.light.LightingProvider;
-import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.level.LevelGeneratorType;
 import org.apache.logging.log4j.LogManager;
@@ -204,7 +204,7 @@ public class WorldChunk implements Chunk {
 				blockState = DebugChunkGenerator.getBlockState(i, k);
 			}
 
-			return blockState == null ? Blocks.field_10124.getDefaultState() : blockState;
+			return blockState == null ? Blocks.AIR.getDefaultState() : blockState;
 		} else {
 			try {
 				if (j >= 0 && j >> 4 < this.sections.length) {
@@ -214,7 +214,7 @@ public class WorldChunk implements Chunk {
 					}
 				}
 
-				return Blocks.field_10124.getDefaultState();
+				return Blocks.AIR.getDefaultState();
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Getting block state");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being got");
@@ -419,21 +419,20 @@ public class WorldChunk implements Chunk {
 	public void addBlockEntity(BlockEntity blockEntity) {
 		this.setBlockEntity(blockEntity.getPos(), blockEntity);
 		if (this.loadedToWorld || this.world.isClient()) {
-			this.world.addBlockEntity(blockEntity);
+			this.world.setBlockEntity(blockEntity.getPos(), blockEntity);
 		}
 	}
 
 	@Override
 	public void setBlockEntity(BlockPos blockPos, BlockEntity blockEntity) {
-		blockEntity.setWorld(this.world);
-		blockEntity.setPos(blockPos);
 		if (this.getBlockState(blockPos).getBlock() instanceof BlockEntityProvider) {
-			if (this.blockEntities.containsKey(blockPos)) {
-				((BlockEntity)this.blockEntities.get(blockPos)).invalidate();
-			}
-
+			blockEntity.setWorld(this.world);
+			blockEntity.setPos(blockPos);
 			blockEntity.validate();
-			this.blockEntities.put(blockPos.toImmutable(), blockEntity);
+			BlockEntity blockEntity2 = (BlockEntity)this.blockEntities.put(blockPos.toImmutable(), blockEntity);
+			if (blockEntity2 != null && blockEntity2 != blockEntity) {
+				blockEntity2.invalidate();
+			}
 		}
 	}
 

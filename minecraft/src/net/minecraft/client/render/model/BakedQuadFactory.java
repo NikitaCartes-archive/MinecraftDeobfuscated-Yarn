@@ -9,7 +9,6 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.Quaternion;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
-import net.minecraft.sortme.SomethingDirectionSomethingQuadBakery;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
@@ -50,13 +49,13 @@ public class BakedQuadFactory {
 		ModelElementFace modelElementFace,
 		Sprite sprite,
 		Direction direction,
-		ModelRotationContainer modelRotationContainer,
+		ModelBakeSettings modelBakeSettings,
 		@Nullable net.minecraft.client.render.model.json.ModelRotation modelRotation,
 		boolean bl
 	) {
 		ModelElementTexture modelElementTexture = modelElementFace.textureData;
-		if (modelRotationContainer.isUvLocked()) {
-			modelElementTexture = this.method_3454(modelElementFace.textureData, direction, modelRotationContainer.getRotation());
+		if (modelBakeSettings.isUvLocked()) {
+			modelElementTexture = this.uvLock(modelElementFace.textureData, direction, modelBakeSettings.getRotation());
 		}
 
 		float[] fs = new float[modelElementTexture.uvs.length];
@@ -70,9 +69,7 @@ public class BakedQuadFactory {
 		modelElementTexture.uvs[2] = MathHelper.lerp(h, modelElementTexture.uvs[2], i);
 		modelElementTexture.uvs[1] = MathHelper.lerp(h, modelElementTexture.uvs[1], j);
 		modelElementTexture.uvs[3] = MathHelper.lerp(h, modelElementTexture.uvs[3], j);
-		int[] is = this.method_3458(
-			modelElementTexture, sprite, direction, this.method_3459(vector3f, vector3f2), modelRotationContainer.getRotation(), modelRotation, bl
-		);
+		int[] is = this.method_3458(modelElementTexture, sprite, direction, this.method_3459(vector3f, vector3f2), modelBakeSettings.getRotation(), modelRotation, bl);
 		Direction direction2 = method_3467(is);
 		System.arraycopy(fs, 0, modelElementTexture.uvs, 0, fs.length);
 		if (modelRotation == null) {
@@ -82,7 +79,7 @@ public class BakedQuadFactory {
 		return new BakedQuad(is, modelElementFace.tintIndex, direction2, sprite);
 	}
 
-	private ModelElementTexture method_3454(ModelElementTexture modelElementTexture, Direction direction, ModelRotation modelRotation) {
+	private ModelElementTexture uvLock(ModelElementTexture modelElementTexture, Direction direction, ModelRotation modelRotation) {
 		return field_4264[method_3465(modelRotation, direction)].method_3469(modelElementTexture);
 	}
 
@@ -129,12 +126,12 @@ public class BakedQuadFactory {
 
 	private float[] method_3459(Vector3f vector3f, Vector3f vector3f2) {
 		float[] fs = new float[Direction.values().length];
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.WEST] = vector3f.x() / 16.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.DOWN] = vector3f.y() / 16.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.NORTH] = vector3f.z() / 16.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.EAST] = vector3f2.x() / 16.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.UP] = vector3f2.y() / 16.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.SOUTH] = vector3f2.z() / 16.0F;
+		fs[CubeFace.DirectionIds.WEST] = vector3f.x() / 16.0F;
+		fs[CubeFace.DirectionIds.DOWN] = vector3f.y() / 16.0F;
+		fs[CubeFace.DirectionIds.NORTH] = vector3f.z() / 16.0F;
+		fs[CubeFace.DirectionIds.EAST] = vector3f2.x() / 16.0F;
+		fs[CubeFace.DirectionIds.UP] = vector3f2.y() / 16.0F;
+		fs[CubeFace.DirectionIds.SOUTH] = vector3f2.z() / 16.0F;
 		return fs;
 	}
 
@@ -151,8 +148,8 @@ public class BakedQuadFactory {
 	) {
 		Direction direction2 = modelRotation.apply(direction);
 		int j = bl ? this.method_3457(direction2) : -1;
-		SomethingDirectionSomethingQuadBakery.class_755 lv = SomethingDirectionSomethingQuadBakery.method_3163(direction).method_3162(i);
-		Vector3f vector3f = new Vector3f(fs[lv.field_3975], fs[lv.field_3974], fs[lv.field_3973]);
+		CubeFace.Corner corner = CubeFace.method_3163(direction).getCorner(i);
+		Vector3f vector3f = new Vector3f(fs[corner.xSide], fs[corner.ySide], fs[corner.zSide]);
 		this.method_3463(vector3f, modelRotation2);
 		int k = this.method_3455(vector3f, direction, i, modelRotation);
 		this.method_3460(is, k, i, vector3f, j, sprite, modelElementTexture);
@@ -253,51 +250,51 @@ public class BakedQuadFactory {
 		int[] js = new int[is.length];
 		System.arraycopy(is, 0, js, 0, is.length);
 		float[] fs = new float[Direction.values().length];
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.WEST] = 999.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.DOWN] = 999.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.NORTH] = 999.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.EAST] = -999.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.UP] = -999.0F;
-		fs[SomethingDirectionSomethingQuadBakery.DirectionIds.SOUTH] = -999.0F;
+		fs[CubeFace.DirectionIds.WEST] = 999.0F;
+		fs[CubeFace.DirectionIds.DOWN] = 999.0F;
+		fs[CubeFace.DirectionIds.NORTH] = 999.0F;
+		fs[CubeFace.DirectionIds.EAST] = -999.0F;
+		fs[CubeFace.DirectionIds.UP] = -999.0F;
+		fs[CubeFace.DirectionIds.SOUTH] = -999.0F;
 
 		for (int i = 0; i < 4; i++) {
 			int j = 7 * i;
 			float f = Float.intBitsToFloat(js[j]);
 			float g = Float.intBitsToFloat(js[j + 1]);
 			float h = Float.intBitsToFloat(js[j + 2]);
-			if (f < fs[SomethingDirectionSomethingQuadBakery.DirectionIds.WEST]) {
-				fs[SomethingDirectionSomethingQuadBakery.DirectionIds.WEST] = f;
+			if (f < fs[CubeFace.DirectionIds.WEST]) {
+				fs[CubeFace.DirectionIds.WEST] = f;
 			}
 
-			if (g < fs[SomethingDirectionSomethingQuadBakery.DirectionIds.DOWN]) {
-				fs[SomethingDirectionSomethingQuadBakery.DirectionIds.DOWN] = g;
+			if (g < fs[CubeFace.DirectionIds.DOWN]) {
+				fs[CubeFace.DirectionIds.DOWN] = g;
 			}
 
-			if (h < fs[SomethingDirectionSomethingQuadBakery.DirectionIds.NORTH]) {
-				fs[SomethingDirectionSomethingQuadBakery.DirectionIds.NORTH] = h;
+			if (h < fs[CubeFace.DirectionIds.NORTH]) {
+				fs[CubeFace.DirectionIds.NORTH] = h;
 			}
 
-			if (f > fs[SomethingDirectionSomethingQuadBakery.DirectionIds.EAST]) {
-				fs[SomethingDirectionSomethingQuadBakery.DirectionIds.EAST] = f;
+			if (f > fs[CubeFace.DirectionIds.EAST]) {
+				fs[CubeFace.DirectionIds.EAST] = f;
 			}
 
-			if (g > fs[SomethingDirectionSomethingQuadBakery.DirectionIds.UP]) {
-				fs[SomethingDirectionSomethingQuadBakery.DirectionIds.UP] = g;
+			if (g > fs[CubeFace.DirectionIds.UP]) {
+				fs[CubeFace.DirectionIds.UP] = g;
 			}
 
-			if (h > fs[SomethingDirectionSomethingQuadBakery.DirectionIds.SOUTH]) {
-				fs[SomethingDirectionSomethingQuadBakery.DirectionIds.SOUTH] = h;
+			if (h > fs[CubeFace.DirectionIds.SOUTH]) {
+				fs[CubeFace.DirectionIds.SOUTH] = h;
 			}
 		}
 
-		SomethingDirectionSomethingQuadBakery somethingDirectionSomethingQuadBakery = SomethingDirectionSomethingQuadBakery.method_3163(direction);
+		CubeFace cubeFace = CubeFace.method_3163(direction);
 
 		for (int jx = 0; jx < 4; jx++) {
 			int k = 7 * jx;
-			SomethingDirectionSomethingQuadBakery.class_755 lv = somethingDirectionSomethingQuadBakery.method_3162(jx);
-			float hx = fs[lv.field_3975];
-			float l = fs[lv.field_3974];
-			float m = fs[lv.field_3973];
+			CubeFace.Corner corner = cubeFace.getCorner(jx);
+			float hx = fs[corner.xSide];
+			float l = fs[corner.ySide];
+			float m = fs[corner.zSide];
 			is[k] = Float.floatToRawIntBits(hx);
 			is[k + 1] = Float.floatToRawIntBits(l);
 			is[k + 2] = Float.floatToRawIntBits(m);

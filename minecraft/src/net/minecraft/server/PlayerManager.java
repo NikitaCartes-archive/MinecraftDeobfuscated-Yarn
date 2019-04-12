@@ -46,21 +46,14 @@ import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.server.config.BannedIpEntry;
-import net.minecraft.server.config.BannedIpList;
-import net.minecraft.server.config.BannedPlayerEntry;
-import net.minecraft.server.config.BannedPlayerList;
-import net.minecraft.server.config.OperatorEntry;
-import net.minecraft.server.config.OperatorList;
-import net.minecraft.server.config.WhitelistList;
 import net.minecraft.server.network.DemoServerPlayerInteractionManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.ChatMessageType;
 import net.minecraft.stat.ServerStatHandler;
 import net.minecraft.stat.Stats;
+import net.minecraft.text.ChatMessageType;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
@@ -155,8 +148,8 @@ public abstract class PlayerManager {
 		serverPlayNetworkHandler.sendPacket(new HeldItemChangeS2CPacket(serverPlayerEntity.inventory.selectedSlot));
 		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values()));
 		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(this.server.getTagManager()));
-		this.method_14576(serverPlayerEntity);
-		serverPlayerEntity.getStatHandler().method_14914();
+		this.sendCommandTree(serverPlayerEntity);
+		serverPlayerEntity.getStatHandler().updateStatSet();
 		serverPlayerEntity.getRecipeBook().sendInitRecipesPacket(serverPlayerEntity);
 		this.method_14588(serverWorld.method_14170(), serverPlayerEntity);
 		this.server.method_3856();
@@ -230,7 +223,7 @@ public abstract class PlayerManager {
 		for (int i = 0; i < 19; i++) {
 			ScoreboardObjective scoreboardObjective = serverScoreboard.getObjectiveForSlot(i);
 			if (scoreboardObjective != null && !set.contains(scoreboardObjective)) {
-				for (Packet<?> packet : serverScoreboard.method_12937(scoreboardObjective)) {
+				for (Packet<?> packet : serverScoreboard.createChangePackets(scoreboardObjective)) {
 					serverPlayerEntity.networkHandler.sendPacket(packet);
 				}
 
@@ -455,7 +448,7 @@ public abstract class PlayerManager {
 				new ExperienceBarUpdateS2CPacket(serverPlayerEntity2.experienceLevelProgress, serverPlayerEntity2.experienceLevel, serverPlayerEntity2.experience)
 			);
 		this.method_14606(serverPlayerEntity2, serverWorld);
-		this.method_14576(serverPlayerEntity2);
+		this.sendCommandTree(serverPlayerEntity2);
 		serverWorld.method_18215(serverPlayerEntity2);
 		this.players.add(serverPlayerEntity2);
 		this.playerMap.put(serverPlayerEntity2.getUuid(), serverPlayerEntity2);
@@ -464,10 +457,10 @@ public abstract class PlayerManager {
 		return serverPlayerEntity2;
 	}
 
-	public void method_14576(ServerPlayerEntity serverPlayerEntity) {
+	public void sendCommandTree(ServerPlayerEntity serverPlayerEntity) {
 		GameProfile gameProfile = serverPlayerEntity.getGameProfile();
 		int i = this.server.getPermissionLevel(gameProfile);
-		this.method_14596(serverPlayerEntity, i);
+		this.sendCommandTree(serverPlayerEntity, i);
 	}
 
 	public void updatePlayerLatency() {
@@ -493,7 +486,7 @@ public abstract class PlayerManager {
 	}
 
 	public void sendToTeam(PlayerEntity playerEntity, TextComponent textComponent) {
-		AbstractTeam abstractTeam = playerEntity.method_5781();
+		AbstractTeam abstractTeam = playerEntity.getScoreboardTeam();
 		if (abstractTeam != null) {
 			for (String string : abstractTeam.getPlayerList()) {
 				ServerPlayerEntity serverPlayerEntity = this.getPlayer(string);
@@ -505,13 +498,13 @@ public abstract class PlayerManager {
 	}
 
 	public void sendToOtherTeams(PlayerEntity playerEntity, TextComponent textComponent) {
-		AbstractTeam abstractTeam = playerEntity.method_5781();
+		AbstractTeam abstractTeam = playerEntity.getScoreboardTeam();
 		if (abstractTeam == null) {
 			this.sendToAll(textComponent);
 		} else {
 			for (int i = 0; i < this.players.size(); i++) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
-				if (serverPlayerEntity.method_5781() != abstractTeam) {
+				if (serverPlayerEntity.getScoreboardTeam() != abstractTeam) {
 					serverPlayerEntity.appendCommandFeedback(textComponent);
 				}
 			}
@@ -540,7 +533,7 @@ public abstract class PlayerManager {
 		this.ops.add(new OperatorEntry(gameProfile, this.server.getOpPermissionLevel(), this.ops.isOp(gameProfile)));
 		ServerPlayerEntity serverPlayerEntity = this.getPlayer(gameProfile.getId());
 		if (serverPlayerEntity != null) {
-			this.method_14576(serverPlayerEntity);
+			this.sendCommandTree(serverPlayerEntity);
 		}
 	}
 
@@ -548,11 +541,11 @@ public abstract class PlayerManager {
 		this.ops.remove(gameProfile);
 		ServerPlayerEntity serverPlayerEntity = this.getPlayer(gameProfile.getId());
 		if (serverPlayerEntity != null) {
-			this.method_14576(serverPlayerEntity);
+			this.sendCommandTree(serverPlayerEntity);
 		}
 	}
 
-	private void method_14596(ServerPlayerEntity serverPlayerEntity, int i) {
+	private void sendCommandTree(ServerPlayerEntity serverPlayerEntity, int i) {
 		if (serverPlayerEntity.networkHandler != null) {
 			byte b;
 			if (i <= 0) {
@@ -725,7 +718,7 @@ public abstract class PlayerManager {
 		this.broadcastChatMessage(textComponent, true);
 	}
 
-	public ServerStatHandler method_14583(PlayerEntity playerEntity) {
+	public ServerStatHandler createStatHandler(PlayerEntity playerEntity) {
 		UUID uUID = playerEntity.getUuid();
 		ServerStatHandler serverStatHandler = uUID == null ? null : (ServerStatHandler)this.statisticsMap.get(uUID);
 		if (serverStatHandler == null) {

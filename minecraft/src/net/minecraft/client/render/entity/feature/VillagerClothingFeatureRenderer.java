@@ -56,12 +56,12 @@ public class VillagerClothingFeatureRenderer<T extends LivingEntity & VillagerDa
 			VillagerResourceMetadata.HatType hatType2 = this.getHatType(this.professionToHat, "profession", Registry.VILLAGER_PROFESSION, villagerProfession);
 			M entityModel = this.getModel();
 			this.bindTexture(this.findTexture("type", Registry.VILLAGER_TYPE.getId(villagerType)));
-			entityModel.method_17150(
+			entityModel.setHatVisible(
 				hatType2 == VillagerResourceMetadata.HatType.field_17160
 					|| hatType2 == VillagerResourceMetadata.HatType.field_17161 && hatType != VillagerResourceMetadata.HatType.field_17162
 			);
 			entityModel.render(livingEntity, f, g, i, j, k, l);
-			entityModel.method_17150(true);
+			entityModel.setHatVisible(true);
 			if (villagerProfession != VillagerProfession.field_17051 && !livingEntity.isChild()) {
 				this.bindTexture(this.findTexture("profession", Registry.VILLAGER_PROFESSION.getId(villagerProfession)));
 				entityModel.render(livingEntity, f, g, i, j, k, l);

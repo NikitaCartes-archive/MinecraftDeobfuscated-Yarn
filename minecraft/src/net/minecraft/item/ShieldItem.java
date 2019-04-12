@@ -7,7 +7,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.block.BannerItem;
 import net.minecraft.tag.ItemTags;
 import net.minecraft.text.TextComponent;
 import net.minecraft.util.ActionResult;

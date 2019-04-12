@@ -132,7 +132,7 @@ import net.minecraft.world.World;
 @Environment(EnvType.CLIENT)
 public class EntityRenderDispatcher {
 	private final Map<Class<? extends Entity>, EntityRenderer<? extends Entity>> renderers = Maps.<Class<? extends Entity>, EntityRenderer<? extends Entity>>newHashMap();
-	private final Map<String, PlayerEntityRenderer> skinMap = Maps.<String, PlayerEntityRenderer>newHashMap();
+	private final Map<String, PlayerEntityRenderer> modelRenderers = Maps.<String, PlayerEntityRenderer>newHashMap();
 	private final PlayerEntityRenderer playerRenderer;
 	private TextRenderer textRenderer;
 	private double renderPosX;
@@ -254,8 +254,8 @@ public class EntityRenderDispatcher {
 		this.method_17145(LlamaSpitEntity.class, new LlamaSpitEntityRenderer(this));
 		this.method_17145(LightningEntity.class, new LightningEntityRenderer(this));
 		this.playerRenderer = new PlayerEntityRenderer(this);
-		this.skinMap.put("default", this.playerRenderer);
-		this.skinMap.put("slim", new PlayerEntityRenderer(this, true));
+		this.modelRenderers.put("default", this.playerRenderer);
+		this.modelRenderers.put("slim", new PlayerEntityRenderer(this, true));
 	}
 
 	public void setRenderPosition(double d, double e, double f) {
@@ -277,8 +277,8 @@ public class EntityRenderDispatcher {
 	@Nullable
 	public <T extends Entity, U extends EntityRenderer<T>> U getRenderer(T entity) {
 		if (entity instanceof AbstractClientPlayerEntity) {
-			String string = ((AbstractClientPlayerEntity)entity).method_3121();
-			PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.skinMap.get(string);
+			String string = ((AbstractClientPlayerEntity)entity).getModel();
+			PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.modelRenderers.get(string);
 			return (U)(playerEntityRenderer != null ? playerEntityRenderer : this.playerRenderer);
 		} else {
 			return this.getRenderer(entity.getClass());

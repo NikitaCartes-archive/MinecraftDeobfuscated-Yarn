@@ -16,12 +16,12 @@ public class DirectConnectServerScreen extends Screen {
 	private ButtonWidget selectServerButton;
 	private final ServerEntry serverEntry;
 	private TextFieldWidget addressField;
-	private final BooleanConsumer field_19235;
+	private final BooleanConsumer callback;
 
 	public DirectConnectServerScreen(BooleanConsumer booleanConsumer, ServerEntry serverEntry) {
 		super(new TranslatableTextComponent("selectServer.direct"));
 		this.serverEntry = serverEntry;
-		this.field_19235 = booleanConsumer;
+		this.callback = booleanConsumer;
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class DirectConnectServerScreen extends Screen {
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 12, 200, 20, I18n.translate("selectServer.select"), buttonWidget -> this.saveAndClose())
 		);
 		this.addButton(
-			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.field_19235.accept(false))
+			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.callback.accept(false))
 		);
 		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20);
 		this.addressField.setMaxLength(128);
@@ -57,7 +57,7 @@ public class DirectConnectServerScreen extends Screen {
 
 	private void saveAndClose() {
 		this.serverEntry.address = this.addressField.getText();
-		this.field_19235.accept(true);
+		this.callback.accept(true);
 	}
 
 	@Override

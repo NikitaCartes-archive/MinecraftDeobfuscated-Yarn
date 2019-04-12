@@ -21,53 +21,53 @@ import org.lwjgl.system.MemoryStack;
 @Environment(EnvType.CLIENT)
 public class SoundEngine {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private long field_18898;
-	private long field_18899;
-	private static final SoundEngine.class_4276 field_19183 = new SoundEngine.class_4276() {
+	private long devicePointer;
+	private long contextPointer;
+	private static final SoundEngine.SourceSet EMPTY_SOURCE_SET = new SoundEngine.SourceSet() {
 		@Nullable
 		@Override
-		public Source method_19666() {
+		public Source createSource() {
 			return null;
 		}
 
 		@Override
-		public boolean method_19667(Source source) {
+		public boolean release(Source source) {
 			return false;
 		}
 
 		@Override
-		public void method_19668() {
+		public void close() {
 		}
 
 		@Override
-		public int method_20298() {
+		public int getMaxSourceCount() {
 			return 0;
 		}
 
 		@Override
-		public int method_20299() {
+		public int getSourceCount() {
 			return 0;
 		}
 	};
-	private SoundEngine.class_4276 field_19184 = field_19183;
-	private SoundEngine.class_4276 field_19185 = field_19183;
+	private SoundEngine.SourceSet streamingSources = EMPTY_SOURCE_SET;
+	private SoundEngine.SourceSet staticSources = EMPTY_SOURCE_SET;
 	private final Listener listener = new Listener();
 
 	public void init() {
-		this.field_18898 = method_20050();
-		ALCCapabilities aLCCapabilities = ALC.createCapabilities(this.field_18898);
-		if (AlUtil.method_20051(this.field_18898, "Get capabilities")) {
+		this.devicePointer = openDevice();
+		ALCCapabilities aLCCapabilities = ALC.createCapabilities(this.devicePointer);
+		if (AlUtil.checkAlcErrors(this.devicePointer, "Get capabilities")) {
 			throw new IllegalStateException("Failed to get OpenAL capabilities");
 		} else if (!aLCCapabilities.OpenALC11) {
 			throw new IllegalStateException("OpenAL 1.1 not supported");
 		} else {
-			this.field_18899 = ALC10.alcCreateContext(this.field_18898, (IntBuffer)null);
-			ALC10.alcMakeContextCurrent(this.field_18899);
+			this.contextPointer = ALC10.alcCreateContext(this.devicePointer, (IntBuffer)null);
+			ALC10.alcMakeContextCurrent(this.contextPointer);
 			int i = this.method_20297();
 			int j = MathHelper.clamp((int)MathHelper.sqrt((float)i), 2, 8);
 			int k = MathHelper.clamp(i - j, 8, 255);
-			this.field_19184 = new SoundEngine.class_4226(k);
-			this.field_19185 = new SoundEngine.class_4226(j);
+			this.streamingSources = new SoundEngine.SourceSetImpl(k);
+			this.staticSources = new SoundEngine.SourceSetImpl(j);
 			ALCapabilities aLCapabilities = AL.createCapabilities(aLCCapabilities);
 			AlUtil.checkErrors("Initialization");
 			if (!aLCapabilities.AL_EXT_source_distance_model) {
@@ -87,14 +87,14 @@ public class SoundEngine {
 	private int method_20297() {
 		int var8;
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-			int i = ALC10.alcGetInteger(this.field_18898, 4098);
-			if (AlUtil.method_20051(this.field_18898, "Get attributes size")) {
+			int i = ALC10.alcGetInteger(this.devicePointer, 4098);
+			if (AlUtil.checkAlcErrors(this.devicePointer, "Get attributes size")) {
 				throw new IllegalStateException("Failed to get OpenAL attributes");
 			}
 
 			IntBuffer intBuffer = memoryStack.mallocInt(i);
-			ALC10.alcGetIntegerv(this.field_18898, 4099, intBuffer);
-			if (AlUtil.method_20051(this.field_18898, "Get attributes")) {
+			ALC10.alcGetIntegerv(this.devicePointer, 4099, intBuffer);
+			if (AlUtil.checkAlcErrors(this.devicePointer, "Get attributes")) {
 				throw new IllegalStateException("Failed to get OpenAL attributes");
 			}
 
@@ -121,10 +121,10 @@ public class SoundEngine {
 		return var8;
 	}
 
-	private static long method_20050() {
+	private static long openDevice() {
 		for (int i = 0; i < 3; i++) {
 			long l = ALC10.alcOpenDevice((ByteBuffer)null);
-			if (l != 0L && !AlUtil.method_20051(l, "Open device")) {
+			if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {
 				return l;
 			}
 		}
@@ -133,11 +133,11 @@ public class SoundEngine {
 	}
 
 	public void close() {
-		this.field_19184.method_19668();
-		this.field_19185.method_19668();
-		ALC10.alcDestroyContext(this.field_18899);
-		if (this.field_18898 != 0L) {
-			ALC10.alcCloseDevice(this.field_18898);
+		this.streamingSources.close();
+		this.staticSources.close();
+		ALC10.alcDestroyContext(this.contextPointer);
+		if (this.devicePointer != 0L) {
+			ALC10.alcCloseDevice(this.devicePointer);
 		}
 	}
 
@@ -146,19 +146,23 @@ public class SoundEngine {
 	}
 
 	@Nullable
-	public Source method_19663(SoundEngine.RunMode runMode) {
-		return (runMode == SoundEngine.RunMode.field_18353 ? this.field_19185 : this.field_19184).method_19666();
+	public Source createSource(SoundEngine.RunMode runMode) {
+		return (runMode == SoundEngine.RunMode.field_18353 ? this.staticSources : this.streamingSources).createSource();
 	}
 
 	public void release(Source source) {
-		if (!this.field_19184.method_19667(source) && !this.field_19185.method_19667(source)) {
+		if (!this.streamingSources.release(source) && !this.staticSources.release(source)) {
 			throw new IllegalStateException("Tried to release unknown channel");
 		}
 	}
 
-	public String method_20296() {
+	public String getDebugString() {
 		return String.format(
-			"Sounds: %d/%d + %d/%d", this.field_19184.method_20299(), this.field_19184.method_20298(), this.field_19185.method_20299(), this.field_19185.method_20298()
+			"Sounds: %d/%d + %d/%d",
+			this.streamingSources.getSourceCount(),
+			this.streamingSources.getMaxSourceCount(),
+			this.staticSources.getSourceCount(),
+			this.staticSources.getMaxSourceCount()
 		);
 	}
 
@@ -169,21 +173,35 @@ public class SoundEngine {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_4226 implements SoundEngine.class_4276 {
-		private final int field_18903;
+	interface SourceSet {
+		@Nullable
+		Source createSource();
+
+		boolean release(Source source);
+
+		void close();
+
+		int getMaxSourceCount();
+
+		int getSourceCount();
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class SourceSetImpl implements SoundEngine.SourceSet {
+		private final int maxSourceCount;
 		private final Set<Source> sources = Sets.newIdentityHashSet();
 
-		public class_4226(int i) {
-			this.field_18903 = i;
+		public SourceSetImpl(int i) {
+			this.maxSourceCount = i;
 		}
 
 		@Nullable
 		@Override
-		public Source method_19666() {
-			if (this.sources.size() >= this.field_18903) {
+		public Source createSource() {
+			if (this.sources.size() >= this.maxSourceCount) {
 				return null;
 			} else {
-				Source source = Source.method_19638();
+				Source source = Source.create();
 				if (source != null) {
 					this.sources.add(source);
 				}
@@ -193,7 +211,7 @@ public class SoundEngine {
 		}
 
 		@Override
-		public boolean method_19667(Source source) {
+		public boolean release(Source source) {
 			if (!this.sources.remove(source)) {
 				return false;
 			} else {
@@ -203,33 +221,19 @@ public class SoundEngine {
 		}
 
 		@Override
-		public void method_19668() {
+		public void close() {
 			this.sources.forEach(Source::close);
 			this.sources.clear();
 		}
 
 		@Override
-		public int method_20298() {
-			return this.field_18903;
+		public int getMaxSourceCount() {
+			return this.maxSourceCount;
 		}
 
 		@Override
-		public int method_20299() {
+		public int getSourceCount() {
 			return this.sources.size();
 		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	interface class_4276 {
-		@Nullable
-		Source method_19666();
-
-		boolean method_19667(Source source);
-
-		void method_19668();
-
-		int method_20298();
-
-		int method_20299();
 	}
 }

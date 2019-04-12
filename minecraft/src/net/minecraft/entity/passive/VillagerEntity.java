@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.network.DebugRendererInfoManager;
 import net.minecraft.datafixers.NbtOps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -57,7 +58,6 @@ import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.DebugRendererInfoManager;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
@@ -549,10 +549,10 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 
 	@Override
 	public TextComponent getDisplayName() {
-		AbstractTeam abstractTeam = this.method_5781();
+		AbstractTeam abstractTeam = this.getScoreboardTeam();
 		TextComponent textComponent = this.getCustomName();
 		if (textComponent != null) {
-			return Team.method_1142(abstractTeam, textComponent)
+			return Team.modifyText(abstractTeam, textComponent)
 				.modifyStyle(style -> style.setHoverEvent(this.getComponentHoverEvent()).setInsertion(this.getUuidAsString()));
 		} else {
 			VillagerProfession villagerProfession = this.getVillagerData().getProfession();

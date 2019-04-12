@@ -132,8 +132,8 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 		GlStateManager.popMatrix();
 		GuiLighting.disable();
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		EnchantingPhrases.getInstance().setSeed((long)this.container.method_17413());
-		int q = this.container.method_7638();
+		EnchantingPhrases.getInstance().setSeed((long)this.container.getSeed());
+		int q = this.container.getLapisCount();
 
 		for (int r = 0; r < 3; r++) {
 			int s = k + 60;
@@ -183,7 +183,7 @@ public class EnchantingScreen extends ContainerScreen<EnchantingTableContainer> 
 		super.render(i, j, f);
 		this.drawMouseoverTooltip(i, j);
 		boolean bl = this.minecraft.player.abilities.creativeMode;
-		int k = this.container.method_7638();
+		int k = this.container.getLapisCount();
 
 		for (int l = 0; l < 3; l++) {
 			int m = this.container.enchantmentPower[l];

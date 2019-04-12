@@ -73,7 +73,7 @@ public class ListTag extends AbstractListTag<Tag> {
 		return stringBuilder.append(']').toString();
 	}
 
-	private void method_17809() {
+	private void forgetTypeIfEmpty() {
 		if (this.value.isEmpty()) {
 			this.type = 0;
 		}
@@ -82,7 +82,7 @@ public class ListTag extends AbstractListTag<Tag> {
 	@Override
 	public Tag method_10536(int i) {
 		Tag tag = (Tag)this.value.remove(i);
-		this.method_17809();
+		this.forgetTypeIfEmpty();
 		return tag;
 	}
 

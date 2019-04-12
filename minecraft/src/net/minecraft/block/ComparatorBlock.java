@@ -105,7 +105,7 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 		if (!playerEntity.abilities.allowModifyWorld) {
 			return false;
 		} else {
-			blockState = blockState.method_11572(MODE);
+			blockState = blockState.cycle(MODE);
 			float f = blockState.get(MODE) == ComparatorMode.field_12578 ? 0.55F : 0.5F;
 			world.playSound(playerEntity, blockPos, SoundEvents.field_14762, SoundCategory.field_15245, 0.3F, f);
 			world.setBlockState(blockPos, blockState, 2);

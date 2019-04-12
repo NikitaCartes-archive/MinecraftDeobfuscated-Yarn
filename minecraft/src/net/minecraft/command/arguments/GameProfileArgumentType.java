@@ -43,7 +43,7 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 			if (entitySelector.includesNonPlayers()) {
 				throw EntityArgumentType.PLAYER_SELECTOR_HAS_ENTITIES_EXCEPTION.create();
 			} else {
-				return new GameProfileArgumentType.SelectorProfileSupplier(entitySelector);
+				return new GameProfileArgumentType.class_2193(entitySelector);
 			}
 		} else {
 			int i = stringReader.getCursor();
@@ -94,16 +94,16 @@ public class GameProfileArgumentType implements ArgumentType<GameProfileArgument
 		Collection<GameProfile> getNames(ServerCommandSource serverCommandSource) throws CommandSyntaxException;
 	}
 
-	public static class SelectorProfileSupplier implements GameProfileArgumentType.GameProfileArgument {
-		private final EntitySelector selector;
+	public static class class_2193 implements GameProfileArgumentType.GameProfileArgument {
+		private final EntitySelector field_9870;
 
-		public SelectorProfileSupplier(EntitySelector entitySelector) {
-			this.selector = entitySelector;
+		public class_2193(EntitySelector entitySelector) {
+			this.field_9870 = entitySelector;
 		}
 
 		@Override
 		public Collection<GameProfile> getNames(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-			List<ServerPlayerEntity> list = this.selector.getPlayers(serverCommandSource);
+			List<ServerPlayerEntity> list = this.field_9870.getPlayers(serverCommandSource);
 			if (list.isEmpty()) {
 				throw EntityArgumentType.PLAYER_NOT_FOUND_EXCEPTION.create();
 			} else {

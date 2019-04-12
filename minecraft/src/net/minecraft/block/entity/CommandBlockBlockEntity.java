@@ -11,11 +11,11 @@ import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sortme.CommandBlockExecutor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.CommandBlockExecutor;
 
 public class CommandBlockBlockEntity extends BlockEntity {
 	private boolean powered;
@@ -35,7 +35,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		}
 
 		@Override
-		public void method_8295() {
+		public void markDirty() {
 			BlockState blockState = CommandBlockBlockEntity.this.world.getBlockState(CommandBlockBlockEntity.this.pos);
 			this.getWorld().updateListeners(CommandBlockBlockEntity.this.pos, blockState, blockState, 3);
 		}
@@ -51,7 +51,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 		}
 
 		@Override
-		public ServerCommandSource markDirty() {
+		public ServerCommandSource getSource() {
 			return new ServerCommandSource(
 				this,
 				new Vec3d(

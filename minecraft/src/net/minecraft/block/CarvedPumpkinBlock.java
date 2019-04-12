@@ -54,8 +54,8 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 		if (result != null) {
 			for (int i = 0; i < this.method_9729().getHeight(); i++) {
 				CachedBlockPosition cachedBlockPosition = result.translate(0, i, 0);
-				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
-				world.method_20290(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
+				world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
+				world.playLevelEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
 			}
 
 			SnowmanEntity snowmanEntity = EntityType.SNOW_GOLEM.create(world);
@@ -69,7 +69,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 
 			for (int j = 0; j < this.method_9729().getHeight(); j++) {
 				CachedBlockPosition cachedBlockPosition2 = result.translate(0, j, 0);
-				world.updateNeighbors(cachedBlockPosition2.getBlockPos(), Blocks.field_10124);
+				world.updateNeighbors(cachedBlockPosition2.getBlockPos(), Blocks.AIR);
 			}
 		} else {
 			result = this.method_9730().searchAround(world, blockPos);
@@ -77,8 +77,8 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				for (int i = 0; i < this.method_9730().getWidth(); i++) {
 					for (int k = 0; k < this.method_9730().getHeight(); k++) {
 						CachedBlockPosition cachedBlockPosition3 = result.translate(i, k, 0);
-						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.field_10124.getDefaultState(), 2);
-						world.method_20290(2001, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
+						world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
+						world.playLevelEvent(2001, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
 					}
 				}
 
@@ -95,7 +95,7 @@ public class CarvedPumpkinBlock extends HorizontalFacingBlock {
 				for (int j = 0; j < this.method_9730().getWidth(); j++) {
 					for (int l = 0; l < this.method_9730().getHeight(); l++) {
 						CachedBlockPosition cachedBlockPosition4 = result.translate(j, l, 0);
-						world.updateNeighbors(cachedBlockPosition4.getBlockPos(), Blocks.field_10124);
+						world.updateNeighbors(cachedBlockPosition4.getBlockPos(), Blocks.AIR);
 					}
 				}
 			}

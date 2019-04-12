@@ -109,7 +109,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		this.dataTracker.startTracking(field_7663, 0);
 		this.dataTracker.startTracking(field_7668, 1);
 		this.dataTracker.startTracking(field_7667, 0.0F);
-		this.dataTracker.startTracking(CUSTOM_BLOCK_ID, Block.getRawIdFromState(Blocks.field_10124.getDefaultState()));
+		this.dataTracker.startTracking(CUSTOM_BLOCK_ID, Block.getRawIdFromState(Blocks.AIR.getDefaultState()));
 		this.dataTracker.startTracking(CUSTOM_BLOCK_OFFSET, 6);
 		this.dataTracker.startTracking(CUSTOM_BLOCK_PRESENT, false);
 	}
@@ -260,7 +260,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 
 			this.setRotation(this.yaw, this.pitch);
 			if (this.getMinecartType() == AbstractMinecartEntity.Type.field_7674 && squaredHorizontalLength(this.getVelocity()) > 0.01) {
-				List<Entity> list = this.world.getEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F), EntityPredicates.method_5911(this));
+				List<Entity> list = this.world.getEntities(this, this.getBoundingBox().expand(0.2F, 0.0, 0.2F), EntityPredicates.canBePushedBy(this));
 				if (!list.isEmpty()) {
 					for (int n = 0; n < list.size(); n++) {
 						Entity entity = (Entity)list.get(n);
@@ -700,7 +700,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	public BlockState getDefaultContainedBlock() {
-		return Blocks.field_10124.getDefaultState();
+		return Blocks.AIR.getDefaultState();
 	}
 
 	public int getBlockOffset() {

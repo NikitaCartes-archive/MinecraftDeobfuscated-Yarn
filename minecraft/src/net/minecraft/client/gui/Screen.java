@@ -28,8 +28,8 @@ import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.nbt.Tag;
-import net.minecraft.sortme.JsonLikeTagParser;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TextFormat;
 import net.minecraft.text.event.ClickEvent;
@@ -200,7 +200,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 				ItemStack itemStack = ItemStack.EMPTY;
 
 				try {
-					Tag tag = JsonLikeTagParser.parse(hoverEvent.getValue().getString());
+					Tag tag = StringNbtReader.parse(hoverEvent.getValue().getString());
 					if (tag instanceof CompoundTag) {
 						itemStack = ItemStack.fromTag((CompoundTag)tag);
 					}
@@ -215,7 +215,7 @@ public abstract class Screen extends AbstractParentElement implements Drawable {
 			} else if (hoverEvent.getAction() == HoverEvent.Action.SHOW_ENTITY) {
 				if (this.minecraft.options.advancedItemTooltips) {
 					try {
-						CompoundTag compoundTag = JsonLikeTagParser.parse(hoverEvent.getValue().getString());
+						CompoundTag compoundTag = StringNbtReader.parse(hoverEvent.getValue().getString());
 						List<String> list = Lists.<String>newArrayList();
 						TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(compoundTag.getString("name"));
 						if (textComponent2 != null) {

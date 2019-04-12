@@ -23,12 +23,12 @@ import net.minecraft.world.Difficulty;
 
 @Environment(EnvType.CLIENT)
 public class SettingsScreen extends Screen {
-	private static final GameOption[] field_2504 = new GameOption[]{GameOption.FOV};
+	private static final GameOption[] OPTIONS = new GameOption[]{GameOption.FOV};
 	private final Screen parent;
 	private final GameOptions settings;
 	private ButtonWidget difficultyButton;
 	private LockButtonWidget lockDifficultyButton;
-	private Difficulty field_18745;
+	private Difficulty difficulty;
 
 	public SettingsScreen(Screen screen, GameOptions gameOptions) {
 		super(new TranslatableTextComponent("options.title"));
@@ -40,7 +40,7 @@ public class SettingsScreen extends Screen {
 	protected void init() {
 		int i = 0;
 
-		for (GameOption gameOption : field_2504) {
+		for (GameOption gameOption : OPTIONS) {
 			int j = this.width / 2 - 155 + i % 2 * 160;
 			int k = this.height / 6 - 12 + 24 * (i >> 1);
 			this.addButton(gameOption.createOptionButton(this.minecraft.options, j, k, 150));
@@ -48,13 +48,15 @@ public class SettingsScreen extends Screen {
 		}
 
 		if (this.minecraft.world != null) {
-			this.field_18745 = this.minecraft.world.getDifficulty();
+			this.difficulty = this.minecraft.world.getDifficulty();
 			this.difficultyButton = this.addButton(
-				new ButtonWidget(this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.method_2189(this.field_18745), buttonWidget -> {
-					this.field_18745 = Difficulty.getDifficulty(this.field_18745.getId() + 1);
-					this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(this.field_18745));
-					this.difficultyButton.setMessage(this.method_2189(this.field_18745));
-				})
+				new ButtonWidget(
+					this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, this.getDifficultyButtonText(this.difficulty), buttonWidget -> {
+						this.difficulty = Difficulty.getDifficulty(this.difficulty.getId() + 1);
+						this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket(this.difficulty));
+						this.difficultyButton.setMessage(this.getDifficultyButtonText(this.difficulty));
+					}
+				)
 			);
 			if (this.minecraft.isIntegratedServerRunning() && !this.minecraft.world.getLevelProperties().isHardcore()) {
 				this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
@@ -65,7 +67,7 @@ public class SettingsScreen extends Screen {
 						buttonWidget -> this.minecraft
 								.openScreen(
 									new YesNoScreen(
-										this::method_20374,
+										this::tmp,
 										new TranslatableTextComponent("difficulty.lock.title"),
 										new TranslatableTextComponent(
 											"difficulty.lock.question",
@@ -184,11 +186,11 @@ public class SettingsScreen extends Screen {
 		);
 	}
 
-	public String method_2189(Difficulty difficulty) {
+	public String getDifficultyButtonText(Difficulty difficulty) {
 		return new TranslatableTextComponent("options.difficulty").append(": ").append(difficulty.toTextComponent()).getFormattedText();
 	}
 
-	private void method_20374(boolean bl) {
+	private void tmp(boolean bl) {
 		this.minecraft.openScreen(this);
 		if (bl && this.minecraft.world != null) {
 			this.minecraft.getNetworkHandler().sendPacket(new UpdateDifficultyLockC2SPacket(true));

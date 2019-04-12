@@ -75,7 +75,7 @@ public class Explosion {
 		this.damageSource = DamageSource.explosion(this);
 	}
 
-	public static float method_17752(Vec3d vec3d, Entity entity) {
+	public static float getExposure(Vec3d vec3d, Entity entity) {
 		BoundingBox boundingBox = entity.getBoundingBox();
 		double d = 1.0 / ((boundingBox.maxX - boundingBox.minX) * 2.0 + 1.0);
 		double e = 1.0 / ((boundingBox.maxY - boundingBox.minY) * 2.0 + 1.0);
@@ -181,12 +181,12 @@ public class Explosion {
 						y /= ab;
 						z /= ab;
 						aa /= ab;
-						double ac = (double)method_17752(vec3d, entity);
+						double ac = (double)getExposure(vec3d, entity);
 						double ad = (1.0 - x) * ac;
 						entity.damage(this.getDamageSource(), (float)((int)((ad * ad + ad) / 2.0 * 7.0 * (double)r + 1.0)));
 						double ae = ad;
 						if (entity instanceof LivingEntity) {
-							ae = ProtectionEnchantment.method_8237((LivingEntity)entity, ad);
+							ae = ProtectionEnchantment.transformExplosionKnockback((LivingEntity)entity, ad);
 						}
 
 						entity.setVelocity(entity.getVelocity().add(y * ae, z * ae, aa * ae));
@@ -260,7 +260,7 @@ public class Explosion {
 						Block.dropStacks(blockState, builder);
 					}
 
-					this.world.setBlockState(blockPos, Blocks.field_10124.getDefaultState(), 3);
+					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
 					block.onDestroyedByExplosion(this.world, blockPos, this);
 				}
 			}

@@ -190,13 +190,13 @@ public class FlatChunkGeneratorConfig extends ChunkGeneratorConfig {
 		for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.layers) {
 			for (int j = flatChunkGeneratorLayer.getStartY(); j < flatChunkGeneratorLayer.getStartY() + flatChunkGeneratorLayer.getThickness(); j++) {
 				BlockState blockState = flatChunkGeneratorLayer.getBlockState();
-				if (blockState.getBlock() != Blocks.field_10124) {
+				if (blockState.getBlock() != Blocks.AIR) {
 					this.hasNoTerrain = false;
 					this.layerBlocks[j] = blockState;
 				}
 			}
 
-			if (flatChunkGeneratorLayer.getBlockState().getBlock() == Blocks.field_10124) {
+			if (flatChunkGeneratorLayer.getBlockState().getBlock() == Blocks.AIR) {
 				i += flatChunkGeneratorLayer.getThickness();
 			} else {
 				this.groundHeight = this.groundHeight + flatChunkGeneratorLayer.getThickness() + i;

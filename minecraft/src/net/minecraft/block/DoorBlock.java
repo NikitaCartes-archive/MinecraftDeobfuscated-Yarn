@@ -80,7 +80,7 @@ public class DoorBlock extends Block {
 		DoubleBlockHalf doubleBlockHalf = blockState.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y || doubleBlockHalf == DoubleBlockHalf.field_12607 != (direction == Direction.UP)) {
 			return doubleBlockHalf == DoubleBlockHalf.field_12607 && direction == Direction.DOWN && !blockState.canPlaceAt(iWorld, blockPos)
-				? Blocks.field_10124.getDefaultState()
+				? Blocks.AIR.getDefaultState()
 				: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 		} else {
 			return blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf
@@ -88,7 +88,7 @@ public class DoorBlock extends Block {
 					.with(OPEN, blockState2.get(OPEN))
 					.with(HINGE, blockState2.get(HINGE))
 					.with(POWERED, blockState2.get(POWERED))
-				: Blocks.field_10124.getDefaultState();
+				: Blocks.AIR.getDefaultState();
 		}
 	}
 
@@ -96,7 +96,7 @@ public class DoorBlock extends Block {
 	public void afterBreak(
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
-		super.afterBreak(world, playerEntity, blockPos, Blocks.field_10124.getDefaultState(), blockEntity, itemStack);
+		super.afterBreak(world, playerEntity, blockPos, Blocks.AIR.getDefaultState(), blockEntity, itemStack);
 	}
 
 	@Override
@@ -105,7 +105,7 @@ public class DoorBlock extends Block {
 		BlockPos blockPos2 = doubleBlockHalf == DoubleBlockHalf.field_12607 ? blockPos.up() : blockPos.down();
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.getBlock() == this && blockState2.get(HALF) != doubleBlockHalf) {
-			world.setBlockState(blockPos2, Blocks.field_10124.getDefaultState(), 35);
+			world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 35);
 			world.playLevelEvent(playerEntity, 2001, blockPos2, Block.getRawIdFromState(blockState2));
 			ItemStack itemStack = playerEntity.getMainHandStack();
 			if (!world.isClient && !playerEntity.isCreative()) {
@@ -204,7 +204,7 @@ public class DoorBlock extends Block {
 		if (this.material == Material.METAL) {
 			return false;
 		} else {
-			blockState = blockState.method_11572(OPEN);
+			blockState = blockState.cycle(OPEN);
 			world.setBlockState(blockPos, blockState, 10);
 			world.playLevelEvent(playerEntity, blockState.get(OPEN) ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), blockPos, 0);
 			return true;
@@ -262,7 +262,7 @@ public class DoorBlock extends Block {
 
 	@Override
 	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return mirror == Mirror.NONE ? blockState : blockState.rotate(mirror.getRotation(blockState.get(FACING))).method_11572(HINGE);
+		return mirror == Mirror.NONE ? blockState : blockState.rotate(mirror.getRotation(blockState.get(FACING))).cycle(HINGE);
 	}
 
 	@Environment(EnvType.CLIENT)

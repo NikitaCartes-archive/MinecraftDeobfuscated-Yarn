@@ -27,7 +27,7 @@ public class TextFormatter {
 			? ((TextComponentWithSelectors)textComponent).resolveSelectors(serverCommandSource, entity)
 			: textComponent.copyShallow();
 
-		for (TextComponent textComponent3 : textComponent.getChildren()) {
+		for (TextComponent textComponent3 : textComponent.getSiblings()) {
 			textComponent2.append(method_10881(serverCommandSource, textComponent3, entity));
 		}
 

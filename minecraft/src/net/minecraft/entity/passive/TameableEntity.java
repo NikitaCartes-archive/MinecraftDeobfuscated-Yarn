@@ -19,7 +19,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleParameters;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
-import net.minecraft.server.config.ServerConfigHandler;
+import net.minecraft.server.ServerConfigHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
@@ -195,15 +195,15 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public AbstractTeam method_5781() {
+	public AbstractTeam getScoreboardTeam() {
 		if (this.isTamed()) {
 			LivingEntity livingEntity = this.getOwner();
 			if (livingEntity != null) {
-				return livingEntity.method_5781();
+				return livingEntity.getScoreboardTeam();
 			}
 		}
 
-		return super.method_5781();
+		return super.getScoreboardTeam();
 	}
 
 	@Override

@@ -22,7 +22,7 @@ import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.sortme.WorldNameProvider;
+import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
 import net.minecraft.util.TagHelper;
@@ -209,7 +209,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 		try {
 			Path path = this.generatedPath.resolve(identifier.getNamespace());
 			Path path2 = path.resolve("structures");
-			return WorldNameProvider.method_20202(path2, identifier.getPath(), string);
+			return FileNameUtil.method_20202(path2, identifier.getPath(), string);
 		} catch (InvalidPathException var5) {
 			throw new InvalidIdentifierException("Invalid resource path: " + identifier, var5);
 		}
@@ -220,7 +220,7 @@ public class StructureManager implements SynchronousResourceReloadListener {
 			throw new InvalidIdentifierException("Invalid resource path: " + identifier);
 		} else {
 			Path path = this.getStructurePath(identifier, string);
-			if (path.startsWith(this.generatedPath) && WorldNameProvider.method_20200(path) && WorldNameProvider.method_20201(path)) {
+			if (path.startsWith(this.generatedPath) && FileNameUtil.isNormal(path) && FileNameUtil.isAllowedName(path)) {
 				return path;
 			} else {
 				throw new InvalidIdentifierException("Invalid resource path: " + path);

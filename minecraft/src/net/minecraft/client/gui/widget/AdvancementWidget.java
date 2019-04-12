@@ -152,7 +152,7 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 	}
 
-	public void method_2333(AdvancementProgress advancementProgress) {
+	public void setProgress(AdvancementProgress advancementProgress) {
 		this.field_2714 = advancementProgress;
 	}
 

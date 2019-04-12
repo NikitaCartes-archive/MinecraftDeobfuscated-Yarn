@@ -14,14 +14,14 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
 
 public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int field_12719;
+	private int entityId;
 	private final List<EntityAttributesS2CPacket.Entry> entries = Lists.<EntityAttributesS2CPacket.Entry>newArrayList();
 
 	public EntityAttributesS2CPacket() {
 	}
 
 	public EntityAttributesS2CPacket(int i, Collection<EntityAttributeInstance> collection) {
-		this.field_12719 = i;
+		this.entityId = i;
 
 		for (EntityAttributeInstance entityAttributeInstance : collection) {
 			this.entries
@@ -35,7 +35,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.field_12719 = packetByteBuf.readVarInt();
+		this.entityId = packetByteBuf.readVarInt();
 		int i = packetByteBuf.readInt();
 
 		for (int j = 0; j < i; j++) {
@@ -59,15 +59,15 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeVarInt(this.field_12719);
+		packetByteBuf.writeVarInt(this.entityId);
 		packetByteBuf.writeInt(this.entries.size());
 
 		for (EntityAttributesS2CPacket.Entry entry : this.entries) {
-			packetByteBuf.writeString(entry.method_11940());
-			packetByteBuf.writeDouble(entry.method_11941());
-			packetByteBuf.writeVarInt(entry.method_11939().size());
+			packetByteBuf.writeString(entry.getId());
+			packetByteBuf.writeDouble(entry.getBaseValue());
+			packetByteBuf.writeVarInt(entry.getModifiers().size());
 
-			for (EntityAttributeModifier entityAttributeModifier : entry.method_11939()) {
+			for (EntityAttributeModifier entityAttributeModifier : entry.getModifiers()) {
 				packetByteBuf.writeUuid(entityAttributeModifier.getId());
 				packetByteBuf.writeDouble(entityAttributeModifier.getAmount());
 				packetByteBuf.writeByte(entityAttributeModifier.getOperation().getId());
@@ -80,8 +80,8 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_11937() {
-		return this.field_12719;
+	public int getEntityId() {
+		return this.entityId;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -90,26 +90,26 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public class Entry {
-		private final String field_12724;
-		private final double field_12722;
-		private final Collection<EntityAttributeModifier> field_12723;
+		private final String id;
+		private final double baseValue;
+		private final Collection<EntityAttributeModifier> modifiers;
 
 		public Entry(String string, double d, Collection<EntityAttributeModifier> collection) {
-			this.field_12724 = string;
-			this.field_12722 = d;
-			this.field_12723 = collection;
+			this.id = string;
+			this.baseValue = d;
+			this.modifiers = collection;
 		}
 
-		public String method_11940() {
-			return this.field_12724;
+		public String getId() {
+			return this.id;
 		}
 
-		public double method_11941() {
-			return this.field_12722;
+		public double getBaseValue() {
+			return this.baseValue;
 		}
 
-		public Collection<EntityAttributeModifier> method_11939() {
-			return this.field_12723;
+		public Collection<EntityAttributeModifier> getModifiers() {
+			return this.modifiers;
 		}
 	}
 }
