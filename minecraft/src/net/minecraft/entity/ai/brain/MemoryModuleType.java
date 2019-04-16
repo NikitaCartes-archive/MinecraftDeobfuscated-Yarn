@@ -16,9 +16,9 @@ import net.minecraft.util.registry.Registry;
 
 public class MemoryModuleType<U> {
 	public static final MemoryModuleType<Void> field_18437 = register("dummy", Optional.empty());
-	public static final MemoryModuleType<GlobalPos> field_18438 = register("home", Optional.of(GlobalPos::method_19444));
-	public static final MemoryModuleType<GlobalPos> field_18439 = register("job_site", Optional.of(GlobalPos::method_19444));
-	public static final MemoryModuleType<GlobalPos> field_18440 = register("meeting_point", Optional.of(GlobalPos::method_19444));
+	public static final MemoryModuleType<GlobalPos> field_18438 = register("home", Optional.of(GlobalPos::deserialize));
+	public static final MemoryModuleType<GlobalPos> field_18439 = register("job_site", Optional.of(GlobalPos::deserialize));
+	public static final MemoryModuleType<GlobalPos> field_18440 = register("meeting_point", Optional.of(GlobalPos::deserialize));
 	public static final MemoryModuleType<List<GlobalPos>> field_18873 = register("secondary_job_site", Optional.empty());
 	public static final MemoryModuleType<List<LivingEntity>> field_18441 = register("mobs", Optional.empty());
 	public static final MemoryModuleType<List<LivingEntity>> field_18442 = register("visible_mobs", Optional.empty());

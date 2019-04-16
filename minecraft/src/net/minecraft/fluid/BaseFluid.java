@@ -50,7 +50,7 @@ public abstract class BaseFluid extends Fluid {
 	}
 
 	@Override
-	public Vec3d method_15782(BlockView blockView, BlockPos blockPos, FluidState fluidState) {
+	public Vec3d getVelocity(BlockView blockView, BlockPos blockPos, FluidState fluidState) {
 		double d = 0.0;
 		double e = 0.0;
 
@@ -63,7 +63,7 @@ public abstract class BaseFluid extends Fluid {
 					float f = fluidState2.getHeight(blockView, pooledMutable);
 					float g = 0.0F;
 					if (f == 0.0F) {
-						if (!blockView.getBlockState(pooledMutable).getMaterial().suffocates()) {
+						if (!blockView.getBlockState(pooledMutable).getMaterial().blocksMovement()) {
 							BlockPos blockPos2 = pooledMutable.down();
 							FluidState fluidState3 = blockView.getFluidState(blockPos2);
 							if (this.method_15748(fluidState3)) {
@@ -122,9 +122,9 @@ public abstract class BaseFluid extends Fluid {
 			BlockState blockState = iWorld.getBlockState(blockPos);
 			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState2 = iWorld.getBlockState(blockPos2);
-			FluidState fluidState2 = this.method_15727(iWorld, blockPos2, blockState2);
+			FluidState fluidState2 = this.getUpdatedState(iWorld, blockPos2, blockState2);
 			if (this.method_15738(iWorld, blockPos, blockState, Direction.DOWN, blockPos2, blockState2, iWorld.getFluidState(blockPos2), fluidState2.getFluid())) {
-				this.method_15745(iWorld, blockPos2, blockState2, Direction.DOWN, fluidState2);
+				this.flow(iWorld, blockPos2, blockState2, Direction.DOWN, fluidState2);
 				if (this.method_15740(iWorld, blockPos) >= 3) {
 					this.method_15744(iWorld, blockPos, fluidState, blockState);
 				}
@@ -135,7 +135,7 @@ public abstract class BaseFluid extends Fluid {
 	}
 
 	private void method_15744(IWorld iWorld, BlockPos blockPos, FluidState fluidState, BlockState blockState) {
-		int i = fluidState.getLevel() - this.method_15739(iWorld);
+		int i = fluidState.getLevel() - this.getLevelDecreasePerBlock(iWorld);
 		if ((Boolean)fluidState.get(FALLING)) {
 			i = 7;
 		}
@@ -149,13 +149,13 @@ public abstract class BaseFluid extends Fluid {
 				BlockPos blockPos2 = blockPos.offset(direction);
 				BlockState blockState2 = iWorld.getBlockState(blockPos2);
 				if (this.method_15738(iWorld, blockPos, blockState, direction, blockPos2, blockState2, iWorld.getFluidState(blockPos2), fluidState2.getFluid())) {
-					this.method_15745(iWorld, blockPos2, blockState2, direction, fluidState2);
+					this.flow(iWorld, blockPos2, blockState2, direction, fluidState2);
 				}
 			}
 		}
 	}
 
-	protected FluidState method_15727(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
+	protected FluidState getUpdatedState(ViewableWorld viewableWorld, BlockPos blockPos, BlockState blockState) {
 		int i = 0;
 		int j = 0;
 
@@ -163,7 +163,7 @@ public abstract class BaseFluid extends Fluid {
 			BlockPos blockPos2 = blockPos.offset(direction);
 			BlockState blockState2 = viewableWorld.getBlockState(blockPos2);
 			FluidState fluidState = blockState2.getFluidState();
-			if (fluidState.getFluid().matchesType(this) && this.method_15732(direction, viewableWorld, blockPos, blockState, blockPos2, blockState2)) {
+			if (fluidState.getFluid().matchesType(this) && this.receivesFlow(direction, viewableWorld, blockPos, blockState, blockPos2, blockState2)) {
 				if (fluidState.isStill()) {
 					j++;
 				}
@@ -172,11 +172,11 @@ public abstract class BaseFluid extends Fluid {
 			}
 		}
 
-		if (this.method_15737() && j >= 2) {
+		if (this.isInfinite() && j >= 2) {
 			BlockState blockState3 = viewableWorld.getBlockState(blockPos.down());
 			FluidState fluidState2 = blockState3.getFluidState();
-			if (blockState3.getMaterial().method_15799() || this.method_15752(fluidState2)) {
-				return this.getState(false);
+			if (blockState3.getMaterial().isSolid() || this.method_15752(fluidState2)) {
+				return this.getStill(false);
 			}
 		}
 
@@ -185,15 +185,15 @@ public abstract class BaseFluid extends Fluid {
 		FluidState fluidState3 = blockState4.getFluidState();
 		if (!fluidState3.isEmpty()
 			&& fluidState3.getFluid().matchesType(this)
-			&& this.method_15732(Direction.UP, viewableWorld, blockPos, blockState, blockPos3, blockState4)) {
+			&& this.receivesFlow(Direction.UP, viewableWorld, blockPos, blockState, blockPos3, blockState4)) {
 			return this.getFlowing(8, true);
 		} else {
-			int k = i - this.method_15739(viewableWorld);
+			int k = i - this.getLevelDecreasePerBlock(viewableWorld);
 			return k <= 0 ? Fluids.EMPTY.getDefaultState() : this.getFlowing(k, false);
 		}
 	}
 
-	private boolean method_15732(Direction direction, BlockView blockView, BlockPos blockPos, BlockState blockState, BlockPos blockPos2, BlockState blockState2) {
+	private boolean receivesFlow(Direction direction, BlockView blockView, BlockPos blockPos, BlockState blockState, BlockPos blockPos2, BlockState blockState2) {
 		Object2ByteLinkedOpenHashMap<Block.NeighborGroup> object2ByteLinkedOpenHashMap;
 		if (!blockState.getBlock().hasDynamicBounds() && !blockState2.getBlock().hasDynamicBounds()) {
 			object2ByteLinkedOpenHashMap = (Object2ByteLinkedOpenHashMap<Block.NeighborGroup>)field_15901.get();
@@ -234,25 +234,25 @@ public abstract class BaseFluid extends Fluid {
 
 	public abstract Fluid getStill();
 
-	public FluidState getState(boolean bl) {
+	public FluidState getStill(boolean bl) {
 		return this.getStill().getDefaultState().with(FALLING, Boolean.valueOf(bl));
 	}
 
-	protected abstract boolean method_15737();
+	protected abstract boolean isInfinite();
 
-	protected void method_15745(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
+	protected void flow(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
 		if (blockState.getBlock() instanceof FluidFillable) {
 			((FluidFillable)blockState.getBlock()).tryFillWithFluid(iWorld, blockPos, blockState, fluidState);
 		} else {
 			if (!blockState.isAir()) {
-				this.method_15730(iWorld, blockPos, blockState);
+				this.beforeBreakingBlock(iWorld, blockPos, blockState);
 			}
 
 			iWorld.setBlockState(blockPos, fluidState.getBlockState(), 3);
 		}
 	}
 
-	protected abstract void method_15730(IWorld iWorld, BlockPos blockPos, BlockState blockState);
+	protected abstract void beforeBreakingBlock(IWorld iWorld, BlockPos blockPos, BlockState blockState);
 
 	private static short method_15747(BlockPos blockPos, BlockPos blockPos2) {
 		int i = blockPos2.getX() - blockPos.getX();
@@ -306,7 +306,7 @@ public abstract class BaseFluid extends Fluid {
 	}
 
 	private boolean method_15736(BlockView blockView, Fluid fluid, BlockPos blockPos, BlockState blockState, BlockPos blockPos2, BlockState blockState2) {
-		if (!this.method_15732(Direction.DOWN, blockView, blockPos, blockState, blockPos2, blockState2)) {
+		if (!this.receivesFlow(Direction.DOWN, blockView, blockPos, blockState, blockPos2, blockState2)) {
 			return false;
 		} else {
 			return blockState2.getFluidState().getFluid().matchesType(this) ? true : this.method_15754(blockView, blockPos2, blockState2, fluid);
@@ -324,7 +324,7 @@ public abstract class BaseFluid extends Fluid {
 		FluidState fluidState
 	) {
 		return !this.method_15752(fluidState)
-			&& this.method_15732(direction, blockView, blockPos, blockState, blockPos2, blockState2)
+			&& this.receivesFlow(direction, blockView, blockPos, blockState, blockPos2, blockState2)
 			&& this.method_15754(blockView, blockPos2, blockState2, fluid);
 	}
 
@@ -363,7 +363,7 @@ public abstract class BaseFluid extends Fluid {
 			});
 			BlockState blockState2 = pair.getFirst();
 			FluidState fluidState = pair.getSecond();
-			FluidState fluidState2 = this.method_15727(viewableWorld, blockPos2, blockState2);
+			FluidState fluidState2 = this.getUpdatedState(viewableWorld, blockPos2, blockState2);
 			if (this.method_15746(viewableWorld, fluidState2.getFluid(), blockPos, blockState, direction, blockPos2, blockState2, fluidState)) {
 				BlockPos blockPos3 = blockPos2.down();
 				boolean bl = short2BooleanMap.computeIfAbsent(s, ix -> {
@@ -402,7 +402,7 @@ public abstract class BaseFluid extends Fluid {
 			&& block != Blocks.field_10422) {
 			Material material = blockState.getMaterial();
 			return material != Material.PORTAL && material != Material.STRUCTURE_VOID && material != Material.UNDERWATER_PLANT && material != Material.SEAGRASS
-				? !material.suffocates()
+				? !material.blocksMovement()
 				: false;
 		} else {
 			return false;
@@ -420,21 +420,21 @@ public abstract class BaseFluid extends Fluid {
 		Fluid fluid
 	) {
 		return fluidState.method_15764(blockView, blockPos2, fluid, direction)
-			&& this.method_15732(direction, blockView, blockPos, blockState, blockPos2, blockState2)
+			&& this.receivesFlow(direction, blockView, blockPos, blockState, blockPos2, blockState2)
 			&& this.method_15754(blockView, blockPos2, blockState2, fluid);
 	}
 
-	protected abstract int method_15739(ViewableWorld viewableWorld);
+	protected abstract int getLevelDecreasePerBlock(ViewableWorld viewableWorld);
 
-	protected int method_15753(World world, BlockPos blockPos, FluidState fluidState, FluidState fluidState2) {
+	protected int getNextTickDelay(World world, BlockPos blockPos, FluidState fluidState, FluidState fluidState2) {
 		return this.getTickRate(world);
 	}
 
 	@Override
 	public void onScheduledTick(World world, BlockPos blockPos, FluidState fluidState) {
 		if (!fluidState.isStill()) {
-			FluidState fluidState2 = this.method_15727(world, blockPos, world.getBlockState(blockPos));
-			int i = this.method_15753(world, blockPos, fluidState, fluidState2);
+			FluidState fluidState2 = this.getUpdatedState(world, blockPos, world.getBlockState(blockPos));
+			int i = this.getNextTickDelay(world, blockPos, fluidState, fluidState2);
 			if (fluidState2.isEmpty()) {
 				fluidState = fluidState2;
 				world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);

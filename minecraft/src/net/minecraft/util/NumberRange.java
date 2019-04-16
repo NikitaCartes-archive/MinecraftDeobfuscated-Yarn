@@ -74,7 +74,7 @@ public abstract class NumberRange<T extends Number> {
 		}
 	}
 
-	protected static <T extends Number, R extends NumberRange<T>> R fromStringReader(
+	protected static <T extends Number, R extends NumberRange<T>> R parse(
 		StringReader stringReader,
 		NumberRange.class_2098<T, R> arg,
 		Function<String, T> function,
@@ -87,12 +87,12 @@ public abstract class NumberRange<T extends Number> {
 			int i = stringReader.getCursor();
 
 			try {
-				T number = (T)method_9035(fromStringReader(stringReader, function, supplier), function2);
+				T number = (T)applyIfNonNull(fromStringReader(stringReader, function, supplier), function2);
 				T number2;
 				if (stringReader.canRead(2) && stringReader.peek() == '.' && stringReader.peek(1) == '.') {
 					stringReader.skip();
 					stringReader.skip();
-					number2 = (T)method_9035(fromStringReader(stringReader, function, supplier), function2);
+					number2 = (T)applyIfNonNull(fromStringReader(stringReader, function, supplier), function2);
 					if (number == null && number2 == null) {
 						throw EXCEPTION_EMPTY.createWithContext(stringReader);
 					}
@@ -116,7 +116,7 @@ public abstract class NumberRange<T extends Number> {
 	private static <T extends Number> T fromStringReader(StringReader stringReader, Function<String, T> function, Supplier<DynamicCommandExceptionType> supplier) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 
-		while (stringReader.canRead() && method_9040(stringReader)) {
+		while (stringReader.canRead() && isNextCharValid(stringReader)) {
 			stringReader.skip();
 		}
 
@@ -132,7 +132,7 @@ public abstract class NumberRange<T extends Number> {
 		}
 	}
 
-	private static boolean method_9040(StringReader stringReader) {
+	private static boolean isNextCharValid(StringReader stringReader) {
 		char c = stringReader.peek();
 		if ((c < '0' || c > '9') && c != '-') {
 			return c != '.' ? false : !stringReader.canRead(2) || stringReader.peek(1) != '.';
@@ -142,7 +142,7 @@ public abstract class NumberRange<T extends Number> {
 	}
 
 	@Nullable
-	private static <T> T method_9035(@Nullable T object, Function<T, T> function) {
+	private static <T> T applyIfNonNull(@Nullable T object, Function<T, T> function) {
 		return (T)(object == null ? null : function.apply(object));
 	}
 
@@ -156,7 +156,7 @@ public abstract class NumberRange<T extends Number> {
 		private final Double minSquared;
 		private final Double maxSquared;
 
-		private static NumberRange.FloatRange method_9046(StringReader stringReader, @Nullable Float float_, @Nullable Float float2) throws CommandSyntaxException {
+		private static NumberRange.FloatRange create(StringReader stringReader, @Nullable Float float_, @Nullable Float float2) throws CommandSyntaxException {
 			if (float_ != null && float2 != null && float_ > float2) {
 				throw EXCEPTION_SWAPPED.createWithContext(stringReader);
 			} else {
@@ -192,13 +192,11 @@ public abstract class NumberRange<T extends Number> {
 		}
 
 		public static NumberRange.FloatRange parse(StringReader stringReader) throws CommandSyntaxException {
-			return method_9048(stringReader, float_ -> float_);
+			return parse(stringReader, float_ -> float_);
 		}
 
-		public static NumberRange.FloatRange method_9048(StringReader stringReader, Function<Float, Float> function) throws CommandSyntaxException {
-			return fromStringReader(
-				stringReader, NumberRange.FloatRange::method_9046, Float::parseFloat, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidFloat, function
-			);
+		public static NumberRange.FloatRange parse(StringReader stringReader, Function<Float, Float> function) throws CommandSyntaxException {
+			return parse(stringReader, NumberRange.FloatRange::create, Float::parseFloat, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidFloat, function);
 		}
 	}
 
@@ -247,9 +245,7 @@ public abstract class NumberRange<T extends Number> {
 		}
 
 		public static NumberRange.IntRange fromStringReader(StringReader stringReader, Function<Integer, Integer> function) throws CommandSyntaxException {
-			return fromStringReader(
-				stringReader, NumberRange.IntRange::method_9055, Integer::parseInt, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidInt, function
-			);
+			return parse(stringReader, NumberRange.IntRange::method_9055, Integer::parseInt, CommandSyntaxException.BUILT_IN_EXCEPTIONS::readerInvalidInt, function);
 		}
 	}
 

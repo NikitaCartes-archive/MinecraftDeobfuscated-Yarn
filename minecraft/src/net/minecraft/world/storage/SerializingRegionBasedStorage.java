@@ -187,4 +187,16 @@ public class SerializingRegionBasedStorage<R extends DynamicSerializable> extend
 	private static int method_20369(Dynamic<?> dynamic) {
 		return ((Number)dynamic.get("DataVersion").asNumber().orElse(1945)).intValue();
 	}
+
+	public void method_20436(ChunkPos chunkPos) {
+		if (!this.unsavedElements.isEmpty()) {
+			for (int i = 0; i < 16; i++) {
+				long l = ChunkSectionPos.from(chunkPos, i).asLong();
+				if (this.unsavedElements.contains(l)) {
+					this.method_20370(chunkPos);
+					return;
+				}
+			}
+		}
+	}
 }

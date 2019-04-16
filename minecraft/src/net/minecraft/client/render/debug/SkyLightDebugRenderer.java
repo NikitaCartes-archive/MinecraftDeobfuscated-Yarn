@@ -34,7 +34,7 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 		BlockPos blockPos = new BlockPos(camera.getPos());
 		LongSet longSet = new LongOpenHashSet();
 
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
+		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			int i = world.getLightLevel(LightType.SKY, blockPos2);
 			float f = (float)(15 - i) / 15.0F * 0.5F + 0.16F;
 			int j = MathHelper.hsvToRgb(f, 0.9F, 0.9F);

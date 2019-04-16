@@ -41,7 +41,7 @@ public class FarmlandBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
-		return !blockState2.getMaterial().method_15799() || blockState2.getBlock() instanceof FenceGateBlock;
+		return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class FarmlandBlock extends Block {
 	}
 
 	private static boolean method_10126(ViewableWorld viewableWorld, BlockPos blockPos) {
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
+		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
 			if (viewableWorld.getFluidState(blockPos2).matches(FluidTags.field_15517)) {
 				return true;
 			}

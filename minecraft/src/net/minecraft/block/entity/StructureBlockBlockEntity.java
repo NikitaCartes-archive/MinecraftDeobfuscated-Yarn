@@ -322,7 +322,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private List<StructureBlockBlockEntity> findStructureBlockEntities(BlockPos blockPos, BlockPos blockPos2) {
 		List<StructureBlockBlockEntity> list = Lists.<StructureBlockBlockEntity>newArrayList();
 
-		for (BlockPos blockPos3 : BlockPos.iterateBoxPositions(blockPos, blockPos2)) {
+		for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
 			BlockState blockState = this.world.getBlockState(blockPos3);
 			if (blockState.getBlock() == Blocks.field_10465) {
 				BlockEntity blockEntity = this.world.getBlockEntity(blockPos3);

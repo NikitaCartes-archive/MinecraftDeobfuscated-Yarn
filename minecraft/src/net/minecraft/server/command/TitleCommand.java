@@ -135,7 +135,8 @@ public class TitleCommand {
 		ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent, TitleS2CPacket.Action action
 	) throws CommandSyntaxException {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.networkHandler.sendPacket(new TitleS2CPacket(action, TextFormatter.method_10881(serverCommandSource, textComponent, serverPlayerEntity)));
+			serverPlayerEntity.networkHandler
+				.sendPacket(new TitleS2CPacket(action, TextFormatter.resolveAndStyle(serverCommandSource, textComponent, serverPlayerEntity)));
 		}
 
 		if (collection.size() == 1) {

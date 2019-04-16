@@ -28,20 +28,20 @@ public class ItemStringReader {
 	public static final DynamicCommandExceptionType ID_INVALID_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("argument.item.id.invalid", object)
 	);
-	private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> field_10806 = SuggestionsBuilder::buildFuture;
+	private static final Function<SuggestionsBuilder, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = SuggestionsBuilder::buildFuture;
 	private final StringReader reader;
-	private final boolean field_10804;
+	private final boolean allowTag;
 	private final Map<Property<?>, Comparable<?>> field_10801 = Maps.<Property<?>, Comparable<?>>newHashMap();
 	private Item item;
 	@Nullable
 	private CompoundTag tag;
 	private Identifier id = new Identifier("");
 	private int cursor;
-	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestions = field_10806;
+	private Function<SuggestionsBuilder, CompletableFuture<Suggestions>> suggestions = NBT_SUGGESTION_PROVIDER;
 
 	public ItemStringReader(StringReader stringReader, boolean bl) {
 		this.reader = stringReader;
-		this.field_10804 = bl;
+		this.allowTag = bl;
 	}
 
 	public Item getItem() {
@@ -66,39 +66,39 @@ public class ItemStringReader {
 		});
 	}
 
-	public void method_9787() throws CommandSyntaxException {
-		if (!this.field_10804) {
+	public void readTag() throws CommandSyntaxException {
+		if (!this.allowTag) {
 			throw TAG_DISALLOWED_EXCEPTION.create();
 		} else {
-			this.suggestions = this::suggestIdentifiers;
+			this.suggestions = this::suggestTag;
 			this.reader.expect('#');
 			this.cursor = this.reader.getCursor();
 			this.id = Identifier.parse(this.reader);
 		}
 	}
 
-	public void readTag() throws CommandSyntaxException {
+	public void readNbt() throws CommandSyntaxException {
 		this.tag = new StringNbtReader(this.reader).parseCompoundTag();
 	}
 
 	public ItemStringReader consume() throws CommandSyntaxException {
-		this.suggestions = this::method_9791;
+		this.suggestions = this::suggestAny;
 		if (this.reader.canRead() && this.reader.peek() == '#') {
-			this.method_9787();
+			this.readTag();
 		} else {
 			this.readItem();
-			this.suggestions = this::method_9794;
+			this.suggestions = this::suggestItem;
 		}
 
 		if (this.reader.canRead() && this.reader.peek() == '{') {
-			this.suggestions = field_10806;
-			this.readTag();
+			this.suggestions = NBT_SUGGESTION_PROVIDER;
+			this.readNbt();
 		}
 
 		return this;
 	}
 
-	private CompletableFuture<Suggestions> method_9794(SuggestionsBuilder suggestionsBuilder) {
+	private CompletableFuture<Suggestions> suggestItem(SuggestionsBuilder suggestionsBuilder) {
 		if (suggestionsBuilder.getRemaining().isEmpty()) {
 			suggestionsBuilder.suggest(String.valueOf('{'));
 		}
@@ -106,12 +106,12 @@ public class ItemStringReader {
 		return suggestionsBuilder.buildFuture();
 	}
 
-	private CompletableFuture<Suggestions> suggestIdentifiers(SuggestionsBuilder suggestionsBuilder) {
+	private CompletableFuture<Suggestions> suggestTag(SuggestionsBuilder suggestionsBuilder) {
 		return CommandSource.suggestIdentifiers(ItemTags.getContainer().getKeys(), suggestionsBuilder.createOffset(this.cursor));
 	}
 
-	private CompletableFuture<Suggestions> method_9791(SuggestionsBuilder suggestionsBuilder) {
-		if (this.field_10804) {
+	private CompletableFuture<Suggestions> suggestAny(SuggestionsBuilder suggestionsBuilder) {
+		if (this.allowTag) {
 			CommandSource.suggestIdentifiers(ItemTags.getContainer().getKeys(), suggestionsBuilder, String.valueOf('#'));
 		}
 

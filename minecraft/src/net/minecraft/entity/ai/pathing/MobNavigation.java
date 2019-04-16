@@ -54,12 +54,12 @@ public class MobNavigation extends EntityNavigation {
 			blockPos = blockPos2;
 		}
 
-		if (!this.world.getBlockState(blockPos).getMaterial().method_15799()) {
+		if (!this.world.getBlockState(blockPos).getMaterial().isSolid()) {
 			return super.findPathTo(blockPos);
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 
-			while (blockPos2.getY() < this.world.getHeight() && this.world.getBlockState(blockPos2).getMaterial().method_15799()) {
+			while (blockPos2.getY() < this.world.getHeight() && this.world.getBlockState(blockPos2).getMaterial().isSolid()) {
 				blockPos2 = blockPos2.up();
 			}
 
@@ -213,7 +213,7 @@ public class MobNavigation extends EntityNavigation {
 	}
 
 	private boolean method_6367(int i, int j, int k, int l, int m, int n, Vec3d vec3d, double d, double e) {
-		for (BlockPos blockPos : BlockPos.iterateBoxPositions(new BlockPos(i, j, k), new BlockPos(i + l - 1, j + m - 1, k + n - 1))) {
+		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(i, j, k), new BlockPos(i + l - 1, j + m - 1, k + n - 1))) {
 			double f = (double)blockPos.getX() + 0.5 - vec3d.x;
 			double g = (double)blockPos.getZ() + 0.5 - vec3d.z;
 			if (!(f * d + g * e < 0.0) && !this.world.getBlockState(blockPos).canPlaceAtSide(this.world, blockPos, BlockPlacementEnvironment.field_50)) {

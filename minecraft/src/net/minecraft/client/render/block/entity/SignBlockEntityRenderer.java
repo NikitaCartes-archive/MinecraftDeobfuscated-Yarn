@@ -68,7 +68,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		GlStateManager.scalef(0.010416667F, -0.010416667F, 0.010416667F);
 		GlStateManager.normal3f(0.0F, 0.0F, -0.010416667F);
 		GlStateManager.depthMask(false);
-		int k = signBlockEntity.getTextColor().method_16357();
+		int k = signBlockEntity.getTextColor().getSignColor();
 		if (i < 0) {
 			for (int l = 0; l < 4; l++) {
 				String string = signBlockEntity.getTextBeingEditedOnRow(l, textComponent -> {

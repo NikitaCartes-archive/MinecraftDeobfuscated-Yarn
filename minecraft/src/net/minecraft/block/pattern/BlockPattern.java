@@ -69,7 +69,7 @@ public class BlockPattern {
 		LoadingCache<BlockPos, CachedBlockPosition> loadingCache = makeCache(viewableWorld, false);
 		int i = Math.max(Math.max(this.width, this.height), this.depth);
 
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos, blockPos.add(i - 1, i - 1, i - 1))) {
+		for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(i - 1, i - 1, i - 1))) {
 			for (Direction direction : Direction.values()) {
 				for (Direction direction2 : Direction.values()) {
 					if (direction2 != direction && direction2 != direction.getOpposite()) {

@@ -84,19 +84,19 @@ public class OnKilledCriterion implements Criterion<OnKilledCriterion.Conditions
 			this.killingBlow = damageSourcePredicate;
 		}
 
-		public static OnKilledCriterion.Conditions createKill(EntityPredicate.Builder builder) {
+		public static OnKilledCriterion.Conditions createPlayerKilledEntity(EntityPredicate.Builder builder) {
 			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.id, builder.build(), DamageSourcePredicate.EMPTY);
 		}
 
-		public static OnKilledCriterion.Conditions method_8999() {
+		public static OnKilledCriterion.Conditions createPlayerKilledEntity() {
 			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
 		}
 
-		public static OnKilledCriterion.Conditions method_9001(EntityPredicate.Builder builder, DamageSourcePredicate.Builder builder2) {
+		public static OnKilledCriterion.Conditions createPlayerKilledEntity(EntityPredicate.Builder builder, DamageSourcePredicate.Builder builder2) {
 			return new OnKilledCriterion.Conditions(Criterions.PLAYER_KILLED_ENTITY.id, builder.build(), builder2.build());
 		}
 
-		public static OnKilledCriterion.Conditions method_8998() {
+		public static OnKilledCriterion.Conditions createEntityKilledPlayer() {
 			return new OnKilledCriterion.Conditions(Criterions.ENTITY_KILLED_PLAYER.id, EntityPredicate.ANY, DamageSourcePredicate.EMPTY);
 		}
 

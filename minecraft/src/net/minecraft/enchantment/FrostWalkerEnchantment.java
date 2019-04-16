@@ -37,7 +37,7 @@ public class FrostWalkerEnchantment extends Enchantment {
 			float f = (float)Math.min(16, 2 + i);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add((double)(-f), -1.0, (double)(-f)), blockPos.add((double)f, -1.0, (double)f))) {
+			for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add((double)(-f), -1.0, (double)(-f)), blockPos.add((double)f, -1.0, (double)f))) {
 				if (blockPos2.isWithinDistance(livingEntity.getPos(), (double)f)) {
 					mutable.set(blockPos2.getX(), blockPos2.getY() + 1, blockPos2.getZ());
 					BlockState blockState2 = world.getBlockState(mutable);

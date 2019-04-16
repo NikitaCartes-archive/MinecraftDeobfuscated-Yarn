@@ -37,7 +37,7 @@ public class NarratorManager implements ClientChatListener {
 					textComponent2 = textComponent;
 				}
 
-				this.method_18621(chatMessageType.method_19457(), textComponent2.getString());
+				this.narrate(chatMessageType.interruptsNarration(), textComponent2.getString());
 			}
 		}
 	}
@@ -46,11 +46,11 @@ public class NarratorManager implements ClientChatListener {
 		NarratorOption narratorOption = MinecraftClient.getInstance().options.narrator;
 		if (this.narrator.active() && narratorOption != NarratorOption.field_18176 && narratorOption != NarratorOption.field_18178 && !string.isEmpty()) {
 			this.narrator.clear();
-			this.method_18621(true, string);
+			this.narrate(true, string);
 		}
 	}
 
-	private void method_18621(boolean bl, String string) {
+	private void narrate(boolean bl, String string) {
 		if (SharedConstants.isDevelopment) {
 			field_18210.debug("Narrating: {}", string);
 		}

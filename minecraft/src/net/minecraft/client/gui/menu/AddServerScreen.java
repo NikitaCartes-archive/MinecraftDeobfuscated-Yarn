@@ -55,12 +55,12 @@ public class AddServerScreen extends Screen {
 	@Override
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
-		this.serverNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 66, 200, 20);
+		this.serverNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 66, 200, 20, I18n.translate("addServer.enterName"));
 		this.serverNameField.setFocused(true);
 		this.serverNameField.setText(this.serverEntry.name);
 		this.serverNameField.setChangedListener(this::onClose);
 		this.children.add(this.serverNameField);
-		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20);
+		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 106, 200, 20, I18n.translate("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
 		this.addressField.setText(this.serverEntry.address);
 		this.addressField.method_1890(this.field_2475);

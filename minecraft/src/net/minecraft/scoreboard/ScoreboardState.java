@@ -117,7 +117,7 @@ public class ScoreboardState extends PersistentState {
 		for (int i = 0; i < 19; i++) {
 			if (compoundTag.containsKey("slot_" + i, 8)) {
 				String string = compoundTag.getString("slot_" + i);
-				ScoreboardObjective scoreboardObjective = this.scoreboard.method_1170(string);
+				ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
 				this.scoreboard.setObjectiveSlot(i, scoreboardObjective);
 			}
 		}

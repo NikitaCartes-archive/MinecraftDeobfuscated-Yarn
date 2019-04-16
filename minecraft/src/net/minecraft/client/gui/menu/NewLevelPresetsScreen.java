@@ -47,12 +47,12 @@ public class NewLevelPresetsScreen extends Screen {
 	@Override
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
-		this.customPresetField = new TextFieldWidget(this.font, 50, 40, this.width - 100, 20);
+		this.shareText = I18n.translate("createWorld.customize.presets.share");
+		this.listText = I18n.translate("createWorld.customize.presets.list");
+		this.customPresetField = new TextFieldWidget(this.font, 50, 40, this.width - 100, 20, this.shareText);
 		this.customPresetField.setMaxLength(1230);
 		this.customPresetField.setText(this.parent.getConfigString());
 		this.children.add(this.customPresetField);
-		this.shareText = I18n.translate("createWorld.customize.presets.share");
-		this.listText = I18n.translate("createWorld.customize.presets.list");
 		this.field_2521 = new NewLevelPresetsScreen.SuperflatPresetsListWidget();
 		this.children.add(this.field_2521);
 		this.field_2525 = this.addButton(

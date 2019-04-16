@@ -21,7 +21,7 @@ public class BiomeColors {
 		int l = MinecraftClient.getInstance().options.biomeBlendRadius;
 		int m = (l * 2 + 1) * (l * 2 + 1);
 
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(
+		for (BlockPos blockPos2 : BlockPos.iterate(
 			blockPos.getX() - l, blockPos.getY(), blockPos.getZ() - l, blockPos.getX() + l, blockPos.getY(), blockPos.getZ() + l
 		)) {
 			int n = proxy.getColor(extendedBlockView.getBiome(blockPos2), blockPos2);

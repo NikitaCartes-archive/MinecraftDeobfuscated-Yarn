@@ -152,6 +152,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 	public VillagerEntity(EntityType<? extends VillagerEntity> entityType, World world, VillagerType villagerType) {
 		super(entityType, world);
 		((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
+		this.getNavigation().setCanSwim(true);
 		this.setCanPickUpLoot(true);
 		this.setVillagerData(this.getVillagerData().withType(villagerType).withProfession(VillagerProfession.field_17051));
 		this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, new CompoundTag()));
@@ -181,32 +182,28 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		float f = (float)this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).getValue();
 		if (this.isChild()) {
 			brain.setSchedule(Schedule.VILLAGER_BABY);
-			brain.setTaskList(Activity.field_18885, VillagerTaskListProvider.getPlayTasks(f));
+			brain.setTaskList(Activity.field_18885, VillagerTaskListProvider.createPlayTasks(f));
 		} else {
 			brain.setSchedule(Schedule.VILLAGER_DEFAULT);
 			brain.setTaskList(
 				Activity.field_18596,
-				VillagerTaskListProvider.getWorkTasks(villagerProfession, f),
+				VillagerTaskListProvider.createWorkTasks(villagerProfession, f),
 				ImmutableSet.of(Pair.of(MemoryModuleType.field_18439, MemoryModuleState.field_18456))
 			);
 		}
 
-		brain.setTaskList(Activity.field_18594, VillagerTaskListProvider.getCoreTasks(villagerProfession, f));
+		brain.setTaskList(Activity.field_18594, VillagerTaskListProvider.createCoreTasks(villagerProfession, f));
 		brain.setTaskList(
 			Activity.field_18598,
-			VillagerTaskListProvider.getMeetTasks(villagerProfession, f),
+			VillagerTaskListProvider.createMeetTasks(villagerProfession, f),
 			ImmutableSet.of(Pair.of(MemoryModuleType.field_18440, MemoryModuleState.field_18456))
 		);
-		brain.setTaskList(
-			Activity.field_18597,
-			VillagerTaskListProvider.getRestTasks(villagerProfession, f),
-			ImmutableSet.of(Pair.of(MemoryModuleType.field_18438, MemoryModuleState.field_18456))
-		);
-		brain.setTaskList(Activity.field_18595, VillagerTaskListProvider.getIdleTasks(villagerProfession, f));
-		brain.setTaskList(Activity.field_18599, VillagerTaskListProvider.getPanicTasks(villagerProfession, f));
-		brain.setTaskList(Activity.field_19042, VillagerTaskListProvider.getPreRaidTasks(villagerProfession, f));
-		brain.setTaskList(Activity.field_19041, VillagerTaskListProvider.getRaidTasks(villagerProfession, f));
-		brain.setTaskList(Activity.field_19043, VillagerTaskListProvider.getHideTasks(villagerProfession, f));
+		brain.setTaskList(Activity.field_18597, VillagerTaskListProvider.createRestTasks(villagerProfession, f));
+		brain.setTaskList(Activity.field_18595, VillagerTaskListProvider.createIdleTasks(villagerProfession, f));
+		brain.setTaskList(Activity.field_18599, VillagerTaskListProvider.createPanicTasks(villagerProfession, f));
+		brain.setTaskList(Activity.field_19042, VillagerTaskListProvider.createPreRaidTasks(villagerProfession, f));
+		brain.setTaskList(Activity.field_19041, VillagerTaskListProvider.createRaidTasks(villagerProfession, f));
+		brain.setTaskList(Activity.field_19043, VillagerTaskListProvider.createHideTasks(villagerProfession, f));
 		brain.setCoreActivities(ImmutableSet.of(Activity.field_18594));
 		brain.setDefaultActivity(Activity.field_18595);
 		brain.resetPossibleActivities(Activity.field_18595);
@@ -287,12 +284,16 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 			this.sayNo();
 			return super.interactMob(playerEntity, hand);
 		} else {
+			boolean bl2 = this.getOffers().isEmpty();
 			if (hand == Hand.MAIN) {
+				if (bl2) {
+					this.sayNo();
+				}
+
 				playerEntity.incrementStat(Stats.field_15384);
 			}
 
-			if (this.getOffers().isEmpty()) {
-				this.sayNo();
+			if (bl2) {
 				return super.interactMob(playerEntity, hand);
 			} else {
 				if (!this.world.isClient && !this.offers.isEmpty()) {

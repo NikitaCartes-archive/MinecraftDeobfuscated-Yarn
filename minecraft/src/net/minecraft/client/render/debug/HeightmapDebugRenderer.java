@@ -39,7 +39,7 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(5, VertexFormats.POSITION_COLOR);
 
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-40, 0, -40), blockPos.add(40, 0, 40))) {
+		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-40, 0, -40), blockPos.add(40, 0, 40))) {
 			int i = iWorld.getTop(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
 			if (iWorld.getBlockState(blockPos2.add(0, i, 0).down()).isAir()) {
 				WorldRenderer.buildBox(

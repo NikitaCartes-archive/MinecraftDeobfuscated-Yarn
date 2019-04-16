@@ -63,7 +63,7 @@ public class SignBlockEntity extends BlockEntity {
 			TextComponent textComponent = TextComponent.Serializer.fromJsonString(string);
 			if (this.world instanceof ServerWorld) {
 				try {
-					this.text[i] = TextFormatter.method_10881(this.getCommandSource(null), textComponent, null);
+					this.text[i] = TextFormatter.resolveAndStyle(this.getCommandSource(null), textComponent, null);
 				} catch (CommandSyntaxException var6) {
 					this.text[i] = textComponent;
 				}

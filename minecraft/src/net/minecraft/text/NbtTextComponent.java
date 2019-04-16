@@ -25,13 +25,13 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class NbtTextComponent extends AbstractTextComponent implements TextComponentWithSelectors {
 	private static final Logger LOGGER = LogManager.getLogger();
-	protected final boolean field_11778;
+	protected final boolean componentJson;
 	protected final String path;
 	@Nullable
-	protected final NbtPathArgumentType.class_2209 field_11779;
+	protected final NbtPathArgumentType.NbtPath parsedPath;
 
 	@Nullable
-	private static NbtPathArgumentType.class_2209 method_10919(String string) {
+	private static NbtPathArgumentType.NbtPath parsePath(String string) {
 		try {
 			return new NbtPathArgumentType().method_9362(new StringReader(string));
 		} catch (CommandSyntaxException var2) {
@@ -40,16 +40,16 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 	}
 
 	public NbtTextComponent(String string, boolean bl) {
-		this(string, method_10919(string), bl);
+		this(string, parsePath(string), bl);
 	}
 
-	protected NbtTextComponent(String string, @Nullable NbtPathArgumentType.class_2209 arg, boolean bl) {
+	protected NbtTextComponent(String string, @Nullable NbtPathArgumentType.NbtPath nbtPath, boolean bl) {
 		this.path = string;
-		this.field_11779 = arg;
-		this.field_11778 = bl;
+		this.parsedPath = nbtPath;
+		this.componentJson = bl;
 	}
 
-	protected abstract Stream<CompoundTag> method_10916(ServerCommandSource serverCommandSource) throws CommandSyntaxException;
+	protected abstract Stream<CompoundTag> resolve(ServerCommandSource serverCommandSource) throws CommandSyntaxException;
 
 	@Override
 	public String getText() {
@@ -60,25 +60,25 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 		return this.path;
 	}
 
-	public boolean method_10921() {
-		return this.field_11778;
+	public boolean isComponentJson() {
+		return this.componentJson;
 	}
 
 	@Override
-	public TextComponent resolveSelectors(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
-		if (serverCommandSource != null && this.field_11779 != null) {
-			Stream<String> stream = this.method_10916(serverCommandSource).flatMap(compoundTag -> {
+	public TextComponent resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+		if (serverCommandSource != null && this.parsedPath != null) {
+			Stream<String> stream = this.resolve(serverCommandSource).flatMap(compoundTag -> {
 				try {
-					return this.field_11779.method_9366(compoundTag).stream();
+					return this.parsedPath.get(compoundTag).stream();
 				} catch (CommandSyntaxException var3x) {
 					return Stream.empty();
 				}
 			}).map(Tag::asString);
-			return (TextComponent)(this.field_11778
+			return (TextComponent)(this.componentJson
 				? (TextComponent)stream.flatMap(string -> {
 					try {
 						TextComponent textComponent = TextComponent.Serializer.fromJsonString(string);
-						return Stream.of(TextFormatter.method_10881(serverCommandSource, textComponent, entity));
+						return Stream.of(TextFormatter.resolveAndStyle(serverCommandSource, textComponent, entity));
 					} catch (Exception var4) {
 						LOGGER.warn("Failed to parse component: " + string, (Throwable)var4);
 						return Stream.of();
@@ -93,16 +93,16 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 	public static class BlockPosArgument extends NbtTextComponent {
 		private final String pos;
 		@Nullable
-		private final PosArgument field_16408;
+		private final PosArgument parsedPos;
 
 		public BlockPosArgument(String string, boolean bl, String string2) {
 			super(string, bl);
 			this.pos = string2;
-			this.field_16408 = this.method_16121(this.pos);
+			this.parsedPos = this.parsePos(this.pos);
 		}
 
 		@Nullable
-		private PosArgument method_16121(String string) {
+		private PosArgument parsePos(String string) {
 			try {
 				return BlockPosArgumentType.create().method_9699(new StringReader(string));
 			} catch (CommandSyntaxException var3) {
@@ -110,10 +110,10 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 			}
 		}
 
-		private BlockPosArgument(String string, @Nullable NbtPathArgumentType.class_2209 arg, boolean bl, String string2, @Nullable PosArgument posArgument) {
-			super(string, arg, bl);
+		private BlockPosArgument(String string, @Nullable NbtPathArgumentType.NbtPath nbtPath, boolean bl, String string2, @Nullable PosArgument posArgument) {
+			super(string, nbtPath, bl);
 			this.pos = string2;
-			this.field_16408 = posArgument;
+			this.parsedPos = posArgument;
 		}
 
 		@Nullable
@@ -123,14 +123,14 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 
 		@Override
 		public TextComponent copyShallow() {
-			return new NbtTextComponent.BlockPosArgument(this.path, this.field_11779, this.field_11778, this.pos, this.field_16408);
+			return new NbtTextComponent.BlockPosArgument(this.path, this.parsedPath, this.componentJson, this.pos, this.parsedPos);
 		}
 
 		@Override
-		protected Stream<CompoundTag> method_10916(ServerCommandSource serverCommandSource) {
-			if (this.field_16408 != null) {
+		protected Stream<CompoundTag> resolve(ServerCommandSource serverCommandSource) {
+			if (this.parsedPos != null) {
 				ServerWorld serverWorld = serverCommandSource.getWorld();
-				BlockPos blockPos = this.field_16408.toAbsoluteBlockPos(serverCommandSource);
+				BlockPos blockPos = this.parsedPos.toAbsoluteBlockPos(serverCommandSource);
 				if (serverWorld.isHeightValidAndBlockLoaded(blockPos)) {
 					BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 					if (blockEntity != null) {
@@ -163,16 +163,16 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 	public static class EntityNbtTextComponent extends NbtTextComponent {
 		private final String selector;
 		@Nullable
-		private final EntitySelector field_11781;
+		private final EntitySelector parsedSelector;
 
 		public EntityNbtTextComponent(String string, boolean bl, String string2) {
 			super(string, bl);
 			this.selector = string2;
-			this.field_11781 = method_10923(string2);
+			this.parsedSelector = parseSelector(string2);
 		}
 
 		@Nullable
-		private static EntitySelector method_10923(String string) {
+		private static EntitySelector parseSelector(String string) {
 			try {
 				EntitySelectorReader entitySelectorReader = new EntitySelectorReader(new StringReader(string));
 				return entitySelectorReader.read();
@@ -182,11 +182,11 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 		}
 
 		private EntityNbtTextComponent(
-			String string, @Nullable NbtPathArgumentType.class_2209 arg, boolean bl, String string2, @Nullable EntitySelector entitySelector
+			String string, @Nullable NbtPathArgumentType.NbtPath nbtPath, boolean bl, String string2, @Nullable EntitySelector entitySelector
 		) {
-			super(string, arg, bl);
+			super(string, nbtPath, bl);
 			this.selector = string2;
-			this.field_11781 = entitySelector;
+			this.parsedSelector = entitySelector;
 		}
 
 		public String getSelector() {
@@ -195,13 +195,13 @@ public abstract class NbtTextComponent extends AbstractTextComponent implements 
 
 		@Override
 		public TextComponent copyShallow() {
-			return new NbtTextComponent.EntityNbtTextComponent(this.path, this.field_11779, this.field_11778, this.selector, this.field_11781);
+			return new NbtTextComponent.EntityNbtTextComponent(this.path, this.parsedPath, this.componentJson, this.selector, this.parsedSelector);
 		}
 
 		@Override
-		protected Stream<CompoundTag> method_10916(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
-			if (this.field_11781 != null) {
-				List<? extends Entity> list = this.field_11781.getEntities(serverCommandSource);
+		protected Stream<CompoundTag> resolve(ServerCommandSource serverCommandSource) throws CommandSyntaxException {
+			if (this.parsedSelector != null) {
+				List<? extends Entity> list = this.parsedSelector.getEntities(serverCommandSource);
 				return list.stream().map(NbtPredicate::entityToTag);
 			} else {
 				return Stream.empty();

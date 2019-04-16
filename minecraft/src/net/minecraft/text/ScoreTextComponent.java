@@ -57,7 +57,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements TextCom
 		MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
 		if (minecraftServer != null && minecraftServer.method_3814() && ChatUtil.isEmpty(this.text)) {
 			Scoreboard scoreboard = minecraftServer.getScoreboard();
-			ScoreboardObjective scoreboardObjective = scoreboard.method_1170(this.objective);
+			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(this.objective);
 			if (scoreboard.playerHasObjective(this.name, scoreboardObjective)) {
 				ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(this.name, scoreboardObjective);
 				this.setText(String.format("%d", scoreboardPlayerScore.getScore()));
@@ -74,7 +74,7 @@ public class ScoreTextComponent extends AbstractTextComponent implements TextCom
 	}
 
 	@Override
-	public TextComponent resolveSelectors(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public TextComponent resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
 		if (serverCommandSource == null) {
 			return this.method_10929();
 		} else {

@@ -23,7 +23,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 		BlockPos blockPos,
 		EndGatewayFeatureConfig endGatewayFeatureConfig
 	) {
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-1, -2, -1), blockPos.add(1, 2, 1))) {
+		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-1, -2, -1), blockPos.add(1, 2, 1))) {
 			boolean bl = blockPos2.getX() == blockPos.getX();
 			boolean bl2 = blockPos2.getY() == blockPos.getY();
 			boolean bl3 = blockPos2.getZ() == blockPos.getZ();

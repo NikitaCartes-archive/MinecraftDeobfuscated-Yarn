@@ -241,7 +241,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
 	}
 
 	@Override
@@ -262,5 +262,10 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new CampfireBlockEntity();
+	}
+
+	@Override
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+		return false;
 	}
 }

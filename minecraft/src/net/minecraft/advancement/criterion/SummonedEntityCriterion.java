@@ -75,7 +75,7 @@ public class SummonedEntityCriterion implements Criterion<SummonedEntityCriterio
 			this.entity = entityPredicate;
 		}
 
-		public static SummonedEntityCriterion.Conditions method_9129(EntityPredicate.Builder builder) {
+		public static SummonedEntityCriterion.Conditions create(EntityPredicate.Builder builder) {
 			return new SummonedEntityCriterion.Conditions(builder.build());
 		}
 

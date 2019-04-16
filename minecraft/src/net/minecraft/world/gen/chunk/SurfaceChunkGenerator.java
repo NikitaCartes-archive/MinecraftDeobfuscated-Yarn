@@ -229,7 +229,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		int k = chunkGeneratorConfig.getMinY();
 		int l = chunkGeneratorConfig.getMaxY();
 
-		for (BlockPos blockPos : BlockPos.iterateBoxPositions(i, 0, j, i + 15, 0, j + 15)) {
+		for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
 			if (l > 0) {
 				for (int m = l; m >= l - 4; m--) {
 					if (m >= l - random.nextInt(5)) {

@@ -5,7 +5,7 @@ import net.fabricmc.api.Environment;
 
 public class MetricsData {
 	private final long[] samples = new long[240];
-	private int field_15656;
+	private int startIndex;
 	private int sampleCount;
 	private int writeIndex;
 
@@ -17,10 +17,10 @@ public class MetricsData {
 		}
 
 		if (this.sampleCount < 240) {
-			this.field_15656 = 0;
+			this.startIndex = 0;
 			this.sampleCount++;
 		} else {
-			this.field_15656 = this.wrapIndex(this.writeIndex + 1);
+			this.startIndex = this.wrapIndex(this.writeIndex + 1);
 		}
 	}
 
@@ -31,8 +31,8 @@ public class MetricsData {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int method_15249() {
-		return this.field_15656;
+	public int getStartIndex() {
+		return this.startIndex;
 	}
 
 	@Environment(EnvType.CLIENT)

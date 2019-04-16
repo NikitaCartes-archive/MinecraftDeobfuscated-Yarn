@@ -82,7 +82,7 @@ public class ItemDurabilityChangedCriterion implements Criterion<ItemDurabilityC
 			this.delta = intRange2;
 		}
 
-		public static ItemDurabilityChangedCriterion.Conditions method_8967(ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
+		public static ItemDurabilityChangedCriterion.Conditions create(ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
 			return new ItemDurabilityChangedCriterion.Conditions(itemPredicate, intRange, NumberRange.IntRange.ANY);
 		}
 

@@ -62,7 +62,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	private void generateSpike(IWorld iWorld, Random random, EndSpikeFeatureConfig endSpikeFeatureConfig, EndSpikeFeature.Spike spike) {
 		int i = spike.getRadius();
 
-		for (BlockPos blockPos : BlockPos.iterateBoxPositions(
+		for (BlockPos blockPos : BlockPos.iterate(
 			new BlockPos(spike.getCenterX() - i, 0, spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i)
 		)) {
 			if (blockPos.isWithinDistance(new BlockPos(spike.getCenterX(), blockPos.getY(), spike.getCenterZ()), (double)i) && blockPos.getY() < spike.getHeight()) {

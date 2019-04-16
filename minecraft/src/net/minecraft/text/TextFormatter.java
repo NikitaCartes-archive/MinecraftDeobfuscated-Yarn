@@ -12,7 +12,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 
 public class TextFormatter {
-	public static TextComponent addStyle(TextComponent textComponent, Style style) {
+	public static TextComponent style(TextComponent textComponent, Style style) {
 		if (style.isEmpty()) {
 			return textComponent;
 		} else {
@@ -22,16 +22,16 @@ public class TextFormatter {
 		}
 	}
 
-	public static TextComponent method_10881(@Nullable ServerCommandSource serverCommandSource, TextComponent textComponent, @Nullable Entity entity) throws CommandSyntaxException {
+	public static TextComponent resolveAndStyle(@Nullable ServerCommandSource serverCommandSource, TextComponent textComponent, @Nullable Entity entity) throws CommandSyntaxException {
 		TextComponent textComponent2 = textComponent instanceof TextComponentWithSelectors
-			? ((TextComponentWithSelectors)textComponent).resolveSelectors(serverCommandSource, entity)
+			? ((TextComponentWithSelectors)textComponent).resolve(serverCommandSource, entity)
 			: textComponent.copyShallow();
 
 		for (TextComponent textComponent3 : textComponent.getSiblings()) {
-			textComponent2.append(method_10881(serverCommandSource, textComponent3, entity));
+			textComponent2.append(resolveAndStyle(serverCommandSource, textComponent3, entity));
 		}
 
-		return addStyle(textComponent2, textComponent.getStyle());
+		return style(textComponent2, textComponent.getStyle());
 	}
 
 	public static TextComponent profile(GameProfile gameProfile) {

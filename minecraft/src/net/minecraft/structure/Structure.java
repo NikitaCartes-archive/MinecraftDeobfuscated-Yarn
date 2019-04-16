@@ -70,7 +70,7 @@ public class Structure {
 			);
 			this.size = blockPos2;
 
-			for (BlockPos blockPos6 : BlockPos.iterateBoxPositions(blockPos4, blockPos5)) {
+			for (BlockPos blockPos6 : BlockPos.iterate(blockPos4, blockPos5)) {
 				BlockPos blockPos7 = blockPos6.subtract(blockPos4);
 				BlockState blockState = world.getBlockState(blockPos6);
 				if (block == null || block != blockState.getBlock()) {

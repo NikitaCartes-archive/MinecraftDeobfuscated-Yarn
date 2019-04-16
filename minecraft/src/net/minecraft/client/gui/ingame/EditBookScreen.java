@@ -550,8 +550,8 @@ public class EditBookScreen extends Screen {
 				String string4 = string2.substring(0, l);
 				char c = string2.charAt(l);
 				boolean bl = c == ' ' || c == '\n';
-				string2 = TextFormat.method_538(string4) + string2.substring(l + (bl ? 1 : 0));
-				string3 = TextFormat.method_538(string4) + string3.substring(l + (bl ? 1 : 0));
+				string2 = TextFormat.getFormatAtEnd(string4) + string2.substring(l + (bl ? 1 : 0));
+				string3 = TextFormat.getFormatAtEnd(string4) + string3.substring(l + (bl ? 1 : 0));
 				position2.x = position.x + this.getStringWidth(string4 + " ");
 				this.drawHighlightRect(position, position2);
 				position.x = 0;
@@ -606,7 +606,7 @@ public class EditBookScreen extends Screen {
 			String string3 = string2.substring(0, l);
 			char c = string2.charAt(l);
 			boolean bl = c == ' ' || c == '\n';
-			string2 = TextFormat.method_538(string3) + string2.substring(l + (bl ? 1 : 0));
+			string2 = TextFormat.getFormatAtEnd(string3) + string2.substring(l + (bl ? 1 : 0));
 			j += string3.length() + (bl ? 1 : 0);
 			if (j - 1 >= i) {
 				String string4 = string3.substring(0, Math.min(Math.max(i - k, 0), string3.length()));
@@ -693,7 +693,7 @@ public class EditBookScreen extends Screen {
 
 					char c = string2.charAt(m);
 					boolean bl = c == ' ' || c == '\n';
-					string2 = TextFormat.method_538(string3) + string2.substring(m + (bl ? 1 : 0));
+					string2 = TextFormat.getFormatAtEnd(string3) + string2.substring(m + (bl ? 1 : 0));
 					l += string3.length() + (bl ? 1 : 0);
 				} else if (position.y >= j && position.y < k) {
 					int o = this.getCharacterCountForStringWidth(string2, position.x);

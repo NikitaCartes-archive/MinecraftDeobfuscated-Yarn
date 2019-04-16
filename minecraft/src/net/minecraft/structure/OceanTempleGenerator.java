@@ -287,7 +287,7 @@ public class OceanTempleGenerator {
 			int k = i - 1;
 			int l = 0;
 
-			for (BlockPos blockPos3 : BlockPos.iterateBoxPositions(blockPos, blockPos2)) {
+			for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
 				int m = blockPos3.getX();
 				int n = blockPos3.getZ();
 				int o = blockPos.getY() - 1;

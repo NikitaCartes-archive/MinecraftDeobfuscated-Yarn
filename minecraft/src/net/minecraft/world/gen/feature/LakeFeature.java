@@ -82,7 +82,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 									return false;
 								}
 
-								if (t < 4 && !material.method_15799() && iWorld.getBlockState(blockPos.add(j, t, s)) != lakeFeatureConfig.state) {
+								if (t < 4 && !material.isSolid() && iWorld.getBlockState(blockPos.add(j, t, s)) != lakeFeatureConfig.state) {
 									return false;
 								}
 							}
@@ -131,7 +131,7 @@ public class LakeFeature extends Feature<LakeFeatureConfig> {
 											|| txxx < 7 && bls[(j * 16 + s) * 8 + txxx + 1]
 											|| txxx > 0 && bls[(j * 16 + s) * 8 + (txxx - 1)]
 									);
-								if (bl && (txxx < 4 || random.nextInt(2) != 0) && iWorld.getBlockState(blockPos.add(j, txxx, s)).getMaterial().method_15799()) {
+								if (bl && (txxx < 4 || random.nextInt(2) != 0) && iWorld.getBlockState(blockPos.add(j, txxx, s)).getMaterial().isSolid()) {
 									iWorld.setBlockState(blockPos.add(j, txxx, s), Blocks.field_10340.getDefaultState(), 2);
 								}
 							}

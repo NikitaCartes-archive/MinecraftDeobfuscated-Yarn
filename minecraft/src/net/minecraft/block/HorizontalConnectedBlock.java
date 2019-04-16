@@ -115,7 +115,7 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
 	}
 
 	@Override

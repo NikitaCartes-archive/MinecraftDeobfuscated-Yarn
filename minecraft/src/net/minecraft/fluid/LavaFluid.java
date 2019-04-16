@@ -92,7 +92,7 @@ public abstract class LavaFluid extends BaseFluid {
 							world.setBlockState(blockPos2, Blocks.field_10036.getDefaultState());
 							return;
 						}
-					} else if (blockState.getMaterial().suffocates()) {
+					} else if (blockState.getMaterial().blocksMovement()) {
 						return;
 					}
 				}
@@ -135,7 +135,7 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	protected void method_15730(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
+	protected void beforeBreakingBlock(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
 		this.method_15818(iWorld, blockPos);
 	}
 
@@ -155,7 +155,7 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15739(ViewableWorld viewableWorld) {
+	public int getLevelDecreasePerBlock(ViewableWorld viewableWorld) {
 		return viewableWorld.getDimension().doesWaterVaporize() ? 1 : 2;
 	}
 
@@ -170,7 +170,7 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15753(World world, BlockPos blockPos, FluidState fluidState, FluidState fluidState2) {
+	public int getNextTickDelay(World world, BlockPos blockPos, FluidState fluidState, FluidState fluidState2) {
 		int i = this.getTickRate(world);
 		if (!fluidState.isEmpty()
 			&& !fluidState2.isEmpty()
@@ -189,12 +189,12 @@ public abstract class LavaFluid extends BaseFluid {
 	}
 
 	@Override
-	protected boolean method_15737() {
+	protected boolean isInfinite() {
 		return false;
 	}
 
 	@Override
-	protected void method_15745(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
+	protected void flow(IWorld iWorld, BlockPos blockPos, BlockState blockState, Direction direction, FluidState fluidState) {
 		if (direction == Direction.DOWN) {
 			FluidState fluidState2 = iWorld.getFluidState(blockPos);
 			if (this.matches(FluidTags.field_15518) && fluidState2.matches(FluidTags.field_15517)) {
@@ -207,7 +207,7 @@ public abstract class LavaFluid extends BaseFluid {
 			}
 		}
 
-		super.method_15745(iWorld, blockPos, blockState, direction, fluidState);
+		super.flow(iWorld, blockPos, blockState, direction, fluidState);
 	}
 
 	@Override

@@ -573,7 +573,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public void shutdown() {
 		super.shutdown();
-		SystemUtil.method_18350();
+		SystemUtil.shutdownServerWorkerExecutor();
 	}
 
 	@Override

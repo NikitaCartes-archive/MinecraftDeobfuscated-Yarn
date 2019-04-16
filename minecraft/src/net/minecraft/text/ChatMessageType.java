@@ -9,11 +9,11 @@ public enum ChatMessageType {
 	field_11733((byte)2, true);
 
 	private final byte id;
-	private final boolean field_18797;
+	private final boolean interruptsNarration;
 
 	private ChatMessageType(byte b, boolean bl) {
 		this.id = b;
-		this.field_18797 = bl;
+		this.interruptsNarration = bl;
 	}
 
 	public byte getId() {
@@ -31,7 +31,7 @@ public enum ChatMessageType {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_19457() {
-		return this.field_18797;
+	public boolean interruptsNarration() {
+		return this.interruptsNarration;
 	}
 }

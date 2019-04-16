@@ -150,7 +150,7 @@ public class ChunkRenderer {
 				Random random = new Random();
 				BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
 
-				for (BlockPos blockPos3 : BlockPos.iterateBoxPositions(blockPos, blockPos2)) {
+				for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
 					BlockState blockState = safeWorldView.getBlockState(blockPos3);
 					Block block = blockState.getBlock();
 					if (blockState.isFullOpaque(safeWorldView, blockPos3)) {

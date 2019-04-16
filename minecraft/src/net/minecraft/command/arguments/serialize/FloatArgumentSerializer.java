@@ -9,7 +9,7 @@ public class FloatArgumentSerializer implements ArgumentSerializer<FloatArgument
 	public void method_10044(FloatArgumentType floatArgumentType, PacketByteBuf packetByteBuf) {
 		boolean bl = floatArgumentType.getMinimum() != -Float.MAX_VALUE;
 		boolean bl2 = floatArgumentType.getMaximum() != Float.MAX_VALUE;
-		packetByteBuf.writeByte(BrigadierArgumentTypes.method_10037(bl, bl2));
+		packetByteBuf.writeByte(BrigadierArgumentTypes.createFlag(bl, bl2));
 		if (bl) {
 			packetByteBuf.writeFloat(floatArgumentType.getMinimum());
 		}
@@ -21,8 +21,8 @@ public class FloatArgumentSerializer implements ArgumentSerializer<FloatArgument
 
 	public FloatArgumentType method_10045(PacketByteBuf packetByteBuf) {
 		byte b = packetByteBuf.readByte();
-		float f = BrigadierArgumentTypes.method_10039(b) ? packetByteBuf.readFloat() : -Float.MAX_VALUE;
-		float g = BrigadierArgumentTypes.method_10038(b) ? packetByteBuf.readFloat() : Float.MAX_VALUE;
+		float f = BrigadierArgumentTypes.hasMin(b) ? packetByteBuf.readFloat() : -Float.MAX_VALUE;
+		float g = BrigadierArgumentTypes.hasMax(b) ? packetByteBuf.readFloat() : Float.MAX_VALUE;
 		return FloatArgumentType.floatArg(f, g);
 	}
 

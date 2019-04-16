@@ -18,7 +18,7 @@ public class ProtectionEnchantment extends Enchantment {
 
 	@Override
 	public int getMinimumPower(int i) {
-		return this.type.method_8240() + (i - 1) * this.type.method_8239();
+		return this.type.getBasePower() + (i - 1) * this.type.getPowerPerLevel();
 	}
 
 	@Override
@@ -78,22 +78,22 @@ public class ProtectionEnchantment extends Enchantment {
 		EXPLOSION("explosion", 5, 8),
 		PROJECTILE("projectile", 3, 6);
 
-		private final String field_9137;
-		private final int field_9135;
-		private final int field_9134;
+		private final String name;
+		private final int basePower;
+		private final int powerPerLevel;
 
 		private Type(String string2, int j, int k) {
-			this.field_9137 = string2;
-			this.field_9135 = j;
-			this.field_9134 = k;
+			this.name = string2;
+			this.basePower = j;
+			this.powerPerLevel = k;
 		}
 
-		public int method_8240() {
-			return this.field_9135;
+		public int getBasePower() {
+			return this.basePower;
 		}
 
-		public int method_8239() {
-			return this.field_9134;
+		public int getPowerPerLevel() {
+			return this.powerPerLevel;
 		}
 	}
 }

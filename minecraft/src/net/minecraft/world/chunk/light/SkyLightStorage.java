@@ -31,7 +31,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 		long m = ChunkSectionPos.toChunkLong(l);
 		int i = ChunkSectionPos.unpackLongY(m);
 		SkyLightStorage.Data data = this.dataStorageUncached;
-		int j = data.heightMap.get(ChunkSectionPos.method_18693(m));
+		int j = data.heightMap.get(ChunkSectionPos.toLightStorageIndex(m));
 		if (j != data.defaultHeight && i < j) {
 			ChunkNibbleArray chunkNibbleArray = this.getDataForChunk(data, m);
 			if (chunkNibbleArray == null) {
@@ -63,7 +63,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			this.dataStorage.heightMap.defaultReturnValue(this.dataStorage.defaultHeight);
 		}
 
-		long m = ChunkSectionPos.method_18693(l);
+		long m = ChunkSectionPos.toLightStorageIndex(l);
 		int j = this.dataStorage.heightMap.get(m);
 		if (j < i + 1) {
 			this.dataStorage.heightMap.put(m, i + 1);
@@ -87,7 +87,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 
 	@Override
 	protected void onChunkRemoved(long l) {
-		long m = ChunkSectionPos.method_18693(l);
+		long m = ChunkSectionPos.toLightStorageIndex(l);
 		boolean bl = this.field_15817.contains(m);
 		if (bl) {
 			this.field_15816.add(l);
@@ -263,7 +263,7 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 			return false;
 		} else {
 			long m = ChunkSectionPos.toChunkLong(l);
-			long n = ChunkSectionPos.method_18693(m);
+			long n = ChunkSectionPos.toLightStorageIndex(m);
 			if (!this.field_15817.contains(n)) {
 				return false;
 			} else {
@@ -274,13 +274,13 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	}
 
 	protected boolean method_15568(long l) {
-		long m = ChunkSectionPos.method_18693(l);
+		long m = ChunkSectionPos.toLightStorageIndex(l);
 		int i = this.dataStorage.heightMap.get(m);
 		return i == this.dataStorage.defaultHeight || ChunkSectionPos.unpackLongY(l) >= i;
 	}
 
 	protected boolean method_15566(long l) {
-		long m = ChunkSectionPos.method_18693(l);
+		long m = ChunkSectionPos.toLightStorageIndex(l);
 		return this.field_15817.contains(m);
 	}
 

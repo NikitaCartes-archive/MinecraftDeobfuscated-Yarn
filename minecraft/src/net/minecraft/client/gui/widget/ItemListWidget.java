@@ -452,7 +452,17 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 	}
 
 	protected E remove(int i) {
-		return (E)this.items.remove(i);
+		E item = (E)this.items.get(i);
+		return this.removeEntry((E)this.items.get(i)) ? item : null;
+	}
+
+	protected boolean removeEntry(E item) {
+		boolean bl = this.items.remove(item);
+		if (bl && item == this.getSelectedItem()) {
+			this.selectItem(null);
+		}
+
+		return bl;
 	}
 
 	@Environment(EnvType.CLIENT)

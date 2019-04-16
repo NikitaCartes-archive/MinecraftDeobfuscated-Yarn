@@ -182,13 +182,13 @@ public class TranslatableTextComponent extends AbstractTextComponent implements 
 	}
 
 	@Override
-	public TextComponent resolveSelectors(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public TextComponent resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
 		Object[] objects = new Object[this.params.length];
 
 		for (int i = 0; i < objects.length; i++) {
 			Object object = this.params[i];
 			if (object instanceof TextComponent) {
-				objects[i] = TextFormatter.method_10881(serverCommandSource, (TextComponent)object, entity);
+				objects[i] = TextFormatter.resolveAndStyle(serverCommandSource, (TextComponent)object, entity);
 			} else {
 				objects[i] = object;
 			}

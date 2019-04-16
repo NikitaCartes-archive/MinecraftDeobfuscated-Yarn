@@ -41,7 +41,7 @@ public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 		GlStateManager.depthMask(false);
 		BlockPos blockPos = new BlockPos(camera.getPos());
 
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {
+		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-6, -6, -6), blockPos.add(6, 6, 6))) {
 			BlockState blockState = blockView.getBlockState(blockPos2);
 			if (blockState.getBlock() != Blocks.AIR) {
 				VoxelShape voxelShape = blockState.getOutlineShape(blockView, blockPos2);

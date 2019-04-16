@@ -15,5 +15,5 @@ public interface DataCommandObject {
 
 	TextComponent getQueryFeedback(Tag tag);
 
-	TextComponent getGetFeedback(NbtPathArgumentType.class_2209 arg, double d, int i);
+	TextComponent getGetFeedback(NbtPathArgumentType.NbtPath nbtPath, double d, int i);
 }

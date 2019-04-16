@@ -73,7 +73,7 @@ public class SafeWorldView implements ExtendedBlockView {
 		this.blockStates = new BlockState[this.xSize * this.ySize * this.zSize];
 		this.fluidStates = new FluidState[this.xSize * this.ySize * this.zSize];
 
-		for (BlockPos blockPos3 : BlockPos.iterateBoxPositions(blockPos, blockPos2)) {
+		for (BlockPos blockPos3 : BlockPos.iterate(blockPos, blockPos2)) {
 			int k = (blockPos3.getX() >> 4) - i;
 			int l = (blockPos3.getZ() >> 4) - j;
 			WorldChunk worldChunk = worldChunks[k][l];

@@ -26,7 +26,7 @@ public abstract class AbstractPileFeature extends Feature<DefaultFeatureConfig> 
 			int i = 2 + random.nextInt(2);
 			int j = 2 + random.nextInt(2);
 
-			for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-i, 0, -j), blockPos.add(i, 1, j))) {
+			for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-i, 0, -j), blockPos.add(i, 1, j))) {
 				int k = blockPos.getX() - blockPos2.getX();
 				int l = blockPos.getZ() - blockPos2.getZ();
 				if ((float)(k * k + l * l) <= random.nextFloat() * 10.0F - random.nextFloat() * 6.0F) {

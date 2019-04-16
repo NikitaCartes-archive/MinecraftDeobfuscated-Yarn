@@ -310,7 +310,7 @@ public class BossBarCommand {
 	}
 
 	private static int setName(ServerCommandSource serverCommandSource, CommandBossBar commandBossBar, TextComponent textComponent) throws CommandSyntaxException {
-		TextComponent textComponent2 = TextFormatter.method_10881(serverCommandSource, textComponent, null);
+		TextComponent textComponent2 = TextFormatter.resolveAndStyle(serverCommandSource, textComponent, null);
 		if (commandBossBar.getName().equals(textComponent2)) {
 			throw SET_NAME_UNCHANGED_EXCEPTION.create();
 		} else {
@@ -362,7 +362,7 @@ public class BossBarCommand {
 		if (bossBarManager.get(identifier) != null) {
 			throw CREATE_FAILED_EXCEPTION.create(identifier.toString());
 		} else {
-			CommandBossBar commandBossBar = bossBarManager.add(identifier, TextFormatter.method_10881(serverCommandSource, textComponent, null));
+			CommandBossBar commandBossBar = bossBarManager.add(identifier, TextFormatter.resolveAndStyle(serverCommandSource, textComponent, null));
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.bossbar.create.success", commandBossBar.getTextComponent()), true);
 			return bossBarManager.getAll().size();
 		}

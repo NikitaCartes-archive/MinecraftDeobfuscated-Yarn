@@ -79,15 +79,15 @@ public class LocationArrivalCriterion implements Criterion<LocationArrivalCriter
 			this.location = locationPredicate;
 		}
 
-		public static LocationArrivalCriterion.Conditions method_9034(LocationPredicate locationPredicate) {
+		public static LocationArrivalCriterion.Conditions create(LocationPredicate locationPredicate) {
 			return new LocationArrivalCriterion.Conditions(Criterions.LOCATION.id, locationPredicate);
 		}
 
-		public static LocationArrivalCriterion.Conditions method_9032() {
+		public static LocationArrivalCriterion.Conditions createSleptInBed() {
 			return new LocationArrivalCriterion.Conditions(Criterions.SLEPT_IN_BED.id, LocationPredicate.ANY);
 		}
 
-		public static LocationArrivalCriterion.Conditions method_20400() {
+		public static LocationArrivalCriterion.Conditions createHeroOfTheVillage() {
 			return new LocationArrivalCriterion.Conditions(Criterions.HERO_OF_THE_VILLAGE.id, LocationPredicate.ANY);
 		}
 

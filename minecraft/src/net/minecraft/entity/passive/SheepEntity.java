@@ -220,7 +220,7 @@ public class SheepEntity extends AnimalEntity {
 		ItemStack itemStack = playerEntity.getStackInHand(hand);
 		if (itemStack.getItem() == Items.field_8868 && !this.isSheared() && !this.isChild()) {
 			this.dropItems();
-			if (this.world.isClient) {
+			if (!this.world.isClient) {
 				itemStack.applyDamage(1, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 			}
 		}

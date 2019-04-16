@@ -80,7 +80,7 @@ public class PlayerHurtEntityCriterion implements Criterion<PlayerHurtEntityCrit
 			this.entity = entityPredicate;
 		}
 
-		public static PlayerHurtEntityCriterion.Conditions method_9103(DamagePredicate.Builder builder) {
+		public static PlayerHurtEntityCriterion.Conditions create(DamagePredicate.Builder builder) {
 			return new PlayerHurtEntityCriterion.Conditions(builder.build(), EntityPredicate.ANY);
 		}
 

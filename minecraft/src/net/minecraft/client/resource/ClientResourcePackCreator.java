@@ -112,7 +112,7 @@ public class ClientResourcePackCreator implements ResourcePackCreator {
 				WorkingScreen workingScreen = new WorkingScreen();
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
-				minecraftClient.method_19537(() -> minecraftClient.openScreen(workingScreen));
+				minecraftClient.executeSync(() -> minecraftClient.openScreen(workingScreen));
 				completableFuture = NetworkUtils.download(file, string, map, 52428800, workingScreen, minecraftClient.getNetworkProxy());
 			}
 

@@ -27,6 +27,7 @@ public class RealmsConnect {
 
 	public void connect(String string, int i) {
 		Realms.setConnectedToRealms(true);
+		Realms.narrateNow(Realms.getLocalizedString("mco.connect.success"));
 		(new Thread("Realms-connect-task") {
 				public void run() {
 					InetAddress inetAddress = null;

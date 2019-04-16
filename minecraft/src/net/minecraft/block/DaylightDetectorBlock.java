@@ -34,6 +34,11 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 	}
 
 	@Override
+	public boolean method_9526(BlockState blockState) {
+		return true;
+	}
+
+	@Override
 	public int getWeakRedstonePower(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		return (Integer)blockState.get(POWER);
 	}

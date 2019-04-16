@@ -65,7 +65,7 @@ public class NewLevelScreen extends Screen {
 	@Override
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
-		this.textFieldLevelName = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20);
+		this.textFieldLevelName = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterName"));
 		this.textFieldLevelName.setText(this.levelName);
 		this.textFieldLevelName.setChangedListener(string -> {
 			this.levelName = string;
@@ -110,7 +110,7 @@ public class NewLevelScreen extends Screen {
 
 			this.method_2722();
 		}));
-		this.textFieldSeed = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20);
+		this.textFieldSeed = new TextFieldWidget(this.font, this.width / 2 - 100, 60, 200, 20, I18n.translate("selectWorld.enterSeed"));
 		this.textFieldSeed.setText(this.seed);
 		this.textFieldSeed.setChangedListener(string -> this.seed = this.textFieldSeed.getText());
 		this.children.add(this.textFieldSeed);

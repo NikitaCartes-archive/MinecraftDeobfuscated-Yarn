@@ -18,21 +18,17 @@ import net.minecraft.client.gui.Screen;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class TextFieldWidget extends DrawableHelper implements Drawable, Element {
+public class TextFieldWidget extends AbstractButtonWidget implements Drawable, Element {
 	private final TextRenderer textRenderer;
-	private int x;
-	private int y;
-	private final int width;
-	private final int height;
 	private String text = "";
 	private int maxLength = 32;
 	private int focusedTicks;
-	private boolean hasBorder = true;
+	private boolean focused = true;
 	private boolean field_2096 = true;
-	private boolean focused;
 	private boolean editable = true;
 	private boolean field_17037;
 	private int field_2103;
@@ -40,22 +36,18 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 	private int cursorMin;
 	private int field_2100 = 14737632;
 	private int field_2098 = 7368816;
-	private boolean visible = true;
 	private String suggestion;
 	private Consumer<String> changedListener;
 	private Predicate<String> textPredicate = Predicates.alwaysTrue();
-	private BiFunction<String, Integer, String> renderTextProvider = (string, integer) -> string;
+	private BiFunction<String, Integer, String> renderTextProvider = (stringx, integer) -> stringx;
 
-	public TextFieldWidget(TextRenderer textRenderer, int i, int j, int k, int l) {
-		this(textRenderer, i, j, k, l, null);
+	public TextFieldWidget(TextRenderer textRenderer, int i, int j, int k, int l, String string) {
+		this(textRenderer, i, j, k, l, null, string);
 	}
 
-	public TextFieldWidget(TextRenderer textRenderer, int i, int j, int k, int l, @Nullable TextFieldWidget textFieldWidget) {
+	public TextFieldWidget(TextRenderer textRenderer, int i, int j, int k, int l, @Nullable TextFieldWidget textFieldWidget, String string) {
+		super(i, j, k, l, string);
 		this.textRenderer = textRenderer;
-		this.x = i;
-		this.y = j;
-		this.width = k;
-		this.height = l;
 		if (textFieldWidget != null) {
 			this.setText(textFieldWidget.getText());
 		}
@@ -71,6 +63,12 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 
 	public void tick() {
 		this.focusedTicks++;
+	}
+
+	@Override
+	protected String getNarrationMessage() {
+		String string = this.getMessage();
+		return string.isEmpty() ? "" : I18n.translate("gui.narrate.editBox", string);
 	}
 
 	public void setText(String string) {
@@ -132,7 +130,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 		}
 	}
 
-	public void onChanged(String string) {
+	private void onChanged(String string) {
 		if (this.changedListener != null) {
 			this.changedListener.accept(string);
 		}
@@ -189,11 +187,11 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 		return this.method_1869(i, this.getCursor());
 	}
 
-	public int method_1869(int i, int j) {
+	private int method_1869(int i, int j) {
 		return this.method_1864(i, j, true);
 	}
 
-	public int method_1864(int i, int j, boolean bl) {
+	private int method_1864(int i, int j, boolean bl) {
 		int k = j;
 		boolean bl2 = i < 0;
 		int l = Math.abs(i);
@@ -351,9 +349,9 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 				this.setFocused(bl);
 			}
 
-			if (this.focused && bl && i == 0) {
+			if (this.isFocused() && bl && i == 0) {
 				int j = MathHelper.floor(d) - this.x;
-				if (this.hasBorder) {
+				if (this.focused) {
 					j -= 4;
 				}
 
@@ -367,7 +365,12 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 	}
 
 	@Override
-	public void render(int i, int j, float f) {
+	public void setFocused(boolean bl) {
+		super.setFocused(bl);
+	}
+
+	@Override
+	public void renderButton(int i, int j, float f) {
 		if (this.isVisible()) {
 			if (this.hasBorder()) {
 				fill(this.x - 1, this.y - 1, this.x + this.width + 1, this.y + this.height + 1, -6250336);
@@ -379,9 +382,9 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 			int m = this.cursorMin - this.field_2103;
 			String string = this.textRenderer.trimToWidth(this.text.substring(this.field_2103), this.method_1859());
 			boolean bl = l >= 0 && l <= string.length();
-			boolean bl2 = this.focused && this.focusedTicks / 6 % 2 == 0 && bl;
-			int n = this.hasBorder ? this.x + 4 : this.x;
-			int o = this.hasBorder ? this.y + (this.height - 8) / 2 : this.y;
+			boolean bl2 = this.isFocused() && this.focusedTicks / 6 % 2 == 0 && bl;
+			int n = this.focused ? this.x + 4 : this.x;
+			int o = this.focused ? this.y + (this.height - 8) / 2 : this.y;
 			int p = n;
 			if (m > string.length()) {
 				m = string.length();
@@ -469,7 +472,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 		}
 	}
 
-	public int getMaxLength() {
+	private int getMaxLength() {
 		return this.maxLength;
 	}
 
@@ -477,12 +480,12 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 		return this.cursorMax;
 	}
 
-	public boolean hasBorder() {
-		return this.hasBorder;
+	private boolean hasBorder() {
+		return this.focused;
 	}
 
 	public void setHasBorder(boolean bl) {
-		this.hasBorder = bl;
+		this.focused = bl;
 	}
 
 	public void method_1868(int i) {
@@ -495,12 +498,7 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 
 	@Override
 	public boolean changeFocus(boolean bl) {
-		if (this.visible && this.editable) {
-			this.setFocused(!this.focused);
-			return this.focused;
-		} else {
-			return false;
-		}
+		return this.visible && this.editable ? super.changeFocus(bl) : false;
 	}
 
 	@Override
@@ -508,19 +506,14 @@ public class TextFieldWidget extends DrawableHelper implements Drawable, Element
 		return this.visible && d >= (double)this.x && d < (double)(this.x + this.width) && e >= (double)this.y && e < (double)(this.y + this.height);
 	}
 
-	public void setFocused(boolean bl) {
-		if (bl && !this.focused) {
+	@Override
+	protected void onFocusedChanged(boolean bl) {
+		if (bl) {
 			this.focusedTicks = 0;
 		}
-
-		this.focused = bl;
 	}
 
-	public boolean isFocused() {
-		return this.focused;
-	}
-
-	public boolean method_20316() {
+	private boolean method_20316() {
 		return this.editable;
 	}
 

@@ -306,7 +306,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	protected void onBlockCollision(BlockState blockState) {
-		Criterions.ENTER_BLOCK.method_8885(this, blockState);
+		Criterions.ENTER_BLOCK.handle(this, blockState);
 	}
 
 	@Override
@@ -347,7 +347,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			if (entity.isAlive()) {
 				this.setPositionAnglesAndUpdate(entity.x, entity.y, entity.z, entity.yaw, entity.pitch);
 				this.getServerWorld().method_14178().updateCameraPosition(this);
-				if (this.isInSneakingPose()) {
+				if (this.isSneaking()) {
 					this.setCameraEntity(this);
 				}
 			} else {

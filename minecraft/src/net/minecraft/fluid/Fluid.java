@@ -69,7 +69,7 @@ public abstract class Fluid {
 
 	protected abstract boolean method_15777(FluidState fluidState, BlockView blockView, BlockPos blockPos, Fluid fluid, Direction direction);
 
-	protected abstract Vec3d method_15782(BlockView blockView, BlockPos blockPos, FluidState fluidState);
+	protected abstract Vec3d getVelocity(BlockView blockView, BlockPos blockPos, FluidState fluidState);
 
 	public abstract int getTickRate(ViewableWorld viewableWorld);
 

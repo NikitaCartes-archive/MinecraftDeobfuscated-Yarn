@@ -35,7 +35,7 @@ public class SelectorTextComponent extends AbstractTextComponent implements Text
 	}
 
 	@Override
-	public TextComponent resolveSelectors(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
+	public TextComponent resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException {
 		return (TextComponent)(serverCommandSource != null && this.field_11790 != null
 			? EntitySelector.getNames(this.field_11790.getEntities(serverCommandSource))
 			: new StringTextComponent(""));

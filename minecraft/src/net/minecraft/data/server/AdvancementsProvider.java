@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
-import net.minecraft.advancement.SimpleAdvancement;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
@@ -21,7 +21,7 @@ public class AdvancementsProvider implements DataProvider {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 	private final DataGenerator root;
-	private final List<Consumer<Consumer<SimpleAdvancement>>> tabGenerators = ImmutableList.of(
+	private final List<Consumer<Consumer<Advancement>>> tabGenerators = ImmutableList.of(
 		new EndTabAdvancementGenerator(),
 		new HusbandryTabAdvancementGenerator(),
 		new AdventureTabAdvancementGenerator(),
@@ -37,27 +37,27 @@ public class AdvancementsProvider implements DataProvider {
 	public void run(DataCache dataCache) throws IOException {
 		Path path = this.root.getOutput();
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
-		Consumer<SimpleAdvancement> consumer = simpleAdvancement -> {
-			if (!set.add(simpleAdvancement.getId())) {
-				throw new IllegalStateException("Duplicate advancement " + simpleAdvancement.getId());
+		Consumer<Advancement> consumer = advancement -> {
+			if (!set.add(advancement.getId())) {
+				throw new IllegalStateException("Duplicate advancement " + advancement.getId());
 			} else {
-				Path path2 = getOutput(path, simpleAdvancement);
+				Path path2 = method_10334(path, advancement);
 
 				try {
-					DataProvider.writeToPath(GSON, dataCache, simpleAdvancement.createTask().toJson(), path2);
+					DataProvider.writeToPath(GSON, dataCache, advancement.createTask().toJson(), path2);
 				} catch (IOException var6x) {
 					LOGGER.error("Couldn't save advancement {}", path2, var6x);
 				}
 			}
 		};
 
-		for (Consumer<Consumer<SimpleAdvancement>> consumer2 : this.tabGenerators) {
+		for (Consumer<Consumer<Advancement>> consumer2 : this.tabGenerators) {
 			consumer2.accept(consumer);
 		}
 	}
 
-	private static Path getOutput(Path path, SimpleAdvancement simpleAdvancement) {
-		return path.resolve("data/" + simpleAdvancement.getId().getNamespace() + "/advancements/" + simpleAdvancement.getId().getPath() + ".json");
+	private static Path method_10334(Path path, Advancement advancement) {
+		return path.resolve("data/" + advancement.getId().getNamespace() + "/advancements/" + advancement.getId().getPath() + ".json");
 	}
 
 	@Override

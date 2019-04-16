@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.client.audio.PositionedSoundInstance;
 import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
@@ -15,11 +15,11 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class AdvancementToast implements Toast {
-	private final SimpleAdvancement field_2205;
+	private final Advancement field_2205;
 	private boolean field_2206;
 
-	public AdvancementToast(SimpleAdvancement simpleAdvancement) {
-		this.field_2205 = simpleAdvancement;
+	public AdvancementToast(Advancement advancement) {
+		this.field_2205 = advancement;
 	}
 
 	@Override

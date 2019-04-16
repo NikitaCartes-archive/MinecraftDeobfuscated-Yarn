@@ -42,11 +42,11 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, true).parse(true);
 		if (blockArgumentParser.getBlockState() != null) {
 			BlockPredicateArgumentType.StatePredicate statePredicate = new BlockPredicateArgumentType.StatePredicate(
-				blockArgumentParser.getBlockState(), blockArgumentParser.method_9692().keySet(), blockArgumentParser.getNbtData()
+				blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData()
 			);
 			return tagManager -> statePredicate;
 		} else {
-			Identifier identifier = blockArgumentParser.method_9664();
+			Identifier identifier = blockArgumentParser.getTagId();
 			return tagManager -> {
 				Tag<Block> tag = tagManager.blocks().get(identifier);
 				if (tag == null) {

@@ -94,7 +94,7 @@ public class TheEndDimension extends Dimension {
 	public BlockPos getSpawningBlockInChunk(ChunkPos chunkPos, boolean bl) {
 		Random random = new Random(this.world.getSeed());
 		BlockPos blockPos = new BlockPos(chunkPos.getStartX() + random.nextInt(15), 0, chunkPos.getEndZ() + random.nextInt(15));
-		return this.world.getTopNonAirState(blockPos).getMaterial().suffocates() ? blockPos : null;
+		return this.world.getTopNonAirState(blockPos).getMaterial().blocksMovement() ? blockPos : null;
 	}
 
 	@Override

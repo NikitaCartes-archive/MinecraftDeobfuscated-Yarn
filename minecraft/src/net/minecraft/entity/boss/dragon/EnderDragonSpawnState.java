@@ -56,7 +56,7 @@ public enum EnderDragonSpawnState {
 					} else {
 						int l = 10;
 
-						for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(
+						for (BlockPos blockPos2 : BlockPos.iterate(
 							new BlockPos(spike.getCenterX() - 10, spike.getHeight() - 10, spike.getCenterZ() - 10),
 							new BlockPos(spike.getCenterX() + 10, spike.getHeight() + 10, spike.getCenterZ() + 10)
 						)) {

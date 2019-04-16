@@ -469,7 +469,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			this.world.getProfiler().pop();
 			this.world.getProfiler().push("rest");
 			this.horizontalCollision = !MathHelper.method_20390(vec3d.x, vec3d2.x) || !MathHelper.method_20390(vec3d.z, vec3d2.z);
-			this.verticalCollision = !MathHelper.method_20390(vec3d.y, vec3d2.y);
+			this.verticalCollision = vec3d.y != vec3d2.y;
 			this.onGround = this.verticalCollision && vec3d.y < 0.0;
 			this.collided = this.horizontalCollision || this.verticalCollision;
 			int i = MathHelper.floor(this.x);
@@ -1775,6 +1775,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.getFlag(1);
 	}
 
+	@Environment(EnvType.CLIENT)
 	public boolean isInSneakingPose() {
 		return this.getPose() == EntityPose.field_18081;
 	}
@@ -2572,7 +2573,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 									bl2 = true;
 									d = Math.max(e - boundingBox.minY, d);
 									if (bl) {
-										Vec3d vec3d2 = fluidState.method_15758(this.world, pooledMutable);
+										Vec3d vec3d2 = fluidState.getVelocity(this.world, pooledMutable);
 										if (d < 0.4) {
 											vec3d2 = vec3d2.multiply(d);
 										}

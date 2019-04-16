@@ -11,6 +11,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
+import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
@@ -27,10 +28,12 @@ import net.minecraft.entity.passive.AbstractTraderEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
+import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.tag.EntityTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.MathHelper;
@@ -63,6 +66,16 @@ public class RavagerEntity extends RaiderEntity {
 		this.targetSelector.add(3, new FollowTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(4, new FollowTargetGoal(this, AbstractTraderEntity.class, true));
 		this.targetSelector.add(4, new FollowTargetGoal(this, IronGolemEntity.class, true));
+	}
+
+	@Override
+	protected void method_20417() {
+		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity) || this.getPrimaryPassenger().getType().isTaggedWith(EntityTags.field_19168);
+		boolean bl2 = !(this.getRiddenEntity() instanceof BoatEntity);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18405, bl);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18407, bl && bl2);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18406, bl);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18408, bl);
 	}
 
 	@Override
@@ -139,7 +152,7 @@ public class RavagerEntity extends RaiderEntity {
 				boolean bl = false;
 				BoundingBox boundingBox = this.getBoundingBox().expand(0.2);
 
-				for (BlockPos blockPos : BlockPos.iterateBoxPositions(
+				for (BlockPos blockPos : BlockPos.iterate(
 					MathHelper.floor(boundingBox.minX),
 					MathHelper.floor(boundingBox.minY),
 					MathHelper.floor(boundingBox.minZ),

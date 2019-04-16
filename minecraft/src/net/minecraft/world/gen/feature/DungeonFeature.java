@@ -48,7 +48,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 				for (int u = p; u <= q; u++) {
 					BlockPos blockPos2 = blockPos.add(s, t, u);
 					Material material = iWorld.getBlockState(blockPos2).getMaterial();
-					boolean bl = material.method_15799();
+					boolean bl = material.isSolid();
 					if (t == -1 && !bl) {
 						return false;
 					}
@@ -73,9 +73,9 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 							if (iWorld.getBlockState(blockPos2x).getBlock() != Blocks.field_10034) {
 								iWorld.setBlockState(blockPos2x, AIR, 2);
 							}
-						} else if (blockPos2x.getY() >= 0 && !iWorld.getBlockState(blockPos2x.down()).getMaterial().method_15799()) {
+						} else if (blockPos2x.getY() >= 0 && !iWorld.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
 							iWorld.setBlockState(blockPos2x, AIR, 2);
-						} else if (iWorld.getBlockState(blockPos2x).getMaterial().method_15799() && iWorld.getBlockState(blockPos2x).getBlock() != Blocks.field_10034) {
+						} else if (iWorld.getBlockState(blockPos2x).getMaterial().isSolid() && iWorld.getBlockState(blockPos2x).getBlock() != Blocks.field_10034) {
 							if (t == -1 && random.nextInt(4) != 0) {
 								iWorld.setBlockState(blockPos2x, Blocks.field_9989.getDefaultState(), 2);
 							} else {
@@ -96,7 +96,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						int x = 0;
 
 						for (Direction direction : Direction.Type.HORIZONTAL) {
-							if (iWorld.getBlockState(blockPos3.offset(direction)).getMaterial().method_15799()) {
+							if (iWorld.getBlockState(blockPos3.offset(direction)).getMaterial().isSolid()) {
 								x++;
 							}
 						}

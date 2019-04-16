@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Set;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.advancement.SimpleAdvancement;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -266,7 +266,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	public void disconnect(TextComponent textComponent) {
 		this.client.send(new DisconnectS2CPacket(textComponent), future -> this.client.disconnect(textComponent));
 		this.client.disableAutoRead();
-		this.server.method_19537(this.client::handleDisconnection);
+		this.server.executeSync(this.client::handleDisconnection);
 	}
 
 	@Override
@@ -402,9 +402,9 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(advancementTabC2SPacket, this, this.player.getServerWorld());
 		if (advancementTabC2SPacket.getAction() == AdvancementTabC2SPacket.Action.field_13024) {
 			Identifier identifier = advancementTabC2SPacket.getTabToOpen();
-			SimpleAdvancement simpleAdvancement = this.server.getAdvancementManager().get(identifier);
-			if (simpleAdvancement != null) {
-				this.player.getAdvancementManager().setDisplayTab(simpleAdvancement);
+			Advancement advancement = this.server.getAdvancementManager().get(identifier);
+			if (advancement != null) {
+				this.player.getAdvancementManager().setDisplayTab(advancement);
 			}
 		}
 	}

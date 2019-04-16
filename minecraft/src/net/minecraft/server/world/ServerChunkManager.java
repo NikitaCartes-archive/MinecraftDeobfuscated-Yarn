@@ -407,7 +407,7 @@ public class ServerChunkManager extends ChunkManager {
 		}
 
 		@Override
-		protected boolean isOffThread() {
+		protected boolean shouldRunAsync() {
 			return true;
 		}
 

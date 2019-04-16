@@ -145,6 +145,10 @@ public class ItemEntity extends Entity {
 			.getEntities(ItemEntity.class, this.getBoundingBox().expand(0.5, 0.0, 0.5), itemEntityx -> itemEntityx != this && itemEntityx.method_20397());
 		if (!list.isEmpty()) {
 			for (ItemEntity itemEntity : list) {
+				if (!this.method_20397()) {
+					return;
+				}
+
 				this.tryMerge(itemEntity);
 			}
 		}
@@ -152,7 +156,7 @@ public class ItemEntity extends Entity {
 
 	private boolean method_20397() {
 		ItemStack itemStack = this.getStack();
-		return !this.isAlive() && this.pickupDelay != 32767 && this.age != -32768 && this.age < 6000 && itemStack.getAmount() < itemStack.getMaxAmount();
+		return this.isAlive() && this.pickupDelay != 32767 && this.age != -32768 && this.age < 6000 && itemStack.getAmount() < itemStack.getMaxAmount();
 	}
 
 	private void tryMerge(ItemEntity itemEntity) {
@@ -174,12 +178,17 @@ public class ItemEntity extends Entity {
 	}
 
 	private static void method_18006(ItemEntity itemEntity, ItemStack itemStack, ItemEntity itemEntity2, ItemStack itemStack2) {
+		int i = Math.min(itemStack.getMaxAmount() - itemStack.getAmount(), itemStack2.getAmount());
 		ItemStack itemStack3 = itemStack.copy();
-		itemStack3.addAmount(itemStack2.getAmount());
+		itemStack3.addAmount(i);
 		itemEntity.setStack(itemStack3);
+		itemStack2.subtractAmount(i);
+		itemEntity2.setStack(itemStack2);
 		itemEntity.pickupDelay = Math.max(itemEntity.pickupDelay, itemEntity2.pickupDelay);
 		itemEntity.age = Math.min(itemEntity.age, itemEntity2.age);
-		itemEntity2.remove();
+		if (itemStack2.isEmpty()) {
+			itemEntity2.remove();
+		}
 	}
 
 	public void method_6980() {

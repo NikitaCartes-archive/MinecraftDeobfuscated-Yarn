@@ -75,48 +75,44 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 
 	protected int getLightBlockedBetween(long l, long m) {
 		this.lightStorage.updateAll();
-		if (!BlockPos.isHeightInvalid(l) && !BlockPos.isHeightInvalid(m)) {
-			this.srcMutablePos.setFromLong(l);
-			this.destMutablePos.setFromLong(m);
-			int i = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getX());
-			int j = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getZ());
-			int k = ChunkSectionPos.toChunkCoord(this.destMutablePos.getX());
-			int n = ChunkSectionPos.toChunkCoord(this.destMutablePos.getZ());
-			BlockView blockView = this.method_17529(k, n);
-			if (blockView == null) {
+		this.srcMutablePos.setFromLong(l);
+		this.destMutablePos.setFromLong(m);
+		int i = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getX());
+		int j = ChunkSectionPos.toChunkCoord(this.srcMutablePos.getZ());
+		int k = ChunkSectionPos.toChunkCoord(this.destMutablePos.getX());
+		int n = ChunkSectionPos.toChunkCoord(this.destMutablePos.getZ());
+		BlockView blockView = this.method_17529(k, n);
+		if (blockView == null) {
+			return 16;
+		} else {
+			BlockState blockState = blockView.getBlockState(this.destMutablePos);
+			BlockView blockView2 = this.chunkProvider.getWorld();
+			int o = blockState.getLightSubtracted(blockView2, this.destMutablePos);
+			if (!blockState.method_16386() && o >= 15) {
 				return 16;
 			} else {
-				BlockState blockState = blockView.getBlockState(this.destMutablePos);
-				BlockView blockView2 = this.chunkProvider.getWorld();
-				int o = blockState.getLightSubtracted(blockView2, this.destMutablePos);
-				if (!blockState.method_16386() && o >= 15) {
+				BlockView blockView3;
+				if (i == k && j == n) {
+					blockView3 = blockView;
+				} else {
+					blockView3 = this.method_17529(i, j);
+				}
+
+				if (blockView3 == null) {
 					return 16;
 				} else {
-					BlockView blockView3;
-					if (i == k && j == n) {
-						blockView3 = blockView;
-					} else {
-						blockView3 = this.method_17529(i, j);
-					}
-
-					if (blockView3 == null) {
+					int p = Integer.signum(this.destMutablePos.getX() - this.srcMutablePos.getX());
+					int q = Integer.signum(this.destMutablePos.getY() - this.srcMutablePos.getY());
+					int r = Integer.signum(this.destMutablePos.getZ() - this.srcMutablePos.getZ());
+					Direction direction = Direction.fromVector(this.mutablePosGetLightBlockedBetween.set(p, q, r));
+					if (direction == null) {
 						return 16;
 					} else {
-						int p = Integer.signum(this.destMutablePos.getX() - this.srcMutablePos.getX());
-						int q = Integer.signum(this.destMutablePos.getY() - this.srcMutablePos.getY());
-						int r = Integer.signum(this.destMutablePos.getZ() - this.srcMutablePos.getZ());
-						Direction direction = Direction.fromVector(this.mutablePosGetLightBlockedBetween.set(p, q, r));
-						if (direction == null) {
-							return 16;
-						} else {
-							BlockState blockState2 = blockView3.getBlockState(this.srcMutablePos);
-							return method_20049(blockView2, blockState2, this.srcMutablePos, blockState, this.destMutablePos, direction, o);
-						}
+						BlockState blockState2 = blockView3.getBlockState(this.srcMutablePos);
+						return method_20049(blockView2, blockState2, this.srcMutablePos, blockState, this.destMutablePos, direction, o);
 					}
 				}
 			}
-		} else {
-			return 0;
 		}
 	}
 
@@ -236,7 +232,7 @@ public abstract class ChunkLightProvider<M extends WorldNibbleStorage<M>, S exte
 	}
 
 	public void method_15512(ChunkPos chunkPos, boolean bl) {
-		long l = ChunkSectionPos.method_18693(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
+		long l = ChunkSectionPos.toLightStorageIndex(ChunkSectionPos.asLong(chunkPos.x, 0, chunkPos.z));
 		this.lightStorage.method_15535(l, bl);
 	}
 }

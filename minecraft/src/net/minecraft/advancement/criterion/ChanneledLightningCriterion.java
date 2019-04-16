@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 public class ChanneledLightningCriterion implements Criterion<ChanneledLightningCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("channeled_lightning");
-	private final Map<PlayerAdvancementTracker, ChanneledLightningCriterion.class_2003> field_9500 = Maps.<PlayerAdvancementTracker, ChanneledLightningCriterion.class_2003>newHashMap();
+	private final Map<PlayerAdvancementTracker, ChanneledLightningCriterion.Handler> field_9500 = Maps.<PlayerAdvancementTracker, ChanneledLightningCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -29,23 +29,23 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 	public void beginTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer
 	) {
-		ChanneledLightningCriterion.class_2003 lv = (ChanneledLightningCriterion.class_2003)this.field_9500.get(playerAdvancementTracker);
-		if (lv == null) {
-			lv = new ChanneledLightningCriterion.class_2003(playerAdvancementTracker);
-			this.field_9500.put(playerAdvancementTracker, lv);
+		ChanneledLightningCriterion.Handler handler = (ChanneledLightningCriterion.Handler)this.field_9500.get(playerAdvancementTracker);
+		if (handler == null) {
+			handler = new ChanneledLightningCriterion.Handler(playerAdvancementTracker);
+			this.field_9500.put(playerAdvancementTracker, handler);
 		}
 
-		lv.method_8804(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
 	public void endTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer
 	) {
-		ChanneledLightningCriterion.class_2003 lv = (ChanneledLightningCriterion.class_2003)this.field_9500.get(playerAdvancementTracker);
-		if (lv != null) {
-			lv.method_8807(conditionsContainer);
-			if (lv.method_8805()) {
+		ChanneledLightningCriterion.Handler handler = (ChanneledLightningCriterion.Handler)this.field_9500.get(playerAdvancementTracker);
+		if (handler != null) {
+			handler.removeCondition(conditionsContainer);
+			if (handler.isEmpty()) {
 				this.field_9500.remove(playerAdvancementTracker);
 			}
 		}
@@ -61,10 +61,10 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 		return new ChanneledLightningCriterion.Conditions(entityPredicates);
 	}
 
-	public void method_8803(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
-		ChanneledLightningCriterion.class_2003 lv = (ChanneledLightningCriterion.class_2003)this.field_9500.get(serverPlayerEntity.getAdvancementManager());
-		if (lv != null) {
-			lv.method_8806(serverPlayerEntity, collection);
+	public void handle(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
+		ChanneledLightningCriterion.Handler handler = (ChanneledLightningCriterion.Handler)this.field_9500.get(serverPlayerEntity.getAdvancementManager());
+		if (handler != null) {
+			handler.handle(serverPlayerEntity, collection);
 		}
 	}
 
@@ -107,30 +107,30 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 		}
 	}
 
-	static class class_2003 {
-		private final PlayerAdvancementTracker field_9502;
-		private final Set<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>> field_9501 = Sets.<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>>newHashSet();
+	static class Handler {
+		private final PlayerAdvancementTracker manager;
+		private final Set<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>>newHashSet();
 
-		public class_2003(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9502 = playerAdvancementTracker;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.manager = playerAdvancementTracker;
 		}
 
-		public boolean method_8805() {
-			return this.field_9501.isEmpty();
+		public boolean isEmpty() {
+			return this.conditions.isEmpty();
 		}
 
-		public void method_8804(Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer) {
-			this.field_9501.add(conditionsContainer);
+		public void addCondition(Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer) {
+			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_8807(Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer) {
-			this.field_9501.remove(conditionsContainer);
+		public void removeCondition(Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer) {
+			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_8806(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, Collection<? extends Entity> collection) {
 			List<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>> list = null;
 
-			for (Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer : this.field_9501) {
+			for (Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainer : this.conditions) {
 				if (conditionsContainer.getConditions().matches(serverPlayerEntity, collection)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions>>newArrayList();
@@ -142,7 +142,7 @@ public class ChanneledLightningCriterion implements Criterion<ChanneledLightning
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<ChanneledLightningCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_9502);
+					conditionsContainerx.apply(this.manager);
 				}
 			}
 		}

@@ -1,5 +1,6 @@
 package net.minecraft.entity.ai.brain.task;
 
+import java.util.Comparator;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
@@ -9,7 +10,9 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 
 public class LookTargetUtil {
@@ -64,5 +67,13 @@ public class LookTargetUtil {
 		itemEntity.setVelocity(vec3d);
 		itemEntity.setToDefaultPickupDelay();
 		livingEntity.world.spawnEntity(itemEntity);
+	}
+
+	public static ChunkSectionPos getPosClosestToOccupiedPointOfInterest(ServerWorld serverWorld, ChunkSectionPos chunkSectionPos, int i) {
+		int j = serverWorld.getOccupiedPointOfInterestDistance(chunkSectionPos);
+		return (ChunkSectionPos)ChunkSectionPos.stream(chunkSectionPos, i)
+			.filter(chunkSectionPosx -> serverWorld.getOccupiedPointOfInterestDistance(chunkSectionPosx) < j)
+			.min(Comparator.comparingInt(serverWorld::getOccupiedPointOfInterestDistance))
+			.orElse(chunkSectionPos);
 	}
 }

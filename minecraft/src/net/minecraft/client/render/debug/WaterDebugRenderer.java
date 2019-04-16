@@ -35,7 +35,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 		GlStateManager.disableTexture();
 		GlStateManager.lineWidth(6.0F);
 
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
+		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			FluidState fluidState = viewableWorld.getFluidState(blockPos2);
 			if (fluidState.matches(FluidTags.field_15517)) {
 				double g = (double)((float)blockPos2.getY() + fluidState.getHeight(viewableWorld, blockPos2));
@@ -57,7 +57,7 @@ public class WaterDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		for (BlockPos blockPos2x : BlockPos.iterateBoxPositions(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
+		for (BlockPos blockPos2x : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {
 			FluidState fluidState = viewableWorld.getFluidState(blockPos2x);
 			if (fluidState.matches(FluidTags.field_15517)) {
 				DebugRenderer.method_3714(

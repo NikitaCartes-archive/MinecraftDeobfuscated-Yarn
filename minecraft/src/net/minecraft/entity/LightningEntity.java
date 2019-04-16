@@ -82,7 +82,7 @@ public class LightningEntity extends Entity {
 				}
 
 				if (this.channeller != null) {
-					Criterions.CHANNELED_LIGHTNING.method_8803(this.channeller, list);
+					Criterions.CHANNELED_LIGHTNING.handle(this.channeller, list);
 				}
 			}
 		}

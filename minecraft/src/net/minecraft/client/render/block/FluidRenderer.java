@@ -38,7 +38,7 @@ public class FluidRenderer {
 		this.waterOverlaySprite = spriteAtlasTexture.getSprite(ModelLoader.WATER_OVERLAY);
 	}
 
-	private static boolean method_3348(BlockView blockView, BlockPos blockPos, Direction direction, FluidState fluidState) {
+	private static boolean isSameFluid(BlockView blockView, BlockPos blockPos, Direction direction, FluidState fluidState) {
 		BlockPos blockPos2 = blockPos.offset(direction);
 		FluidState fluidState2 = blockView.getFluidState(blockPos2);
 		return fluidState2.getFluid().matchesType(fluidState.getFluid());
@@ -63,12 +63,12 @@ public class FluidRenderer {
 		float f = (float)(i >> 16 & 0xFF) / 255.0F;
 		float g = (float)(i >> 8 & 0xFF) / 255.0F;
 		float h = (float)(i & 0xFF) / 255.0F;
-		boolean bl2 = !method_3348(extendedBlockView, blockPos, Direction.UP, fluidState);
-		boolean bl3 = !method_3348(extendedBlockView, blockPos, Direction.DOWN, fluidState) && !method_3344(extendedBlockView, blockPos, Direction.DOWN, 0.8888889F);
-		boolean bl4 = !method_3348(extendedBlockView, blockPos, Direction.NORTH, fluidState);
-		boolean bl5 = !method_3348(extendedBlockView, blockPos, Direction.SOUTH, fluidState);
-		boolean bl6 = !method_3348(extendedBlockView, blockPos, Direction.WEST, fluidState);
-		boolean bl7 = !method_3348(extendedBlockView, blockPos, Direction.EAST, fluidState);
+		boolean bl2 = !isSameFluid(extendedBlockView, blockPos, Direction.UP, fluidState);
+		boolean bl3 = !isSameFluid(extendedBlockView, blockPos, Direction.DOWN, fluidState) && !method_3344(extendedBlockView, blockPos, Direction.DOWN, 0.8888889F);
+		boolean bl4 = !isSameFluid(extendedBlockView, blockPos, Direction.NORTH, fluidState);
+		boolean bl5 = !isSameFluid(extendedBlockView, blockPos, Direction.SOUTH, fluidState);
+		boolean bl6 = !isSameFluid(extendedBlockView, blockPos, Direction.WEST, fluidState);
+		boolean bl7 = !isSameFluid(extendedBlockView, blockPos, Direction.EAST, fluidState);
 		if (!bl2 && !bl3 && !bl7 && !bl6 && !bl4 && !bl5) {
 			return false;
 		} else {
@@ -77,10 +77,10 @@ public class FluidRenderer {
 			float k = 1.0F;
 			float l = 0.8F;
 			float m = 0.6F;
-			float n = this.method_3346(extendedBlockView, blockPos, fluidState.getFluid());
-			float o = this.method_3346(extendedBlockView, blockPos.south(), fluidState.getFluid());
-			float p = this.method_3346(extendedBlockView, blockPos.east().south(), fluidState.getFluid());
-			float q = this.method_3346(extendedBlockView, blockPos.east(), fluidState.getFluid());
+			float n = this.getNorthWestCornerFluidHeight(extendedBlockView, blockPos, fluidState.getFluid());
+			float o = this.getNorthWestCornerFluidHeight(extendedBlockView, blockPos.south(), fluidState.getFluid());
+			float p = this.getNorthWestCornerFluidHeight(extendedBlockView, blockPos.east().south(), fluidState.getFluid());
+			float q = this.getNorthWestCornerFluidHeight(extendedBlockView, blockPos.east(), fluidState.getFluid());
 			double d = (double)blockPos.getX();
 			double e = (double)blockPos.getY();
 			double r = (double)blockPos.getZ();
@@ -91,7 +91,7 @@ public class FluidRenderer {
 				o -= 0.001F;
 				p -= 0.001F;
 				q -= 0.001F;
-				Vec3d vec3d = fluidState.method_15758(extendedBlockView, blockPos);
+				Vec3d vec3d = fluidState.getVelocity(extendedBlockView, blockPos);
 				float t;
 				float v;
 				float x;
@@ -272,7 +272,7 @@ public class FluidRenderer {
 		return (k > l ? k : l) | (m > n ? m : n) << 16;
 	}
 
-	private float method_3346(BlockView blockView, BlockPos blockPos, Fluid fluid) {
+	private float getNorthWestCornerFluidHeight(BlockView blockView, BlockPos blockPos, Fluid fluid) {
 		int i = 0;
 		float f = 0.0F;
 
@@ -292,7 +292,7 @@ public class FluidRenderer {
 					f += g;
 					i++;
 				}
-			} else if (!blockView.getBlockState(blockPos2).getMaterial().method_15799()) {
+			} else if (!blockView.getBlockState(blockPos2).getMaterial().isSolid()) {
 				i++;
 			}
 		}

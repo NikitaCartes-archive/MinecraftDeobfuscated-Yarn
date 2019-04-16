@@ -6,9 +6,9 @@ import com.google.gson.JsonObject;
 import java.util.List;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriteriaMerger;
-import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
@@ -26,7 +26,7 @@ public class ShapelessRecipeJsonFactory {
 	private final Item output;
 	private final int outputCount;
 	private final List<Ingredient> inputs = Lists.<Ingredient>newArrayList();
-	private final SimpleAdvancement.Task builder = SimpleAdvancement.Task.create();
+	private final Advancement.Task field_11393 = Advancement.Task.create();
 	private String group;
 
 	public ShapelessRecipeJsonFactory(ItemProvider itemProvider, int i) {
@@ -71,7 +71,7 @@ public class ShapelessRecipeJsonFactory {
 	}
 
 	public ShapelessRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
-		this.builder.criterion(string, criterionConditions);
+		this.field_11393.criterion(string, criterionConditions);
 		return this;
 	}
 
@@ -95,7 +95,7 @@ public class ShapelessRecipeJsonFactory {
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
 		this.validate(identifier);
-		this.builder
+		this.field_11393
 			.parent(new Identifier("recipes/root"))
 			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
 			.rewards(AdvancementRewards.Builder.recipe(identifier))
@@ -107,14 +107,14 @@ public class ShapelessRecipeJsonFactory {
 				this.outputCount,
 				this.group == null ? "" : this.group,
 				this.inputs,
-				this.builder,
+				this.field_11393,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())
 			)
 		);
 	}
 
 	private void validate(Identifier identifier) {
-		if (this.builder.getCriteria().isEmpty()) {
+		if (this.field_11393.getCriteria().isEmpty()) {
 			throw new IllegalStateException("No way of obtaining recipe " + identifier);
 		}
 	}
@@ -125,18 +125,18 @@ public class ShapelessRecipeJsonFactory {
 		private final int count;
 		private final String group;
 		private final List<Ingredient> inputs;
-		private final SimpleAdvancement.Task builder;
+		private final Advancement.Task field_11401;
 		private final Identifier advancementId;
 
 		public ShapelessRecipeJsonProvider(
-			Identifier identifier, Item item, int i, String string, List<Ingredient> list, SimpleAdvancement.Task task, Identifier identifier2
+			Identifier identifier, Item item, int i, String string, List<Ingredient> list, Advancement.Task task, Identifier identifier2
 		) {
 			this.recipeId = identifier;
 			this.output = item;
 			this.count = i;
 			this.group = string;
 			this.inputs = list;
-			this.builder = task;
+			this.field_11401 = task;
 			this.advancementId = identifier2;
 		}
 
@@ -175,7 +175,7 @@ public class ShapelessRecipeJsonFactory {
 		@Nullable
 		@Override
 		public JsonObject toAdvancementJson() {
-			return this.builder.toJson();
+			return this.field_11401.toJson();
 		}
 
 		@Nullable

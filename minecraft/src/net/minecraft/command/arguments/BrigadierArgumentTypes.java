@@ -20,7 +20,7 @@ public class BrigadierArgumentTypes {
 		ArgumentTypes.register("brigadier:string", StringArgumentType.class, new StringArgumentSerializer());
 	}
 
-	public static byte method_10037(boolean bl, boolean bl2) {
+	public static byte createFlag(boolean bl, boolean bl2) {
 		byte b = 0;
 		if (bl) {
 			b = (byte)(b | 1);
@@ -33,11 +33,11 @@ public class BrigadierArgumentTypes {
 		return b;
 	}
 
-	public static boolean method_10039(byte b) {
+	public static boolean hasMin(byte b) {
 		return (b & 1) != 0;
 	}
 
-	public static boolean method_10038(byte b) {
+	public static boolean hasMax(byte b) {
 		return (b & 2) != 0;
 	}
 }

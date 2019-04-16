@@ -335,7 +335,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				entityPose = EntityPose.field_18079;
 			} else if (this.isUsingRiptide()) {
 				entityPose = EntityPose.field_18080;
-			} else if (this.isSneaking()) {
+			} else if (this.isSneaking() && !this.abilities.flying) {
 				entityPose = EntityPose.field_18081;
 			} else {
 				entityPose = EntityPose.field_18076;

@@ -27,12 +27,12 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.TagHelper;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.class_2209> {
+public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.NbtPath> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("foo", "foo.bar", "foo[0]", "[0]", "[]", "{foo=bar}");
-	public static final SimpleCommandExceptionType INVALID_NBT_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(
+	public static final SimpleCommandExceptionType INVALID_PATH_NODE_EXCEPTION = new SimpleCommandExceptionType(
 		new TranslatableTextComponent("arguments.nbtpath.node.invalid")
 	);
-	public static final DynamicCommandExceptionType NBT_PATH_NOT_FOUND_EXCEPTION = new DynamicCommandExceptionType(
+	public static final DynamicCommandExceptionType NOTHING_FOUND_EXCEPTION = new DynamicCommandExceptionType(
 		object -> new TranslatableTextComponent("arguments.nbtpath.nothing_found", object)
 	);
 
@@ -40,11 +40,11 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		return new NbtPathArgumentType();
 	}
 
-	public static NbtPathArgumentType.class_2209 getNbtPath(CommandContext<ServerCommandSource> commandContext, String string) {
-		return commandContext.getArgument(string, NbtPathArgumentType.class_2209.class);
+	public static NbtPathArgumentType.NbtPath method_9358(CommandContext<ServerCommandSource> commandContext, String string) {
+		return commandContext.getArgument(string, NbtPathArgumentType.NbtPath.class);
 	}
 
-	public NbtPathArgumentType.class_2209 method_9362(StringReader stringReader) throws CommandSyntaxException {
+	public NbtPathArgumentType.NbtPath method_9362(StringReader stringReader) throws CommandSyntaxException {
 		List<NbtPathArgumentType.NbtPathNode> list = Lists.<NbtPathArgumentType.NbtPathNode>newArrayList();
 		int i = stringReader.getCursor();
 		Object2IntMap<NbtPathArgumentType.NbtPathNode> object2IntMap = new Object2IntOpenHashMap<>();
@@ -63,7 +63,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 			}
 		}
 
-		return new NbtPathArgumentType.class_2209(
+		return new NbtPathArgumentType.NbtPath(
 			stringReader.getString().substring(i, stringReader.getCursor()),
 			(NbtPathArgumentType.NbtPathNode[])list.toArray(new NbtPathArgumentType.NbtPathNode[0]),
 			object2IntMap
@@ -74,7 +74,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		switch (stringReader.peek()) {
 			case '"': {
 				String string = stringReader.readString();
-				return method_9352(stringReader, string);
+				return readCompoundChildNode(stringReader, string);
 			}
 			case '[':
 				stringReader.skip();
@@ -82,49 +82,49 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 				if (i == 123) {
 					CompoundTag compoundTag2 = new StringNbtReader(stringReader).parseCompoundTag();
 					stringReader.expect(']');
-					return new NbtPathArgumentType.class_2207(compoundTag2);
+					return new NbtPathArgumentType.EqualListElementNode(compoundTag2);
 				} else {
 					if (i == 93) {
 						stringReader.skip();
-						return NbtPathArgumentType.class_2204.field_9901;
+						return NbtPathArgumentType.AllListElementsNode.INSTANCE;
 					}
 
 					int j = stringReader.readInt();
 					stringReader.expect(']');
-					return new NbtPathArgumentType.class_2206(j);
+					return new NbtPathArgumentType.ListIndexNode(j);
 				}
 			case '{':
 				if (!bl) {
-					throw INVALID_NBT_PATH_NODE_EXCEPTION.createWithContext(stringReader);
+					throw INVALID_PATH_NODE_EXCEPTION.createWithContext(stringReader);
 				}
 
 				CompoundTag compoundTag = new StringNbtReader(stringReader).parseCompoundTag();
-				return new NbtPathArgumentType.class_3707(compoundTag);
+				return new NbtPathArgumentType.EqualCompoundNode(compoundTag);
 			default: {
-				String string = method_9357(stringReader);
-				return method_9352(stringReader, string);
+				String string = readName(stringReader);
+				return readCompoundChildNode(stringReader, string);
 			}
 		}
 	}
 
-	private static NbtPathArgumentType.NbtPathNode method_9352(StringReader stringReader, String string) throws CommandSyntaxException {
+	private static NbtPathArgumentType.NbtPathNode readCompoundChildNode(StringReader stringReader, String string) throws CommandSyntaxException {
 		if (stringReader.canRead() && stringReader.peek() == '{') {
 			CompoundTag compoundTag = new StringNbtReader(stringReader).parseCompoundTag();
-			return new NbtPathArgumentType.class_2208(string, compoundTag);
+			return new NbtPathArgumentType.EqualCompundChildNode(string, compoundTag);
 		} else {
-			return new NbtPathArgumentType.class_2205(string);
+			return new NbtPathArgumentType.CompoundChildNode(string);
 		}
 	}
 
-	private static String method_9357(StringReader stringReader) throws CommandSyntaxException {
+	private static String readName(StringReader stringReader) throws CommandSyntaxException {
 		int i = stringReader.getCursor();
 
-		while (stringReader.canRead() && method_9355(stringReader.peek())) {
+		while (stringReader.canRead() && isNameCharacter(stringReader.peek())) {
 			stringReader.skip();
 		}
 
 		if (stringReader.getCursor() == i) {
-			throw INVALID_NBT_PATH_NODE_EXCEPTION.createWithContext(stringReader);
+			throw INVALID_PATH_NODE_EXCEPTION.createWithContext(stringReader);
 		} else {
 			return stringReader.getString().substring(i, stringReader.getCursor());
 		}
@@ -135,59 +135,29 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		return EXAMPLES;
 	}
 
-	private static boolean method_9355(char c) {
+	private static boolean isNameCharacter(char c) {
 		return c != ' ' && c != '"' && c != '[' && c != ']' && c != '.' && c != '{' && c != '}';
 	}
 
-	private static Predicate<Tag> method_9359(CompoundTag compoundTag) {
+	private static Predicate<Tag> getEqualityPredicate(CompoundTag compoundTag) {
 		return tag -> TagHelper.areTagsEqual(compoundTag, tag, true);
 	}
 
-	interface NbtPathNode {
-		void method_9378(Tag tag, List<Tag> list);
+	static class AllListElementsNode implements NbtPathArgumentType.NbtPathNode {
+		public static final NbtPathArgumentType.AllListElementsNode INSTANCE = new NbtPathArgumentType.AllListElementsNode();
 
-		void method_9380(Tag tag, Supplier<Tag> supplier, List<Tag> list);
-
-		Tag method_9382();
-
-		int method_9376(Tag tag, Supplier<Tag> supplier);
-
-		int method_9383(Tag tag);
-
-		default List<Tag> method_9381(List<Tag> list) {
-			return this.method_9384(list, this::method_9378);
-		}
-
-		default List<Tag> method_9377(List<Tag> list, Supplier<Tag> supplier) {
-			return this.method_9384(list, (tag, listx) -> this.method_9380(tag, supplier, listx));
-		}
-
-		default List<Tag> method_9384(List<Tag> list, BiConsumer<Tag, List<Tag>> biConsumer) {
-			List<Tag> list2 = Lists.<Tag>newArrayList();
-
-			for (Tag tag : list) {
-				biConsumer.accept(tag, list2);
-			}
-
-			return list2;
-		}
-	}
-
-	static class class_2204 implements NbtPathArgumentType.NbtPathNode {
-		public static final NbtPathArgumentType.class_2204 field_9901 = new NbtPathArgumentType.class_2204();
-
-		private class_2204() {
+		private AllListElementsNode() {
 		}
 
 		@Override
-		public void method_9378(Tag tag, List<Tag> list) {
+		public void get(Tag tag, List<Tag> list) {
 			if (tag instanceof AbstractListTag) {
 				list.addAll((AbstractListTag)tag);
 			}
 		}
 
 		@Override
-		public void method_9380(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+		public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
 			if (tag instanceof AbstractListTag) {
 				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
 				if (abstractListTag.isEmpty()) {
@@ -202,12 +172,12 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public Tag method_9382() {
+		public Tag createParent() {
 			return new ListTag();
 		}
 
 		@Override
-		public int method_9376(Tag tag, Supplier<Tag> supplier) {
+		public int put(Tag tag, Supplier<Tag> supplier) {
 			if (!(tag instanceof AbstractListTag)) {
 				return 0;
 			} else {
@@ -238,7 +208,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9383(Tag tag) {
+		public int remove(Tag tag) {
 			if (tag instanceof AbstractListTag) {
 				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
 				int i = abstractListTag.size();
@@ -252,17 +222,17 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 	}
 
-	static class class_2205 implements NbtPathArgumentType.NbtPathNode {
-		private final String field_9902;
+	static class CompoundChildNode implements NbtPathArgumentType.NbtPathNode {
+		private final String name;
 
-		public class_2205(String string) {
-			this.field_9902 = string;
+		public CompoundChildNode(String string) {
+			this.name = string;
 		}
 
 		@Override
-		public void method_9378(Tag tag, List<Tag> list) {
+		public void get(Tag tag, List<Tag> list) {
 			if (tag instanceof CompoundTag) {
-				Tag tag2 = ((CompoundTag)tag).getTag(this.field_9902);
+				Tag tag2 = ((CompoundTag)tag).getTag(this.name);
 				if (tag2 != null) {
 					list.add(tag2);
 				}
@@ -270,15 +240,15 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public void method_9380(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+		public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
 				Tag tag2;
-				if (compoundTag.containsKey(this.field_9902)) {
-					tag2 = compoundTag.getTag(this.field_9902);
+				if (compoundTag.containsKey(this.name)) {
+					tag2 = compoundTag.getTag(this.name);
 				} else {
 					tag2 = (Tag)supplier.get();
-					compoundTag.put(this.field_9902, tag2);
+					compoundTag.put(this.name, tag2);
 				}
 
 				list.add(tag2);
@@ -286,16 +256,16 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public Tag method_9382() {
+		public Tag createParent() {
 			return new CompoundTag();
 		}
 
 		@Override
-		public int method_9376(Tag tag, Supplier<Tag> supplier) {
+		public int put(Tag tag, Supplier<Tag> supplier) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
 				Tag tag2 = (Tag)supplier.get();
-				Tag tag3 = compoundTag.put(this.field_9902, tag2);
+				Tag tag3 = compoundTag.put(this.name, tag2);
 				if (!tag2.equals(tag3)) {
 					return 1;
 				}
@@ -305,11 +275,11 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9383(Tag tag) {
+		public int remove(Tag tag) {
 			if (tag instanceof CompoundTag) {
 				CompoundTag compoundTag = (CompoundTag)tag;
-				if (compoundTag.containsKey(this.field_9902)) {
-					compoundTag.remove(this.field_9902);
+				if (compoundTag.containsKey(this.name)) {
+					compoundTag.remove(this.name);
 					return 1;
 				}
 			}
@@ -318,45 +288,91 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 	}
 
-	static class class_2206 implements NbtPathArgumentType.NbtPathNode {
-		private final int field_9903;
+	static class EqualCompoundNode implements NbtPathArgumentType.NbtPathNode {
+		private final Predicate<Tag> predicate;
 
-		public class_2206(int i) {
-			this.field_9903 = i;
+		public EqualCompoundNode(CompoundTag compoundTag) {
+			this.predicate = NbtPathArgumentType.getEqualityPredicate(compoundTag);
 		}
 
 		@Override
-		public void method_9378(Tag tag, List<Tag> list) {
-			if (tag instanceof AbstractListTag) {
-				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
-				int i = abstractListTag.size();
-				int j = this.field_9903 < 0 ? i + this.field_9903 : this.field_9903;
-				if (0 <= j && j < i) {
-					list.add(abstractListTag.get(j));
+		public void get(Tag tag, List<Tag> list) {
+			if (tag instanceof CompoundTag && this.predicate.test(tag)) {
+				list.add(tag);
+			}
+		}
+
+		@Override
+		public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+			this.get(tag, list);
+		}
+
+		@Override
+		public Tag createParent() {
+			return new CompoundTag();
+		}
+
+		@Override
+		public int put(Tag tag, Supplier<Tag> supplier) {
+			return 0;
+		}
+
+		@Override
+		public int remove(Tag tag) {
+			return 0;
+		}
+	}
+
+	static class EqualCompundChildNode implements NbtPathArgumentType.NbtPathNode {
+		private final String name;
+		private final CompoundTag tag;
+		private final Predicate<Tag> predicate;
+
+		public EqualCompundChildNode(String string, CompoundTag compoundTag) {
+			this.name = string;
+			this.tag = compoundTag;
+			this.predicate = NbtPathArgumentType.getEqualityPredicate(compoundTag);
+		}
+
+		@Override
+		public void get(Tag tag, List<Tag> list) {
+			if (tag instanceof CompoundTag) {
+				Tag tag2 = ((CompoundTag)tag).getTag(this.name);
+				if (this.predicate.test(tag2)) {
+					list.add(tag2);
 				}
 			}
 		}
 
 		@Override
-		public void method_9380(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
-			this.method_9378(tag, list);
+		public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+			if (tag instanceof CompoundTag) {
+				CompoundTag compoundTag = (CompoundTag)tag;
+				Tag tag2 = compoundTag.getTag(this.name);
+				if (tag2 == null) {
+					Tag var6 = this.tag.method_10553();
+					compoundTag.put(this.name, var6);
+					list.add(var6);
+				} else if (this.predicate.test(tag2)) {
+					list.add(tag2);
+				}
+			}
 		}
 
 		@Override
-		public Tag method_9382() {
-			return new ListTag();
+		public Tag createParent() {
+			return new CompoundTag();
 		}
 
 		@Override
-		public int method_9376(Tag tag, Supplier<Tag> supplier) {
-			if (tag instanceof AbstractListTag) {
-				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
-				int i = abstractListTag.size();
-				int j = this.field_9903 < 0 ? i + this.field_9903 : this.field_9903;
-				if (0 <= j && j < i) {
-					Tag tag2 = (Tag)abstractListTag.get(j);
+		public int put(Tag tag, Supplier<Tag> supplier) {
+			if (tag instanceof CompoundTag) {
+				CompoundTag compoundTag = (CompoundTag)tag;
+				Tag tag2 = compoundTag.getTag(this.name);
+				if (this.predicate.test(tag2)) {
 					Tag tag3 = (Tag)supplier.get();
-					if (!tag3.equals(tag2) && abstractListTag.setTag(j, tag3)) {
+					if (!tag3.equals(tag2)) {
+						compoundTag.put(this.name, tag3);
 						return 1;
 					}
 				}
@@ -366,13 +382,12 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9383(Tag tag) {
-			if (tag instanceof AbstractListTag) {
-				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
-				int i = abstractListTag.size();
-				int j = this.field_9903 < 0 ? i + this.field_9903 : this.field_9903;
-				if (0 <= j && j < i) {
-					abstractListTag.method_10536(j);
+		public int remove(Tag tag) {
+			if (tag instanceof CompoundTag) {
+				CompoundTag compoundTag = (CompoundTag)tag;
+				Tag tag2 = compoundTag.getTag(this.name);
+				if (this.predicate.test(tag2)) {
+					compoundTag.remove(this.name);
 					return 1;
 				}
 			}
@@ -381,34 +396,34 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 	}
 
-	static class class_2207 implements NbtPathArgumentType.NbtPathNode {
-		private final CompoundTag field_9904;
-		private final Predicate<Tag> field_9905;
+	static class EqualListElementNode implements NbtPathArgumentType.NbtPathNode {
+		private final CompoundTag tag;
+		private final Predicate<Tag> predicate;
 
-		public class_2207(CompoundTag compoundTag) {
-			this.field_9904 = compoundTag;
-			this.field_9905 = NbtPathArgumentType.method_9359(compoundTag);
+		public EqualListElementNode(CompoundTag compoundTag) {
+			this.tag = compoundTag;
+			this.predicate = NbtPathArgumentType.getEqualityPredicate(compoundTag);
 		}
 
 		@Override
-		public void method_9378(Tag tag, List<Tag> list) {
+		public void get(Tag tag, List<Tag> list) {
 			if (tag instanceof ListTag) {
 				ListTag listTag = (ListTag)tag;
-				listTag.stream().filter(this.field_9905).forEach(list::add);
+				listTag.stream().filter(this.predicate).forEach(list::add);
 			}
 		}
 
 		@Override
-		public void method_9380(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+		public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
 			MutableBoolean mutableBoolean = new MutableBoolean();
 			if (tag instanceof ListTag) {
 				ListTag listTag = (ListTag)tag;
-				listTag.stream().filter(this.field_9905).forEach(tagx -> {
+				listTag.stream().filter(this.predicate).forEach(tagx -> {
 					list.add(tagx);
 					mutableBoolean.setTrue();
 				});
 				if (mutableBoolean.isFalse()) {
-					CompoundTag compoundTag = this.field_9904.method_10553();
+					CompoundTag compoundTag = this.tag.method_10553();
 					listTag.add(compoundTag);
 					list.add(compoundTag);
 				}
@@ -416,12 +431,12 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public Tag method_9382() {
+		public Tag createParent() {
 			return new ListTag();
 		}
 
 		@Override
-		public int method_9376(Tag tag, Supplier<Tag> supplier) {
+		public int put(Tag tag, Supplier<Tag> supplier) {
 			int i = 0;
 			if (tag instanceof ListTag) {
 				ListTag listTag = (ListTag)tag;
@@ -432,7 +447,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 				} else {
 					for (int k = 0; k < j; k++) {
 						Tag tag2 = listTag.method_10534(k);
-						if (this.field_9905.test(tag2)) {
+						if (this.predicate.test(tag2)) {
 							Tag tag3 = (Tag)supplier.get();
 							if (!tag3.equals(tag2) && listTag.setTag(k, tag3)) {
 								i++;
@@ -446,13 +461,13 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9383(Tag tag) {
+		public int remove(Tag tag) {
 			int i = 0;
 			if (tag instanceof ListTag) {
 				ListTag listTag = (ListTag)tag;
 
 				for (int j = listTag.size() - 1; j >= 0; j--) {
-					if (this.field_9905.test(listTag.method_10534(j))) {
+					if (this.predicate.test(listTag.method_10534(j))) {
 						listTag.method_10536(j);
 						i++;
 					}
@@ -463,56 +478,45 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 	}
 
-	static class class_2208 implements NbtPathArgumentType.NbtPathNode {
-		private final String field_9906;
-		private final CompoundTag field_9907;
-		private final Predicate<Tag> field_9908;
+	static class ListIndexNode implements NbtPathArgumentType.NbtPathNode {
+		private final int index;
 
-		public class_2208(String string, CompoundTag compoundTag) {
-			this.field_9906 = string;
-			this.field_9907 = compoundTag;
-			this.field_9908 = NbtPathArgumentType.method_9359(compoundTag);
+		public ListIndexNode(int i) {
+			this.index = i;
 		}
 
 		@Override
-		public void method_9378(Tag tag, List<Tag> list) {
-			if (tag instanceof CompoundTag) {
-				Tag tag2 = ((CompoundTag)tag).getTag(this.field_9906);
-				if (this.field_9908.test(tag2)) {
-					list.add(tag2);
+		public void get(Tag tag, List<Tag> list) {
+			if (tag instanceof AbstractListTag) {
+				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
+				int i = abstractListTag.size();
+				int j = this.index < 0 ? i + this.index : this.index;
+				if (0 <= j && j < i) {
+					list.add(abstractListTag.get(j));
 				}
 			}
 		}
 
 		@Override
-		public void method_9380(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
-			if (tag instanceof CompoundTag) {
-				CompoundTag compoundTag = (CompoundTag)tag;
-				Tag tag2 = compoundTag.getTag(this.field_9906);
-				if (tag2 == null) {
-					Tag var6 = this.field_9907.method_10553();
-					compoundTag.put(this.field_9906, var6);
-					list.add(var6);
-				} else if (this.field_9908.test(tag2)) {
-					list.add(tag2);
-				}
-			}
+		public void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
+			this.get(tag, list);
 		}
 
 		@Override
-		public Tag method_9382() {
-			return new CompoundTag();
+		public Tag createParent() {
+			return new ListTag();
 		}
 
 		@Override
-		public int method_9376(Tag tag, Supplier<Tag> supplier) {
-			if (tag instanceof CompoundTag) {
-				CompoundTag compoundTag = (CompoundTag)tag;
-				Tag tag2 = compoundTag.getTag(this.field_9906);
-				if (this.field_9908.test(tag2)) {
+		public int put(Tag tag, Supplier<Tag> supplier) {
+			if (tag instanceof AbstractListTag) {
+				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
+				int i = abstractListTag.size();
+				int j = this.index < 0 ? i + this.index : this.index;
+				if (0 <= j && j < i) {
+					Tag tag2 = (Tag)abstractListTag.get(j);
 					Tag tag3 = (Tag)supplier.get();
-					if (!tag3.equals(tag2)) {
-						compoundTag.put(this.field_9906, tag3);
+					if (!tag3.equals(tag2) && abstractListTag.setTag(j, tag3)) {
 						return 1;
 					}
 				}
@@ -522,12 +526,13 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 
 		@Override
-		public int method_9383(Tag tag) {
-			if (tag instanceof CompoundTag) {
-				CompoundTag compoundTag = (CompoundTag)tag;
-				Tag tag2 = compoundTag.getTag(this.field_9906);
-				if (this.field_9908.test(tag2)) {
-					compoundTag.remove(this.field_9906);
+		public int remove(Tag tag) {
+			if (tag instanceof AbstractListTag) {
+				AbstractListTag<?> abstractListTag = (AbstractListTag<?>)tag;
+				int i = abstractListTag.size();
+				int j = this.index < 0 ? i + this.index : this.index;
+				if (0 <= j && j < i) {
+					abstractListTag.method_10536(j);
 					return 1;
 				}
 			}
@@ -536,35 +541,35 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 		}
 	}
 
-	public static class class_2209 {
-		private final String field_9909;
-		private final Object2IntMap<NbtPathArgumentType.NbtPathNode> field_9910;
-		private final NbtPathArgumentType.NbtPathNode[] field_9911;
+	public static class NbtPath {
+		private final String string;
+		private final Object2IntMap<NbtPathArgumentType.NbtPathNode> nodeEndIndices;
+		private final NbtPathArgumentType.NbtPathNode[] nodes;
 
-		public class_2209(String string, NbtPathArgumentType.NbtPathNode[] nbtPathNodes, Object2IntMap<NbtPathArgumentType.NbtPathNode> object2IntMap) {
-			this.field_9909 = string;
-			this.field_9911 = nbtPathNodes;
-			this.field_9910 = object2IntMap;
+		public NbtPath(String string, NbtPathArgumentType.NbtPathNode[] nbtPathNodes, Object2IntMap<NbtPathArgumentType.NbtPathNode> object2IntMap) {
+			this.string = string;
+			this.nodes = nbtPathNodes;
+			this.nodeEndIndices = object2IntMap;
 		}
 
-		public List<Tag> method_9366(Tag tag) throws CommandSyntaxException {
+		public List<Tag> get(Tag tag) throws CommandSyntaxException {
 			List<Tag> list = Collections.singletonList(tag);
 
-			for (NbtPathArgumentType.NbtPathNode nbtPathNode : this.field_9911) {
-				list = nbtPathNode.method_9381(list);
+			for (NbtPathArgumentType.NbtPathNode nbtPathNode : this.nodes) {
+				list = nbtPathNode.get(list);
 				if (list.isEmpty()) {
-					throw this.method_9375(nbtPathNode);
+					throw this.createNothingFoundException(nbtPathNode);
 				}
 			}
 
 			return list;
 		}
 
-		public int method_9374(Tag tag) {
+		public int count(Tag tag) {
 			List<Tag> list = Collections.singletonList(tag);
 
-			for (NbtPathArgumentType.NbtPathNode nbtPathNode : this.field_9911) {
-				list = nbtPathNode.method_9381(list);
+			for (NbtPathArgumentType.NbtPathNode nbtPathNode : this.nodes) {
+				list = nbtPathNode.get(list);
 				if (list.isEmpty()) {
 					return 0;
 				}
@@ -573,90 +578,85 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.cla
 			return list.size();
 		}
 
-		private List<Tag> method_9369(Tag tag) throws CommandSyntaxException {
+		private List<Tag> getParents(Tag tag) throws CommandSyntaxException {
 			List<Tag> list = Collections.singletonList(tag);
 
-			for (int i = 0; i < this.field_9911.length - 1; i++) {
-				NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[i];
+			for (int i = 0; i < this.nodes.length - 1; i++) {
+				NbtPathArgumentType.NbtPathNode nbtPathNode = this.nodes[i];
 				int j = i + 1;
-				list = nbtPathNode.method_9377(list, this.field_9911[j]::method_9382);
+				list = nbtPathNode.putIfAbsent(list, this.nodes[j]::createParent);
 				if (list.isEmpty()) {
-					throw this.method_9375(nbtPathNode);
+					throw this.createNothingFoundException(nbtPathNode);
 				}
 			}
 
 			return list;
 		}
 
-		public List<Tag> method_9367(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
-			List<Tag> list = this.method_9369(tag);
-			NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[this.field_9911.length - 1];
-			return nbtPathNode.method_9377(list, supplier);
+		public List<Tag> putIfAbsent(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
+			List<Tag> list = this.getParents(tag);
+			NbtPathArgumentType.NbtPathNode nbtPathNode = this.nodes[this.nodes.length - 1];
+			return nbtPathNode.putIfAbsent(list, supplier);
 		}
 
-		private static int method_9371(List<Tag> list, Function<Tag, Integer> function) {
+		private static int forEach(List<Tag> list, Function<Tag, Integer> function) {
 			return (Integer)list.stream().map(function).reduce(0, (integer, integer2) -> integer + integer2);
 		}
 
-		public int method_9368(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
-			List<Tag> list = this.method_9369(tag);
-			NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[this.field_9911.length - 1];
-			return method_9371(list, tagx -> nbtPathNode.method_9376(tagx, supplier));
+		public int put(Tag tag, Supplier<Tag> supplier) throws CommandSyntaxException {
+			List<Tag> list = this.getParents(tag);
+			NbtPathArgumentType.NbtPathNode nbtPathNode = this.nodes[this.nodes.length - 1];
+			return forEach(list, tagx -> nbtPathNode.put(tagx, supplier));
 		}
 
-		public int method_9372(Tag tag) {
+		public int remove(Tag tag) {
 			List<Tag> list = Collections.singletonList(tag);
 
-			for (int i = 0; i < this.field_9911.length - 1; i++) {
-				list = this.field_9911[i].method_9381(list);
+			for (int i = 0; i < this.nodes.length - 1; i++) {
+				list = this.nodes[i].get(list);
 			}
 
-			NbtPathArgumentType.NbtPathNode nbtPathNode = this.field_9911[this.field_9911.length - 1];
-			return method_9371(list, nbtPathNode::method_9383);
+			NbtPathArgumentType.NbtPathNode nbtPathNode = this.nodes[this.nodes.length - 1];
+			return forEach(list, nbtPathNode::remove);
 		}
 
-		private CommandSyntaxException method_9375(NbtPathArgumentType.NbtPathNode nbtPathNode) {
-			int i = this.field_9910.getInt(nbtPathNode);
-			return NbtPathArgumentType.NBT_PATH_NOT_FOUND_EXCEPTION.create(this.field_9909.substring(0, i));
+		private CommandSyntaxException createNothingFoundException(NbtPathArgumentType.NbtPathNode nbtPathNode) {
+			int i = this.nodeEndIndices.getInt(nbtPathNode);
+			return NbtPathArgumentType.NOTHING_FOUND_EXCEPTION.create(this.string.substring(0, i));
 		}
 
 		public String toString() {
-			return this.field_9909;
+			return this.string;
 		}
 	}
 
-	static class class_3707 implements NbtPathArgumentType.NbtPathNode {
-		private final Predicate<Tag> field_16319;
+	interface NbtPathNode {
+		void get(Tag tag, List<Tag> list);
 
-		public class_3707(CompoundTag compoundTag) {
-			this.field_16319 = NbtPathArgumentType.method_9359(compoundTag);
+		void putIfAbsent(Tag tag, Supplier<Tag> supplier, List<Tag> list);
+
+		Tag createParent();
+
+		int put(Tag tag, Supplier<Tag> supplier);
+
+		int remove(Tag tag);
+
+		default List<Tag> get(List<Tag> list) {
+			return this.get(list, this::get);
 		}
 
-		@Override
-		public void method_9378(Tag tag, List<Tag> list) {
-			if (tag instanceof CompoundTag && this.field_16319.test(tag)) {
-				list.add(tag);
+		default List<Tag> putIfAbsent(List<Tag> list, Supplier<Tag> supplier) {
+			return this.get(list, (tag, listx) -> this.putIfAbsent(tag, supplier, listx));
+		}
+
+		default List<Tag> get(List<Tag> list, BiConsumer<Tag, List<Tag>> biConsumer) {
+			List<Tag> list2 = Lists.<Tag>newArrayList();
+
+			for (Tag tag : list) {
+				biConsumer.accept(tag, list2);
 			}
-		}
 
-		@Override
-		public void method_9380(Tag tag, Supplier<Tag> supplier, List<Tag> list) {
-			this.method_9378(tag, list);
-		}
-
-		@Override
-		public Tag method_9382() {
-			return new CompoundTag();
-		}
-
-		@Override
-		public int method_9376(Tag tag, Supplier<Tag> supplier) {
-			return 0;
-		}
-
-		@Override
-		public int method_9383(Tag tag) {
-			return 0;
+			return list2;
 		}
 	}
 }

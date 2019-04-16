@@ -188,7 +188,7 @@ public class StructurePoolBasedGenerator {
 							break;
 						}
 
-						for (Rotation rotation2 : Rotation.method_16547(this.field_18705)) {
+						for (Rotation rotation2 : Rotation.randomRotationOrder(this.field_18705)) {
 							List<Structure.StructureBlockInfo> list2 = structurePoolElement2.getStructureBlockInfos(this.field_18703, BlockPos.ORIGIN, rotation2, this.field_18705);
 							MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement2.getBoundingBox(this.field_18703, BlockPos.ORIGIN, rotation2);
 							int o;

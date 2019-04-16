@@ -21,7 +21,7 @@ import net.minecraft.util.Identifier;
 
 public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("fishing_rod_hooked");
-	private final Map<PlayerAdvancementTracker, FishingRodHookedCriterion.class_2059> field_9618 = Maps.<PlayerAdvancementTracker, FishingRodHookedCriterion.class_2059>newHashMap();
+	private final Map<PlayerAdvancementTracker, FishingRodHookedCriterion.Handler> field_9618 = Maps.<PlayerAdvancementTracker, FishingRodHookedCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -32,23 +32,23 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 	public void beginTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer
 	) {
-		FishingRodHookedCriterion.class_2059 lv = (FishingRodHookedCriterion.class_2059)this.field_9618.get(playerAdvancementTracker);
-		if (lv == null) {
-			lv = new FishingRodHookedCriterion.class_2059(playerAdvancementTracker);
-			this.field_9618.put(playerAdvancementTracker, lv);
+		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.field_9618.get(playerAdvancementTracker);
+		if (handler == null) {
+			handler = new FishingRodHookedCriterion.Handler(playerAdvancementTracker);
+			this.field_9618.put(playerAdvancementTracker, handler);
 		}
 
-		lv.method_8943(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
 	public void endTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer
 	) {
-		FishingRodHookedCriterion.class_2059 lv = (FishingRodHookedCriterion.class_2059)this.field_9618.get(playerAdvancementTracker);
-		if (lv != null) {
-			lv.method_8945(conditionsContainer);
-			if (lv.method_8944()) {
+		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.field_9618.get(playerAdvancementTracker);
+		if (handler != null) {
+			handler.removeCondition(conditionsContainer);
+			if (handler.isEmpty()) {
 				this.field_9618.remove(playerAdvancementTracker);
 			}
 		}
@@ -66,10 +66,10 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 		return new FishingRodHookedCriterion.Conditions(itemPredicate, entityPredicate, itemPredicate2);
 	}
 
-	public void method_8939(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
-		FishingRodHookedCriterion.class_2059 lv = (FishingRodHookedCriterion.class_2059)this.field_9618.get(serverPlayerEntity.getAdvancementManager());
-		if (lv != null) {
-			lv.method_8942(serverPlayerEntity, itemStack, fishHookEntity, collection);
+	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
+		FishingRodHookedCriterion.Handler handler = (FishingRodHookedCriterion.Handler)this.field_9618.get(serverPlayerEntity.getAdvancementManager());
+		if (handler != null) {
+			handler.handle(serverPlayerEntity, itemStack, fishHookEntity, collection);
 		}
 	}
 
@@ -130,30 +130,30 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 		}
 	}
 
-	static class class_2059 {
-		private final PlayerAdvancementTracker field_9620;
-		private final Set<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>> field_9619 = Sets.<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>>newHashSet();
+	static class Handler {
+		private final PlayerAdvancementTracker manager;
+		private final Set<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>>newHashSet();
 
-		public class_2059(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9620 = playerAdvancementTracker;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.manager = playerAdvancementTracker;
 		}
 
-		public boolean method_8944() {
-			return this.field_9619.isEmpty();
+		public boolean isEmpty() {
+			return this.conditions.isEmpty();
 		}
 
-		public void method_8943(Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer) {
-			this.field_9619.add(conditionsContainer);
+		public void addCondition(Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer) {
+			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_8945(Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer) {
-			this.field_9619.remove(conditionsContainer);
+		public void removeCondition(Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer) {
+			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_8942(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
+		public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack, FishHookEntity fishHookEntity, Collection<ItemStack> collection) {
 			List<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>> list = null;
 
-			for (Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer : this.field_9619) {
+			for (Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainer : this.conditions) {
 				if (conditionsContainer.getConditions().matches(serverPlayerEntity, itemStack, fishHookEntity, collection)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions>>newArrayList();
@@ -165,7 +165,7 @@ public class FishingRodHookedCriterion implements Criterion<FishingRodHookedCrit
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<FishingRodHookedCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_9620);
+					conditionsContainerx.apply(this.manager);
 				}
 			}
 		}

@@ -75,7 +75,7 @@ public class EffectsChangedCriterion implements Criterion<EffectsChangedCriterio
 			this.effects = entityEffectPredicate;
 		}
 
-		public static EffectsChangedCriterion.Conditions method_8869(EntityEffectPredicate entityEffectPredicate) {
+		public static EffectsChangedCriterion.Conditions create(EntityEffectPredicate entityEffectPredicate) {
 			return new EffectsChangedCriterion.Conditions(entityEffectPredicate);
 		}
 

@@ -84,12 +84,12 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	protected boolean method_15737() {
+	protected boolean isInfinite() {
 		return true;
 	}
 
 	@Override
-	protected void method_15730(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
+	protected void beforeBreakingBlock(IWorld iWorld, BlockPos blockPos, BlockState blockState) {
 		BlockEntity blockEntity = blockState.getBlock().hasBlockEntity() ? iWorld.getBlockEntity(blockPos) : null;
 		Block.dropStacks(blockState, iWorld.getWorld(), blockPos, blockEntity);
 	}
@@ -110,7 +110,7 @@ public abstract class WaterFluid extends BaseFluid {
 	}
 
 	@Override
-	public int method_15739(ViewableWorld viewableWorld) {
+	public int getLevelDecreasePerBlock(ViewableWorld viewableWorld) {
 		return 1;
 	}
 

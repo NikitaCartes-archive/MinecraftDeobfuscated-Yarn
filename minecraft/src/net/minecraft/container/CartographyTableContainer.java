@@ -20,8 +20,6 @@ import net.minecraft.world.World;
 public class CartographyTableContainer extends Container {
 	private final BlockContext context;
 	private boolean field_17295;
-	private ItemStack field_17296 = ItemStack.EMPTY;
-	private ItemStack field_17297 = ItemStack.EMPTY;
 	public final Inventory inventory = new BasicInventory(3) {
 		@Override
 		public void markDirty() {
@@ -62,7 +60,7 @@ public class CartographyTableContainer extends Container {
 					ItemStack itemStack = super.takeStack(i);
 					ItemStack itemStack2 = (ItemStack)blockContext.run((BiFunction)((world, blockPos) -> {
 						if (!CartographyTableContainer.this.field_17295 && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
-							ItemStack itemStack2x = FilledMapItem.method_17442(world, CartographyTableContainer.this.field_17296);
+							ItemStack itemStack2x = FilledMapItem.method_17442(world, CartographyTableContainer.this.inventory.getInvStack(0));
 							if (itemStack2x != null) {
 								itemStack2x.setAmount(1);
 								return itemStack2x;
@@ -74,6 +72,12 @@ public class CartographyTableContainer extends Container {
 					this.inventory.takeInvStack(0, 1);
 					this.inventory.takeInvStack(1, 1);
 					return itemStack2;
+				}
+
+				@Override
+				protected void onCrafted(ItemStack itemStack, int i) {
+					this.takeStack(i);
+					super.onCrafted(itemStack, i);
 				}
 
 				@Override
@@ -107,19 +111,13 @@ public class CartographyTableContainer extends Container {
 	public void onContentChanged(Inventory inventory) {
 		ItemStack itemStack = this.inventory.getInvStack(0);
 		ItemStack itemStack2 = this.inventory.getInvStack(1);
-		boolean bl = !ItemStack.areEqual(itemStack, this.field_17296);
-		boolean bl2 = !ItemStack.areEqual(itemStack2, this.field_17297);
-		this.field_17296 = itemStack.copy();
-		this.field_17297 = itemStack2.copy();
-		if (bl || bl2) {
-			ItemStack itemStack3 = this.inventory.getInvStack(2);
-			if (itemStack3.isEmpty() || !itemStack.isEmpty() && !itemStack2.isEmpty()) {
-				if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
-					this.updateResult(itemStack, itemStack2, itemStack3);
-				}
-			} else {
-				this.inventory.removeInvStack(2);
+		ItemStack itemStack3 = this.inventory.getInvStack(2);
+		if (itemStack3.isEmpty() || !itemStack.isEmpty() && !itemStack2.isEmpty()) {
+			if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
+				this.updateResult(itemStack, itemStack2, itemStack3);
 			}
+		} else {
+			this.inventory.removeInvStack(2);
 		}
 	}
 
@@ -175,8 +173,13 @@ public class CartographyTableContainer extends Container {
 			if (i == 2) {
 				if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 					itemStack3 = (ItemStack)this.context.run((BiFunction)((world, blockPos) -> {
-						ItemStack itemStack2x = FilledMapItem.method_17442(world, this.field_17296);
-						return itemStack2x != null ? itemStack2x : itemStack2;
+						ItemStack itemStack2x = FilledMapItem.method_17442(world, this.inventory.getInvStack(0));
+						if (itemStack2x != null) {
+							itemStack2x.setAmount(1);
+							return itemStack2x;
+						} else {
+							return itemStack2;
+						}
 					})).orElse(itemStack2);
 				}
 

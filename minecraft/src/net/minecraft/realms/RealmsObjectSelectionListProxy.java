@@ -20,6 +20,10 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 		return super.getItemCount();
 	}
 
+	public void clear() {
+		super.clearItems();
+	}
+
 	@Override
 	public boolean isFocused() {
 		return this.realmsObjectSelectionList.isFocused();
@@ -86,6 +90,10 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 
 	public E remove(int i) {
 		return super.remove(i);
+	}
+
+	public boolean removeEntry(E item) {
+		return super.removeEntry(item);
 	}
 
 	@Override

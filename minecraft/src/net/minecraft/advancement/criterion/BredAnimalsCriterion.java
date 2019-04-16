@@ -89,7 +89,7 @@ public class BredAnimalsCriterion implements Criterion<BredAnimalsCriterion.Cond
 			return new BredAnimalsCriterion.Conditions(EntityPredicate.ANY, EntityPredicate.ANY, EntityPredicate.ANY);
 		}
 
-		public static BredAnimalsCriterion.Conditions method_861(EntityPredicate.Builder builder) {
+		public static BredAnimalsCriterion.Conditions create(EntityPredicate.Builder builder) {
 			return new BredAnimalsCriterion.Conditions(builder.build(), EntityPredicate.ANY, EntityPredicate.ANY);
 		}
 

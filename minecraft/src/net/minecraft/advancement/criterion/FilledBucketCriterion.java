@@ -17,7 +17,7 @@ import net.minecraft.util.Identifier;
 
 public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Conditions> {
 	private static final Identifier ID = new Identifier("filled_bucket");
-	private final Map<PlayerAdvancementTracker, FilledBucketCriterion.class_2055> field_9613 = Maps.<PlayerAdvancementTracker, FilledBucketCriterion.class_2055>newHashMap();
+	private final Map<PlayerAdvancementTracker, FilledBucketCriterion.Handler> field_9613 = Maps.<PlayerAdvancementTracker, FilledBucketCriterion.Handler>newHashMap();
 
 	@Override
 	public Identifier getId() {
@@ -28,23 +28,23 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 	public void beginTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer
 	) {
-		FilledBucketCriterion.class_2055 lv = (FilledBucketCriterion.class_2055)this.field_9613.get(playerAdvancementTracker);
-		if (lv == null) {
-			lv = new FilledBucketCriterion.class_2055(playerAdvancementTracker);
-			this.field_9613.put(playerAdvancementTracker, lv);
+		FilledBucketCriterion.Handler handler = (FilledBucketCriterion.Handler)this.field_9613.get(playerAdvancementTracker);
+		if (handler == null) {
+			handler = new FilledBucketCriterion.Handler(playerAdvancementTracker);
+			this.field_9613.put(playerAdvancementTracker, handler);
 		}
 
-		lv.method_8933(conditionsContainer);
+		handler.addCondition(conditionsContainer);
 	}
 
 	@Override
 	public void endTrackingCondition(
 		PlayerAdvancementTracker playerAdvancementTracker, Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer
 	) {
-		FilledBucketCriterion.class_2055 lv = (FilledBucketCriterion.class_2055)this.field_9613.get(playerAdvancementTracker);
-		if (lv != null) {
-			lv.method_8936(conditionsContainer);
-			if (lv.method_8934()) {
+		FilledBucketCriterion.Handler handler = (FilledBucketCriterion.Handler)this.field_9613.get(playerAdvancementTracker);
+		if (handler != null) {
+			handler.removeCondition(conditionsContainer);
+			if (handler.isEmpty()) {
 				this.field_9613.remove(playerAdvancementTracker);
 			}
 		}
@@ -60,10 +60,10 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 		return new FilledBucketCriterion.Conditions(itemPredicate);
 	}
 
-	public void method_8932(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
-		FilledBucketCriterion.class_2055 lv = (FilledBucketCriterion.class_2055)this.field_9613.get(serverPlayerEntity.getAdvancementManager());
-		if (lv != null) {
-			lv.method_8935(itemStack);
+	public void handle(ServerPlayerEntity serverPlayerEntity, ItemStack itemStack) {
+		FilledBucketCriterion.Handler handler = (FilledBucketCriterion.Handler)this.field_9613.get(serverPlayerEntity.getAdvancementManager());
+		if (handler != null) {
+			handler.handle(itemStack);
 		}
 	}
 
@@ -91,30 +91,30 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 		}
 	}
 
-	static class class_2055 {
-		private final PlayerAdvancementTracker field_9615;
-		private final Set<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>> field_9614 = Sets.<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>>newHashSet();
+	static class Handler {
+		private final PlayerAdvancementTracker manager;
+		private final Set<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>> conditions = Sets.<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>>newHashSet();
 
-		public class_2055(PlayerAdvancementTracker playerAdvancementTracker) {
-			this.field_9615 = playerAdvancementTracker;
+		public Handler(PlayerAdvancementTracker playerAdvancementTracker) {
+			this.manager = playerAdvancementTracker;
 		}
 
-		public boolean method_8934() {
-			return this.field_9614.isEmpty();
+		public boolean isEmpty() {
+			return this.conditions.isEmpty();
 		}
 
-		public void method_8933(Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer) {
-			this.field_9614.add(conditionsContainer);
+		public void addCondition(Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer) {
+			this.conditions.add(conditionsContainer);
 		}
 
-		public void method_8936(Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer) {
-			this.field_9614.remove(conditionsContainer);
+		public void removeCondition(Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer) {
+			this.conditions.remove(conditionsContainer);
 		}
 
-		public void method_8935(ItemStack itemStack) {
+		public void handle(ItemStack itemStack) {
 			List<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>> list = null;
 
-			for (Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer : this.field_9614) {
+			for (Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainer : this.conditions) {
 				if (conditionsContainer.getConditions().matches(itemStack)) {
 					if (list == null) {
 						list = Lists.<Criterion.ConditionsContainer<FilledBucketCriterion.Conditions>>newArrayList();
@@ -126,7 +126,7 @@ public class FilledBucketCriterion implements Criterion<FilledBucketCriterion.Co
 
 			if (list != null) {
 				for (Criterion.ConditionsContainer<FilledBucketCriterion.Conditions> conditionsContainerx : list) {
-					conditionsContainerx.apply(this.field_9615);
+					conditionsContainerx.apply(this.manager);
 				}
 			}
 		}

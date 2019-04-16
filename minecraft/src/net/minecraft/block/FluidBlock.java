@@ -35,7 +35,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 		super(settings);
 		this.fluid = baseFluid;
 		this.statesByLevel = Lists.<FluidState>newArrayList();
-		this.statesByLevel.add(baseFluid.getState(false));
+		this.statesByLevel.add(baseFluid.getStill(false));
 
 		for (int i = 1; i < 8; i++) {
 			this.statesByLevel.add(baseFluid.getFlowing(8 - i, false));

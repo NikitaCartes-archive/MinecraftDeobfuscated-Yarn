@@ -12,7 +12,7 @@ public enum Rotation {
 	ROT_180,
 	ROT_270;
 
-	public Rotation method_10501(Rotation rotation) {
+	public Rotation rotate(Rotation rotation) {
 		switch (rotation) {
 			case ROT_180:
 				switch (this) {
@@ -87,7 +87,7 @@ public enum Rotation {
 		return rotations[random.nextInt(rotations.length)];
 	}
 
-	public static List<Rotation> method_16547(Random random) {
+	public static List<Rotation> randomRotationOrder(Random random) {
 		List<Rotation> list = Lists.<Rotation>newArrayList(values());
 		Collections.shuffle(list, random);
 		return list;

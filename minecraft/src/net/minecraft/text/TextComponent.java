@@ -355,7 +355,7 @@ public interface TextComponent extends Message, Iterable<TextComponent> {
 
 				NbtTextComponent nbtTextComponent = (NbtTextComponent)textComponent;
 				jsonObject.addProperty("nbt", nbtTextComponent.getPath());
-				jsonObject.addProperty("interpret", nbtTextComponent.method_10921());
+				jsonObject.addProperty("interpret", nbtTextComponent.isComponentJson());
 				if (textComponent instanceof NbtTextComponent.BlockPosArgument) {
 					NbtTextComponent.BlockPosArgument blockPosArgument = (NbtTextComponent.BlockPosArgument)textComponent;
 					jsonObject.addProperty("block", blockPosArgument.getPos());

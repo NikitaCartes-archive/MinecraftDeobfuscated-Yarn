@@ -182,7 +182,7 @@ public abstract class EntityRenderer<T extends Entity> {
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 
-		for (BlockPos blockPos : BlockPos.iterateBoxPositions(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
+		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(m, o, q), new BlockPos(n, p, r))) {
 			BlockPos blockPos2 = blockPos.down();
 			BlockState blockState = viewableWorld.getBlockState(blockPos2);
 			if (blockState.getRenderType() != BlockRenderType.field_11455 && viewableWorld.getLightLevel(blockPos) > 3) {

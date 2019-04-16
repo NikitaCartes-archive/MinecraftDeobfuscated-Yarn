@@ -31,6 +31,7 @@ import net.minecraft.client.recipe.book.ClientRecipeBook;
 import net.minecraft.client.util.ClientPlayerTickable;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.JumpingMount;
@@ -576,8 +577,20 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		this.client.particleManager.addEmitter(entity, ParticleTypes.field_11208);
 	}
 
+	@Override
+	public boolean isSneaking() {
+		return this.isHoldingSneakKey();
+	}
+
 	public boolean isHoldingSneakKey() {
 		return this.input != null && this.input.sneaking;
+	}
+
+	@Override
+	public boolean isInSneakingPose() {
+		return !this.abilities.flying && this.wouldPoseNotCollide(EntityPose.field_18081)
+			? this.isHoldingSneakKey() || !this.wouldPoseNotCollide(EntityPose.field_18076)
+			: false;
 	}
 
 	@Override
@@ -610,7 +623,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl2 = this.input.sneaking;
 		float f = 0.8F;
 		boolean bl3 = this.input.movementForward >= 0.8F;
-		this.input.tick(this.isInSneakingPose());
+		this.input.tick(this.isInSneakingPose(), this.isSpectator());
 		this.client.getTutorialManager().onMovement(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {
 			this.input.movementSideways *= 0.2F;

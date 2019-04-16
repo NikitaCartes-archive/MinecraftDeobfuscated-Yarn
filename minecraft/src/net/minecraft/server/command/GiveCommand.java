@@ -54,7 +54,7 @@ public class GiveCommand {
 			while (j > 0) {
 				int k = Math.min(itemStackArgument.getItem().getMaxAmount(), j);
 				j -= k;
-				ItemStack itemStack = itemStackArgument.method_9781(k, false);
+				ItemStack itemStack = itemStackArgument.createStack(k, false);
 				boolean bl = serverPlayerEntity.inventory.insertStack(itemStack);
 				if (bl && itemStack.isEmpty()) {
 					itemStack.setAmount(1);
@@ -90,14 +90,14 @@ public class GiveCommand {
 				new TranslatableTextComponent(
 					"commands.give.success.single",
 					i,
-					itemStackArgument.method_9781(i, false).toTextComponent(),
+					itemStackArgument.createStack(i, false).toTextComponent(),
 					((ServerPlayerEntity)collection.iterator().next()).getDisplayName()
 				),
 				true
 			);
 		} else {
 			serverCommandSource.sendFeedback(
-				new TranslatableTextComponent("commands.give.success.single", i, itemStackArgument.method_9781(i, false).toTextComponent(), collection.size()), true
+				new TranslatableTextComponent("commands.give.success.single", i, itemStackArgument.createStack(i, false).toTextComponent(), collection.size()), true
 			);
 		}
 

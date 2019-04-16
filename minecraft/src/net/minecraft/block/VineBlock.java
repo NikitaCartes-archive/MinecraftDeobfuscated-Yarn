@@ -263,7 +263,7 @@ public class VineBlock extends Block {
 
 	private boolean method_10824(BlockView blockView, BlockPos blockPos) {
 		int i = 4;
-		Iterable<BlockPos> iterable = BlockPos.iterateBoxPositions(
+		Iterable<BlockPos> iterable = BlockPos.iterate(
 			blockPos.getX() - 4, blockPos.getY() - 1, blockPos.getZ() - 4, blockPos.getX() + 4, blockPos.getY() + 1, blockPos.getZ() + 4
 		);
 		int j = 5;

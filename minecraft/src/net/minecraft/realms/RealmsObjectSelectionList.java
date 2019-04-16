@@ -25,6 +25,14 @@ public abstract class RealmsObjectSelectionList extends RealmsGuiEventListener {
 		this.proxy.remove(i);
 	}
 
+	public void clear() {
+		this.proxy.clear();
+	}
+
+	public boolean removeEntry(RealmListEntry realmListEntry) {
+		return this.proxy.removeEntry(realmListEntry);
+	}
+
 	public int width() {
 		return this.proxy.getWidth();
 	}

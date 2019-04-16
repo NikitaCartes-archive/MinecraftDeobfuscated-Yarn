@@ -86,7 +86,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	private final LongSet field_18307 = new LongOpenHashSet();
 	private final ServerWorld world;
 	private final ServerLightingProvider serverLightingProvider;
-	private final ThreadExecutor<?> mainThreadExecutor;
+	private final ThreadExecutor<Runnable> mainThreadExecutor;
 	private final ChunkGenerator<?> chunkGenerator;
 	private final Supplier<PersistentStateManager> persistentStateManagerFactory;
 	private final PointOfInterestStorage pointOfInterestStorage;
@@ -111,7 +111,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		DataFixer dataFixer,
 		StructureManager structureManager,
 		Executor executor,
-		ThreadExecutor<?> threadExecutor,
+		ThreadExecutor<Runnable> threadExecutor,
 		ChunkProvider chunkProvider,
 		ChunkGenerator<?> chunkGenerator,
 		WorldGenerationProgressListener worldGenerationProgressListener,
@@ -400,6 +400,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				return Either.left(new ProtoChunk(chunkPos, UpgradeData.NO_UPGRADE_DATA));
 			}, this.mainThreadExecutor);
 		} else {
+			if (chunkStatus == ChunkStatus.LIGHT) {
+				this.ticketManager.addTicketWithLevel(ChunkTicketType.field_19270, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos);
+			}
+
 			CompletableFuture<Either<List<Chunk>, ChunkHolder.Unloaded>> completableFuture = this.createChunkRegionFuture(
 				chunkPos, chunkStatus.getTaskMargin(), i -> this.getRequiredStatusForGeneration(chunkStatus, i)
 			);
@@ -427,11 +431,24 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 								throw new CrashException(crashReport);
 							}
 						},
-						unloaded -> CompletableFuture.completedFuture(Either.right(unloaded))
+						unloaded -> {
+							this.method_20441(chunkPos);
+							return CompletableFuture.completedFuture(Either.right(unloaded));
+						}
 					),
 				runnable -> this.worldgenActor.send(ChunkTaskPrioritySystem.createExecutorMessage(chunkHolder, runnable))
 			);
 		}
+	}
+
+	protected void method_20441(ChunkPos chunkPos) {
+		this.mainThreadExecutor
+			.method_18858(
+				SystemUtil.debugRunnable(
+					() -> this.ticketManager.method_20444(ChunkTicketType.field_19270, chunkPos, 33 + ChunkStatus.getTargetGenerationRadius(ChunkStatus.FEATURES), chunkPos),
+					() -> "release light ticket " + chunkPos
+				)
+			);
 	}
 
 	private ChunkStatus getRequiredStatusForGeneration(ChunkStatus chunkStatus, int i) {
@@ -460,9 +477,24 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			if (this.field_18307.add(chunkPos.toLong())) {
 				worldChunk.setLoadedToWorld(true);
 				this.world.addBlockEntities(worldChunk.getBlockEntities().values());
+				List<Entity> list = null;
+				TypeFilterableList[] var6 = worldChunk.getEntitySectionArray();
+				int var7 = var6.length;
 
-				for (TypeFilterableList<Entity> typeFilterableList : worldChunk.getEntitySectionArray()) {
-					typeFilterableList.stream().filter(entity -> !(entity instanceof PlayerEntity)).forEach(this.world::loadEntity);
+				for (int var8 = 0; var8 < var7; var8++) {
+					for (Entity entity : var6[var8]) {
+						if (!(entity instanceof PlayerEntity) && !this.world.loadEntity(entity)) {
+							if (list == null) {
+								list = Lists.<Entity>newArrayList(entity);
+							} else {
+								list.add(entity);
+							}
+						}
+					}
+				}
+
+				if (list != null) {
+					list.forEach(worldChunk::remove);
 				}
 			}
 
@@ -492,6 +524,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private void save(Chunk chunk) {
+		this.pointOfInterestStorage.method_20436(chunk.getPos());
 		if (chunk.needsSaving()) {
 			try {
 				this.world.checkSessionLock();

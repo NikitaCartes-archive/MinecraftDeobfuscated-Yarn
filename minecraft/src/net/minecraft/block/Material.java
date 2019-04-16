@@ -3,73 +3,73 @@ package net.minecraft.block;
 import net.minecraft.block.piston.PistonBehavior;
 
 public final class Material {
-	public static final Material AIR = new Material.Builder(MaterialColor.AIR).suffocates().lightPassesThrough().setFlag7().replaceable().build();
-	public static final Material STRUCTURE_VOID = new Material.Builder(MaterialColor.AIR).suffocates().lightPassesThrough().setFlag7().replaceable().build();
-	public static final Material PORTAL = new Material.Builder(MaterialColor.AIR).suffocates().lightPassesThrough().setFlag7().blocksPistons().build();
-	public static final Material CARPET = new Material.Builder(MaterialColor.WEB).suffocates().lightPassesThrough().setFlag7().burnable().build();
-	public static final Material PLANT = new Material.Builder(MaterialColor.FOLIAGE).suffocates().lightPassesThrough().setFlag7().destroyedByPiston().build();
+	public static final Material AIR = new Material.Builder(MaterialColor.AIR).allowsMovement().lightPassesThrough().notSolid().replaceable().build();
+	public static final Material STRUCTURE_VOID = new Material.Builder(MaterialColor.AIR).allowsMovement().lightPassesThrough().notSolid().replaceable().build();
+	public static final Material PORTAL = new Material.Builder(MaterialColor.AIR).allowsMovement().lightPassesThrough().notSolid().blocksPistons().build();
+	public static final Material CARPET = new Material.Builder(MaterialColor.WEB).allowsMovement().lightPassesThrough().notSolid().burnable().build();
+	public static final Material PLANT = new Material.Builder(MaterialColor.FOLIAGE).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
 	public static final Material UNDERWATER_PLANT = new Material.Builder(MaterialColor.WATER)
-		.suffocates()
+		.allowsMovement()
 		.lightPassesThrough()
-		.setFlag7()
+		.notSolid()
 		.destroyedByPiston()
 		.build();
 	public static final Material REPLACEABLE_PLANT = new Material.Builder(MaterialColor.FOLIAGE)
-		.suffocates()
+		.allowsMovement()
 		.lightPassesThrough()
-		.setFlag7()
+		.notSolid()
 		.destroyedByPiston()
 		.replaceable()
 		.burnable()
 		.build();
 	public static final Material SEAGRASS = new Material.Builder(MaterialColor.WATER)
-		.suffocates()
+		.allowsMovement()
 		.lightPassesThrough()
-		.setFlag7()
+		.notSolid()
 		.destroyedByPiston()
 		.replaceable()
 		.build();
 	public static final Material WATER = new Material.Builder(MaterialColor.WATER)
-		.suffocates()
+		.allowsMovement()
 		.lightPassesThrough()
-		.setFlag7()
+		.notSolid()
 		.destroyedByPiston()
 		.replaceable()
 		.liquid()
 		.build();
 	public static final Material BUBBLE_COLUMN = new Material.Builder(MaterialColor.WATER)
-		.suffocates()
+		.allowsMovement()
 		.lightPassesThrough()
-		.setFlag7()
+		.notSolid()
 		.destroyedByPiston()
 		.replaceable()
 		.liquid()
 		.build();
 	public static final Material LAVA = new Material.Builder(MaterialColor.LAVA)
-		.suffocates()
+		.allowsMovement()
 		.lightPassesThrough()
-		.setFlag7()
+		.notSolid()
 		.destroyedByPiston()
 		.replaceable()
 		.liquid()
 		.build();
 	public static final Material SNOW = new Material.Builder(MaterialColor.WHITE)
-		.suffocates()
+		.allowsMovement()
 		.lightPassesThrough()
-		.setFlag7()
+		.notSolid()
 		.destroyedByPiston()
 		.replaceable()
 		.requiresTool()
 		.build();
 	public static final Material FIRE = new Material.Builder(MaterialColor.AIR)
-		.suffocates()
+		.allowsMovement()
 		.lightPassesThrough()
-		.setFlag7()
+		.notSolid()
 		.destroyedByPiston()
 		.replaceable()
 		.build();
-	public static final Material PART = new Material.Builder(MaterialColor.AIR).suffocates().lightPassesThrough().setFlag7().destroyedByPiston().build();
-	public static final Material COBWEB = new Material.Builder(MaterialColor.WEB).suffocates().lightPassesThrough().destroyedByPiston().requiresTool().build();
+	public static final Material PART = new Material.Builder(MaterialColor.AIR).allowsMovement().lightPassesThrough().notSolid().destroyedByPiston().build();
+	public static final Material COBWEB = new Material.Builder(MaterialColor.WEB).allowsMovement().lightPassesThrough().destroyedByPiston().requiresTool().build();
 	public static final Material REDSTONE_LAMP = new Material.Builder(MaterialColor.AIR).build();
 	public static final Material CLAY = new Material.Builder(MaterialColor.CLAY).build();
 	public static final Material EARTH = new Material.Builder(MaterialColor.DIRT).build();
@@ -79,7 +79,7 @@ public final class Material {
 	public static final Material SPONGE = new Material.Builder(MaterialColor.YELLOW).build();
 	public static final Material SHULKER_BOX = new Material.Builder(MaterialColor.PURPLE).build();
 	public static final Material WOOD = new Material.Builder(MaterialColor.WOOD).burnable().build();
-	public static final Material BAMBOO_SAPLING = new Material.Builder(MaterialColor.WOOD).burnable().destroyedByPiston().suffocates().build();
+	public static final Material BAMBOO_SAPLING = new Material.Builder(MaterialColor.WOOD).burnable().destroyedByPiston().allowsMovement().build();
 	public static final Material BAMBOO = new Material.Builder(MaterialColor.WOOD).burnable().destroyedByPiston().build();
 	public static final Material WOOL = new Material.Builder(MaterialColor.WEB).burnable().build();
 	public static final Material TNT = new Material.Builder(MaterialColor.LAVA).burnable().lightPassesThrough().build();
@@ -99,21 +99,21 @@ public final class Material {
 	public static final Material CAKE = new Material.Builder(MaterialColor.AIR).destroyedByPiston().build();
 	private final MaterialColor color;
 	private final PistonBehavior pistonBehavior;
-	private final boolean suffocates;
+	private final boolean blocksMovement;
 	private final boolean burnable;
 	private final boolean breakByHand;
 	private final boolean liquid;
 	private final boolean blocksLight;
 	private final boolean replaceable;
-	private final boolean flag7;
+	private final boolean solid;
 
 	public Material(
 		MaterialColor materialColor, boolean bl, boolean bl2, boolean bl3, boolean bl4, boolean bl5, boolean bl6, boolean bl7, PistonBehavior pistonBehavior
 	) {
 		this.color = materialColor;
 		this.liquid = bl;
-		this.flag7 = bl2;
-		this.suffocates = bl3;
+		this.solid = bl2;
+		this.blocksMovement = bl3;
 		this.blocksLight = bl4;
 		this.breakByHand = bl5;
 		this.burnable = bl6;
@@ -125,12 +125,12 @@ public final class Material {
 		return this.liquid;
 	}
 
-	public boolean method_15799() {
-		return this.flag7;
+	public boolean isSolid() {
+		return this.solid;
 	}
 
-	public boolean suffocates() {
-		return this.suffocates;
+	public boolean blocksMovement() {
+		return this.blocksMovement;
 	}
 
 	public boolean isBurnable() {
@@ -159,12 +159,12 @@ public final class Material {
 
 	public static class Builder {
 		private PistonBehavior pistonBehavior = PistonBehavior.field_15974;
-		private boolean suffocates = true;
+		private boolean blocksMovement = true;
 		private boolean burnable;
 		private boolean breakByHand = true;
 		private boolean liquid;
 		private boolean replaceable;
-		private boolean flag7 = true;
+		private boolean solid = true;
 		private final MaterialColor color;
 		private boolean blocksLight = true;
 
@@ -177,13 +177,13 @@ public final class Material {
 			return this;
 		}
 
-		public Material.Builder setFlag7() {
-			this.flag7 = false;
+		public Material.Builder notSolid() {
+			this.solid = false;
 			return this;
 		}
 
-		public Material.Builder suffocates() {
-			this.suffocates = false;
+		public Material.Builder allowsMovement() {
+			this.blocksMovement = false;
 			return this;
 		}
 
@@ -219,7 +219,7 @@ public final class Material {
 
 		public Material build() {
 			return new Material(
-				this.color, this.liquid, this.flag7, this.suffocates, this.blocksLight, this.breakByHand, this.burnable, this.replaceable, this.pistonBehavior
+				this.color, this.liquid, this.solid, this.blocksMovement, this.blocksLight, this.breakByHand, this.burnable, this.replaceable, this.pistonBehavior
 			);
 		}
 	}

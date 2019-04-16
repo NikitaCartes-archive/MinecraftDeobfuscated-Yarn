@@ -82,7 +82,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 			this.uniqueEntityTypes = intRange;
 		}
 
-		public static KilledByCrossbowCriterion.Conditions method_8986(EntityPredicate.Builder... builders) {
+		public static KilledByCrossbowCriterion.Conditions create(EntityPredicate.Builder... builders) {
 			EntityPredicate[] entityPredicates = new EntityPredicate[builders.length];
 
 			for (int i = 0; i < builders.length; i++) {
@@ -93,7 +93,7 @@ public class KilledByCrossbowCriterion implements Criterion<KilledByCrossbowCrit
 			return new KilledByCrossbowCriterion.Conditions(entityPredicates, NumberRange.IntRange.ANY);
 		}
 
-		public static KilledByCrossbowCriterion.Conditions method_8987(NumberRange.IntRange intRange) {
+		public static KilledByCrossbowCriterion.Conditions create(NumberRange.IntRange intRange) {
 			EntityPredicate[] entityPredicates = new EntityPredicate[0];
 			return new KilledByCrossbowCriterion.Conditions(entityPredicates, intRange);
 		}

@@ -80,8 +80,8 @@ import net.minecraft.tag.TagManager;
 import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.GameTaskQueue;
 import net.minecraft.util.MetricsData;
+import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
@@ -117,7 +117,7 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable, Runnable {
+public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTask> implements SnooperListener, CommandOutput, AutoCloseable, Runnable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final File USER_CACHE_FILE = new File("usercache.json");
 	public static final LevelInfo WORLD_INFO = new LevelInfo((long)"North Carolina".hashCode(), GameMode.field_9215, true, false, LevelGeneratorType.DEFAULT)
@@ -246,7 +246,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 
 	protected abstract boolean setupServer() throws IOException;
 
-	protected void method_3755(String string) {
+	protected void upgradeWorld(String string) {
 		if (this.getLevelStorage().requiresConversion(string)) {
 			LOGGER.info("Converting map!");
 			this.method_3768(new TranslatableTextComponent("menu.convertingLevel"));
@@ -319,7 +319,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	}
 
 	protected void method_3735(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
-		this.method_3755(string);
+		this.upgradeWorld(string);
 		this.method_3768(new TranslatableTextComponent("menu.loadingLevel"));
 		WorldSaveHandler worldSaveHandler = this.getLevelStorage().method_242(string, this);
 		this.method_3861(this.getLevelName(), worldSaveHandler);
@@ -615,7 +615,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 					this.method_3748(this::shouldKeepTicking);
 					this.profiler.swap("nextTickWait");
 					this.field_19249 = true;
-					this.field_19248 = Math.max(SystemUtil.getMeasuringTimeMs() + 20L, this.timeReference);
+					this.field_19248 = Math.max(SystemUtil.getMeasuringTimeMs() + 50L, this.timeReference);
 					this.method_16208();
 					this.profiler.pop();
 					this.profiler.endTick();
@@ -656,7 +656,7 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	}
 
 	private boolean shouldKeepTicking() {
-		return this.method_18860() || SystemUtil.getMeasuringTimeMs() < (this.field_19249 ? this.field_19248 : this.timeReference);
+		return this.hasRunningTasks() || SystemUtil.getMeasuringTimeMs() < (this.field_19249 ? this.field_19248 : this.timeReference);
 	}
 
 	protected void method_16208() {
@@ -1357,8 +1357,8 @@ public abstract class MinecraftServer extends GameTaskQueue<ServerTask> implemen
 	}
 
 	@Override
-	public boolean isOffThread() {
-		return super.isOffThread() && !this.isStopped();
+	public boolean shouldRunAsync() {
+		return super.shouldRunAsync() && !this.isStopped();
 	}
 
 	@Override

@@ -104,7 +104,7 @@ public class EnterBlockCriterion implements Criterion<EnterBlockCriterion.Condit
 		return new EnterBlockCriterion.Conditions(block, map);
 	}
 
-	public void method_8885(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
+	public void handle(ServerPlayerEntity serverPlayerEntity, BlockState blockState) {
 		EnterBlockCriterion.Handler handler = (EnterBlockCriterion.Handler)this.handlers.get(serverPlayerEntity.getAdvancementManager());
 		if (handler != null) {
 			handler.handle(blockState);

@@ -80,7 +80,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, Element, 
 		this.client.player.inventory.populateRecipeFinder(this.recipeFinder);
 		this.craftingContainer.populateRecipeFinder(this.recipeFinder);
 		String string = this.searchField != null ? this.searchField.getText() : "";
-		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, 9 + 5);
+		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, 9 + 5, I18n.translate("itemGroup.search"));
 		this.searchField.setMaxLength(50);
 		this.searchField.setHasBorder(false);
 		this.searchField.setVisible(true);

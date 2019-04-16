@@ -76,12 +76,12 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 			commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
 			this.updateTrackedOutput();
 		}));
-		this.consoleCommandTextField = new TextFieldWidget(this.font, this.width / 2 - 150, 50, 300, 20);
+		this.consoleCommandTextField = new TextFieldWidget(this.font, this.width / 2 - 150, 50, 300, 20, I18n.translate("advMode.command"));
 		this.consoleCommandTextField.setMaxLength(32500);
 		this.consoleCommandTextField.setRenderTextProvider(this::method_2348);
 		this.consoleCommandTextField.setChangedListener(this::onCommandChanged);
 		this.children.add(this.consoleCommandTextField);
-		this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.method_2364(), 276, 20);
+		this.previousOutputTextField = new TextFieldWidget(this.font, this.width / 2 - 150, this.method_2364(), 276, 20, I18n.translate("advMode.previousOutput"));
 		this.previousOutputTextField.setMaxLength(32500);
 		this.previousOutputTextField.setIsEditable(false);
 		this.previousOutputTextField.setText("-");

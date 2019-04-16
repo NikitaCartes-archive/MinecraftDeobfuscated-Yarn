@@ -212,6 +212,7 @@ public class ClientWorld extends World {
 
 	public void unloadBlockEntities(WorldChunk worldChunk) {
 		this.unloadedBlockEntities.addAll(worldChunk.getBlockEntities().values());
+		this.chunkManager.getLightingProvider().suppressLight(worldChunk.getPos(), false);
 	}
 
 	@Override

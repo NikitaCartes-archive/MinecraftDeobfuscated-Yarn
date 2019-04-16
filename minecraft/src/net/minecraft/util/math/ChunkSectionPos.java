@@ -1,9 +1,11 @@
 package net.minecraft.util.math;
 
+import java.util.Spliterators.AbstractSpliterator;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.util.stream.StreamSupport;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.world.chunk.ChunkPos;
 
 public class ChunkSectionPos extends Vec3i {
@@ -110,16 +112,14 @@ public class ChunkSectionPos extends Vec3i {
 		return asLong(toChunkCoord(BlockPos.unpackLongX(l)), toChunkCoord(BlockPos.unpackLongY(l)), toChunkCoord(BlockPos.unpackLongZ(l)));
 	}
 
-	public static long method_18693(long l) {
+	public static long toLightStorageIndex(long l) {
 		return l & -1048576L;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BlockPos getMinPos() {
 		return new BlockPos(fromChunkCoord(this.getChunkX()), fromChunkCoord(this.getChunkY()), fromChunkCoord(this.getChunkZ()));
 	}
 
-	@Environment(EnvType.CLIENT)
 	public BlockPos getCenterPos() {
 		int i = 8;
 		return this.getMinPos().add(8, 8, 8);
@@ -140,7 +140,29 @@ public class ChunkSectionPos extends Vec3i {
 		return asLong(this.getChunkX(), this.getChunkY(), this.getChunkZ());
 	}
 
-	public Stream<BlockPos> streamBoxPositions() {
-		return BlockPos.streamBoxPositions(this.getMinX(), this.getMinY(), this.getMinZ(), this.getMaxX(), this.getMaxY(), this.getMaxZ());
+	public Stream<BlockPos> streamBlocks() {
+		return BlockPos.stream(this.getMinX(), this.getMinY(), this.getMinZ(), this.getMaxX(), this.getMaxY(), this.getMaxZ());
+	}
+
+	public static Stream<ChunkSectionPos> stream(ChunkSectionPos chunkSectionPos, int i) {
+		int j = chunkSectionPos.getChunkX();
+		int k = chunkSectionPos.getChunkY();
+		int l = chunkSectionPos.getChunkZ();
+		return stream(j - i, k - i, l - i, j + i, k + i, l + i);
+	}
+
+	public static Stream<ChunkSectionPos> stream(int i, int j, int k, int l, int m, int n) {
+		return StreamSupport.stream(new AbstractSpliterator<ChunkSectionPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64) {
+			final CuboidBlockIterator iterator = new CuboidBlockIterator(i, j, k, l, m, n);
+
+			public boolean tryAdvance(Consumer<? super ChunkSectionPos> consumer) {
+				if (this.iterator.step()) {
+					consumer.accept(new ChunkSectionPos(this.iterator.getX(), this.iterator.getY(), this.iterator.getZ()));
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}, false);
 	}
 }

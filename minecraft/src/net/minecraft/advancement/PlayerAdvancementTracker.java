@@ -56,13 +56,13 @@ public class PlayerAdvancementTracker {
 	};
 	private final MinecraftServer server;
 	private final File advancementFile;
-	private final Map<SimpleAdvancement, AdvancementProgress> advancementToProgress = Maps.<SimpleAdvancement, AdvancementProgress>newLinkedHashMap();
-	private final Set<SimpleAdvancement> visibleAdvancements = Sets.<SimpleAdvancement>newLinkedHashSet();
-	private final Set<SimpleAdvancement> visibilityUpdates = Sets.<SimpleAdvancement>newLinkedHashSet();
-	private final Set<SimpleAdvancement> progressUpdates = Sets.<SimpleAdvancement>newLinkedHashSet();
+	private final Map<Advancement, AdvancementProgress> advancementToProgress = Maps.<Advancement, AdvancementProgress>newLinkedHashMap();
+	private final Set<Advancement> visibleAdvancements = Sets.<Advancement>newLinkedHashSet();
+	private final Set<Advancement> visibilityUpdates = Sets.<Advancement>newLinkedHashSet();
+	private final Set<Advancement> progressUpdates = Sets.<Advancement>newLinkedHashSet();
 	private ServerPlayerEntity owner;
 	@Nullable
-	private SimpleAdvancement currentDisplayTab;
+	private Advancement currentDisplayTab;
 	private boolean dirty = true;
 
 	public PlayerAdvancementTracker(MinecraftServer minecraftServer, File file, ServerPlayerEntity serverPlayerEntity) {
@@ -94,31 +94,31 @@ public class PlayerAdvancementTracker {
 	}
 
 	private void beginTrackingAllAdvancements() {
-		for (SimpleAdvancement simpleAdvancement : this.server.getAdvancementManager().getAdvancements()) {
-			this.beginTracking(simpleAdvancement);
+		for (Advancement advancement : this.server.getAdvancementManager().getAdvancements()) {
+			this.beginTracking(advancement);
 		}
 	}
 
 	private void updateCompleted() {
-		List<SimpleAdvancement> list = Lists.<SimpleAdvancement>newArrayList();
+		List<Advancement> list = Lists.<Advancement>newArrayList();
 
-		for (Entry<SimpleAdvancement, AdvancementProgress> entry : this.advancementToProgress.entrySet()) {
+		for (Entry<Advancement, AdvancementProgress> entry : this.advancementToProgress.entrySet()) {
 			if (((AdvancementProgress)entry.getValue()).isDone()) {
 				list.add(entry.getKey());
 				this.progressUpdates.add(entry.getKey());
 			}
 		}
 
-		for (SimpleAdvancement simpleAdvancement : list) {
-			this.updateDisplay(simpleAdvancement);
+		for (Advancement advancement : list) {
+			this.updateDisplay(advancement);
 		}
 	}
 
 	private void rewardEmptyAdvancements() {
-		for (SimpleAdvancement simpleAdvancement : this.server.getAdvancementManager().getAdvancements()) {
-			if (simpleAdvancement.getCriteria().isEmpty()) {
-				this.grantCriterion(simpleAdvancement, "");
-				simpleAdvancement.getRewards().apply(this.owner);
+		for (Advancement advancement : this.server.getAdvancementManager().getAdvancements()) {
+			if (advancement.getCriteria().isEmpty()) {
+				this.grantCriterion(advancement, "");
+				advancement.getRewards().apply(this.owner);
 			}
 		}
 	}
@@ -148,11 +148,11 @@ public class PlayerAdvancementTracker {
 					Stream<Entry<Identifier, AdvancementProgress>> stream = map.entrySet().stream().sorted(Comparator.comparing(Entry::getValue));
 
 					for (Entry<Identifier, AdvancementProgress> entry : (List)stream.collect(Collectors.toList())) {
-						SimpleAdvancement simpleAdvancement = this.server.getAdvancementManager().get((Identifier)entry.getKey());
-						if (simpleAdvancement == null) {
+						Advancement advancement = this.server.getAdvancementManager().get((Identifier)entry.getKey());
+						if (advancement == null) {
 							LOGGER.warn("Ignored advancement '{}' in progress file {} - it doesn't exist anymore?", entry.getKey(), this.advancementFile);
 						} else {
-							this.initProgress(simpleAdvancement, (AdvancementProgress)entry.getValue());
+							this.initProgress(advancement, (AdvancementProgress)entry.getValue());
 						}
 					}
 				} catch (Throwable var18) {
@@ -186,10 +186,10 @@ public class PlayerAdvancementTracker {
 	public void save() {
 		Map<Identifier, AdvancementProgress> map = Maps.<Identifier, AdvancementProgress>newHashMap();
 
-		for (Entry<SimpleAdvancement, AdvancementProgress> entry : this.advancementToProgress.entrySet()) {
+		for (Entry<Advancement, AdvancementProgress> entry : this.advancementToProgress.entrySet()) {
 			AdvancementProgress advancementProgress = (AdvancementProgress)entry.getValue();
 			if (advancementProgress.isAnyObtained()) {
-				map.put(((SimpleAdvancement)entry.getKey()).getId(), advancementProgress);
+				map.put(((Advancement)entry.getKey()).getId(), advancementProgress);
 			}
 		}
 
@@ -247,24 +247,24 @@ public class PlayerAdvancementTracker {
 		}
 	}
 
-	public boolean grantCriterion(SimpleAdvancement simpleAdvancement, String string) {
+	public boolean grantCriterion(Advancement advancement, String string) {
 		boolean bl = false;
-		AdvancementProgress advancementProgress = this.getProgress(simpleAdvancement);
+		AdvancementProgress advancementProgress = this.getProgress(advancement);
 		boolean bl2 = advancementProgress.isDone();
 		if (advancementProgress.obtain(string)) {
-			this.endTrackingCompleted(simpleAdvancement);
-			this.progressUpdates.add(simpleAdvancement);
+			this.endTrackingCompleted(advancement);
+			this.progressUpdates.add(advancement);
 			bl = true;
 			if (!bl2 && advancementProgress.isDone()) {
-				simpleAdvancement.getRewards().apply(this.owner);
-				if (simpleAdvancement.getDisplay() != null
-					&& simpleAdvancement.getDisplay().shouldAnnounceToChat()
+				advancement.getRewards().apply(this.owner);
+				if (advancement.getDisplay() != null
+					&& advancement.getDisplay().shouldAnnounceToChat()
 					&& this.owner.world.getGameRules().getBoolean("announceAdvancements")) {
 					this.server
 						.getPlayerManager()
 						.sendToAll(
 							new TranslatableTextComponent(
-								"chat.type.advancement." + simpleAdvancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), simpleAdvancement.getTextComponent()
+								"chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.getTextComponent()
 							)
 						);
 				}
@@ -272,39 +272,39 @@ public class PlayerAdvancementTracker {
 		}
 
 		if (advancementProgress.isDone()) {
-			this.updateDisplay(simpleAdvancement);
+			this.updateDisplay(advancement);
 		}
 
 		return bl;
 	}
 
-	public boolean revokeCriterion(SimpleAdvancement simpleAdvancement, String string) {
+	public boolean revokeCriterion(Advancement advancement, String string) {
 		boolean bl = false;
-		AdvancementProgress advancementProgress = this.getProgress(simpleAdvancement);
+		AdvancementProgress advancementProgress = this.getProgress(advancement);
 		if (advancementProgress.reset(string)) {
-			this.beginTracking(simpleAdvancement);
-			this.progressUpdates.add(simpleAdvancement);
+			this.beginTracking(advancement);
+			this.progressUpdates.add(advancement);
 			bl = true;
 		}
 
 		if (!advancementProgress.isAnyObtained()) {
-			this.updateDisplay(simpleAdvancement);
+			this.updateDisplay(advancement);
 		}
 
 		return bl;
 	}
 
-	private void beginTracking(SimpleAdvancement simpleAdvancement) {
-		AdvancementProgress advancementProgress = this.getProgress(simpleAdvancement);
+	private void beginTracking(Advancement advancement) {
+		AdvancementProgress advancementProgress = this.getProgress(advancement);
 		if (!advancementProgress.isDone()) {
-			for (Entry<String, AdvancementCriterion> entry : simpleAdvancement.getCriteria().entrySet()) {
+			for (Entry<String, AdvancementCriterion> entry : advancement.getCriteria().entrySet()) {
 				CriterionProgress criterionProgress = advancementProgress.getCriterionProgress((String)entry.getKey());
 				if (criterionProgress != null && !criterionProgress.isObtained()) {
 					CriterionConditions criterionConditions = ((AdvancementCriterion)entry.getValue()).getConditions();
 					if (criterionConditions != null) {
 						Criterion<CriterionConditions> criterion = Criterions.getById(criterionConditions.getId());
 						if (criterion != null) {
-							criterion.beginTrackingCondition(this, new Criterion.ConditionsContainer<>(criterionConditions, simpleAdvancement, (String)entry.getKey()));
+							criterion.beginTrackingCondition(this, new Criterion.ConditionsContainer<>(criterionConditions, advancement, (String)entry.getKey()));
 						}
 					}
 				}
@@ -312,17 +312,17 @@ public class PlayerAdvancementTracker {
 		}
 	}
 
-	private void endTrackingCompleted(SimpleAdvancement simpleAdvancement) {
-		AdvancementProgress advancementProgress = this.getProgress(simpleAdvancement);
+	private void endTrackingCompleted(Advancement advancement) {
+		AdvancementProgress advancementProgress = this.getProgress(advancement);
 
-		for (Entry<String, AdvancementCriterion> entry : simpleAdvancement.getCriteria().entrySet()) {
+		for (Entry<String, AdvancementCriterion> entry : advancement.getCriteria().entrySet()) {
 			CriterionProgress criterionProgress = advancementProgress.getCriterionProgress((String)entry.getKey());
 			if (criterionProgress != null && (criterionProgress.isObtained() || advancementProgress.isDone())) {
 				CriterionConditions criterionConditions = ((AdvancementCriterion)entry.getValue()).getConditions();
 				if (criterionConditions != null) {
 					Criterion<CriterionConditions> criterion = Criterions.getById(criterionConditions.getId());
 					if (criterion != null) {
-						criterion.endTrackingCondition(this, new Criterion.ConditionsContainer<>(criterionConditions, simpleAdvancement, (String)entry.getKey()));
+						criterion.endTrackingCondition(this, new Criterion.ConditionsContainer<>(criterionConditions, advancement, (String)entry.getKey()));
 					}
 				}
 			}
@@ -332,20 +332,20 @@ public class PlayerAdvancementTracker {
 	public void sendUpdate(ServerPlayerEntity serverPlayerEntity) {
 		if (this.dirty || !this.visibilityUpdates.isEmpty() || !this.progressUpdates.isEmpty()) {
 			Map<Identifier, AdvancementProgress> map = Maps.<Identifier, AdvancementProgress>newHashMap();
-			Set<SimpleAdvancement> set = Sets.<SimpleAdvancement>newLinkedHashSet();
+			Set<Advancement> set = Sets.<Advancement>newLinkedHashSet();
 			Set<Identifier> set2 = Sets.<Identifier>newLinkedHashSet();
 
-			for (SimpleAdvancement simpleAdvancement : this.progressUpdates) {
-				if (this.visibleAdvancements.contains(simpleAdvancement)) {
-					map.put(simpleAdvancement.getId(), this.advancementToProgress.get(simpleAdvancement));
+			for (Advancement advancement : this.progressUpdates) {
+				if (this.visibleAdvancements.contains(advancement)) {
+					map.put(advancement.getId(), this.advancementToProgress.get(advancement));
 				}
 			}
 
-			for (SimpleAdvancement simpleAdvancementx : this.visibilityUpdates) {
-				if (this.visibleAdvancements.contains(simpleAdvancementx)) {
-					set.add(simpleAdvancementx);
+			for (Advancement advancementx : this.visibilityUpdates) {
+				if (this.visibleAdvancements.contains(advancementx)) {
+					set.add(advancementx);
 				} else {
-					set2.add(simpleAdvancementx.getId());
+					set2.add(advancementx.getId());
 				}
 			}
 
@@ -359,89 +359,89 @@ public class PlayerAdvancementTracker {
 		this.dirty = false;
 	}
 
-	public void setDisplayTab(@Nullable SimpleAdvancement simpleAdvancement) {
-		SimpleAdvancement simpleAdvancement2 = this.currentDisplayTab;
-		if (simpleAdvancement != null && simpleAdvancement.getParent() == null && simpleAdvancement.getDisplay() != null) {
-			this.currentDisplayTab = simpleAdvancement;
+	public void setDisplayTab(@Nullable Advancement advancement) {
+		Advancement advancement2 = this.currentDisplayTab;
+		if (advancement != null && advancement.getParent() == null && advancement.getDisplay() != null) {
+			this.currentDisplayTab = advancement;
 		} else {
 			this.currentDisplayTab = null;
 		}
 
-		if (simpleAdvancement2 != this.currentDisplayTab) {
+		if (advancement2 != this.currentDisplayTab) {
 			this.owner.networkHandler.sendPacket(new SelectAdvancementTabS2CPacket(this.currentDisplayTab == null ? null : this.currentDisplayTab.getId()));
 		}
 	}
 
-	public AdvancementProgress getProgress(SimpleAdvancement simpleAdvancement) {
-		AdvancementProgress advancementProgress = (AdvancementProgress)this.advancementToProgress.get(simpleAdvancement);
+	public AdvancementProgress getProgress(Advancement advancement) {
+		AdvancementProgress advancementProgress = (AdvancementProgress)this.advancementToProgress.get(advancement);
 		if (advancementProgress == null) {
 			advancementProgress = new AdvancementProgress();
-			this.initProgress(simpleAdvancement, advancementProgress);
+			this.initProgress(advancement, advancementProgress);
 		}
 
 		return advancementProgress;
 	}
 
-	private void initProgress(SimpleAdvancement simpleAdvancement, AdvancementProgress advancementProgress) {
-		advancementProgress.init(simpleAdvancement.getCriteria(), simpleAdvancement.getRequirements());
-		this.advancementToProgress.put(simpleAdvancement, advancementProgress);
+	private void initProgress(Advancement advancement, AdvancementProgress advancementProgress) {
+		advancementProgress.init(advancement.getCriteria(), advancement.getRequirements());
+		this.advancementToProgress.put(advancement, advancementProgress);
 	}
 
-	private void updateDisplay(SimpleAdvancement simpleAdvancement) {
-		boolean bl = this.canSee(simpleAdvancement);
-		boolean bl2 = this.visibleAdvancements.contains(simpleAdvancement);
+	private void updateDisplay(Advancement advancement) {
+		boolean bl = this.canSee(advancement);
+		boolean bl2 = this.visibleAdvancements.contains(advancement);
 		if (bl && !bl2) {
-			this.visibleAdvancements.add(simpleAdvancement);
-			this.visibilityUpdates.add(simpleAdvancement);
-			if (this.advancementToProgress.containsKey(simpleAdvancement)) {
-				this.progressUpdates.add(simpleAdvancement);
+			this.visibleAdvancements.add(advancement);
+			this.visibilityUpdates.add(advancement);
+			if (this.advancementToProgress.containsKey(advancement)) {
+				this.progressUpdates.add(advancement);
 			}
 		} else if (!bl && bl2) {
-			this.visibleAdvancements.remove(simpleAdvancement);
-			this.visibilityUpdates.add(simpleAdvancement);
+			this.visibleAdvancements.remove(advancement);
+			this.visibilityUpdates.add(advancement);
 		}
 
-		if (bl != bl2 && simpleAdvancement.getParent() != null) {
-			this.updateDisplay(simpleAdvancement.getParent());
+		if (bl != bl2 && advancement.getParent() != null) {
+			this.updateDisplay(advancement.getParent());
 		}
 
-		for (SimpleAdvancement simpleAdvancement2 : simpleAdvancement.getChildren()) {
-			this.updateDisplay(simpleAdvancement2);
+		for (Advancement advancement2 : advancement.getChildren()) {
+			this.updateDisplay(advancement2);
 		}
 	}
 
-	private boolean canSee(SimpleAdvancement simpleAdvancement) {
-		for (int i = 0; simpleAdvancement != null && i <= 2; i++) {
-			if (i == 0 && this.hasChildrenDone(simpleAdvancement)) {
+	private boolean canSee(Advancement advancement) {
+		for (int i = 0; advancement != null && i <= 2; i++) {
+			if (i == 0 && this.hasChildrenDone(advancement)) {
 				return true;
 			}
 
-			if (simpleAdvancement.getDisplay() == null) {
+			if (advancement.getDisplay() == null) {
 				return false;
 			}
 
-			AdvancementProgress advancementProgress = this.getProgress(simpleAdvancement);
+			AdvancementProgress advancementProgress = this.getProgress(advancement);
 			if (advancementProgress.isDone()) {
 				return true;
 			}
 
-			if (simpleAdvancement.getDisplay().isHidden()) {
+			if (advancement.getDisplay().isHidden()) {
 				return false;
 			}
 
-			simpleAdvancement = simpleAdvancement.getParent();
+			advancement = advancement.getParent();
 		}
 
 		return false;
 	}
 
-	private boolean hasChildrenDone(SimpleAdvancement simpleAdvancement) {
-		AdvancementProgress advancementProgress = this.getProgress(simpleAdvancement);
+	private boolean hasChildrenDone(Advancement advancement) {
+		AdvancementProgress advancementProgress = this.getProgress(advancement);
 		if (advancementProgress.isDone()) {
 			return true;
 		} else {
-			for (SimpleAdvancement simpleAdvancement2 : simpleAdvancement.getChildren()) {
-				if (this.hasChildrenDone(simpleAdvancement2)) {
+			for (Advancement advancement2 : advancement.getChildren()) {
+				if (this.hasChildrenDone(advancement2)) {
 					return true;
 				}
 			}

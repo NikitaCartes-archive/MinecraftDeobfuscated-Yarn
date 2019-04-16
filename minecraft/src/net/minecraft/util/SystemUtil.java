@@ -111,7 +111,7 @@ public class SystemUtil {
 		return SERVER_WORKER_EXECUTOR;
 	}
 
-	public static void method_18350() {
+	public static void shutdownServerWorkerExecutor() {
 		SERVER_WORKER_EXECUTOR.shutdown();
 
 		boolean bl;
@@ -239,7 +239,7 @@ public class SystemUtil {
 		return optional;
 	}
 
-	public static Runnable method_18839(Runnable runnable, Supplier<String> supplier) {
+	public static Runnable debugRunnable(Runnable runnable, Supplier<String> supplier) {
 		return runnable;
 	}
 

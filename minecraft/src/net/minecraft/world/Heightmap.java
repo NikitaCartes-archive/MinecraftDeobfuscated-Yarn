@@ -17,7 +17,7 @@ import net.minecraft.world.chunk.Chunk;
 
 public class Heightmap {
 	private static final Predicate<BlockState> ALWAYS_TRUE = blockState -> true;
-	private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().suffocates();
+	private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().blocksMovement();
 	private final PackedIntegerArray storage = new PackedIntegerArray(9, 256);
 	private final Predicate<BlockState> blockPredicate;
 	private final Chunk chunk;
@@ -132,12 +132,12 @@ public class Heightmap {
 		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Purpose.field_13207, Heightmap.SUFFOCATES),
 		OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.Purpose.field_13206, Heightmap.SUFFOCATES),
 		MOTION_BLOCKING(
-			"MOTION_BLOCKING", Heightmap.Purpose.field_16424, blockState -> blockState.getMaterial().suffocates() || !blockState.getFluidState().isEmpty()
+			"MOTION_BLOCKING", Heightmap.Purpose.field_16424, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()
 		),
 		MOTION_BLOCKING_NO_LEAVES(
 			"MOTION_BLOCKING_NO_LEAVES",
 			Heightmap.Purpose.field_13206,
-			blockState -> (blockState.getMaterial().suffocates() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
+			blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
 		);
 
 		private final String name;

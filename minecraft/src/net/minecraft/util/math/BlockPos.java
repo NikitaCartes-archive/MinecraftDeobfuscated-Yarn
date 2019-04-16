@@ -78,11 +78,6 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		return asLong(unpackLongX(l) + i, unpackLongY(l) + j, unpackLongZ(l) + k);
 	}
 
-	public static boolean isHeightInvalid(long l) {
-		int i = unpackLongY(l);
-		return i < 0 || i >= 256;
-	}
-
 	public static int unpackLongX(long l) {
 		return (int)(l << 64 - BIT_SHIFT_X - SIZE_BITS_X >> 64 - SIZE_BITS_X);
 	}
@@ -214,8 +209,8 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		return this;
 	}
 
-	public static Iterable<BlockPos> iterateBoxPositions(BlockPos blockPos, BlockPos blockPos2) {
-		return iterateBoxPositions(
+	public static Iterable<BlockPos> iterate(BlockPos blockPos, BlockPos blockPos2) {
+		return iterate(
 			Math.min(blockPos.getX(), blockPos2.getX()),
 			Math.min(blockPos.getY(), blockPos2.getY()),
 			Math.min(blockPos.getZ(), blockPos2.getZ()),
@@ -225,7 +220,18 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		);
 	}
 
-	public static Stream<BlockPos> streamBoxPositions(int i, int j, int k, int l, int m, int n) {
+	public static Stream<BlockPos> stream(BlockPos blockPos, BlockPos blockPos2) {
+		return stream(
+			Math.min(blockPos.getX(), blockPos2.getX()),
+			Math.min(blockPos.getY(), blockPos2.getY()),
+			Math.min(blockPos.getZ(), blockPos2.getZ()),
+			Math.max(blockPos.getX(), blockPos2.getX()),
+			Math.max(blockPos.getY(), blockPos2.getY()),
+			Math.max(blockPos.getZ(), blockPos2.getZ())
+		);
+	}
+
+	public static Stream<BlockPos> stream(int i, int j, int k, int l, int m, int n) {
 		return StreamSupport.stream(new AbstractSpliterator<BlockPos>((long)((l - i + 1) * (m - j + 1) * (n - k + 1)), 64) {
 			final CuboidBlockIterator connector = new CuboidBlockIterator(i, j, k, l, m, n);
 			final BlockPos.Mutable field_18231 = new BlockPos.Mutable();
@@ -241,7 +247,7 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		}, false);
 	}
 
-	public static Iterable<BlockPos> iterateBoxPositions(int i, int j, int k, int l, int m, int n) {
+	public static Iterable<BlockPos> iterate(int i, int j, int k, int l, int m, int n) {
 		return () -> new AbstractIterator<BlockPos>() {
 				final CuboidBlockIterator iterator = new CuboidBlockIterator(i, j, k, l, m, n);
 				final BlockPos.Mutable pos = new BlockPos.Mutable();

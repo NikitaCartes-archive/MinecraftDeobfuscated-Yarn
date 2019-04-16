@@ -2615,7 +2615,7 @@ public abstract class LivingEntity extends Entity {
 			while (!bl3 && blockPos.getY() > 0) {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = world.getBlockState(blockPos2);
-				if (blockState.getMaterial().suffocates()) {
+				if (blockState.getMaterial().blocksMovement()) {
 					bl3 = true;
 				} else {
 					this.y--;

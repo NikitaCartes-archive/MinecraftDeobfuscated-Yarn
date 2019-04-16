@@ -153,7 +153,7 @@ public interface ViewableWorld extends ExtendedBlockView {
 		Predicate<VoxelShape> predicate = voxelShape2x -> !voxelShape2x.isEmpty() && VoxelShapes.matchesAnywhere(voxelShape, voxelShape2x, BooleanBiFunction.AND);
 		AtomicReference<ChunkPos> atomicReference = new AtomicReference(new ChunkPos(i >> 4, m >> 4));
 		AtomicReference<Chunk> atomicReference2 = new AtomicReference(this.getChunk(i >> 4, m >> 4, this.getLeastChunkStatusForCollisionCalculation(), false));
-		Stream<VoxelShape> stream2 = BlockPos.streamBoxPositions(i, k, m, j - 1, l - 1, n - 1).map(blockPos -> {
+		Stream<VoxelShape> stream2 = BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).map(blockPos -> {
 			int o = blockPos.getX();
 			int p = blockPos.getY();
 			int q = blockPos.getZ();

@@ -11,9 +11,9 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriteriaMerger;
-import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
@@ -32,7 +32,7 @@ public class ShapedRecipeJsonFactory {
 	private final int outputCount;
 	private final List<String> pattern = Lists.<String>newArrayList();
 	private final Map<Character, Ingredient> inputs = Maps.<Character, Ingredient>newLinkedHashMap();
-	private final SimpleAdvancement.Task builder = SimpleAdvancement.Task.create();
+	private final Advancement.Task field_11379 = Advancement.Task.create();
 	private String group;
 
 	public ShapedRecipeJsonFactory(ItemProvider itemProvider, int i) {
@@ -77,7 +77,7 @@ public class ShapedRecipeJsonFactory {
 	}
 
 	public ShapedRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
-		this.builder.criterion(string, criterionConditions);
+		this.field_11379.criterion(string, criterionConditions);
 		return this;
 	}
 
@@ -101,7 +101,7 @@ public class ShapedRecipeJsonFactory {
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
 		this.validate(identifier);
-		this.builder
+		this.field_11379
 			.parent(new Identifier("recipes/root"))
 			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
 			.rewards(AdvancementRewards.Builder.recipe(identifier))
@@ -114,7 +114,7 @@ public class ShapedRecipeJsonFactory {
 				this.group == null ? "" : this.group,
 				this.pattern,
 				this.inputs,
-				this.builder,
+				this.field_11379,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())
 			)
 		);
@@ -142,7 +142,7 @@ public class ShapedRecipeJsonFactory {
 				throw new IllegalStateException("Ingredients are defined but not used in pattern for recipe " + identifier);
 			} else if (this.pattern.size() == 1 && ((String)this.pattern.get(0)).length() == 1) {
 				throw new IllegalStateException("Shaped recipe " + identifier + " only takes in a single item - should it be a shapeless recipe instead?");
-			} else if (this.builder.getCriteria().isEmpty()) {
+			} else if (this.field_11379.getCriteria().isEmpty()) {
 				throw new IllegalStateException("No way of obtaining recipe " + identifier);
 			}
 		}
@@ -155,18 +155,11 @@ public class ShapedRecipeJsonFactory {
 		private final String group;
 		private final List<String> pattern;
 		private final Map<Character, Ingredient> inputs;
-		private final SimpleAdvancement.Task builder;
+		private final Advancement.Task field_11389;
 		private final Identifier advancementId;
 
 		public ShapedRecipeJsonProvider(
-			Identifier identifier,
-			Item item,
-			int i,
-			String string,
-			List<String> list,
-			Map<Character, Ingredient> map,
-			SimpleAdvancement.Task task,
-			Identifier identifier2
+			Identifier identifier, Item item, int i, String string, List<String> list, Map<Character, Ingredient> map, Advancement.Task task, Identifier identifier2
 		) {
 			this.recipeId = identifier;
 			this.output = item;
@@ -174,7 +167,7 @@ public class ShapedRecipeJsonFactory {
 			this.group = string;
 			this.pattern = list;
 			this.inputs = map;
-			this.builder = task;
+			this.field_11389 = task;
 			this.advancementId = identifier2;
 		}
 
@@ -220,7 +213,7 @@ public class ShapedRecipeJsonFactory {
 		@Nullable
 		@Override
 		public JsonObject toAdvancementJson() {
-			return this.builder.toJson();
+			return this.field_11389.toJson();
 		}
 
 		@Nullable

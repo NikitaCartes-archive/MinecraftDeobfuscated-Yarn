@@ -147,7 +147,7 @@ public class ChunkSerializer {
 			}
 
 			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
-				for (BlockPos blockPos : BlockPos.iterateBoxPositions(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 255, chunkPos.getEndZ())) {
+				for (BlockPos blockPos : BlockPos.iterate(chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 255, chunkPos.getEndZ())) {
 					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
 						protoChunk.addLightSource(blockPos);
 					}

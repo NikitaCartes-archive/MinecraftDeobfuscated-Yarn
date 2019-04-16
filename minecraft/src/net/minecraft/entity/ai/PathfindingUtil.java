@@ -136,12 +136,12 @@ public class PathfindingUtil {
 	}
 
 	private static BlockPos method_6372(BlockPos blockPos, MobEntityWithAi mobEntityWithAi) {
-		if (!mobEntityWithAi.world.getBlockState(blockPos).getMaterial().method_15799()) {
+		if (!mobEntityWithAi.world.getBlockState(blockPos).getMaterial().isSolid()) {
 			return blockPos;
 		} else {
 			BlockPos blockPos2 = blockPos.up();
 
-			while (blockPos2.getY() < mobEntityWithAi.world.getHeight() && mobEntityWithAi.world.getBlockState(blockPos2).getMaterial().method_15799()) {
+			while (blockPos2.getY() < mobEntityWithAi.world.getHeight() && mobEntityWithAi.world.getBlockState(blockPos2).getMaterial().isSolid()) {
 				blockPos2 = blockPos2.up();
 			}
 

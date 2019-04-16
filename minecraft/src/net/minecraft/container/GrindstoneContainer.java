@@ -128,7 +128,8 @@ public class GrindstoneContainer extends Container {
 		if (!bl) {
 			this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 		} else {
-			boolean bl3 = !itemStack.isEmpty() && !itemStack.hasEnchantments() || !itemStack2.isEmpty() && !itemStack2.hasEnchantments();
+			boolean bl3 = !itemStack.isEmpty() && itemStack.getItem() != Items.field_8598 && !itemStack.hasEnchantments()
+				|| !itemStack2.isEmpty() && itemStack2.getItem() != Items.field_8598 && !itemStack2.hasEnchantments();
 			if (itemStack.getAmount() > 1 || itemStack2.getAmount() > 1 || !bl2 && bl3) {
 				this.resultInventory.setInvStack(0, ItemStack.EMPTY);
 				this.sendContentUpdates();

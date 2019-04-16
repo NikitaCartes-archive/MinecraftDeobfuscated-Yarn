@@ -20,7 +20,7 @@ public final class GlobalPos implements DynamicSerializable {
 		return new GlobalPos(dimensionType, blockPos);
 	}
 
-	public static GlobalPos method_19444(Dynamic<?> dynamic) {
+	public static GlobalPos deserialize(Dynamic<?> dynamic) {
 		return (GlobalPos)dynamic.get("dimension")
 			.map(DimensionType::method_19298)
 			.flatMap(dimensionType -> dynamic.get("pos").map(BlockPos::deserialize).map(blockPos -> new GlobalPos(dimensionType, blockPos)))

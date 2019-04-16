@@ -79,7 +79,7 @@ public class TameAnimalCriterion implements Criterion<TameAnimalCriterion.Condit
 			return new TameAnimalCriterion.Conditions(EntityPredicate.ANY);
 		}
 
-		public static TameAnimalCriterion.Conditions method_16114(EntityPredicate entityPredicate) {
+		public static TameAnimalCriterion.Conditions create(EntityPredicate entityPredicate) {
 			return new TameAnimalCriterion.Conditions(entityPredicate);
 		}
 

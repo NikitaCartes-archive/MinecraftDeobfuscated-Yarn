@@ -47,7 +47,7 @@ public class MoveThroughVillageGoal extends Goal {
 		} else {
 			ServerWorld serverWorld = (ServerWorld)this.field_6525.world;
 			BlockPos blockPos = new BlockPos(this.field_6525);
-			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 4)) {
+			if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 				return false;
 			} else {
 				Vec3d vec3d = PathfindingUtil.findTargetStraight(

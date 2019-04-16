@@ -378,7 +378,7 @@ public class FishHookEntity extends Entity {
 			int i = 0;
 			if (this.hookedEntity != null) {
 				this.method_6954();
-				Criterions.FISHING_ROD_HOOKED.method_8939((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
+				Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, Collections.emptyList());
 				this.world.sendEntityStatus(this, (byte)31);
 				i = this.hookedEntity instanceof ItemEntity ? 3 : 5;
 			} else if (this.field_7173 > 0) {
@@ -389,7 +389,7 @@ public class FishHookEntity extends Entity {
 					.setLuck((float)this.field_7171 + this.owner.getLuck());
 				LootSupplier lootSupplier = this.world.getServer().getLootManager().getSupplier(LootTables.GAMEPLAY_FISHING);
 				List<ItemStack> list = lootSupplier.getDrops(builder.build(LootContextTypes.FISHING));
-				Criterions.FISHING_ROD_HOOKED.method_8939((ServerPlayerEntity)this.owner, itemStack, this, list);
+				Criterions.FISHING_ROD_HOOKED.handle((ServerPlayerEntity)this.owner, itemStack, this, list);
 
 				for (ItemStack itemStack2 : list) {
 					ItemEntity itemEntity = new ItemEntity(this.world, this.x, this.y, this.z, itemStack2);

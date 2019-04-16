@@ -170,7 +170,11 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	}
 
 	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {
-		return new RealmsEditBox(i, j, k, l, m);
+		return this.newEditBox(i, j, k, l, m, "");
+	}
+
+	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m, String string) {
+		return new RealmsEditBox(i, j, k, l, m, string);
 	}
 
 	@Override

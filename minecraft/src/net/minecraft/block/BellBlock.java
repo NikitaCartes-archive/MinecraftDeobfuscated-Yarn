@@ -230,4 +230,9 @@ public class BellBlock extends BlockWithEntity {
 	public BlockEntity createBlockEntity(BlockView blockView) {
 		return new BellBlockEntity();
 	}
+
+	@Override
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+		return false;
+	}
 }

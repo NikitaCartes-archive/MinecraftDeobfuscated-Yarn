@@ -3,9 +3,9 @@ package net.minecraft.data.server.recipe;
 import com.google.gson.JsonObject;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriteriaMerger;
-import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
 import net.minecraft.item.Item;
@@ -22,7 +22,7 @@ public class CookingRecipeJsonFactory {
 	private final Ingredient input;
 	private final float exp;
 	private final int time;
-	private final SimpleAdvancement.Task builder = SimpleAdvancement.Task.create();
+	private final Advancement.Task field_11416 = Advancement.Task.create();
 	private String group;
 	private final CookingRecipeSerializer<?> serializer;
 
@@ -49,7 +49,7 @@ public class CookingRecipeJsonFactory {
 	}
 
 	public CookingRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
-		this.builder.criterion(string, criterionConditions);
+		this.field_11416.criterion(string, criterionConditions);
 		return this;
 	}
 
@@ -69,7 +69,7 @@ public class CookingRecipeJsonFactory {
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
 		this.validate(identifier);
-		this.builder
+		this.field_11416
 			.parent(new Identifier("recipes/root"))
 			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
 			.rewards(AdvancementRewards.Builder.recipe(identifier))
@@ -82,7 +82,7 @@ public class CookingRecipeJsonFactory {
 				this.output,
 				this.exp,
 				this.time,
-				this.builder,
+				this.field_11416,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath()),
 				(RecipeSerializer<? extends CookingRecipe>)this.serializer
 			)
@@ -90,7 +90,7 @@ public class CookingRecipeJsonFactory {
 	}
 
 	private void validate(Identifier identifier) {
-		if (this.builder.getCriteria().isEmpty()) {
+		if (this.field_11416.getCriteria().isEmpty()) {
 			throw new IllegalStateException("No way of obtaining recipe " + identifier);
 		}
 	}
@@ -102,7 +102,7 @@ public class CookingRecipeJsonFactory {
 		private final Item result;
 		private final float experience;
 		private final int cookingTime;
-		private final SimpleAdvancement.Task builder;
+		private final Advancement.Task field_11423;
 		private final Identifier advancementId;
 		private final RecipeSerializer<? extends CookingRecipe> cookingRecipeSerializer;
 
@@ -113,7 +113,7 @@ public class CookingRecipeJsonFactory {
 			Item item,
 			float f,
 			int i,
-			SimpleAdvancement.Task task,
+			Advancement.Task task,
 			Identifier identifier2,
 			RecipeSerializer<? extends CookingRecipe> recipeSerializer
 		) {
@@ -123,7 +123,7 @@ public class CookingRecipeJsonFactory {
 			this.result = item;
 			this.experience = f;
 			this.cookingTime = i;
-			this.builder = task;
+			this.field_11423 = task;
 			this.advancementId = identifier2;
 			this.cookingRecipeSerializer = recipeSerializer;
 		}
@@ -153,7 +153,7 @@ public class CookingRecipeJsonFactory {
 		@Nullable
 		@Override
 		public JsonObject toAdvancementJson() {
-			return this.builder.toJson();
+			return this.field_11423.toJson();
 		}
 
 		@Nullable

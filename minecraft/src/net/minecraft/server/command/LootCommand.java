@@ -78,7 +78,7 @@ public class LootCommand {
 																	commandContext,
 																	IdentifierArgumentType.getIdentifier(commandContext, "loot_table"),
 																	BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-																	ItemStackArgumentType.getItemStackArgument(commandContext, "tool").method_9781(1, false),
+																	ItemStackArgumentType.getItemStackArgument(commandContext, "tool").createStack(1, false),
 																	target
 																)
 														)
@@ -136,7 +136,7 @@ public class LootCommand {
 													commandContext -> executeMine(
 															commandContext,
 															BlockPosArgumentType.getLoadedBlockPos(commandContext, "pos"),
-															ItemStackArgumentType.getItemStackArgument(commandContext, "tool").method_9781(1, false),
+															ItemStackArgumentType.getItemStackArgument(commandContext, "tool").createStack(1, false),
 															target
 														)
 												)

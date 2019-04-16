@@ -315,7 +315,7 @@ public class TextRenderer implements AutoCloseable {
 			String string3 = string.substring(0, j);
 			char c = string.charAt(j);
 			boolean bl = c == ' ' || c == '\n';
-			string = TextFormat.method_538(string3) + string.substring(j + (bl ? 1 : 0));
+			string = TextFormat.getFormatAtEnd(string3) + string.substring(j + (bl ? 1 : 0));
 			string2 = string2 + string3 + "\n";
 		}
 

@@ -26,7 +26,9 @@ public class EscapeSunlightGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (!this.world.isDaylight()) {
+		if (this.owner.getTarget() != null) {
+			return false;
+		} else if (!this.world.isDaylight()) {
 			return false;
 		} else if (!this.owner.isOnFire()) {
 			return false;

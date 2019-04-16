@@ -37,7 +37,7 @@ public class FlyAroundGoal extends WanderAroundFarGoal {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(
+		for (BlockPos blockPos2 : BlockPos.iterate(
 			MathHelper.floor(this.owner.x - 3.0),
 			MathHelper.floor(this.owner.y - 6.0),
 			MathHelper.floor(this.owner.z - 3.0),

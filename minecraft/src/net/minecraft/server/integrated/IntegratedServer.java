@@ -82,7 +82,7 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public void method_3735(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
-		this.method_3755(string);
+		this.upgradeWorld(string);
 		WorldSaveHandler worldSaveHandler = this.getLevelStorage().method_242(string, this);
 		this.method_3861(this.getLevelName(), worldSaveHandler);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
@@ -256,7 +256,7 @@ public class IntegratedServer extends MinecraftServer {
 
 	@Override
 	public void stop(boolean bl) {
-		this.method_19537(() -> {
+		this.executeSync(() -> {
 			for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(this.getPlayerManager().getPlayerList())) {
 				if (!serverPlayerEntity.getUuid().equals(this.field_5521)) {
 					this.getPlayerManager().method_14611(serverPlayerEntity);

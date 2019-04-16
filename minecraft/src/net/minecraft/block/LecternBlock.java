@@ -80,6 +80,11 @@ public class LecternBlock extends BlockWithEntity {
 	}
 
 	@Override
+	public boolean method_9526(BlockState blockState) {
+		return true;
+	}
+
+	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
 	}
@@ -264,5 +269,10 @@ public class LecternBlock extends BlockWithEntity {
 			playerEntity.openContainer((LecternBlockEntity)blockEntity);
 			playerEntity.incrementStat(Stats.field_17485);
 		}
+	}
+
+	@Override
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+		return false;
 	}
 }

@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.SimpleAdvancement;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.Identifier;
@@ -24,8 +24,8 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static AdvancementTabC2SPacket open(SimpleAdvancement simpleAdvancement) {
-		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.field_13024, simpleAdvancement.getId());
+	public static AdvancementTabC2SPacket method_12418(Advancement advancement) {
+		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.field_13024, advancement.getId());
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -21,7 +21,7 @@ public class TellRawCommand {
 
 										for (ServerPlayerEntity serverPlayerEntity : EntityArgumentType.getPlayers(commandContext, "targets")) {
 											serverPlayerEntity.appendCommandFeedback(
-												TextFormatter.method_10881(commandContext.getSource(), ComponentArgumentType.getComponent(commandContext, "message"), serverPlayerEntity)
+												TextFormatter.resolveAndStyle(commandContext.getSource(), ComponentArgumentType.getComponent(commandContext, "message"), serverPlayerEntity)
 											);
 											i++;
 										}

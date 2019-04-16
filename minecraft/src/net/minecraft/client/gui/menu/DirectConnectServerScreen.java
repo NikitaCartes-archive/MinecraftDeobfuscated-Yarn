@@ -38,7 +38,7 @@ public class DirectConnectServerScreen extends Screen {
 		this.addButton(
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, I18n.translate("gui.cancel"), buttonWidget -> this.callback.accept(false))
 		);
-		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20);
+		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20, I18n.translate("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
 		this.addressField.setFocused(true);
 		this.addressField.setText(this.minecraft.options.lastServer);

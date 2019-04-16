@@ -9,7 +9,7 @@ public class DoubleArgumentSerializer implements ArgumentSerializer<DoubleArgume
 	public void method_10041(DoubleArgumentType doubleArgumentType, PacketByteBuf packetByteBuf) {
 		boolean bl = doubleArgumentType.getMinimum() != -Double.MAX_VALUE;
 		boolean bl2 = doubleArgumentType.getMaximum() != Double.MAX_VALUE;
-		packetByteBuf.writeByte(BrigadierArgumentTypes.method_10037(bl, bl2));
+		packetByteBuf.writeByte(BrigadierArgumentTypes.createFlag(bl, bl2));
 		if (bl) {
 			packetByteBuf.writeDouble(doubleArgumentType.getMinimum());
 		}
@@ -21,8 +21,8 @@ public class DoubleArgumentSerializer implements ArgumentSerializer<DoubleArgume
 
 	public DoubleArgumentType method_10042(PacketByteBuf packetByteBuf) {
 		byte b = packetByteBuf.readByte();
-		double d = BrigadierArgumentTypes.method_10039(b) ? packetByteBuf.readDouble() : -Double.MAX_VALUE;
-		double e = BrigadierArgumentTypes.method_10038(b) ? packetByteBuf.readDouble() : Double.MAX_VALUE;
+		double d = BrigadierArgumentTypes.hasMin(b) ? packetByteBuf.readDouble() : -Double.MAX_VALUE;
+		double e = BrigadierArgumentTypes.hasMax(b) ? packetByteBuf.readDouble() : Double.MAX_VALUE;
 		return DoubleArgumentType.doubleArg(d, e);
 	}
 

@@ -237,7 +237,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity implements Ticka
 		BlockPos blockPos3 = null;
 		double d = 0.0;
 
-		for (BlockPos blockPos4 : BlockPos.iterateBoxPositions(blockPos, blockPos2)) {
+		for (BlockPos blockPos4 : BlockPos.iterate(blockPos, blockPos2)) {
 			BlockState blockState = worldChunk.getBlockState(blockPos4);
 			BlockPos blockPos5 = blockPos4.up();
 			BlockPos blockPos6 = blockPos4.up(2);

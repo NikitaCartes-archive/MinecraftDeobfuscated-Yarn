@@ -253,7 +253,7 @@ public class ExecuteCommand {
 												commandContext -> executeStoreData(
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
-														NbtPathArgumentType.getNbtPath(commandContext, "path"),
+														NbtPathArgumentType.method_9358(commandContext, "path"),
 														i -> new IntTag((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
 														bl
 													)
@@ -269,7 +269,7 @@ public class ExecuteCommand {
 												commandContext -> executeStoreData(
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
-														NbtPathArgumentType.getNbtPath(commandContext, "path"),
+														NbtPathArgumentType.method_9358(commandContext, "path"),
 														i -> new FloatTag((float)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
 														bl
 													)
@@ -285,7 +285,7 @@ public class ExecuteCommand {
 												commandContext -> executeStoreData(
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
-														NbtPathArgumentType.getNbtPath(commandContext, "path"),
+														NbtPathArgumentType.method_9358(commandContext, "path"),
 														i -> new ShortTag((short)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
 														bl
 													)
@@ -301,7 +301,7 @@ public class ExecuteCommand {
 												commandContext -> executeStoreData(
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
-														NbtPathArgumentType.getNbtPath(commandContext, "path"),
+														NbtPathArgumentType.method_9358(commandContext, "path"),
 														i -> new LongTag((long)((double)i * DoubleArgumentType.getDouble(commandContext, "scale"))),
 														bl
 													)
@@ -317,7 +317,7 @@ public class ExecuteCommand {
 												commandContext -> executeStoreData(
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
-														NbtPathArgumentType.getNbtPath(commandContext, "path"),
+														NbtPathArgumentType.method_9358(commandContext, "path"),
 														i -> new DoubleTag((double)i * DoubleArgumentType.getDouble(commandContext, "scale")),
 														bl
 													)
@@ -333,7 +333,7 @@ public class ExecuteCommand {
 												commandContext -> executeStoreData(
 														commandContext.getSource(),
 														objectType.getObject(commandContext),
-														NbtPathArgumentType.getNbtPath(commandContext, "path"),
+														NbtPathArgumentType.method_9358(commandContext, "path"),
 														i -> new ByteTag((byte)((int)((double)i * DoubleArgumentType.getDouble(commandContext, "scale")))),
 														bl
 													)
@@ -372,13 +372,13 @@ public class ExecuteCommand {
 	}
 
 	private static ServerCommandSource executeStoreData(
-		ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject, NbtPathArgumentType.class_2209 arg, IntFunction<Tag> intFunction, boolean bl
+		ServerCommandSource serverCommandSource, DataCommandObject dataCommandObject, NbtPathArgumentType.NbtPath nbtPath, IntFunction<Tag> intFunction, boolean bl
 	) {
 		return serverCommandSource.mergeConsumers((commandContext, bl2, i) -> {
 			try {
 				CompoundTag compoundTag = dataCommandObject.getTag();
 				int j = bl ? i : (bl2 ? 1 : 0);
-				arg.method_9368(compoundTag, () -> (Tag)intFunction.apply(j));
+				nbtPath.put(compoundTag, () -> (Tag)intFunction.apply(j));
 				dataCommandObject.setTag(compoundTag);
 			} catch (CommandSyntaxException var9) {
 			}
@@ -534,12 +534,12 @@ public class ExecuteCommand {
 								.fork(
 									commandNode,
 									commandContext -> getSourceOrEmptyForConditionFork(
-											commandContext, bl, countPathMatches(objectType.getObject(commandContext), NbtPathArgumentType.getNbtPath(commandContext, "path")) > 0
+											commandContext, bl, countPathMatches(objectType.getObject(commandContext), NbtPathArgumentType.method_9358(commandContext, "path")) > 0
 										)
 								)
 								.executes(
 									getExistsConditionExecute(
-										bl, commandContext -> countPathMatches(objectType.getObject(commandContext), NbtPathArgumentType.getNbtPath(commandContext, "path"))
+										bl, commandContext -> countPathMatches(objectType.getObject(commandContext), NbtPathArgumentType.method_9358(commandContext, "path"))
 									)
 								)
 						)
@@ -570,8 +570,8 @@ public class ExecuteCommand {
 		};
 	}
 
-	private static int countPathMatches(DataCommandObject dataCommandObject, NbtPathArgumentType.class_2209 arg) throws CommandSyntaxException {
-		return arg.method_9374(dataCommandObject.getTag());
+	private static int countPathMatches(DataCommandObject dataCommandObject, NbtPathArgumentType.NbtPath nbtPath) throws CommandSyntaxException {
+		return nbtPath.count(dataCommandObject.getTag());
 	}
 
 	private static boolean testScoreCondition(CommandContext<ServerCommandSource> commandContext, BiPredicate<Integer, Integer> biPredicate) throws CommandSyntaxException {

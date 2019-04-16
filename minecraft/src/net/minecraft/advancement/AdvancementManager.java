@@ -18,28 +18,28 @@ import org.apache.logging.log4j.Logger;
 
 public class AdvancementManager {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final Map<Identifier, SimpleAdvancement> advancements = Maps.<Identifier, SimpleAdvancement>newHashMap();
-	private final Set<SimpleAdvancement> roots = Sets.<SimpleAdvancement>newLinkedHashSet();
-	private final Set<SimpleAdvancement> dependents = Sets.<SimpleAdvancement>newLinkedHashSet();
+	private final Map<Identifier, Advancement> advancements = Maps.<Identifier, Advancement>newHashMap();
+	private final Set<Advancement> roots = Sets.<Advancement>newLinkedHashSet();
+	private final Set<Advancement> dependents = Sets.<Advancement>newLinkedHashSet();
 	private AdvancementManager.Listener listener;
 
 	@Environment(EnvType.CLIENT)
-	private void remove(SimpleAdvancement simpleAdvancement) {
-		for (SimpleAdvancement simpleAdvancement2 : simpleAdvancement.getChildren()) {
-			this.remove(simpleAdvancement2);
+	private void remove(Advancement advancement) {
+		for (Advancement advancement2 : advancement.getChildren()) {
+			this.remove(advancement2);
 		}
 
-		LOGGER.info("Forgot about advancement {}", simpleAdvancement.getId());
-		this.advancements.remove(simpleAdvancement.getId());
-		if (simpleAdvancement.getParent() == null) {
-			this.roots.remove(simpleAdvancement);
+		LOGGER.info("Forgot about advancement {}", advancement.getId());
+		this.advancements.remove(advancement.getId());
+		if (advancement.getParent() == null) {
+			this.roots.remove(advancement);
 			if (this.listener != null) {
-				this.listener.onRootRemoved(simpleAdvancement);
+				this.listener.onRootRemoved(advancement);
 			}
 		} else {
-			this.dependents.remove(simpleAdvancement);
+			this.dependents.remove(advancement);
 			if (this.listener != null) {
-				this.listener.onDependentRemoved(simpleAdvancement);
+				this.listener.onDependentRemoved(advancement);
 			}
 		}
 	}
@@ -47,47 +47,47 @@ public class AdvancementManager {
 	@Environment(EnvType.CLIENT)
 	public void removeAll(Set<Identifier> set) {
 		for (Identifier identifier : set) {
-			SimpleAdvancement simpleAdvancement = (SimpleAdvancement)this.advancements.get(identifier);
-			if (simpleAdvancement == null) {
+			Advancement advancement = (Advancement)this.advancements.get(identifier);
+			if (advancement == null) {
 				LOGGER.warn("Told to remove advancement {} but I don't know what that is", identifier);
 			} else {
-				this.remove(simpleAdvancement);
+				this.remove(advancement);
 			}
 		}
 	}
 
-	public void load(Map<Identifier, SimpleAdvancement.Task> map) {
-		Function<Identifier, SimpleAdvancement> function = Functions.forMap(this.advancements, null);
+	public void load(Map<Identifier, Advancement.Task> map) {
+		Function<Identifier, Advancement> function = Functions.forMap(this.advancements, null);
 
 		while (!map.isEmpty()) {
 			boolean bl = false;
-			Iterator<Entry<Identifier, SimpleAdvancement.Task>> iterator = map.entrySet().iterator();
+			Iterator<Entry<Identifier, Advancement.Task>> iterator = map.entrySet().iterator();
 
 			while (iterator.hasNext()) {
-				Entry<Identifier, SimpleAdvancement.Task> entry = (Entry<Identifier, SimpleAdvancement.Task>)iterator.next();
+				Entry<Identifier, Advancement.Task> entry = (Entry<Identifier, Advancement.Task>)iterator.next();
 				Identifier identifier = (Identifier)entry.getKey();
-				SimpleAdvancement.Task task = (SimpleAdvancement.Task)entry.getValue();
+				Advancement.Task task = (Advancement.Task)entry.getValue();
 				if (task.findParent(function)) {
-					SimpleAdvancement simpleAdvancement = task.build(identifier);
-					this.advancements.put(identifier, simpleAdvancement);
+					Advancement advancement = task.build(identifier);
+					this.advancements.put(identifier, advancement);
 					bl = true;
 					iterator.remove();
-					if (simpleAdvancement.getParent() == null) {
-						this.roots.add(simpleAdvancement);
+					if (advancement.getParent() == null) {
+						this.roots.add(advancement);
 						if (this.listener != null) {
-							this.listener.onRootAdded(simpleAdvancement);
+							this.listener.onRootAdded(advancement);
 						}
 					} else {
-						this.dependents.add(simpleAdvancement);
+						this.dependents.add(advancement);
 						if (this.listener != null) {
-							this.listener.onDependentAdded(simpleAdvancement);
+							this.listener.onDependentAdded(advancement);
 						}
 					}
 				}
 			}
 
 			if (!bl) {
-				for (Entry<Identifier, SimpleAdvancement.Task> entry : map.entrySet()) {
+				for (Entry<Identifier, Advancement.Task> entry : map.entrySet()) {
 					LOGGER.error("Couldn't load advancement {}: {}", entry.getKey(), entry.getValue());
 				}
 				break;
@@ -106,43 +106,43 @@ public class AdvancementManager {
 		}
 	}
 
-	public Iterable<SimpleAdvancement> getRoots() {
+	public Iterable<Advancement> getRoots() {
 		return this.roots;
 	}
 
-	public Collection<SimpleAdvancement> getAdvancements() {
+	public Collection<Advancement> getAdvancements() {
 		return this.advancements.values();
 	}
 
 	@Nullable
-	public SimpleAdvancement get(Identifier identifier) {
-		return (SimpleAdvancement)this.advancements.get(identifier);
+	public Advancement get(Identifier identifier) {
+		return (Advancement)this.advancements.get(identifier);
 	}
 
 	@Environment(EnvType.CLIENT)
 	public void setListener(@Nullable AdvancementManager.Listener listener) {
 		this.listener = listener;
 		if (listener != null) {
-			for (SimpleAdvancement simpleAdvancement : this.roots) {
-				listener.onRootAdded(simpleAdvancement);
+			for (Advancement advancement : this.roots) {
+				listener.onRootAdded(advancement);
 			}
 
-			for (SimpleAdvancement simpleAdvancement : this.dependents) {
-				listener.onDependentAdded(simpleAdvancement);
+			for (Advancement advancement : this.dependents) {
+				listener.onDependentAdded(advancement);
 			}
 		}
 	}
 
 	public interface Listener {
-		void onRootAdded(SimpleAdvancement simpleAdvancement);
+		void onRootAdded(Advancement advancement);
 
 		@Environment(EnvType.CLIENT)
-		void onRootRemoved(SimpleAdvancement simpleAdvancement);
+		void onRootRemoved(Advancement advancement);
 
-		void onDependentAdded(SimpleAdvancement simpleAdvancement);
+		void onDependentAdded(Advancement advancement);
 
 		@Environment(EnvType.CLIENT)
-		void onDependentRemoved(SimpleAdvancement simpleAdvancement);
+		void onDependentRemoved(Advancement advancement);
 
 		void onClear();
 	}

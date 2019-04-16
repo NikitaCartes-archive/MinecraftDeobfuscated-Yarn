@@ -600,9 +600,7 @@ public class WorldChunk implements Chunk {
 
 	@Override
 	public Stream<BlockPos> getLightSourcesStream() {
-		return StreamSupport.stream(
-				BlockPos.iterateBoxPositions(this.pos.getStartX(), 0, this.pos.getStartZ(), this.pos.getEndX(), 255, this.pos.getEndZ()).spliterator(), false
-			)
+		return StreamSupport.stream(BlockPos.iterate(this.pos.getStartX(), 0, this.pos.getStartZ(), this.pos.getEndX(), 255, this.pos.getEndZ()).spliterator(), false)
 			.filter(blockPos -> this.getBlockState(blockPos).getLuminance() != 0);
 	}
 

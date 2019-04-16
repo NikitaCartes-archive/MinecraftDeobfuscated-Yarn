@@ -603,9 +603,7 @@ public class WoodlandMansionGenerator {
 								BlockPos blockPos5 = blockPos4.offset(rotation.rotate(Direction.SOUTH), 7);
 								blockPos5 = blockPos5.offset(rotation.rotate(Direction.EAST), 7);
 								list.add(
-									new WoodlandMansionGenerator.Piece(
-										this.field_15444, direction2 == Direction.SOUTH ? string4 : string3, blockPos5, rotation.method_10501(Rotation.ROT_90)
-									)
+									new WoodlandMansionGenerator.Piece(this.field_15444, direction2 == Direction.SOUTH ? string4 : string3, blockPos5, rotation.rotate(Rotation.ROT_90))
 								);
 							}
 
@@ -613,9 +611,7 @@ public class WoodlandMansionGenerator {
 								BlockPos blockPos5 = blockPos4.offset(rotation.rotate(Direction.NORTH), 1);
 								blockPos5 = blockPos5.offset(rotation.rotate(Direction.EAST), 7);
 								list.add(
-									new WoodlandMansionGenerator.Piece(
-										this.field_15444, direction2 == Direction.NORTH ? string4 : string3, blockPos5, rotation.method_10501(Rotation.ROT_90)
-									)
+									new WoodlandMansionGenerator.Piece(this.field_15444, direction2 == Direction.NORTH ? string4 : string3, blockPos5, rotation.rotate(Rotation.ROT_90))
 								);
 							}
 
@@ -704,18 +700,18 @@ public class WoodlandMansionGenerator {
 						if (!WoodlandMansionGenerator.class_3474.method_15047(arg, j - 1, i)) {
 							BlockPos blockPos3 = blockPos2.offset(rotation.rotate(Direction.EAST), 0);
 							blockPos3 = blockPos3.offset(rotation.rotate(Direction.SOUTH), 7);
-							list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_front", blockPos3, rotation.method_10501(Rotation.ROT_180)));
+							list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_front", blockPos3, rotation.rotate(Rotation.ROT_180)));
 						}
 
 						if (!WoodlandMansionGenerator.class_3474.method_15047(arg, j, i - 1)) {
 							BlockPos blockPos3 = blockPos2.offset(rotation.rotate(Direction.WEST), 1);
-							list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_front", blockPos3, rotation.method_10501(Rotation.ROT_270)));
+							list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_front", blockPos3, rotation.rotate(Rotation.ROT_270)));
 						}
 
 						if (!WoodlandMansionGenerator.class_3474.method_15047(arg, j, i + 1)) {
 							BlockPos blockPos3 = blockPos2.offset(rotation.rotate(Direction.EAST), 6);
 							blockPos3 = blockPos3.offset(rotation.rotate(Direction.SOUTH), 6);
-							list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_front", blockPos3, rotation.method_10501(Rotation.ROT_90)));
+							list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_front", blockPos3, rotation.rotate(Rotation.ROT_90)));
 						}
 					}
 				}
@@ -736,19 +732,19 @@ public class WoodlandMansionGenerator {
 							if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jx - 1, i)) {
 								BlockPos blockPos3 = var17.offset(rotation.rotate(Direction.WEST), 1);
 								blockPos3 = blockPos3.offset(rotation.rotate(Direction.SOUTH), 6);
-								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall", blockPos3, rotation.method_10501(Rotation.ROT_180)));
+								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall", blockPos3, rotation.rotate(Rotation.ROT_180)));
 							}
 
 							if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jx, i - 1)) {
 								BlockPos blockPos3 = var17.offset(rotation.rotate(Direction.WEST), 0);
 								blockPos3 = blockPos3.offset(rotation.rotate(Direction.NORTH), 1);
-								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall", blockPos3, rotation.method_10501(Rotation.ROT_270)));
+								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall", blockPos3, rotation.rotate(Rotation.ROT_270)));
 							}
 
 							if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jx, i + 1)) {
 								BlockPos blockPos3 = var17.offset(rotation.rotate(Direction.EAST), 6);
 								blockPos3 = blockPos3.offset(rotation.rotate(Direction.SOUTH), 7);
-								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall", blockPos3, rotation.method_10501(Rotation.ROT_90)));
+								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall", blockPos3, rotation.rotate(Rotation.ROT_90)));
 							}
 
 							if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jx + 1, i)) {
@@ -761,7 +757,7 @@ public class WoodlandMansionGenerator {
 								if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jx, i + 1)) {
 									BlockPos blockPos3 = var17.offset(rotation.rotate(Direction.EAST), 8);
 									blockPos3 = blockPos3.offset(rotation.rotate(Direction.SOUTH), 7);
-									list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall_corner", blockPos3, rotation.method_10501(Rotation.ROT_90)));
+									list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall_corner", blockPos3, rotation.rotate(Rotation.ROT_90)));
 								}
 							}
 
@@ -769,13 +765,13 @@ public class WoodlandMansionGenerator {
 								if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jx, i - 1)) {
 									BlockPos blockPos3 = var17.offset(rotation.rotate(Direction.WEST), 2);
 									blockPos3 = blockPos3.offset(rotation.rotate(Direction.NORTH), 1);
-									list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall_corner", blockPos3, rotation.method_10501(Rotation.ROT_270)));
+									list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall_corner", blockPos3, rotation.rotate(Rotation.ROT_270)));
 								}
 
 								if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jx, i + 1)) {
 									BlockPos blockPos3 = var17.offset(rotation.rotate(Direction.WEST), 1);
 									blockPos3 = blockPos3.offset(rotation.rotate(Direction.SOUTH), 8);
-									list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall_corner", blockPos3, rotation.method_10501(Rotation.ROT_180)));
+									list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "small_wall_corner", blockPos3, rotation.rotate(Rotation.ROT_180)));
 								}
 							}
 						}
@@ -800,11 +796,11 @@ public class WoodlandMansionGenerator {
 							}
 
 							if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jxx, i - 1)) {
-								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_corner", blockPos3, rotation.method_10501(Rotation.ROT_270)));
+								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_corner", blockPos3, rotation.rotate(Rotation.ROT_270)));
 							} else if (WoodlandMansionGenerator.class_3474.method_15047(arg, jxx + 1, i - 1)) {
 								BlockPos blockPos4 = var19.offset(rotation.rotate(Direction.EAST), 9);
 								blockPos4 = blockPos4.offset(rotation.rotate(Direction.NORTH), 2);
-								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_inner_corner", blockPos4, rotation.method_10501(Rotation.ROT_90)));
+								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_inner_corner", blockPos4, rotation.rotate(Rotation.ROT_90)));
 							}
 						}
 
@@ -813,18 +809,18 @@ public class WoodlandMansionGenerator {
 							blockPos3x = blockPos3x.offset(rotation.rotate(Direction.SOUTH), 0);
 							if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jxx, i + 1)) {
 								BlockPos blockPos4 = blockPos3x.offset(rotation.rotate(Direction.SOUTH), 6);
-								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_corner", blockPos4, rotation.method_10501(Rotation.ROT_90)));
+								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_corner", blockPos4, rotation.rotate(Rotation.ROT_90)));
 							} else if (WoodlandMansionGenerator.class_3474.method_15047(arg, jxx - 1, i + 1)) {
 								BlockPos blockPos4 = blockPos3x.offset(rotation.rotate(Direction.SOUTH), 8);
 								blockPos4 = blockPos4.offset(rotation.rotate(Direction.WEST), 3);
-								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_inner_corner", blockPos4, rotation.method_10501(Rotation.ROT_270)));
+								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_inner_corner", blockPos4, rotation.rotate(Rotation.ROT_270)));
 							}
 
 							if (!WoodlandMansionGenerator.class_3474.method_15047(arg, jxx, i - 1)) {
-								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_corner", blockPos3x, rotation.method_10501(Rotation.ROT_180)));
+								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_corner", blockPos3x, rotation.rotate(Rotation.ROT_180)));
 							} else if (WoodlandMansionGenerator.class_3474.method_15047(arg, jxx - 1, i - 1)) {
 								BlockPos blockPos4 = blockPos3x.offset(rotation.rotate(Direction.SOUTH), 1);
-								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_inner_corner", blockPos4, rotation.method_10501(Rotation.ROT_180)));
+								list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "roof_inner_corner", blockPos4, rotation.rotate(Rotation.ROT_180)));
 							}
 						}
 					}
@@ -850,13 +846,13 @@ public class WoodlandMansionGenerator {
 			list.add(new WoodlandMansionGenerator.Piece(this.field_15444, "wall_corner", arg.field_15449, arg.field_15450));
 			arg.field_15449 = arg.field_15449.offset(arg.field_15450.rotate(Direction.SOUTH), -7);
 			arg.field_15449 = arg.field_15449.offset(arg.field_15450.rotate(Direction.WEST), -6);
-			arg.field_15450 = arg.field_15450.method_10501(Rotation.ROT_90);
+			arg.field_15450 = arg.field_15450.rotate(Rotation.ROT_90);
 		}
 
 		private void method_15060(List<WoodlandMansionGenerator.Piece> list, WoodlandMansionGenerator.class_3476 arg) {
 			arg.field_15449 = arg.field_15449.offset(arg.field_15450.rotate(Direction.SOUTH), 6);
 			arg.field_15449 = arg.field_15449.offset(arg.field_15450.rotate(Direction.EAST), 8);
-			arg.field_15450 = arg.field_15450.method_10501(Rotation.ROT_270);
+			arg.field_15450 = arg.field_15450.rotate(Rotation.ROT_270);
 		}
 
 		private void method_15057(
@@ -866,18 +862,18 @@ public class WoodlandMansionGenerator {
 			String string = arg.method_15037(this.field_15447);
 			if (direction != Direction.EAST) {
 				if (direction == Direction.NORTH) {
-					rotation2 = rotation2.method_10501(Rotation.ROT_270);
+					rotation2 = rotation2.rotate(Rotation.ROT_270);
 				} else if (direction == Direction.WEST) {
-					rotation2 = rotation2.method_10501(Rotation.ROT_180);
+					rotation2 = rotation2.rotate(Rotation.ROT_180);
 				} else if (direction == Direction.SOUTH) {
-					rotation2 = rotation2.method_10501(Rotation.ROT_90);
+					rotation2 = rotation2.rotate(Rotation.ROT_90);
 				} else {
 					string = arg.method_15032(this.field_15447);
 				}
 			}
 
 			BlockPos blockPos2 = Structure.method_15162(new BlockPos(1, 0, 0), Mirror.NONE, rotation2, 7, 7);
-			rotation2 = rotation2.method_10501(rotation);
+			rotation2 = rotation2.rotate(rotation);
 			blockPos2 = blockPos2.rotate(rotation);
 			BlockPos blockPos3 = blockPos.add(blockPos2.getX(), 0, blockPos2.getZ());
 			list.add(new WoodlandMansionGenerator.Piece(this.field_15444, string, blockPos3, rotation2));
@@ -902,7 +898,7 @@ public class WoodlandMansionGenerator {
 			} else if (direction2 == Direction.WEST && direction == Direction.NORTH) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 7);
 				blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 6);
-				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_180)));
+				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.rotate(Rotation.ROT_180)));
 			} else if (direction2 == Direction.WEST && direction == Direction.SOUTH) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 7);
 				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation, Mirror.FRONT_BACK));
@@ -910,24 +906,24 @@ public class WoodlandMansionGenerator {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 1);
 				list.add(
 					new WoodlandMansionGenerator.Piece(
-						this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_90), Mirror.LEFT_RIGHT
+						this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.rotate(Rotation.ROT_90), Mirror.LEFT_RIGHT
 					)
 				);
 			} else if (direction2 == Direction.SOUTH && direction == Direction.WEST) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 7);
-				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_90)));
+				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.rotate(Rotation.ROT_90)));
 			} else if (direction2 == Direction.NORTH && direction == Direction.WEST) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 7);
 				blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 6);
 				list.add(
 					new WoodlandMansionGenerator.Piece(
-						this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_90), Mirror.FRONT_BACK
+						this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.rotate(Rotation.ROT_90), Mirror.FRONT_BACK
 					)
 				);
 			} else if (direction2 == Direction.NORTH && direction == Direction.EAST) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 1);
 				blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 6);
-				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_270)));
+				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15033(this.field_15447, bl), blockPos2, rotation.rotate(Rotation.ROT_270)));
 			} else if (direction2 == Direction.SOUTH && direction == Direction.NORTH) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 1);
 				blockPos2 = blockPos2.offset(rotation.rotate(Direction.NORTH), 8);
@@ -935,17 +931,17 @@ public class WoodlandMansionGenerator {
 			} else if (direction2 == Direction.NORTH && direction == Direction.SOUTH) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 7);
 				blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 14);
-				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_180)));
+				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation.rotate(Rotation.ROT_180)));
 			} else if (direction2 == Direction.WEST && direction == Direction.EAST) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 15);
-				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_90)));
+				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation.rotate(Rotation.ROT_90)));
 			} else if (direction2 == Direction.EAST && direction == Direction.WEST) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.WEST), 7);
 				blockPos2 = blockPos2.offset(rotation.rotate(Direction.SOUTH), 6);
-				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation.method_10501(Rotation.ROT_270)));
+				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15031(this.field_15447, bl), blockPos2, rotation.rotate(Rotation.ROT_270)));
 			} else if (direction2 == Direction.UP && direction == Direction.EAST) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 15);
-				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15035(this.field_15447), blockPos2, rotation.method_10501(Rotation.ROT_90)));
+				list.add(new WoodlandMansionGenerator.Piece(this.field_15444, arg.method_15035(this.field_15447), blockPos2, rotation.rotate(Rotation.ROT_90)));
 			} else if (direction2 == Direction.UP && direction == Direction.SOUTH) {
 				BlockPos blockPos2 = blockPos.offset(rotation.rotate(Direction.EAST), 1);
 				blockPos2 = blockPos2.offset(rotation.rotate(Direction.NORTH), 0);
@@ -974,25 +970,25 @@ public class WoodlandMansionGenerator {
 			} else if (direction2 == Direction.NORTH && direction == Direction.EAST) {
 				i = 1;
 				j = 14;
-				rotation2 = rotation.method_10501(Rotation.ROT_270);
+				rotation2 = rotation.rotate(Rotation.ROT_270);
 			} else if (direction2 == Direction.NORTH && direction == Direction.WEST) {
 				i = 7;
 				j = 14;
-				rotation2 = rotation.method_10501(Rotation.ROT_270);
+				rotation2 = rotation.rotate(Rotation.ROT_270);
 				mirror = Mirror.LEFT_RIGHT;
 			} else if (direction2 == Direction.SOUTH && direction == Direction.WEST) {
 				i = 7;
 				j = -8;
-				rotation2 = rotation.method_10501(Rotation.ROT_90);
+				rotation2 = rotation.rotate(Rotation.ROT_90);
 			} else if (direction2 == Direction.SOUTH && direction == Direction.EAST) {
 				i = 1;
 				j = -8;
-				rotation2 = rotation.method_10501(Rotation.ROT_90);
+				rotation2 = rotation.rotate(Rotation.ROT_90);
 				mirror = Mirror.LEFT_RIGHT;
 			} else if (direction2 == Direction.WEST && direction == Direction.NORTH) {
 				i = 15;
 				j = 6;
-				rotation2 = rotation.method_10501(Rotation.ROT_180);
+				rotation2 = rotation.rotate(Rotation.ROT_180);
 			} else if (direction2 == Direction.WEST && direction == Direction.SOUTH) {
 				i = 15;
 				mirror = Mirror.FRONT_BACK;

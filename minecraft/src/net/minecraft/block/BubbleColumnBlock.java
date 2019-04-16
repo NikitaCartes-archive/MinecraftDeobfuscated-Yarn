@@ -82,7 +82,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return Fluids.WATER.getState(false);
+		return Fluids.WATER.getStill(false);
 	}
 
 	public static void method_9657(IWorld iWorld, BlockPos blockPos, boolean bl) {

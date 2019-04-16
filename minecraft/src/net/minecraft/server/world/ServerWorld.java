@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Queues;
 import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
@@ -132,7 +132,7 @@ import org.apache.logging.log4j.Logger;
 public class ServerWorld extends World {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<Entity> globalEntities = Lists.<Entity>newArrayList();
-	private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectOpenHashMap<>();
+	private final Int2ObjectMap<Entity> entitiesById = new Int2ObjectLinkedOpenHashMap<>();
 	private final Map<UUID, Entity> entitiesByUuid = Maps.<UUID, Entity>newHashMap();
 	private final Queue<Entity> entitiesToLoad = Queues.<Entity>newArrayDeque();
 	private final List<ServerPlayerEntity> players = Lists.<ServerPlayerEntity>newArrayList();
@@ -861,9 +861,12 @@ public class ServerWorld extends World {
 		}
 	}
 
-	public void loadEntity(Entity entity) {
-		if (!this.checkUuid(entity)) {
+	public boolean loadEntity(Entity entity) {
+		if (this.checkUuid(entity)) {
+			return false;
+		} else {
 			this.loadEntityUnchecked(entity);
+			return true;
 		}
 	}
 
@@ -1312,7 +1315,7 @@ public class ServerWorld extends World {
 	}
 
 	public boolean isNearOccupiedPointOfInterest(BlockPos blockPos, int i) {
-		return i > 4 ? false : this.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)) <= i;
+		return i > 6 ? false : this.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)) <= i;
 	}
 
 	public int getOccupiedPointOfInterestDistance(ChunkSectionPos chunkSectionPos) {

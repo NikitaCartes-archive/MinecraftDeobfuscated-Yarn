@@ -165,10 +165,10 @@ import net.minecraft.text.TextFormat;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
-import net.minecraft.util.GameTaskQueue;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.MetricsData;
+import net.minecraft.util.NonBlockingThreadExecutor;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.UncaughtExceptionLogger;
 import net.minecraft.util.UserCache;
@@ -201,7 +201,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperListener, WindowEventHandler, AutoCloseable {
+public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> implements SnooperListener, WindowEventHandler, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final boolean IS_SYSTEM_MAC = SystemUtil.getOperatingSystem() == SystemUtil.OperatingSystem.MAC;
 	public static final Identifier DEFAULT_TEXT_RENDERER_ID = new Identifier("default");
@@ -803,7 +803,7 @@ public class MinecraftClient extends GameTaskQueue<Runnable> implements SnooperL
 			this.particleManager.clearAtlas();
 			this.statusEffectSpriteManager.close();
 			this.paintingManager.close();
-			SystemUtil.method_18350();
+			SystemUtil.shutdownServerWorkerExecutor();
 		} finally {
 			this.windowProvider.close();
 			this.window.close();

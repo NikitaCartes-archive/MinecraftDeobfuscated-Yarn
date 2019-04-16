@@ -14,7 +14,7 @@ import net.minecraft.village.PointOfInterestType;
 import net.minecraft.village.VillagerProfession;
 
 public class VillagerTaskListProvider {
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getCoreTasks(VillagerProfession villagerProfession, float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createCoreTasks(VillagerProfession villagerProfession, float f) {
 		return ImmutableList.of(
 			Pair.of(0, new StayAboveWaterTask(0.4F, 0.8F)),
 			Pair.of(0, new OpenDoorsTask()),
@@ -32,9 +32,9 @@ public class VillagerTaskListProvider {
 		);
 	}
 
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getWorkTasks(VillagerProfession villagerProfession, float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createWorkTasks(VillagerProfession villagerProfession, float f) {
 		return ImmutableList.of(
-			method_20242(),
+			createBusyFollowTask(),
 			Pair.of(
 				5,
 				new RandomTask<>(
@@ -56,10 +56,10 @@ public class VillagerTaskListProvider {
 		);
 	}
 
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getPlayTasks(float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createPlayTasks(float f) {
 		return ImmutableList.of(
 			Pair.of(0, new WanderAroundTask(100)),
-			method_20241(),
+			createFreeFollowTask(),
 			Pair.of(5, new PlayWithVillagerBabiesTask()),
 			Pair.of(
 				5,
@@ -79,17 +79,24 @@ public class VillagerTaskListProvider {
 		);
 	}
 
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getRestTasks(VillagerProfession villagerProfession, float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createRestTasks(VillagerProfession villagerProfession, float f) {
 		return ImmutableList.of(
 			Pair.of(2, new VillagerWalkTowardsTask(MemoryModuleType.field_18438, f, 1, 150)),
 			Pair.of(3, new ForgetCompletedPointOfInterestTask(PointOfInterestType.field_18517, MemoryModuleType.field_18438)),
 			Pair.of(3, new SleepTask()),
-			method_20242(),
+			Pair.of(
+				5,
+				new RandomTask<>(
+					ImmutableSet.of(Pair.of(MemoryModuleType.field_18438, MemoryModuleState.field_18457)),
+					ImmutableList.of(Pair.of(new WalkHomeTask(f), 1), Pair.of(new WanderIndoorsTask(f), 4), Pair.of(new WaitTask(20, 40), 2))
+				)
+			),
+			createBusyFollowTask(),
 			Pair.of(99, new ScheduleActivityTask())
 		);
 	}
 
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getMeetTasks(VillagerProfession villagerProfession, float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createMeetTasks(VillagerProfession villagerProfession, float f) {
 		return ImmutableList.of(
 			Pair.of(2, new RandomTask<>(ImmutableList.of(Pair.of(new GoToIfNearbyTask(MemoryModuleType.field_18440, 40), 2), Pair.of(new MeetVillagerTask(), 2)))),
 			Pair.of(10, new HoldTradeOffersTask(400, 1600)),
@@ -107,12 +114,12 @@ public class VillagerTaskListProvider {
 					ImmutableList.of(Pair.of(new GatherItemsVillagerTask(), 1))
 				)
 			),
-			method_20241(),
+			createFreeFollowTask(),
 			Pair.of(99, new ScheduleActivityTask())
 		);
 	}
 
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getIdleTasks(VillagerProfession villagerProfession, float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createIdleTasks(VillagerProfession villagerProfession, float f) {
 		return ImmutableList.of(
 			Pair.of(
 				2,
@@ -153,23 +160,23 @@ public class VillagerTaskListProvider {
 					ImmutableList.of(Pair.of(new VillagerBreedTask(), 1))
 				)
 			),
-			method_20241(),
+			createFreeFollowTask(),
 			Pair.of(99, new ScheduleActivityTask())
 		);
 	}
 
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getPanicTasks(VillagerProfession villagerProfession, float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createPanicTasks(VillagerProfession villagerProfession, float f) {
 		float g = f * 1.5F;
 		return ImmutableList.of(
 			Pair.of(0, new StopPanicingTask()),
 			Pair.of(1, new GoToNearbyEntityTask(MemoryModuleType.field_18453, g)),
 			Pair.of(1, new GoToNearbyEntityTask(MemoryModuleType.field_18452, g)),
 			Pair.of(3, new FindWalkTargetTask(g)),
-			method_20242()
+			createBusyFollowTask()
 		);
 	}
 
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getPreRaidTasks(VillagerProfession villagerProfession, float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createPreRaidTasks(VillagerProfession villagerProfession, float f) {
 		return ImmutableList.of(
 			Pair.of(0, new RingBellTask()),
 			Pair.of(
@@ -178,27 +185,27 @@ public class VillagerTaskListProvider {
 					ImmutableList.of(Pair.of(new VillagerWalkTowardsTask(MemoryModuleType.field_18440, f * 1.5F, 3, 150), 6), Pair.of(new FindWalkTargetTask(f * 1.5F), 2))
 				)
 			),
-			method_20242(),
+			createBusyFollowTask(),
 			Pair.of(99, new EndRaidTask())
 		);
 	}
 
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getRaidTasks(VillagerProfession villagerProfession, float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createRaidTasks(VillagerProfession villagerProfession, float f) {
 		return ImmutableList.of(
 			Pair.of(0, new RandomTask<>(ImmutableList.of(Pair.of(new SeekSkyAfterRaidWinTask(f), 5), Pair.of(new RunAroundAfterRaidTask(f * 1.1F), 2)))),
 			Pair.of(0, new CelebrateRaidWinTask(600, 600)),
 			Pair.of(2, new HideInHomeDuringRaidTask(24, f * 1.4F)),
-			method_20242(),
+			createBusyFollowTask(),
 			Pair.of(99, new EndRaidTask())
 		);
 	}
 
-	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> getHideTasks(VillagerProfession villagerProfession, float f) {
+	public static ImmutableList<Pair<Integer, ? extends Task<? super VillagerEntity>>> createHideTasks(VillagerProfession villagerProfession, float f) {
 		int i = 2;
-		return ImmutableList.of(Pair.of(0, new ForgetBellRingTask(15, 2)), Pair.of(1, new HideInHomeTask(32, f * 1.25F, 2)), method_20242());
+		return ImmutableList.of(Pair.of(0, new ForgetBellRingTask(15, 2)), Pair.of(1, new HideInHomeTask(32, f * 1.25F, 2)), createBusyFollowTask());
 	}
 
-	private static Pair<Integer, Task<LivingEntity>> method_20241() {
+	private static Pair<Integer, Task<LivingEntity>> createFreeFollowTask() {
 		return Pair.of(
 			5,
 			new RandomTask<>(
@@ -215,7 +222,7 @@ public class VillagerTaskListProvider {
 		);
 	}
 
-	private static Pair<Integer, Task<LivingEntity>> method_20242() {
+	private static Pair<Integer, Task<LivingEntity>> createBusyFollowTask() {
 		return Pair.of(
 			5,
 			new RandomTask<>(

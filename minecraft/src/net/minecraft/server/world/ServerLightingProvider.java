@@ -64,12 +64,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			blockPos.getX() >> 4,
 			blockPos.getZ() >> 4,
 			ServerLightingProvider.class_3901.field_17262,
-			SystemUtil.method_18839(() -> super.enqueueLightUpdate(blockPos2), () -> "checkBlock " + blockPos)
+			SystemUtil.debugRunnable(() -> super.enqueueLightUpdate(blockPos2), () -> "checkBlock " + blockPos)
 		);
 	}
 
 	protected void method_20386(ChunkPos chunkPos) {
-		this.enqueue(chunkPos.x, chunkPos.z, () -> 0, ServerLightingProvider.class_3901.field_17261, SystemUtil.method_18839(() -> {
+		this.enqueue(chunkPos.x, chunkPos.z, () -> 0, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
 			for (int i = 0; i < 16; i++) {
 				super.updateSectionStatus(ChunkSectionPos.from(chunkPos, i), true);
 			}
@@ -83,7 +83,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunkSectionPos.getChunkZ(),
 			() -> 0,
 			ServerLightingProvider.class_3901.field_17261,
-			SystemUtil.method_18839(() -> super.updateSectionStatus(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl)
+			SystemUtil.debugRunnable(() -> super.updateSectionStatus(chunkSectionPos, bl), () -> "updateSectionStatus " + chunkSectionPos + " " + bl)
 		);
 	}
 
@@ -93,7 +93,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunkPos.x,
 			chunkPos.z,
 			ServerLightingProvider.class_3901.field_17261,
-			SystemUtil.method_18839(() -> super.suppressLight(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl)
+			SystemUtil.debugRunnable(() -> super.suppressLight(chunkPos, bl), () -> "enableLight " + chunkPos + " " + bl)
 		);
 	}
 
@@ -103,7 +103,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			chunkSectionPos.getChunkX(),
 			chunkSectionPos.getChunkZ(),
 			ServerLightingProvider.class_3901.field_17261,
-			SystemUtil.method_18839(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
+			SystemUtil.debugRunnable(() -> super.queueData(lightType, chunkSectionPos, chunkNibbleArray), () -> "queueData " + chunkSectionPos)
 		);
 	}
 
@@ -122,7 +122,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 	public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
 		ChunkPos chunkPos = chunk.getPos();
-		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, SystemUtil.method_18839(() -> {
+		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
 			if (!bl) {
 				super.suppressLight(chunkPos, true);
 			}
@@ -141,6 +141,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			}
 
 			chunk.setLightOn(true);
+			this.chunkStorage.method_20441(chunkPos);
 		}, () -> "lightChunk " + chunkPos + " " + bl));
 		return CompletableFuture.supplyAsync(() -> chunk, runnable -> this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17262, runnable));
 	}

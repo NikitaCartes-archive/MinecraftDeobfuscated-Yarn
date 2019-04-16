@@ -50,7 +50,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		Predicate<PointOfInterestType> predicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
 		int j = i * i;
-		return ChunkPos.streamPositions(new ChunkPos(blockPos), Math.floorDiv(i, 16))
+		return ChunkPos.stream(new ChunkPos(blockPos), Math.floorDiv(i, 16))
 			.flatMap(
 				chunkPos -> this.get(predicate, chunkPos, occupationStatus).filter(pointOfInterest -> pointOfInterest.getPos().getSquaredDistance(blockPos) <= (double)j)
 			);
@@ -172,7 +172,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	private void scanAndPopulate(ChunkSection chunkSection, ChunkSectionPos chunkSectionPos, BiConsumer<BlockPos, PointOfInterestType> biConsumer) {
-		chunkSectionPos.streamBoxPositions()
+		chunkSectionPos.streamBlocks()
 			.forEach(
 				blockPos -> {
 					BlockState blockState = chunkSection.getBlockState(
@@ -203,13 +203,13 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 		private final Long2ByteMap distances = new Long2ByteOpenHashMap();
 
 		protected PointOfInterestDistanceTracker() {
-			super(5, 16, 256);
-			this.distances.defaultReturnValue((byte)5);
+			super(7, 16, 256);
+			this.distances.defaultReturnValue((byte)7);
 		}
 
 		@Override
 		protected int getInitialLevel(long l) {
-			return PointOfInterestStorage.this.isOccupied(l) ? 0 : 5;
+			return PointOfInterestStorage.this.isOccupied(l) ? 0 : 7;
 		}
 
 		@Override
@@ -219,7 +219,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 
 		@Override
 		protected void setLevel(long l, int i) {
-			if (i > 4) {
+			if (i > 6) {
 				this.distances.remove(l);
 			} else {
 				this.distances.put(l, (byte)i);

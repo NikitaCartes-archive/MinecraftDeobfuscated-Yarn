@@ -70,7 +70,7 @@ public class BlockArgumentParser {
 		this.allowTag = bl;
 	}
 
-	public Map<Property<?>, Comparable<?>> method_9692() {
+	public Map<Property<?>, Comparable<?>> getBlockProperties() {
 		return this.blockProperties;
 	}
 
@@ -85,7 +85,7 @@ public class BlockArgumentParser {
 	}
 
 	@Nullable
-	public Identifier method_9664() {
+	public Identifier getTagId() {
 		return this.tagId;
 	}
 

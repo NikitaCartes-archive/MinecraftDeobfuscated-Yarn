@@ -2,8 +2,8 @@ package net.minecraft.advancement.criterion;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.util.Identifier;
 
 public interface Criterion<T extends CriterionConditions> {
@@ -19,12 +19,12 @@ public interface Criterion<T extends CriterionConditions> {
 
 	public static class ConditionsContainer<T extends CriterionConditions> {
 		private final T conditions;
-		private final SimpleAdvancement advancement;
+		private final Advancement advancement;
 		private final String id;
 
-		public ConditionsContainer(T criterionConditions, SimpleAdvancement simpleAdvancement, String string) {
+		public ConditionsContainer(T criterionConditions, Advancement advancement, String string) {
 			this.conditions = criterionConditions;
-			this.advancement = simpleAdvancement;
+			this.advancement = advancement;
 			this.id = string;
 		}
 

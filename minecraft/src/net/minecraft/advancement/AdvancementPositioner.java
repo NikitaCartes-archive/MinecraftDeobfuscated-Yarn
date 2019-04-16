@@ -5,7 +5,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 public class AdvancementPositioner {
-	private final SimpleAdvancement advancement;
+	private final Advancement field_1263;
 	private final AdvancementPositioner parent;
 	private final AdvancementPositioner previousSibling;
 	private final int childrenSize;
@@ -19,16 +19,12 @@ public class AdvancementPositioner {
 	private float field_1265;
 
 	public AdvancementPositioner(
-		SimpleAdvancement simpleAdvancement,
-		@Nullable AdvancementPositioner advancementPositioner,
-		@Nullable AdvancementPositioner advancementPositioner2,
-		int i,
-		int j
+		Advancement advancement, @Nullable AdvancementPositioner advancementPositioner, @Nullable AdvancementPositioner advancementPositioner2, int i, int j
 	) {
-		if (simpleAdvancement.getDisplay() == null) {
+		if (advancement.getDisplay() == null) {
 			throw new IllegalArgumentException("Can't position an invisible advancement!");
 		} else {
-			this.advancement = simpleAdvancement;
+			this.field_1263 = advancement;
 			this.parent = advancementPositioner;
 			this.previousSibling = advancementPositioner2;
 			this.childrenSize = i;
@@ -37,20 +33,20 @@ public class AdvancementPositioner {
 			this.row = -1.0F;
 			AdvancementPositioner advancementPositioner3 = null;
 
-			for (SimpleAdvancement simpleAdvancement2 : simpleAdvancement.getChildren()) {
-				advancementPositioner3 = this.findChildrenRecursively(simpleAdvancement2, advancementPositioner3);
+			for (Advancement advancement2 : advancement.getChildren()) {
+				advancementPositioner3 = this.method_846(advancement2, advancementPositioner3);
 			}
 		}
 	}
 
 	@Nullable
-	private AdvancementPositioner findChildrenRecursively(SimpleAdvancement simpleAdvancement, @Nullable AdvancementPositioner advancementPositioner) {
-		if (simpleAdvancement.getDisplay() != null) {
-			advancementPositioner = new AdvancementPositioner(simpleAdvancement, this, advancementPositioner, this.children.size() + 1, this.depth + 1);
+	private AdvancementPositioner method_846(Advancement advancement, @Nullable AdvancementPositioner advancementPositioner) {
+		if (advancement.getDisplay() != null) {
+			advancementPositioner = new AdvancementPositioner(advancement, this, advancementPositioner, this.children.size() + 1, this.depth + 1);
 			this.children.add(advancementPositioner);
 		} else {
-			for (SimpleAdvancement simpleAdvancement2 : simpleAdvancement.getChildren()) {
-				advancementPositioner = this.findChildrenRecursively(simpleAdvancement2, advancementPositioner);
+			for (Advancement advancement2 : advancement.getChildren()) {
+				advancementPositioner = this.method_846(advancement2, advancementPositioner);
 			}
 		}
 
@@ -203,8 +199,8 @@ public class AdvancementPositioner {
 	}
 
 	private void apply() {
-		if (this.advancement.getDisplay() != null) {
-			this.advancement.getDisplay().setPosition((float)this.depth, this.row);
+		if (this.field_1263.getDisplay() != null) {
+			this.field_1263.getDisplay().setPosition((float)this.depth, this.row);
 		}
 
 		if (!this.children.isEmpty()) {
@@ -214,11 +210,11 @@ public class AdvancementPositioner {
 		}
 	}
 
-	public static void arrangeForTree(SimpleAdvancement simpleAdvancement) {
-		if (simpleAdvancement.getDisplay() == null) {
+	public static void method_852(Advancement advancement) {
+		if (advancement.getDisplay() == null) {
 			throw new IllegalArgumentException("Can't position children of an invisible root!");
 		} else {
-			AdvancementPositioner advancementPositioner = new AdvancementPositioner(simpleAdvancement, null, null, 1, 0);
+			AdvancementPositioner advancementPositioner = new AdvancementPositioner(advancement, null, null, 1, 0);
 			advancementPositioner.calculateRecursively();
 			float f = advancementPositioner.findMinRowRecursively(0.0F, 0, advancementPositioner.row);
 			if (f < 0.0F) {

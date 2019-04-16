@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.advancement.SimpleAdvancement;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.block.Block;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeaconBlockEntity;
@@ -283,6 +283,7 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
+import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
@@ -742,6 +743,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (worldChunk != null) {
 			this.world.addEntitiesToChunk(worldChunk);
 		}
+
+		this.world.method_2935().getLightingProvider().suppressLight(new ChunkPos(i, j), true);
 
 		for (int k = 0; k < 16; k++) {
 			this.world.scheduleBlockRenders(i, k, j);
@@ -1361,10 +1364,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(selectAdvancementTabS2CPacket, this, this.client);
 		Identifier identifier = selectAdvancementTabS2CPacket.getTabId();
 		if (identifier == null) {
-			this.advancementHandler.selectTab(null, false);
+			this.advancementHandler.method_2864(null, false);
 		} else {
-			SimpleAdvancement simpleAdvancement = this.advancementHandler.getManager().get(identifier);
-			this.advancementHandler.selectTab(simpleAdvancement, false);
+			Advancement advancement = this.advancementHandler.getManager().get(identifier);
+			this.advancementHandler.method_2864(advancement, false);
 		}
 	}
 
@@ -1975,7 +1978,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (scoreboardObjectiveUpdateS2CPacket.getMode() == 0) {
 			scoreboard.addObjective(string, ScoreboardCriterion.DUMMY, scoreboardObjectiveUpdateS2CPacket.getDisplayName(), scoreboardObjectiveUpdateS2CPacket.getType());
 		} else if (scoreboard.containsObjective(string)) {
-			ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string);
+			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
 			if (scoreboardObjectiveUpdateS2CPacket.getMode() == 1) {
 				scoreboard.removeObjective(scoreboardObjective);
 			} else if (scoreboardObjectiveUpdateS2CPacket.getMode() == 2) {
@@ -1997,7 +2000,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				scoreboardPlayerScore.setScore(scoreboardPlayerUpdateS2CPacket.getScore());
 				break;
 			case field_13430:
-				scoreboard.resetPlayerScore(scoreboardPlayerUpdateS2CPacket.getPlayerName(), scoreboard.method_1170(string));
+				scoreboard.resetPlayerScore(scoreboardPlayerUpdateS2CPacket.getPlayerName(), scoreboard.getNullableObjective(string));
 		}
 	}
 

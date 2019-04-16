@@ -99,7 +99,7 @@ public class EndCityGenerator {
 				for (Pair<Rotation, BlockPos> pair : EndCityGenerator.field_14385) {
 					if (random.nextBoolean()) {
 						EndCityGenerator.Piece piece4 = EndCityGenerator.addPiece(
-							list, EndCityGenerator.createPiece(structureManager, piece3, pair.getRight(), "bridge_end", rotation.method_10501(pair.getLeft()), true)
+							list, EndCityGenerator.createPiece(structureManager, piece3, pair.getRight(), "bridge_end", rotation.rotate(pair.getLeft()), true)
 						);
 						EndCityGenerator.method_14673(structureManager, EndCityGenerator.field_14387, i + 1, piece4, null, list, random);
 					}
@@ -166,7 +166,7 @@ public class EndCityGenerator {
 			}
 
 			piece2 = EndCityGenerator.addPiece(
-				list, EndCityGenerator.createPiece(structureManager, piece2, new BlockPos(4, k, 0), "bridge_end", rotation.method_10501(Rotation.ROT_180), true)
+				list, EndCityGenerator.createPiece(structureManager, piece2, new BlockPos(4, k, 0), "bridge_end", rotation.rotate(Rotation.ROT_180), true)
 			);
 			piece2.field_15316 = -1;
 			return true;
@@ -199,7 +199,7 @@ public class EndCityGenerator {
 				for (Pair<Rotation, BlockPos> pair : EndCityGenerator.field_14388) {
 					if (random.nextBoolean()) {
 						EndCityGenerator.Piece piece3 = EndCityGenerator.addPiece(
-							list, EndCityGenerator.createPiece(structureManager, piece2, pair.getRight(), "bridge_end", rotation.method_10501(pair.getLeft()), true)
+							list, EndCityGenerator.createPiece(structureManager, piece2, pair.getRight(), "bridge_end", rotation.rotate(pair.getLeft()), true)
 						);
 						EndCityGenerator.method_14673(structureManager, EndCityGenerator.field_14387, i + 1, piece3, null, list, random);
 					}

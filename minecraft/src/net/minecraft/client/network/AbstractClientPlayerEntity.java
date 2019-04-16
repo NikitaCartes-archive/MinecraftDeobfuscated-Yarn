@@ -12,14 +12,12 @@ import net.minecraft.client.texture.Texture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BoundingBox;
 import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
@@ -136,12 +134,5 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		}
 
 		return f;
-	}
-
-	@Override
-	protected boolean wouldPoseNotCollide(EntityPose entityPose) {
-		BoundingBox boundingBox = this.method_20343(entityPose);
-		BoundingBox boundingBox2 = boundingBox.contract(0.1, 0.0, 0.1);
-		return this.world.doesNotCollide(this, boundingBox2);
 	}
 }

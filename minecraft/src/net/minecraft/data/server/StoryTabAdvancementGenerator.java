@@ -1,9 +1,9 @@
 package net.minecraft.data.server;
 
 import java.util.function.Consumer;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.CriteriaMerger;
-import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.CuredZombieVillagerCriterion;
 import net.minecraft.advancement.criterion.EnchantedItemCriterion;
@@ -20,9 +20,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
-public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvancement>> {
-	public void method_10347(Consumer<SimpleAdvancement> consumer) {
-		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Task.create()
+public class StoryTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
+	public void method_10347(Consumer<Advancement> consumer) {
+		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.field_10219,
 				new TranslatableTextComponent("advancements.story.root.title"),
@@ -35,8 +35,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("crafting_table", InventoryChangedCriterion.Conditions.items(Blocks.field_9980))
 			.build(consumer, "story/root");
-		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement)
+		Advancement advancement2 = Advancement.Task.create()
+			.parent(advancement)
 			.display(
 				Items.field_8647,
 				new TranslatableTextComponent("advancements.story.mine_stone.title"),
@@ -49,8 +49,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("get_stone", InventoryChangedCriterion.Conditions.items(Blocks.field_10445))
 			.build(consumer, "story/mine_stone");
-		SimpleAdvancement simpleAdvancement3 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement2)
+		Advancement advancement3 = Advancement.Task.create()
+			.parent(advancement2)
 			.display(
 				Items.field_8387,
 				new TranslatableTextComponent("advancements.story.upgrade_tools.title"),
@@ -63,8 +63,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("stone_pickaxe", InventoryChangedCriterion.Conditions.items(Items.field_8387))
 			.build(consumer, "story/upgrade_tools");
-		SimpleAdvancement simpleAdvancement4 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement3)
+		Advancement advancement4 = Advancement.Task.create()
+			.parent(advancement3)
 			.display(
 				Items.field_8620,
 				new TranslatableTextComponent("advancements.story.smelt_iron.title"),
@@ -77,8 +77,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("iron", InventoryChangedCriterion.Conditions.items(Items.field_8620))
 			.build(consumer, "story/smelt_iron");
-		SimpleAdvancement simpleAdvancement5 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement4)
+		Advancement advancement5 = Advancement.Task.create()
+			.parent(advancement4)
 			.display(
 				Items.field_8403,
 				new TranslatableTextComponent("advancements.story.iron_tools.title"),
@@ -91,8 +91,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("iron_pickaxe", InventoryChangedCriterion.Conditions.items(Items.field_8403))
 			.build(consumer, "story/iron_tools");
-		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement5)
+		Advancement advancement6 = Advancement.Task.create()
+			.parent(advancement5)
 			.display(
 				Items.field_8477,
 				new TranslatableTextComponent("advancements.story.mine_diamond.title"),
@@ -105,8 +105,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("diamond", InventoryChangedCriterion.Conditions.items(Items.field_8477))
 			.build(consumer, "story/mine_diamond");
-		SimpleAdvancement simpleAdvancement7 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement4)
+		Advancement advancement7 = Advancement.Task.create()
+			.parent(advancement4)
 			.display(
 				Items.field_8187,
 				new TranslatableTextComponent("advancements.story.lava_bucket.title"),
@@ -119,8 +119,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("lava_bucket", InventoryChangedCriterion.Conditions.items(Items.field_8187))
 			.build(consumer, "story/lava_bucket");
-		SimpleAdvancement simpleAdvancement8 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement4)
+		Advancement advancement8 = Advancement.Task.create()
+			.parent(advancement4)
 			.display(
 				Items.field_8523,
 				new TranslatableTextComponent("advancements.story.obtain_armor.title"),
@@ -137,8 +137,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			.criterion("iron_leggings", InventoryChangedCriterion.Conditions.items(Items.field_8396))
 			.criterion("iron_boots", InventoryChangedCriterion.Conditions.items(Items.field_8660))
 			.build(consumer, "story/obtain_armor");
-		SimpleAdvancement simpleAdvancement9 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement6)
+		Advancement advancement9 = Advancement.Task.create()
+			.parent(advancement6)
 			.display(
 				Items.field_8598,
 				new TranslatableTextComponent("advancements.story.enchant_item.title"),
@@ -151,8 +151,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("enchanted_item", EnchantedItemCriterion.Conditions.any())
 			.build(consumer, "story/enchant_item");
-		SimpleAdvancement simpleAdvancement10 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement7)
+		Advancement advancement10 = Advancement.Task.create()
+			.parent(advancement7)
 			.display(
 				Blocks.field_10540,
 				new TranslatableTextComponent("advancements.story.form_obsidian.title"),
@@ -165,8 +165,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("obsidian", InventoryChangedCriterion.Conditions.items(Blocks.field_10540))
 			.build(consumer, "story/form_obsidian");
-		SimpleAdvancement simpleAdvancement11 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement8)
+		Advancement advancement11 = Advancement.Task.create()
+			.parent(advancement8)
 			.display(
 				Items.field_8255,
 				new TranslatableTextComponent("advancements.story.deflect_arrow.title"),
@@ -179,13 +179,11 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion(
 				"deflected_projectile",
-				EntityHurtPlayerCriterion.Conditions.method_8908(
-					DamagePredicate.Builder.create().type(DamageSourcePredicate.Builder.create().projectile(true)).blocked(true)
-				)
+				EntityHurtPlayerCriterion.Conditions.create(DamagePredicate.Builder.create().type(DamageSourcePredicate.Builder.create().projectile(true)).blocked(true))
 			)
 			.build(consumer, "story/deflect_arrow");
-		SimpleAdvancement simpleAdvancement12 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement6)
+		Advancement advancement12 = Advancement.Task.create()
+			.parent(advancement6)
 			.display(
 				Items.field_8058,
 				new TranslatableTextComponent("advancements.story.shiny_gear.title"),
@@ -202,8 +200,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			.criterion("diamond_leggings", InventoryChangedCriterion.Conditions.items(Items.field_8348))
 			.criterion("diamond_boots", InventoryChangedCriterion.Conditions.items(Items.field_8285))
 			.build(consumer, "story/shiny_gear");
-		SimpleAdvancement simpleAdvancement13 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement10)
+		Advancement advancement13 = Advancement.Task.create()
+			.parent(advancement10)
 			.display(
 				Items.field_8884,
 				new TranslatableTextComponent("advancements.story.enter_the_nether.title"),
@@ -216,8 +214,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("entered_nether", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13076))
 			.build(consumer, "story/enter_the_nether");
-		SimpleAdvancement simpleAdvancement14 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement13)
+		Advancement advancement14 = Advancement.Task.create()
+			.parent(advancement13)
 			.display(
 				Items.field_8463,
 				new TranslatableTextComponent("advancements.story.cure_zombie_villager.title"),
@@ -230,8 +228,8 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 			)
 			.criterion("cured_zombie", CuredZombieVillagerCriterion.Conditions.any())
 			.build(consumer, "story/cure_zombie_villager");
-		SimpleAdvancement simpleAdvancement15 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement13)
+		Advancement advancement15 = Advancement.Task.create()
+			.parent(advancement13)
 			.display(
 				Items.field_8449,
 				new TranslatableTextComponent("advancements.story.follow_ender_eye.title"),
@@ -242,10 +240,10 @@ public class StoryTabAdvancementGenerator implements Consumer<Consumer<SimpleAdv
 				true,
 				false
 			)
-			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.feature(Feature.STRONGHOLD)))
+			.criterion("in_stronghold", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.STRONGHOLD)))
 			.build(consumer, "story/follow_ender_eye");
-		SimpleAdvancement simpleAdvancement16 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement15)
+		Advancement advancement16 = Advancement.Task.create()
+			.parent(advancement15)
 			.display(
 				Blocks.field_10471,
 				new TranslatableTextComponent("advancements.story.enter_the_end.title"),

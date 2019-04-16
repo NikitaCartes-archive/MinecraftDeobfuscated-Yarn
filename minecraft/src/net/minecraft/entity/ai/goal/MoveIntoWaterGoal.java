@@ -21,7 +21,7 @@ public class MoveIntoWaterGoal extends Goal {
 	public void start() {
 		BlockPos blockPos = null;
 
-		for (BlockPos blockPos2 : BlockPos.iterateBoxPositions(
+		for (BlockPos blockPos2 : BlockPos.iterate(
 			MathHelper.floor(this.owner.x - 2.0),
 			MathHelper.floor(this.owner.y - 2.0),
 			MathHelper.floor(this.owner.z - 2.0),

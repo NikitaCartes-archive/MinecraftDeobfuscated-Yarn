@@ -172,4 +172,9 @@ public class GrindstoneBlock extends WallMountedBlock {
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.with(field_11177, FACE);
 	}
+
+	@Override
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+		return false;
+	}
 }

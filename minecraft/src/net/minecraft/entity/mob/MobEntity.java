@@ -289,13 +289,17 @@ public abstract class MobEntity extends LivingEntity {
 		if (!this.world.isClient) {
 			this.updateLeash();
 			if (this.age % 5 == 0) {
-				boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity);
-				boolean bl2 = !(this.getRiddenEntity() instanceof BoatEntity);
-				this.goalSelector.setControlEnabled(Goal.Control.field_18405, bl);
-				this.goalSelector.setControlEnabled(Goal.Control.field_18407, bl && bl2);
-				this.goalSelector.setControlEnabled(Goal.Control.field_18406, bl);
+				this.method_20417();
 			}
 		}
+	}
+
+	protected void method_20417() {
+		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity);
+		boolean bl2 = !(this.getRiddenEntity() instanceof BoatEntity);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18405, bl);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18407, bl && bl2);
+		this.goalSelector.setControlEnabled(Goal.Control.field_18406, bl);
 	}
 
 	@Override

@@ -78,8 +78,8 @@ public interface FluidState extends PropertyContainer<FluidState> {
 		this.getFluid().onRandomTick(world, blockPos, this, random);
 	}
 
-	default Vec3d method_15758(BlockView blockView, BlockPos blockPos) {
-		return this.getFluid().method_15782(blockView, blockPos, this);
+	default Vec3d getVelocity(BlockView blockView, BlockPos blockPos) {
+		return this.getFluid().getVelocity(blockView, blockPos, this);
 	}
 
 	default BlockState getBlockState() {

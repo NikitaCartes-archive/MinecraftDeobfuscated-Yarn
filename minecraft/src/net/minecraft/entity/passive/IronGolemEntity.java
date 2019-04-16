@@ -16,6 +16,7 @@ import net.minecraft.entity.ai.goal.MoveThroughVillageGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.TrackIronGolemTargetGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
+import net.minecraft.entity.ai.goal.WanderAroundPointOfInterestGoal;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -51,6 +52,7 @@ public class IronGolemEntity extends GolemEntity {
 	protected void initGoals() {
 		this.goalSelector.add(1, new MeleeAttackGoal(this, 1.0, true));
 		this.goalSelector.add(2, new GoToEntityTargetGoal(this, 0.9, 32.0F));
+		this.goalSelector.add(2, new WanderAroundPointOfInterestGoal(this, 0.6));
 		this.goalSelector.add(3, new MoveThroughVillageGoal(this, 0.6, false, 4, () -> false));
 		this.goalSelector.add(5, new IronGolemLookGoal(this));
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 0.6));

@@ -627,13 +627,13 @@ public class ScoreboardCommand {
 		ServerCommandSource serverCommandSource, String string, ScoreboardCriterion scoreboardCriterion, TextComponent textComponent
 	) throws CommandSyntaxException {
 		Scoreboard scoreboard = serverCommandSource.getMinecraftServer().getScoreboard();
-		if (scoreboard.method_1170(string) != null) {
+		if (scoreboard.getNullableObjective(string) != null) {
 			throw OBJECTIVES_ADD_DUPLICATE_EXCEPTION.create();
 		} else if (string.length() > 16) {
 			throw ObjectiveArgumentType.LONG_NAME_EXCEPTION.create(16);
 		} else {
 			scoreboard.addObjective(string, scoreboardCriterion, textComponent, scoreboardCriterion.getCriterionType());
-			ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string);
+			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.scoreboard.objectives.add.success", scoreboardObjective.getTextComponent()), true);
 			return scoreboard.getObjectives().size();
 		}

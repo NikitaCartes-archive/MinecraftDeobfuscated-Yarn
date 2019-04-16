@@ -818,7 +818,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 		BlockPos blockPos2 = new BlockPos(blockPos.getX() >> 4 << 4, blockPos.getY() >> 4 << 4, blockPos.getZ() >> 4 << 4);
 		WorldChunk worldChunk = this.world.getWorldChunk(blockPos2);
 
-		for (BlockPos blockPos3 : BlockPos.iterateBoxPositions(blockPos2, blockPos2.add(15, 15, 15))) {
+		for (BlockPos blockPos3 : BlockPos.iterate(blockPos2, blockPos2.add(15, 15, 15))) {
 			if (worldChunk.getBlockState(blockPos3).isFullOpaque(this.world, blockPos3)) {
 				chunkOcclusionGraphBuilder.markClosed(blockPos3);
 			}

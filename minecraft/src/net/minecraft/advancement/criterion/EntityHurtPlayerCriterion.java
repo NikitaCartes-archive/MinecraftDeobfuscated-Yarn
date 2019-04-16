@@ -75,7 +75,7 @@ public class EntityHurtPlayerCriterion implements Criterion<EntityHurtPlayerCrit
 			this.damage = damagePredicate;
 		}
 
-		public static EntityHurtPlayerCriterion.Conditions method_8908(DamagePredicate.Builder builder) {
+		public static EntityHurtPlayerCriterion.Conditions create(DamagePredicate.Builder builder) {
 			return new EntityHurtPlayerCriterion.Conditions(builder.build());
 		}
 
