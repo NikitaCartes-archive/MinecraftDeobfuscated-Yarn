@@ -411,7 +411,7 @@ public class DebugHud extends DrawableHelper {
 
 	private void drawMetricsData(MetricsData metricsData, int i, int j, boolean bl) {
 		GlStateManager.disableDepthTest();
-		int k = metricsData.method_15249();
+		int k = metricsData.getStartIndex();
 		int l = metricsData.getCurrentIndex();
 		long[] ls = metricsData.getSamples();
 		int n = i;

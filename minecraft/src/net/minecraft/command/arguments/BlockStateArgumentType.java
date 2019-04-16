@@ -20,7 +20,7 @@ public class BlockStateArgumentType implements ArgumentType<BlockStateArgument> 
 
 	public BlockStateArgument method_9654(StringReader stringReader) throws CommandSyntaxException {
 		BlockArgumentParser blockArgumentParser = new BlockArgumentParser(stringReader, false).parse(true);
-		return new BlockStateArgument(blockArgumentParser.getBlockState(), blockArgumentParser.method_9692().keySet(), blockArgumentParser.getNbtData());
+		return new BlockStateArgument(blockArgumentParser.getBlockState(), blockArgumentParser.getBlockProperties().keySet(), blockArgumentParser.getNbtData());
 	}
 
 	public static BlockStateArgument getBlockState(CommandContext<ServerCommandSource> commandContext, String string) {

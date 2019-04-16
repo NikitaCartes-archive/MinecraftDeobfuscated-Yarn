@@ -69,7 +69,7 @@ public enum TextFormat {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static String method_538(String string) {
+	public static String getFormatAtEnd(String string) {
 		StringBuilder stringBuilder = new StringBuilder();
 		int i = -1;
 		int j = string.length();

@@ -13,7 +13,7 @@ public class KeyboardInput extends Input {
 	}
 
 	@Override
-	public void tick(boolean bl) {
+	public void tick(boolean bl, boolean bl2) {
 		this.pressingForward = this.settings.keyForward.isPressed();
 		this.pressingBack = this.settings.keyBack.isPressed();
 		this.pressingLeft = this.settings.keyLeft.isPressed();
@@ -22,7 +22,7 @@ public class KeyboardInput extends Input {
 		this.movementSideways = this.pressingLeft == this.pressingRight ? 0.0F : (float)(this.pressingLeft ? 1 : -1);
 		this.jumping = this.settings.keyJump.isPressed();
 		this.sneaking = this.settings.keySneak.isPressed();
-		if (this.sneaking || bl) {
+		if (!bl2 && (this.sneaking || bl)) {
 			this.movementSideways = (float)((double)this.movementSideways * 0.3);
 			this.movementForward = (float)((double)this.movementForward * 0.3);
 		}

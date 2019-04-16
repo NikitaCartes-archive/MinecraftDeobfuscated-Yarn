@@ -77,7 +77,7 @@ public class CakeBlock extends Block {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return viewableWorld.getBlockState(blockPos.down()).getMaterial().method_15799();
+		return viewableWorld.getBlockState(blockPos.down()).getMaterial().isSolid();
 	}
 
 	@Override

@@ -161,7 +161,7 @@ public class StructureBlockScreen extends Screen {
 			this.structureBlock.setRotation(Rotation.ROT_270);
 			this.updateRotationButton();
 		}));
-		this.inputName = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20) {
+		this.inputName = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20, I18n.translate("structure_block.structure_name")) {
 			@Override
 			public boolean charTyped(char c, int i) {
 				return !StructureBlockScreen.this.isValidCharacterForName(this.getText(), c, this.getCursor()) ? false : super.charTyped(c, i);
@@ -171,40 +171,40 @@ public class StructureBlockScreen extends Screen {
 		this.inputName.setText(this.structureBlock.getStructureName());
 		this.children.add(this.inputName);
 		BlockPos blockPos = this.structureBlock.getOffset();
-		this.inputPosX = new TextFieldWidget(this.font, this.width / 2 - 152, 80, 80, 20);
+		this.inputPosX = new TextFieldWidget(this.font, this.width / 2 - 152, 80, 80, 20, I18n.translate("structure_block.position.x"));
 		this.inputPosX.setMaxLength(15);
 		this.inputPosX.setText(Integer.toString(blockPos.getX()));
 		this.children.add(this.inputPosX);
-		this.inputPosY = new TextFieldWidget(this.font, this.width / 2 - 72, 80, 80, 20);
+		this.inputPosY = new TextFieldWidget(this.font, this.width / 2 - 72, 80, 80, 20, I18n.translate("structure_block.position.y"));
 		this.inputPosY.setMaxLength(15);
 		this.inputPosY.setText(Integer.toString(blockPos.getY()));
 		this.children.add(this.inputPosY);
-		this.inputPosZ = new TextFieldWidget(this.font, this.width / 2 + 8, 80, 80, 20);
+		this.inputPosZ = new TextFieldWidget(this.font, this.width / 2 + 8, 80, 80, 20, I18n.translate("structure_block.position.z"));
 		this.inputPosZ.setMaxLength(15);
 		this.inputPosZ.setText(Integer.toString(blockPos.getZ()));
 		this.children.add(this.inputPosZ);
 		BlockPos blockPos2 = this.structureBlock.getSize();
-		this.inputSizeX = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 80, 20);
+		this.inputSizeX = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 80, 20, I18n.translate("structure_block.size.x"));
 		this.inputSizeX.setMaxLength(15);
 		this.inputSizeX.setText(Integer.toString(blockPos2.getX()));
 		this.children.add(this.inputSizeX);
-		this.inputSizeY = new TextFieldWidget(this.font, this.width / 2 - 72, 120, 80, 20);
+		this.inputSizeY = new TextFieldWidget(this.font, this.width / 2 - 72, 120, 80, 20, I18n.translate("structure_block.size.y"));
 		this.inputSizeY.setMaxLength(15);
 		this.inputSizeY.setText(Integer.toString(blockPos2.getY()));
 		this.children.add(this.inputSizeY);
-		this.inputSizeZ = new TextFieldWidget(this.font, this.width / 2 + 8, 120, 80, 20);
+		this.inputSizeZ = new TextFieldWidget(this.font, this.width / 2 + 8, 120, 80, 20, I18n.translate("structure_block.size.z"));
 		this.inputSizeZ.setMaxLength(15);
 		this.inputSizeZ.setText(Integer.toString(blockPos2.getZ()));
 		this.children.add(this.inputSizeZ);
-		this.inputIntegrity = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 80, 20);
+		this.inputIntegrity = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 80, 20, I18n.translate("structure_block.integrity.integrity"));
 		this.inputIntegrity.setMaxLength(15);
 		this.inputIntegrity.setText(this.decimalFormat.format((double)this.structureBlock.getIntegrity()));
 		this.children.add(this.inputIntegrity);
-		this.inputSeed = new TextFieldWidget(this.font, this.width / 2 - 72, 120, 80, 20);
+		this.inputSeed = new TextFieldWidget(this.font, this.width / 2 - 72, 120, 80, 20, I18n.translate("structure_block.integrity.seed"));
 		this.inputSeed.setMaxLength(31);
 		this.inputSeed.setText(Long.toString(this.structureBlock.getSeed()));
 		this.children.add(this.inputSeed);
-		this.inputMetadata = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 240, 20);
+		this.inputMetadata = new TextFieldWidget(this.font, this.width / 2 - 152, 120, 240, 20, I18n.translate("structure_block.custom_data"));
 		this.inputMetadata.setMaxLength(128);
 		this.inputMetadata.setText(this.structureBlock.getMetadata());
 		this.children.add(this.inputMetadata);

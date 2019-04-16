@@ -104,11 +104,11 @@ public class ChunkPos {
 		return new BlockPos(this.x << 4, 0, this.z << 4);
 	}
 
-	public static Stream<ChunkPos> streamPositions(ChunkPos chunkPos, int i) {
-		return streamPositions(new ChunkPos(chunkPos.x - i, chunkPos.z - i), new ChunkPos(chunkPos.x + i, chunkPos.z + i));
+	public static Stream<ChunkPos> stream(ChunkPos chunkPos, int i) {
+		return stream(new ChunkPos(chunkPos.x - i, chunkPos.z - i), new ChunkPos(chunkPos.x + i, chunkPos.z + i));
 	}
 
-	public static Stream<ChunkPos> streamPositions(ChunkPos chunkPos, ChunkPos chunkPos2) {
+	public static Stream<ChunkPos> stream(ChunkPos chunkPos, ChunkPos chunkPos2) {
 		int i = Math.abs(chunkPos.x - chunkPos2.x) + 1;
 		int j = Math.abs(chunkPos.z - chunkPos2.z) + 1;
 		final int k = chunkPos.x < chunkPos2.x ? 1 : -1;

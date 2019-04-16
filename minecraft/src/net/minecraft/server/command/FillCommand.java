@@ -157,7 +157,7 @@ public class FillCommand {
 			ServerWorld serverWorld = serverCommandSource.getWorld();
 			int j = 0;
 
-			for(BlockPos blockPos : BlockPos.iterateBoxPositions(
+			for(BlockPos blockPos : BlockPos.iterate(
 				mutableIntBoundingBox.minX,
 				mutableIntBoundingBox.minY,
 				mutableIntBoundingBox.minZ,

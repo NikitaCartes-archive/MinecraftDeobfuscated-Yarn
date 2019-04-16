@@ -194,10 +194,6 @@ public class RealmsScreenProxy extends Screen {
 		this.buttons.remove(realmsButton.getProxy());
 	}
 
-	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {
-		return new RealmsEditBox(i, j, k, l, m);
-	}
-
 	@Override
 	public boolean mouseClicked(double d, double e, int i) {
 		return this.screen.mouseClicked(d, e, i) ? true : super.mouseClicked(d, e, i);

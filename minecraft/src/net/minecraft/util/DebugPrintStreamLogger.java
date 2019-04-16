@@ -8,9 +8,9 @@ public class DebugPrintStreamLogger extends PrintStreamLogger {
 	}
 
 	@Override
-	protected void method_12870(String string) {
+	protected void log(String string) {
 		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 		StackTraceElement stackTraceElement = stackTraceElements[Math.min(3, stackTraceElements.length)];
-		LOGGER.info("[{}]@.({}:{}): {}", this.field_13383, stackTraceElement.getFileName(), stackTraceElement.getLineNumber(), string);
+		LOGGER.info("[{}]@.({}:{}): {}", this.name, stackTraceElement.getFileName(), stackTraceElement.getLineNumber(), string);
 	}
 }

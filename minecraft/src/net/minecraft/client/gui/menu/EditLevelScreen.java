@@ -99,7 +99,7 @@ public class EditLevelScreen extends Screen {
 		LevelStorage levelStorage = this.minecraft.getLevelStorage();
 		LevelProperties levelProperties = levelStorage.getLevelProperties(this.levelName);
 		String string = levelProperties == null ? "" : levelProperties.getLevelName();
-		this.levelNameTextField = new TextFieldWidget(this.font, this.width / 2 - 100, 53, 200, 20);
+		this.levelNameTextField = new TextFieldWidget(this.font, this.width / 2 - 100, 53, 200, 20, I18n.translate("selectWorld.enterName"));
 		this.levelNameTextField.setText(string);
 		this.levelNameTextField.setChangedListener(stringx -> this.saveButton.active = !stringx.trim().isEmpty());
 		this.children.add(this.levelNameTextField);

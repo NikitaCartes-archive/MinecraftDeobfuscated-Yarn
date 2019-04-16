@@ -29,6 +29,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.Rect2i;
 import net.minecraft.server.command.CommandSource;
@@ -63,7 +64,7 @@ public class ChatScreen extends Screen {
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
 		this.field_2387 = this.minecraft.inGameHud.getChatHud().method_1809().size();
-		this.chatField = new TextFieldWidget(this.font, 4, this.height - 12, this.width - 4, 12);
+		this.chatField = new TextFieldWidget(this.font, 4, this.height - 12, this.width - 4, 12, I18n.translate("chat.editBox"));
 		this.chatField.setMaxLength(256);
 		this.chatField.setHasBorder(false);
 		this.chatField.setText(this.field_18973);

@@ -10,8 +10,8 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 public class RealmsEditBox extends RealmsGuiEventListener {
 	private final TextFieldWidget editBox;
 
-	public RealmsEditBox(int i, int j, int k, int l, int m) {
-		this.editBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, j, k, l, m);
+	public RealmsEditBox(int i, int j, int k, int l, int m, String string) {
+		this.editBox = new TextFieldWidget(MinecraftClient.getInstance().textRenderer, j, k, l, m, null, string);
 	}
 
 	public String getValue() {

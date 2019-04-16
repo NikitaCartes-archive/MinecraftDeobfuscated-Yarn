@@ -15,9 +15,9 @@ import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.advancement.PlayerAdvancementTracker;
-import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.CriterionProgress;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -378,7 +378,7 @@ public class EntitySelectorOptions {
 						String stringxx = entity.getEntityName();
 
 						for(Entry<String, NumberRange.IntRange> entry : map.entrySet()) {
-							ScoreboardObjective scoreboardObjective = scoreboard.method_1170((String)entry.getKey());
+							ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective((String)entry.getKey());
 							if (scoreboardObjective == null) {
 								return false;
 							}
@@ -467,8 +467,8 @@ public class EntitySelectorOptions {
 							ServerAdvancementLoader serverAdvancementLoader = serverPlayerEntity.getServer().getAdvancementManager();
 
 							for(Entry<Identifier, Predicate<AdvancementProgress>> entry : map.entrySet()) {
-								SimpleAdvancement simpleAdvancement = serverAdvancementLoader.get((Identifier)entry.getKey());
-								if (simpleAdvancement == null || !((Predicate)entry.getValue()).test(playerAdvancementTracker.getProgress(simpleAdvancement))) {
+								Advancement advancement = serverAdvancementLoader.get((Identifier)entry.getKey());
+								if (advancement == null || !((Predicate)entry.getValue()).test(playerAdvancementTracker.getProgress(advancement))) {
 									return false;
 								}
 							}

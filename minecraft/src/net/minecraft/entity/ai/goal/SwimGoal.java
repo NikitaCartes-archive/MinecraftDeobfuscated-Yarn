@@ -14,7 +14,8 @@ public class SwimGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.entityMob.isInWater() || this.entityMob.isTouchingLava();
+		double d = (double)this.entityMob.getStandingEyeHeight() < 0.4 ? 0.2 : 0.4;
+		return this.entityMob.isInsideWater() && this.entityMob.getWaterHeight() > d || this.entityMob.isTouchingLava();
 	}
 
 	@Override

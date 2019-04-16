@@ -51,7 +51,7 @@ public class EntityScoresLootCondition implements LootCondition {
 	}
 
 	protected boolean entityScoreIsInRange(Entity entity, Scoreboard scoreboard, String string, UniformLootTableRange uniformLootTableRange) {
-		ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string);
+		ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
 		if (scoreboardObjective == null) {
 			return false;
 		} else {

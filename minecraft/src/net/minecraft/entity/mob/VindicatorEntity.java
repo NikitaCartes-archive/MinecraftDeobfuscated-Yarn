@@ -61,7 +61,7 @@ public class VindicatorEntity extends IllagerEntity {
 		this.goalSelector.add(1, new VindicatorEntity.VindicatorBreakDoorGoal(this));
 		this.goalSelector.add(2, new IllagerEntity.class_4258(this));
 		this.goalSelector.add(3, new RaiderEntity.PatrolApproachGoal(this, 10.0F));
-		this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0, false));
+		this.goalSelector.add(4, new VindicatorEntity.class_4293(this));
 		this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge());
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, true));
 		this.targetSelector.add(3, new FollowTargetGoal(this, AbstractTraderEntity.class, true));
@@ -236,6 +236,22 @@ public class VindicatorEntity extends IllagerEntity {
 		public void start() {
 			super.start();
 			this.entity.setDespawnCounter(0);
+		}
+	}
+
+	class class_4293 extends MeleeAttackGoal {
+		public class_4293(VindicatorEntity vindicatorEntity2) {
+			super(vindicatorEntity2, 1.0, false);
+		}
+
+		@Override
+		protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
+			if (this.entity.getRiddenEntity() instanceof RavagerEntity) {
+				float f = this.entity.getRiddenEntity().getWidth() - 0.1F;
+				return (double)(f * 2.0F * f * 2.0F + livingEntity.getWidth());
+			} else {
+				return super.getSquaredMaxAttackDistance(livingEntity);
+			}
 		}
 	}
 }

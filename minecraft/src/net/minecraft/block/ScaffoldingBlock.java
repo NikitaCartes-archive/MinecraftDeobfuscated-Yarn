@@ -134,7 +134,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Fluids.WATER.getState(false) : super.getFluidState(blockState);
+		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
 	}
 
 	private boolean method_16373(BlockView blockView, BlockPos blockPos, int i) {

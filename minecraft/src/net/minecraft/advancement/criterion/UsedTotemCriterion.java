@@ -76,7 +76,7 @@ public class UsedTotemCriterion implements Criterion<UsedTotemCriterion.Conditio
 			this.item = itemPredicate;
 		}
 
-		public static UsedTotemCriterion.Conditions method_9170(ItemProvider itemProvider) {
+		public static UsedTotemCriterion.Conditions create(ItemProvider itemProvider) {
 			return new UsedTotemCriterion.Conditions(ItemPredicate.Builder.create().item(itemProvider).build());
 		}
 

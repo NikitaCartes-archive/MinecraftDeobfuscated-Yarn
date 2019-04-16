@@ -261,7 +261,7 @@ public class Block implements ItemProvider {
 
 	@Deprecated
 	public boolean canSuffocate(BlockState blockState, BlockView blockView, BlockPos blockPos) {
-		return this.material.suffocates() && isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
+		return this.material.blocksMovement() && isShapeFullCube(blockState.getCollisionShape(blockView, blockPos));
 	}
 
 	@Deprecated
@@ -642,7 +642,7 @@ public class Block implements ItemProvider {
 	}
 
 	public boolean canMobSpawnInside() {
-		return !this.material.method_15799() && !this.material.isLiquid();
+		return !this.material.isSolid() && !this.material.isLiquid();
 	}
 
 	@Environment(EnvType.CLIENT)

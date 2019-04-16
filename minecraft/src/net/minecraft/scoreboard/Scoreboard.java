@@ -36,7 +36,7 @@ public class Scoreboard {
 	}
 
 	@Nullable
-	public ScoreboardObjective method_1170(@Nullable String string) {
+	public ScoreboardObjective getNullableObjective(@Nullable String string) {
 		return (ScoreboardObjective)this.objectives.get(string);
 	}
 

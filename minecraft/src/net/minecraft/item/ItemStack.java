@@ -544,7 +544,7 @@ public final class ItemStack {
 						try {
 							TextComponent textComponent2 = TextComponent.Serializer.fromJsonString(string);
 							if (textComponent2 != null) {
-								list.add(TextFormatter.addStyle(textComponent2, new Style().setColor(TextFormat.field_1064).setItalic(true)));
+								list.add(TextFormatter.style(textComponent2, new Style().setColor(TextFormat.field_1064).setItalic(true)));
 							}
 						} catch (JsonParseException var19) {
 							compoundTag.remove("Lore");
@@ -676,7 +676,7 @@ public final class ItemStack {
 		try {
 			BlockArgumentParser blockArgumentParser = new BlockArgumentParser(new StringReader(string), true).parse(true);
 			BlockState blockState = blockArgumentParser.getBlockState();
-			Identifier identifier = blockArgumentParser.method_9664();
+			Identifier identifier = blockArgumentParser.getTagId();
 			boolean bl = blockState != null;
 			boolean bl2 = identifier != null;
 			if (bl || bl2) {

@@ -51,7 +51,7 @@ public class GrassPathBlock extends Block {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		BlockState blockState2 = viewableWorld.getBlockState(blockPos.up());
-		return !blockState2.getMaterial().method_15799() || blockState2.getBlock() instanceof FenceGateBlock;
+		return !blockState2.getMaterial().isSolid() || blockState2.getBlock() instanceof FenceGateBlock;
 	}
 
 	@Override

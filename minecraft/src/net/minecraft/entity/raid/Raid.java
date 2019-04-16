@@ -264,6 +264,8 @@ public class Raid {
 						} else {
 							this.bar.setName(EVENT_TEXT);
 						}
+					} else {
+						this.bar.setName(EVENT_TEXT);
 					}
 				}
 
@@ -301,7 +303,7 @@ public class Raid {
 							Entity entity = this.world.getEntity(uUID);
 							if (entity instanceof LivingEntity && !entity.isSpectator()) {
 								LivingEntity livingEntity = (LivingEntity)entity;
-								livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_18980, 48000, this.badOmenLevel - 1));
+								livingEntity.addPotionEffect(new StatusEffectInstance(StatusEffects.field_18980, 48000, this.badOmenLevel - 1, false, false, true));
 								if (livingEntity instanceof ServerPlayerEntity) {
 									ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
 									serverPlayerEntity.incrementStat(Stats.field_19257);

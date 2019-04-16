@@ -79,7 +79,7 @@ public class LevitationCriterion implements Criterion<LevitationCriterion.Condit
 			this.duration = intRange;
 		}
 
-		public static LevitationCriterion.Conditions method_9013(DistancePredicate distancePredicate) {
+		public static LevitationCriterion.Conditions create(DistancePredicate distancePredicate) {
 			return new LevitationCriterion.Conditions(distancePredicate, NumberRange.IntRange.ANY);
 		}
 

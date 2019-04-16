@@ -156,6 +156,8 @@ public class FoxModel<T extends FoxEntity> extends EntityModel<T> {
 		}
 
 		if (foxEntity.isSleeping()) {
+			this.head.pitch = 0.0F;
+			this.head.yaw = (float) (-Math.PI * 2.0 / 3.0);
 			this.head.roll = MathHelper.cos(h * 0.027F) / 22.0F;
 		}
 

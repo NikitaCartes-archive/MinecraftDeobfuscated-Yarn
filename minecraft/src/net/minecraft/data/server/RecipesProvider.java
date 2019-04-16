@@ -13,7 +13,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Consumer;
-import net.minecraft.advancement.SimpleAdvancement;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.EnterBlockCriterion;
 import net.minecraft.advancement.criterion.ImpossibleCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
@@ -78,7 +78,7 @@ public class RecipesProvider implements DataProvider {
 		);
 		this.method_10427(
 			dataCache,
-			SimpleAdvancement.Task.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(),
+			Advancement.Task.create().criterion("impossible", new ImpossibleCriterion.Conditions()).toJson(),
 			path.resolve("data/minecraft/advancements/recipes/root.json")
 		);
 	}

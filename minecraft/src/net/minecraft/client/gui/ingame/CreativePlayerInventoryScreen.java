@@ -233,7 +233,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 		if (this.minecraft.interactionManager.hasCreativeInventory()) {
 			super.init();
 			this.minecraft.keyboard.enableRepeatEvents(true);
-			this.searchBox = new TextFieldWidget(this.font, this.left + 82, this.top + 6, 80, 9);
+			this.searchBox = new TextFieldWidget(this.font, this.left + 82, this.top + 6, 80, 9, I18n.translate("itemGroup.search"));
 			this.searchBox.setMaxLength(50);
 			this.searchBox.setHasBorder(false);
 			this.searchBox.setVisible(false);

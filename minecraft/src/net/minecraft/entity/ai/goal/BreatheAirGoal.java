@@ -40,7 +40,7 @@ public class BreatheAirGoal extends Goal {
 	}
 
 	private void moveToAir() {
-		Iterable<BlockPos> iterable = BlockPos.iterateBoxPositions(
+		Iterable<BlockPos> iterable = BlockPos.iterate(
 			MathHelper.floor(this.owner.x - 1.0),
 			MathHelper.floor(this.owner.y),
 			MathHelper.floor(this.owner.z - 1.0),

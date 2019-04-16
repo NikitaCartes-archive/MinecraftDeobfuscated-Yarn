@@ -51,7 +51,7 @@ public class KelpBlock extends Block implements FluidFillable {
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return Fluids.WATER.getState(false);
+		return Fluids.WATER.getStill(false);
 	}
 
 	@Override

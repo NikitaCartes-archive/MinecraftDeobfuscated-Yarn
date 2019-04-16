@@ -35,7 +35,7 @@ public class ObjectiveArgumentType implements ArgumentType<String> {
 	public static ScoreboardObjective getObjective(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		String string2 = commandContext.getArgument(string, String.class);
 		Scoreboard scoreboard = commandContext.getSource().getMinecraftServer().getScoreboard();
-		ScoreboardObjective scoreboardObjective = scoreboard.method_1170(string2);
+		ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string2);
 		if (scoreboardObjective == null) {
 			throw UNKNOWN_OBJECTIVE_EXCEPTION.create(string2);
 		} else {

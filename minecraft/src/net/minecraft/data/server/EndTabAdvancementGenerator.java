@@ -1,9 +1,9 @@
 package net.minecraft.data.server;
 
 import java.util.function.Consumer;
+import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.advancement.AdvancementRewards;
-import net.minecraft.advancement.SimpleAdvancement;
 import net.minecraft.advancement.criterion.ChangedDimensionCriterion;
 import net.minecraft.advancement.criterion.EnterBlockCriterion;
 import net.minecraft.advancement.criterion.InventoryChangedCriterion;
@@ -23,9 +23,9 @@ import net.minecraft.util.NumberRange;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.Feature;
 
-public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvancement>> {
-	public void method_10348(Consumer<SimpleAdvancement> consumer) {
-		SimpleAdvancement simpleAdvancement = SimpleAdvancement.Task.create()
+public class EndTabAdvancementGenerator implements Consumer<Consumer<Advancement>> {
+	public void method_10348(Consumer<Advancement> consumer) {
+		Advancement advancement = Advancement.Task.create()
 			.display(
 				Blocks.field_10471,
 				new TranslatableTextComponent("advancements.end.root.title"),
@@ -38,8 +38,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("entered_end", ChangedDimensionCriterion.Conditions.to(DimensionType.field_13078))
 			.build(consumer, "end/root");
-		SimpleAdvancement simpleAdvancement2 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement)
+		Advancement advancement2 = Advancement.Task.create()
+			.parent(advancement)
 			.display(
 				Blocks.field_10337,
 				new TranslatableTextComponent("advancements.end.kill_dragon.title"),
@@ -50,10 +50,10 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 				true,
 				false
 			)
-			.criterion("killed_dragon", OnKilledCriterion.Conditions.createKill(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
+			.criterion("killed_dragon", OnKilledCriterion.Conditions.createPlayerKilledEntity(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
 			.build(consumer, "end/kill_dragon");
-		SimpleAdvancement simpleAdvancement3 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement2)
+		Advancement advancement3 = Advancement.Task.create()
+			.parent(advancement2)
 			.display(
 				Items.field_8634,
 				new TranslatableTextComponent("advancements.end.enter_end_gateway.title"),
@@ -66,8 +66,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("entered_end_gateway", EnterBlockCriterion.Conditions.block(Blocks.field_10613))
 			.build(consumer, "end/enter_end_gateway");
-		SimpleAdvancement simpleAdvancement4 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement2)
+		Advancement advancement4 = Advancement.Task.create()
+			.parent(advancement2)
 			.display(
 				Items.field_8301,
 				new TranslatableTextComponent("advancements.end.respawn_dragon.title"),
@@ -78,10 +78,10 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 				true,
 				false
 			)
-			.criterion("summoned_dragon", SummonedEntityCriterion.Conditions.method_9129(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
+			.criterion("summoned_dragon", SummonedEntityCriterion.Conditions.create(EntityPredicate.Builder.create().type(EntityType.ENDER_DRAGON)))
 			.build(consumer, "end/respawn_dragon");
-		SimpleAdvancement simpleAdvancement5 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement3)
+		Advancement advancement5 = Advancement.Task.create()
+			.parent(advancement3)
 			.display(
 				Blocks.field_10286,
 				new TranslatableTextComponent("advancements.end.find_end_city.title"),
@@ -92,10 +92,10 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 				true,
 				false
 			)
-			.criterion("in_city", LocationArrivalCriterion.Conditions.method_9034(LocationPredicate.feature(Feature.END_CITY)))
+			.criterion("in_city", LocationArrivalCriterion.Conditions.create(LocationPredicate.feature(Feature.END_CITY)))
 			.build(consumer, "end/find_end_city");
-		SimpleAdvancement simpleAdvancement6 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement2)
+		Advancement advancement6 = Advancement.Task.create()
+			.parent(advancement2)
 			.display(
 				Items.field_8613,
 				new TranslatableTextComponent("advancements.end.dragon_breath.title"),
@@ -108,8 +108,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("dragon_breath", InventoryChangedCriterion.Conditions.items(Items.field_8613))
 			.build(consumer, "end/dragon_breath");
-		SimpleAdvancement simpleAdvancement7 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement5)
+		Advancement advancement7 = Advancement.Task.create()
+			.parent(advancement5)
 			.display(
 				Items.field_8815,
 				new TranslatableTextComponent("advancements.end.levitate.title"),
@@ -121,10 +121,10 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 				false
 			)
 			.rewards(AdvancementRewards.Builder.experience(50))
-			.criterion("levitated", LevitationCriterion.Conditions.method_9013(DistancePredicate.y(NumberRange.FloatRange.atLeast(50.0F))))
+			.criterion("levitated", LevitationCriterion.Conditions.create(DistancePredicate.y(NumberRange.FloatRange.atLeast(50.0F))))
 			.build(consumer, "end/levitate");
-		SimpleAdvancement simpleAdvancement8 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement5)
+		Advancement advancement8 = Advancement.Task.create()
+			.parent(advancement5)
 			.display(
 				Items.field_8833,
 				new TranslatableTextComponent("advancements.end.elytra.title"),
@@ -137,8 +137,8 @@ public class EndTabAdvancementGenerator implements Consumer<Consumer<SimpleAdvan
 			)
 			.criterion("elytra", InventoryChangedCriterion.Conditions.items(Items.field_8833))
 			.build(consumer, "end/elytra");
-		SimpleAdvancement simpleAdvancement9 = SimpleAdvancement.Task.create()
-			.parent(simpleAdvancement2)
+		Advancement advancement9 = Advancement.Task.create()
+			.parent(advancement2)
 			.display(
 				Blocks.field_10081,
 				new TranslatableTextComponent("advancements.end.dragon_egg.title"),

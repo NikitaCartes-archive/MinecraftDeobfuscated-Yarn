@@ -15,12 +15,18 @@ public abstract class AlwaysSelectedItemListWidget<E extends ItemListWidget.Item
 
 	@Override
 	public boolean changeFocus(boolean bl) {
-		this.inFocus = !this.inFocus;
-		if (this.inFocus && this.getSelectedItem() == null && this.getItemCount() > 0) {
-			this.moveSelection(1);
-		}
+		if (!this.inFocus && this.getItemCount() == 0) {
+			return false;
+		} else {
+			this.inFocus = !this.inFocus;
+			if (this.inFocus && this.getSelectedItem() == null && this.getItemCount() > 0) {
+				this.moveSelection(1);
+			} else if (this.inFocus && this.getSelectedItem() != null) {
+				this.moveSelection(0);
+			}
 
-		return this.inFocus;
+			return this.inFocus;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

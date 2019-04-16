@@ -41,7 +41,10 @@ public class LookControl {
 	}
 
 	public void tick() {
-		this.entity.pitch = 0.0F;
+		if (this.method_20433()) {
+			this.entity.pitch = 0.0F;
+		}
+
 		if (this.active) {
 			this.active = false;
 			this.entity.headYaw = this.changeAngle(this.entity.headYaw, this.getTargetYaw(), this.yawSpeed);
@@ -53,6 +56,10 @@ public class LookControl {
 		if (!this.entity.getNavigation().isIdle()) {
 			this.entity.headYaw = MathHelper.method_20306(this.entity.headYaw, this.entity.field_6283, (float)this.entity.method_5986());
 		}
+	}
+
+	protected boolean method_20433() {
+		return true;
 	}
 
 	public boolean isActive() {

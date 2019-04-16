@@ -36,7 +36,7 @@ public class IceBlock extends TransparentBlock {
 			}
 
 			Material material = world.getBlockState(blockPos.down()).getMaterial();
-			if (material.suffocates() || material.isLiquid()) {
+			if (material.blocksMovement() || material.isLiquid()) {
 				world.setBlockState(blockPos, Blocks.field_10382.getDefaultState());
 			}
 		}

@@ -7,7 +7,6 @@ import javax.sound.sampled.AudioFormat;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import org.lwjgl.openal.AL10;
-import org.lwjgl.openal.AL11;
 
 @Environment(EnvType.CLIENT)
 public class StaticSound {
@@ -50,7 +49,7 @@ public class StaticSound {
 
 	public void close() {
 		if (this.hasBuffer) {
-			AL11.alDeleteBuffers(new int[]{this.streamBufferPointer});
+			AL10.alDeleteBuffers(new int[]{this.streamBufferPointer});
 			if (AlUtil.checkErrors("Deleting stream buffers")) {
 				return;
 			}

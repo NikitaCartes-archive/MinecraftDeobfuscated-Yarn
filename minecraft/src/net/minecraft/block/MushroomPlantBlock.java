@@ -30,7 +30,7 @@ public class MushroomPlantBlock extends PlantBlock implements Fertilizable {
 			int i = 5;
 			int j = 4;
 
-			for(BlockPos blockPos2 : BlockPos.iterateBoxPositions(blockPos.add(-4, -1, -4), blockPos.add(4, 1, 4))) {
+			for(BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, -1, -4), blockPos.add(4, 1, 4))) {
 				if (world.getBlockState(blockPos2).getBlock() == this) {
 					if (--i <= 0) {
 						return;

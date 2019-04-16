@@ -33,7 +33,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 		this.minecraft.keyboard.enableRepeatEvents(true);
 		int i = (this.width - this.containerWidth) / 2;
 		int j = (this.height - this.containerHeight) / 2;
-		this.nameField = new TextFieldWidget(this.font, i + 62, j + 24, 103, 12);
+		this.nameField = new TextFieldWidget(this.font, i + 62, j + 24, 103, 12, I18n.translate("container.repair"));
 		this.nameField.method_1856(false);
 		this.nameField.changeFocus(true);
 		this.nameField.method_1868(-1);

@@ -6,5 +6,5 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.command.ServerCommandSource;
 
 public interface TextComponentWithSelectors {
-	TextComponent resolveSelectors(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException;
+	TextComponent resolve(@Nullable ServerCommandSource serverCommandSource, @Nullable Entity entity) throws CommandSyntaxException;
 }

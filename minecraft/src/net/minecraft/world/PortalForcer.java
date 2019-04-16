@@ -140,7 +140,7 @@ public class PortalForcer {
 										int ab = t + z;
 										int ac = s + (y - 1) * w - x * v;
 										mutable.set(aa, ab, ac);
-										if (z < 0 && !this.world.getBlockState(mutable).getMaterial().method_15799() || z >= 0 && !this.world.isAir(mutable)) {
+										if (z < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || z >= 0 && !this.world.isAir(mutable)) {
 											continue label279;
 										}
 									}
@@ -186,7 +186,7 @@ public class PortalForcer {
 										int aa = t + y;
 										int ab = s + (x - 1) * w;
 										mutable.set(z, aa, ab);
-										if (y < 0 && !this.world.getBlockState(mutable).getMaterial().method_15799() || y >= 0 && !this.world.isAir(mutable)) {
+										if (y < 0 && !this.world.getBlockState(mutable).getMaterial().isSolid() || y >= 0 && !this.world.isAir(mutable)) {
 											continue label216;
 										}
 									}

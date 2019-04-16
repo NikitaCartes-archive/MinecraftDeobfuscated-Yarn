@@ -59,6 +59,16 @@ public class StonecutterBlock extends Block {
 	}
 
 	@Override
+	public boolean method_9526(BlockState blockState) {
+		return true;
+	}
+
+	@Override
+	public boolean isFullBoundsCubeForCulling(BlockState blockState) {
+		return true;
+	}
+
+	@Override
 	public BlockRenderType getRenderType(BlockState blockState) {
 		return BlockRenderType.field_11458;
 	}
@@ -81,5 +91,10 @@ public class StonecutterBlock extends Block {
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
 		builder.with(FACING);
+	}
+
+	@Override
+	public boolean canPlaceAtSide(BlockState blockState, BlockView blockView, BlockPos blockPos, BlockPlacementEnvironment blockPlacementEnvironment) {
+		return false;
 	}
 }

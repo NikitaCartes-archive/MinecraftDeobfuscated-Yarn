@@ -32,7 +32,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements Actor<R>, Ex
 
 	protected abstract Thread getThread();
 
-	protected boolean isOffThread() {
+	protected boolean shouldRunAsync() {
 		return !this.isOnThread();
 	}
 
@@ -43,7 +43,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements Actor<R>, Ex
 
 	@Environment(EnvType.CLIENT)
 	public <V> CompletableFuture<V> executeFuture(Supplier<V> supplier) {
-		return this.isOffThread() ? CompletableFuture.supplyAsync(supplier, this) : CompletableFuture.completedFuture(supplier.get());
+		return this.shouldRunAsync() ? CompletableFuture.supplyAsync(supplier, this) : CompletableFuture.completedFuture(supplier.get());
 	}
 
 	private CompletableFuture<Object> executeFuture(Runnable runnable) {
@@ -53,7 +53,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements Actor<R>, Ex
 		}, this);
 	}
 
-	public void method_19537(Runnable runnable) {
+	public void executeSync(Runnable runnable) {
 		if (!this.isOnThread()) {
 			this.executeFuture(runnable).join();
 		} else {
@@ -67,7 +67,7 @@ public abstract class ThreadExecutor<R extends Runnable> implements Actor<R>, Ex
 	}
 
 	public void execute(Runnable runnable) {
-		if (this.isOffThread()) {
+		if (this.shouldRunAsync()) {
 			this.method_18858(this.prepareRunnable(runnable));
 		} else {
 			runnable.run();

@@ -188,10 +188,14 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	public boolean changeFocus(boolean bl) {
 		if (this.active && this.visible) {
 			this.focused = !this.focused;
+			this.onFocusedChanged(this.focused);
 			return this.focused;
 		} else {
 			return false;
 		}
+	}
+
+	protected void onFocusedChanged(boolean bl) {
 	}
 
 	@Override
@@ -228,5 +232,13 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 
 	public String getMessage() {
 		return this.message;
+	}
+
+	public boolean isFocused() {
+		return this.focused;
+	}
+
+	protected void setFocused(boolean bl) {
+		this.focused = bl;
 	}
 }

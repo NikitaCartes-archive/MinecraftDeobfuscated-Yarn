@@ -32,7 +32,7 @@ public class ItemStackArgument implements Predicate<ItemStack> {
 		return itemStack.getItem() == this.item && TagHelper.areTagsEqual(this.tag, itemStack.getTag(), true);
 	}
 
-	public ItemStack method_9781(int i, boolean bl) throws CommandSyntaxException {
+	public ItemStack createStack(int i, boolean bl) throws CommandSyntaxException {
 		ItemStack itemStack = new ItemStack(this.item, i);
 		if (this.tag != null) {
 			itemStack.setTag(this.tag);

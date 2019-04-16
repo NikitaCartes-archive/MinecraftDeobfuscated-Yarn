@@ -33,7 +33,7 @@ public class EmptyFluid extends Fluid {
 	}
 
 	@Override
-	public Vec3d method_15782(BlockView blockView, BlockPos blockPos, FluidState fluidState) {
+	public Vec3d getVelocity(BlockView blockView, BlockPos blockPos, FluidState fluidState) {
 		return Vec3d.ZERO;
 	}
 

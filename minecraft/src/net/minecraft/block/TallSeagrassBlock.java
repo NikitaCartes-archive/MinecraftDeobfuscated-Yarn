@@ -70,7 +70,7 @@ public class TallSeagrassBlock extends ReplaceableTallPlantBlock implements Flui
 
 	@Override
 	public FluidState getFluidState(BlockState blockState) {
-		return Fluids.WATER.getState(false);
+		return Fluids.WATER.getStill(false);
 	}
 
 	@Override
