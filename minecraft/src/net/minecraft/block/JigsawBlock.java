@@ -53,7 +53,7 @@ public class JigsawBlock extends FacingBlock implements BlockEntityProvider {
 		}
 	}
 
-	public static boolean method_16546(Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2) {
+	public static boolean attachmentMatches(Structure.StructureBlockInfo structureBlockInfo, Structure.StructureBlockInfo structureBlockInfo2) {
 		return structureBlockInfo.state.get(FACING) == ((Direction)structureBlockInfo2.state.get(FACING)).getOpposite()
 			&& structureBlockInfo.tag.getString("attachement_type").equals(structureBlockInfo2.tag.getString("attachement_type"));
 	}

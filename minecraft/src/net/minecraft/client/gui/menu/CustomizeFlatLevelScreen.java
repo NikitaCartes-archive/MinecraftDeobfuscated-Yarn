@@ -28,7 +28,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	private FlatChunkGeneratorConfig config = FlatChunkGeneratorConfig.getDefaultConfig();
 	private String tileText;
 	private String heightText;
-	private CustomizeFlatLevelScreen.SuperflatLayersListWidget layerList;
+	private CustomizeFlatLevelScreen.SuperflatLayersListWidget layers;
 	private ButtonWidget widgetButtonRemoveLayer;
 
 	public CustomizeFlatLevelScreen(NewLevelScreen newLevelScreen, CompoundTag compoundTag) {
@@ -57,8 +57,8 @@ public class CustomizeFlatLevelScreen extends Screen {
 	protected void init() {
 		this.tileText = I18n.translate("createWorld.customize.flat.tile");
 		this.heightText = I18n.translate("createWorld.customize.flat.height");
-		this.layerList = new CustomizeFlatLevelScreen.SuperflatLayersListWidget();
-		this.children.add(this.layerList);
+		this.layers = new CustomizeFlatLevelScreen.SuperflatLayersListWidget();
+		this.children.add(this.layers);
 		this.widgetButtonRemoveLayer = this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 155,
@@ -69,14 +69,12 @@ public class CustomizeFlatLevelScreen extends Screen {
 				buttonWidget -> {
 					if (this.method_2147()) {
 						List<FlatChunkGeneratorLayer> list = this.config.getLayers();
-						int i = this.layerList.children().indexOf(this.layerList.getSelectedItem());
+						int i = this.layers.children().indexOf(this.layers.getSelectedItem());
 						int j = list.size() - i - 1;
 						list.remove(j);
-						this.layerList
+						this.layers
 							.method_20094(
-								list.isEmpty()
-									? null
-									: (CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem)this.layerList.children().get(Math.min(i, list.size() - 1))
+								list.isEmpty() ? null : (CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem)this.layers.children().get(Math.min(i, list.size() - 1))
 							);
 						this.config.updateLayerBlocks();
 						this.method_2145();
@@ -106,17 +104,17 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 	public void method_2145() {
 		this.widgetButtonRemoveLayer.active = this.method_2147();
-		this.layerList.method_19372();
+		this.layers.method_19372();
 	}
 
 	private boolean method_2147() {
-		return this.layerList.getSelectedItem() != null;
+		return this.layers.getSelectedItem() != null;
 	}
 
 	@Override
 	public void render(int i, int j, float f) {
 		this.renderBackground();
-		this.layerList.render(i, j, f);
+		this.layers.render(i, j, f);
 		this.drawCenteredString(this.font, this.title.getFormattedText(), this.width / 2, 8, 16777215);
 		int k = this.width / 2 - 92 - 16;
 		this.drawString(this.font, this.tileText, k, 32, 16777215);

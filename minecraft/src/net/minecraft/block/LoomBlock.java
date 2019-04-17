@@ -41,11 +41,11 @@ public class LoomBlock extends HorizontalFacingBlock {
 
 	@Override
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
-		return this.getDefaultState().with(field_11177, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
+		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite());
 	}
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11177);
+		builder.with(FACING);
 	}
 }

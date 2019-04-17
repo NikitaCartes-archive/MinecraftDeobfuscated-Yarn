@@ -86,10 +86,10 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	private Heightmap.Type transformHeightmapType(Heightmap.Type type) {
-		if (type == Heightmap.Type.WORLD_SURFACE_WG) {
-			return Heightmap.Type.WORLD_SURFACE;
+		if (type == Heightmap.Type.field_13194) {
+			return Heightmap.Type.field_13202;
 		} else {
-			return type == Heightmap.Type.OCEAN_FLOOR_WG ? Heightmap.Type.OCEAN_FLOOR : type;
+			return type == Heightmap.Type.field_13195 ? Heightmap.Type.field_13200 : type;
 		}
 	}
 

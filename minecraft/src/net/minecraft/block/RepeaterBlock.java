@@ -27,7 +27,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(field_11177, Direction.NORTH)
+				.with(FACING, Direction.NORTH)
 				.with(DELAY, Integer.valueOf(1))
 				.with(LOCKED, Boolean.valueOf(false))
 				.with(POWERED, Boolean.valueOf(false))
@@ -59,7 +59,7 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return !iWorld.isClient() && direction.getAxis() != ((Direction)blockState.get(field_11177)).getAxis()
+		return !iWorld.isClient() && direction.getAxis() != ((Direction)blockState.get(FACING)).getAxis()
 			? blockState.with(LOCKED, Boolean.valueOf(this.isLocked(iWorld, blockPos, blockState)))
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
@@ -71,14 +71,14 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 
 	@Override
 	protected boolean isValidInput(BlockState blockState) {
-		return method_9999(blockState);
+		return isRedstoneGate(blockState);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void randomDisplayTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if ((Boolean)blockState.get(POWERED)) {
-			Direction direction = blockState.get(field_11177);
+			Direction direction = blockState.get(FACING);
 			double d = (double)((float)blockPos.getX() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
 			double e = (double)((float)blockPos.getY() + 0.4F) + (double)(random.nextFloat() - 0.5F) * 0.2;
 			double f = (double)((float)blockPos.getZ() + 0.5F) + (double)(random.nextFloat() - 0.5F) * 0.2;
@@ -96,6 +96,6 @@ public class RepeaterBlock extends AbstractRedstoneGateBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11177, DELAY, LOCKED, POWERED);
+		builder.with(FACING, DELAY, LOCKED, POWERED);
 	}
 }

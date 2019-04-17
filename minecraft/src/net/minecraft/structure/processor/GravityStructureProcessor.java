@@ -20,7 +20,7 @@ public class GravityStructureProcessor extends StructureProcessor {
 	}
 
 	public GravityStructureProcessor(Dynamic<?> dynamic) {
-		this(Heightmap.Type.byName(dynamic.get("heightmap").asString(Heightmap.Type.WORLD_SURFACE_WG.getName())), dynamic.get("offset").asInt(0));
+		this(Heightmap.Type.byName(dynamic.get("heightmap").asString(Heightmap.Type.field_13194.getName())), dynamic.get("offset").asInt(0));
 	}
 
 	@Nullable

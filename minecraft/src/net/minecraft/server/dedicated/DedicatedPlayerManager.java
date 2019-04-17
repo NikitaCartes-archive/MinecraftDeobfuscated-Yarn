@@ -120,7 +120,7 @@ public class DedicatedPlayerManager extends PlayerManager {
 
 	@Override
 	public boolean isWhitelisted(GameProfile gameProfile) {
-		return !this.isWhitelistEnabled() || this.isOperator(gameProfile) || this.getWhitelist().method_14653(gameProfile);
+		return !this.isWhitelistEnabled() || this.isOperator(gameProfile) || this.getWhitelist().isAllowed(gameProfile);
 	}
 
 	public MinecraftDedicatedServer method_13938() {

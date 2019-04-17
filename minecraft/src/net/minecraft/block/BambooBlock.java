@@ -93,9 +93,9 @@ public class BambooBlock extends Block implements Fertilizable {
 			world.breakBlock(blockPos, true);
 		} else if ((Integer)blockState.get(STAGE) == 0) {
 			if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
-				int i = this.method_9386(world, blockPos) + 1;
+				int i = this.countBambooBelow(world, blockPos) + 1;
 				if (i < 16) {
-					this.method_9385(blockState, world, blockPos, random, i);
+					this.updateLeaves(blockState, world, blockPos, random, i);
 				}
 			}
 		}
@@ -123,8 +123,8 @@ public class BambooBlock extends Block implements Fertilizable {
 
 	@Override
 	public boolean isFertilizable(BlockView blockView, BlockPos blockPos, BlockState blockState, boolean bl) {
-		int i = this.method_9387(blockView, blockPos);
-		int j = this.method_9386(blockView, blockPos);
+		int i = this.countBambooAbove(blockView, blockPos);
+		int j = this.countBambooBelow(blockView, blockPos);
 		return i + j + 1 < 16 && (Integer)blockView.getBlockState(blockPos.up(i)).get(STAGE) != 1;
 	}
 
@@ -135,8 +135,8 @@ public class BambooBlock extends Block implements Fertilizable {
 
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		int i = this.method_9387(world, blockPos);
-		int j = this.method_9386(world, blockPos);
+		int i = this.countBambooAbove(world, blockPos);
+		int j = this.countBambooBelow(world, blockPos);
 		int k = i + j + 1;
 		int l = 1 + random.nextInt(2);
 
@@ -147,7 +147,7 @@ public class BambooBlock extends Block implements Fertilizable {
 				return;
 			}
 
-			this.method_9385(blockState2, world, blockPos2, random, k);
+			this.updateLeaves(blockState2, world, blockPos2, random, k);
 			i++;
 			k++;
 		}
@@ -163,7 +163,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		return BlockRenderLayer.CUTOUT;
 	}
 
-	protected void method_9385(BlockState blockState, World world, BlockPos blockPos, Random random, int i) {
+	protected void updateLeaves(BlockState blockState, World world, BlockPos blockPos, Random random, int i) {
 		BlockState blockState2 = world.getBlockState(blockPos.down());
 		BlockPos blockPos2 = blockPos.down(2);
 		BlockState blockState3 = world.getBlockState(blockPos2);
@@ -185,7 +185,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		world.setBlockState(blockPos.up(), this.getDefaultState().with(AGE, Integer.valueOf(j)).with(LEAVES, bambooLeaves).with(STAGE, Integer.valueOf(k)), 3);
 	}
 
-	protected int method_9387(BlockView blockView, BlockPos blockPos) {
+	protected int countBambooAbove(BlockView blockView, BlockPos blockPos) {
 		int i = 0;
 
 		while (i < 16 && blockView.getBlockState(blockPos.up(i + 1)).getBlock() == Blocks.field_10211) {
@@ -195,7 +195,7 @@ public class BambooBlock extends Block implements Fertilizable {
 		return i;
 	}
 
-	protected int method_9386(BlockView blockView, BlockPos blockPos) {
+	protected int countBambooBelow(BlockView blockView, BlockPos blockPos) {
 		int i = 0;
 
 		while (i < 16 && blockView.getBlockState(blockPos.down(i + 1)).getBlock() == Blocks.field_10211) {

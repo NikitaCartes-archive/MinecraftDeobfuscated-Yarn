@@ -27,7 +27,7 @@ public class ScaffoldingItem extends BlockItem {
 		BlockState blockState = world.getBlockState(blockPos);
 		Block block = this.getBlock();
 		if (blockState.getBlock() != block) {
-			return ScaffoldingBlock.method_16372(world, blockPos) == 7 ? null : itemPlacementContext;
+			return ScaffoldingBlock.calculateDistance(world, blockPos) == 7 ? null : itemPlacementContext;
 		} else {
 			Direction direction;
 			if (itemPlacementContext.isPlayerSneaking()) {

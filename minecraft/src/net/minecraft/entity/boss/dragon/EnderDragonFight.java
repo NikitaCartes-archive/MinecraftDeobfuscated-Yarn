@@ -284,7 +284,7 @@ public class EnderDragonFight {
 			}
 		}
 
-		int i = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN).getY();
+		int i = this.world.getTopPosition(Heightmap.Type.field_13197, EndPortalFeature.ORIGIN).getY();
 
 		for (int j = i; j >= 0; j--) {
 			BlockPattern.Result result2 = this.endPortalPattern
@@ -353,7 +353,7 @@ public class EnderDragonFight {
 			this.generateEndPortal(true);
 			this.generateNewEndGateway();
 			if (!this.previouslyKilled) {
-				this.world.setBlockState(this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN), Blocks.field_10081.getDefaultState());
+				this.world.setBlockState(this.world.getTopPosition(Heightmap.Type.field_13197, EndPortalFeature.ORIGIN), Blocks.field_10081.getDefaultState());
 			}
 
 			this.previouslyKilled = true;
@@ -385,7 +385,7 @@ public class EnderDragonFight {
 	private void generateEndPortal(boolean bl) {
 		EndPortalFeature endPortalFeature = new EndPortalFeature(bl);
 		if (this.exitPortalLocation == null) {
-			this.exitPortalLocation = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN).down();
+			this.exitPortalLocation = this.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN).down();
 
 			while (this.world.getBlockState(this.exitPortalLocation).getBlock() == Blocks.field_9987 && this.exitPortalLocation.getY() > this.world.getSeaLevel()) {
 				this.exitPortalLocation = this.exitPortalLocation.down();

@@ -26,7 +26,7 @@ public class ClientAdvancementManager {
 	@Nullable
 	private ClientAdvancementManager.Listener listener;
 	@Nullable
-	private Advancement field_3685;
+	private Advancement selectedTab;
 
 	public ClientAdvancementManager(MinecraftClient minecraftClient) {
 		this.client = minecraftClient;
@@ -48,7 +48,7 @@ public class ClientAdvancementManager {
 				advancementProgress.init(advancement.getCriteria(), advancement.getRequirements());
 				this.advancementProgresses.put(advancement, advancementProgress);
 				if (this.listener != null) {
-					this.listener.method_2865(advancement, advancementProgress);
+					this.listener.setProgress(advancement, advancementProgress);
 				}
 
 				if (!advancementUpdateS2CPacket.shouldClearCurrent()
@@ -67,16 +67,16 @@ public class ClientAdvancementManager {
 		return this.manager;
 	}
 
-	public void method_2864(@Nullable Advancement advancement, boolean bl) {
+	public void selectTab(@Nullable Advancement advancement, boolean bl) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.getNetworkHandler();
 		if (clientPlayNetworkHandler != null && advancement != null && bl) {
-			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.method_12418(advancement));
+			clientPlayNetworkHandler.sendPacket(AdvancementTabC2SPacket.open(advancement));
 		}
 
-		if (this.field_3685 != advancement) {
-			this.field_3685 = advancement;
+		if (this.selectedTab != advancement) {
+			this.selectedTab = advancement;
 			if (this.listener != null) {
-				this.listener.method_2866(advancement);
+				this.listener.selectTab(advancement);
 			}
 		}
 	}
@@ -86,17 +86,17 @@ public class ClientAdvancementManager {
 		this.manager.setListener(listener);
 		if (listener != null) {
 			for (Entry<Advancement, AdvancementProgress> entry : this.advancementProgresses.entrySet()) {
-				listener.method_2865((Advancement)entry.getKey(), (AdvancementProgress)entry.getValue());
+				listener.setProgress((Advancement)entry.getKey(), (AdvancementProgress)entry.getValue());
 			}
 
-			listener.method_2866(this.field_3685);
+			listener.selectTab(this.selectedTab);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public interface Listener extends AdvancementManager.Listener {
-		void method_2865(Advancement advancement, AdvancementProgress advancementProgress);
+		void setProgress(Advancement advancement, AdvancementProgress advancementProgress);
 
-		void method_2866(@Nullable Advancement advancement);
+		void selectTab(@Nullable Advancement advancement);
 	}
 }

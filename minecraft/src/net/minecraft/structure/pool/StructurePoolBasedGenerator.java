@@ -113,7 +113,7 @@ public class StructurePoolBasedGenerator {
 			MutableIntBoundingBox mutableIntBoundingBox = poolStructurePiece.getBoundingBox();
 			int j = (mutableIntBoundingBox.maxX + mutableIntBoundingBox.minX) / 2;
 			int k = (mutableIntBoundingBox.maxZ + mutableIntBoundingBox.minZ) / 2;
-			int l = chunkGenerator.method_20402(j, k, Heightmap.Type.WORLD_SURFACE_WG);
+			int l = chunkGenerator.method_20402(j, k, Heightmap.Type.field_13194);
 			poolStructurePiece.translate(0, l - (mutableIntBoundingBox.minY + poolStructurePiece.getGroundLevelDelta()), 0);
 			list.add(poolStructurePiece);
 			if (i > 0) {
@@ -208,7 +208,7 @@ public class StructurePoolBasedGenerator {
 							}
 
 							for (Structure.StructureBlockInfo structureBlockInfo2 : list2) {
-								if (JigsawBlock.method_16546(structureBlockInfo, structureBlockInfo2)) {
+								if (JigsawBlock.attachmentMatches(structureBlockInfo, structureBlockInfo2)) {
 									BlockPos blockPos4 = structureBlockInfo2.pos;
 									BlockPos blockPos5 = new BlockPos(blockPos3.getX() - blockPos4.getX(), blockPos3.getY() - blockPos4.getY(), blockPos3.getZ() - blockPos4.getZ());
 									MutableIntBoundingBox mutableIntBoundingBox3 = structurePoolElement2.getBoundingBox(this.field_18703, blockPos5, rotation2);
@@ -222,7 +222,7 @@ public class StructurePoolBasedGenerator {
 										s = k + r;
 									} else {
 										if (m == -1) {
-											m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
+											m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.field_13194);
 										}
 
 										s = m - q;
@@ -259,7 +259,7 @@ public class StructurePoolBasedGenerator {
 											w = s + q;
 										} else {
 											if (m == -1) {
-												m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.WORLD_SURFACE_WG);
+												m = this.field_18702.method_20402(blockPos2.getX(), blockPos2.getZ(), Heightmap.Type.field_13194);
 											}
 
 											w = m + r / 2;

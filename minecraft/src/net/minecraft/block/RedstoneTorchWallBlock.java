@@ -21,7 +21,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty field_11444 = RedstoneTorchBlock.LIT;
 
 	protected RedstoneTorchWallBlock(Block.Settings settings) {

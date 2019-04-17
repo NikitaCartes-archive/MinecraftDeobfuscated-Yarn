@@ -1,10 +1,10 @@
 package net.minecraft.block;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.WeakHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.particle.DustParticleParameters;
@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 
 public class RedstoneTorchBlock extends TorchBlock {
 	public static final BooleanProperty LIT = Properties.LIT;
-	private static final Map<BlockView, List<RedstoneTorchBlock.class_2460>> field_11445 = Maps.<BlockView, List<RedstoneTorchBlock.class_2460>>newHashMap();
+	private static final Map<BlockView, List<RedstoneTorchBlock.class_2460>> field_11445 = new WeakHashMap();
 
 	protected RedstoneTorchBlock(Block.Settings settings) {
 		super(settings);
@@ -58,10 +58,10 @@ public class RedstoneTorchBlock extends TorchBlock {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		method_10490(blockState, world, blockPos, random, this.method_10488(world, blockPos, blockState));
+		update(blockState, world, blockPos, random, this.method_10488(world, blockPos, blockState));
 	}
 
-	public static void method_10490(BlockState blockState, World world, BlockPos blockPos, Random random, boolean bl) {
+	public static void update(BlockState blockState, World world, BlockPos blockPos, Random random, boolean bl) {
 		List<RedstoneTorchBlock.class_2460> list = (List<RedstoneTorchBlock.class_2460>)field_11445.get(world);
 
 		while (list != null && !list.isEmpty() && world.getTime() - ((RedstoneTorchBlock.class_2460)list.get(0)).field_11447 > 60L) {
@@ -120,12 +120,7 @@ public class RedstoneTorchBlock extends TorchBlock {
 	}
 
 	private static boolean method_10489(World world, BlockPos blockPos, boolean bl) {
-		List<RedstoneTorchBlock.class_2460> list = (List<RedstoneTorchBlock.class_2460>)field_11445.get(world);
-		if (list == null) {
-			list = Lists.<RedstoneTorchBlock.class_2460>newArrayList();
-			field_11445.put(world, list);
-		}
-
+		List<RedstoneTorchBlock.class_2460> list = (List<RedstoneTorchBlock.class_2460>)field_11445.computeIfAbsent(world, blockView -> Lists.newArrayList());
 		if (bl) {
 			list.add(new RedstoneTorchBlock.class_2460(blockPos.toImmutable(), world.getTime()));
 		}

@@ -38,7 +38,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 	private boolean field_13411;
 	private final TagContainer<CommandFunction> tags = new TagContainer<>(this::getFunction, "tags/functions", true, "function");
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
-	private boolean justLoaded;
+	private boolean needToRunLoadFunctions;
 
 	public CommandFunctionManager(MinecraftServer minecraftServer) {
 		this.server = minecraftServer;
@@ -64,7 +64,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		return this.server.getCommandManager().getDispatcher();
 	}
 
-	public void method_18699() {
+	public void tick() {
 		this.server.getProfiler().push(TICK_FUNCTION::toString);
 
 		for (CommandFunction commandFunction : this.tickFunctions) {
@@ -72,8 +72,8 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 		}
 
 		this.server.getProfiler().pop();
-		if (this.justLoaded) {
-			this.justLoaded = false;
+		if (this.needToRunLoadFunctions) {
+			this.needToRunLoadFunctions = false;
 			Collection<CommandFunction> collection = this.getTags().getOrCreate(LOAD_FUNCTION).values();
 			this.server.getProfiler().push(LOAD_FUNCTION::toString);
 
@@ -153,7 +153,7 @@ public class CommandFunctionManager implements SynchronousResourceReloadListener
 
 		this.tags.applyReload((Map<Identifier, Tag.Builder<CommandFunction>>)this.tags.prepareReload(resourceManager, this.server.getWorkerExecutor()).join());
 		this.tickFunctions.addAll(this.tags.getOrCreate(TICK_FUNCTION).values());
-		this.justLoaded = true;
+		this.needToRunLoadFunctions = true;
 	}
 
 	@Nullable

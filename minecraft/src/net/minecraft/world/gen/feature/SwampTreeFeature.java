@@ -23,7 +23,7 @@ public class SwampTreeFeature extends AbstractTreeFeature<DefaultFeatureConfig> 
 	@Override
 	public boolean generate(Set<BlockPos> set, ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos blockPos) {
 		int i = random.nextInt(4) + 5;
-		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.OCEAN_FLOOR, blockPos);
+		blockPos = modifiableTestableWorld.getTopPosition(Heightmap.Type.field_13200, blockPos);
 		boolean bl = true;
 		if (blockPos.getY() >= 1 && blockPos.getY() + i + 1 <= 256) {
 			for (int j = blockPos.getY(); j <= blockPos.getY() + 1 + i; j++) {

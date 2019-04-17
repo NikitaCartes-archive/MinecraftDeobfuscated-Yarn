@@ -85,10 +85,10 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 		int m = (i << 4) + 7;
 		int n = (j << 4) + 7;
-		int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
-		int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
-		int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
-		int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG);
+		int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.field_13194);
+		int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.field_13194);
+		int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.field_13194);
+		int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.field_13194);
 		return Math.min(Math.min(o, p), Math.min(q, r));
 	}
 

@@ -2082,7 +2082,7 @@ public class WorldRenderer implements AutoCloseable, SynchronousResourceReloadLi
 				this.world.playSound(blockPos, SoundEvents.field_17481, SoundCategory.field_15245, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
 			case 1500:
-				ComposterBlock.method_18027(this.world, blockPos, j > 0);
+				ComposterBlock.playEffects(this.world, blockPos, j > 0);
 				break;
 			case 1501:
 				this.world

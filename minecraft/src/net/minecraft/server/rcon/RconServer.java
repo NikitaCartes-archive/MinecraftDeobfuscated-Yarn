@@ -57,7 +57,7 @@ public class RconServer extends RconBase {
 				try {
 					Socket socket = this.listener.accept();
 					socket.setSoTimeout(500);
-					RconClient rconClient = new RconClient(this.field_14425, this.password, socket);
+					RconClient rconClient = new RconClient(this.server, this.password, socket);
 					rconClient.start();
 					this.clients.put(socket.getRemoteSocketAddress(), rconClient);
 					this.removeStoppedClients();
@@ -92,11 +92,11 @@ public class RconServer extends RconBase {
 	}
 
 	@Override
-	public void method_18050() {
-		super.method_18050();
+	public void stop() {
+		super.stop();
 
 		for (Entry<SocketAddress, RconClient> entry : this.clients.entrySet()) {
-			((RconClient)entry.getValue()).method_18050();
+			((RconClient)entry.getValue()).stop();
 		}
 
 		this.closeSocket(this.listener);

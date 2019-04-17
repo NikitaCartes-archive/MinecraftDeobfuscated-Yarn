@@ -1391,12 +1391,8 @@ public class StrongholdGenerator {
 					this.addBlock(iWorld, Blocks.field_10056.getDefaultState(), i + 2, j, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_9973.getDefaultState(), i + 1, j, k, mutableIntBoundingBox);
 					this.addBlock(iWorld, Blocks.field_9973.getDefaultState().with(DoorBlock.HALF, DoubleBlockHalf.field_12609), i + 1, j + 1, k, mutableIntBoundingBox);
-					this.addBlock(
-						iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.field_11177, Direction.NORTH), i + 2, j + 1, k + 1, mutableIntBoundingBox
-					);
-					this.addBlock(
-						iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.field_11177, Direction.SOUTH), i + 2, j + 1, k - 1, mutableIntBoundingBox
-					);
+					this.addBlock(iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.NORTH), i + 2, j + 1, k + 1, mutableIntBoundingBox);
+					this.addBlock(iWorld, Blocks.field_10494.getDefaultState().with(AbstractButtonBlock.FACING, Direction.SOUTH), i + 2, j + 1, k - 1, mutableIntBoundingBox);
 			}
 		}
 

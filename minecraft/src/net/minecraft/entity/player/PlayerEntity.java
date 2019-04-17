@@ -1188,7 +1188,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	public Either<PlayerEntity.SleepFailureReason, Void> trySleep(BlockPos blockPos) {
-		Direction direction = this.world.getBlockState(blockPos).get(HorizontalFacingBlock.field_11177);
+		Direction direction = this.world.getBlockState(blockPos).get(HorizontalFacingBlock.FACING);
 		if (!this.world.isClient) {
 			if (this.isSleeping() || !this.isAlive()) {
 				return Either.left(PlayerEntity.SleepFailureReason.INVALID_ATTEMPT);
@@ -1296,7 +1296,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				return bl2 && bl3 ? blockPos : null;
 			}
 		} else {
-			return BedBlock.method_9484(blockView, blockPos, 0);
+			return BedBlock.findWakeUpPosition(blockView, blockPos, 0);
 		}
 	}
 

@@ -127,7 +127,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
 			if (!world.isClient && playerEntity.isCreative()) {
 				ItemStack itemStack = getItemStack(this.getColor());
-				CompoundTag compoundTag = shulkerBoxBlockEntity.method_11317(new CompoundTag());
+				CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
 				if (!compoundTag.isEmpty()) {
 					itemStack.setChildTag("BlockEntityTag", compoundTag);
 				}
@@ -248,7 +248,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	public ItemStack getPickStack(BlockView blockView, BlockPos blockPos, BlockState blockState) {
 		ItemStack itemStack = super.getPickStack(blockView, blockPos, blockState);
 		ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockView.getBlockEntity(blockPos);
-		CompoundTag compoundTag = shulkerBoxBlockEntity.method_11317(new CompoundTag());
+		CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
 		if (!compoundTag.isEmpty()) {
 			itemStack.setChildTag("BlockEntityTag", compoundTag);
 		}

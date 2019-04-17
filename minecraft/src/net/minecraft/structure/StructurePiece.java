@@ -234,7 +234,7 @@ public abstract class StructurePiece {
 		int m = this.applyYTransform(j + 1);
 		int n = this.applyZTransform(i, k);
 		BlockPos blockPos = new BlockPos(l, m, n);
-		return !mutableIntBoundingBox.contains(blockPos) ? false : m < viewableWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
+		return !mutableIntBoundingBox.contains(blockPos) ? false : m < viewableWorld.getTop(Heightmap.Type.field_13195, l, n);
 	}
 
 	protected void fill(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, int i, int j, int k, int l, int m, int n) {
@@ -407,9 +407,9 @@ public abstract class StructurePiece {
 		}
 
 		if (direction != null) {
-			return blockState.with(HorizontalFacingBlock.field_11177, direction.getOpposite());
+			return blockState.with(HorizontalFacingBlock.FACING, direction.getOpposite());
 		} else {
-			Direction direction3 = blockState.get(HorizontalFacingBlock.field_11177);
+			Direction direction3 = blockState.get(HorizontalFacingBlock.FACING);
 			BlockPos blockPos3 = blockPos.offset(direction3);
 			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
@@ -426,7 +426,7 @@ public abstract class StructurePiece {
 				blockPos3 = blockPos.offset(direction3);
 			}
 
-			return blockState.with(HorizontalFacingBlock.field_11177, direction3);
+			return blockState.with(HorizontalFacingBlock.FACING, direction3);
 		}
 	}
 

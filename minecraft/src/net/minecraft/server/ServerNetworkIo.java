@@ -114,7 +114,7 @@ public class ServerNetworkIo {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public SocketAddress method_14353() {
+	public SocketAddress bindLocal() {
 		ChannelFuture channelFuture;
 		synchronized (this.channels) {
 			channelFuture = new ServerBootstrap().channel(LocalServerChannel.class).childHandler(new ChannelInitializer<Channel>() {

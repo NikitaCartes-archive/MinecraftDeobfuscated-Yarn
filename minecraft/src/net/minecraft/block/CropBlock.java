@@ -73,7 +73,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		if (world.getLightLevel(blockPos, 0) >= 9) {
 			int i = this.getCropAge(blockState);
 			if (i < this.getCropAgeMaximum()) {
-				float f = method_9830(this, world, blockPos);
+				float f = getAvailableMoisture(this, world, blockPos);
 				if (random.nextInt((int)(25.0F / f) + 1) == 0) {
 					world.setBlockState(blockPos, this.withCropAge(i + 1), 2);
 				}
@@ -95,7 +95,7 @@ public class CropBlock extends PlantBlock implements Fertilizable {
 		return MathHelper.nextInt(world.random, 2, 5);
 	}
 
-	protected static float method_9830(Block block, BlockView blockView, BlockPos blockPos) {
+	protected static float getAvailableMoisture(Block block, BlockView blockView, BlockPos blockPos) {
 		float f = 1.0F;
 		BlockPos blockPos2 = blockPos.down();
 

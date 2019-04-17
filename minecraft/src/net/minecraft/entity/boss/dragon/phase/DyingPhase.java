@@ -32,7 +32,7 @@ public class DyingPhase extends AbstractPhase {
 	public void method_6855() {
 		this.field_7040++;
 		if (this.field_7041 == null) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13197, EndPortalFeature.ORIGIN);
 			this.field_7041 = new Vec3d((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 		}
 

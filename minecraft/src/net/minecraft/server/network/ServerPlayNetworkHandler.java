@@ -259,8 +259,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 		return this.client;
 	}
 
-	private boolean method_19507() {
-		return this.server.method_19466(this.player.getGameProfile());
+	private boolean isServerOwner() {
+		return this.server.isOwner(this.player.getGameProfile());
 	}
 
 	public void disconnect(TextComponent textComponent) {
@@ -318,7 +318,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 				double n = i - this.lastTickRiddenZ;
 				double o = entity.getVelocity().lengthSquared();
 				double p = l * l + m * m + n * n;
-				if (p - o > 100.0 && !this.method_19507()) {
+				if (p - o > 100.0 && !this.isServerOwner()) {
 					LOGGER.warn("{} (vehicle of {}) moved too quickly! {},{},{}", entity.getName().getString(), this.player.getName().getString(), l, m, n);
 					this.client.send(new VehicleMoveS2CPacket(entity));
 					return;
@@ -753,7 +753,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 							if (!this.player.isInTeleportationState()
 								&& (!this.player.getServerWorld().getGameRules().getBoolean("disableElytraMovementCheck") || !this.player.isFallFlying())) {
 								float s = this.player.isFallFlying() ? 300.0F : 100.0F;
-								if (q - p > (double)(s * (float)r) && !this.method_19507()) {
+								if (q - p > (double)(s * (float)r) && !this.isServerOwner()) {
 									LOGGER.warn("{} moved too quickly! {},{},{}", this.player.getName().getString(), m, n, o);
 									this.requestTeleport(this.player.x, this.player.y, this.player.z, this.player.yaw, this.player.pitch);
 									return;
@@ -978,8 +978,8 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			.getPlayerManager()
 			.sendToAll(new TranslatableTextComponent("multiplayer.player.left", this.player.getDisplayName()).applyFormat(TextFormat.field_1054));
 		this.player.method_14231();
-		this.server.getPlayerManager().method_14611(this.player);
-		if (this.method_19507()) {
+		this.server.getPlayerManager().remove(this.player);
+		if (this.isServerOwner()) {
 			LOGGER.info("Stopping singleplayer server as player logged out");
 			this.server.stop(false);
 		}
@@ -1343,7 +1343,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 			int i = (int)(SystemUtil.getMeasuringTimeMs() - this.lastKeepAliveTime);
 			this.player.field_13967 = (this.player.field_13967 * 3 + i) / 4;
 			this.waitingForKeepAlive = false;
-		} else if (!this.method_19507()) {
+		} else if (!this.isServerOwner()) {
 			this.disconnect(new TranslatableTextComponent("disconnect.timeout"));
 		}
 	}
@@ -1367,7 +1367,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onUpdateDifficulty(UpdateDifficultyC2SPacket updateDifficultyC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateDifficultyC2SPacket, this, this.player.getServerWorld());
-		if (this.player.allowsPermissionLevel(2) || this.method_19507()) {
+		if (this.player.allowsPermissionLevel(2) || this.isServerOwner()) {
 			this.server.setDifficulty(updateDifficultyC2SPacket.getDifficulty(), false);
 		}
 	}
@@ -1375,7 +1375,7 @@ public class ServerPlayNetworkHandler implements ServerPlayPacketListener {
 	@Override
 	public void onUpdateDifficultyLock(UpdateDifficultyLockC2SPacket updateDifficultyLockC2SPacket) {
 		NetworkThreadUtils.forceMainThread(updateDifficultyLockC2SPacket, this, this.player.getServerWorld());
-		if (this.player.allowsPermissionLevel(2) || this.method_19507()) {
+		if (this.player.allowsPermissionLevel(2) || this.isServerOwner()) {
 			this.server.method_19467(updateDifficultyLockC2SPacket.isDifficultyLocked());
 		}
 	}

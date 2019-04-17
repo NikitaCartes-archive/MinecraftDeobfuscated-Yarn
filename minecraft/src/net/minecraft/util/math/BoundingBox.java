@@ -257,10 +257,6 @@ public class BoundingBox {
 		return this.maxZ - this.minZ;
 	}
 
-	public BoundingBox contract(double d, double e, double f) {
-		return this.expand(-d, -e, -f);
-	}
-
 	public BoundingBox contract(double d) {
 		return this.expand(-d);
 	}

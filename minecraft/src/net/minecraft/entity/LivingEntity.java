@@ -1227,7 +1227,7 @@ public abstract class LivingEntity extends Entity {
 	private boolean method_6077(BlockPos blockPos, BlockState blockState) {
 		if ((Boolean)blockState.get(TrapdoorBlock.OPEN)) {
 			BlockState blockState2 = this.world.getBlockState(blockPos.down());
-			if (blockState2.getBlock() == Blocks.field_9983 && blockState2.get(LadderBlock.FACING) == blockState.get(TrapdoorBlock.field_11177)) {
+			if (blockState2.getBlock() == Blocks.field_9983 && blockState2.get(LadderBlock.FACING) == blockState.get(TrapdoorBlock.FACING)) {
 				return true;
 			}
 		}
@@ -2719,7 +2719,7 @@ public abstract class LivingEntity extends Entity {
 			BlockState blockState = this.world.getBlockState(blockPos);
 			if (blockState.getBlock() instanceof BedBlock) {
 				this.world.setBlockState(blockPos, blockState.with(BedBlock.OCCUPIED, Boolean.valueOf(false)), 3);
-				BlockPos blockPos2 = BedBlock.method_9484(this.world, blockPos, 0);
+				BlockPos blockPos2 = BedBlock.findWakeUpPosition(this.world, blockPos, 0);
 				if (blockPos2 == null) {
 					blockPos2 = blockPos.up();
 				}
@@ -2733,9 +2733,9 @@ public abstract class LivingEntity extends Entity {
 
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	public Direction method_18401() {
+	public Direction getSleepingDirection() {
 		BlockPos blockPos = (BlockPos)this.getSleepingPosition().orElse(null);
-		return blockPos != null ? BedBlock.method_18476(this.world, blockPos) : null;
+		return blockPos != null ? BedBlock.getDirection(this.world, blockPos) : null;
 	}
 
 	@Override

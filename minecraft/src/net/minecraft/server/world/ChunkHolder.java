@@ -26,6 +26,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.ProtoChunk;
+import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 
@@ -322,8 +324,9 @@ public class ChunkHolder {
 		}
 
 		if (bl3 && !bl4) {
-			this.tickingFuture.complete(UNLOADED_WORLD_CHUNK);
+			CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture2 = this.tickingFuture;
 			this.tickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
+			completableFuture2.thenAccept(either -> either.ifLeft(threadedAnvilChunkStorage::method_20459));
 		}
 
 		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.ENTITY_TICKING);
@@ -360,6 +363,21 @@ public class ChunkHolder {
 
 	public void method_20385() {
 		this.field_19238 = getTargetGenerationStatus(this.level).isAtLeast(ChunkStatus.FULL);
+	}
+
+	public void method_20456(ReadOnlyChunk readOnlyChunk) {
+		for (int i = 0; i < this.futuresByStatus.length(); i++) {
+			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)this.futuresByStatus
+				.get(i);
+			if (completableFuture != null) {
+				Optional<Chunk> optional = ((Either)completableFuture.getNow(UNLOADED_CHUNK)).left();
+				if (optional.isPresent() && optional.get() instanceof ProtoChunk) {
+					this.futuresByStatus.set(i, CompletableFuture.completedFuture(Either.left(readOnlyChunk)));
+				}
+			}
+		}
+
+		this.updateFuture(CompletableFuture.completedFuture(Either.left(readOnlyChunk.getWrappedChunk())));
 	}
 
 	public static enum LevelType {

@@ -52,7 +52,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		super.onScheduledTick(blockState, world, blockPos, random);
 		if (world.getLightLevel(blockPos, 0) >= 9) {
-			float f = CropBlock.method_9830(this, world, blockPos);
+			float f = CropBlock.getAvailableMoisture(this, world, blockPos);
 			if (random.nextInt((int)(25.0F / f) + 1) == 0) {
 				int i = (Integer)blockState.get(AGE);
 				if (i < 7) {
@@ -67,7 +67,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 							block == Blocks.field_10362 || block == Blocks.field_10566 || block == Blocks.field_10253 || block == Blocks.field_10520 || block == Blocks.field_10219
 						)) {
 						world.setBlockState(blockPos2, this.gourdBlock.getDefaultState());
-						world.setBlockState(blockPos, this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.field_11177, direction));
+						world.setBlockState(blockPos, this.gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction));
 					}
 				}
 			}

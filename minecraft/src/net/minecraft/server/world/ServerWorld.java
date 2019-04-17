@@ -426,7 +426,7 @@ public class ServerWorld extends World {
 
 		profiler.swap("iceandsnow");
 		if (this.random.nextInt(16) == 0) {
-			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, this.getRandomPosInChunk(j, 0, k, 15));
+			BlockPos blockPos = this.getTopPosition(Heightmap.Type.field_13197, this.getRandomPosInChunk(j, 0, k, 15));
 			BlockPos blockPos2 = blockPos.down();
 			Biome biome = this.getBiome(blockPos);
 			if (biome.canSetSnow(this, blockPos2)) {
@@ -471,7 +471,7 @@ public class ServerWorld extends World {
 	}
 
 	protected BlockPos method_18210(BlockPos blockPos) {
-		BlockPos blockPos2 = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos);
+		BlockPos blockPos2 = this.getTopPosition(Heightmap.Type.field_13197, blockPos);
 		BoundingBox boundingBox = new BoundingBox(blockPos2, new BlockPos(blockPos2.getX(), this.getHeight(), blockPos2.getZ())).expand(3.0);
 		List<LivingEntity> list = this.getEntities(
 			LivingEntity.class, boundingBox, livingEntity -> livingEntity != null && livingEntity.isAlive() && this.isSkyVisible(livingEntity.getBlockPos())
@@ -694,7 +694,7 @@ public class ServerWorld extends World {
 		for (int i = 0; i < 10; i++) {
 			int j = this.properties.getSpawnX() + this.random.nextInt(6) - this.random.nextInt(6);
 			int k = this.properties.getSpawnZ() + this.random.nextInt(6) - this.random.nextInt(6);
-			BlockPos blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(j, 0, k)).up();
+			BlockPos blockPos = this.getTopPosition(Heightmap.Type.field_13203, new BlockPos(j, 0, k)).up();
 			if (bonusChestFeature.method_12817(
 				this, (ChunkGenerator<? extends ChunkGeneratorConfig>)this.chunkManager.getChunkGenerator(), this.random, blockPos, FeatureConfig.DEFAULT
 			)) {

@@ -68,11 +68,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 	public BlockState getPlacementState(ItemPlacementContext itemPlacementContext) {
 		BlockPos blockPos = itemPlacementContext.getBlockPos();
 		World world = itemPlacementContext.getWorld();
-		int i = method_16372(world, blockPos);
+		int i = calculateDistance(world, blockPos);
 		return this.getDefaultState()
 			.with(WATERLOGGED, Boolean.valueOf(world.getFluidState(blockPos).getFluid() == Fluids.WATER))
 			.with(DISTANCE, Integer.valueOf(i))
-			.with(BOTTOM, Boolean.valueOf(this.method_16373(world, blockPos, i)));
+			.with(BOTTOM, Boolean.valueOf(this.shouldBeBottom(world, blockPos, i)));
 	}
 
 	@Override
@@ -99,8 +99,8 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		int i = method_16372(world, blockPos);
-		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.method_16373(world, blockPos, i)));
+		int i = calculateDistance(world, blockPos);
+		BlockState blockState2 = blockState.with(DISTANCE, Integer.valueOf(i)).with(BOTTOM, Boolean.valueOf(this.shouldBeBottom(world, blockPos, i)));
 		if ((Integer)blockState2.get(DISTANCE) == 7) {
 			if ((Integer)blockState.get(DISTANCE) == 7) {
 				world.spawnEntity(
@@ -118,7 +118,7 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return method_16372(viewableWorld, blockPos) < 7;
+		return calculateDistance(viewableWorld, blockPos) < 7;
 	}
 
 	@Override
@@ -137,11 +137,11 @@ public class ScaffoldingBlock extends Block implements Waterloggable {
 		return blockState.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(blockState);
 	}
 
-	private boolean method_16373(BlockView blockView, BlockPos blockPos, int i) {
+	private boolean shouldBeBottom(BlockView blockView, BlockPos blockPos, int i) {
 		return i > 0 && blockView.getBlockState(blockPos.down()).getBlock() != this;
 	}
 
-	public static int method_16372(BlockView blockView, BlockPos blockPos) {
+	public static int calculateDistance(BlockView blockView, BlockPos blockPos) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos).setOffset(Direction.DOWN);
 		BlockState blockState = blockView.getBlockState(mutable);
 		int i = 7;

@@ -42,7 +42,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack itemStack, LootContext lootContext) {
-		ListTag listTag = this.getLoreTag(itemStack, !this.lore.isEmpty());
+		ListTag listTag = this.getLoreForMerge(itemStack, !this.lore.isEmpty());
 		if (listTag != null) {
 			if (this.replace) {
 				listTag.clear();
@@ -56,7 +56,7 @@ public class SetLoreLootFunction extends ConditionalLootFunction {
 	}
 
 	@Nullable
-	private ListTag getLoreTag(ItemStack itemStack, boolean bl) {
+	private ListTag getLoreForMerge(ItemStack itemStack, boolean bl) {
 		CompoundTag compoundTag;
 		if (itemStack.hasTag()) {
 			compoundTag = itemStack.getTag();

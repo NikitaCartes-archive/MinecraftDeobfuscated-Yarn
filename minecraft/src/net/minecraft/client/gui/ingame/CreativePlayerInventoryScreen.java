@@ -500,7 +500,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			if (itemGroup == ItemGroup.SEARCH) {
 				this.searchBox.setVisible(true);
 				this.searchBox.method_1856(false);
-				this.searchBox.setFocused(true);
+				this.searchBox.method_1876(true);
 				if (i != itemGroup.getIndex()) {
 					this.searchBox.setText("");
 				}
@@ -509,7 +509,7 @@ public class CreativePlayerInventoryScreen extends AbstractPlayerInventoryScreen
 			} else {
 				this.searchBox.setVisible(false);
 				this.searchBox.method_1856(true);
-				this.searchBox.setFocused(false);
+				this.searchBox.method_1876(false);
 				this.searchBox.setText("");
 			}
 		}

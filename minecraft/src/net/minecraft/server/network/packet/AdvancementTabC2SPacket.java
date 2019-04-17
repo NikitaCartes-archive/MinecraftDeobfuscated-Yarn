@@ -24,7 +24,7 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static AdvancementTabC2SPacket method_12418(Advancement advancement) {
+	public static AdvancementTabC2SPacket open(Advancement advancement) {
 		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.field_13024, advancement.getId());
 	}
 

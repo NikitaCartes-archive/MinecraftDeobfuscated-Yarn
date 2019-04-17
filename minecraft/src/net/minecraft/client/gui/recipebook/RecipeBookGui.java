@@ -367,7 +367,7 @@ public class RecipeBookGui extends DrawableHelper implements Drawable, Element, 
 			return true;
 		} else if (this.client.options.keyChat.matchesKey(i, j) && !this.searchField.isFocused()) {
 			this.field_3087 = true;
-			this.searchField.setFocused(true);
+			this.searchField.method_1876(true);
 			return true;
 		} else {
 			return false;

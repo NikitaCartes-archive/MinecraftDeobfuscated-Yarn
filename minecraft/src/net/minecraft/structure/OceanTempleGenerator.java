@@ -271,7 +271,7 @@ public class OceanTempleGenerator {
 				.clearProcessors()
 				.addProcessor(new BlockRotStructureProcessor(this.integrity))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-			int i = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, this.pos.getX(), this.pos.getZ());
+			int i = iWorld.getTop(Heightmap.Type.field_13195, this.pos.getX(), this.pos.getZ());
 			this.pos = new BlockPos(this.pos.getX(), i, this.pos.getZ());
 			BlockPos blockPos = Structure.method_15168(
 					new BlockPos(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1), Mirror.NONE, this.rotation, BlockPos.ORIGIN

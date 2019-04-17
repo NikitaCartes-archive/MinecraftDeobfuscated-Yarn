@@ -39,7 +39,7 @@ public class LandingPhase extends AbstractPhase {
 	@Override
 	public void method_6855() {
 		if (this.field_7046 == null) {
-			this.field_7046 = new Vec3d(this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN));
+			this.field_7046 = new Vec3d(this.dragon.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN));
 		}
 
 		if (this.field_7046.squaredDistanceTo(this.dragon.x, this.dragon.y, this.dragon.z) < 1.0) {

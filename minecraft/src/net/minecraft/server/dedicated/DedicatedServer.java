@@ -19,7 +19,7 @@ public interface DedicatedServer {
 
 	String getLevelName();
 
-	String method_12916();
+	String getPlugins();
 
 	String executeRconCommand(String string);
 

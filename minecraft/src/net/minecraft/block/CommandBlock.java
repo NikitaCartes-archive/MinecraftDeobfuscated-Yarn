@@ -75,7 +75,7 @@ public class CommandBlock extends BlockWithEntity {
 				if (type == CommandBlockBlockEntity.Type.field_11923) {
 					commandBlockBlockEntity.updateConditionMet();
 					if (bl2) {
-						this.method_9780(blockState, world, blockPos, commandBlockExecutor, bl);
+						this.execute(blockState, world, blockPos, commandBlockExecutor, bl);
 					} else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
 						commandBlockExecutor.setSuccessCount(0);
 					}
@@ -85,7 +85,7 @@ public class CommandBlock extends BlockWithEntity {
 					}
 				} else if (type == CommandBlockBlockEntity.Type.field_11924) {
 					if (bl2) {
-						this.method_9780(blockState, world, blockPos, commandBlockExecutor, bl);
+						this.execute(blockState, world, blockPos, commandBlockExecutor, bl);
 					} else if (commandBlockBlockEntity.isConditionalCommandBlock()) {
 						commandBlockExecutor.setSuccessCount(0);
 					}
@@ -96,14 +96,14 @@ public class CommandBlock extends BlockWithEntity {
 		}
 	}
 
-	private void method_9780(BlockState blockState, World world, BlockPos blockPos, CommandBlockExecutor commandBlockExecutor, boolean bl) {
+	private void execute(BlockState blockState, World world, BlockPos blockPos, CommandBlockExecutor commandBlockExecutor, boolean bl) {
 		if (bl) {
 			commandBlockExecutor.execute(world);
 		} else {
 			commandBlockExecutor.setSuccessCount(0);
 		}
 
-		method_9779(world, blockPos, blockState.get(FACING));
+		executeCommandChain(world, blockPos, blockState.get(FACING));
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class CommandBlock extends BlockWithEntity {
 		return this.getDefaultState().with(FACING, itemPlacementContext.getPlayerFacing().getOpposite());
 	}
 
-	private static void method_9779(World world, BlockPos blockPos, Direction direction) {
+	private static void executeCommandChain(World world, BlockPos blockPos, Direction direction) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(blockPos);
 		GameRules gameRules = world.getGameRules();
 		int i = gameRules.getInteger("maxCommandChainLength");

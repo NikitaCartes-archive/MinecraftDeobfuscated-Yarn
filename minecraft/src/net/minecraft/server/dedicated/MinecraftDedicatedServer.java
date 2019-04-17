@@ -56,10 +56,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class MinecraftDedicatedServer extends MinecraftServer implements DedicatedServer {
-	private static final Logger LOGGER_DEDICATED = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Pattern SHA1_PATTERN = Pattern.compile("^[a-fA-F0-9]{40}$");
 	private final List<PendingServerCommand> commandQueue = Collections.synchronizedList(Lists.newArrayList());
-	private QueryResponseHandler field_13816;
+	private QueryResponseHandler queryResponseHandler;
 	private final ServerCommandOutput rconCommandOutput;
 	private RconServer rconServer;
 	private final ServerPropertiesLoader propertiesLoader;
@@ -95,7 +95,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		new Thread("Server Infinisleeper") {
 			{
 				this.setDaemon(true);
-				this.setUncaughtExceptionHandler(new UncaughtExceptionLogger(MinecraftDedicatedServer.LOGGER_DEDICATED));
+				this.setUncaughtExceptionHandler(new UncaughtExceptionLogger(MinecraftDedicatedServer.LOGGER));
 				this.start();
 			}
 
@@ -122,19 +122,19 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 						MinecraftDedicatedServer.this.enqueueCommand(string, MinecraftDedicatedServer.this.getCommandSource());
 					}
 				} catch (IOException var4) {
-					MinecraftDedicatedServer.LOGGER_DEDICATED.error("Exception handling console input", (Throwable)var4);
+					MinecraftDedicatedServer.LOGGER.error("Exception handling console input", (Throwable)var4);
 				}
 			}
 		};
 		thread.setDaemon(true);
-		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER_DEDICATED));
+		thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 		thread.start();
-		LOGGER_DEDICATED.info("Starting minecraft server version " + SharedConstants.getGameVersion().getName());
+		LOGGER.info("Starting minecraft server version " + SharedConstants.getGameVersion().getName());
 		if (Runtime.getRuntime().maxMemory() / 1024L / 1024L < 512L) {
-			LOGGER_DEDICATED.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
+			LOGGER.warn("To start the server with more ram, launch it as \"java -Xmx1024M -Xms1024M -jar minecraft_server.jar\"");
 		}
 
-		LOGGER_DEDICATED.info("Loading properties");
+		LOGGER.info("Loading properties");
 		ServerPropertiesHandler serverPropertiesHandler = this.propertiesLoader.getPropertiesHandler();
 		if (this.isSinglePlayer()) {
 			this.setServerIp("127.0.0.1");
@@ -154,7 +154,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
 		this.method_3731(serverPropertiesHandler.enforceWhitelist);
 		this.defaultGameMode = serverPropertiesHandler.gameMode;
-		LOGGER_DEDICATED.info("Default game type: {}", this.defaultGameMode);
+		LOGGER.info("Default game type: {}", this.defaultGameMode);
 		InetAddress inetAddress = null;
 		if (!this.getServerIp().isEmpty()) {
 			inetAddress = InetAddress.getByName(this.getServerIp());
@@ -164,29 +164,29 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			this.setServerPort(serverPropertiesHandler.serverPort);
 		}
 
-		LOGGER_DEDICATED.info("Generating keypair");
+		LOGGER.info("Generating keypair");
 		this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
-		LOGGER_DEDICATED.info("Starting Minecraft server on {}:{}", this.getServerIp().isEmpty() ? "*" : this.getServerIp(), this.getServerPort());
+		LOGGER.info("Starting Minecraft server on {}:{}", this.getServerIp().isEmpty() ? "*" : this.getServerIp(), this.getServerPort());
 
 		try {
 			this.getNetworkIo().bind(inetAddress, this.getServerPort());
 		} catch (IOException var17) {
-			LOGGER_DEDICATED.warn("**** FAILED TO BIND TO PORT!");
-			LOGGER_DEDICATED.warn("The exception was: {}", var17.toString());
-			LOGGER_DEDICATED.warn("Perhaps a server is already running on that port?");
+			LOGGER.warn("**** FAILED TO BIND TO PORT!");
+			LOGGER.warn("The exception was: {}", var17.toString());
+			LOGGER.warn("Perhaps a server is already running on that port?");
 			return false;
 		}
 
 		if (!this.isOnlineMode()) {
-			LOGGER_DEDICATED.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
-			LOGGER_DEDICATED.warn("The server will make no attempt to authenticate usernames. Beware.");
-			LOGGER_DEDICATED.warn(
+			LOGGER.warn("**** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!");
+			LOGGER.warn("The server will make no attempt to authenticate usernames. Beware.");
+			LOGGER.warn(
 				"While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose."
 			);
-			LOGGER_DEDICATED.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
+			LOGGER.warn("To change this, set \"online-mode\" to \"true\" in the server.properties file.");
 		}
 
-		if (this.method_13951()) {
+		if (this.convertData()) {
 			this.getUserCache().save();
 		}
 
@@ -214,7 +214,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			SkullBlockEntity.setUserCache(this.getUserCache());
 			SkullBlockEntity.setSessionService(this.getSessionService());
 			UserCache.setUseRemote(this.isOnlineMode());
-			LOGGER_DEDICATED.info("Preparing level \"{}\"", this.getLevelName());
+			LOGGER.info("Preparing level \"{}\"", this.getLevelName());
 			JsonObject jsonObject = new JsonObject();
 			if (levelGeneratorType == LevelGeneratorType.FLAT) {
 				jsonObject.addProperty("flat_world_options", string2);
@@ -225,26 +225,26 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			this.method_3735(this.getLevelName(), this.getLevelName(), m, levelGeneratorType, jsonObject);
 			long o = SystemUtil.getMeasuringTimeNano() - l;
 			String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
-			LOGGER_DEDICATED.info("Done ({})! For help, type \"help\"", string3);
+			LOGGER.info("Done ({})! For help, type \"help\"", string3);
 			if (serverPropertiesHandler.announcePlayerAchievements != null) {
 				this.getGameRules().put("announceAdvancements", serverPropertiesHandler.announcePlayerAchievements ? "true" : "false", this);
 			}
 
 			if (serverPropertiesHandler.enableQuery) {
-				LOGGER_DEDICATED.info("Starting GS4 status listener");
-				this.field_13816 = new QueryResponseHandler(this);
-				this.field_13816.start();
+				LOGGER.info("Starting GS4 status listener");
+				this.queryResponseHandler = new QueryResponseHandler(this);
+				this.queryResponseHandler.start();
 			}
 
 			if (serverPropertiesHandler.enableRcon) {
-				LOGGER_DEDICATED.info("Starting remote control listener");
+				LOGGER.info("Starting remote control listener");
 				this.rconServer = new RconServer(this);
 				this.rconServer.start();
 			}
 
 			if (this.getMaxTickTime() > 0L) {
 				Thread thread2 = new Thread(new DedicatedServerWatchdog(this));
-				thread2.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOGGER_DEDICATED));
+				thread2.setUncaughtExceptionHandler(new UncaughtExceptionHandler(LOGGER));
 				thread2.setName("Server Watchdog");
 				thread2.setDaemon(true);
 				thread2.start();
@@ -261,23 +261,21 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		if (!serverPropertiesHandler.resourcePackSha1.isEmpty()) {
 			string = serverPropertiesHandler.resourcePackSha1;
 			if (!Strings.isNullOrEmpty(serverPropertiesHandler.resourcePackHash)) {
-				LOGGER_DEDICATED.warn("resource-pack-hash is deprecated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
+				LOGGER.warn("resource-pack-hash is deprecated and found along side resource-pack-sha1. resource-pack-hash will be ignored.");
 			}
 		} else if (!Strings.isNullOrEmpty(serverPropertiesHandler.resourcePackHash)) {
-			LOGGER_DEDICATED.warn("resource-pack-hash is deprecated. Please use resource-pack-sha1 instead.");
+			LOGGER.warn("resource-pack-hash is deprecated. Please use resource-pack-sha1 instead.");
 			string = serverPropertiesHandler.resourcePackHash;
 		} else {
 			string = "";
 		}
 
 		if (!string.isEmpty() && !SHA1_PATTERN.matcher(string).matches()) {
-			LOGGER_DEDICATED.warn("Invalid sha1 for ressource-pack-sha1");
+			LOGGER.warn("Invalid sha1 for ressource-pack-sha1");
 		}
 
 		if (!serverPropertiesHandler.resourcePack.isEmpty() && string.isEmpty()) {
-			LOGGER_DEDICATED.warn(
-				"You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack."
-			);
+			LOGGER.warn("You specified a resource pack without providing a sha1 hash. Pack will be updated on the client only if you change the name of the pack.");
 		}
 
 		return string;
@@ -332,18 +330,18 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		}
 
 		if (this.rconServer != null) {
-			this.rconServer.method_18050();
+			this.rconServer.stop();
 		}
 
-		if (this.field_13816 != null) {
-			this.field_13816.method_18050();
+		if (this.queryResponseHandler != null) {
+			this.queryResponseHandler.stop();
 		}
 	}
 
 	@Override
 	public void tick(BooleanSupplier booleanSupplier) {
 		super.tick(booleanSupplier);
-		this.method_13941();
+		this.executeQueuedCommands();
 	}
 
 	@Override
@@ -367,7 +365,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		this.commandQueue.add(new PendingServerCommand(string, serverCommandSource));
 	}
 
-	public void method_13941() {
+	public void executeQueuedCommands() {
 		while (!this.commandQueue.isEmpty()) {
 			PendingServerCommand pendingServerCommand = (PendingServerCommand)this.commandQueue.remove(0);
 			this.getCommandManager().execute(pendingServerCommand.source, pendingServerCommand.command);
@@ -484,12 +482,12 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		return this.getProperties().networkCompressionThreshold;
 	}
 
-	protected boolean method_13951() {
+	protected boolean convertData() {
 		boolean bl = false;
 
 		for (int i = 0; !bl && i <= 2; i++) {
 			if (i > 0) {
-				LOGGER_DEDICATED.warn("Encountered a problem while converting the user banlist, retrying in a few seconds");
+				LOGGER.warn("Encountered a problem while converting the user banlist, retrying in a few seconds");
 				this.sleepFiveSeconds();
 			}
 
@@ -500,7 +498,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 		for (int var7 = 0; !bl2 && var7 <= 2; var7++) {
 			if (var7 > 0) {
-				LOGGER_DEDICATED.warn("Encountered a problem while converting the ip banlist, retrying in a few seconds");
+				LOGGER.warn("Encountered a problem while converting the ip banlist, retrying in a few seconds");
 				this.sleepFiveSeconds();
 			}
 
@@ -511,7 +509,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 		for (int var8 = 0; !bl3 && var8 <= 2; var8++) {
 			if (var8 > 0) {
-				LOGGER_DEDICATED.warn("Encountered a problem while converting the op list, retrying in a few seconds");
+				LOGGER.warn("Encountered a problem while converting the op list, retrying in a few seconds");
 				this.sleepFiveSeconds();
 			}
 
@@ -522,7 +520,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 		for (int var9 = 0; !bl4 && var9 <= 2; var9++) {
 			if (var9 > 0) {
-				LOGGER_DEDICATED.warn("Encountered a problem while converting the whitelist, retrying in a few seconds");
+				LOGGER.warn("Encountered a problem while converting the whitelist, retrying in a few seconds");
 				this.sleepFiveSeconds();
 			}
 
@@ -533,7 +531,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 		for (int var10 = 0; !bl5 && var10 <= 2; var10++) {
 			if (var10 > 0) {
-				LOGGER_DEDICATED.warn("Encountered a problem while converting the player save files, retrying in a few seconds");
+				LOGGER.warn("Encountered a problem while converting the player save files, retrying in a few seconds");
 				this.sleepFiveSeconds();
 			}
 
@@ -555,14 +553,14 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public String method_12916() {
+	public String getPlugins() {
 		return "";
 	}
 
 	@Override
 	public String executeRconCommand(String string) {
 		this.rconCommandOutput.clear();
-		this.getCommandManager().execute(this.rconCommandOutput.method_14700(), string);
+		this.getCommandManager().execute(this.rconCommandOutput.createReconCommandSource(), string);
 		return this.rconCommandOutput.asString();
 	}
 
@@ -577,7 +575,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean method_19466(GameProfile gameProfile) {
+	public boolean isOwner(GameProfile gameProfile) {
 		return false;
 	}
 }

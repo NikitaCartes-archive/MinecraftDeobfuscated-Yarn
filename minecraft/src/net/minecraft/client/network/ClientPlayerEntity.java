@@ -623,7 +623,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		boolean bl2 = this.input.sneaking;
 		float f = 0.8F;
 		boolean bl3 = this.input.movementForward >= 0.8F;
-		this.input.tick(this.isInSneakingPose(), this.isSpectator());
+		boolean bl4 = this.isInSneakingPose() || this.method_20448();
+		this.input.tick(bl4, this.isSpectator());
 		this.client.getTutorialManager().onMovement(this.input);
 		if (this.isUsingItem() && !this.hasVehicle()) {
 			this.input.movementSideways *= 0.2F;
@@ -631,10 +632,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.field_3935 = 0;
 		}
 
-		boolean bl4 = false;
+		boolean bl5 = false;
 		if (this.field_3934 > 0) {
 			this.field_3934--;
-			bl4 = true;
+			bl5 = true;
 			this.input.jumping = true;
 		}
 
@@ -646,13 +647,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.pushOutOfBlocks(this.x + (double)this.getWidth() * 0.35, boundingBox.minY + 0.5, this.z + (double)this.getWidth() * 0.35);
 		}
 
-		boolean bl5 = (float)this.getHungerManager().getFoodLevel() > 6.0F || this.abilities.allowFlying;
+		boolean bl6 = (float)this.getHungerManager().getFoodLevel() > 6.0F || this.abilities.allowFlying;
 		if ((this.onGround || this.isInWater())
 			&& !bl2
 			&& !bl3
 			&& this.input.movementForward >= 0.8F
 			&& !this.isSprinting()
-			&& bl5
+			&& bl6
 			&& !this.isUsingItem()
 			&& !this.hasStatusEffect(StatusEffects.field_5919)) {
 			if (this.field_3935 <= 0 && !this.client.options.keySprint.isPressed()) {
@@ -665,7 +666,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (!this.isSprinting()
 			&& (!this.isInsideWater() || this.isInWater())
 			&& this.input.movementForward >= 0.8F
-			&& bl5
+			&& bl6
 			&& !this.isUsingItem()
 			&& !this.hasStatusEffect(StatusEffects.field_5919)
 			&& this.client.options.keySprint.isPressed()) {
@@ -673,13 +674,13 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.isSprinting()) {
-			boolean bl6 = this.input.movementForward < 0.8F || !bl5;
-			boolean bl7 = bl6 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
+			boolean bl7 = this.input.movementForward < 0.8F || !bl6;
+			boolean bl8 = bl7 || this.horizontalCollision || this.isInsideWater() && !this.isInWater();
 			if (this.isSwimming()) {
-				if (!this.onGround && !this.input.sneaking && bl6 || !this.isInsideWater()) {
+				if (!this.onGround && !this.input.sneaking && bl7 || !this.isInsideWater()) {
 					this.setSprinting(false);
 				}
-			} else if (bl7) {
+			} else if (bl8) {
 				this.setSprinting(false);
 			}
 		}
@@ -690,7 +691,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 					this.abilities.flying = true;
 					this.sendAbilitiesUpdate();
 				}
-			} else if (!bl && this.input.jumping && !bl4) {
+			} else if (!bl && this.input.jumping && !bl5) {
 				if (this.field_7489 == 0) {
 					this.field_7489 = 7;
 				} else if (!this.isSwimming()) {

@@ -132,7 +132,7 @@ public class FilledMapItem extends MapItem {
 
 									for (int y = 0; y < i; y++) {
 										for (int z = 0; z < i; z++) {
-											int aa = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
+											int aa = worldChunk.sampleHeightmap(Heightmap.Type.field_13202, y + u, z + v) + 1;
 											BlockState blockState;
 											if (aa <= 1) {
 												blockState = Blocks.field_9987.getDefaultState();

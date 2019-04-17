@@ -68,7 +68,7 @@ public class MultiplayerScreen extends Screen {
 		);
 		this.addButton(new ButtonWidget(this.width / 2 - 50, this.height - 52, 100, 20, I18n.translate("selectServer.direct"), buttonWidget -> {
 			this.selectedEntry = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
-			this.minecraft.openScreen(new DirectConnectServerScreen(this::directConnectFromSubMenu, this.selectedEntry));
+			this.minecraft.openScreen(new DirectConnectServerScreen(this::directConnect, this.selectedEntry));
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 4 + 50, this.height - 52, 100, 20, I18n.translate("selectServer.add"), buttonWidget -> {
 			this.selectedEntry = new ServerEntry(I18n.translate("selectServer.defaultName"), "", false);
@@ -100,7 +100,7 @@ public class MultiplayerScreen extends Screen {
 		this.addButton(
 			new ButtonWidget(this.width / 2 + 4 + 76, this.height - 28, 75, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
-		this.updateButtonActivationState();
+		this.updateButtonActivationStates();
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class MultiplayerScreen extends Screen {
 		this.minecraft.openScreen(this);
 	}
 
-	private void directConnectFromSubMenu(boolean bl) {
+	private void directConnect(boolean bl) {
 		if (bl) {
 			this.connect(this.selectedEntry);
 		} else {
@@ -218,10 +218,10 @@ public class MultiplayerScreen extends Screen {
 
 	public void selectEntry(MultiplayerServerListWidget.Entry entry) {
 		this.serverListWidget.method_20122(entry);
-		this.updateButtonActivationState();
+		this.updateButtonActivationStates();
 	}
 
-	protected void updateButtonActivationState() {
+	protected void updateButtonActivationStates() {
 		this.buttonJoin.active = false;
 		this.buttonEdit.active = false;
 		this.buttonDelete.active = false;
@@ -239,7 +239,7 @@ public class MultiplayerScreen extends Screen {
 		return this.field_3037;
 	}
 
-	public void setTooltipText(String string) {
+	public void setTooltip(String string) {
 		this.tooltipText = string;
 	}
 

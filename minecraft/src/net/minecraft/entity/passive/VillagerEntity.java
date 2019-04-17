@@ -404,6 +404,7 @@ public class VillagerEntity extends AbstractTraderEntity implements InteractionO
 		}
 
 		this.setCanPickUpLoot(true);
+		this.reinitializeBrain((ServerWorld)this.world);
 	}
 
 	@Override

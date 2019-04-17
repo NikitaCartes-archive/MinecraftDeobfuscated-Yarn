@@ -2,6 +2,7 @@ package net.minecraft.world.chunk;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import javax.annotation.Nullable;
+import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerLightingProvider;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
@@ -22,9 +24,9 @@ import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class ChunkStatus {
-	private static final EnumSet<Heightmap.Type> PRE_CARVER_HEIGHTMAPS = EnumSet.of(Heightmap.Type.OCEAN_FLOOR_WG, Heightmap.Type.WORLD_SURFACE_WG);
+	private static final EnumSet<Heightmap.Type> PRE_CARVER_HEIGHTMAPS = EnumSet.of(Heightmap.Type.field_13195, Heightmap.Type.field_13194);
 	private static final EnumSet<Heightmap.Type> POST_CARVER_HEIGHTMAPS = EnumSet.of(
-		Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE, Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES
+		Heightmap.Type.field_13200, Heightmap.Type.field_13202, Heightmap.Type.field_13197, Heightmap.Type.field_13203
 	);
 	public static final ChunkStatus EMPTY = register(
 		"empty", null, -1, PRE_CARVER_HEIGHTMAPS, ChunkStatus.ChunkType.PROTOCHUNK, (serverWorld, chunkGenerator, list, chunk) -> {
@@ -47,7 +49,7 @@ public class ChunkStatus {
 				}
 			}
 
-			return CompletableFuture.completedFuture(chunk);
+			return CompletableFuture.completedFuture(Either.left(chunk));
 		}
 	);
 	public static final ChunkStatus STRUCTURE_REFERENCES = register(
@@ -108,7 +110,7 @@ public class ChunkStatus {
 			chunk.setLightingProvider(serverLightingProvider);
 			if (!chunk.getStatus().isAtLeast(chunkStatus)) {
 				Heightmap.populateHeightmaps(
-					chunk, EnumSet.of(Heightmap.Type.MOTION_BLOCKING, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, Heightmap.Type.OCEAN_FLOOR, Heightmap.Type.WORLD_SURFACE)
+					chunk, EnumSet.of(Heightmap.Type.field_13197, Heightmap.Type.field_13203, Heightmap.Type.field_13200, Heightmap.Type.field_13202)
 				);
 				chunkGenerator.generateFeatures(new ChunkRegion(serverWorld, list));
 				if (chunk instanceof ProtoChunk) {
@@ -116,7 +118,7 @@ public class ChunkStatus {
 				}
 			}
 
-			return CompletableFuture.completedFuture(chunk);
+			return CompletableFuture.completedFuture(Either.left(chunk));
 		}
 	);
 	public static final ChunkStatus LIGHT = register(
@@ -131,7 +133,7 @@ public class ChunkStatus {
 				((ProtoChunk)chunk).setStatus(chunkStatus);
 			}
 
-			return serverLightingProvider.light(chunk, bl);
+			return serverLightingProvider.light(chunk, bl).thenApply(Either::left);
 		}
 	);
 	public static final ChunkStatus SPAWN = register(
@@ -152,7 +154,9 @@ public class ChunkStatus {
 		0,
 		POST_CARVER_HEIGHTMAPS,
 		ChunkStatus.ChunkType.LEVELCHUNK,
-		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> (CompletableFuture<Chunk>)function.apply(chunk)
+		(chunkStatus, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, chunk) -> (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)function.apply(
+				chunk
+			)
 	);
 	private static final List<ChunkStatus> DISTANCE_TO_TARGET_GENERATION_STATUS = ImmutableList.of(
 		FULL,
@@ -249,12 +253,12 @@ public class ChunkStatus {
 		return this.previous;
 	}
 
-	public CompletableFuture<Chunk> runTask(
+	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> runTask(
 		ServerWorld serverWorld,
 		ChunkGenerator<?> chunkGenerator,
 		StructureManager structureManager,
 		ServerLightingProvider serverLightingProvider,
-		Function<Chunk, CompletableFuture<Chunk>> function,
+		Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 		List<Chunk> list
 	) {
 		return this.task.doWork(this, serverWorld, chunkGenerator, structureManager, serverLightingProvider, function, list, (Chunk)list.get(list.size() / 2));
@@ -291,13 +295,13 @@ public class ChunkStatus {
 
 	interface SimpleTask extends ChunkStatus.Task {
 		@Override
-		default CompletableFuture<Chunk> doWork(
+		default CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus chunkStatus,
 			ServerWorld serverWorld,
 			ChunkGenerator<?> chunkGenerator,
 			StructureManager structureManager,
 			ServerLightingProvider serverLightingProvider,
-			Function<Chunk, CompletableFuture<Chunk>> function,
+			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 			List<Chunk> list,
 			Chunk chunk
 		) {
@@ -308,20 +312,20 @@ public class ChunkStatus {
 				}
 			}
 
-			return CompletableFuture.completedFuture(chunk);
+			return CompletableFuture.completedFuture(Either.left(chunk));
 		}
 
 		void doWork(ServerWorld serverWorld, ChunkGenerator<?> chunkGenerator, List<Chunk> list, Chunk chunk);
 	}
 
 	interface Task {
-		CompletableFuture<Chunk> doWork(
+		CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> doWork(
 			ChunkStatus chunkStatus,
 			ServerWorld serverWorld,
 			ChunkGenerator<?> chunkGenerator,
 			StructureManager structureManager,
 			ServerLightingProvider serverLightingProvider,
-			Function<Chunk, CompletableFuture<Chunk>> function,
+			Function<Chunk, CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>> function,
 			List<Chunk> list,
 			Chunk chunk
 		);

@@ -64,7 +64,7 @@ public class BlockPosArgumentType implements ArgumentType<PosArgument> {
 				collection = ((CommandSource)commandContext.getSource()).getBlockPositionSuggestions();
 			}
 
-			return CommandSource.method_9260(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9699));
+			return CommandSource.suggestPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9699));
 		}
 	}
 

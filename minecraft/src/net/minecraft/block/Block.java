@@ -706,7 +706,7 @@ public class Block implements ItemProvider {
 		return MathHelper.hashCode(blockPos);
 	}
 
-	public void method_19286(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
+	public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
 	}
 
 	public void onBreak(World world, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {

@@ -26,7 +26,7 @@ public class DoublePlantFeature extends Feature<DoublePlantFeatureConfig> {
 		for (int i = 0; i < 64; i++) {
 			BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), random.nextInt(4) - random.nextInt(4), random.nextInt(8) - random.nextInt(8));
 			if (iWorld.isAir(blockPos2) && blockPos2.getY() < 254 && doublePlantFeatureConfig.state.canPlaceAt(iWorld, blockPos2)) {
-				((TallPlantBlock)doublePlantFeatureConfig.state.getBlock()).method_10021(iWorld, blockPos2, 2);
+				((TallPlantBlock)doublePlantFeatureConfig.state.getBlock()).placeAt(iWorld, blockPos2, 2);
 				bl = true;
 			}
 		}

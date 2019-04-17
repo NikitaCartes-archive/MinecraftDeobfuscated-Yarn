@@ -102,7 +102,7 @@ public interface CommandSource {
 		return suggestFromIdentifier(stream::iterator, suggestionsBuilder, function, function2);
 	}
 
-	static CompletableFuture<Suggestions> method_9260(
+	static CompletableFuture<Suggestions> suggestPositions(
 		String string, Collection<CommandSource.RelativePosition> collection, SuggestionsBuilder suggestionsBuilder, Predicate<String> predicate
 	) {
 		List<String> list = Lists.<String>newArrayList();
@@ -138,7 +138,7 @@ public interface CommandSource {
 		return suggestMatching(list, suggestionsBuilder);
 	}
 
-	static CompletableFuture<Suggestions> method_9252(
+	static CompletableFuture<Suggestions> suggestColumnPositions(
 		String string, Collection<CommandSource.RelativePosition> collection, SuggestionsBuilder suggestionsBuilder, Predicate<String> predicate
 	) {
 		List<String> list = Lists.<String>newArrayList();

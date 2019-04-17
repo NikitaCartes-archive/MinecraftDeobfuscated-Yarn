@@ -359,7 +359,7 @@ public class ChatScreen extends Screen {
 	@Override
 	public void render(int i, int j, float f) {
 		this.setFocused(this.chatField);
-		this.chatField.setFocused(true);
+		this.chatField.method_1876(true);
 		fill(2, this.height - 14, this.width - 2, this.height - 2, this.minecraft.options.getTextBackgroundColor(Integer.MIN_VALUE));
 		this.chatField.render(i, j, f);
 		if (this.suggestionsWindow != null) {

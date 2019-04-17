@@ -37,7 +37,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		this.setDefaultState(
 			this.stateFactory
 				.getDefaultState()
-				.with(field_11177, Direction.NORTH)
+				.with(FACING, Direction.NORTH)
 				.with(OPEN, Boolean.valueOf(false))
 				.with(HALF, BlockHalf.BOTTOM)
 				.with(POWERED, Boolean.valueOf(false))
@@ -50,7 +50,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		if (!(Boolean)blockState.get(OPEN)) {
 			return blockState.get(HALF) == BlockHalf.TOP ? OPEN_TOP_SHAPE : OPEN_BOTTOM_SHAPE;
 		} else {
-			switch ((Direction)blockState.get(field_11177)) {
+			switch ((Direction)blockState.get(FACING)) {
 				case NORTH:
 				default:
 					return NORTH_SHAPE;
@@ -89,12 +89,12 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 				world.getFluidTickScheduler().schedule(blockPos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
-			this.method_10740(playerEntity, world, blockPos, (Boolean)blockState.get(OPEN));
+			this.playToggleSound(playerEntity, world, blockPos, (Boolean)blockState.get(OPEN));
 			return true;
 		}
 	}
 
-	protected void method_10740(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, boolean bl) {
+	protected void playToggleSound(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, boolean bl) {
 		if (bl) {
 			int i = this.material == Material.METAL ? 1037 : 1007;
 			world.playLevelEvent(playerEntity, i, blockPos, 0);
@@ -111,7 +111,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			if (bl2 != (Boolean)blockState.get(POWERED)) {
 				if ((Boolean)blockState.get(OPEN) != bl2) {
 					blockState = blockState.with(OPEN, Boolean.valueOf(bl2));
-					this.method_10740(null, world, blockPos, bl2);
+					this.playToggleSound(null, world, blockPos, bl2);
 				}
 
 				world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(bl2)), 2);
@@ -128,10 +128,10 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 		FluidState fluidState = itemPlacementContext.getWorld().getFluidState(itemPlacementContext.getBlockPos());
 		Direction direction = itemPlacementContext.getFacing();
 		if (!itemPlacementContext.method_7717() && direction.getAxis().isHorizontal()) {
-			blockState = blockState.with(field_11177, direction)
+			blockState = blockState.with(FACING, direction)
 				.with(HALF, itemPlacementContext.getPos().y - (double)itemPlacementContext.getBlockPos().getY() > 0.5 ? BlockHalf.TOP : BlockHalf.BOTTOM);
 		} else {
-			blockState = blockState.with(field_11177, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())
+			blockState = blockState.with(FACING, itemPlacementContext.getPlayerHorizontalFacing().getOpposite())
 				.with(HALF, direction == Direction.UP ? BlockHalf.BOTTOM : BlockHalf.TOP);
 		}
 
@@ -149,7 +149,7 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11177, OPEN, HALF, POWERED, WATERLOGGED);
+		builder.with(FACING, OPEN, HALF, POWERED, WATERLOGGED);
 	}
 
 	@Override

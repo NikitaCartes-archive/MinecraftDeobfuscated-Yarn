@@ -15,7 +15,7 @@ public abstract class RconBase implements Runnable {
 	private static final Logger field_14430 = LogManager.getLogger();
 	private static final AtomicInteger field_14428 = new AtomicInteger(0);
 	protected boolean running;
-	protected final DedicatedServer field_14425;
+	protected final DedicatedServer server;
 	protected final String description;
 	protected Thread thread;
 	protected final int field_14427 = 5;
@@ -23,9 +23,9 @@ public abstract class RconBase implements Runnable {
 	protected final List<ServerSocket> serverSockets = Lists.<ServerSocket>newArrayList();
 
 	protected RconBase(DedicatedServer dedicatedServer, String string) {
-		this.field_14425 = dedicatedServer;
+		this.server = dedicatedServer;
 		this.description = string;
-		if (this.field_14425.isDebuggingEnabled()) {
+		if (this.server.isDebuggingEnabled()) {
 			this.warn("Debugging is enabled, performance maybe reduced!");
 		}
 	}
@@ -37,7 +37,7 @@ public abstract class RconBase implements Runnable {
 		this.running = true;
 	}
 
-	public synchronized void method_18050() {
+	public synchronized void stop() {
 		this.running = false;
 		if (null != this.thread) {
 			int i = 0;
@@ -72,23 +72,23 @@ public abstract class RconBase implements Runnable {
 	}
 
 	protected void log(String string) {
-		this.field_14425.log(string);
+		this.server.log(string);
 	}
 
 	protected void info(String string) {
-		this.field_14425.info(string);
+		this.server.info(string);
 	}
 
 	protected void warn(String string) {
-		this.field_14425.warn(string);
+		this.server.warn(string);
 	}
 
 	protected void logError(String string) {
-		this.field_14425.logError(string);
+		this.server.logError(string);
 	}
 
 	protected int getCurrentPlayerCount() {
-		return this.field_14425.getCurrentPlayerCount();
+		return this.server.getCurrentPlayerCount();
 	}
 
 	protected void registerSocket(DatagramSocket datagramSocket) {

@@ -25,7 +25,6 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.Material;
 import net.minecraft.block.PortalBlock;
 import net.minecraft.block.pattern.BlockPattern;
 import net.minecraft.block.piston.PistonBehavior;
@@ -151,6 +150,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	protected boolean insideWater;
 	protected double waterHeight;
 	protected boolean field_6000;
+	protected boolean field_19271;
 	public int field_6008;
 	protected boolean field_5953 = true;
 	protected final DataTracker dataTracker;
@@ -537,6 +537,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			}
 
 			try {
+				this.field_19271 = false;
 				this.checkBlockCollision();
 			} catch (Throwable var21) {
 				CrashReport crashReport = CrashReport.create(var21, "Checking entity block collision");
@@ -1027,8 +1028,12 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
+	public void method_20447() {
+		this.field_19271 = true;
+	}
+
 	public boolean isTouchingLava() {
-		return this.world.containsBlockWithMaterial(this.getBoundingBox().contract(0.1F, 0.4F, 0.1F), Material.LAVA);
+		return this.field_19271;
 	}
 
 	public void updateVelocity(float f, Vec3d vec3d) {
@@ -1800,6 +1805,11 @@ public abstract class Entity implements Nameable, CommandOutput {
 		return this.getPose() == EntityPose.field_18079;
 	}
 
+	@Environment(EnvType.CLIENT)
+	public boolean method_20448() {
+		return this.isInSwimmingPose() && !this.isInsideWater();
+	}
+
 	public void setSwimming(boolean bl) {
 		this.setFlag(4, bl);
 	}
@@ -2039,7 +2049,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 			float f = 0.0F;
 			BlockPos blockPos;
 			if (dimensionType2 == DimensionType.field_13078 && dimensionType == DimensionType.field_13072) {
-				blockPos = serverWorld2.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, serverWorld2.getSpawnPos());
+				blockPos = serverWorld2.getTopPosition(Heightmap.Type.field_13203, serverWorld2.getSpawnPos());
 			} else if (dimensionType == DimensionType.field_13078) {
 				blockPos = serverWorld2.getForcedSpawnPoint();
 			} else {

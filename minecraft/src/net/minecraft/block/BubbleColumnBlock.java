@@ -72,12 +72,12 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		method_9657(world, blockPos.up(), method_9656(world, blockPos.down()));
+		update(world, blockPos.up(), calculateDrag(world, blockPos.down()));
 	}
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		method_9657(world, blockPos.up(), method_9656(world, blockPos));
+		update(world, blockPos.up(), calculateDrag(world, blockPos));
 	}
 
 	@Override
@@ -85,18 +85,18 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 		return Fluids.WATER.getStill(false);
 	}
 
-	public static void method_9657(IWorld iWorld, BlockPos blockPos, boolean bl) {
-		if (method_9658(iWorld, blockPos)) {
+	public static void update(IWorld iWorld, BlockPos blockPos, boolean bl) {
+		if (isStillWater(iWorld, blockPos)) {
 			iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(DRAG, Boolean.valueOf(bl)), 2);
 		}
 	}
 
-	public static boolean method_9658(IWorld iWorld, BlockPos blockPos) {
+	public static boolean isStillWater(IWorld iWorld, BlockPos blockPos) {
 		FluidState fluidState = iWorld.getFluidState(blockPos);
 		return iWorld.getBlockState(blockPos).getBlock() == Blocks.field_10382 && fluidState.getLevel() >= 8 && fluidState.isStill();
 	}
 
-	private static boolean method_9656(BlockView blockView, BlockPos blockPos) {
+	private static boolean calculateDrag(BlockView blockView, BlockPos blockPos) {
 		BlockState blockState = blockView.getBlockState(blockPos);
 		Block block = blockState.getBlock();
 		return block == Blocks.field_10422 ? (Boolean)blockState.get(DRAG) : block != Blocks.field_10114;
@@ -137,8 +137,8 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 			return Blocks.field_10382.getDefaultState();
 		} else {
 			if (direction == Direction.DOWN) {
-				iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(DRAG, Boolean.valueOf(method_9656(iWorld, blockPos2))), 2);
-			} else if (direction == Direction.UP && blockState2.getBlock() != Blocks.field_10422 && method_9658(iWorld, blockPos2)) {
+				iWorld.setBlockState(blockPos, Blocks.field_10422.getDefaultState().with(DRAG, Boolean.valueOf(calculateDrag(iWorld, blockPos2))), 2);
+			} else if (direction == Direction.UP && blockState2.getBlock() != Blocks.field_10422 && isStillWater(iWorld, blockPos2)) {
 				iWorld.getBlockTickScheduler().schedule(blockPos, this, this.getTickRate(iWorld));
 			}
 

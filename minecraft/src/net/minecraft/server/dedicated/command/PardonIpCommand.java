@@ -43,7 +43,7 @@ public class PardonIpCommand {
 			throw INVALID_IP_EXCEPTION.create();
 		} else {
 			BannedIpList bannedIpList = serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList();
-			if (!bannedIpList.method_14529(string)) {
+			if (!bannedIpList.isBanned(string)) {
 				throw ALREADY_UNBANNED_EXCEPTION.create();
 			} else {
 				bannedIpList.remove(string);

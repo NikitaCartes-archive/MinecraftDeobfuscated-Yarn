@@ -72,7 +72,7 @@ public class StructureBlock extends BlockWithEntity {
 				boolean bl3 = structureBlockBlockEntity.isPowered();
 				if (bl2 && !bl3) {
 					structureBlockBlockEntity.setPowered(true);
-					this.method_10703(structureBlockBlockEntity);
+					this.doAction(structureBlockBlockEntity);
 				} else if (!bl2 && bl3) {
 					structureBlockBlockEntity.setPowered(false);
 				}
@@ -80,7 +80,7 @@ public class StructureBlock extends BlockWithEntity {
 		}
 	}
 
-	private void method_10703(StructureBlockBlockEntity structureBlockBlockEntity) {
+	private void doAction(StructureBlockBlockEntity structureBlockBlockEntity) {
 		switch (structureBlockBlockEntity.getMode()) {
 			case field_12695:
 				structureBlockBlockEntity.saveStructure(false);

@@ -67,7 +67,7 @@ public class FarmlandBlock extends Block {
 			setToDirt(blockState, world, blockPos);
 		} else {
 			int i = (Integer)blockState.get(MOISTURE);
-			if (!method_10126(world, blockPos) && !world.hasRain(blockPos.up())) {
+			if (!isWaterNearby(world, blockPos) && !world.hasRain(blockPos.up())) {
 				if (i > 0) {
 					world.setBlockState(blockPos, blockState.with(MOISTURE, Integer.valueOf(i - 1)), 2);
 				} else if (!hasCrop(world, blockPos)) {
@@ -101,7 +101,7 @@ public class FarmlandBlock extends Block {
 		return block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock;
 	}
 
-	private static boolean method_10126(ViewableWorld viewableWorld, BlockPos blockPos) {
+	private static boolean isWaterNearby(ViewableWorld viewableWorld, BlockPos blockPos) {
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-4, 0, -4), blockPos.add(4, 1, 4))) {
 			if (viewableWorld.getFluidState(blockPos2).matches(FluidTags.field_15517)) {
 				return true;

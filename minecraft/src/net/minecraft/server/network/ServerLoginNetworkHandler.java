@@ -101,9 +101,9 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity != null) {
 				this.state = ServerLoginNetworkHandler.State.field_14171;
-				this.clientEntity = this.server.getPlayerManager().method_14613(this.profile);
+				this.clientEntity = this.server.getPlayerManager().createPlayer(this.profile);
 			} else {
-				this.server.getPlayerManager().onPlayerConnect(this.client, this.server.getPlayerManager().method_14613(this.profile));
+				this.server.getPlayerManager().onPlayerConnect(this.client, this.server.getPlayerManager().createPlayer(this.profile));
 			}
 		}
 	}

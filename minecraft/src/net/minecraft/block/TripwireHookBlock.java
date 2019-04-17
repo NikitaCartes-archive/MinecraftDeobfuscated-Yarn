@@ -24,7 +24,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class TripwireHookBlock extends Block {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty ATTACHED = Properties.ATTACHED;
 	protected static final VoxelShape field_11665 = Block.createCuboidShape(5.0, 0.0, 10.0, 11.0, 10.0, 16.0);
@@ -94,10 +94,10 @@ public class TripwireHookBlock extends Block {
 
 	@Override
 	public void onPlaced(World world, BlockPos blockPos, BlockState blockState, LivingEntity livingEntity, ItemStack itemStack) {
-		this.method_10776(world, blockPos, blockState, false, false, -1, null);
+		this.update(world, blockPos, blockState, false, false, -1, null);
 	}
 
-	public void method_10776(World world, BlockPos blockPos, BlockState blockState, boolean bl, boolean bl2, int i, @Nullable BlockState blockState2) {
+	public void update(World world, BlockPos blockPos, BlockState blockState, boolean bl, boolean bl2, int i, @Nullable BlockState blockState2) {
 		Direction direction = blockState.get(FACING);
 		boolean bl3 = (Boolean)blockState.get(ATTACHED);
 		boolean bl4 = (Boolean)blockState.get(POWERED);
@@ -142,15 +142,15 @@ public class TripwireHookBlock extends Block {
 			BlockPos blockPos2x = blockPos.offset(direction, j);
 			Direction direction2 = direction.getOpposite();
 			world.setBlockState(blockPos2x, blockState4.with(FACING, direction2), 3);
-			this.method_10775(world, blockPos2x, direction2);
-			this.method_10777(world, blockPos2x, bl5, bl6, bl3, bl4);
+			this.updateNeighborsOnAxis(world, blockPos2x, direction2);
+			this.playSound(world, blockPos2x, bl5, bl6, bl3, bl4);
 		}
 
-		this.method_10777(world, blockPos, bl5, bl6, bl3, bl4);
+		this.playSound(world, blockPos, bl5, bl6, bl3, bl4);
 		if (!bl) {
 			world.setBlockState(blockPos, blockState4.with(FACING, direction), 3);
 			if (bl2) {
-				this.method_10775(world, blockPos, direction);
+				this.updateNeighborsOnAxis(world, blockPos, direction);
 			}
 		}
 
@@ -169,10 +169,10 @@ public class TripwireHookBlock extends Block {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		this.method_10776(world, blockPos, blockState, false, true, -1, null);
+		this.update(world, blockPos, blockState, false, true, -1, null);
 	}
 
-	private void method_10777(World world, BlockPos blockPos, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
+	private void playSound(World world, BlockPos blockPos, boolean bl, boolean bl2, boolean bl3, boolean bl4) {
 		if (bl2 && !bl4) {
 			world.playSound(null, blockPos, SoundEvents.field_14674, SoundCategory.field_15245, 0.4F, 0.6F);
 		} else if (!bl2 && bl4) {
@@ -184,7 +184,7 @@ public class TripwireHookBlock extends Block {
 		}
 	}
 
-	private void method_10775(World world, BlockPos blockPos, Direction direction) {
+	private void updateNeighborsOnAxis(World world, BlockPos blockPos, Direction direction) {
 		world.updateNeighborsAlways(blockPos, this);
 		world.updateNeighborsAlways(blockPos.offset(direction.getOpposite()), this);
 	}
@@ -195,7 +195,7 @@ public class TripwireHookBlock extends Block {
 			boolean bl2 = (Boolean)blockState.get(ATTACHED);
 			boolean bl3 = (Boolean)blockState.get(POWERED);
 			if (bl2 || bl3) {
-				this.method_10776(world, blockPos, blockState, true, false, -1, null);
+				this.update(world, blockPos, blockState, true, false, -1, null);
 			}
 
 			if (bl3) {

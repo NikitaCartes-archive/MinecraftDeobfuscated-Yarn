@@ -7,8 +7,8 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
 import net.minecraft.command.arguments.GameProfileArgumentType;
 import net.minecraft.server.PlayerManager;
+import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
-import net.minecraft.server.WhitelistList;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
@@ -46,7 +46,7 @@ public class WhitelistCommand {
 										return CommandSource.suggestMatching(
 											playerManager.getPlayerList()
 												.stream()
-												.filter(serverPlayerEntity -> !playerManager.getWhitelist().method_14653(serverPlayerEntity.getGameProfile()))
+												.filter(serverPlayerEntity -> !playerManager.getWhitelist().isAllowed(serverPlayerEntity.getGameProfile()))
 												.map(serverPlayerEntity -> serverPlayerEntity.getGameProfile().getName()),
 											suggestionsBuilder
 										);
@@ -79,13 +79,13 @@ public class WhitelistCommand {
 	}
 
 	private static int method_13838(ServerCommandSource serverCommandSource, Collection<GameProfile> collection) throws CommandSyntaxException {
-		WhitelistList whitelistList = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelist();
+		Whitelist whitelist = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelist();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {
-			if (!whitelistList.method_14653(gameProfile)) {
+			if (!whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
-				whitelistList.add(whitelistEntry);
+				whitelist.add(whitelistEntry);
 				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.whitelist.add.success", TextFormatter.profile(gameProfile)), true);
 				i++;
 			}
@@ -99,13 +99,13 @@ public class WhitelistCommand {
 	}
 
 	private static int method_13845(ServerCommandSource serverCommandSource, Collection<GameProfile> collection) throws CommandSyntaxException {
-		WhitelistList whitelistList = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelist();
+		Whitelist whitelist = serverCommandSource.getMinecraftServer().getPlayerManager().getWhitelist();
 		int i = 0;
 
 		for (GameProfile gameProfile : collection) {
-			if (whitelistList.method_14653(gameProfile)) {
+			if (whitelist.isAllowed(gameProfile)) {
 				WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
-				whitelistList.removeEntry(whitelistEntry);
+				whitelist.removeEntry(whitelistEntry);
 				serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.whitelist.remove.success", TextFormatter.profile(gameProfile)), true);
 				i++;
 			}

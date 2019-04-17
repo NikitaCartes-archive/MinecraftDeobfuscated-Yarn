@@ -64,7 +64,7 @@ public class BanIpCommand {
 
 	private static int banIp(ServerCommandSource serverCommandSource, String string, @Nullable TextComponent textComponent) throws CommandSyntaxException {
 		BannedIpList bannedIpList = serverCommandSource.getMinecraftServer().getPlayerManager().getIpBanList();
-		if (bannedIpList.method_14529(string)) {
+		if (bannedIpList.isBanned(string)) {
 			throw ALREADY_BANNED_EXCEPTION.create();
 		} else {
 			List<ServerPlayerEntity> list = serverCommandSource.getMinecraftServer().getPlayerManager().getPlayersByIp(string);

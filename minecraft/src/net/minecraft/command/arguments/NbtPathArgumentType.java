@@ -40,7 +40,7 @@ public class NbtPathArgumentType implements ArgumentType<NbtPathArgumentType.Nbt
 		return new NbtPathArgumentType();
 	}
 
-	public static NbtPathArgumentType.NbtPath method_9358(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static NbtPathArgumentType.NbtPath getNbtPath(CommandContext<ServerCommandSource> commandContext, String string) {
 		return commandContext.getArgument(string, NbtPathArgumentType.NbtPath.class);
 	}
 

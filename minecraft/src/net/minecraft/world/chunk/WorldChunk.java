@@ -270,10 +270,10 @@ public class WorldChunk implements Chunk {
 		} else {
 			Block block = blockState.getBlock();
 			Block block2 = blockState2.getBlock();
-			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING)).trackUpdate(i, j, k, blockState);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)).trackUpdate(i, j, k, blockState);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.OCEAN_FLOOR)).trackUpdate(i, j, k, blockState);
-			((Heightmap)this.heightmaps.get(Heightmap.Type.WORLD_SURFACE)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13197)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13203)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13200)).trackUpdate(i, j, k, blockState);
+			((Heightmap)this.heightmaps.get(Heightmap.Type.field_13202)).trackUpdate(i, j, k, blockState);
 			boolean bl3 = chunkSection.isEmpty();
 			if (bl2 != bl3) {
 				this.world.getChunkManager().getLightingProvider().updateSectionStatus(blockPos, bl3);

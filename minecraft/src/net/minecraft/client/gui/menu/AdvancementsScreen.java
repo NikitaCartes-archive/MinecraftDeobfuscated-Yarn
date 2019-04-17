@@ -39,9 +39,9 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 		this.selectedWidget = null;
 		this.advancementHandler.setListener(this);
 		if (this.selectedWidget == null && !this.widgetMap.isEmpty()) {
-			this.advancementHandler.method_2864(((AdvancementTreeWidget)this.widgetMap.values().iterator().next()).method_2307(), true);
+			this.advancementHandler.selectTab(((AdvancementTreeWidget)this.widgetMap.values().iterator().next()).method_2307(), true);
 		} else {
-			this.advancementHandler.method_2864(this.selectedWidget == null ? null : this.selectedWidget.method_2307(), true);
+			this.advancementHandler.selectTab(this.selectedWidget == null ? null : this.selectedWidget.method_2307(), true);
 		}
 	}
 
@@ -62,7 +62,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 			for (AdvancementTreeWidget advancementTreeWidget : this.widgetMap.values()) {
 				if (advancementTreeWidget.method_2316(j, k, d, e)) {
-					this.advancementHandler.method_2864(advancementTreeWidget.method_2307(), true);
+					this.advancementHandler.selectTab(advancementTreeWidget.method_2307(), true);
 					break;
 				}
 			}
@@ -178,7 +178,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void onRootAdded(Advancement advancement) {
-		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.method_2317(this.minecraft, this, this.widgetMap.size(), advancement);
+		AdvancementTreeWidget advancementTreeWidget = AdvancementTreeWidget.create(this.minecraft, this, this.widgetMap.size(), advancement);
 		if (advancementTreeWidget != null) {
 			this.widgetMap.put(advancement, advancementTreeWidget);
 		}
@@ -190,7 +190,7 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 
 	@Override
 	public void onDependentAdded(Advancement advancement) {
-		AdvancementTreeWidget advancementTreeWidget = this.method_2336(advancement);
+		AdvancementTreeWidget advancementTreeWidget = this.getAdvancementTreeWidget(advancement);
 		if (advancementTreeWidget != null) {
 			advancementTreeWidget.method_2318(advancement);
 		}
@@ -201,15 +201,15 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Override
-	public void method_2865(Advancement advancement, AdvancementProgress advancementProgress) {
-		AdvancementWidget advancementWidget = this.method_2335(advancement);
+	public void setProgress(Advancement advancement, AdvancementProgress advancementProgress) {
+		AdvancementWidget advancementWidget = this.getAdvancementWidget(advancement);
 		if (advancementWidget != null) {
 			advancementWidget.setProgress(advancementProgress);
 		}
 	}
 
 	@Override
-	public void method_2866(@Nullable Advancement advancement) {
+	public void selectTab(@Nullable Advancement advancement) {
 		this.selectedWidget = (AdvancementTreeWidget)this.widgetMap.get(advancement);
 	}
 
@@ -220,13 +220,13 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	@Nullable
-	public AdvancementWidget method_2335(Advancement advancement) {
-		AdvancementTreeWidget advancementTreeWidget = this.method_2336(advancement);
-		return advancementTreeWidget == null ? null : advancementTreeWidget.method_2308(advancement);
+	public AdvancementWidget getAdvancementWidget(Advancement advancement) {
+		AdvancementTreeWidget advancementTreeWidget = this.getAdvancementTreeWidget(advancement);
+		return advancementTreeWidget == null ? null : advancementTreeWidget.getWidgetForAdvancement(advancement);
 	}
 
 	@Nullable
-	private AdvancementTreeWidget method_2336(Advancement advancement) {
+	private AdvancementTreeWidget getAdvancementTreeWidget(Advancement advancement) {
 		while (advancement.getParent() != null) {
 			advancement = advancement.getParent();
 		}

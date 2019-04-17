@@ -23,7 +23,7 @@ public class FrostedIceBlock extends IceBlock {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if ((random.nextInt(3) == 0 || this.method_10202(world, blockPos, 4))
+		if ((random.nextInt(3) == 0 || this.canMelt(world, blockPos, 4))
 			&& world.getLightLevel(blockPos) > 11 - (Integer)blockState.get(AGE) - blockState.getLightSubtracted(world, blockPos)
 			&& this.increaseAge(blockState, world, blockPos)) {
 			try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {
@@ -53,14 +53,14 @@ public class FrostedIceBlock extends IceBlock {
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		if (block == this && this.method_10202(world, blockPos, 2)) {
+		if (block == this && this.canMelt(world, blockPos, 2)) {
 			this.melt(blockState, world, blockPos);
 		}
 
 		super.neighborUpdate(blockState, world, blockPos, block, blockPos2, bl);
 	}
 
-	private boolean method_10202(BlockView blockView, BlockPos blockPos, int i) {
+	private boolean canMelt(BlockView blockView, BlockPos blockPos, int i) {
 		int j = 0;
 
 		try (BlockPos.PooledMutable pooledMutable = BlockPos.PooledMutable.get()) {

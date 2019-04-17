@@ -43,7 +43,7 @@ public class MagmaBlock extends Block {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		BubbleColumnBlock.method_9657(world, blockPos.up(), true);
+		BubbleColumnBlock.update(world, blockPos.up(), true);
 	}
 
 	@Override

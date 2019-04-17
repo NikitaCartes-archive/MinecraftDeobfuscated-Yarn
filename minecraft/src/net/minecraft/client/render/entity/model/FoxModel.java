@@ -65,15 +65,15 @@ public class FoxModel<T extends FoxEntity> extends EntityModel<T> {
 		this.frontRightLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
 		this.rearLeftLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
 		this.rearRightLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
+		this.head.setRotationPoint(-1.0F, 16.5F, -3.0F);
+		this.head.yaw = 0.0F;
 		this.head.roll = foxEntity.getHeadRoll(h);
 		this.frontLeftLeg.visible = true;
 		this.frontRightLeg.visible = true;
 		this.rearLeftLeg.visible = true;
 		this.rearRightLeg.visible = true;
-		this.head.setRotationPoint(-1.0F, 16.5F, -3.0F);
 		this.body.setRotationPoint(0.0F, 16.0F, -6.0F);
 		this.body.roll = 0.0F;
-		this.head.yaw = 0.0F;
 		this.frontLeftLeg.setRotationPoint(-5.0F, 17.5F, 7.0F);
 		this.frontRightLeg.setRotationPoint(-1.0F, 17.5F, 7.0F);
 		if (foxEntity.isCrouching()) {
@@ -81,17 +81,20 @@ public class FoxModel<T extends FoxEntity> extends EntityModel<T> {
 			float i = foxEntity.getBodyRotationHeightOffset(h);
 			this.body.setRotationPoint(0.0F, 16.0F + foxEntity.getBodyRotationHeightOffset(h), -6.0F);
 			this.head.setRotationPoint(-1.0F, 16.5F + i, -3.0F);
+			this.head.yaw = 0.0F;
 		} else if (foxEntity.isSleeping()) {
 			this.body.roll = (float) (-Math.PI / 2);
-			this.body.setRotationPoint(0.0F, 21.0F + foxEntity.getBodyRotationHeightOffset(h), -6.0F);
+			this.body.setRotationPoint(0.0F, 21.0F, -6.0F);
 			this.tail.pitch = (float) (-Math.PI * 5.0 / 6.0);
 			if (this.isChild) {
 				this.tail.pitch = -2.1816616F;
-				this.body.setRotationPoint(0.0F, 21.0F + foxEntity.getBodyRotationHeightOffset(h), -2.0F);
+				this.body.setRotationPoint(0.0F, 21.0F, -2.0F);
 			}
 
 			this.head.setRotationPoint(1.0F, 19.49F, -3.0F);
+			this.head.pitch = 0.0F;
 			this.head.yaw = (float) (-Math.PI * 2.0 / 3.0);
+			this.head.roll = 0.0F;
 			this.frontLeftLeg.visible = false;
 			this.frontRightLeg.visible = false;
 			this.rearLeftLeg.visible = false;
@@ -103,6 +106,7 @@ public class FoxModel<T extends FoxEntity> extends EntityModel<T> {
 			this.tail.setRotationPoint(-4.0F, 15.0F, -2.0F);
 			this.head.setRotationPoint(-1.0F, 10.0F, -0.25F);
 			this.head.pitch = 0.0F;
+			this.head.yaw = 0.0F;
 			if (this.isChild) {
 				this.head.setRotationPoint(-1.0F, 13.0F, -3.75F);
 			}

@@ -1,23 +1,25 @@
 package net.minecraft.realms;
 
+import java.util.Collection;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Element;
 
 @Environment(EnvType.CLIENT)
-public abstract class RealmsObjectSelectionList extends RealmsGuiEventListener {
-	private final RealmsObjectSelectionListProxy<RealmListEntry> proxy;
+public abstract class RealmsObjectSelectionList<E extends RealmListEntry> extends RealmsGuiEventListener {
+	private final RealmsObjectSelectionListProxy proxy;
 
 	public RealmsObjectSelectionList(int i, int j, int k, int l, int m) {
-		this.proxy = new RealmsObjectSelectionListProxy<>(this, i, j, k, l, m);
+		this.proxy = new RealmsObjectSelectionListProxy(this, i, j, k, l, m);
 	}
 
 	public void render(int i, int j, float f) {
 		this.proxy.render(i, j, f);
 	}
 
-	public void addEntry(RealmListEntry realmListEntry) {
+	public void addEntry(E realmListEntry) {
 		this.proxy.addEntry(realmListEntry);
 	}
 
@@ -29,7 +31,7 @@ public abstract class RealmsObjectSelectionList extends RealmsGuiEventListener {
 		this.proxy.clear();
 	}
 
-	public boolean removeEntry(RealmListEntry realmListEntry) {
+	public boolean removeEntry(E realmListEntry) {
 		return this.proxy.removeEntry(realmListEntry);
 	}
 
@@ -67,7 +69,7 @@ public abstract class RealmsObjectSelectionList extends RealmsGuiEventListener {
 	}
 
 	public int getScrollbarPosition() {
-		return this.proxy.getWidth() / 2 + 124;
+		return this.proxy.getRowLeft() + this.proxy.getItemWidth();
 	}
 
 	public int method_20325() {
@@ -110,7 +112,23 @@ public abstract class RealmsObjectSelectionList extends RealmsGuiEventListener {
 	}
 
 	@Nullable
-	public RealmListEntry getSelected() {
-		return this.proxy.getSelectedItem();
+	public E getSelected() {
+		return (E)this.proxy.getSelectedItem();
+	}
+
+	public List<E> children() {
+		return (List<E>)this.proxy.children();
+	}
+
+	public void replaceEntries(Collection<E> collection) {
+		this.proxy.replaceEntries(collection);
+	}
+
+	public int getRowTop(int i) {
+		return this.proxy.getRowTop(i);
+	}
+
+	public int getRowLeft() {
+		return this.proxy.getRowLeft();
 	}
 }

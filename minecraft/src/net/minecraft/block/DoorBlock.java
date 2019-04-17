@@ -32,7 +32,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class DoorBlock extends Block {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty OPEN = Properties.OPEN;
 	public static final EnumProperty<DoorHinge> HINGE = Properties.DOOR_HINGE;
 	public static final BooleanProperty POWERED = Properties.POWERED;

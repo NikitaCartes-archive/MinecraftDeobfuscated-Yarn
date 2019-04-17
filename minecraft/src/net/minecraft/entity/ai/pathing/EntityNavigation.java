@@ -203,14 +203,16 @@ public abstract class EntityNavigation {
 			this.currentPath.setCurrentNodeIndex(this.currentPath.getCurrentNodeIndex() + 1);
 		}
 
-		int k = MathHelper.ceil(this.entity.getWidth());
-		int l = MathHelper.ceil(this.entity.getHeight());
-		int m = k;
+		if (this.entity.world.getTime() % 5L == 0L) {
+			int k = MathHelper.ceil(this.entity.getWidth());
+			int l = MathHelper.ceil(this.entity.getHeight());
+			int m = k;
 
-		for (int n = i - 1; n >= this.currentPath.getCurrentNodeIndex(); n--) {
-			if (this.canPathDirectlyThrough(vec3d, this.currentPath.getNodePosition(this.entity, n), k, l, m)) {
-				this.currentPath.setCurrentNodeIndex(n);
-				break;
+			for (int n = i - 1; n >= this.currentPath.getCurrentNodeIndex(); n--) {
+				if (this.canPathDirectlyThrough(vec3d, this.currentPath.getNodePosition(this.entity, n), k, l, m)) {
+					this.currentPath.setCurrentNodeIndex(n);
+					break;
+				}
 			}
 		}
 

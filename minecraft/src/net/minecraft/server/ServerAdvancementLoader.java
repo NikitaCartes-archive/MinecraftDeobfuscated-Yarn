@@ -109,7 +109,7 @@ public class ServerAdvancementLoader implements SynchronousResourceReloadListene
 
 		for (Advancement advancement : MANAGER.getRoots()) {
 			if (advancement.getDisplay() != null) {
-				AdvancementPositioner.method_852(advancement);
+				AdvancementPositioner.arrangeForTree(advancement);
 			}
 		}
 	}

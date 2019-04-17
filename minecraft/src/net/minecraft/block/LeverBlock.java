@@ -35,7 +35,7 @@ public class LeverBlock extends WallMountedBlock {
 	protected LeverBlock(Block.Settings settings) {
 		super(settings);
 		this.setDefaultState(
-			this.stateFactory.getDefaultState().with(field_11177, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
+			this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(POWERED, Boolean.valueOf(false)).with(FACE, WallMountLocation.field_12471)
 		);
 	}
 
@@ -43,7 +43,7 @@ public class LeverBlock extends WallMountedBlock {
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		switch ((WallMountLocation)blockState.get(FACE)) {
 			case field_12475:
-				switch (((Direction)blockState.get(field_11177)).getAxis()) {
+				switch (((Direction)blockState.get(FACING)).getAxis()) {
 					case X:
 						return FLOOR_X_AXIS_SHAPE;
 					case Z:
@@ -51,7 +51,7 @@ public class LeverBlock extends WallMountedBlock {
 						return FLOOR_Z_AXIS_SHAPE;
 				}
 			case field_12471:
-				switch ((Direction)blockState.get(field_11177)) {
+				switch ((Direction)blockState.get(FACING)) {
 					case EAST:
 						return EAST_WALL_SHAPE;
 					case WEST:
@@ -64,7 +64,7 @@ public class LeverBlock extends WallMountedBlock {
 				}
 			case field_12473:
 			default:
-				switch (((Direction)blockState.get(field_11177)).getAxis()) {
+				switch (((Direction)blockState.get(FACING)).getAxis()) {
 					case X:
 						return CEILING_X_AXIS_SHAPE;
 					case Z:
@@ -94,7 +94,7 @@ public class LeverBlock extends WallMountedBlock {
 	}
 
 	private static void spawnParticles(BlockState blockState, IWorld iWorld, BlockPos blockPos, float f) {
-		Direction direction = ((Direction)blockState.get(field_11177)).getOpposite();
+		Direction direction = ((Direction)blockState.get(FACING)).getOpposite();
 		Direction direction2 = getDirection(blockState).getOpposite();
 		double d = (double)blockPos.getX() + 0.5 + 0.1 * (double)direction.getOffsetX() + 0.2 * (double)direction2.getOffsetX();
 		double e = (double)blockPos.getY() + 0.5 + 0.1 * (double)direction.getOffsetY() + 0.2 * (double)direction2.getOffsetY();
@@ -143,6 +143,6 @@ public class LeverBlock extends WallMountedBlock {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(FACE, field_11177, POWERED);
+		builder.with(FACE, FACING, POWERED);
 	}
 }

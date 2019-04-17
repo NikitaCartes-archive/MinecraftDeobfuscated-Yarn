@@ -20,7 +20,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.IWorld;
 
 public class AttachedStemBlock extends PlantBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private final GourdBlock gourdBlock;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(

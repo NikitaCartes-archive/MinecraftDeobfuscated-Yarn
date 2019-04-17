@@ -7,6 +7,8 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
@@ -16,7 +18,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
 
 public class Heightmap {
-	private static final Predicate<BlockState> ALWAYS_TRUE = blockState -> true;
+	private static final Predicate<BlockState> ALWAYS_TRUE = blockState -> !blockState.isAir();
 	private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().blocksMovement();
 	private final PackedIntegerArray storage = new PackedIntegerArray(9, 256);
 	private final Predicate<BlockState> blockPredicate;
@@ -81,14 +83,11 @@ public class Heightmap {
 					mutable.set(i, m, k);
 					if (this.blockPredicate.test(this.chunk.getBlockState(mutable))) {
 						this.set(i, k, m + 1);
-						break;
-					}
-
-					if (m == 0) {
-						this.set(i, k, 0);
+						return true;
 					}
 				}
 
+				this.set(i, k, 0);
 				return true;
 			}
 
@@ -127,14 +126,14 @@ public class Heightmap {
 	}
 
 	public static enum Type {
-		WORLD_SURFACE_WG("WORLD_SURFACE_WG", Heightmap.Purpose.field_13207, Heightmap.ALWAYS_TRUE),
-		WORLD_SURFACE("WORLD_SURFACE", Heightmap.Purpose.field_16424, Heightmap.ALWAYS_TRUE),
-		OCEAN_FLOOR_WG("OCEAN_FLOOR_WG", Heightmap.Purpose.field_13207, Heightmap.SUFFOCATES),
-		OCEAN_FLOOR("OCEAN_FLOOR", Heightmap.Purpose.field_13206, Heightmap.SUFFOCATES),
-		MOTION_BLOCKING(
+		field_13194("WORLD_SURFACE_WG", Heightmap.Purpose.field_13207, Heightmap.ALWAYS_TRUE),
+		field_13202("WORLD_SURFACE", Heightmap.Purpose.field_16424, Heightmap.ALWAYS_TRUE),
+		field_13195("OCEAN_FLOOR_WG", Heightmap.Purpose.field_13207, Heightmap.SUFFOCATES),
+		field_13200("OCEAN_FLOOR", Heightmap.Purpose.field_13206, Heightmap.SUFFOCATES),
+		field_13197(
 			"MOTION_BLOCKING", Heightmap.Purpose.field_16424, blockState -> blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()
 		),
-		MOTION_BLOCKING_NO_LEAVES(
+		field_13203(
 			"MOTION_BLOCKING_NO_LEAVES",
 			Heightmap.Purpose.field_13206,
 			blockState -> (blockState.getMaterial().blocksMovement() || !blockState.getFluidState().isEmpty()) && !(blockState.getBlock() instanceof LeavesBlock)
@@ -161,6 +160,11 @@ public class Heightmap {
 
 		public boolean shouldSendToClient() {
 			return this.purpose == Heightmap.Purpose.field_16424;
+		}
+
+		@Environment(EnvType.CLIENT)
+		public boolean isStoredServerSide() {
+			return this.purpose != Heightmap.Purpose.field_13207;
 		}
 
 		public static Heightmap.Type byName(String string) {

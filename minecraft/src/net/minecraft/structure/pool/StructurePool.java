@@ -79,7 +79,7 @@ public class StructurePool {
 	}
 
 	public static enum Projection {
-		TERRAIN_MATCHING("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.WORLD_SURFACE_WG, -1))),
+		TERRAIN_MATCHING("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.field_13194, -1))),
 		RIGID("rigid", ImmutableList.of());
 
 		private static final Map<String, StructurePool.Projection> PROJECTIONS_BY_ID = (Map<String, StructurePool.Projection>)Arrays.stream(values())

@@ -72,7 +72,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 
 		for (int m = 0; m < blockPos2.getX(); m++) {
 			for (int n = 0; n < blockPos2.getZ(); n++) {
-				l = Math.min(l, iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
+				l = Math.min(l, iWorld.getTop(Heightmap.Type.field_13195, blockPos.getX() + m + j, blockPos.getZ() + n + k));
 			}
 		}
 

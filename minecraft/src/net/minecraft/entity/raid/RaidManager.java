@@ -9,6 +9,7 @@ import javax.annotation.Nullable;
 import net.minecraft.advancement.criterion.Criterions;
 import net.minecraft.client.network.packet.EntityStatusS2CPacket;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -19,6 +20,7 @@ import net.minecraft.village.PointOfInterestStorage;
 import net.minecraft.village.PointOfInterestType;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.dimension.Dimension;
+import net.minecraft.world.dimension.DimensionType;
 
 public class RaidManager extends PersistentState {
 	private final Map<Integer, Raid> raids = Maps.<Integer, Raid>newHashMap();
@@ -74,37 +76,51 @@ public class RaidManager extends PersistentState {
 		if (serverPlayerEntity.isSpectator()) {
 			return null;
 		} else {
-			BlockPos blockPos = new BlockPos(serverPlayerEntity);
-			Optional<BlockPos> optional = this.world
-				.getPointOfInterestStorage()
-				.getNearestPosition(
-					pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18518, Objects::nonNull, blockPos, 15, PointOfInterestStorage.OccupationStatus.ANY
-				);
-			if (!optional.isPresent()) {
-				optional = Optional.of(blockPos);
-			}
-
-			Raid raid = this.getOrCreateRaid(serverPlayerEntity.getServerWorld(), (BlockPos)optional.get());
-			boolean bl = false;
-			if (!raid.hasStarted()) {
-				if (!this.raids.containsKey(raid.getRaidId())) {
-					this.raids.put(raid.getRaidId(), raid);
+			DimensionType dimensionType = serverPlayerEntity.world.getDimension().getType();
+			if (dimensionType == DimensionType.field_13076) {
+				return null;
+			} else {
+				BlockPos blockPos = new BlockPos(serverPlayerEntity);
+				Optional<BlockPos> optional = this.world
+					.getPointOfInterestStorage()
+					.getNearestPosition(
+						pointOfInterestType -> pointOfInterestType == PointOfInterestType.field_18518,
+						Objects::nonNull,
+						blockPos,
+						15,
+						PointOfInterestStorage.OccupationStatus.ANY
+					);
+				if (!optional.isPresent()) {
+					optional = Optional.of(blockPos);
 				}
 
-				bl = true;
-			} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
-				bl = true;
-			}
+				Raid raid = this.getOrCreateRaid(serverPlayerEntity.getServerWorld(), (BlockPos)optional.get());
+				boolean bl = false;
+				if (!raid.hasStarted()) {
+					if (!this.raids.containsKey(raid.getRaidId())) {
+						this.raids.put(raid.getRaidId(), raid);
+					}
 
-			if (bl) {
-				raid.start(serverPlayerEntity);
-				serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
-				serverPlayerEntity.incrementStat(Stats.field_19256);
-				Criterions.VOLUNTARY_EXILE.handle(serverPlayerEntity);
-			}
+					bl = true;
+				} else if (raid.getBadOmenLevel() < raid.getMaxAcceptableBadOmenLevel()) {
+					bl = true;
+				} else {
+					serverPlayerEntity.removeStatusEffect(StatusEffects.field_16595);
+					serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
+				}
 
-			this.markDirty();
-			return raid;
+				if (bl) {
+					raid.start(serverPlayerEntity);
+					serverPlayerEntity.networkHandler.sendPacket(new EntityStatusS2CPacket(serverPlayerEntity, (byte)43));
+					if (!raid.hasSpawned()) {
+						serverPlayerEntity.incrementStat(Stats.field_19256);
+						Criterions.VOLUNTARY_EXILE.handle(serverPlayerEntity);
+					}
+				}
+
+				this.markDirty();
+				return raid;
+			}
 		}
 	}
 

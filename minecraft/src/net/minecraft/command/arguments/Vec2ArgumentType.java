@@ -68,7 +68,7 @@ public class Vec2ArgumentType implements ArgumentType<PosArgument> {
 				collection = ((CommandSource)commandContext.getSource()).getPositionSuggestions();
 			}
 
-			return CommandSource.method_9252(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9725));
+			return CommandSource.suggestColumnPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9725));
 		}
 	}
 

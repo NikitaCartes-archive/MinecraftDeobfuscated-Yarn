@@ -66,7 +66,7 @@ public class BarrelBlock extends BlockWithEntity {
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof BarrelBlockEntity) {
-			((BarrelBlockEntity)blockEntity).method_20362();
+			((BarrelBlockEntity)blockEntity).tick();
 		}
 	}
 

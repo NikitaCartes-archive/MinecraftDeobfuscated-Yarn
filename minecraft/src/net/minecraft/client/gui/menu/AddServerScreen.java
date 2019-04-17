@@ -56,7 +56,7 @@ public class AddServerScreen extends Screen {
 	protected void init() {
 		this.minecraft.keyboard.enableRepeatEvents(true);
 		this.serverNameField = new TextFieldWidget(this.font, this.width / 2 - 100, 66, 200, 20, I18n.translate("addServer.enterName"));
-		this.serverNameField.setFocused(true);
+		this.serverNameField.method_1876(true);
 		this.serverNameField.setText(this.serverEntry.name);
 		this.serverNameField.setChangedListener(this::onClose);
 		this.children.add(this.serverNameField);

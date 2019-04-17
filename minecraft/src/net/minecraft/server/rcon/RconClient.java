@@ -58,7 +58,7 @@ public class RconClient extends RconBase {
 								String string2 = BufferHelper.getString(this.packetBuffer, j, i);
 
 								try {
-									this.method_14789(l, this.field_14425.executeRconCommand(string2));
+									this.method_14789(l, this.server.executeRconCommand(string2));
 								} catch (Exception var16) {
 									this.method_14789(l, "Error executing: " + string2 + " (" + var16.getMessage() + ")");
 								}
@@ -124,8 +124,8 @@ public class RconClient extends RconBase {
 	}
 
 	@Override
-	public void method_18050() {
-		super.method_18050();
+	public void stop() {
+		super.stop();
 		this.close();
 	}
 

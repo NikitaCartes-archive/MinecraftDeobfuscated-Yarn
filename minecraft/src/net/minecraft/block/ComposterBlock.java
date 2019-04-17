@@ -136,7 +136,7 @@ public class ComposterBlock extends Block implements InventoryProvider {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_18027(World world, BlockPos blockPos, boolean bl) {
+	public static void playEffects(World world, BlockPos blockPos, boolean bl) {
 		BlockState blockState = world.getBlockState(blockPos);
 		world.playSound(
 			(double)blockPos.getX(),

@@ -35,7 +35,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public int getLuminance(BlockState blockState) {
-		return this.method_10506(blockState) ? 0 : super.getLuminance(blockState) + 3 * (Integer)blockState.get(PICKLES);
+		return this.isDry(blockState) ? 0 : super.getLuminance(blockState) + 3 * (Integer)blockState.get(PICKLES);
 	}
 
 	@Nullable
@@ -51,7 +51,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 		}
 	}
 
-	private boolean method_10506(BlockState blockState) {
+	private boolean isDry(BlockState blockState) {
 		return !(Boolean)blockState.get(WATERLOGGED);
 	}
 
@@ -125,7 +125,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		if (!this.method_10506(blockState) && world.getBlockState(blockPos.down()).matches(BlockTags.field_15461)) {
+		if (!this.isDry(blockState) && world.getBlockState(blockPos.down()).matches(BlockTags.field_15461)) {
 			int i = 5;
 			int j = 1;
 			int k = 2;

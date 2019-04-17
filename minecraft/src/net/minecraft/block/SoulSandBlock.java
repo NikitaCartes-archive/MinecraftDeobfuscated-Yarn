@@ -28,7 +28,7 @@ public class SoulSandBlock extends Block {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		BubbleColumnBlock.method_9657(world, blockPos.up(), false);
+		BubbleColumnBlock.update(world, blockPos.up(), false);
 	}
 
 	@Override

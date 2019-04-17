@@ -32,7 +32,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.explosion.Explosion;
 
 public class StairsBlock extends Block implements Waterloggable {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final EnumProperty<BlockHalf> HALF = Properties.BLOCK_HALF;
 	public static final EnumProperty<StairShape> SHAPE = Properties.STAIR_SHAPE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
@@ -208,7 +208,7 @@ public class StairsBlock extends Block implements Waterloggable {
 	private static StairShape method_10675(BlockState blockState, BlockView blockView, BlockPos blockPos) {
 		Direction direction = blockState.get(FACING);
 		BlockState blockState2 = blockView.getBlockState(blockPos.offset(direction));
-		if (method_10676(blockState2) && blockState.get(HALF) == blockState2.get(HALF)) {
+		if (isStairs(blockState2) && blockState.get(HALF) == blockState2.get(HALF)) {
 			Direction direction2 = blockState2.get(FACING);
 			if (direction2.getAxis() != ((Direction)blockState.get(FACING)).getAxis() && method_10678(blockState, blockView, blockPos, direction2.getOpposite())) {
 				if (direction2 == direction.rotateYCounterclockwise()) {
@@ -220,7 +220,7 @@ public class StairsBlock extends Block implements Waterloggable {
 		}
 
 		BlockState blockState3 = blockView.getBlockState(blockPos.offset(direction.getOpposite()));
-		if (method_10676(blockState3) && blockState.get(HALF) == blockState3.get(HALF)) {
+		if (isStairs(blockState3) && blockState.get(HALF) == blockState3.get(HALF)) {
 			Direction direction3 = blockState3.get(FACING);
 			if (direction3.getAxis() != ((Direction)blockState.get(FACING)).getAxis() && method_10678(blockState, blockView, blockPos, direction3)) {
 				if (direction3 == direction.rotateYCounterclockwise()) {
@@ -236,10 +236,10 @@ public class StairsBlock extends Block implements Waterloggable {
 
 	private static boolean method_10678(BlockState blockState, BlockView blockView, BlockPos blockPos, Direction direction) {
 		BlockState blockState2 = blockView.getBlockState(blockPos.offset(direction));
-		return !method_10676(blockState2) || blockState2.get(FACING) != blockState.get(FACING) || blockState2.get(HALF) != blockState.get(HALF);
+		return !isStairs(blockState2) || blockState2.get(FACING) != blockState.get(FACING) || blockState2.get(HALF) != blockState.get(HALF);
 	}
 
-	public static boolean method_10676(BlockState blockState) {
+	public static boolean isStairs(BlockState blockState) {
 		return blockState.getBlock() instanceof StairsBlock;
 	}
 

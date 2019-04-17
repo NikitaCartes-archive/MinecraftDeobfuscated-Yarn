@@ -884,7 +884,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 
 			for (int l = 0; l < k; l++) {
 				BlockPos blockPos2 = viewableWorld.getTopPosition(
-					Heightmap.Type.MOTION_BLOCKING, blockPos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10))
+					Heightmap.Type.field_13197, blockPos.add(this.random.nextInt(10) - this.random.nextInt(10), 0, this.random.nextInt(10) - this.random.nextInt(10))
 				);
 				Biome biome = viewableWorld.getBiome(blockPos2);
 				BlockPos blockPos3 = blockPos2.down();
@@ -938,7 +938,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 			if (j > 0 && this.random.nextInt(3) < this.field_3995++) {
 				this.field_3995 = 0;
 				if (e > (double)(blockPos.getY() + 1)
-					&& viewableWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > MathHelper.floor((float)blockPos.getY())) {
+					&& viewableWorld.getTopPosition(Heightmap.Type.field_13197, blockPos).getY() > MathHelper.floor((float)blockPos.getY())) {
 					this.client.world.playSound(d, e, g, SoundEvents.field_15020, SoundCategory.field_15252, 0.1F, 0.5F, false);
 				} else {
 					this.client.world.playSound(d, e, g, SoundEvents.field_14946, SoundCategory.field_15252, 0.2F, 1.0F, false);
@@ -987,7 +987,7 @@ public class GameRenderer implements AutoCloseable, SynchronousResourceReloadLis
 					mutable.set(q, 0, p);
 					Biome biome = world.getBiome(mutable);
 					if (biome.getPrecipitation() != Biome.Precipitation.NONE) {
-						int u = world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, mutable).getY();
+						int u = world.getTopPosition(Heightmap.Type.field_13197, mutable).getY();
 						int v = j - m;
 						int w = j + m;
 						if (v < u) {

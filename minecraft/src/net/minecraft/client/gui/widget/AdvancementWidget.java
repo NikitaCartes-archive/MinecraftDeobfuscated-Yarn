@@ -23,7 +23,7 @@ public class AdvancementWidget extends DrawableHelper {
 	private static final Identifier WIDGETS_TEX = new Identifier("textures/gui/advancements/widgets.png");
 	private static final Pattern field_2708 = Pattern.compile("(.+) \\S+");
 	private final AdvancementTreeWidget tree;
-	private final Advancement field_2702;
+	private final Advancement advancement;
 	private final AdvancementDisplay display;
 	private final String field_2713;
 	private final int field_2715;
@@ -39,7 +39,7 @@ public class AdvancementWidget extends DrawableHelper {
 		AdvancementTreeWidget advancementTreeWidget, MinecraftClient minecraftClient, Advancement advancement, AdvancementDisplay advancementDisplay
 	) {
 		this.tree = advancementTreeWidget;
-		this.field_2702 = advancement;
+		this.advancement = advancement;
 		this.display = advancementDisplay;
 		this.client = minecraftClient;
 		this.field_2713 = minecraftClient.textRenderer.trimToWidth(advancementDisplay.getTitle().getFormattedText(), 163);
@@ -92,12 +92,12 @@ public class AdvancementWidget extends DrawableHelper {
 	}
 
 	@Nullable
-	private AdvancementWidget method_2328(Advancement advancement) {
+	private AdvancementWidget getRootWidget(Advancement advancement) {
 		do {
 			advancement = advancement.getParent();
 		} while (advancement != null && advancement.getDisplay() == null);
 
-		return advancement != null && advancement.getDisplay() != null ? this.tree.method_2308(advancement) : null;
+		return advancement != null && advancement.getDisplay() != null ? this.tree.getWidgetForAdvancement(advancement) : null;
 	}
 
 	public void method_2323(int i, int j, boolean bl) {
@@ -285,8 +285,8 @@ public class AdvancementWidget extends DrawableHelper {
 	}
 
 	public void method_2332() {
-		if (this.field_2706 == null && this.field_2702.getParent() != null) {
-			this.field_2706 = this.method_2328(this.field_2702);
+		if (this.field_2706 == null && this.advancement.getParent() != null) {
+			this.field_2706 = this.getRootWidget(this.advancement);
 			if (this.field_2706 != null) {
 				this.field_2706.method_2322(this);
 			}

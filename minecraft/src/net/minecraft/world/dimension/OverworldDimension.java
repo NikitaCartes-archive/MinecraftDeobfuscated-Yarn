@@ -188,12 +188,10 @@ public class OverworldDimension extends Dimension {
 			return null;
 		} else {
 			WorldChunk worldChunk = this.world.method_8497(i >> 4, j >> 4);
-			int k = worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, i & 15, j & 15);
+			int k = worldChunk.sampleHeightmap(Heightmap.Type.field_13197, i & 15, j & 15);
 			if (k < 0) {
 				return null;
-			} else if (worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i & 15, j & 15) > worldChunk.sampleHeightmap(Heightmap.Type.OCEAN_FLOOR, i & 15, j & 15)
-				)
-			 {
+			} else if (worldChunk.sampleHeightmap(Heightmap.Type.field_13202, i & 15, j & 15) > worldChunk.sampleHeightmap(Heightmap.Type.field_13200, i & 15, j & 15)) {
 				return null;
 			} else {
 				for (int l = k + 1; l >= 0; l--) {

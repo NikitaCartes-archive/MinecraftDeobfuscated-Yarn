@@ -6,6 +6,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.BasicInventory;
+import net.minecraft.inventory.CraftingResultInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.Item;
@@ -19,8 +20,15 @@ import net.minecraft.world.World;
 
 public class CartographyTableContainer extends Container {
 	private final BlockContext context;
-	private boolean field_17295;
-	public final Inventory inventory = new BasicInventory(3) {
+	private boolean currentlyTakingItem;
+	public final Inventory inventory = new BasicInventory(2) {
+		@Override
+		public void markDirty() {
+			CartographyTableContainer.this.onContentChanged(this);
+			super.markDirty();
+		}
+	};
+	private final CraftingResultInventory resultSlot = new CraftingResultInventory() {
 		@Override
 		public void markDirty() {
 			CartographyTableContainer.this.onContentChanged(this);
@@ -49,7 +57,7 @@ public class CartographyTableContainer extends Container {
 			}
 		});
 		this.addSlot(
-			new Slot(this.inventory, 2, 145, 39) {
+			new Slot(this.resultSlot, 2, 145, 39) {
 				@Override
 				public boolean canInsert(ItemStack itemStack) {
 					return false;
@@ -59,7 +67,7 @@ public class CartographyTableContainer extends Container {
 				public ItemStack takeStack(int i) {
 					ItemStack itemStack = super.takeStack(i);
 					ItemStack itemStack2 = (ItemStack)blockContext.run((BiFunction)((world, blockPos) -> {
-						if (!CartographyTableContainer.this.field_17295 && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
+						if (!CartographyTableContainer.this.currentlyTakingItem && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 							ItemStack itemStack2x = FilledMapItem.method_17442(world, CartographyTableContainer.this.inventory.getInvStack(0));
 							if (itemStack2x != null) {
 								itemStack2x.setAmount(1);
@@ -69,8 +77,8 @@ public class CartographyTableContainer extends Container {
 
 						return itemStack;
 					})).orElse(itemStack);
-					this.inventory.takeInvStack(0, 1);
-					this.inventory.takeInvStack(1, 1);
+					CartographyTableContainer.this.inventory.takeInvStack(0, 1);
+					CartographyTableContainer.this.inventory.takeInvStack(1, 1);
 					return itemStack2;
 				}
 
@@ -111,13 +119,13 @@ public class CartographyTableContainer extends Container {
 	public void onContentChanged(Inventory inventory) {
 		ItemStack itemStack = this.inventory.getInvStack(0);
 		ItemStack itemStack2 = this.inventory.getInvStack(1);
-		ItemStack itemStack3 = this.inventory.getInvStack(2);
+		ItemStack itemStack3 = this.resultSlot.getInvStack(2);
 		if (itemStack3.isEmpty() || !itemStack.isEmpty() && !itemStack2.isEmpty()) {
 			if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 				this.updateResult(itemStack, itemStack2, itemStack3);
 			}
 		} else {
-			this.inventory.removeInvStack(2);
+			this.resultSlot.removeInvStack(2);
 		}
 	}
 
@@ -138,7 +146,7 @@ public class CartographyTableContainer extends Container {
 					this.sendContentUpdates();
 				} else {
 					if (item != Items.field_8895) {
-						this.inventory.removeInvStack(2);
+						this.resultSlot.removeInvStack(2);
 						this.sendContentUpdates();
 						return;
 					}
@@ -149,7 +157,7 @@ public class CartographyTableContainer extends Container {
 				}
 
 				if (!ItemStack.areEqual(itemStack4, itemStack3)) {
-					this.inventory.setInvStack(2, itemStack4);
+					this.resultSlot.setInvStack(2, itemStack4);
 					this.sendContentUpdates();
 				}
 			}
@@ -218,9 +226,9 @@ public class CartographyTableContainer extends Container {
 				return ItemStack.EMPTY;
 			}
 
-			this.field_17295 = true;
+			this.currentlyTakingItem = true;
 			slot.onTakeItem(playerEntity, itemStack3);
-			this.field_17295 = false;
+			this.currentlyTakingItem = false;
 			this.sendContentUpdates();
 		}
 
@@ -230,7 +238,7 @@ public class CartographyTableContainer extends Container {
 	@Override
 	public void close(PlayerEntity playerEntity) {
 		super.close(playerEntity);
-		this.inventory.removeInvStack(2);
+		this.resultSlot.removeInvStack(2);
 		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(playerEntity, playerEntity.world, this.inventory)));
 	}
 }

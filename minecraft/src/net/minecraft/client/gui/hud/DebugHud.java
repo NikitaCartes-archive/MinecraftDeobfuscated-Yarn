@@ -7,8 +7,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.datafixers.DataFixUtils;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Map.Entry;
@@ -38,6 +40,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.World;
@@ -48,6 +51,14 @@ import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
+	private static final Map<Heightmap.Type, String> HEIGHT_MAP_TYPES = SystemUtil.consume(new EnumMap(Heightmap.Type.class), enumMap -> {
+		enumMap.put(Heightmap.Type.field_13194, "SW");
+		enumMap.put(Heightmap.Type.field_13202, "S");
+		enumMap.put(Heightmap.Type.field_13195, "OW");
+		enumMap.put(Heightmap.Type.field_13200, "O");
+		enumMap.put(Heightmap.Type.field_13197, "M");
+		enumMap.put(Heightmap.Type.field_13203, "ML");
+	});
 	private final MinecraftClient client;
 	private final TextRenderer fontRenderer;
 	private HitResult blockHit;
@@ -247,6 +258,34 @@ public class DebugHud extends DrawableHelper {
 									+ lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos)
 									+ " block)"
 							);
+						}
+
+						StringBuilder stringBuilder = new StringBuilder("CH");
+
+						for (Heightmap.Type type : Heightmap.Type.values()) {
+							if (type.shouldSendToClient()) {
+								stringBuilder.append(" ")
+									.append((String)HEIGHT_MAP_TYPES.get(type))
+									.append(": ")
+									.append(worldChunk.sampleHeightmap(type, blockPos.getX(), blockPos.getZ()));
+							}
+						}
+
+						list.add(stringBuilder.toString());
+						if (worldChunk2 != null) {
+							stringBuilder.setLength(0);
+							stringBuilder.append("SH");
+
+							for (Heightmap.Type typex : Heightmap.Type.values()) {
+								if (typex.isStoredServerSide()) {
+									stringBuilder.append(" ")
+										.append((String)HEIGHT_MAP_TYPES.get(typex))
+										.append(": ")
+										.append(worldChunk2.sampleHeightmap(typex, blockPos.getX(), blockPos.getZ()));
+								}
+							}
+
+							list.add(stringBuilder.toString());
 						}
 
 						if (blockPos.getY() >= 0 && blockPos.getY() < 256) {

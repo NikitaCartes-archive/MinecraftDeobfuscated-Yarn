@@ -370,7 +370,7 @@ public class DefaultBiomeFeatures {
 				Feature.field_13540,
 				new ProbabilityConfig(0.2F),
 				Decorator.field_14247,
-				new TopSolidHeightmapNoiseBiasedDecoratorConfig(160, 80.0, 0.3, Heightmap.Type.WORLD_SURFACE_WG)
+				new TopSolidHeightmapNoiseBiasedDecoratorConfig(160, 80.0, 0.3, Heightmap.Type.field_13194)
 			)
 		);
 		biome.addFeature(
@@ -942,7 +942,7 @@ public class DefaultBiomeFeatures {
 				Feature.field_13535,
 				FeatureConfig.DEFAULT,
 				Decorator.field_14247,
-				new TopSolidHeightmapNoiseBiasedDecoratorConfig(120, 80.0, 0.0, Heightmap.Type.OCEAN_FLOOR_WG)
+				new TopSolidHeightmapNoiseBiasedDecoratorConfig(120, 80.0, 0.0, Heightmap.Type.field_13195)
 			)
 		);
 	}
@@ -985,7 +985,7 @@ public class DefaultBiomeFeatures {
 				Feature.field_13535,
 				FeatureConfig.DEFAULT,
 				Decorator.field_14247,
-				new TopSolidHeightmapNoiseBiasedDecoratorConfig(80, 80.0, 0.0, Heightmap.Type.OCEAN_FLOOR_WG)
+				new TopSolidHeightmapNoiseBiasedDecoratorConfig(80, 80.0, 0.0, Heightmap.Type.field_13195)
 			)
 		);
 	}

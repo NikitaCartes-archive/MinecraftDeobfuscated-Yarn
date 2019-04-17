@@ -22,13 +22,13 @@ import net.minecraft.world.ViewableWorld;
 
 public class BannerBlock extends AbstractBannerBlock {
 	public static final IntegerProperty ROTATION = Properties.ROTATION_16;
-	private static final Map<DyeColor, Block> field_9925 = Maps.<DyeColor, Block>newHashMap();
+	private static final Map<DyeColor, Block> COLORED_BANNERS = Maps.<DyeColor, Block>newHashMap();
 	private static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 
 	public BannerBlock(DyeColor dyeColor, Block.Settings settings) {
 		super(dyeColor, settings);
 		this.setDefaultState(this.stateFactory.getDefaultState().with(ROTATION, Integer.valueOf(0)));
-		field_9925.put(dyeColor, this);
+		COLORED_BANNERS.put(dyeColor, this);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class BannerBlock extends AbstractBannerBlock {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static Block method_9398(DyeColor dyeColor) {
-		return (Block)field_9925.getOrDefault(dyeColor, Blocks.field_10154);
+	public static Block getForColor(DyeColor dyeColor) {
+		return (Block)COLORED_BANNERS.getOrDefault(dyeColor, Blocks.field_10154);
 	}
 }

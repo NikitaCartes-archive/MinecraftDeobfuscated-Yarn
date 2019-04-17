@@ -557,7 +557,7 @@ public class Raid {
 			float f = this.world.random.nextFloat() * (float) (Math.PI * 2);
 			int m = this.center.getX() + (int)(MathHelper.cos(f) * 32.0F * (float)k) + this.world.random.nextInt(5);
 			int n = this.center.getZ() + (int)(MathHelper.sin(f) * 32.0F * (float)k) + this.world.random.nextInt(5);
-			int o = this.world.getTop(Heightmap.Type.WORLD_SURFACE, m, n);
+			int o = this.world.getTop(Heightmap.Type.field_13202, m, n);
 			mutable.set(m, o, n);
 			if ((!this.world.isNearOccupiedPointOfInterest(mutable) || i >= 2)
 				&& this.world.isAreaLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)

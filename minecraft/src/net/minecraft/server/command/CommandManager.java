@@ -189,11 +189,11 @@ public class CommandManager {
 		Map<CommandNode<ServerCommandSource>, CommandNode<CommandSource>> map = Maps.<CommandNode<ServerCommandSource>, CommandNode<CommandSource>>newHashMap();
 		RootCommandNode<CommandSource> rootCommandNode = new RootCommandNode<>();
 		map.put(this.dispatcher.getRoot(), rootCommandNode);
-		this.method_9239(this.dispatcher.getRoot(), rootCommandNode, serverPlayerEntity.getCommandSource(), map);
+		this.makeTreeForSource(this.dispatcher.getRoot(), rootCommandNode, serverPlayerEntity.getCommandSource(), map);
 		serverPlayerEntity.networkHandler.sendPacket(new CommandTreeS2CPacket(rootCommandNode));
 	}
 
-	private void method_9239(
+	private void makeTreeForSource(
 		CommandNode<ServerCommandSource> commandNode,
 		CommandNode<CommandSource> commandNode2,
 		ServerCommandSource serverCommandSource,
@@ -222,7 +222,7 @@ public class CommandManager {
 				map.put(commandNode3, commandNode4);
 				commandNode2.addChild(commandNode4);
 				if (!commandNode3.getChildren().isEmpty()) {
-					this.method_9239(commandNode3, commandNode4, serverCommandSource, map);
+					this.makeTreeForSource(commandNode3, commandNode4, serverCommandSource, map);
 				}
 			}
 		}

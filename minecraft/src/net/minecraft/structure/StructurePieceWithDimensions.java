@@ -55,7 +55,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 				for (int m = this.boundingBox.minX; m <= this.boundingBox.maxX; m++) {
 					mutable.set(m, 64, l);
 					if (mutableIntBoundingBox.contains(mutable)) {
-						j += iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY();
+						j += iWorld.getTopPosition(Heightmap.Type.field_13203, mutable).getY();
 						k++;
 					}
 				}

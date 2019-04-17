@@ -712,10 +712,10 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			item.appendItemsForGroup(ItemGroup.SEARCH, defaultedList);
 
 			for (ItemStack itemStack : defaultedList) {
-				String string = new TranslatableTextComponent(itemStack.getTranslationKey()).getString();
-				if (string.toLowerCase(Locale.ROOT).equals(string)) {
-					LOGGER.debug("Missing translation for: {} {} {}", itemStack, itemStack.getTranslationKey(), itemStack.getItem());
-					bl = true;
+				String string = itemStack.getTranslationKey();
+				String string2 = new TranslatableTextComponent(string).getString();
+				if (string2.toLowerCase(Locale.ROOT).equals(item.getTranslationKey())) {
+					LOGGER.debug("Missing translation for: {} {} {}", itemStack, string, itemStack.getItem());
 				}
 			}
 		}
@@ -1529,7 +1529,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 			}
 		}
 
-		SocketAddress socketAddress = this.server.getNetworkIo().method_14353();
+		SocketAddress socketAddress = this.server.getNetworkIo().bindLocal();
 		ClientConnection clientConnection = ClientConnection.connect(socketAddress);
 		clientConnection.setPacketListener(new ClientLoginNetworkHandler(clientConnection, this, null, textComponent -> {
 		}));

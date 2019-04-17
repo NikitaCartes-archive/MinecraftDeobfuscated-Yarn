@@ -209,7 +209,7 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 			for (int n = 0; n < 16; n++) {
 				int o = k + m;
 				int p = l + n;
-				int q = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE_WG, m, n) + 1;
+				int q = chunk.sampleHeightmap(Heightmap.Type.field_13194, m, n) + 1;
 				double e = this.surfaceDepthNoise.sample((double)o * 0.0625, (double)p * 0.0625, 0.0625, (double)m * 0.0625);
 				biomes[n * 16 + m]
 					.buildSurface(
@@ -299,8 +299,8 @@ public abstract class SurfaceChunkGenerator<T extends ChunkGeneratorConfig> exte
 		}
 
 		ProtoChunk protoChunk = (ProtoChunk)chunk;
-		Heightmap heightmap = protoChunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
-		Heightmap heightmap2 = protoChunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
+		Heightmap heightmap = protoChunk.getHeightmap(Heightmap.Type.field_13195);
+		Heightmap heightmap2 = protoChunk.getHeightmap(Heightmap.Type.field_13194);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		ObjectListIterator<PoolStructurePiece> objectListIterator = objectList.iterator();
 		ObjectListIterator<JigsawJunction> objectListIterator2 = objectList2.iterator();

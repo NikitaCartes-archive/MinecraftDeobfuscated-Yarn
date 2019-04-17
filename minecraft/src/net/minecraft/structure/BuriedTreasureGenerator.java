@@ -29,7 +29,7 @@ public class BuriedTreasureGenerator {
 
 		@Override
 		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
-			int i = iWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
+			int i = iWorld.getTop(Heightmap.Type.field_13195, this.boundingBox.minX, this.boundingBox.minZ);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
 
 			while (mutable.getY() > 0) {

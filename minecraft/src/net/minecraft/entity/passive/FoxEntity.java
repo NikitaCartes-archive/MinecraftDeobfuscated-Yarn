@@ -139,7 +139,7 @@ public class FoxEntity extends AnimalEntity {
 					this, PlayerEntity.class, 16.0F, 1.6, 1.4, livingEntity -> NOTICEABLE_PLAYER_FILTER.test(livingEntity) && !this.canTrust(livingEntity.getUuid())
 				)
 			);
-		this.goalSelector.add(3, new FleeEntityGoal(this, WolfEntity.class, 8.0F, 1.6, 1.4, EntityPredicates.EXCEPT_SPECTATOR::test));
+		this.goalSelector.add(3, new FleeEntityGoal(this, WolfEntity.class, 8.0F, 1.6, 1.4, livingEntity -> !((WolfEntity)livingEntity).isTamed()));
 		this.goalSelector.add(4, new FoxEntity.MoveToHuntGoal());
 		this.goalSelector.add(5, new FoxEntity.JumpChasingGoal());
 		this.goalSelector.add(5, new FoxEntity.MateGoal(1.0));
@@ -175,7 +175,11 @@ public class FoxEntity extends AnimalEntity {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HAND_MAIN);
 			if (this.method_18430(itemStack)) {
 				if (this.eatingTime > 600) {
-					itemStack.onItemFinishedUsing(this.world, this);
+					ItemStack itemStack2 = itemStack.onItemFinishedUsing(this.world, this);
+					if (!itemStack2.isEmpty()) {
+						this.setEquippedStack(EquipmentSlot.HAND_MAIN, itemStack2);
+					}
+
 					this.eatingTime = 0;
 				} else if (this.eatingTime > 560 && this.random.nextFloat() < 0.1F) {
 					this.playSound(this.getEatSound(itemStack), 1.0F, 1.0F);
@@ -266,7 +270,7 @@ public class FoxEntity extends AnimalEntity {
 	protected void initAttributes() {
 		super.initAttributes();
 		this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.3F);
-		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(20.0);
+		this.getAttributeInstance(EntityAttributes.MAX_HEALTH).setBaseValue(10.0);
 		this.getAttributeInstance(EntityAttributes.FOLLOW_RANGE).setBaseValue(32.0);
 		this.getAttributeContainer().register(EntityAttributes.ATTACK_DAMAGE).setBaseValue(2.0);
 	}
@@ -1431,14 +1435,14 @@ public class FoxEntity extends AnimalEntity {
 		public boolean method_18303(LivingEntity livingEntity) {
 			if (livingEntity instanceof FoxEntity) {
 				return false;
-			} else if (!(livingEntity instanceof ChickenEntity) && !(livingEntity instanceof RabbitEntity) && !(livingEntity instanceof HostileEntity)) {
-				if (!(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative()) {
-					return FoxEntity.this.canTrust(livingEntity.getUuid()) ? false : !livingEntity.isSleeping() && !livingEntity.isSneaking();
-				} else {
-					return false;
-				}
-			} else {
+			} else if (livingEntity instanceof ChickenEntity || livingEntity instanceof RabbitEntity || livingEntity instanceof HostileEntity) {
 				return true;
+			} else if (livingEntity instanceof TameableEntity) {
+				return !((TameableEntity)livingEntity).isTamed();
+			} else if (!(livingEntity instanceof PlayerEntity) || !livingEntity.isSpectator() && !((PlayerEntity)livingEntity).isCreative()) {
+				return FoxEntity.this.canTrust(livingEntity.getUuid()) ? false : !livingEntity.isSleeping() && !livingEntity.isSneaking();
+			} else {
+				return false;
 			}
 		}
 	}

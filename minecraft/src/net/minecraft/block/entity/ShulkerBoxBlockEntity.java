@@ -56,7 +56,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	public void tick() {
 		this.updateAnimation();
 		if (this.animationStage == ShulkerBoxBlockEntity.AnimationStage.field_12066 || this.animationStage == ShulkerBoxBlockEntity.AnimationStage.field_12064) {
-			this.method_11316();
+			this.pushEntities();
 		}
 	}
 
@@ -69,10 +69,10 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			case field_12066:
 				this.animationProgress += 0.1F;
 				if (this.animationProgress >= 1.0F) {
-					this.method_11316();
+					this.pushEntities();
 					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
 					this.animationProgress = 1.0F;
-					this.method_20047();
+					this.updateNeighborStates();
 				}
 				break;
 			case field_12064:
@@ -80,7 +80,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 				if (this.animationProgress <= 0.0F) {
 					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
 					this.animationProgress = 0.0F;
-					this.method_20047();
+					this.updateNeighborStates();
 				}
 				break;
 			case OPENED:
@@ -105,16 +105,16 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			);
 	}
 
-	private BoundingBox method_11315(Direction direction) {
+	private BoundingBox getCollisionBox(Direction direction) {
 		Direction direction2 = direction.getOpposite();
 		return this.getBoundingBox(direction).shrink((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
 	}
 
-	private void method_11316() {
+	private void pushEntities() {
 		BlockState blockState = this.world.getBlockState(this.getPos());
 		if (blockState.getBlock() instanceof ShulkerBoxBlock) {
 			Direction direction = blockState.get(ShulkerBoxBlock.FACING);
-			BoundingBox boundingBox = this.method_11315(direction).offset(this.pos);
+			BoundingBox boundingBox = this.getCollisionBox(direction).offset(this.pos);
 			List<Entity> list = this.world.getEntities(null, boundingBox);
 			if (!list.isEmpty()) {
 				for (int i = 0; i < list.size(); i++) {
@@ -173,12 +173,12 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			this.viewerCount = j;
 			if (j == 0) {
 				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12064;
-				this.method_20047();
+				this.updateNeighborStates();
 			}
 
 			if (j == 1) {
 				this.animationStage = ShulkerBoxBlockEntity.AnimationStage.field_12066;
-				this.method_20047();
+				this.updateNeighborStates();
 			}
 
 			return true;
@@ -187,7 +187,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		}
 	}
 
-	private void method_20047() {
+	private void updateNeighborStates() {
 		this.getCachedState().updateNeighborStates(this.getWorld(), this.getPos(), 3);
 	}
 
@@ -225,23 +225,23 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	@Override
 	public void fromTag(CompoundTag compoundTag) {
 		super.fromTag(compoundTag);
-		this.method_11319(compoundTag);
+		this.deserializeInventory(compoundTag);
 	}
 
 	@Override
 	public CompoundTag toTag(CompoundTag compoundTag) {
 		super.toTag(compoundTag);
-		return this.method_11317(compoundTag);
+		return this.serializeInventory(compoundTag);
 	}
 
-	public void method_11319(CompoundTag compoundTag) {
+	public void deserializeInventory(CompoundTag compoundTag) {
 		this.inventory = DefaultedList.create(this.getInvSize(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(compoundTag) && compoundTag.containsKey("Items", 9)) {
 			Inventories.fromTag(compoundTag, this.inventory);
 		}
 	}
 
-	public CompoundTag method_11317(CompoundTag compoundTag) {
+	public CompoundTag serializeInventory(CompoundTag compoundTag) {
 		if (!this.serializeLootTable(compoundTag)) {
 			Inventories.toTag(compoundTag, this.inventory, false);
 		}

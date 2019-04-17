@@ -331,10 +331,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 8, -2, 11, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 9, -2, 11, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 10, -2, 11, mutableIntBoundingBox);
-			BlockState blockState6 = Blocks.field_10363
-				.getDefaultState()
-				.with(LeverBlock.field_11177, Direction.NORTH)
-				.with(LeverBlock.FACE, WallMountLocation.field_12471);
+			BlockState blockState6 = Blocks.field_10363.getDefaultState().with(LeverBlock.FACING, Direction.NORTH).with(LeverBlock.FACE, WallMountLocation.field_12471);
 			this.addBlock(iWorld, blockState6, 8, -2, 12, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState6, 9, -2, 12, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState6, 10, -2, 12, mutableIntBoundingBox);
@@ -351,7 +348,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.UP), 9, -2, 8, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.WEST), 10, -2, 8, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.WEST), 10, -1, 8, mutableIntBoundingBox);
-			this.addBlock(iWorld, Blocks.field_10450.getDefaultState().with(RepeaterBlock.field_11177, Direction.NORTH), 10, -2, 10, mutableIntBoundingBox);
+			this.addBlock(iWorld, Blocks.field_10450.getDefaultState().with(RepeaterBlock.FACING, Direction.NORTH), 10, -2, 10, mutableIntBoundingBox);
 			if (!this.placedHiddenChest) {
 				this.placedHiddenChest = this.method_14915(iWorld, mutableIntBoundingBox, random, 9, -3, 10, LootTables.CHEST_JUNGLE_TEMPLE);
 			}

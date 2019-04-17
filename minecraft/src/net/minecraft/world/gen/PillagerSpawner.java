@@ -84,7 +84,7 @@ public class PillagerSpawner {
 		if (patrolEntity != null) {
 			double d = (double)(blockPos.getX() + random.nextInt(5) - random.nextInt(5));
 			double e = (double)(blockPos.getZ() + random.nextInt(5) - random.nextInt(5));
-			BlockPos blockPos2 = patrolEntity.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(d, (double)blockPos.getY(), e));
+			BlockPos blockPos2 = patrolEntity.world.getTopPosition(Heightmap.Type.field_13203, new BlockPos(d, (double)blockPos.getY(), e));
 			if (bl) {
 				patrolEntity.setPatrolLeader(true);
 				patrolEntity.setRandomPatrolTarget();

@@ -97,7 +97,7 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		int j = this.pos.getY();
 		int k = this.pos.getZ();
 		this.ticksOpen++;
-		this.viewerCount = method_20364(this.world, this, this.ticksOpen, i, j, k, this.viewerCount);
+		this.viewerCount = tickViewerCount(this.world, this, this.ticksOpen, i, j, k, this.viewerCount);
 		this.lastAnimationAngle = this.animationAngle;
 		float f = 0.1F;
 		if (this.viewerCount > 0 && this.animationAngle == 0.0F) {
@@ -127,15 +127,15 @@ public class ChestBlockEntity extends LootableContainerBlockEntity implements Ch
 		}
 	}
 
-	public static int method_20364(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k, int l, int m) {
+	public static int tickViewerCount(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k, int l, int m) {
 		if (!world.isClient && m != 0 && (i + j + k + l) % 200 == 0) {
-			m = recalculateViewerCountIfNecessary(world, lockableContainerBlockEntity, j, k, l);
+			m = countViewers(world, lockableContainerBlockEntity, j, k, l);
 		}
 
 		return m;
 	}
 
-	public static int recalculateViewerCountIfNecessary(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k) {
+	public static int countViewers(World world, LockableContainerBlockEntity lockableContainerBlockEntity, int i, int j, int k) {
 		int l = 0;
 		float f = 5.0F;
 

@@ -45,7 +45,7 @@ public class IntegratedServer extends MinecraftServer {
 	private boolean field_5524;
 	private int lanPort = -1;
 	private LanServerPinger lanPinger;
-	private UUID field_5521;
+	private UUID localPlayerUuid;
 
 	public IntegratedServer(
 		MinecraftClient minecraftClient,
@@ -126,7 +126,7 @@ public class IntegratedServer extends MinecraftServer {
 			disableableProfiler.push("autoSave");
 			LOGGER.info("Saving and pausing game...");
 			this.getPlayerManager().saveAllPlayerData();
-			this.save(false, true, false);
+			this.save(false, false, false);
 			disableableProfiler.pop();
 		}
 
@@ -258,8 +258,8 @@ public class IntegratedServer extends MinecraftServer {
 	public void stop(boolean bl) {
 		this.executeSync(() -> {
 			for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(this.getPlayerManager().getPlayerList())) {
-				if (!serverPlayerEntity.getUuid().equals(this.field_5521)) {
-					this.getPlayerManager().method_14611(serverPlayerEntity);
+				if (!serverPlayerEntity.getUuid().equals(this.localPlayerUuid)) {
+					this.getPlayerManager().remove(serverPlayerEntity);
 				}
 			}
 		});
@@ -296,12 +296,12 @@ public class IntegratedServer extends MinecraftServer {
 		return 2;
 	}
 
-	public void method_4817(UUID uUID) {
-		this.field_5521 = uUID;
+	public void setLocalPlayerUuid(UUID uUID) {
+		this.localPlayerUuid = uUID;
 	}
 
 	@Override
-	public boolean method_19466(GameProfile gameProfile) {
+	public boolean isOwner(GameProfile gameProfile) {
 		return gameProfile.getName().equalsIgnoreCase(this.getUserName());
 	}
 }

@@ -121,7 +121,7 @@ public class CauldronBlock extends Block {
 						} else if (!playerEntity.inventory.insertStack(itemStack2)) {
 							playerEntity.dropItem(itemStack2, false);
 						} else if (playerEntity instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)playerEntity).method_14204(playerEntity.playerContainer);
+							((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
 						}
 					}
 
@@ -137,7 +137,7 @@ public class CauldronBlock extends Block {
 						playerEntity.incrementStat(Stats.field_15373);
 						playerEntity.setStackInHand(hand, itemStack2);
 						if (playerEntity instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)playerEntity).method_14204(playerEntity.playerContainer);
+							((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
 						}
 					}
 
@@ -173,7 +173,7 @@ public class CauldronBlock extends Block {
 						} else if (!playerEntity.inventory.insertStack(itemStack2)) {
 							playerEntity.dropItem(itemStack2, false);
 						} else if (playerEntity instanceof ServerPlayerEntity) {
-							((ServerPlayerEntity)playerEntity).method_14204(playerEntity.playerContainer);
+							((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
 						}
 					}
 

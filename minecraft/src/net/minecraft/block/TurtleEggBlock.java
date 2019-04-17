@@ -35,30 +35,30 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public void onSteppedOn(World world, BlockPos blockPos, Entity entity) {
-		this.method_10834(world, blockPos, entity, 100);
+		this.tryBreakEgg(world, blockPos, entity, 100);
 		super.onSteppedOn(world, blockPos, entity);
 	}
 
 	@Override
 	public void onLandedUpon(World world, BlockPos blockPos, Entity entity, float f) {
 		if (!(entity instanceof ZombieEntity)) {
-			this.method_10834(world, blockPos, entity, 3);
+			this.tryBreakEgg(world, blockPos, entity, 3);
 		}
 
 		super.onLandedUpon(world, blockPos, entity, f);
 	}
 
-	private void method_10834(World world, BlockPos blockPos, Entity entity, int i) {
-		if (!this.method_10835(world, entity)) {
+	private void tryBreakEgg(World world, BlockPos blockPos, Entity entity, int i) {
+		if (!this.breaksEgg(world, entity)) {
 			super.onSteppedOn(world, blockPos, entity);
 		} else {
 			if (!world.isClient && world.random.nextInt(i) == 0) {
-				this.method_10833(world, blockPos, world.getBlockState(blockPos));
+				this.breakEgg(world, blockPos, world.getBlockState(blockPos));
 			}
 		}
 	}
 
-	private void method_10833(World world, BlockPos blockPos, BlockState blockState) {
+	private void breakEgg(World world, BlockPos blockPos, BlockState blockState) {
 		world.playSound(null, blockPos, SoundEvents.field_14687, SoundCategory.field_15245, 0.7F, 0.9F + world.random.nextFloat() * 0.2F);
 		int i = (Integer)blockState.get(EGGS);
 		if (i <= 1) {
@@ -71,7 +71,7 @@ public class TurtleEggBlock extends Block {
 
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
-		if (this.method_10832(world) && this.method_10831(world, blockPos)) {
+		if (this.shouldHatchProgress(world) && this.isSand(world, blockPos)) {
 			int i = (Integer)blockState.get(HATCH);
 			if (i < 2) {
 				world.playSound(null, blockPos, SoundEvents.field_15109, SoundCategory.field_15245, 0.7F, 0.9F + random.nextFloat() * 0.2F);
@@ -93,18 +93,18 @@ public class TurtleEggBlock extends Block {
 		}
 	}
 
-	private boolean method_10831(BlockView blockView, BlockPos blockPos) {
+	private boolean isSand(BlockView blockView, BlockPos blockPos) {
 		return blockView.getBlockState(blockPos.down()).getBlock() == Blocks.field_10102;
 	}
 
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
-		if (this.method_10831(world, blockPos) && !world.isClient) {
+		if (this.isSand(world, blockPos) && !world.isClient) {
 			world.playLevelEvent(2005, blockPos, 0);
 		}
 	}
 
-	private boolean method_10832(World world) {
+	private boolean shouldHatchProgress(World world) {
 		float f = world.getSkyAngle(1.0F);
 		return (double)f < 0.69 && (double)f > 0.65 ? true : world.random.nextInt(500) == 0;
 	}
@@ -114,7 +114,7 @@ public class TurtleEggBlock extends Block {
 		World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState, @Nullable BlockEntity blockEntity, ItemStack itemStack
 	) {
 		super.afterBreak(world, playerEntity, blockPos, blockState, blockEntity, itemStack);
-		this.method_10833(world, blockPos, blockState);
+		this.breakEgg(world, blockPos, blockState);
 	}
 
 	@Override
@@ -148,7 +148,7 @@ public class TurtleEggBlock extends Block {
 		builder.with(HATCH, EGGS);
 	}
 
-	private boolean method_10835(World world, Entity entity) {
+	private boolean breaksEgg(World world, Entity entity) {
 		if (entity instanceof TurtleEntity) {
 			return false;
 		} else {

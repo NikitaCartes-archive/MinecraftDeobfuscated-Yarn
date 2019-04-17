@@ -21,7 +21,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class CarvedPumpkinBlock extends HorizontalFacingBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	@Nullable
 	private BlockPattern field_10749;
 	@Nullable

@@ -385,7 +385,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			levelProperties.setInitialized(true);
 		}
 
-		this.getPlayerManager().method_14591(serverWorld2);
+		this.getPlayerManager().setMainWorld(serverWorld2);
 		if (levelProperties.getCustomBossEvents() != null) {
 			this.getBossBarManager().fromTag(levelProperties.getCustomBossEvents());
 		}
@@ -787,7 +787,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 	protected void tick(BooleanSupplier booleanSupplier) {
 		this.profiler.push("commandFunctions");
-		this.getCommandFunctionManager().method_18699();
+		this.getCommandFunctionManager().tick();
 		this.profiler.swap("levels");
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
@@ -1432,10 +1432,10 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	public void method_3728(ServerCommandSource serverCommandSource) {
 		if (this.method_3729()) {
 			PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
-			WhitelistList whitelistList = playerManager.getWhitelist();
-			if (whitelistList.isEnabled()) {
+			Whitelist whitelist = playerManager.getWhitelist();
+			if (whitelist.isEnabled()) {
 				for (ServerPlayerEntity serverPlayerEntity : Lists.newArrayList(playerManager.getPlayerList())) {
-					if (!whitelistList.method_14653(serverPlayerEntity.getGameProfile())) {
+					if (!whitelist.isAllowed(serverPlayerEntity.getGameProfile())) {
 						serverPlayerEntity.networkHandler.disconnect(new TranslatableTextComponent("multiplayer.disconnect.not_whitelisted"));
 					}
 				}
@@ -1521,7 +1521,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			OperatorEntry operatorEntry = this.getPlayerManager().getOpList().get(gameProfile);
 			if (operatorEntry != null) {
 				return operatorEntry.getPermissionLevel();
-			} else if (this.method_19466(gameProfile)) {
+			} else if (this.isOwner(gameProfile)) {
 				return 4;
 			} else if (this.isSinglePlayer()) {
 				return this.getPlayerManager().areCheatsAllowed() ? 4 : 0;
@@ -1546,5 +1546,5 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		return this.workerExecutor;
 	}
 
-	public abstract boolean method_19466(GameProfile gameProfile);
+	public abstract boolean isOwner(GameProfile gameProfile);
 }

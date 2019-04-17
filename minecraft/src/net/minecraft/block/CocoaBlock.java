@@ -41,7 +41,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	public CocoaBlock(Block.Settings settings) {
 		super(settings);
-		this.setDefaultState(this.stateFactory.getDefaultState().with(field_11177, Direction.NORTH).with(AGE, Integer.valueOf(0)));
+		this.setDefaultState(this.stateFactory.getDefaultState().with(FACING, Direction.NORTH).with(AGE, Integer.valueOf(0)));
 	}
 
 	@Override
@@ -56,14 +56,14 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		Block block = viewableWorld.getBlockState(blockPos.offset(blockState.get(field_11177))).getBlock();
+		Block block = viewableWorld.getBlockState(blockPos.offset(blockState.get(FACING))).getBlock();
 		return block.matches(BlockTags.field_15474);
 	}
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState blockState, BlockView blockView, BlockPos blockPos, VerticalEntityPosition verticalEntityPosition) {
 		int i = (Integer)blockState.get(AGE);
-		switch ((Direction)blockState.get(field_11177)) {
+		switch ((Direction)blockState.get(FACING)) {
 			case SOUTH:
 				return AGE_TO_SOUTH_SHAPE[i];
 			case NORTH:
@@ -85,7 +85,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 		for (Direction direction : itemPlacementContext.getPlacementFacings()) {
 			if (direction.getAxis().isHorizontal()) {
-				blockState = blockState.with(field_11177, direction);
+				blockState = blockState.with(FACING, direction);
 				if (blockState.canPlaceAt(viewableWorld, blockPos)) {
 					return blockState;
 				}
@@ -99,7 +99,7 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 	public BlockState getStateForNeighborUpdate(
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
-		return direction == blockState.get(field_11177) && !blockState.canPlaceAt(iWorld, blockPos)
+		return direction == blockState.get(FACING) && !blockState.canPlaceAt(iWorld, blockPos)
 			? Blocks.AIR.getDefaultState()
 			: super.getStateForNeighborUpdate(blockState, direction, blockState2, iWorld, blockPos, blockPos2);
 	}
@@ -126,6 +126,6 @@ public class CocoaBlock extends HorizontalFacingBlock implements Fertilizable {
 
 	@Override
 	protected void appendProperties(StateFactory.Builder<Block, BlockState> builder) {
-		builder.with(field_11177, AGE);
+		builder.with(FACING, AGE);
 	}
 }

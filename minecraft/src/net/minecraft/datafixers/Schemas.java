@@ -72,6 +72,7 @@ import net.minecraft.datafixers.fixes.ItemInstanceMapIdFix;
 import net.minecraft.datafixers.fixes.ItemInstanceSpawnEggFix;
 import net.minecraft.datafixers.fixes.ItemInstanceTheFlatteningFix;
 import net.minecraft.datafixers.fixes.ItemLoreToComponentFix;
+import net.minecraft.datafixers.fixes.ItemOminousBannerRenameFix;
 import net.minecraft.datafixers.fixes.ItemPotionFix;
 import net.minecraft.datafixers.fixes.ItemShulkerBoxColorFix;
 import net.minecraft.datafixers.fixes.ItemSpawnEggFix;
@@ -497,5 +498,7 @@ public class Schemas {
 		dataFixerBuilder.addFixer(new OptionsAddTextBackgroundFix(schema91, false));
 		Schema schema92 = dataFixerBuilder.addSchema(1946, identNormalize);
 		dataFixerBuilder.addFixer(new PointOfInterestReorganizationFix(schema92, false));
+		Schema schema93 = dataFixerBuilder.addSchema(1948, identNormalize);
+		dataFixerBuilder.addFixer(new ItemOminousBannerRenameFix(schema93, false));
 	}
 }

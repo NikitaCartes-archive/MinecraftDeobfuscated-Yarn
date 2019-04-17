@@ -119,7 +119,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 					int n = (j - 1) / -2;
 					mutable.set(blockPos).setOffset(direction, k + m).setOffset(Direction.UP, l + n);
 					BlockState blockState = this.world.getBlockState(mutable);
-					if (!blockState.getMaterial().isSolid() && !AbstractRedstoneGateBlock.method_9999(blockState)) {
+					if (!blockState.getMaterial().isSolid() && !AbstractRedstoneGateBlock.isRedstoneGate(blockState)) {
 						return false;
 					}
 				}

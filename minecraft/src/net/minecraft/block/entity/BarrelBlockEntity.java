@@ -126,24 +126,24 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
 			if (!bl) {
 				this.playSound(blockState, SoundEvents.field_17604);
-				this.method_18318(blockState, true);
+				this.setOpen(blockState, true);
 			}
 
-			this.method_20363();
+			this.scheduleUpdate();
 		}
 	}
 
-	private void method_20363() {
+	private void scheduleUpdate() {
 		this.world.getBlockTickScheduler().schedule(this.getPos(), this.getCachedState().getBlock(), 5);
 	}
 
-	public void method_20362() {
+	public void tick() {
 		int i = this.pos.getX();
 		int j = this.pos.getY();
 		int k = this.pos.getZ();
-		this.viewerCount = ChestBlockEntity.recalculateViewerCountIfNecessary(this.world, this, i, j, k);
+		this.viewerCount = ChestBlockEntity.countViewers(this.world, this, i, j, k);
 		if (this.viewerCount > 0) {
-			this.method_20363();
+			this.scheduleUpdate();
 		} else {
 			BlockState blockState = this.getCachedState();
 			if (blockState.getBlock() != Blocks.field_16328) {
@@ -154,7 +154,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 			boolean bl = (Boolean)blockState.get(BarrelBlock.OPEN);
 			if (bl) {
 				this.playSound(blockState, SoundEvents.field_17603);
-				this.method_18318(blockState, false);
+				this.setOpen(blockState, false);
 			}
 		}
 	}
@@ -166,7 +166,7 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 		}
 	}
 
-	private void method_18318(BlockState blockState, boolean bl) {
+	private void setOpen(BlockState blockState, boolean bl) {
 		this.world.setBlockState(this.getPos(), blockState.with(BarrelBlock.OPEN, Boolean.valueOf(bl)), 3);
 	}
 

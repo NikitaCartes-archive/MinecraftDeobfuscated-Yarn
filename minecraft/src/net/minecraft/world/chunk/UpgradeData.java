@@ -334,7 +334,7 @@ public class UpgradeData {
 				if ((Integer)blockState.get(StemBlock.AGE) == 7) {
 					GourdBlock gourdBlock = ((StemBlock)blockState.getBlock()).getGourdBlock();
 					if (blockState2.getBlock() == gourdBlock) {
-						return gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.field_11177, direction);
+						return gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction);
 					}
 				}
 

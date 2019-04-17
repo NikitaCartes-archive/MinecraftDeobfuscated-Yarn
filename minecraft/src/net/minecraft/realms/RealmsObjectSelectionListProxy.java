@@ -1,5 +1,6 @@
 package net.minecraft.realms;
 
+import java.util.Collection;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,8 +31,11 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 	}
 
 	protected void setSelectedItem(int i) {
-		if (super.getItemCount() != 0) {
-			super.selectItem(super.getItem(i));
+		if (i == -1) {
+			super.selectItem(null);
+		} else if (super.getItemCount() != 0) {
+			E item = super.getItem(i);
+			super.selectItem(item);
 		}
 	}
 
@@ -120,5 +124,20 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
 		return super.keyPressed(i, j, k) ? true : this.realmsObjectSelectionList.keyPressed(i, j, k);
+	}
+
+	@Override
+	public void replaceEntries(Collection<E> collection) {
+		super.replaceEntries(collection);
+	}
+
+	@Override
+	public int getRowTop(int i) {
+		return super.getRowTop(i);
+	}
+
+	@Override
+	public int getRowLeft() {
+		return super.getRowLeft();
 	}
 }

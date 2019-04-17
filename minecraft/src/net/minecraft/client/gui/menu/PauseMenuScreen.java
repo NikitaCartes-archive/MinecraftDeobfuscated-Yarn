@@ -2,6 +2,7 @@ package net.minecraft.client.gui.menu;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.CloseWorldScreen;
 import net.minecraft.client.gui.MainMenuScreen;
 import net.minecraft.client.gui.Screen;
@@ -46,6 +47,7 @@ public class PauseMenuScreen extends Screen {
 				buttonWidgetx -> this.minecraft.openScreen(new StatsScreen(this, this.minecraft.player.getStats()))
 			)
 		);
+		String string = SharedConstants.getGameVersion().isStable() ? "https://aka.ms/javafeedback?ref=game" : "https://aka.ms/snapshotfeedback?ref=game";
 		this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 102,
@@ -55,11 +57,11 @@ public class PauseMenuScreen extends Screen {
 				I18n.translate("menu.sendFeedback"),
 				buttonWidgetx -> this.minecraft.openScreen(new ConfirmChatLinkScreen(bl -> {
 						if (bl) {
-							SystemUtil.getOperatingSystem().open("https://aka.ms/snapshotfeedback?ref=game");
+							SystemUtil.getOperatingSystem().open(string);
 						}
 
 						this.minecraft.openScreen(this);
-					}, "https://aka.ms/snapshotfeedback?ref=game", true))
+					}, string, true))
 			)
 		);
 		this.addButton(

@@ -26,16 +26,16 @@ public class DragonEggBlock extends FallingBlock {
 
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
-		this.method_10047(blockState, world, blockPos);
+		this.teleport(blockState, world, blockPos);
 		return true;
 	}
 
 	@Override
 	public void onBlockBreakStart(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity) {
-		this.method_10047(blockState, world, blockPos);
+		this.teleport(blockState, world, blockPos);
 	}
 
-	private void method_10047(BlockState blockState, World world, BlockPos blockPos) {
+	private void teleport(BlockState blockState, World world, BlockPos blockPos) {
 		for (int i = 0; i < 1000; i++) {
 			BlockPos blockPos2 = blockPos.add(
 				world.random.nextInt(16) - world.random.nextInt(16), world.random.nextInt(8) - world.random.nextInt(8), world.random.nextInt(16) - world.random.nextInt(16)

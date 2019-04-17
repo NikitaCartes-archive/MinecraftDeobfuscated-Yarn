@@ -32,7 +32,7 @@ public class ShapedRecipeJsonFactory {
 	private final int outputCount;
 	private final List<String> pattern = Lists.<String>newArrayList();
 	private final Map<Character, Ingredient> inputs = Maps.<Character, Ingredient>newLinkedHashMap();
-	private final Advancement.Task field_11379 = Advancement.Task.create();
+	private final Advancement.Task builder = Advancement.Task.create();
 	private String group;
 
 	public ShapedRecipeJsonFactory(ItemProvider itemProvider, int i) {
@@ -77,7 +77,7 @@ public class ShapedRecipeJsonFactory {
 	}
 
 	public ShapedRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
-		this.field_11379.criterion(string, criterionConditions);
+		this.builder.criterion(string, criterionConditions);
 		return this;
 	}
 
@@ -101,7 +101,7 @@ public class ShapedRecipeJsonFactory {
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
 		this.validate(identifier);
-		this.field_11379
+		this.builder
 			.parent(new Identifier("recipes/root"))
 			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
 			.rewards(AdvancementRewards.Builder.recipe(identifier))
@@ -114,7 +114,7 @@ public class ShapedRecipeJsonFactory {
 				this.group == null ? "" : this.group,
 				this.pattern,
 				this.inputs,
-				this.field_11379,
+				this.builder,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())
 			)
 		);
@@ -142,7 +142,7 @@ public class ShapedRecipeJsonFactory {
 				throw new IllegalStateException("Ingredients are defined but not used in pattern for recipe " + identifier);
 			} else if (this.pattern.size() == 1 && ((String)this.pattern.get(0)).length() == 1) {
 				throw new IllegalStateException("Shaped recipe " + identifier + " only takes in a single item - should it be a shapeless recipe instead?");
-			} else if (this.field_11379.getCriteria().isEmpty()) {
+			} else if (this.builder.getCriteria().isEmpty()) {
 				throw new IllegalStateException("No way of obtaining recipe " + identifier);
 			}
 		}
@@ -155,7 +155,7 @@ public class ShapedRecipeJsonFactory {
 		private final String group;
 		private final List<String> pattern;
 		private final Map<Character, Ingredient> inputs;
-		private final Advancement.Task field_11389;
+		private final Advancement.Task builder;
 		private final Identifier advancementId;
 
 		public ShapedRecipeJsonProvider(
@@ -167,7 +167,7 @@ public class ShapedRecipeJsonFactory {
 			this.group = string;
 			this.pattern = list;
 			this.inputs = map;
-			this.field_11389 = task;
+			this.builder = task;
 			this.advancementId = identifier2;
 		}
 
@@ -213,7 +213,7 @@ public class ShapedRecipeJsonFactory {
 		@Nullable
 		@Override
 		public JsonObject toAdvancementJson() {
-			return this.field_11389.toJson();
+			return this.builder.toJson();
 		}
 
 		@Nullable

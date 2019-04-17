@@ -28,7 +28,8 @@ public class VillagerTaskListProvider {
 			Pair.of(10, new FindPointOfInterestTask(villagerProfession.getWorkStation(), MemoryModuleType.field_18439, true)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.field_18517, MemoryModuleType.field_18438, false)),
 			Pair.of(10, new FindPointOfInterestTask(PointOfInterestType.field_18518, MemoryModuleType.field_18440, true)),
-			Pair.of(10, new GoToWorkTask())
+			Pair.of(10, new GoToWorkTask()),
+			Pair.of(10, new LoseJobOnSiteLossTask())
 		);
 	}
 

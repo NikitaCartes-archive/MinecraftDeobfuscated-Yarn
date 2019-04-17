@@ -29,7 +29,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class BellBlock extends BlockWithEntity {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final EnumProperty<Attachment> ATTACHMENT = Properties.ATTACHMENT;
 	private static final VoxelShape NORTH_SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 4.0, 16.0, 16.0, 12.0);
 	private static final VoxelShape EAST_WEST_SHAPE = Block.createCuboidShape(4.0, 0.0, 0.0, 12.0, 16.0, 16.0);
@@ -50,7 +50,7 @@ public class BellBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void method_19286(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
+	public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
 		if (entity instanceof ProjectileEntity) {
 			Entity entity2 = ((ProjectileEntity)entity).getOwner();
 			PlayerEntity playerEntity = entity2 instanceof PlayerEntity ? (PlayerEntity)entity2 : null;
@@ -179,7 +179,7 @@ public class BellBlock extends BlockWithEntity {
 		BlockState blockState, Direction direction, BlockState blockState2, IWorld iWorld, BlockPos blockPos, BlockPos blockPos2
 	) {
 		Attachment attachment = blockState.get(ATTACHMENT);
-		Direction direction2 = method_16115(blockState).getOpposite();
+		Direction direction2 = getPlacementSide(blockState).getOpposite();
 		if (direction2 == direction && !blockState.canPlaceAt(iWorld, blockPos) && attachment != Attachment.field_17101) {
 			return Blocks.AIR.getDefaultState();
 		} else {
@@ -201,10 +201,10 @@ public class BellBlock extends BlockWithEntity {
 
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
-		return WallMountedBlock.method_20046(viewableWorld, blockPos, method_16115(blockState).getOpposite());
+		return WallMountedBlock.canPlaceAt(viewableWorld, blockPos, getPlacementSide(blockState).getOpposite());
 	}
 
-	private static Direction method_16115(BlockState blockState) {
+	private static Direction getPlacementSide(BlockState blockState) {
 		switch ((Attachment)blockState.get(ATTACHMENT)) {
 			case field_17098:
 				return Direction.UP;

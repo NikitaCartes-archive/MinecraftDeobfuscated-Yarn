@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.fluid.BaseFluid;
 import net.minecraft.fluid.Fluid;
@@ -163,6 +164,13 @@ public class FluidBlock extends Block implements FluidDrainable {
 			return this.fluid;
 		} else {
 			return Fluids.EMPTY;
+		}
+	}
+
+	@Override
+	public void onEntityCollision(BlockState blockState, World world, BlockPos blockPos, Entity entity) {
+		if (this.fluid.matches(FluidTags.field_15518)) {
+			entity.method_20447();
 		}
 	}
 }

@@ -111,7 +111,7 @@ public class HopperBlock extends BlockWithEntity {
 	@Override
 	public void onBlockAdded(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState2.getBlock() != blockState.getBlock()) {
-			this.method_10217(world, blockPos, blockState);
+			this.updateEnabled(world, blockPos, blockState);
 		}
 	}
 
@@ -132,10 +132,10 @@ public class HopperBlock extends BlockWithEntity {
 
 	@Override
 	public void neighborUpdate(BlockState blockState, World world, BlockPos blockPos, Block block, BlockPos blockPos2, boolean bl) {
-		this.method_10217(world, blockPos, blockState);
+		this.updateEnabled(world, blockPos, blockState);
 	}
 
-	private void method_10217(World world, BlockPos blockPos, BlockState blockState) {
+	private void updateEnabled(World world, BlockPos blockPos, BlockState blockState) {
 		boolean bl = !world.isReceivingRedstonePower(blockPos);
 		if (bl != (Boolean)blockState.get(ENABLED)) {
 			world.setBlockState(blockPos, blockState.with(ENABLED, Boolean.valueOf(bl)), 4);

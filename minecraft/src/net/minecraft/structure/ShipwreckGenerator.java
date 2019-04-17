@@ -126,7 +126,7 @@ public class ShipwreckGenerator {
 			BlockPos blockPos = this.pos.add(this.structure.getSize().getX() - 1, 0, this.structure.getSize().getZ() - 1);
 
 			for (BlockPos blockPos2 : BlockPos.iterate(this.pos, blockPos)) {
-				int k = iWorld.getTop(this.isBeached ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG, blockPos2.getX(), blockPos2.getZ());
+				int k = iWorld.getTop(this.isBeached ? Heightmap.Type.field_13194 : Heightmap.Type.field_13195, blockPos2.getX(), blockPos2.getZ());
 				j += k;
 				i = Math.min(i, k);
 			}

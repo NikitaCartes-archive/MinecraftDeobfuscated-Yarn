@@ -42,7 +42,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		this.operations = ImmutableList.copyOf(list);
 	}
 
-	private static NbtPathArgumentType.NbtPath method_16853(String string) {
+	private static NbtPathArgumentType.NbtPath parseNbtPath(String string) {
 		try {
 			return new NbtPathArgumentType().method_9362(new StringReader(string));
 		} catch (CommandSyntaxException var2) {
@@ -124,24 +124,24 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	static class Operation {
 		private final String sourcePath;
-		private final NbtPathArgumentType.NbtPath field_17020;
+		private final NbtPathArgumentType.NbtPath parsedSourcePath;
 		private final String targetPath;
-		private final NbtPathArgumentType.NbtPath field_17022;
+		private final NbtPathArgumentType.NbtPath parsedTargetPath;
 		private final CopyNbtLootFunction.Operator operator;
 
 		private Operation(String string, String string2, CopyNbtLootFunction.Operator operator) {
 			this.sourcePath = string;
-			this.field_17020 = CopyNbtLootFunction.method_16853(string);
+			this.parsedSourcePath = CopyNbtLootFunction.parseNbtPath(string);
 			this.targetPath = string2;
-			this.field_17022 = CopyNbtLootFunction.method_16853(string2);
+			this.parsedTargetPath = CopyNbtLootFunction.parseNbtPath(string2);
 			this.operator = operator;
 		}
 
 		public void execute(Supplier<Tag> supplier, Tag tag) {
 			try {
-				List<Tag> list = this.field_17020.get(tag);
+				List<Tag> list = this.parsedSourcePath.get(tag);
 				if (!list.isEmpty()) {
-					this.operator.method_16864((Tag)supplier.get(), this.field_17022, list);
+					this.operator.merge((Tag)supplier.get(), this.parsedTargetPath, list);
 				}
 			} catch (CommandSyntaxException var4) {
 			}
@@ -166,13 +166,13 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 	public static enum Operator {
 		REPLACE("replace") {
 			@Override
-			public void method_16864(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
+			public void merge(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
 				nbtPath.put(tag, Iterables.getLast(list)::copy);
 			}
 		},
 		APPEND("append") {
 			@Override
-			public void method_16864(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
+			public void merge(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
 				List<Tag> list2 = nbtPath.putIfAbsent(tag, ListTag::new);
 				list2.forEach(tagx -> {
 					if (tagx instanceof ListTag) {
@@ -183,7 +183,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 		},
 		MERGE("merge") {
 			@Override
-			public void method_16864(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
+			public void merge(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException {
 				List<Tag> list2 = nbtPath.putIfAbsent(tag, CompoundTag::new);
 				list2.forEach(tagx -> {
 					if (tagx instanceof CompoundTag) {
@@ -199,7 +199,7 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 		private final String name;
 
-		public abstract void method_16864(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException;
+		public abstract void merge(Tag tag, NbtPathArgumentType.NbtPath nbtPath, List<Tag> list) throws CommandSyntaxException;
 
 		private Operator(String string2) {
 			this.name = string2;

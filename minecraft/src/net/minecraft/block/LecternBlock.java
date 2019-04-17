@@ -29,7 +29,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 public class LecternBlock extends BlockWithEntity {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty POWERED = Properties.POWERED;
 	public static final BooleanProperty HAS_BOOK = Properties.HAS_BOOK;
 	public static final VoxelShape BOTTOM_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
@@ -184,7 +184,7 @@ public class LecternBlock extends BlockWithEntity {
 	public void onBlockRemoved(BlockState blockState, World world, BlockPos blockPos, BlockState blockState2, boolean bl) {
 		if (blockState.getBlock() != blockState2.getBlock()) {
 			if ((Boolean)blockState.get(HAS_BOOK)) {
-				this.method_17477(blockState, world, blockPos);
+				this.dropBook(blockState, world, blockPos);
 			}
 
 			if ((Boolean)blockState.get(POWERED)) {
@@ -195,7 +195,7 @@ public class LecternBlock extends BlockWithEntity {
 		}
 	}
 
-	private void method_17477(BlockState blockState, World world, BlockPos blockPos) {
+	private void dropBook(BlockState blockState, World world, BlockPos blockPos) {
 		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof LecternBlockEntity) {
 			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;

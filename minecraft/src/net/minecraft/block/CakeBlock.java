@@ -42,14 +42,14 @@ public class CakeBlock extends Block {
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient) {
-			return this.method_9719(world, blockPos, blockState, playerEntity);
+			return this.tryEat(world, blockPos, blockState, playerEntity);
 		} else {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			return this.method_9719(world, blockPos, blockState, playerEntity) || itemStack.isEmpty();
+			return this.tryEat(world, blockPos, blockState, playerEntity) || itemStack.isEmpty();
 		}
 	}
 
-	private boolean method_9719(IWorld iWorld, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
+	private boolean tryEat(IWorld iWorld, BlockPos blockPos, BlockState blockState, PlayerEntity playerEntity) {
 		if (!playerEntity.canConsume(false)) {
 			return false;
 		} else {
