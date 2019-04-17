@@ -194,13 +194,13 @@ public class ServerConfigHandler {
 	}
 
 	public static boolean convertWhitelist(MinecraftServer minecraftServer) {
-		final WhitelistList whitelistList = new WhitelistList(PlayerManager.WHITELIST_FILE);
+		final Whitelist whitelist = new Whitelist(PlayerManager.WHITELIST_FILE);
 		if (WHITE_LIST_FILE.exists() && WHITE_LIST_FILE.isFile()) {
-			if (whitelistList.getFile().exists()) {
+			if (whitelist.getFile().exists()) {
 				try {
-					whitelistList.load();
+					whitelist.load();
 				} catch (FileNotFoundException var6) {
-					LOGGER.warn("Could not load existing file {}", whitelistList.getFile().getName(), var6);
+					LOGGER.warn("Could not load existing file {}", whitelist.getFile().getName(), var6);
 				}
 			}
 
@@ -210,7 +210,7 @@ public class ServerConfigHandler {
 					@Override
 					public void onProfileLookupSucceeded(GameProfile gameProfile) {
 						minecraftServer.getUserCache().add(gameProfile);
-						whitelistList.add(new WhitelistEntry(gameProfile));
+						whitelist.add(new WhitelistEntry(gameProfile));
 					}
 
 					@Override
@@ -222,7 +222,7 @@ public class ServerConfigHandler {
 					}
 				};
 				lookupProfile(minecraftServer, list, profileLookupCallback);
-				whitelistList.save();
+				whitelist.save();
 				markFileConverted(WHITE_LIST_FILE);
 				return true;
 			} catch (IOException var4) {

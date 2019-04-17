@@ -58,7 +58,7 @@ public class OceanWarmBiome extends Biome {
 					new FeatureConfig[]{FeatureConfig.DEFAULT, FeatureConfig.DEFAULT, FeatureConfig.DEFAULT}
 				),
 				Decorator.field_14247,
-				new TopSolidHeightmapNoiseBiasedDecoratorConfig(20, 400.0, 0.0, Heightmap.Type.OCEAN_FLOOR_WG)
+				new TopSolidHeightmapNoiseBiasedDecoratorConfig(20, 400.0, 0.0, Heightmap.Type.field_13195)
 			)
 		);
 		DefaultBiomeFeatures.addSeagrass(this);

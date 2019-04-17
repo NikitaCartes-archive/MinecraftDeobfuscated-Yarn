@@ -671,7 +671,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.networkHandler.requestTeleport(this.x, this.y, this.z, h, g);
 			this.interactionManager.setWorld(serverWorld2);
 			this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.abilities));
-			playerManager.method_14606(this, serverWorld2);
+			playerManager.sendWorldInfo(this, serverWorld2);
 			playerManager.method_14594(this);
 
 			for(StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
@@ -889,7 +889,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 		}
 	}
 
-	public void method_14204(Container container) {
+	public void openContainer(Container container) {
 		this.onContainerRegistered(container, container.getStacks());
 	}
 
@@ -1303,7 +1303,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			this.method_18783(serverWorld2);
 			this.networkHandler.requestTeleport(d, e, f, g, h);
 			this.interactionManager.setWorld(serverWorld);
-			this.server.getPlayerManager().method_14606(this, serverWorld);
+			this.server.getPlayerManager().sendWorldInfo(this, serverWorld);
 			this.server.getPlayerManager().method_14594(this);
 		}
 	}

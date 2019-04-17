@@ -50,7 +50,7 @@ public class HoldingPatternPhase extends AbstractPhase {
 
 	private void method_6841() {
 		if (this.field_7043 != null && this.field_7043.isFinished()) {
-			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(EndPortalFeature.ORIGIN));
+			BlockPos blockPos = this.dragon.world.getTopPosition(Heightmap.Type.field_13203, new BlockPos(EndPortalFeature.ORIGIN));
 			int i = this.dragon.getFight() == null ? 0 : this.dragon.getFight().getAliveEndCrystals();
 			if (this.dragon.getRand().nextInt(i + 3) == 0) {
 				this.dragon.getPhaseManager().setPhase(PhaseType.LANDING_APPROACH);

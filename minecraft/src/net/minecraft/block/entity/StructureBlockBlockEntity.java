@@ -405,7 +405,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		return this.loadStructure(true);
 	}
 
-	private static Random method_20048(long l) {
+	private static Random createRandom(long l) {
 		return l == 0L ? new Random(SystemUtil.getMeasuringTimeMs()) : new Random(l);
 	}
 
@@ -450,7 +450,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 					if (this.integrity < 1.0F) {
 						structurePlacementData.clearProcessors()
 							.addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F)))
-							.setRandom(method_20048(this.seed));
+							.setRandom(createRandom(this.seed));
 					}
 
 					structure.place(this.world, blockPos2, structurePlacementData);

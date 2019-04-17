@@ -62,7 +62,7 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 				collection = ((CommandSource)commandContext.getSource()).getBlockPositionSuggestions();
 			}
 
-			return CommandSource.method_9252(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9703));
+			return CommandSource.suggestColumnPositions(string, collection, suggestionsBuilder, CommandManager.getCommandValidator(this::method_9703));
 		}
 	}
 

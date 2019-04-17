@@ -45,7 +45,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 
 public class ChestBlock extends BlockWithEntity implements Waterloggable {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final EnumProperty<ChestType> CHEST_TYPE = Properties.CHEST_TYPE;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape DOUBLE_NORTH_SHAPE = Block.createCuboidShape(1.0, 0.0, 0.0, 15.0, 14.0, 15.0);

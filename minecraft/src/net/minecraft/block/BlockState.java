@@ -322,8 +322,8 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().getSoundGroup(this);
 	}
 
-	public void method_19287(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
-		this.getBlock().method_19286(world, blockState, blockHitResult, entity);
+	public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
+		this.getBlock().onProjectileHit(world, blockState, blockHitResult, entity);
 	}
 
 	public static <T> Dynamic<T> serialize(DynamicOps<T> dynamicOps, BlockState blockState) {

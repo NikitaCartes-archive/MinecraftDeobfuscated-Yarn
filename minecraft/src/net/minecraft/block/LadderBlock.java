@@ -19,7 +19,7 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.ViewableWorld;
 
 public class LadderBlock extends Block implements Waterloggable {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	protected static final VoxelShape EAST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 3.0, 16.0, 16.0);
 	protected static final VoxelShape WEST_SHAPE = Block.createCuboidShape(13.0, 0.0, 0.0, 16.0, 16.0, 16.0);
@@ -46,7 +46,7 @@ public class LadderBlock extends Block implements Waterloggable {
 		}
 	}
 
-	private boolean method_10305(BlockView blockView, BlockPos blockPos, Direction direction) {
+	private boolean canPlaceOn(BlockView blockView, BlockPos blockPos, Direction direction) {
 		BlockState blockState = blockView.getBlockState(blockPos);
 		return !blockState.emitsRedstonePower() && Block.isSolidFullSquare(blockState, blockView, blockPos, direction);
 	}
@@ -54,7 +54,7 @@ public class LadderBlock extends Block implements Waterloggable {
 	@Override
 	public boolean canPlaceAt(BlockState blockState, ViewableWorld viewableWorld, BlockPos blockPos) {
 		Direction direction = blockState.get(FACING);
-		return this.method_10305(viewableWorld, blockPos.offset(direction.getOpposite()), direction);
+		return this.canPlaceOn(viewableWorld, blockPos.offset(direction.getOpposite()), direction);
 	}
 
 	@Override

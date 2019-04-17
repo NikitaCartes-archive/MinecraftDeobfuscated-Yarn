@@ -26,7 +26,7 @@ public class ShapelessRecipeJsonFactory {
 	private final Item output;
 	private final int outputCount;
 	private final List<Ingredient> inputs = Lists.<Ingredient>newArrayList();
-	private final Advancement.Task field_11393 = Advancement.Task.create();
+	private final Advancement.Task builder = Advancement.Task.create();
 	private String group;
 
 	public ShapelessRecipeJsonFactory(ItemProvider itemProvider, int i) {
@@ -71,7 +71,7 @@ public class ShapelessRecipeJsonFactory {
 	}
 
 	public ShapelessRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
-		this.field_11393.criterion(string, criterionConditions);
+		this.builder.criterion(string, criterionConditions);
 		return this;
 	}
 
@@ -95,7 +95,7 @@ public class ShapelessRecipeJsonFactory {
 
 	public void offerTo(Consumer<RecipeJsonProvider> consumer, Identifier identifier) {
 		this.validate(identifier);
-		this.field_11393
+		this.builder
 			.parent(new Identifier("recipes/root"))
 			.criterion("has_the_recipe", new RecipeUnlockedCriterion.Conditions(identifier))
 			.rewards(AdvancementRewards.Builder.recipe(identifier))
@@ -107,14 +107,14 @@ public class ShapelessRecipeJsonFactory {
 				this.outputCount,
 				this.group == null ? "" : this.group,
 				this.inputs,
-				this.field_11393,
+				this.builder,
 				new Identifier(identifier.getNamespace(), "recipes/" + this.output.getItemGroup().getName() + "/" + identifier.getPath())
 			)
 		);
 	}
 
 	private void validate(Identifier identifier) {
-		if (this.field_11393.getCriteria().isEmpty()) {
+		if (this.builder.getCriteria().isEmpty()) {
 			throw new IllegalStateException("No way of obtaining recipe " + identifier);
 		}
 	}
@@ -125,7 +125,7 @@ public class ShapelessRecipeJsonFactory {
 		private final int count;
 		private final String group;
 		private final List<Ingredient> inputs;
-		private final Advancement.Task field_11401;
+		private final Advancement.Task builder;
 		private final Identifier advancementId;
 
 		public ShapelessRecipeJsonProvider(
@@ -136,7 +136,7 @@ public class ShapelessRecipeJsonFactory {
 			this.count = i;
 			this.group = string;
 			this.inputs = list;
-			this.field_11401 = task;
+			this.builder = task;
 			this.advancementId = identifier2;
 		}
 
@@ -175,7 +175,7 @@ public class ShapelessRecipeJsonFactory {
 		@Nullable
 		@Override
 		public JsonObject toAdvancementJson() {
-			return this.field_11401.toJson();
+			return this.builder.toJson();
 		}
 
 		@Nullable

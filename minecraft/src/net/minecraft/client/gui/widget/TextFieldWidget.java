@@ -346,7 +346,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		} else {
 			boolean bl = d >= (double)this.x && d < (double)(this.x + this.width) && e >= (double)this.y && e < (double)(this.y + this.height);
 			if (this.field_2096) {
-				this.setFocused(bl);
+				this.method_1876(bl);
 			}
 
 			if (this.isFocused() && bl && i == 0) {
@@ -364,8 +364,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		}
 	}
 
-	@Override
-	public void setFocused(boolean bl) {
+	public void method_1876(boolean bl) {
 		super.setFocused(bl);
 	}
 

@@ -39,7 +39,7 @@ public class ServerCommandSource implements CommandSource {
 	private final ServerWorld world;
 	private final int level;
 	private final String simpleName;
-	private final TextComponent nameTextComponent;
+	private final TextComponent name;
 	private final MinecraftServer minecraftServer;
 	private final boolean silent;
 	@Nullable
@@ -84,7 +84,7 @@ public class ServerCommandSource implements CommandSource {
 		this.entity = entity;
 		this.level = i;
 		this.simpleName = string;
-		this.nameTextComponent = textComponent;
+		this.name = textComponent;
 		this.minecraftServer = minecraftServer;
 		this.resultConsumer = resultConsumer;
 		this.entityAnchor = entityAnchor;
@@ -120,7 +120,7 @@ public class ServerCommandSource implements CommandSource {
 				this.world,
 				this.level,
 				this.simpleName,
-				this.nameTextComponent,
+				this.name,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -139,7 +139,7 @@ public class ServerCommandSource implements CommandSource {
 				this.world,
 				this.level,
 				this.simpleName,
-				this.nameTextComponent,
+				this.name,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -158,7 +158,7 @@ public class ServerCommandSource implements CommandSource {
 				this.world,
 				this.level,
 				this.simpleName,
-				this.nameTextComponent,
+				this.name,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -184,7 +184,7 @@ public class ServerCommandSource implements CommandSource {
 				this.world,
 				this.level,
 				this.simpleName,
-				this.nameTextComponent,
+				this.name,
 				this.minecraftServer,
 				this.entity,
 				true,
@@ -203,7 +203,7 @@ public class ServerCommandSource implements CommandSource {
 				this.world,
 				i,
 				this.simpleName,
-				this.nameTextComponent,
+				this.name,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -222,7 +222,7 @@ public class ServerCommandSource implements CommandSource {
 				this.world,
 				i,
 				this.simpleName,
-				this.nameTextComponent,
+				this.name,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -241,7 +241,7 @@ public class ServerCommandSource implements CommandSource {
 				this.world,
 				this.level,
 				this.simpleName,
-				this.nameTextComponent,
+				this.name,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -260,7 +260,7 @@ public class ServerCommandSource implements CommandSource {
 				serverWorld,
 				this.level,
 				this.simpleName,
-				this.nameTextComponent,
+				this.name,
 				this.minecraftServer,
 				this.entity,
 				this.silent,
@@ -285,7 +285,7 @@ public class ServerCommandSource implements CommandSource {
 	}
 
 	public TextComponent getDisplayName() {
-		return this.nameTextComponent;
+		return this.name;
 	}
 
 	public String getName() {

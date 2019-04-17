@@ -15,7 +15,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 
 public class WallSkullBlock extends AbstractSkullBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.NORTH,

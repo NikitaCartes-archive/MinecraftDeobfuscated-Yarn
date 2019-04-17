@@ -361,7 +361,7 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		@Override
 		public void stop() {
 			PhantomEntity.this.field_7312 = PhantomEntity.this.world
-				.getTopPosition(Heightmap.Type.MOTION_BLOCKING, PhantomEntity.this.field_7312)
+				.getTopPosition(Heightmap.Type.field_13197, PhantomEntity.this.field_7312)
 				.up(10 + PhantomEntity.this.random.nextInt(20));
 		}
 

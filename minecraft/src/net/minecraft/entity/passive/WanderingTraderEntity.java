@@ -161,6 +161,8 @@ public class WanderingTraderEntity extends AbstractTraderEntity {
 		if (compoundTag.containsKey("WanderTarget")) {
 			this.wanderTarget = TagHelper.deserializeBlockPos(compoundTag.getCompound("WanderTarget"));
 		}
+
+		this.setBreedingAge(Math.max(0, this.getBreedingAge()));
 	}
 
 	@Override

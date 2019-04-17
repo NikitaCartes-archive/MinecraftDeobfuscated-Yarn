@@ -23,7 +23,7 @@ import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
 
 public class WallTorchBlock extends TorchBlock {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	private static final Map<Direction, VoxelShape> BOUNDING_SHAPES = Maps.newEnumMap(
 		ImmutableMap.of(
 			Direction.NORTH,

@@ -40,7 +40,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 	@Override
 	public void onScheduledTick(BlockState blockState, World world, BlockPos blockPos, Random random) {
 		if (random.nextInt(3) == 0 && world.isAir(blockPos.up()) && world.getLightLevel(blockPos.up(), 0) >= 9) {
-			this.method_9351(world, blockPos);
+			this.grow(world, blockPos);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 
 	@Override
 	public void grow(World world, Random random, BlockPos blockPos, BlockState blockState) {
-		this.method_9351(world, blockPos);
+		this.grow(world, blockPos);
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class BambooSaplingBlock extends Block implements Fertilizable {
 		return BlockRenderLayer.CUTOUT;
 	}
 
-	protected void method_9351(World world, BlockPos blockPos) {
+	protected void grow(World world, BlockPos blockPos) {
 		world.setBlockState(blockPos.up(), Blocks.field_10211.getDefaultState().with(BambooBlock.LEAVES, BambooLeaves.field_12466), 3);
 	}
 }

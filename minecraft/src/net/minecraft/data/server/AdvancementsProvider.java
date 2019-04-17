@@ -41,7 +41,7 @@ public class AdvancementsProvider implements DataProvider {
 			if (!set.add(advancement.getId())) {
 				throw new IllegalStateException("Duplicate advancement " + advancement.getId());
 			} else {
-				Path path2 = method_10334(path, advancement);
+				Path path2 = getOutput(path, advancement);
 
 				try {
 					DataProvider.writeToPath(GSON, dataCache, advancement.createTask().toJson(), path2);
@@ -56,7 +56,7 @@ public class AdvancementsProvider implements DataProvider {
 		}
 	}
 
-	private static Path method_10334(Path path, Advancement advancement) {
+	private static Path getOutput(Path path, Advancement advancement) {
 		return path.resolve("data/" + advancement.getId().getNamespace() + "/advancements/" + advancement.getId().getPath() + ".json");
 	}
 

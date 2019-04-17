@@ -4,8 +4,8 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import java.io.File;
 
-public class WhitelistList extends ServerConfigList<GameProfile, WhitelistEntry> {
-	public WhitelistList(File file) {
+public class Whitelist extends ServerConfigList<GameProfile, WhitelistEntry> {
+	public Whitelist(File file) {
 		super(file);
 	}
 
@@ -14,7 +14,7 @@ public class WhitelistList extends ServerConfigList<GameProfile, WhitelistEntry>
 		return new WhitelistEntry(jsonObject);
 	}
 
-	public boolean method_14653(GameProfile gameProfile) {
+	public boolean isAllowed(GameProfile gameProfile) {
 		return this.contains(gameProfile);
 	}
 

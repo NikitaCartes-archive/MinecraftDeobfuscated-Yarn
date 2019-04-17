@@ -104,7 +104,7 @@ public class IglooGenerator {
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 			BlockPos blockPos = (BlockPos)IglooGenerator.field_14406.get(this.template);
 			BlockPos blockPos2 = this.pos.add(Structure.method_15171(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, 0 - blockPos.getZ())));
-			int i = iWorld.getTop(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
+			int i = iWorld.getTop(Heightmap.Type.field_13194, blockPos2.getX(), blockPos2.getZ());
 			BlockPos blockPos3 = this.pos;
 			this.pos = this.pos.add(0, i - 90 - 1, 0);
 			boolean bl = super.generate(iWorld, random, mutableIntBoundingBox, chunkPos);

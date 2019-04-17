@@ -64,7 +64,7 @@ public class DedicatedServerWatchdog implements Runnable {
 					LOGGER.error("We were unable to save this crash report to disk.");
 				}
 
-				this.method_13954();
+				this.shutdown();
 			}
 
 			try {
@@ -74,7 +74,7 @@ public class DedicatedServerWatchdog implements Runnable {
 		}
 	}
 
-	private void method_13954() {
+	private void shutdown() {
 		try {
 			Timer timer = new Timer();
 			timer.schedule(new TimerTask() {

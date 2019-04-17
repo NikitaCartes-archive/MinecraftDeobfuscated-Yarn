@@ -20,7 +20,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 
 public abstract class AbstractFurnaceBlock extends BlockWithEntity {
-	public static final DirectionProperty FACING = HorizontalFacingBlock.field_11177;
+	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 	public static final BooleanProperty LIT = RedstoneTorchBlock.LIT;
 
 	protected AbstractFurnaceBlock(Block.Settings settings) {

@@ -162,7 +162,7 @@ public final class SpawnHelper {
 		ChunkPos chunkPos = worldChunk.getPos();
 		int i = chunkPos.getStartX() + world.random.nextInt(16);
 		int j = chunkPos.getStartZ() + world.random.nextInt(16);
-		int k = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i, j) + 1;
+		int k = worldChunk.sampleHeightmap(Heightmap.Type.field_13202, i, j) + 1;
 		int l = world.random.nextInt(k + 1);
 		return new BlockPos(i, l, j);
 	}

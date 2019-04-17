@@ -90,7 +90,7 @@ public class DataCommand {
 									CommandManager.argument("path", NbtPathArgumentType.create())
 										.executes(
 											commandContext -> executeGet(
-													commandContext.getSource(), objectType.getObject(commandContext), NbtPathArgumentType.method_9358(commandContext, "path")
+													commandContext.getSource(), objectType.getObject(commandContext), NbtPathArgumentType.getNbtPath(commandContext, "path")
 												)
 										)
 										.then(
@@ -99,7 +99,7 @@ public class DataCommand {
 													commandContext -> executeGet(
 															commandContext.getSource(),
 															objectType.getObject(commandContext),
-															NbtPathArgumentType.method_9358(commandContext, "path"),
+															NbtPathArgumentType.getNbtPath(commandContext, "path"),
 															DoubleArgumentType.getDouble(commandContext, "scale")
 														)
 												)
@@ -114,7 +114,7 @@ public class DataCommand {
 								CommandManager.argument("path", NbtPathArgumentType.create())
 									.executes(
 										commandContext -> executeRemove(
-												commandContext.getSource(), objectType.getObject(commandContext), NbtPathArgumentType.method_9358(commandContext, "path")
+												commandContext.getSource(), objectType.getObject(commandContext), NbtPathArgumentType.getNbtPath(commandContext, "path")
 											)
 									)
 							)
@@ -225,7 +225,7 @@ public class DataCommand {
 											return executeModify(commandContext, objectType, modifyOperation, list);
 										}).then(CommandManager.argument("sourcePath", NbtPathArgumentType.create()).executes(commandContext -> {
 											DataCommandObject dataCommandObject = objectType2.getObject(commandContext);
-											NbtPathArgumentType.NbtPath nbtPath = NbtPathArgumentType.method_9358(commandContext, "sourcePath");
+											NbtPathArgumentType.NbtPath nbtPath = NbtPathArgumentType.getNbtPath(commandContext, "sourcePath");
 											List<Tag> list = nbtPath.get(dataCommandObject.getTag());
 											return executeModify(commandContext, objectType, modifyOperation, list);
 										}))
@@ -253,7 +253,7 @@ public class DataCommand {
 		CommandContext<ServerCommandSource> commandContext, DataCommand.ObjectType objectType, DataCommand.ModifyOperation modifyOperation, List<Tag> list
 	) throws CommandSyntaxException {
 		DataCommandObject dataCommandObject = objectType.getObject(commandContext);
-		NbtPathArgumentType.NbtPath nbtPath = NbtPathArgumentType.method_9358(commandContext, "targetPath");
+		NbtPathArgumentType.NbtPath nbtPath = NbtPathArgumentType.getNbtPath(commandContext, "targetPath");
 		CompoundTag compoundTag = dataCommandObject.getTag();
 		int i = modifyOperation.modify(commandContext, compoundTag, nbtPath, list);
 		if (i == 0) {

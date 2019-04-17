@@ -205,7 +205,9 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			}
 		} else if (i > 0.0F) {
 			super.setupTransforms(abstractClientPlayerEntity, f, g, h);
-			GlStateManager.rotatef(MathHelper.lerp(i, abstractClientPlayerEntity.pitch, -90.0F - abstractClientPlayerEntity.pitch), 1.0F, 0.0F, 0.0F);
+			float j = abstractClientPlayerEntity.isInsideWater() ? -90.0F - abstractClientPlayerEntity.pitch : -90.0F;
+			float k = MathHelper.lerp(i, 0.0F, j);
+			GlStateManager.rotatef(k, 1.0F, 0.0F, 0.0F);
 			if (abstractClientPlayerEntity.isInSwimmingPose()) {
 				GlStateManager.translatef(0.0F, -1.0F, 0.3F);
 			}

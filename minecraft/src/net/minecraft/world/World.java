@@ -721,19 +721,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 		int m = MathHelper.floor(boundingBox.minZ);
 		int n = MathHelper.ceil(boundingBox.maxZ);
 		MaterialPredicate materialPredicate = MaterialPredicate.create(material);
-		BlockPos.Mutable mutable = new BlockPos.Mutable();
-
-		for(int o = i; o < j; ++o) {
-			for(int p = k; p < l; ++p) {
-				for(int q = m; q < n; ++q) {
-					if (materialPredicate.method_11745(this.getBlockState(mutable.set(o, p, q)))) {
-						return true;
-					}
-				}
-			}
-		}
-
-		return false;
+		return BlockPos.stream(i, k, m, j - 1, l - 1, n - 1).anyMatch(blockPos -> materialPredicate.method_11745(this.getBlockState(blockPos)));
 	}
 
 	public Explosion createExplosion(@Nullable Entity entity, double d, double e, double f, float g, Explosion.DestructionType destructionType) {
@@ -1090,7 +1078,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 	public BlockPos getSpawnPos() {
 		BlockPos blockPos = new BlockPos(this.properties.getSpawnX(), this.properties.getSpawnY(), this.properties.getSpawnZ());
 		if (!this.getWorldBorder().contains(blockPos)) {
-			blockPos = this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
+			blockPos = this.getTopPosition(Heightmap.Type.field_13197, new BlockPos(this.getWorldBorder().getCenterX(), 0.0, this.getWorldBorder().getCenterZ()));
 		}
 
 		return blockPos;
@@ -1162,7 +1150,7 @@ public abstract class World implements ExtendedBlockView, IWorld, AutoCloseable 
 			return false;
 		} else if (!this.isSkyVisible(blockPos)) {
 			return false;
-		} else if (this.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos).getY() > blockPos.getY()) {
+		} else if (this.getTopPosition(Heightmap.Type.field_13197, blockPos).getY() > blockPos.getY()) {
 			return false;
 		} else {
 			return this.getBiome(blockPos).getPrecipitation() == Biome.Precipitation.RAIN;

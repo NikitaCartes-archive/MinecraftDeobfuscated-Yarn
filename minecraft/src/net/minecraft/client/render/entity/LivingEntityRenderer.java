@@ -321,7 +321,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 
 	protected void method_4048(T livingEntity, double d, double e, double f) {
 		if (livingEntity.getPose() == EntityPose.field_18078) {
-			Direction direction = livingEntity.method_18401();
+			Direction direction = livingEntity.getSleepingDirection();
 			if (direction != null) {
 				float g = livingEntity.getEyeHeight(EntityPose.field_18076) - 0.1F;
 				GlStateManager.translatef((float)d - (float)direction.getOffsetX() * g, (float)e, (float)f - (float)direction.getOffsetZ() * g);
@@ -365,7 +365,7 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			GlStateManager.rotatef(-90.0F - livingEntity.pitch, 1.0F, 0.0F, 0.0F);
 			GlStateManager.rotatef(((float)livingEntity.age + h) * -75.0F, 0.0F, 1.0F, 0.0F);
 		} else if (entityPose == EntityPose.field_18078) {
-			Direction direction = livingEntity.method_18401();
+			Direction direction = livingEntity.getSleepingDirection();
 			GlStateManager.rotatef(direction != null ? method_18656(direction) : g, 0.0F, 1.0F, 0.0F);
 			GlStateManager.rotatef(this.getLyingAngle(livingEntity), 0.0F, 0.0F, 1.0F);
 			GlStateManager.rotatef(270.0F, 0.0F, 1.0F, 0.0F);

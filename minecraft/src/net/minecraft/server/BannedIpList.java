@@ -14,12 +14,12 @@ public class BannedIpList extends ServerConfigList<String, BannedIpEntry> {
 		return new BannedIpEntry(jsonObject);
 	}
 
-	public boolean contains(SocketAddress socketAddress) {
+	public boolean isBanned(SocketAddress socketAddress) {
 		String string = this.stringifyAddress(socketAddress);
 		return this.contains(string);
 	}
 
-	public boolean method_14529(String string) {
+	public boolean isBanned(String string) {
 		return this.contains(string);
 	}
 

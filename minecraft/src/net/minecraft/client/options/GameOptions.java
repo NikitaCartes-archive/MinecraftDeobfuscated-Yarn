@@ -279,6 +279,10 @@ public class GameOptions {
 						GameOption.FORCE_UNICODE_FONT.set(this, string2);
 					}
 
+					if ("discrete_mouse_scroll".equals(string)) {
+						GameOption.DISCRETE_MOUSE_SCROLL.set(this, string2);
+					}
+
 					if ("invertYMouse".equals(string)) {
 						GameOption.INVERT_MOUSE.set(this, string2);
 					}
@@ -651,8 +655,8 @@ public class GameOptions {
 	}
 
 	public void setSoundVolume(SoundCategory soundCategory, float f) {
-		this.client.getSoundManager().updateSoundVolume(soundCategory, f);
 		this.soundVolumeLevels.put(soundCategory, f);
+		this.client.getSoundManager().updateSoundVolume(soundCategory, f);
 	}
 
 	public void onPlayerModelPartChange() {

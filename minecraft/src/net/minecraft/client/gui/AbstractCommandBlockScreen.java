@@ -87,7 +87,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.previousOutputTextField.setText("-");
 		this.children.add(this.previousOutputTextField);
 		this.method_20085(this.consoleCommandTextField);
-		this.consoleCommandTextField.setFocused(true);
+		this.consoleCommandTextField.method_1876(true);
 		this.updateCommand();
 	}
 

@@ -40,14 +40,14 @@ public class AdvancementCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.method_9439(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
 														)
 												)
 												.then(
 													CommandManager.argument("criterion", StringArgumentType.greedyString())
 														.suggests(
 															(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-																	IdentifierArgumentType.method_9439(commandContext, "advancement").getCriteria().keySet(), suggestionsBuilder
+																	IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement").getCriteria().keySet(), suggestionsBuilder
 																)
 														)
 														.executes(
@@ -55,7 +55,7 @@ public class AdvancementCommand {
 																	commandContext.getSource(),
 																	EntityArgumentType.getPlayers(commandContext, "targets"),
 																	AdvancementCommand.Operation.GRANT,
-																	IdentifierArgumentType.method_9439(commandContext, "advancement"),
+																	IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"),
 																	StringArgumentType.getString(commandContext, "criterion")
 																)
 														)
@@ -72,7 +72,7 @@ public class AdvancementCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.method_9439(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
 														)
 												)
 										)
@@ -87,7 +87,7 @@ public class AdvancementCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.method_9439(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
 														)
 												)
 										)
@@ -102,7 +102,7 @@ public class AdvancementCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.GRANT,
-															select(IdentifierArgumentType.method_9439(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
 														)
 												)
 										)
@@ -134,14 +134,14 @@ public class AdvancementCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.method_9439(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13464)
 														)
 												)
 												.then(
 													CommandManager.argument("criterion", StringArgumentType.greedyString())
 														.suggests(
 															(commandContext, suggestionsBuilder) -> CommandSource.suggestMatching(
-																	IdentifierArgumentType.method_9439(commandContext, "advancement").getCriteria().keySet(), suggestionsBuilder
+																	IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement").getCriteria().keySet(), suggestionsBuilder
 																)
 														)
 														.executes(
@@ -149,7 +149,7 @@ public class AdvancementCommand {
 																	commandContext.getSource(),
 																	EntityArgumentType.getPlayers(commandContext, "targets"),
 																	AdvancementCommand.Operation.REVOKE,
-																	IdentifierArgumentType.method_9439(commandContext, "advancement"),
+																	IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"),
 																	StringArgumentType.getString(commandContext, "criterion")
 																)
 														)
@@ -166,7 +166,7 @@ public class AdvancementCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.method_9439(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13458)
 														)
 												)
 										)
@@ -181,7 +181,7 @@ public class AdvancementCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.method_9439(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13465)
 														)
 												)
 										)
@@ -196,7 +196,7 @@ public class AdvancementCommand {
 															commandContext.getSource(),
 															EntityArgumentType.getPlayers(commandContext, "targets"),
 															AdvancementCommand.Operation.REVOKE,
-															select(IdentifierArgumentType.method_9439(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
+															select(IdentifierArgumentType.getAdvancementArgument(commandContext, "advancement"), AdvancementCommand.Selection.field_13462)
 														)
 												)
 										)

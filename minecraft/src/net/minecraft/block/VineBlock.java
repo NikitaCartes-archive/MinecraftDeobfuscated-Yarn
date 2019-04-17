@@ -97,7 +97,7 @@ public class VineBlock extends Block {
 		return i;
 	}
 
-	private boolean method_10829(BlockView blockView, BlockPos blockPos, Direction direction) {
+	private boolean shouldHaveSide(BlockView blockView, BlockPos blockPos, Direction direction) {
 		if (direction == Direction.DOWN) {
 			return false;
 		} else {
@@ -130,7 +130,7 @@ public class VineBlock extends Block {
 		for(Direction direction : Direction.Type.HORIZONTAL) {
 			BooleanProperty booleanProperty = getFacingProperty(direction);
 			if (blockState.get(booleanProperty)) {
-				boolean bl = this.method_10829(blockView, blockPos, direction);
+				boolean bl = this.shouldHaveSide(blockView, blockPos, direction);
 				if (!bl) {
 					if (blockState2 == null) {
 						blockState2 = blockView.getBlockState(blockPos2);
@@ -173,7 +173,7 @@ public class VineBlock extends Block {
 				Direction direction = Direction.random(random);
 				BlockPos blockPos2 = blockPos.up();
 				if (direction.getAxis().isHorizontal() && !blockState.get(getFacingProperty(direction))) {
-					if (this.method_10824(world, blockPos)) {
+					if (this.canGrowAt(world, blockPos)) {
 						BlockPos blockPos3 = blockPos.offset(direction);
 						BlockState blockState3 = world.getBlockState(blockPos3);
 						if (blockState3.isAir()) {
@@ -203,13 +203,13 @@ public class VineBlock extends Block {
 					}
 				} else {
 					if (direction == Direction.UP && blockPos.getY() < 255) {
-						if (this.method_10829(world, blockPos, direction)) {
+						if (this.shouldHaveSide(world, blockPos, direction)) {
 							world.setBlockState(blockPos, blockState.with(UP, Boolean.valueOf(true)), 2);
 							return;
 						}
 
 						if (world.isAir(blockPos2)) {
-							if (!this.method_10824(world, blockPos)) {
+							if (!this.canGrowAt(world, blockPos)) {
 								return;
 							}
 
@@ -221,7 +221,7 @@ public class VineBlock extends Block {
 								}
 							}
 
-							if (this.method_10830(blockState4)) {
+							if (this.hasHorizontalSide(blockState4)) {
 								world.setBlockState(blockPos2, blockState4, 2);
 							}
 
@@ -234,8 +234,8 @@ public class VineBlock extends Block {
 						BlockState blockState3 = world.getBlockState(blockPos3);
 						if (blockState3.isAir() || blockState3.getBlock() == this) {
 							BlockState blockState5 = blockState3.isAir() ? this.getDefaultState() : blockState3;
-							BlockState blockState6 = this.method_10820(blockState, blockState5, random);
-							if (blockState5 != blockState6 && this.method_10830(blockState6)) {
+							BlockState blockState6 = this.getGrownState(blockState, blockState5, random);
+							if (blockState5 != blockState6 && this.hasHorizontalSide(blockState6)) {
 								world.setBlockState(blockPos3, blockState6, 2);
 							}
 						}
@@ -245,7 +245,7 @@ public class VineBlock extends Block {
 		}
 	}
 
-	private BlockState method_10820(BlockState blockState, BlockState blockState2, Random random) {
+	private BlockState getGrownState(BlockState blockState, BlockState blockState2, Random random) {
 		for(Direction direction : Direction.Type.HORIZONTAL) {
 			if (random.nextBoolean()) {
 				BooleanProperty booleanProperty = getFacingProperty(direction);
@@ -258,11 +258,11 @@ public class VineBlock extends Block {
 		return blockState2;
 	}
 
-	private boolean method_10830(BlockState blockState) {
+	private boolean hasHorizontalSide(BlockState blockState) {
 		return blockState.get(NORTH) || blockState.get(EAST) || blockState.get(SOUTH) || blockState.get(WEST);
 	}
 
-	private boolean method_10824(BlockView blockView, BlockPos blockPos) {
+	private boolean canGrowAt(BlockView blockView, BlockPos blockPos) {
 		int i = 4;
 		Iterable<BlockPos> iterable = BlockPos.iterate(
 			blockPos.getX() - 4, blockPos.getY() - 1, blockPos.getZ() - 4, blockPos.getX() + 4, blockPos.getY() + 1, blockPos.getZ() + 4
@@ -301,7 +301,7 @@ public class VineBlock extends Block {
 			if (direction != Direction.DOWN) {
 				BooleanProperty booleanProperty = getFacingProperty(direction);
 				boolean bl2 = bl && blockState.get(booleanProperty);
-				if (!bl2 && this.method_10829(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos(), direction)) {
+				if (!bl2 && this.shouldHaveSide(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos(), direction)) {
 					return blockState2.with(booleanProperty, Boolean.valueOf(true));
 				}
 			}

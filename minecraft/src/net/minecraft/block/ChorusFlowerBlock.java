@@ -218,7 +218,7 @@ public class ChorusFlowerBlock extends Block {
 	}
 
 	@Override
-	public void method_19286(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
+	public void onProjectileHit(World world, BlockState blockState, BlockHitResult blockHitResult, Entity entity) {
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		dropStack(world, blockPos, new ItemStack(this));
 		world.breakBlock(blockPos, true);

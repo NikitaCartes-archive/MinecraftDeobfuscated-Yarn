@@ -23,7 +23,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	private final AdvancementsScreen field_2687;
 	private final AdvancementTabType tabType;
 	private final int field_2681;
-	private final Advancement field_2682;
+	private final Advancement rootAdvancement;
 	private final AdvancementDisplay field_2695;
 	private final ItemStack field_2697;
 	private final String field_2686;
@@ -50,7 +50,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 		this.field_2687 = advancementsScreen;
 		this.tabType = advancementTabType;
 		this.field_2681 = i;
-		this.field_2682 = advancement;
+		this.rootAdvancement = advancement;
 		this.field_2695 = advancementDisplay;
 		this.field_2697 = advancementDisplay.getIcon();
 		this.field_2686 = advancementDisplay.getTitle().getFormattedText();
@@ -59,7 +59,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	public Advancement method_2307() {
-		return this.field_2682;
+		return this.rootAdvancement;
 	}
 
 	public String method_2309() {
@@ -138,7 +138,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	@Nullable
-	public static AdvancementTreeWidget method_2317(MinecraftClient minecraftClient, AdvancementsScreen advancementsScreen, int i, Advancement advancement) {
+	public static AdvancementTreeWidget create(MinecraftClient minecraftClient, AdvancementsScreen advancementsScreen, int i, Advancement advancement) {
 		if (advancement.getDisplay() == null) {
 			return null;
 		} else {
@@ -188,7 +188,7 @@ public class AdvancementTreeWidget extends DrawableHelper {
 	}
 
 	@Nullable
-	public AdvancementWidget method_2308(Advancement advancement) {
+	public AdvancementWidget getWidgetForAdvancement(Advancement advancement) {
 		return (AdvancementWidget)this.widgets.get(advancement);
 	}
 

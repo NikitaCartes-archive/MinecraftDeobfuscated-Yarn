@@ -40,7 +40,7 @@ public class DirectConnectServerScreen extends Screen {
 		);
 		this.addressField = new TextFieldWidget(this.font, this.width / 2 - 100, 116, 200, 20, I18n.translate("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
-		this.addressField.setFocused(true);
+		this.addressField.method_1876(true);
 		this.addressField.setText(this.minecraft.options.lastServer);
 		this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
 		this.children.add(this.addressField);

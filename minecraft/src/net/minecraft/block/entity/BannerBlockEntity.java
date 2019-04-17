@@ -182,7 +182,7 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 
 	@Environment(EnvType.CLIENT)
 	public ItemStack getPickStack(BlockState blockState) {
-		ItemStack itemStack = new ItemStack(BannerBlock.method_9398(this.getColorForState(() -> blockState)));
+		ItemStack itemStack = new ItemStack(BannerBlock.getForColor(this.getColorForState(() -> blockState)));
 		if (this.patternListTag != null && !this.patternListTag.isEmpty()) {
 			itemStack.getOrCreateSubCompoundTag("BlockEntityTag").put("Patterns", this.patternListTag.method_10612());
 		}

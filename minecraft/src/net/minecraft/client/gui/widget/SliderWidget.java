@@ -50,32 +50,22 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 
 	@Override
 	public boolean keyPressed(int i, int j, int k) {
-		if (i == 263) {
-			double d = this.value;
-			double e = 1.0 / (double)(this.width - 8);
-			this.value = MathHelper.clamp(this.value - e, 0.0, 1.0);
-			if (d != this.value) {
-				this.applyValue();
-			}
-
-			this.updateMessage();
-		} else if (i == 262) {
-			double d = this.value;
-			double e = 1.0 / (double)(this.width - 8);
-			this.value = MathHelper.clamp(this.value + e, 0.0, 1.0);
-			if (d != this.value) {
-				this.applyValue();
-			}
-
-			this.updateMessage();
+		boolean bl = i == 263;
+		if (bl || i == 262) {
+			float f = bl ? -1.0F : 1.0F;
+			this.setValue(this.value + (double)(f / (float)(this.width - 8)));
 		}
 
 		return false;
 	}
 
 	private void setValueFromMouse(double d) {
+		this.setValue((d - (double)(this.x + 4)) / (double)(this.width - 8));
+	}
+
+	private void setValue(double d) {
 		double e = this.value;
-		this.value = MathHelper.clamp((d - (double)(this.x + 4)) / (double)(this.width - 8), 0.0, 1.0);
+		this.value = MathHelper.clamp(d, 0.0, 1.0);
 		if (e != this.value) {
 			this.applyValue();
 		}

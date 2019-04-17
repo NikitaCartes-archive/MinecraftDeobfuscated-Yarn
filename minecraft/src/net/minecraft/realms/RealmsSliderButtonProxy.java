@@ -72,6 +72,7 @@ public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstr
 		return this.value;
 	}
 
+	@Override
 	public void setValue(double d) {
 		this.value = d;
 	}

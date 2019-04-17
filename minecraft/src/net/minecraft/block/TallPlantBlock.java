@@ -67,7 +67,7 @@ public class TallPlantBlock extends PlantBlock {
 		}
 	}
 
-	public void method_10021(IWorld iWorld, BlockPos blockPos, int i) {
+	public void placeAt(IWorld iWorld, BlockPos blockPos, int i) {
 		iWorld.setBlockState(blockPos, this.getDefaultState().with(HALF, DoubleBlockHalf.field_12607), i);
 		iWorld.setBlockState(blockPos.up(), this.getDefaultState().with(HALF, DoubleBlockHalf.field_12609), i);
 	}

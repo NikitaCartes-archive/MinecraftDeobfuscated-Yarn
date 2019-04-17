@@ -237,7 +237,7 @@ public abstract class StructurePiece {
 		if (!mutableIntBoundingBox.contains(blockPos)) {
 			return false;
 		} else {
-			return m < viewableWorld.getTop(Heightmap.Type.OCEAN_FLOOR_WG, l, n);
+			return m < viewableWorld.getTop(Heightmap.Type.field_13195, l, n);
 		}
 	}
 
@@ -411,9 +411,9 @@ public abstract class StructurePiece {
 		}
 
 		if (direction != null) {
-			return blockState.with(HorizontalFacingBlock.field_11177, direction.getOpposite());
+			return blockState.with(HorizontalFacingBlock.FACING, direction.getOpposite());
 		} else {
-			Direction direction3 = blockState.get(HorizontalFacingBlock.field_11177);
+			Direction direction3 = blockState.get(HorizontalFacingBlock.FACING);
 			BlockPos blockPos3 = blockPos.offset(direction3);
 			if (blockView.getBlockState(blockPos3).isFullOpaque(blockView, blockPos3)) {
 				direction3 = direction3.getOpposite();
@@ -430,7 +430,7 @@ public abstract class StructurePiece {
 				blockPos3 = blockPos.offset(direction3);
 			}
 
-			return blockState.with(HorizontalFacingBlock.field_11177, direction3);
+			return blockState.with(HorizontalFacingBlock.FACING, direction3);
 		}
 	}
 

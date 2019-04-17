@@ -571,7 +571,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 					m = (int)(20.0F * MathHelper.sin(2.0F * ((float) -Math.PI + (float) (Math.PI / 4) * (float)var7)));
 				}
 
-				int n = Math.max(this.world.getSeaLevel() + 10, this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, new BlockPos(l, 0, m)).getY() + j);
+				int n = Math.max(this.world.getSeaLevel() + 10, this.world.getTopPosition(Heightmap.Type.field_13203, new BlockPos(l, 0, m)).getY() + j);
 				this.field_7012[i] = new PathNode(l, n, m);
 			}
 
@@ -776,7 +776,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		PhaseType<? extends Phase> phaseType = phase.getType();
 		double d;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
-			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
 			float f = Math.max(MathHelper.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0F, 1.0F);
 			d = (double)((float)i / f);
 		} else if (phase.method_6848()) {
@@ -795,7 +795,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		PhaseType<? extends Phase> phaseType = phase.getType();
 		Vec3d vec3d;
 		if (phaseType == PhaseType.LANDING || phaseType == PhaseType.TAKEOFF) {
-			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN);
+			BlockPos blockPos = this.world.getTopPosition(Heightmap.Type.field_13203, EndPortalFeature.ORIGIN);
 			float g = Math.max(MathHelper.sqrt(blockPos.getSquaredDistance(this.getPos(), true)) / 4.0F, 1.0F);
 			float h = 6.0F / g;
 			float i = this.pitch;

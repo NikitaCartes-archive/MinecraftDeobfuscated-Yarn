@@ -30,7 +30,7 @@ public class IdentifierArgumentType implements ArgumentType<Identifier> {
 		return new IdentifierArgumentType();
 	}
 
-	public static Advancement method_9439(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
+	public static Advancement getAdvancementArgument(CommandContext<ServerCommandSource> commandContext, String string) throws CommandSyntaxException {
 		Identifier identifier = commandContext.getArgument(string, Identifier.class);
 		Advancement advancement = commandContext.getSource().getMinecraftServer().getAdvancementManager().get(identifier);
 		if (advancement == null) {

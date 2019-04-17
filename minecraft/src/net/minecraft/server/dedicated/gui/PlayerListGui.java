@@ -11,10 +11,10 @@ public class PlayerListGui extends JList<String> {
 
 	public PlayerListGui(MinecraftServer minecraftServer) {
 		this.server = minecraftServer;
-		minecraftServer.registerTickable(this::method_18700);
+		minecraftServer.registerTickable(this::tick);
 	}
 
-	public void method_18700() {
+	public void tick() {
 		if (this.tick++ % 20 == 0) {
 			Vector<String> vector = new Vector();
 

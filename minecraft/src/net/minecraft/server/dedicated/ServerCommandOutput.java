@@ -26,7 +26,7 @@ public class ServerCommandOutput implements CommandOutput {
 		return this.buffer.toString();
 	}
 
-	public ServerCommandSource method_14700() {
+	public ServerCommandSource createReconCommandSource() {
 		ServerWorld serverWorld = this.server.getWorld(DimensionType.field_13072);
 		return new ServerCommandSource(
 			this, new Vec3d(serverWorld.getSpawnPos()), Vec2f.ZERO, serverWorld, 4, "Recon", new StringTextComponent("Rcon"), this.server, null

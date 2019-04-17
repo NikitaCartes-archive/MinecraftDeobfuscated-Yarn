@@ -28,7 +28,7 @@ public class VillagerScreen extends ContainerScreen<MerchantContainer> {
 
 	public VillagerScreen(MerchantContainer merchantContainer, PlayerInventory playerInventory, TextComponent textComponent) {
 		super(merchantContainer, playerInventory, textComponent);
-		this.containerWidth = 275;
+		this.containerWidth = 276;
 	}
 
 	private void syncRecipeIndex() {

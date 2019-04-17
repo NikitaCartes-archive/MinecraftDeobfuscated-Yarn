@@ -351,7 +351,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.player = this.client.interactionManager.createPlayer(this.world, new StatHandler(), new ClientRecipeBook(this.world.getRecipeManager()));
 			this.client.player.yaw = -180.0F;
 			if (this.client.getServer() != null) {
-				this.client.getServer().method_4817(this.client.player.getUuid());
+				this.client.getServer().setLocalPlayerUuid(this.client.player.getUuid());
 			}
 		}
 
@@ -1364,10 +1364,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(selectAdvancementTabS2CPacket, this, this.client);
 		Identifier identifier = selectAdvancementTabS2CPacket.getTabId();
 		if (identifier == null) {
-			this.advancementHandler.method_2864(null, false);
+			this.advancementHandler.selectTab(null, false);
 		} else {
 			Advancement advancement = this.advancementHandler.getManager().get(identifier);
-			this.advancementHandler.method_2864(advancement, false);
+			this.advancementHandler.selectTab(advancement, false);
 		}
 	}
 

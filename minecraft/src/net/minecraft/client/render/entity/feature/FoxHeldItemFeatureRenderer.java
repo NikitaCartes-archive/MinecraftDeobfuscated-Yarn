@@ -39,12 +39,12 @@ public class FoxHeldItemFeatureRenderer extends FeatureRenderer<FoxEntity, FoxMo
 				if (bl) {
 					GlStateManager.translatef(0.4F, 0.26F, 0.15F);
 				} else {
-					GlStateManager.translatef(0.0F, 0.26F, -0.5F);
+					GlStateManager.translatef(0.06F, 0.26F, -0.5F);
 				}
 			} else if (bl) {
 				GlStateManager.translatef(0.46F, 0.26F, 0.22F);
 			} else {
-				GlStateManager.translatef(0.05F, 0.3F, -0.5F);
+				GlStateManager.translatef(0.06F, 0.27F, -0.5F);
 			}
 
 			GlStateManager.rotatef(90.0F, 1.0F, 0.0F, 0.0F);

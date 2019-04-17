@@ -261,7 +261,7 @@ public class ServerPlayerInteractionManager {
 				}
 
 				if (!playerEntity.isUsingItem()) {
-					((ServerPlayerEntity)playerEntity).method_14204(playerEntity.playerContainer);
+					((ServerPlayerEntity)playerEntity).openContainer(playerEntity.playerContainer);
 				}
 
 				return typedActionResult.getResult();

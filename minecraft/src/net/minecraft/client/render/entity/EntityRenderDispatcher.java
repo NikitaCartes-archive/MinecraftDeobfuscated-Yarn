@@ -292,7 +292,7 @@ public class EntityRenderDispatcher {
 		this.targetedEntity = entity;
 		this.textRenderer = textRenderer;
 		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).isSleeping()) {
-			Direction direction = ((LivingEntity)camera.getFocusedEntity()).method_18401();
+			Direction direction = ((LivingEntity)camera.getFocusedEntity()).getSleepingDirection();
 			if (direction != null) {
 				this.cameraYaw = direction.getOpposite().asRotation();
 				this.cameraPitch = 0.0F;

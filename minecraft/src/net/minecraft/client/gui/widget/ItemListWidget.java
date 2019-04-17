@@ -3,6 +3,7 @@ package net.minecraft.client.gui.widget;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.AbstractList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
@@ -87,6 +88,11 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 
 	protected final void clearItems() {
 		this.items.clear();
+	}
+
+	protected void replaceEntries(Collection<E> collection) {
+		this.items.clear();
+		this.items.addAll(collection);
 	}
 
 	protected E getItem(int i) {

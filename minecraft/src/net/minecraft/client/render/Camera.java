@@ -52,7 +52,7 @@ public class Camera {
 
 			this.moveBy(-this.method_19318(4.0), 0.0, 0.0);
 		} else if (entity instanceof LivingEntity && ((LivingEntity)entity).isSleeping()) {
-			Direction direction = ((LivingEntity)entity).method_18401();
+			Direction direction = ((LivingEntity)entity).getSleepingDirection();
 			this.setRotation(direction != null ? direction.asRotation() - 180.0F : 0.0F, 0.0F);
 			this.moveBy(0.0, 0.3, 0.0);
 		} else {

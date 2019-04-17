@@ -21,7 +21,7 @@ public class EndGatewayDecorator extends Decorator<NopeDecoratorConfig> {
 		if (random.nextInt(700) == 0) {
 			int i = random.nextInt(16);
 			int j = random.nextInt(16);
-			int k = iWorld.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(i, 0, j)).getY();
+			int k = iWorld.getTopPosition(Heightmap.Type.field_13197, blockPos.add(i, 0, j)).getY();
 			if (k > 0) {
 				int l = k + 3 + random.nextInt(7);
 				return Stream.of(blockPos.add(i, l, j));

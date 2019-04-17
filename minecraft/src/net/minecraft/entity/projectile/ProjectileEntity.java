@@ -330,7 +330,7 @@ public abstract class ProjectileEntity extends Entity implements Projectile {
 			this.setSound(SoundEvents.field_15151);
 			this.setShotFromCrossbow(false);
 			this.clearPiercingStatus();
-			blockState.method_19287(this.world, blockState, blockHitResult, this);
+			blockState.onProjectileHit(this.world, blockState, blockHitResult, this);
 		}
 	}
 

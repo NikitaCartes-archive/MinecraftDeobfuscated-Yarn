@@ -78,7 +78,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedItemListWidget<Mu
 			}
 		} else {
 			this.ensureVisible(entry);
-			this.field_19108.updateButtonActivationState();
+			this.field_19108.updateButtonActivationStates();
 		}
 	}
 
@@ -269,9 +269,9 @@ public class MultiplayerServerListWidget extends AlwaysSelectedItemListWidget<Mu
 			int t = n - k;
 			int u = o - j;
 			if (t >= l - 15 && t <= l - 5 && u >= 0 && u <= 8) {
-				this.screen.setTooltipText(string3);
+				this.screen.setTooltip(string3);
 			} else if (t >= l - q - 15 - 2 && t <= l - 15 - 2 && u >= 0 && u <= 8) {
-				this.screen.setTooltipText(string2);
+				this.screen.setTooltip(string2);
 			}
 
 			if (this.client.options.touchscreen || bl) {

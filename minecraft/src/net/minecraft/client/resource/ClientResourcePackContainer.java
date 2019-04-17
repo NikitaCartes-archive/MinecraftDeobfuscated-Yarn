@@ -19,7 +19,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class ClientResourcePackContainer extends ResourcePackContainer {
 	@Nullable
-	private final NativeImage icon;
+	private NativeImage icon;
 	@Nullable
 	private Identifier iconId;
 
@@ -94,6 +94,7 @@ public class ClientResourcePackContainer extends ResourcePackContainer {
 		super.close();
 		if (this.icon != null) {
 			this.icon.close();
+			this.icon = null;
 		}
 	}
 }
