@@ -48,7 +48,7 @@ public class BucketItem extends Item {
 		} else {
 			BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 			BlockPos blockPos = blockHitResult.getBlockPos();
-			if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceBlock(blockPos, blockHitResult.getSide(), itemStack)) {
+			if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 				return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 			} else if (this.fluid == Fluids.EMPTY) {
 				BlockState blockState = world.getBlockState(blockPos);

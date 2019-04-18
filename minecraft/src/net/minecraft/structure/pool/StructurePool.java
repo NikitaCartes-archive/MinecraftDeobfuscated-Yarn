@@ -12,8 +12,8 @@ import java.util.stream.Collectors;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.processor.GravityStructureProcessor;
 import net.minecraft.structure.processor.StructureProcessor;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 
@@ -50,7 +50,7 @@ public class StructurePool {
 		if (this.field_18707 == Integer.MIN_VALUE) {
 			this.field_18707 = this.elements
 				.stream()
-				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, Rotation.ROT_0).getBlockCountY())
+				.mapToInt(structurePoolElement -> structurePoolElement.getBoundingBox(structureManager, BlockPos.ORIGIN, BlockRotation.ROT_0).getBlockCountY())
 				.max()
 				.orElse(0);
 		}

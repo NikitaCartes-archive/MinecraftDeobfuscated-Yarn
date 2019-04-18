@@ -236,7 +236,7 @@ public class ServerPlayerInteractionManager {
 	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
 		if (this.gameMode == GameMode.field_9219) {
 			return ActionResult.PASS;
-		} else if (playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
+		} else if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 			return ActionResult.PASS;
 		} else {
 			int i = itemStack.getAmount();
@@ -285,7 +285,7 @@ public class ServerPlayerInteractionManager {
 			boolean bl2 = playerEntity.isSneaking() && bl;
 			if (!bl2 && blockState.activate(world, playerEntity, hand, blockHitResult)) {
 				return ActionResult.field_5812;
-			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
+			} else if (!itemStack.isEmpty() && !playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				ItemUsageContext itemUsageContext = new ItemUsageContext(playerEntity, hand, blockHitResult);
 				if (this.isCreative()) {
 					int i = itemStack.getAmount();

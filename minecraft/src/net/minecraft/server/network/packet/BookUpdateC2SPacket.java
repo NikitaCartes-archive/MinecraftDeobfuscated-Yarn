@@ -10,8 +10,8 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.PacketByteBuf;
 
 public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
-	private ItemStack stack;
-	private boolean field_12864;
+	private ItemStack book;
+	private boolean signed;
 	private Hand hand;
 
 	public BookUpdateC2SPacket() {
@@ -19,22 +19,22 @@ public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
 
 	@Environment(EnvType.CLIENT)
 	public BookUpdateC2SPacket(ItemStack itemStack, boolean bl, Hand hand) {
-		this.stack = itemStack.copy();
-		this.field_12864 = bl;
+		this.book = itemStack.copy();
+		this.signed = bl;
 		this.hand = hand;
 	}
 
 	@Override
 	public void read(PacketByteBuf packetByteBuf) throws IOException {
-		this.stack = packetByteBuf.readItemStack();
-		this.field_12864 = packetByteBuf.readBoolean();
+		this.book = packetByteBuf.readItemStack();
+		this.signed = packetByteBuf.readBoolean();
 		this.hand = packetByteBuf.readEnumConstant(Hand.class);
 	}
 
 	@Override
 	public void write(PacketByteBuf packetByteBuf) throws IOException {
-		packetByteBuf.writeItemStack(this.stack);
-		packetByteBuf.writeBoolean(this.field_12864);
+		packetByteBuf.writeItemStack(this.book);
+		packetByteBuf.writeBoolean(this.signed);
 		packetByteBuf.writeEnumConstant(this.hand);
 	}
 
@@ -42,15 +42,15 @@ public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
 		serverPlayPacketListener.onBookUpdate(this);
 	}
 
-	public ItemStack stack() {
-		return this.stack;
+	public ItemStack getBook() {
+		return this.book;
 	}
 
-	public boolean method_12238() {
-		return this.field_12864;
+	public boolean wasSigned() {
+		return this.signed;
 	}
 
-	public Hand hand() {
+	public Hand getHand() {
 		return this.hand;
 	}
 }

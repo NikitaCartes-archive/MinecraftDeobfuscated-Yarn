@@ -29,8 +29,8 @@ public class CaveSpiderEntity extends SpiderEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
-		if (super.attack(entity)) {
+	public boolean tryAttack(Entity entity) {
+		if (super.tryAttack(entity)) {
 			if (entity instanceof LivingEntity) {
 				int i = 0;
 				if (this.world.getDifficulty() == Difficulty.NORMAL) {

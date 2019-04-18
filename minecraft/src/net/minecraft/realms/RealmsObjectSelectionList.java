@@ -69,15 +69,15 @@ public abstract class RealmsObjectSelectionList<E extends RealmListEntry> extend
 	}
 
 	public int getScrollbarPosition() {
-		return this.proxy.getRowLeft() + this.proxy.getItemWidth();
+		return this.proxy.getRowLeft() + this.proxy.getRowWidth();
 	}
 
-	public int method_20325() {
-		return this.proxy.method_20327();
+	public int y0() {
+		return this.proxy.y0();
 	}
 
-	public int method_20326() {
-		return this.proxy.method_20328();
+	public int y1() {
+		return this.proxy.y1();
 	}
 
 	public int headerHeight() {
@@ -89,11 +89,11 @@ public abstract class RealmsObjectSelectionList<E extends RealmListEntry> extend
 	}
 
 	public void scroll(int i) {
-		this.proxy.capYPosition((double)i);
+		this.proxy.setScrollAmount((double)i);
 	}
 
 	public int getScroll() {
-		return (int)this.proxy.getScroll();
+		return (int)this.proxy.getScrollAmount();
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public abstract class RealmsObjectSelectionList<E extends RealmListEntry> extend
 
 	@Nullable
 	public E getSelected() {
-		return (E)this.proxy.getSelectedItem();
+		return (E)this.proxy.getSelected();
 	}
 
 	public List<E> children() {

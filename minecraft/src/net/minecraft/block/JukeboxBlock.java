@@ -91,7 +91,7 @@ public class JukeboxBlock extends BlockWithEntity {
 		if (blockEntity instanceof JukeboxBlockEntity) {
 			Item item = ((JukeboxBlockEntity)blockEntity).getRecord().getItem();
 			if (item instanceof MusicDiscItem) {
-				return ((MusicDiscItem)item).method_8010();
+				return ((MusicDiscItem)item).getComparatorOutput();
 			}
 		}
 

@@ -209,7 +209,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (this.isAlive()) {
 			boolean bl = this.burnsInDaylight() && this.isInDaylight();
 			if (bl) {
@@ -232,7 +232,7 @@ public class ZombieEntity extends HostileEntity {
 			}
 		}
 
-		super.updateMovement();
+		super.updateState();
 	}
 
 	private void setTicksUntilWaterConversion(int i) {
@@ -325,8 +325,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
-		boolean bl = super.attack(entity);
+	public boolean tryAttack(Entity entity) {
+		boolean bl = super.tryAttack(entity);
 		if (bl) {
 			float f = this.world.getLocalDifficulty(new BlockPos(this)).getLocalDifficulty();
 			if (this.getMainHandStack().isEmpty() && this.isOnFire() && this.random.nextFloat() < f * 0.3F) {

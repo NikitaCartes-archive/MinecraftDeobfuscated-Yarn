@@ -193,7 +193,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 		if (this.hasVehicle()) {
 			blockPos = null;
-			float f = this.getRiddenEntity().yaw;
+			float f = this.getVehicle().yaw;
 			this.yaw = f;
 			this.field_6283 = f;
 			this.field_6220 = f;
@@ -355,8 +355,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		this.setVelocity(Vec3d.ZERO);
 		this.field_6220 = 180.0F;
 		this.field_6283 = 180.0F;

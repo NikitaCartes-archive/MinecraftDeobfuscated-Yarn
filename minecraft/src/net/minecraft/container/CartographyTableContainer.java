@@ -68,7 +68,7 @@ public class CartographyTableContainer extends Container {
 					ItemStack itemStack = super.takeStack(i);
 					ItemStack itemStack2 = (ItemStack)blockContext.run((BiFunction)((world, blockPos) -> {
 						if (!CartographyTableContainer.this.currentlyTakingItem && CartographyTableContainer.this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
-							ItemStack itemStack2xx = FilledMapItem.method_17442(world, CartographyTableContainer.this.inventory.getInvStack(0));
+							ItemStack itemStack2xx = FilledMapItem.createCopy(world, CartographyTableContainer.this.inventory.getInvStack(0));
 							if (itemStack2xx != null) {
 								itemStack2xx.setAmount(1);
 								return itemStack2xx;
@@ -181,7 +181,7 @@ public class CartographyTableContainer extends Container {
 			if (i == 2) {
 				if (this.inventory.getInvStack(1).getItem() == Items.GLASS_PANE) {
 					itemStack3 = (ItemStack)this.context.run((BiFunction)((world, blockPos) -> {
-						ItemStack itemStack2xx = FilledMapItem.method_17442(world, this.inventory.getInvStack(0));
+						ItemStack itemStack2xx = FilledMapItem.createCopy(world, this.inventory.getInvStack(0));
 						if (itemStack2xx != null) {
 							itemStack2xx.setAmount(1);
 							return itemStack2xx;

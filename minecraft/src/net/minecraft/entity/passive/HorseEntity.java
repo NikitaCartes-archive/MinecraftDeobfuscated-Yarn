@@ -147,7 +147,7 @@ public class HorseEntity extends HorseBaseEntity {
 		if (!this.world.isClient) {
 			this.getAttributeInstance(EntityAttributes.ARMOR).removeModifier(field_6985);
 			if (this.canEquip(itemStack)) {
-				int i = ((HorseArmorItem)itemStack.getItem()).method_18455();
+				int i = ((HorseArmorItem)itemStack.getItem()).getBonus();
 				if (i != 0) {
 					this.getAttributeInstance(EntityAttributes.ARMOR)
 						.addModifier(new EntityAttributeModifier(field_6985, "Horse armor bonus", (double)i, EntityAttributeModifier.Operation.field_6328).setSerialize(false));

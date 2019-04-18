@@ -123,7 +123,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 	@Override
 	public void kill() {
-		this.method_6937(this.getHeldItemStack());
+		this.removeFromFrame(this.getHeldItemStack());
 		super.kill();
 	}
 
@@ -175,7 +175,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	public void method_6936(@Nullable Entity entity, boolean bl) {
 		if (!this.world.getGameRules().getBoolean("doEntityDrops")) {
 			if (entity == null) {
-				this.method_6937(this.getHeldItemStack());
+				this.removeFromFrame(this.getHeldItemStack());
 			}
 		} else {
 			ItemStack itemStack = this.getHeldItemStack();
@@ -183,7 +183,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			if (entity instanceof PlayerEntity) {
 				PlayerEntity playerEntity = (PlayerEntity)entity;
 				if (playerEntity.abilities.creativeMode) {
-					this.method_6937(itemStack);
+					this.removeFromFrame(itemStack);
 					return;
 				}
 			}
@@ -194,7 +194,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 			if (!itemStack.isEmpty()) {
 				itemStack = itemStack.copy();
-				this.method_6937(itemStack);
+				this.removeFromFrame(itemStack);
 				if (this.random.nextFloat() < this.itemDropChance) {
 					this.dropStack(itemStack);
 				}
@@ -202,10 +202,10 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		}
 	}
 
-	private void method_6937(ItemStack itemStack) {
+	private void removeFromFrame(ItemStack itemStack) {
 		if (itemStack.getItem() == Items.field_8204) {
 			MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.world);
-			mapState.method_104(this.blockPos, this.getEntityId());
+			mapState.removeFrame(this.blockPos, this.getEntityId());
 			mapState.setDirty(true);
 		}
 
@@ -296,7 +296,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 
 			ItemStack itemStack2 = this.getHeldItemStack();
 			if (!itemStack2.isEmpty() && !ItemStack.areEqual(itemStack, itemStack2)) {
-				this.method_6937(itemStack2);
+				this.removeFromFrame(itemStack2);
 			}
 
 			this.setHeldItemStack(itemStack, false);

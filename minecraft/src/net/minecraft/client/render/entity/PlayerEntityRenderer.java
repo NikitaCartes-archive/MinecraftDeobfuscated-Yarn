@@ -96,7 +96,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 		ItemStack itemStack3 = hand == Hand.MAIN ? itemStack : itemStack2;
 		if (!itemStack3.isEmpty()) {
 			armPose = BipedEntityModel.ArmPose.field_3410;
-			if (abstractClientPlayerEntity.method_6014() > 0) {
+			if (abstractClientPlayerEntity.getItemUseTimeLeft() > 0) {
 				UseAction useAction = itemStack3.getUseAction();
 				if (useAction == UseAction.field_8949) {
 					armPose = BipedEntityModel.ArmPose.field_3406;

@@ -71,7 +71,7 @@ public class ScaffoldingItem extends BlockItem {
 	}
 
 	@Override
-	protected boolean method_20360() {
+	protected boolean shouldCheckIfStateAllowsPlacement() {
 		return false;
 	}
 }

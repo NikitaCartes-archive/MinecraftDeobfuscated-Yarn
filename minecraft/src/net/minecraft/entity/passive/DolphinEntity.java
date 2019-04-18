@@ -179,7 +179,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
 			this.dealDamage(this, entity);

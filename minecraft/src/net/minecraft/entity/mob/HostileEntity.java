@@ -31,10 +31,10 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		this.tickHandSwing();
 		this.updateDespawnCounter();
-		super.updateMovement();
+		super.updateState();
 	}
 
 	protected void updateDespawnCounter() {
@@ -120,7 +120,7 @@ public abstract class HostileEntity extends MobEntityWithAi implements Monster {
 	@Override
 	public ItemStack getArrowType(ItemStack itemStack) {
 		if (itemStack.getItem() instanceof BaseBowItem) {
-			Predicate<ItemStack> predicate = ((BaseBowItem)itemStack.getItem()).method_20310();
+			Predicate<ItemStack> predicate = ((BaseBowItem)itemStack.getItem()).getHeldProjectilePredicate();
 			ItemStack itemStack2 = BaseBowItem.getItemHeld(this, predicate);
 			return itemStack2.isEmpty() ? new ItemStack(Items.field_8107) : itemStack2;
 		} else {

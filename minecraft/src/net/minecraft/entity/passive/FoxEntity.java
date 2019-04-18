@@ -170,7 +170,7 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (!this.world.isClient && this.isAlive() && this.canMoveVoluntarily()) {
 			++this.eatingTime;
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HAND_MAIN);
@@ -202,7 +202,7 @@ public class FoxEntity extends AnimalEntity {
 			this.field_6267 = 0.0F;
 		}
 
-		super.updateMovement();
+		super.updateState();
 		if (this.isAggressive() && this.random.nextFloat() < 0.05F) {
 			this.playSound(SoundEvents.field_18055, 1.0F, 1.0F);
 		}
@@ -716,7 +716,7 @@ public class FoxEntity extends AnimalEntity {
 			double e = this.getSquaredMaxAttackDistance(livingEntity);
 			if (d <= e && this.ticksUntilAttack <= 0) {
 				this.ticksUntilAttack = 20;
-				this.entity.attack(livingEntity);
+				this.entity.tryAttack(livingEntity);
 				FoxEntity.this.playSound(SoundEvents.field_18058, 1.0F, 1.0F);
 			}
 		}
@@ -1132,7 +1132,7 @@ public class FoxEntity extends AnimalEntity {
 			}
 
 			if (livingEntity != null && FoxEntity.this.distanceTo(livingEntity) <= 2.0F) {
-				FoxEntity.this.attack(livingEntity);
+				FoxEntity.this.tryAttack(livingEntity);
 			} else if (FoxEntity.this.pitch > 0.0F
 				&& FoxEntity.this.onGround
 				&& (float)FoxEntity.this.getVelocity().y != 0.0F

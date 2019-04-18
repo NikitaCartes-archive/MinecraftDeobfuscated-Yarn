@@ -171,7 +171,7 @@ public class CreeperEntity extends HostileEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		return true;
 	}
 

@@ -44,7 +44,7 @@ public class DirectConnectServerScreen extends Screen {
 		this.addressField.setText(this.minecraft.options.lastServer);
 		this.addressField.setChangedListener(string -> this.onAddressFieldChanged());
 		this.children.add(this.addressField);
-		this.method_20085(this.addressField);
+		this.setInitialFocus(this.addressField);
 		this.onAddressFieldChanged();
 	}
 

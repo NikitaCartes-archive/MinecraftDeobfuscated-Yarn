@@ -1,12 +1,11 @@
 package net.minecraft.client.world;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import java.util.stream.Stream;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.TickScheduler;
 
-@Environment(EnvType.CLIENT)
 public class DummyClientTickScheduler<T> implements TickScheduler<T> {
 	private static final DummyClientTickScheduler<Object> INSTANCE = new DummyClientTickScheduler<>();
 
@@ -30,5 +29,9 @@ public class DummyClientTickScheduler<T> implements TickScheduler<T> {
 	@Override
 	public boolean isTicking(BlockPos blockPos, T object) {
 		return false;
+	}
+
+	@Override
+	public void method_20470(Stream<ScheduledTick<T>> stream) {
 	}
 }

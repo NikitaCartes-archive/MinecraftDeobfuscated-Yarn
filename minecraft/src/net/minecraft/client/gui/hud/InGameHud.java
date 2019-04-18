@@ -684,7 +684,7 @@ public class InGameHud extends DrawableHelper {
 	private LivingEntity getRiddenEntity() {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
-			Entity entity = playerEntity.getRiddenEntity();
+			Entity entity = playerEntity.getVehicle();
 			if (entity == null) {
 				return null;
 			}

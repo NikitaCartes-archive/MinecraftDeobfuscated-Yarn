@@ -12,7 +12,7 @@ public class ItemCooldownManager {
 	private final Map<Item, ItemCooldownManager.Entry> entries = Maps.<Item, ItemCooldownManager.Entry>newHashMap();
 	private int tick;
 
-	public boolean isCooldown(Item item) {
+	public boolean isCoolingDown(Item item) {
 		return this.getCooldownProgress(item, 0.0F) > 0.0F;
 	}
 

@@ -109,11 +109,11 @@ public class LevelStorage {
 		return 19133;
 	}
 
-	public WorldSaveHandler method_242(String string, @Nullable MinecraftServer minecraftServer) {
-		return method_17929(this.savesDirectory, this.dataFixer, string, minecraftServer);
+	public WorldSaveHandler createSaveHandler(String string, @Nullable MinecraftServer minecraftServer) {
+		return createSaveHandler(this.savesDirectory, this.dataFixer, string, minecraftServer);
 	}
 
-	protected static WorldSaveHandler method_17929(Path path, DataFixer dataFixer, String string, @Nullable MinecraftServer minecraftServer) {
+	protected static WorldSaveHandler createSaveHandler(Path path, DataFixer dataFixer, String string, @Nullable MinecraftServer minecraftServer) {
 		return new WorldSaveHandler(path.toFile(), string, minecraftServer, dataFixer);
 	}
 
@@ -246,7 +246,7 @@ public class LevelStorage {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Path method_19636() {
+	public Path getSavesDirectory() {
 		return this.savesDirectory;
 	}
 

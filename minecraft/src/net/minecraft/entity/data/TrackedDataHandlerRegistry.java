@@ -16,7 +16,7 @@ import net.minecraft.util.Int2ObjectBiMap;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Rotation;
+import net.minecraft.util.math.EulerRotation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerData;
 
@@ -167,19 +167,19 @@ public class TrackedDataHandlerRegistry {
 			return particleParameters;
 		}
 	};
-	public static final TrackedDataHandler<Rotation> ROTATION = new TrackedDataHandler<Rotation>() {
-		public void method_12747(PacketByteBuf packetByteBuf, Rotation rotation) {
-			packetByteBuf.writeFloat(rotation.getX());
-			packetByteBuf.writeFloat(rotation.getY());
-			packetByteBuf.writeFloat(rotation.getZ());
+	public static final TrackedDataHandler<EulerRotation> ROTATION = new TrackedDataHandler<EulerRotation>() {
+		public void method_12747(PacketByteBuf packetByteBuf, EulerRotation eulerRotation) {
+			packetByteBuf.writeFloat(eulerRotation.getX());
+			packetByteBuf.writeFloat(eulerRotation.getY());
+			packetByteBuf.writeFloat(eulerRotation.getZ());
 		}
 
-		public Rotation method_12748(PacketByteBuf packetByteBuf) {
-			return new Rotation(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
+		public EulerRotation method_12748(PacketByteBuf packetByteBuf) {
+			return new EulerRotation(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
 		}
 
-		public Rotation method_12749(Rotation rotation) {
-			return rotation;
+		public EulerRotation method_12749(EulerRotation eulerRotation) {
+			return eulerRotation;
 		}
 	};
 	public static final TrackedDataHandler<BlockPos> BLOCK_POS = new TrackedDataHandler<BlockPos>() {

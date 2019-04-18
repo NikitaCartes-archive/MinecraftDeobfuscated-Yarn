@@ -7,8 +7,8 @@ import net.minecraft.entity.VerticalEntityPosition;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -65,13 +65,13 @@ public class WallSkullBlock extends AbstractSkullBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return blockState.rotate(mirror.getRotation(blockState.get(FACING)));
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.rotate(blockMirror.getRotation(blockState.get(FACING)));
 	}
 
 	@Override

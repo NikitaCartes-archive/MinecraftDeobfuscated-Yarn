@@ -98,7 +98,7 @@ public class BipedEntityModel<T extends LivingEntity> extends EntityModel<T> imp
 
 	public void method_17086(T livingEntity, float f, float g, float h) {
 		this.field_3396 = livingEntity.method_6024(h);
-		this.field_3393 = (float)livingEntity.method_6048();
+		this.field_3393 = (float)livingEntity.getItemUseTime();
 		super.animateModel(livingEntity, f, g, h);
 	}
 

@@ -10,7 +10,7 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.structure.WoodlandMansionGenerator;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
@@ -81,15 +81,15 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 
 		@Override
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
+			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
 			int k = 5;
 			int l = 5;
-			if (rotation == Rotation.ROT_90) {
+			if (blockRotation == BlockRotation.ROT_90) {
 				k = -5;
-			} else if (rotation == Rotation.ROT_180) {
+			} else if (blockRotation == BlockRotation.ROT_180) {
 				k = -5;
 				l = -5;
-			} else if (rotation == Rotation.ROT_270) {
+			} else if (blockRotation == BlockRotation.ROT_270) {
 				l = -5;
 			}
 
@@ -103,7 +103,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 			if (s >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, s + 1, j * 16 + 8);
 				List<WoodlandMansionGenerator.Piece> list = Lists.<WoodlandMansionGenerator.Piece>newLinkedList();
-				WoodlandMansionGenerator.method_15029(structureManager, blockPos, rotation, list, this.random);
+				WoodlandMansionGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
 				this.children.addAll(list);
 				this.setBoundingBoxFromChildren();
 			}

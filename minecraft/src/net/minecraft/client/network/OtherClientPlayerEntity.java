@@ -49,7 +49,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (this.field_6210 > 0) {
 			double d = this.x + (this.field_6224 - this.x) / (double)this.field_6210;
 			double e = this.y + (this.field_6245 - this.y) / (double)this.field_6210;
@@ -92,7 +92,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void appendCommandFeedback(TextComponent textComponent) {
+	public void sendMessage(TextComponent textComponent) {
 		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(textComponent);
 	}
 }

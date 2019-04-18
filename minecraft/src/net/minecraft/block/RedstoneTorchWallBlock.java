@@ -10,8 +10,8 @@ import net.minecraft.particle.DustParticleParameters;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -83,13 +83,13 @@ public class RedstoneTorchWallBlock extends RedstoneTorchBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return Blocks.field_10099.rotate(blockState, rotation);
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return Blocks.field_10099.rotate(blockState, blockRotation);
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return Blocks.field_10099.mirror(blockState, mirror);
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return Blocks.field_10099.mirror(blockState, blockMirror);
 	}
 
 	@Override

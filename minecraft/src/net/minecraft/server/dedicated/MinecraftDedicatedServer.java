@@ -152,7 +152,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		this.setMotd(serverPropertiesHandler.motd);
 		this.setForceGameMode(serverPropertiesHandler.forceGameMode);
 		super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
-		this.method_3731(serverPropertiesHandler.enforceWhitelist);
+		this.setWhitelistEnabled(serverPropertiesHandler.enforceWhitelist);
 		this.defaultGameMode = serverPropertiesHandler.gameMode;
 		LOGGER.info("Default game type: {}", this.defaultGameMode);
 		InetAddress inetAddress = null;
@@ -222,7 +222,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 				jsonObject = JsonHelper.deserialize(string2);
 			}
 
-			this.method_3735(this.getLevelName(), this.getLevelName(), m, levelGeneratorType, jsonObject);
+			this.loadWorld(this.getLevelName(), this.getLevelName(), m, levelGeneratorType, jsonObject);
 			long o = SystemUtil.getMeasuringTimeNano() - l;
 			String string3 = String.format(Locale.ROOT, "%.3fs", (double)o / 1.0E9);
 			LOGGER.info("Done ({})! For help, type \"help\"", string3);
@@ -339,8 +339,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public void tick(BooleanSupplier booleanSupplier) {
-		super.tick(booleanSupplier);
+	public void tickWorlds(BooleanSupplier booleanSupplier) {
+		super.tickWorlds(booleanSupplier);
 		this.executeQueuedCommands();
 	}
 

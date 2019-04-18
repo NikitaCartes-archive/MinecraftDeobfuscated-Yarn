@@ -8,13 +8,13 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public abstract class RealmsSliderButton extends AbstractRealmsButton<RealmsSliderButtonProxy> {
 	protected static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
-	private final int field_18804;
+	private final int id;
 	private final RealmsSliderButtonProxy proxy;
 	private final double minValue;
 	private final double maxValue;
 
 	public RealmsSliderButton(int i, int j, int k, int l, int m, double d, double e) {
-		this.field_18804 = i;
+		this.id = i;
 		this.minValue = d;
 		this.maxValue = e;
 		this.proxy = new RealmsSliderButtonProxy(this, j, k, l, 20, this.toPct((double)m));
@@ -59,8 +59,8 @@ public abstract class RealmsSliderButton extends AbstractRealmsButton<RealmsSlid
 		this.proxy.setValue(d);
 	}
 
-	public int method_19462() {
-		return this.field_18804;
+	public int id() {
+		return this.id;
 	}
 
 	public void setMessage(String string) {
@@ -75,8 +75,8 @@ public abstract class RealmsSliderButton extends AbstractRealmsButton<RealmsSlid
 		return this.proxy.getHeight();
 	}
 
-	public int method_19463() {
-		return this.proxy.method_19362();
+	public int y() {
+		return this.proxy.y();
 	}
 
 	public abstract void applyValue();

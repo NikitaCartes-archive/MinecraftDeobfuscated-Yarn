@@ -288,8 +288,8 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0) {
 			BlockPos blockPos = new BlockPos(this);
 			if (this.world.getBlockState(blockPos.down()).getBlock() == Blocks.field_10102) {

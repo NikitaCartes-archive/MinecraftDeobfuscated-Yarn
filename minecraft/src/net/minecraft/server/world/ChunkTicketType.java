@@ -2,6 +2,7 @@ package net.minecraft.server.world;
 
 import java.util.Comparator;
 import net.minecraft.util.Void;
+import net.minecraft.util.math.ColumnPos;
 import net.minecraft.world.chunk.ChunkPos;
 
 public class ChunkTicketType<T> {
@@ -12,6 +13,7 @@ public class ChunkTicketType<T> {
 	public static final ChunkTicketType<ChunkPos> PLAYER = create("player", Comparator.comparingLong(ChunkPos::toLong));
 	public static final ChunkTicketType<ChunkPos> FORCED = create("forced", Comparator.comparingLong(ChunkPos::toLong));
 	public static final ChunkTicketType<ChunkPos> field_19270 = create("light", Comparator.comparingLong(ChunkPos::toLong));
+	public static final ChunkTicketType<ColumnPos> field_19280 = create("portal", Comparator.comparingLong(ColumnPos::toLong));
 	public static final ChunkTicketType<ChunkPos> UNKNOWN = create("unknown", Comparator.comparingLong(ChunkPos::toLong));
 
 	public static <T> ChunkTicketType<T> create(String string, Comparator<T> comparator) {

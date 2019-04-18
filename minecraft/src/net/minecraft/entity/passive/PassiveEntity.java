@@ -131,8 +131,8 @@ public abstract class PassiveEntity extends MobEntityWithAi {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.world.isClient) {
 			if (this.happyTicksRemaining > 0) {
 				if (this.happyTicksRemaining % 4 == 0) {

@@ -103,7 +103,7 @@ public class EditLevelScreen extends Screen {
 		this.levelNameTextField.setText(string);
 		this.levelNameTextField.setChangedListener(stringx -> this.saveButton.active = !stringx.trim().isEmpty());
 		this.children.add(this.levelNameTextField);
-		this.method_20085(this.levelNameTextField);
+		this.setInitialFocus(this.levelNameTextField);
 	}
 
 	@Override

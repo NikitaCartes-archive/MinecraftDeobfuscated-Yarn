@@ -16,6 +16,7 @@ import net.minecraft.server.command.CommandSource;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ColumnPos;
 
 public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("0 0", "~ ~", "~1 ~-2", "^ ^", "^-1 ^0");
@@ -27,9 +28,9 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 		return new ColumnPosArgumentType();
 	}
 
-	public static ColumnPosArgumentType.ColumnPos getColumnPos(CommandContext<ServerCommandSource> commandContext, String string) {
+	public static ColumnPos getColumnPos(CommandContext<ServerCommandSource> commandContext, String string) {
 		BlockPos blockPos = commandContext.<PosArgument>getArgument(string, PosArgument.class).toAbsoluteBlockPos(commandContext.getSource());
-		return new ColumnPosArgumentType.ColumnPos(blockPos.getX(), blockPos.getZ());
+		return new ColumnPos(blockPos.getX(), blockPos.getZ());
 	}
 
 	public PosArgument method_9703(StringReader stringReader) throws CommandSyntaxException {
@@ -69,19 +70,5 @@ public class ColumnPosArgumentType implements ArgumentType<PosArgument> {
 	@Override
 	public Collection<String> getExamples() {
 		return EXAMPLES;
-	}
-
-	public static class ColumnPos {
-		public final int x;
-		public final int z;
-
-		public ColumnPos(int i, int j) {
-			this.x = i;
-			this.z = j;
-		}
-
-		public String toString() {
-			return "[" + this.x + ", " + this.z + "]";
-		}
 	}
 }

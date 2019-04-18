@@ -130,7 +130,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (!this.isInsideWater() && this.onGround && this.verticalCollision) {
 			this.setVelocity(
 				this.getVelocity().add((double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F), 0.4F, (double)((this.random.nextFloat() * 2.0F - 1.0F) * 0.05F))
@@ -140,7 +140,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 			this.playSound(this.getFlopSound(), this.getSoundVolume(), this.getSoundPitch());
 		}
 
-		super.updateMovement();
+		super.updateState();
 	}
 
 	@Override

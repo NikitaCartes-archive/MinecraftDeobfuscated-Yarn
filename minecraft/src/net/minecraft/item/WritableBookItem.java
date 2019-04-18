@@ -39,7 +39,7 @@ public class WritableBookItem extends Item {
 		return new TypedActionResult<>(ActionResult.field_5812, itemStack);
 	}
 
-	public static boolean method_8047(@Nullable CompoundTag compoundTag) {
+	public static boolean isValidBook(@Nullable CompoundTag compoundTag) {
 		if (compoundTag == null) {
 			return false;
 		} else if (!compoundTag.containsKey("pages", 9)) {

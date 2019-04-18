@@ -124,7 +124,7 @@ public class LeadKnotEntity extends AbstractDecorationEntity {
 		return this.world.getBlockState(this.blockPos).getBlock().matches(BlockTags.field_16584);
 	}
 
-	public static LeadKnotEntity method_6932(World world, BlockPos blockPos) {
+	public static LeadKnotEntity getOrCreate(World world, BlockPos blockPos) {
 		int i = blockPos.getX();
 		int j = blockPos.getY();
 		int k = blockPos.getZ();

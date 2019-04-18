@@ -11,8 +11,8 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.EulerRotation;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Rotation;
 import net.minecraft.world.World;
 
 public class ArmorStandItem extends Item {
@@ -61,14 +61,14 @@ public class ArmorStandItem extends Item {
 	}
 
 	private void setRotations(ArmorStandEntity armorStandEntity, Random random) {
-		Rotation rotation = armorStandEntity.getHeadRotation();
+		EulerRotation eulerRotation = armorStandEntity.getHeadRotation();
 		float f = random.nextFloat() * 5.0F;
 		float g = random.nextFloat() * 20.0F - 10.0F;
-		Rotation rotation2 = new Rotation(rotation.getX() + f, rotation.getY() + g, rotation.getZ());
-		armorStandEntity.setHeadRotation(rotation2);
-		rotation = armorStandEntity.getBodyRotation();
+		EulerRotation eulerRotation2 = new EulerRotation(eulerRotation.getX() + f, eulerRotation.getY() + g, eulerRotation.getZ());
+		armorStandEntity.setHeadRotation(eulerRotation2);
+		eulerRotation = armorStandEntity.getBodyRotation();
 		f = random.nextFloat() * 10.0F - 5.0F;
-		rotation2 = new Rotation(rotation.getX(), rotation.getY() + f, rotation.getZ());
-		armorStandEntity.setBodyRotation(rotation2);
+		eulerRotation2 = new EulerRotation(eulerRotation.getX(), eulerRotation.getY() + f, eulerRotation.getZ());
+		armorStandEntity.setBodyRotation(eulerRotation2);
 	}
 }

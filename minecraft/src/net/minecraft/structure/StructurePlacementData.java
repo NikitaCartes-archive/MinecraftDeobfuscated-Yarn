@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.structure.processor.StructureProcessor;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -14,8 +14,8 @@ import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.chunk.ChunkPos;
 
 public class StructurePlacementData {
-	private Mirror mirror = Mirror.NONE;
-	private Rotation rotation = Rotation.ROT_0;
+	private BlockMirror mirror = BlockMirror.NONE;
+	private BlockRotation rotation = BlockRotation.ROT_0;
 	private BlockPos position = BlockPos.ORIGIN;
 	private boolean ignoreEntities;
 	@Nullable
@@ -48,13 +48,13 @@ public class StructurePlacementData {
 		return structurePlacementData;
 	}
 
-	public StructurePlacementData setMirrored(Mirror mirror) {
-		this.mirror = mirror;
+	public StructurePlacementData setMirrored(BlockMirror blockMirror) {
+		this.mirror = blockMirror;
 		return this;
 	}
 
-	public StructurePlacementData setRotation(Rotation rotation) {
-		this.rotation = rotation;
+	public StructurePlacementData setRotation(BlockRotation blockRotation) {
+		this.rotation = blockRotation;
 		return this;
 	}
 
@@ -103,11 +103,11 @@ public class StructurePlacementData {
 		return this;
 	}
 
-	public Mirror getMirror() {
+	public BlockMirror getMirror() {
 		return this.mirror;
 	}
 
-	public Rotation getRotation() {
+	public BlockRotation getRotation() {
 		return this.rotation;
 	}
 

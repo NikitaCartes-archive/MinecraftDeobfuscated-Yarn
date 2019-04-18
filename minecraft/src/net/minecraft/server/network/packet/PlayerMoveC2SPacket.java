@@ -7,7 +7,7 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.PacketByteBuf;
 
-public class PlayerMoveServerMessage implements Packet<ServerPlayPacketListener> {
+public class PlayerMoveC2SPacket implements Packet<ServerPlayPacketListener> {
 	protected double x;
 	protected double y;
 	protected double z;
@@ -17,15 +17,15 @@ public class PlayerMoveServerMessage implements Packet<ServerPlayPacketListener>
 	protected boolean changePosition;
 	protected boolean changeLook;
 
-	public PlayerMoveServerMessage() {
+	public PlayerMoveC2SPacket() {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PlayerMoveServerMessage(boolean bl) {
+	public PlayerMoveC2SPacket(boolean bl) {
 		this.onGround = bl;
 	}
 
-	public void method_12272(ServerPlayPacketListener serverPlayPacketListener) {
+	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
 		serverPlayPacketListener.onPlayerMove(this);
 	}
 
@@ -63,7 +63,7 @@ public class PlayerMoveServerMessage implements Packet<ServerPlayPacketListener>
 		return this.onGround;
 	}
 
-	public static class Both extends PlayerMoveServerMessage {
+	public static class Both extends PlayerMoveC2SPacket {
 		public Both() {
 			this.changePosition = true;
 			this.changeLook = true;
@@ -102,7 +102,7 @@ public class PlayerMoveServerMessage implements Packet<ServerPlayPacketListener>
 		}
 	}
 
-	public static class LookOnly extends PlayerMoveServerMessage {
+	public static class LookOnly extends PlayerMoveC2SPacket {
 		public LookOnly() {
 			this.changeLook = true;
 		}
@@ -130,7 +130,7 @@ public class PlayerMoveServerMessage implements Packet<ServerPlayPacketListener>
 		}
 	}
 
-	public static class PositionOnly extends PlayerMoveServerMessage {
+	public static class PositionOnly extends PlayerMoveC2SPacket {
 		public PositionOnly() {
 			this.changePosition = true;
 		}

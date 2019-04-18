@@ -93,7 +93,7 @@ public class LevelSelectScreen extends Screen {
 			new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 		this.worldSelected(false);
-		this.method_20085(this.searchBox);
+		this.setInitialFocus(this.searchBox);
 	}
 
 	@Override

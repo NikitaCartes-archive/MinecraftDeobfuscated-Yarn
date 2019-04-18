@@ -100,7 +100,7 @@ public class SpawnEggItem extends Item {
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				if (!(world.getBlockState(blockPos).getBlock() instanceof FluidBlock)) {
 					return new TypedActionResult<>(ActionResult.PASS, itemStack);
-				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceBlock(blockPos, blockHitResult.getSide(), itemStack)) {
+				} else if (world.canPlayerModifyAt(playerEntity, blockPos) && playerEntity.canPlaceOn(blockPos, blockHitResult.getSide(), itemStack)) {
 					EntityType<?> entityType = this.entityTypeFromTag(itemStack.getTag());
 					if (entityType.spawnFromItemStack(world, itemStack, playerEntity, blockPos, SpawnType.field_16465, false, false) == null) {
 						return new TypedActionResult<>(ActionResult.PASS, itemStack);

@@ -72,8 +72,8 @@ public abstract class LivingEntityRenderer<T extends LivingEntity, M extends Ent
 			float i = MathHelper.method_17821(h, livingEntity.field_6220, livingEntity.field_6283);
 			float j = MathHelper.method_17821(h, livingEntity.prevHeadYaw, livingEntity.headYaw);
 			float k = j - i;
-			if (livingEntity.hasVehicle() && livingEntity.getRiddenEntity() instanceof LivingEntity) {
-				LivingEntity livingEntity2 = (LivingEntity)livingEntity.getRiddenEntity();
+			if (livingEntity.hasVehicle() && livingEntity.getVehicle() instanceof LivingEntity) {
+				LivingEntity livingEntity2 = (LivingEntity)livingEntity.getVehicle();
 				i = MathHelper.method_17821(h, livingEntity2.field_6220, livingEntity2.field_6283);
 				k = j - i;
 				float l = MathHelper.wrapDegrees(k);

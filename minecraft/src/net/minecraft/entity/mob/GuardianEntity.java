@@ -197,7 +197,7 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (this.isAlive()) {
 			if (this.world.isClient) {
 				this.prevSpikesExtension = this.spikesExtension;
@@ -289,7 +289,7 @@ public class GuardianEntity extends HostileEntity {
 			}
 		}
 
-		super.updateMovement();
+		super.updateState();
 	}
 
 	protected SoundEvent getFlopSound() {

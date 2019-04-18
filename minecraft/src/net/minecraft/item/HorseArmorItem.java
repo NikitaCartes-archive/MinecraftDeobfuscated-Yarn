@@ -5,12 +5,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 
 public class HorseArmorItem extends Item {
-	private final int field_18136;
+	private final int bonus;
 	private final String texture;
 
 	public HorseArmorItem(int i, String string, Item.Settings settings) {
 		super(settings);
-		this.field_18136 = i;
+		this.bonus = i;
 		this.texture = "textures/entity/horse/armor/horse_armor_" + string + ".png";
 	}
 
@@ -19,7 +19,7 @@ public class HorseArmorItem extends Item {
 		return new Identifier(this.texture);
 	}
 
-	public int method_18455() {
-		return this.field_18136;
+	public int getBonus() {
+		return this.bonus;
 	}
 }

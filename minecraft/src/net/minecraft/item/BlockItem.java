@@ -64,7 +64,7 @@ public class BlockItem extends Item {
 					BlockState blockState2 = world.getBlockState(blockPos);
 					Block block = blockState2.getBlock();
 					if (block == blockState.getBlock()) {
-						blockState2 = this.method_18084(blockPos, world, itemStack, blockState2);
+						blockState2 = this.place(blockPos, world, itemStack, blockState2);
 						this.afterBlockPlaced(blockPos, world, playerEntity, itemStack, blockState2);
 						block.onPlaced(world, blockPos, blockState2, playerEntity, itemStack);
 						if (playerEntity instanceof ServerPlayerEntity) {
@@ -76,7 +76,7 @@ public class BlockItem extends Item {
 					world.playSound(
 						playerEntity,
 						blockPos,
-						this.method_19260(blockState2),
+						this.getPlaceSound(blockState2),
 						SoundCategory.field_15245,
 						(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
 						blockSoundGroup.getPitch() * 0.8F
@@ -88,7 +88,7 @@ public class BlockItem extends Item {
 		}
 	}
 
-	protected SoundEvent method_19260(BlockState blockState) {
+	protected SoundEvent getPlaceSound(BlockState blockState) {
 		return blockState.getSoundGroup().getPlaceSound();
 	}
 
@@ -107,7 +107,7 @@ public class BlockItem extends Item {
 		return blockState != null && this.canPlace(itemPlacementContext, blockState) ? blockState : null;
 	}
 
-	private BlockState method_18084(BlockPos blockPos, World world, ItemStack itemStack, BlockState blockState) {
+	private BlockState place(BlockPos blockPos, World world, ItemStack itemStack, BlockState blockState) {
 		BlockState blockState2 = blockState;
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null) {
@@ -118,7 +118,7 @@ public class BlockItem extends Item {
 				Property<?> property = stateFactory.getProperty(string);
 				if (property != null) {
 					String string2 = compoundTag2.getTag(string).asString();
-					blockState2 = method_18083(blockState2, property, string2);
+					blockState2 = addProperty(blockState2, property, string2);
 				}
 			}
 		}
@@ -130,18 +130,18 @@ public class BlockItem extends Item {
 		return blockState2;
 	}
 
-	private static <T extends Comparable<T>> BlockState method_18083(BlockState blockState, Property<T> property, String string) {
+	private static <T extends Comparable<T>> BlockState addProperty(BlockState blockState, Property<T> property, String string) {
 		return (BlockState)property.getValue(string).map(comparable -> blockState.with(property, comparable)).orElse(blockState);
 	}
 
 	protected boolean canPlace(ItemPlacementContext itemPlacementContext, BlockState blockState) {
 		PlayerEntity playerEntity = itemPlacementContext.getPlayer();
 		VerticalEntityPosition verticalEntityPosition = playerEntity == null ? VerticalEntityPosition.minValue() : VerticalEntityPosition.fromEntity(playerEntity);
-		return (!this.method_20360() || blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()))
+		return (!this.shouldCheckIfStateAllowsPlacement() || blockState.canPlaceAt(itemPlacementContext.getWorld(), itemPlacementContext.getBlockPos()))
 			&& itemPlacementContext.getWorld().canPlace(blockState, itemPlacementContext.getBlockPos(), verticalEntityPosition);
 	}
 
-	protected boolean method_20360() {
+	protected boolean shouldCheckIfStateAllowsPlacement() {
 		return true;
 	}
 

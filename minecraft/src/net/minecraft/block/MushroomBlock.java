@@ -5,8 +5,8 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
@@ -58,23 +58,23 @@ public class MushroomBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.NORTH)), blockState.get(NORTH))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.SOUTH)), blockState.get(SOUTH))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.EAST)), blockState.get(EAST))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.WEST)), blockState.get(WEST))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.UP)), blockState.get(UP))
-			.with((Property)FACING_PROPERTIES.get(rotation.rotate(Direction.DOWN)), blockState.get(DOWN));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with((Property)FACING_PROPERTIES.get(blockRotation.rotate(Direction.NORTH)), blockState.get(NORTH))
+			.with((Property)FACING_PROPERTIES.get(blockRotation.rotate(Direction.SOUTH)), blockState.get(SOUTH))
+			.with((Property)FACING_PROPERTIES.get(blockRotation.rotate(Direction.EAST)), blockState.get(EAST))
+			.with((Property)FACING_PROPERTIES.get(blockRotation.rotate(Direction.WEST)), blockState.get(WEST))
+			.with((Property)FACING_PROPERTIES.get(blockRotation.rotate(Direction.UP)), blockState.get(UP))
+			.with((Property)FACING_PROPERTIES.get(blockRotation.rotate(Direction.DOWN)), blockState.get(DOWN));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		return blockState.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.NORTH)), blockState.get(NORTH))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.SOUTH)), blockState.get(SOUTH))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.EAST)), blockState.get(EAST))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.WEST)), blockState.get(WEST))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.UP)), blockState.get(UP))
-			.with((Property)FACING_PROPERTIES.get(mirror.apply(Direction.DOWN)), blockState.get(DOWN));
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		return blockState.with((Property)FACING_PROPERTIES.get(blockMirror.apply(Direction.NORTH)), blockState.get(NORTH))
+			.with((Property)FACING_PROPERTIES.get(blockMirror.apply(Direction.SOUTH)), blockState.get(SOUTH))
+			.with((Property)FACING_PROPERTIES.get(blockMirror.apply(Direction.EAST)), blockState.get(EAST))
+			.with((Property)FACING_PROPERTIES.get(blockMirror.apply(Direction.WEST)), blockState.get(WEST))
+			.with((Property)FACING_PROPERTIES.get(blockMirror.apply(Direction.UP)), blockState.get(UP))
+			.with((Property)FACING_PROPERTIES.get(blockMirror.apply(Direction.DOWN)), blockState.get(DOWN));
 	}
 
 	@Override

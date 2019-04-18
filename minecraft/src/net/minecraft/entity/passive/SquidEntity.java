@@ -91,8 +91,8 @@ public class SquidEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		this.field_6905 = this.field_6907;
 		this.field_6906 = this.field_6903;
 		this.field_6902 = this.field_6908;

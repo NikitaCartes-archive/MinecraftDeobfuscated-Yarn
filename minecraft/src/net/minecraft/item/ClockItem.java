@@ -14,11 +14,11 @@ public class ClockItem extends Item {
 		super(settings);
 		this.addProperty(new Identifier("time"), new ItemPropertyGetter() {
 			@Environment(EnvType.CLIENT)
-			private double field_7911;
+			private double lastClockTime;
 			@Environment(EnvType.CLIENT)
-			private double field_7910;
+			private double clockTimeChangeSpeed;
 			@Environment(EnvType.CLIENT)
-			private long field_7913;
+			private long lastWorldTime;
 
 			@Environment(EnvType.CLIENT)
 			@Override
@@ -39,23 +39,23 @@ public class ClockItem extends Item {
 						d = Math.random();
 					}
 
-					d = this.method_7736(world, d);
+					d = this.getClockTime(world, d);
 					return (float)d;
 				}
 			}
 
 			@Environment(EnvType.CLIENT)
-			private double method_7736(World world, double d) {
-				if (world.getTime() != this.field_7913) {
-					this.field_7913 = world.getTime();
-					double e = d - this.field_7911;
+			private double getClockTime(World world, double d) {
+				if (world.getTime() != this.lastWorldTime) {
+					this.lastWorldTime = world.getTime();
+					double e = d - this.lastClockTime;
 					e = MathHelper.floorMod(e + 0.5, 1.0) - 0.5;
-					this.field_7910 += e * 0.1;
-					this.field_7910 *= 0.9;
-					this.field_7911 = MathHelper.floorMod(this.field_7911 + this.field_7910, 1.0);
+					this.clockTimeChangeSpeed += e * 0.1;
+					this.clockTimeChangeSpeed *= 0.9;
+					this.lastClockTime = MathHelper.floorMod(this.lastClockTime + this.clockTimeChangeSpeed, 1.0);
 				}
 
-				return this.field_7911;
+				return this.lastClockTime;
 			}
 		});
 	}

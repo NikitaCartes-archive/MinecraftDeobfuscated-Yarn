@@ -43,7 +43,7 @@ public class AnvilScreen extends ContainerScreen<AnvilContainer> implements Cont
 		this.nameField.setChangedListener(this::onRenamed);
 		this.children.add(this.nameField);
 		this.container.addListener(this);
-		this.method_20085(this.nameField);
+		this.setInitialFocus(this.nameField);
 	}
 
 	@Override

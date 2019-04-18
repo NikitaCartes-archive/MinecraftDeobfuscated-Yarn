@@ -4,22 +4,22 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.TagHelper;
 import net.minecraft.util.math.BlockPos;
 
-public class MapFrameInstance {
+public class MapFrameMarker {
 	private final BlockPos pos;
 	private final int rotation;
 	private final int entityId;
 
-	public MapFrameInstance(BlockPos blockPos, int i, int j) {
+	public MapFrameMarker(BlockPos blockPos, int i, int j) {
 		this.pos = blockPos;
 		this.rotation = i;
 		this.entityId = j;
 	}
 
-	public static MapFrameInstance fromNbt(CompoundTag compoundTag) {
+	public static MapFrameMarker fromNbt(CompoundTag compoundTag) {
 		BlockPos blockPos = TagHelper.deserializeBlockPos(compoundTag.getCompound("Pos"));
 		int i = compoundTag.getInt("Rotation");
 		int j = compoundTag.getInt("EntityId");
-		return new MapFrameInstance(blockPos, i, j);
+		return new MapFrameMarker(blockPos, i, j);
 	}
 
 	public CompoundTag getNbt() {
@@ -42,11 +42,11 @@ public class MapFrameInstance {
 		return this.entityId;
 	}
 
-	public String method_82() {
-		return method_81(this.pos);
+	public String getKey() {
+		return getKey(this.pos);
 	}
 
-	public static String method_81(BlockPos blockPos) {
+	public static String getKey(BlockPos blockPos) {
 		return "frame-" + blockPos.getX() + "," + blockPos.getY() + "," + blockPos.getZ();
 	}
 }

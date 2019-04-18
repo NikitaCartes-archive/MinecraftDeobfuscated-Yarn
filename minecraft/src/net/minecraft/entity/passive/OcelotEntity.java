@@ -153,7 +153,7 @@ public class OcelotEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		return entity.damage(DamageSource.mob(this), 3.0F);
 	}
 

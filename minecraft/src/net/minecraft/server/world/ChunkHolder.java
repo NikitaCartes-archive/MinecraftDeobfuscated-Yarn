@@ -168,34 +168,10 @@ public class ChunkHolder {
 	public void flushUpdates(WorldChunk worldChunk) {
 		if (this.blockUpdateCount != 0 || this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
 			World world = worldChunk.getWorld();
-			if (this.blockUpdateCount == 1) {
-				int i = (this.blockUpdatePositions[0] >> 12 & 15) + this.pos.x * 16;
-				int j = this.blockUpdatePositions[0] & 255;
-				int k = (this.blockUpdatePositions[0] >> 8 & 15) + this.pos.z * 16;
-				BlockPos blockPos = new BlockPos(i, j, k);
-				this.sendPacketToPlayersWatching(new BlockUpdateS2CPacket(world, blockPos), false);
-				if (world.getBlockState(blockPos).getBlock().hasBlockEntity()) {
-					this.sendBlockEntityUpdatePacket(world, blockPos);
-				}
-			} else if (this.blockUpdateCount == 64) {
-				this.sendPacketToPlayersWatching(new ChunkDataS2CPacket(worldChunk, this.sectionsNeedingUpdateMask), false);
-				this.lightSentWithBlocksBits = this.sectionsNeedingUpdateMask << 1;
-			} else if (this.blockUpdateCount != 0) {
-				this.sendPacketToPlayersWatching(new ChunkDeltaUpdateS2CPacket(this.blockUpdateCount, this.blockUpdatePositions, worldChunk), false);
-
-				for(int i = 0; i < this.blockUpdateCount; ++i) {
-					int j = (this.blockUpdatePositions[i] >> 12 & 15) + this.pos.x * 16;
-					int k = this.blockUpdatePositions[i] & 255;
-					int l = (this.blockUpdatePositions[i] >> 8 & 15) + this.pos.z * 16;
-					BlockPos blockPos2 = new BlockPos(j, k, l);
-					if (world.getBlockState(blockPos2).getBlock().hasBlockEntity()) {
-						this.sendBlockEntityUpdatePacket(world, blockPos2);
-					}
-				}
+			if (this.blockUpdateCount == 64) {
+				this.lightSentWithBlocksBits = -1;
 			}
 
-			this.blockUpdateCount = 0;
-			this.sectionsNeedingUpdateMask = 0;
 			if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
 				this.sendPacketToPlayersWatching(
 					new LightUpdateS2CPacket(
@@ -216,6 +192,34 @@ public class ChunkHolder {
 				this.blockLightUpdateBits = 0;
 				this.lightSentWithBlocksBits &= ~(this.skyLightUpdateBits & this.blockLightUpdateBits);
 			}
+
+			if (this.blockUpdateCount == 1) {
+				int i = (this.blockUpdatePositions[0] >> 12 & 15) + this.pos.x * 16;
+				int j = this.blockUpdatePositions[0] & 255;
+				int k = (this.blockUpdatePositions[0] >> 8 & 15) + this.pos.z * 16;
+				BlockPos blockPos = new BlockPos(i, j, k);
+				this.sendPacketToPlayersWatching(new BlockUpdateS2CPacket(world, blockPos), false);
+				if (world.getBlockState(blockPos).getBlock().hasBlockEntity()) {
+					this.sendBlockEntityUpdatePacket(world, blockPos);
+				}
+			} else if (this.blockUpdateCount == 64) {
+				this.sendPacketToPlayersWatching(new ChunkDataS2CPacket(worldChunk, this.sectionsNeedingUpdateMask), false);
+			} else if (this.blockUpdateCount != 0) {
+				this.sendPacketToPlayersWatching(new ChunkDeltaUpdateS2CPacket(this.blockUpdateCount, this.blockUpdatePositions, worldChunk), false);
+
+				for(int i = 0; i < this.blockUpdateCount; ++i) {
+					int j = (this.blockUpdatePositions[i] >> 12 & 15) + this.pos.x * 16;
+					int k = this.blockUpdatePositions[i] & 255;
+					int l = (this.blockUpdatePositions[i] >> 8 & 15) + this.pos.z * 16;
+					BlockPos blockPos2 = new BlockPos(j, k, l);
+					if (world.getBlockState(blockPos2).getBlock().hasBlockEntity()) {
+						this.sendBlockEntityUpdatePacket(world, blockPos2);
+					}
+				}
+			}
+
+			this.blockUpdateCount = 0;
+			this.sectionsNeedingUpdateMask = 0;
 		}
 	}
 

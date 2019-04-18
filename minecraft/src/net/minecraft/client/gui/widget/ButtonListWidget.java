@@ -14,15 +14,15 @@ import net.minecraft.client.options.GameOptions;
 public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonItem> {
 	public ButtonListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
 		super(minecraftClient, i, j, k, l, m);
-		this.verticallyCenter = false;
+		this.centerListVertically = false;
 	}
 
 	public int method_20406(GameOption gameOption) {
-		return this.addItem(ButtonListWidget.ButtonItem.method_20409(this.client.options, this.width, gameOption));
+		return this.addEntry(ButtonListWidget.ButtonItem.method_20409(this.minecraft.options, this.width, gameOption));
 	}
 
 	public void method_20407(GameOption gameOption, @Nullable GameOption gameOption2) {
-		this.addItem(ButtonListWidget.ButtonItem.method_20410(this.client.options, this.width, gameOption, gameOption2));
+		this.addEntry(ButtonListWidget.ButtonItem.method_20410(this.minecraft.options, this.width, gameOption, gameOption2));
 	}
 
 	public void addAll(GameOption[] gameOptions) {
@@ -32,7 +32,7 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonI
 	}
 
 	@Override
-	public int getItemWidth() {
+	public int getRowWidth() {
 		return 400;
 	}
 
@@ -42,7 +42,7 @@ public class ButtonListWidget extends ElementListWidget<ButtonListWidget.ButtonI
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class ButtonItem extends ElementListWidget.ElementItem<ButtonListWidget.ButtonItem> {
+	public static class ButtonItem extends ElementListWidget.Entry<ButtonListWidget.ButtonItem> {
 		private final List<AbstractButtonWidget> buttons;
 
 		private ButtonItem(List<AbstractButtonWidget> list) {

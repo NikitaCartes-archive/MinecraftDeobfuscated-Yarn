@@ -233,7 +233,7 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		protected boolean method_14915(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Identifier identifier) {
+		protected boolean addChest(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Identifier identifier) {
 			BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
 			if (mutableIntBoundingBox.contains(blockPos) && iWorld.getBlockState(blockPos).isAir() && !iWorld.getBlockState(blockPos.down()).isAir()) {
 				BlockState blockState = Blocks.field_10167.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.field_12665 : RailShape.field_12674);
@@ -278,11 +278,11 @@ public class MineshaftGenerator {
 					this.method_14715(iWorld, mutableIntBoundingBox, random, 0.05F, 0, 2, o + 2);
 					this.method_14715(iWorld, mutableIntBoundingBox, random, 0.05F, 2, 2, o + 2);
 					if (random.nextInt(100) == 0) {
-						this.method_14915(iWorld, mutableIntBoundingBox, random, 2, 0, o - 1, LootTables.CHEST_ABANDONED_MINESHAFT);
+						this.addChest(iWorld, mutableIntBoundingBox, random, 2, 0, o - 1, LootTables.CHEST_ABANDONED_MINESHAFT);
 					}
 
 					if (random.nextInt(100) == 0) {
-						this.method_14915(iWorld, mutableIntBoundingBox, random, 0, 0, o + 1, LootTables.CHEST_ABANDONED_MINESHAFT);
+						this.addChest(iWorld, mutableIntBoundingBox, random, 0, 0, o + 1, LootTables.CHEST_ABANDONED_MINESHAFT);
 					}
 
 					if (this.hasCobwebs && !this.hasSpawner) {

@@ -5,10 +5,10 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import net.minecraft.structure.OceanTempleGenerator;
+import net.minecraft.structure.OceanRuinGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
@@ -81,8 +81,8 @@ public class OceanRuinFeature extends AbstractTempleFeature<OceanRuinFeatureConf
 			int k = i * 16;
 			int l = j * 16;
 			BlockPos blockPos = new BlockPos(k, 90, l);
-			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
-			OceanTempleGenerator.method_14827(structureManager, blockPos, rotation, this.children, this.random, oceanRuinFeatureConfig);
+			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
+			OceanRuinGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random, oceanRuinFeatureConfig);
 			this.setBoundingBoxFromChildren();
 		}
 	}

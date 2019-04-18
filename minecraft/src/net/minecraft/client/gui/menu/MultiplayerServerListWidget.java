@@ -32,7 +32,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class MultiplayerServerListWidget extends AlwaysSelectedItemListWidget<MultiplayerServerListWidget.Entry> {
+public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<MultiplayerServerListWidget.Entry> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ThreadPoolExecutor field_19105 = new ScheduledThreadPoolExecutor(
 		5, new ThreadFactoryBuilder().setNameFormat("Server Pinger #%d").setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).build()
@@ -50,26 +50,26 @@ public class MultiplayerServerListWidget extends AlwaysSelectedItemListWidget<Mu
 	}
 
 	private void method_20131() {
-		this.clearItems();
-		this.field_19109.forEach(this::addItem);
-		this.addItem(this.field_19110);
-		this.field_19111.forEach(this::addItem);
+		this.clearEntries();
+		this.field_19109.forEach(this::addEntry);
+		this.addEntry(this.field_19110);
+		this.field_19111.forEach(this::addEntry);
 	}
 
 	public void method_20122(MultiplayerServerListWidget.Entry entry) {
-		super.selectItem(entry);
-		if (this.getSelectedItem() instanceof MultiplayerServerListWidget.ServerItem) {
+		super.setSelected(entry);
+		if (this.getSelected() instanceof MultiplayerServerListWidget.ServerItem) {
 			NarratorManager.INSTANCE
-				.method_19788(new TranslatableTextComponent("narrator.select", ((MultiplayerServerListWidget.ServerItem)this.getSelectedItem()).server.name).getString());
+				.method_19788(new TranslatableTextComponent("narrator.select", ((MultiplayerServerListWidget.ServerItem)this.getSelected()).server.name).getString());
 		}
 	}
 
 	@Override
 	protected void moveSelection(int i) {
-		int j = this.children().indexOf(this.getSelectedItem());
+		int j = this.children().indexOf(this.getSelected());
 		int k = MathHelper.clamp(j + i, 0, this.getItemCount() - 1);
 		MultiplayerServerListWidget.Entry entry = (MultiplayerServerListWidget.Entry)this.children().get(k);
-		super.selectItem(entry);
+		super.setSelected(entry);
 		if (entry instanceof MultiplayerServerListWidget.class_4268) {
 			if (i <= 0 || k != this.getItemCount() - 1) {
 				if (i >= 0 || k != 0) {
@@ -108,8 +108,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedItemListWidget<Mu
 	}
 
 	@Override
-	public int getItemWidth() {
-		return super.getItemWidth() + 85;
+	public int getRowWidth() {
+		return super.getRowWidth() + 85;
 	}
 
 	@Override
@@ -118,7 +118,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedItemListWidget<Mu
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class Entry extends AlwaysSelectedItemListWidget.Item<MultiplayerServerListWidget.Entry> {
+	public abstract static class Entry extends AlwaysSelectedEntryListWidget.Entry<MultiplayerServerListWidget.Entry> {
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -361,7 +361,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedItemListWidget<Mu
 				if (f < 16.0 && g < 16.0 && j > 0) {
 					int k = Screen.hasShiftDown() ? 0 : j - 1;
 					this.screen.getServerList().swapEntries(j, k);
-					if (this.screen.serverListWidget.getSelectedItem() == this) {
+					if (this.screen.serverListWidget.getSelected() == this) {
 						this.screen.selectEntry(this);
 					}
 
@@ -373,7 +373,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedItemListWidget<Mu
 					ServerList serverList = this.screen.getServerList();
 					int l = Screen.hasShiftDown() ? serverList.size() - 1 : j + 1;
 					serverList.swapEntries(j, l);
-					if (this.screen.serverListWidget.getSelectedItem() == this) {
+					if (this.screen.serverListWidget.getSelected() == this) {
 						this.screen.selectEntry(this);
 					}
 

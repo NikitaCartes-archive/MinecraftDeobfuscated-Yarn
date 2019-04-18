@@ -8,118 +8,118 @@ import net.minecraft.client.render.VertexFormat;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBufferBuilder {
-	private BufferBuilder field_5669;
+	private BufferBuilder b;
 
 	public RealmsBufferBuilder(BufferBuilder bufferBuilder) {
-		this.field_5669 = bufferBuilder;
+		this.b = bufferBuilder;
 	}
 
 	public RealmsBufferBuilder from(BufferBuilder bufferBuilder) {
-		this.field_5669 = bufferBuilder;
+		this.b = bufferBuilder;
 		return this;
 	}
 
 	public void sortQuads(float f, float g, float h) {
-		this.field_5669.sortQuads(f, g, h);
+		this.b.sortQuads(f, g, h);
 	}
 
 	public void fixupQuadColor(int i) {
-		this.field_5669.setQuadColor(i);
+		this.b.setQuadColor(i);
 	}
 
 	public ByteBuffer getBuffer() {
-		return this.field_5669.getByteBuffer();
+		return this.b.getByteBuffer();
 	}
 
 	public void postNormal(float f, float g, float h) {
-		this.field_5669.postNormal(f, g, h);
+		this.b.postNormal(f, g, h);
 	}
 
 	public int getDrawMode() {
-		return this.field_5669.getDrawMode();
+		return this.b.getDrawMode();
 	}
 
 	public void offset(double d, double e, double f) {
-		this.field_5669.setOffset(d, e, f);
+		this.b.setOffset(d, e, f);
 	}
 
 	public void restoreState(BufferBuilder.State state) {
-		this.field_5669.restoreState(state);
+		this.b.restoreState(state);
 	}
 
 	public void endVertex() {
-		this.field_5669.next();
+		this.b.next();
 	}
 
 	public RealmsBufferBuilder normal(float f, float g, float h) {
-		return this.from(this.field_5669.normal(f, g, h));
+		return this.from(this.b.normal(f, g, h));
 	}
 
 	public void end() {
-		this.field_5669.end();
+		this.b.end();
 	}
 
 	public void begin(int i, VertexFormat vertexFormat) {
-		this.field_5669.begin(i, vertexFormat);
+		this.b.begin(i, vertexFormat);
 	}
 
 	public RealmsBufferBuilder color(int i, int j, int k, int l) {
-		return this.from(this.field_5669.color(i, j, k, l));
+		return this.from(this.b.color(i, j, k, l));
 	}
 
 	public void faceTex2(int i, int j, int k, int l) {
-		this.field_5669.brightness(i, j, k, l);
+		this.b.brightness(i, j, k, l);
 	}
 
 	public void postProcessFacePosition(double d, double e, double f) {
-		this.field_5669.postPosition(d, e, f);
+		this.b.postPosition(d, e, f);
 	}
 
 	public void fixupVertexColor(float f, float g, float h, int i) {
-		this.field_5669.setColor(f, g, h, i);
+		this.b.setColor(f, g, h, i);
 	}
 
 	public RealmsBufferBuilder color(float f, float g, float h, float i) {
-		return this.from(this.field_5669.color(f, g, h, i));
+		return this.from(this.b.color(f, g, h, i));
 	}
 
 	public RealmsVertexFormat getVertexFormat() {
-		return new RealmsVertexFormat(this.field_5669.getVertexFormat());
+		return new RealmsVertexFormat(this.b.getVertexFormat());
 	}
 
 	public void faceTint(float f, float g, float h, int i) {
-		this.field_5669.multiplyColor(f, g, h, i);
+		this.b.multiplyColor(f, g, h, i);
 	}
 
 	public RealmsBufferBuilder tex2(int i, int j) {
-		return this.from(this.field_5669.texture(i, j));
+		return this.from(this.b.texture(i, j));
 	}
 
 	public void putBulkData(int[] is) {
-		this.field_5669.putVertexData(is);
+		this.b.putVertexData(is);
 	}
 
 	public RealmsBufferBuilder tex(double d, double e) {
-		return this.from(this.field_5669.texture(d, e));
+		return this.from(this.b.texture(d, e));
 	}
 
 	public int getVertexCount() {
-		return this.field_5669.getVertexCount();
+		return this.b.getVertexCount();
 	}
 
 	public void clear() {
-		this.field_5669.clear();
+		this.b.clear();
 	}
 
 	public RealmsBufferBuilder vertex(double d, double e, double f) {
-		return this.from(this.field_5669.vertex(d, e, f));
+		return this.from(this.b.vertex(d, e, f));
 	}
 
 	public void fixupQuadColor(float f, float g, float h) {
-		this.field_5669.setQuadColor(f, g, h);
+		this.b.setQuadColor(f, g, h);
 	}
 
 	public void noColor() {
-		this.field_5669.disableColor();
+		this.b.disableColor();
 	}
 }

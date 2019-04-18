@@ -6,41 +6,41 @@ import net.minecraft.client.render.VertexFormatElement;
 
 @Environment(EnvType.CLIENT)
 public class RealmsVertexFormatElement {
-	private final VertexFormatElement field_13809;
+	private final VertexFormatElement v;
 
 	public RealmsVertexFormatElement(VertexFormatElement vertexFormatElement) {
-		this.field_13809 = vertexFormatElement;
+		this.v = vertexFormatElement;
 	}
 
 	public VertexFormatElement getVertexFormatElement() {
-		return this.field_13809;
+		return this.v;
 	}
 
 	public boolean isPosition() {
-		return this.field_13809.isPosition();
+		return this.v.isPosition();
 	}
 
 	public int getIndex() {
-		return this.field_13809.getIndex();
+		return this.v.getIndex();
 	}
 
 	public int getByteSize() {
-		return this.field_13809.getSize();
+		return this.v.getSize();
 	}
 
 	public int getCount() {
-		return this.field_13809.getCount();
+		return this.v.getCount();
 	}
 
 	public int hashCode() {
-		return this.field_13809.hashCode();
+		return this.v.hashCode();
 	}
 
 	public boolean equals(Object object) {
-		return this.field_13809.equals(object);
+		return this.v.equals(object);
 	}
 
 	public String toString() {
-		return this.field_13809.toString();
+		return this.v.toString();
 	}
 }

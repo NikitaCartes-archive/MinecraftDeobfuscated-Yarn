@@ -40,7 +40,7 @@ public class EnchantedBookItem extends Item {
 	@Override
 	public void buildTooltip(ItemStack itemStack, @Nullable World world, List<TextComponent> list, TooltipContext tooltipContext) {
 		super.buildTooltip(itemStack, world, list, tooltipContext);
-		ItemStack.method_17870(list, getEnchantmentTag(itemStack));
+		ItemStack.appendEnchantmentComponents(list, getEnchantmentTag(itemStack));
 	}
 
 	public static void addEnchantment(ItemStack itemStack, InfoEnchantment infoEnchantment) {

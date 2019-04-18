@@ -38,7 +38,7 @@ public class GameModeCommand {
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamemode.success.self", textComponent), true);
 		} else {
 			if (serverCommandSource.getWorld().getGameRules().getBoolean("sendCommandFeedback")) {
-				serverPlayerEntity.appendCommandFeedback(new TranslatableTextComponent("gameMode.changed", textComponent));
+				serverPlayerEntity.sendMessage(new TranslatableTextComponent("gameMode.changed", textComponent));
 			}
 
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.gamemode.success.other", serverPlayerEntity.getDisplayName(), textComponent), true);

@@ -38,14 +38,14 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Hand;
 import net.minecraft.util.IdList;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -218,12 +218,12 @@ public class Block implements ItemProvider {
 	}
 
 	@Deprecated
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
 		return blockState;
 	}
 
 	@Deprecated
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
 		return blockState;
 	}
 

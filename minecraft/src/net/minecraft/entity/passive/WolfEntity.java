@@ -178,8 +178,8 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (!this.world.isClient && this.wet && !this.canShakeWaterOff && !this.isNavigating() && this.onGround) {
 			this.canShakeWaterOff = true;
 			this.shakeProgress = 0.0F;
@@ -302,7 +302,7 @@ public class WolfEntity extends TameableEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
 			this.dealDamage(this, entity);

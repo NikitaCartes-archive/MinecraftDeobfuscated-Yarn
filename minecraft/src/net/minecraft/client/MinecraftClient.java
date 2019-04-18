@@ -1467,7 +1467,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 
 	public void startIntegratedServer(String string, String string2, @Nullable LevelInfo levelInfo) {
 		this.disconnect();
-		WorldSaveHandler worldSaveHandler = this.levelStorage.method_242(string, null);
+		WorldSaveHandler worldSaveHandler = this.levelStorage.createSaveHandler(string, null);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
 		if (levelProperties == null && levelInfo != null) {
 			levelProperties = new LevelProperties(levelInfo, string);
@@ -1515,7 +1515,7 @@ public class MinecraftClient extends NonBlockingThreadExecutor<Runnable> impleme
 		);
 		this.openScreen(worldGenerationProgressScreen);
 
-		while(!this.server.method_3820()) {
+		while(!this.server.isLoading()) {
 			worldGenerationProgressScreen.tick();
 			this.render(false);
 

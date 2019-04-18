@@ -95,7 +95,7 @@ public class BlazeEntity extends HostileEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (!this.onGround && this.getVelocity().y < 0.0) {
 			this.setVelocity(this.getVelocity().multiply(1.0, 0.6, 1.0));
 		}
@@ -129,7 +129,7 @@ public class BlazeEntity extends HostileEntity {
 			}
 		}
 
-		super.updateMovement();
+		super.updateState();
 	}
 
 	@Override
@@ -218,7 +218,7 @@ public class BlazeEntity extends HostileEntity {
 			if (d < 4.0) {
 				if (this.field_7217 <= 0) {
 					this.field_7217 = 20;
-					this.field_7219.attack(livingEntity);
+					this.field_7219.tryAttack(livingEntity);
 				}
 
 				this.field_7219.getMoveControl().moveTo(livingEntity.x, livingEntity.y, livingEntity.z, 1.0);

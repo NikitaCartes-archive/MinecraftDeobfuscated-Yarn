@@ -2,8 +2,8 @@ package net.minecraft.item;
 
 import net.minecraft.block.Block;
 
-public class StringItem extends BlockItem {
-	public StringItem(Block block, Item.Settings settings) {
+public class AliasedBlockItem extends BlockItem {
+	public AliasedBlockItem(Block block, Item.Settings settings) {
 		super(block, settings);
 	}
 

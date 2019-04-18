@@ -6,7 +6,7 @@ import java.util.function.Function;
 import net.minecraft.structure.EndCityGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
@@ -71,15 +71,15 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 	private static int getGenerationHeight(int i, int j, ChunkGenerator<?> chunkGenerator) {
 		Random random = new Random((long)(i + j * 10387313));
-		Rotation rotation = Rotation.values()[random.nextInt(Rotation.values().length)];
+		BlockRotation blockRotation = BlockRotation.values()[random.nextInt(BlockRotation.values().length)];
 		int k = 5;
 		int l = 5;
-		if (rotation == Rotation.ROT_90) {
+		if (blockRotation == BlockRotation.ROT_90) {
 			k = -5;
-		} else if (rotation == Rotation.ROT_180) {
+		} else if (blockRotation == BlockRotation.ROT_180) {
 			k = -5;
 			l = -5;
-		} else if (rotation == Rotation.ROT_270) {
+		} else if (blockRotation == BlockRotation.ROT_270) {
 			l = -5;
 		}
 
@@ -99,11 +99,11 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 		@Override
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
-			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
+			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
 			int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator);
 			if (k >= 60) {
 				BlockPos blockPos = new BlockPos(i * 16 + 8, k, j * 16 + 8);
-				EndCityGenerator.addPieces(structureManager, blockPos, rotation, this.children, this.random);
+				EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);
 				this.setBoundingBoxFromChildren();
 			}
 		}

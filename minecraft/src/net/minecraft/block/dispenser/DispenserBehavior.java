@@ -304,9 +304,9 @@ public interface DispenserBehavior {
 				this.success = true;
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
 				BlockState blockState = world.getBlockState(blockPos);
-				if (FlintAndSteelItem.method_7825(blockState, world, blockPos)) {
+				if (FlintAndSteelItem.canSetOnFire(blockState, world, blockPos)) {
 					world.setBlockState(blockPos, Blocks.field_10036.getDefaultState());
-				} else if (FlintAndSteelItem.method_17439(blockState)) {
+				} else if (FlintAndSteelItem.canBeLit(blockState)) {
 					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
 				} else if (blockState.getBlock() instanceof TntBlock) {
 					TntBlock.primeTnt(world, blockPos);
@@ -328,7 +328,7 @@ public interface DispenserBehavior {
 				this.success = true;
 				World world = blockPointer.getWorld();
 				BlockPos blockPos = blockPointer.getBlockPos().offset(blockPointer.getBlockState().get(DispenserBlock.FACING));
-				if (!BoneMealItem.method_7720(itemStack, world, blockPos) && !BoneMealItem.method_7719(itemStack, world, blockPos, null)) {
+				if (!BoneMealItem.useOnFertilizable(itemStack, world, blockPos) && !BoneMealItem.useOnGround(itemStack, world, blockPos, null)) {
 					this.success = false;
 				} else if (!world.isClient) {
 					world.playLevelEvent(2005, blockPos, 0);

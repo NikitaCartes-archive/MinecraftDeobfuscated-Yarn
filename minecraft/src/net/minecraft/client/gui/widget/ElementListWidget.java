@@ -8,7 +8,7 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ParentElement;
 
 @Environment(EnvType.CLIENT)
-public abstract class ElementListWidget<E extends ElementListWidget.ElementItem<E>> extends ItemListWidget<E> {
+public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> extends EntryListWidget<E> {
 	public ElementListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
 		super(minecraftClient, i, j, k, l, m);
 	}
@@ -24,12 +24,12 @@ public abstract class ElementListWidget<E extends ElementListWidget.ElementItem<
 	}
 
 	@Override
-	protected boolean isSelected(int i) {
+	protected boolean isSelectedItem(int i) {
 		return false;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class ElementItem<E extends ElementListWidget.ElementItem<E>> extends ItemListWidget.Item<E> implements ParentElement {
+	public abstract static class Entry<E extends ElementListWidget.Entry<E>> extends EntryListWidget.Entry<E> implements ParentElement {
 		@Nullable
 		private Element focused;
 		private boolean dragging;

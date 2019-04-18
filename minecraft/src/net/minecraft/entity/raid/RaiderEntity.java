@@ -84,7 +84,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (this.world instanceof ServerWorld && this.isAlive()) {
 			Raid raid = this.getRaid();
 			if (this.canJoinRaid()) {
@@ -104,7 +104,7 @@ public abstract class RaiderEntity extends PatrolEntity {
 			}
 		}
 
-		super.updateMovement();
+		super.updateState();
 	}
 
 	@Override

@@ -4,7 +4,7 @@ import java.util.List;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.StructurePoolElement;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.gen.ChunkRandom;
@@ -36,10 +36,10 @@ public class VillageGenerator {
 			StructurePoolElement structurePoolElement,
 			BlockPos blockPos,
 			int i,
-			Rotation rotation,
+			BlockRotation blockRotation,
 			MutableIntBoundingBox mutableIntBoundingBox
 		) {
-			super(StructurePieceType.VILLAGE, structureManager, structurePoolElement, blockPos, i, rotation, mutableIntBoundingBox);
+			super(StructurePieceType.VILLAGE, structureManager, structurePoolElement, blockPos, i, blockRotation, mutableIntBoundingBox);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {

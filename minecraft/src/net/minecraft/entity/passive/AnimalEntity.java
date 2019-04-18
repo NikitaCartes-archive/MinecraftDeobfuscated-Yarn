@@ -41,8 +41,8 @@ public abstract class AnimalEntity extends PassiveEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.getBreedingAge() != 0) {
 			this.loveTicks = 0;
 		}

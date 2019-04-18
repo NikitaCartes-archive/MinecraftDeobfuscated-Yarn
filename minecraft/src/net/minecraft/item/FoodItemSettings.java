@@ -8,7 +8,7 @@ public class FoodItemSettings {
 	public static final FoodItemSetting BAKED_POTATO = new FoodItemSetting.Builder().hunger(5).saturationModifier(0.6F).build();
 	public static final FoodItemSetting BEEF = new FoodItemSetting.Builder().hunger(3).saturationModifier(0.3F).wolfFood().build();
 	public static final FoodItemSetting BEETROOT = new FoodItemSetting.Builder().hunger(1).saturationModifier(0.6F).build();
-	public static final FoodItemSetting BEETROOT_SOUP = method_19243(6);
+	public static final FoodItemSetting BEETROOT_SOUP = create(6);
 	public static final FoodItemSetting BREAD = new FoodItemSetting.Builder().hunger(5).saturationModifier(0.6F).build();
 	public static final FoodItemSetting CARROT = new FoodItemSetting.Builder().hunger(3).saturationModifier(0.6F).build();
 	public static final FoodItemSetting CHICKEN = new FoodItemSetting.Builder()
@@ -46,7 +46,7 @@ public class FoodItemSettings {
 		.build();
 	public static final FoodItemSetting GOLDEN_CARROT = new FoodItemSetting.Builder().hunger(6).saturationModifier(1.2F).build();
 	public static final FoodItemSetting MELON_SLICE = new FoodItemSetting.Builder().hunger(2).saturationModifier(0.3F).build();
-	public static final FoodItemSetting MUSHROOM_STEW = method_19243(6);
+	public static final FoodItemSetting MUSHROOM_STEW = create(6);
 	public static final FoodItemSetting MUTTON = new FoodItemSetting.Builder().hunger(2).saturationModifier(0.3F).wolfFood().build();
 	public static final FoodItemSetting POISONOUS_POTATO = new FoodItemSetting.Builder()
 		.hunger(2)
@@ -64,7 +64,7 @@ public class FoodItemSettings {
 		.build();
 	public static final FoodItemSetting PUMPKIN_PIE = new FoodItemSetting.Builder().hunger(8).saturationModifier(0.3F).build();
 	public static final FoodItemSetting RABBIT = new FoodItemSetting.Builder().hunger(3).saturationModifier(0.3F).wolfFood().build();
-	public static final FoodItemSetting RABBIT_STEW = method_19243(10);
+	public static final FoodItemSetting RABBIT_STEW = create(10);
 	public static final FoodItemSetting ROTTEN_FLESH = new FoodItemSetting.Builder()
 		.hunger(4)
 		.saturationModifier(0.1F)
@@ -77,11 +77,11 @@ public class FoodItemSettings {
 		.saturationModifier(0.8F)
 		.statusEffect(new StatusEffectInstance(StatusEffects.field_5899, 100, 0), 1.0F)
 		.build();
-	public static final FoodItemSetting SUSPICIOUS_STEW = method_19243(6);
+	public static final FoodItemSetting SUSPICIOUS_STEW = create(6);
 	public static final FoodItemSetting SWEET_BERRIES = new FoodItemSetting.Builder().hunger(2).saturationModifier(0.1F).build();
 	public static final FoodItemSetting TROPICAL_FISH = new FoodItemSetting.Builder().hunger(1).saturationModifier(0.1F).build();
 
-	private static FoodItemSetting method_19243(int i) {
+	private static FoodItemSetting create(int i) {
 		return new FoodItemSetting.Builder().hunger(i).saturationModifier(0.6F).build();
 	}
 }
