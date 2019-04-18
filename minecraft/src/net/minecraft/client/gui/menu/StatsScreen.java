@@ -21,6 +21,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.entity.EntityType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.Items;
 import net.minecraft.server.network.packet.ClientStatusC2SPacket;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stat;
@@ -42,7 +43,7 @@ public class StatsScreen extends Screen implements StatsListener {
 	private StatsScreen.EntityStatsListWidget mobsButton;
 	private final StatHandler statHandler;
 	@Nullable
-	private AlwaysSelectedItemListWidget<?> listWidget;
+	private AlwaysSelectedEntryListWidget<?> listWidget;
 	private boolean field_2645 = true;
 
 	public StatsScreen(Screen screen, StatHandler statHandler) {
@@ -122,17 +123,17 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	@Nullable
-	public AlwaysSelectedItemListWidget<?> method_19399() {
+	public AlwaysSelectedEntryListWidget<?> method_19399() {
 		return this.listWidget;
 	}
 
-	public void method_19390(@Nullable AlwaysSelectedItemListWidget<?> alwaysSelectedItemListWidget) {
+	public void method_19390(@Nullable AlwaysSelectedEntryListWidget<?> alwaysSelectedEntryListWidget) {
 		this.children.remove(this.generalButton);
 		this.children.remove(this.itemsButton);
 		this.children.remove(this.mobsButton);
-		if (alwaysSelectedItemListWidget != null) {
-			this.children.add(0, alwaysSelectedItemListWidget);
-			this.listWidget = alwaysSelectedItemListWidget;
+		if (alwaysSelectedEntryListWidget != null) {
+			this.children.add(0, alwaysSelectedEntryListWidget);
+			this.listWidget = alwaysSelectedEntryListWidget;
 		}
 	}
 
@@ -156,22 +157,22 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class CustomStatsListWidget extends AlwaysSelectedItemListWidget<StatsScreen.CustomStatsListWidget.CustomStatItem> {
+	class CustomStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.CustomStatsListWidget.CustomStatItem> {
 		public CustomStatsListWidget(MinecraftClient minecraftClient) {
 			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 10);
 
 			for (Stat<Identifier> stat : Stats.field_15419) {
-				this.addItem(new StatsScreen.CustomStatsListWidget.CustomStatItem(stat));
+				this.addEntry(new StatsScreen.CustomStatsListWidget.CustomStatItem(stat));
 			}
 		}
 
 		@Override
-		protected void drawBackground() {
+		protected void renderBackground() {
 			StatsScreen.this.renderBackground();
 		}
 
 		@Environment(EnvType.CLIENT)
-		class CustomStatItem extends AlwaysSelectedItemListWidget.Item<StatsScreen.CustomStatsListWidget.CustomStatItem> {
+		class CustomStatItem extends AlwaysSelectedEntryListWidget.Entry<StatsScreen.CustomStatsListWidget.CustomStatItem> {
 			private final Stat<Identifier> field_18749;
 
 			private CustomStatItem(Stat<Identifier> stat) {
@@ -192,25 +193,25 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class EntityStatsListWidget extends AlwaysSelectedItemListWidget<StatsScreen.EntityStatsListWidget.EntityStatItem> {
+	class EntityStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.EntityStatsListWidget.EntityStatItem> {
 		public EntityStatsListWidget(MinecraftClient minecraftClient) {
 			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 9 * 4);
 
 			for (EntityType<?> entityType : Registry.ENTITY_TYPE) {
 				if (StatsScreen.this.statHandler.getStat(Stats.field_15403.getOrCreateStat(entityType)) > 0
 					|| StatsScreen.this.statHandler.getStat(Stats.field_15411.getOrCreateStat(entityType)) > 0) {
-					this.addItem(new StatsScreen.EntityStatsListWidget.EntityStatItem(entityType));
+					this.addEntry(new StatsScreen.EntityStatsListWidget.EntityStatItem(entityType));
 				}
 			}
 		}
 
 		@Override
-		protected void drawBackground() {
+		protected void renderBackground() {
 			StatsScreen.this.renderBackground();
 		}
 
 		@Environment(EnvType.CLIENT)
-		class EntityStatItem extends AlwaysSelectedItemListWidget.Item<StatsScreen.EntityStatsListWidget.EntityStatItem> {
+		class EntityStatItem extends AlwaysSelectedEntryListWidget.Entry<StatsScreen.EntityStatsListWidget.EntityStatItem> {
 			private final EntityType<?> field_18762;
 
 			public EntityStatItem(EntityType<?> entityType) {
@@ -240,13 +241,13 @@ public class StatsScreen extends Screen implements StatsListener {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class ItemStatsListWidget extends AlwaysSelectedItemListWidget<StatsScreen.ItemStatsListWidget.ItemStatItem> {
+	class ItemStatsListWidget extends AlwaysSelectedEntryListWidget<StatsScreen.ItemStatsListWidget.ItemStatItem> {
 		protected final List<StatType<Block>> field_18754;
-		protected final List<StatType<net.minecraft.item.Item>> field_18755;
+		protected final List<StatType<Item>> field_18755;
 		private final int[] field_18753 = new int[]{3, 4, 1, 2, 5, 6};
 		protected int field_18756 = -1;
-		protected final List<net.minecraft.item.Item> field_18757;
-		protected final Comparator<net.minecraft.item.Item> field_18758 = new StatsScreen.ItemStatsListWidget.class_450();
+		protected final List<Item> field_18757;
+		protected final Comparator<Item> field_18758 = new StatsScreen.ItemStatsListWidget.class_450();
 		@Nullable
 		protected StatType<?> field_18759;
 		protected int field_18760;
@@ -255,16 +256,14 @@ public class StatsScreen extends Screen implements StatsListener {
 			super(minecraftClient, StatsScreen.this.width, StatsScreen.this.height, 32, StatsScreen.this.height - 64, 20);
 			this.field_18754 = Lists.<StatType<Block>>newArrayList();
 			this.field_18754.add(Stats.field_15427);
-			this.field_18755 = Lists.<StatType<net.minecraft.item.Item>>newArrayList(
-				Stats.field_15383, Stats.field_15370, Stats.field_15372, Stats.field_15392, Stats.field_15405
-			);
+			this.field_18755 = Lists.<StatType<Item>>newArrayList(Stats.field_15383, Stats.field_15370, Stats.field_15372, Stats.field_15392, Stats.field_15405);
 			this.setRenderHeader(true, 20);
-			Set<net.minecraft.item.Item> set = Sets.newIdentityHashSet();
+			Set<Item> set = Sets.newIdentityHashSet();
 
-			for (net.minecraft.item.Item item : Registry.ITEM) {
+			for (Item item : Registry.ITEM) {
 				boolean bl = false;
 
-				for (StatType<net.minecraft.item.Item> statType : this.field_18755) {
+				for (StatType<Item> statType : this.field_18755) {
 					if (statType.hasStat(item) && StatsScreen.this.statHandler.getStat(statType.getOrCreateStat(item)) > 0) {
 						bl = true;
 					}
@@ -289,17 +288,17 @@ public class StatsScreen extends Screen implements StatsListener {
 				}
 			}
 
-			set.remove(net.minecraft.item.Items.AIR);
-			this.field_18757 = Lists.<net.minecraft.item.Item>newArrayList(set);
+			set.remove(Items.AIR);
+			this.field_18757 = Lists.<Item>newArrayList(set);
 
 			for (int i = 0; i < this.field_18757.size(); i++) {
-				this.addItem(new StatsScreen.ItemStatsListWidget.ItemStatItem());
+				this.addEntry(new StatsScreen.ItemStatsListWidget.ItemStatItem());
 			}
 		}
 
 		@Override
 		protected void renderHeader(int i, int j, Tessellator tessellator) {
-			if (!this.client.mouse.wasLeftButtonClicked()) {
+			if (!this.minecraft.mouse.wasLeftButtonClicked()) {
 				this.field_18756 = -1;
 			}
 
@@ -320,7 +319,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		public int getItemWidth() {
+		public int getRowWidth() {
 			return 375;
 		}
 
@@ -330,7 +329,7 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Override
-		protected void drawBackground() {
+		protected void renderBackground() {
 			StatsScreen.this.renderBackground();
 		}
 
@@ -348,7 +347,7 @@ public class StatsScreen extends Screen implements StatsListener {
 
 			if (this.field_18756 >= 0) {
 				this.method_19408(this.method_19410(this.field_18756));
-				this.client.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
+				this.minecraft.getSoundManager().play(PositionedSoundInstance.master(SoundEvents.field_15015, 1.0F));
 			}
 		}
 
@@ -369,14 +368,14 @@ public class StatsScreen extends Screen implements StatsListener {
 		@Override
 		protected void renderDecorations(int i, int j) {
 			if (j >= this.top && j <= this.bottom) {
-				StatsScreen.ItemStatsListWidget.ItemStatItem itemStatItem = this.getItemAtPosition((double)i, (double)j);
-				int k = (this.width - this.getItemWidth()) / 2;
+				StatsScreen.ItemStatsListWidget.ItemStatItem itemStatItem = this.getEntryAtPosition((double)i, (double)j);
+				int k = (this.width - this.getRowWidth()) / 2;
 				if (itemStatItem != null) {
 					if (i < k + 40 || i > k + 40 + 20) {
 						return;
 					}
 
-					net.minecraft.item.Item item = (net.minecraft.item.Item)this.field_18757.get(this.children().indexOf(itemStatItem));
+					Item item = (Item)this.field_18757.get(this.children().indexOf(itemStatItem));
 					this.method_19407(this.method_19406(item), i, j);
 				} else {
 					TextComponent textComponent = null;
@@ -406,7 +405,7 @@ public class StatsScreen extends Screen implements StatsListener {
 			}
 		}
 
-		protected TextComponent method_19406(net.minecraft.item.Item item) {
+		protected TextComponent method_19406(Item item) {
 			return item.getTextComponent();
 		}
 
@@ -425,13 +424,13 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Environment(EnvType.CLIENT)
-		class ItemStatItem extends AlwaysSelectedItemListWidget.Item<StatsScreen.ItemStatsListWidget.ItemStatItem> {
+		class ItemStatItem extends AlwaysSelectedEntryListWidget.Entry<StatsScreen.ItemStatsListWidget.ItemStatItem> {
 			private ItemStatItem() {
 			}
 
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-				net.minecraft.item.Item item = (net.minecraft.item.Item)StatsScreen.this.itemsButton.field_18757.get(i);
+				Item item = (Item)StatsScreen.this.itemsButton.field_18757.get(i);
 				StatsScreen.this.method_2289(k + 40, j, item);
 
 				for (int p = 0; p < StatsScreen.this.itemsButton.field_18754.size(); p++) {
@@ -462,11 +461,11 @@ public class StatsScreen extends Screen implements StatsListener {
 		}
 
 		@Environment(EnvType.CLIENT)
-		class class_450 implements Comparator<net.minecraft.item.Item> {
+		class class_450 implements Comparator<Item> {
 			private class_450() {
 			}
 
-			public int method_2297(net.minecraft.item.Item item, net.minecraft.item.Item item2) {
+			public int method_2297(Item item, Item item2) {
 				int i;
 				int j;
 				if (ItemStatsListWidget.this.field_18759 == null) {
@@ -477,13 +476,13 @@ public class StatsScreen extends Screen implements StatsListener {
 					i = item instanceof BlockItem ? StatsScreen.this.statHandler.getStat(statType, ((BlockItem)item).getBlock()) : -1;
 					j = item2 instanceof BlockItem ? StatsScreen.this.statHandler.getStat(statType, ((BlockItem)item2).getBlock()) : -1;
 				} else {
-					StatType<net.minecraft.item.Item> statType = (StatType<net.minecraft.item.Item>)ItemStatsListWidget.this.field_18759;
+					StatType<Item> statType = (StatType<Item>)ItemStatsListWidget.this.field_18759;
 					i = StatsScreen.this.statHandler.getStat(statType, item);
 					j = StatsScreen.this.statHandler.getStat(statType, item2);
 				}
 
 				return i == j
-					? ItemStatsListWidget.this.field_18760 * Integer.compare(net.minecraft.item.Item.getRawIdByItem(item), net.minecraft.item.Item.getRawIdByItem(item2))
+					? ItemStatsListWidget.this.field_18760 * Integer.compare(Item.getRawIdByItem(item), Item.getRawIdByItem(item2))
 					: ItemStatsListWidget.this.field_18760 * Integer.compare(i, j);
 			}
 		}

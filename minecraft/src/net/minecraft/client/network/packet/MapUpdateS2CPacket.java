@@ -16,11 +16,11 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private boolean showIcons;
 	private boolean locked;
 	private MapIcon[] icons;
-	private int updateLeft;
-	private int updateTop;
-	private int updateHeight;
-	private int updateWidth;
-	private byte[] updateData;
+	private int startX;
+	private int startZ;
+	private int width;
+	private int height;
+	private byte[] colors;
 
 	public MapUpdateS2CPacket() {
 	}
@@ -31,15 +31,15 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.showIcons = bl;
 		this.locked = bl2;
 		this.icons = (MapIcon[])collection.toArray(new MapIcon[collection.size()]);
-		this.updateLeft = j;
-		this.updateTop = k;
-		this.updateHeight = l;
-		this.updateWidth = m;
-		this.updateData = new byte[l * m];
+		this.startX = j;
+		this.startZ = k;
+		this.width = l;
+		this.height = m;
+		this.colors = new byte[l * m];
 
 		for (int n = 0; n < l; n++) {
 			for (int o = 0; o < m; o++) {
-				this.updateData[n + o * l] = bs[j + n + (k + o) * 128];
+				this.colors[n + o * l] = bs[j + n + (k + o) * 128];
 			}
 		}
 	}
@@ -63,12 +63,12 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 			);
 		}
 
-		this.updateHeight = packetByteBuf.readUnsignedByte();
-		if (this.updateHeight > 0) {
-			this.updateWidth = packetByteBuf.readUnsignedByte();
-			this.updateLeft = packetByteBuf.readUnsignedByte();
-			this.updateTop = packetByteBuf.readUnsignedByte();
-			this.updateData = packetByteBuf.readByteArray();
+		this.width = packetByteBuf.readUnsignedByte();
+		if (this.width > 0) {
+			this.height = packetByteBuf.readUnsignedByte();
+			this.startX = packetByteBuf.readUnsignedByte();
+			this.startZ = packetByteBuf.readUnsignedByte();
+			this.colors = packetByteBuf.readByteArray();
 		}
 	}
 
@@ -93,12 +93,12 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 			}
 		}
 
-		packetByteBuf.writeByte(this.updateHeight);
-		if (this.updateHeight > 0) {
-			packetByteBuf.writeByte(this.updateWidth);
-			packetByteBuf.writeByte(this.updateLeft);
-			packetByteBuf.writeByte(this.updateTop);
-			packetByteBuf.writeByteArray(this.updateData);
+		packetByteBuf.writeByte(this.width);
+		if (this.width > 0) {
+			packetByteBuf.writeByte(this.height);
+			packetByteBuf.writeByte(this.startX);
+			packetByteBuf.writeByte(this.startZ);
+			packetByteBuf.writeByteArray(this.colors);
 		}
 	}
 
@@ -123,9 +123,9 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 			mapState.icons.put("icon-" + i, mapIcon);
 		}
 
-		for (int i = 0; i < this.updateHeight; i++) {
-			for (int j = 0; j < this.updateWidth; j++) {
-				mapState.colorArray[this.updateLeft + i + (this.updateTop + j) * 128] = this.updateData[i + j * this.updateHeight];
+		for (int i = 0; i < this.width; i++) {
+			for (int j = 0; j < this.height; j++) {
+				mapState.colors[this.startX + i + (this.startZ + j) * 128] = this.colors[i + j * this.width];
 			}
 		}
 	}

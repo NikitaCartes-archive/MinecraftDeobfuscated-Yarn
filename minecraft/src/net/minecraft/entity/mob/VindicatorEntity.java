@@ -246,8 +246,8 @@ public class VindicatorEntity extends IllagerEntity {
 
 		@Override
 		protected double getSquaredMaxAttackDistance(LivingEntity livingEntity) {
-			if (this.entity.getRiddenEntity() instanceof RavagerEntity) {
-				float f = this.entity.getRiddenEntity().getWidth() - 0.1F;
+			if (this.entity.getVehicle() instanceof RavagerEntity) {
+				float f = this.entity.getVehicle().getWidth() - 0.1F;
 				return (double)(f * 2.0F * f * 2.0F + livingEntity.getWidth());
 			} else {
 				return super.getSquaredMaxAttackDistance(livingEntity);

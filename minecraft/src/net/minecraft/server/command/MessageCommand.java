@@ -32,7 +32,7 @@ public class MessageCommand {
 
 	private static int execute(ServerCommandSource serverCommandSource, Collection<ServerPlayerEntity> collection, TextComponent textComponent) {
 		for (ServerPlayerEntity serverPlayerEntity : collection) {
-			serverPlayerEntity.appendCommandFeedback(
+			serverPlayerEntity.sendMessage(
 				new TranslatableTextComponent("commands.message.display.incoming", serverCommandSource.getDisplayName(), textComponent.copy())
 					.applyFormat(new TextFormat[]{TextFormat.field_1080, TextFormat.field_1056})
 			);

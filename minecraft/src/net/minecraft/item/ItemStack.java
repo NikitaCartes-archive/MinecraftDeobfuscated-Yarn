@@ -512,7 +512,7 @@ public final class ItemStack {
 
 		if (this.hasTag()) {
 			if ((i & 1) == 0) {
-				method_17870(list, this.getEnchantmentList());
+				appendEnchantmentComponents(list, this.getEnchantmentList());
 			}
 
 			if (this.tag.containsKey("display", 10)) {
@@ -652,7 +652,7 @@ public final class ItemStack {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_17870(List<TextComponent> list, ListTag listTag) {
+	public static void appendEnchantmentComponents(List<TextComponent> list, ListTag listTag) {
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompoundTag(i);
 			Registry.ENCHANTMENT

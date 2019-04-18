@@ -292,31 +292,31 @@ public class TeleportCommand {
 	}
 
 	static class LookTarget {
-		private final Vec3d lookPosition;
-		private final Entity lookEntity;
-		private final EntityAnchorArgumentType.EntityAnchor lookEntityAnchor;
+		private final Vec3d targetPos;
+		private final Entity targetEntity;
+		private final EntityAnchorArgumentType.EntityAnchor targetEntityAnchor;
 
 		public LookTarget(Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor) {
-			this.lookEntity = entity;
-			this.lookEntityAnchor = entityAnchor;
-			this.lookPosition = entityAnchor.positionAt(entity);
+			this.targetEntity = entity;
+			this.targetEntityAnchor = entityAnchor;
+			this.targetPos = entityAnchor.positionAt(entity);
 		}
 
 		public LookTarget(Vec3d vec3d) {
-			this.lookEntity = null;
-			this.lookPosition = vec3d;
-			this.lookEntityAnchor = null;
+			this.targetEntity = null;
+			this.targetPos = vec3d;
+			this.targetEntityAnchor = null;
 		}
 
 		public void look(ServerCommandSource serverCommandSource, Entity entity) {
-			if (this.lookEntity != null) {
+			if (this.targetEntity != null) {
 				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).method_14222(serverCommandSource.getEntityAnchor(), this.lookEntity, this.lookEntityAnchor);
+					((ServerPlayerEntity)entity).method_14222(serverCommandSource.getEntityAnchor(), this.targetEntity, this.targetEntityAnchor);
 				} else {
-					entity.lookAt(serverCommandSource.getEntityAnchor(), this.lookPosition);
+					entity.lookAt(serverCommandSource.getEntityAnchor(), this.targetPos);
 				}
 			} else {
-				entity.lookAt(serverCommandSource.getEntityAnchor(), this.lookPosition);
+				entity.lookAt(serverCommandSource.getEntityAnchor(), this.targetPos);
 			}
 		}
 	}

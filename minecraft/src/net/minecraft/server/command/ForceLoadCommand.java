@@ -10,6 +10,7 @@ import net.minecraft.command.arguments.BlockPosArgumentType;
 import net.minecraft.command.arguments.ColumnPosArgumentType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableTextComponent;
+import net.minecraft.util.math.ColumnPos;
 import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -95,7 +96,7 @@ public class ForceLoadCommand {
 		);
 	}
 
-	private static int executeQuery(ServerCommandSource serverCommandSource, ColumnPosArgumentType.ColumnPos columnPos) throws CommandSyntaxException {
+	private static int executeQuery(ServerCommandSource serverCommandSource, ColumnPos columnPos) throws CommandSyntaxException {
 		ChunkPos chunkPos = new ChunkPos(columnPos.x >> 4, columnPos.z >> 4);
 		DimensionType dimensionType = serverCommandSource.getWorld().getDimension().getType();
 		boolean bl = serverCommandSource.getMinecraftServer().getWorld(dimensionType).getForcedChunks().contains(chunkPos.toLong());
@@ -134,9 +135,7 @@ public class ForceLoadCommand {
 		return 0;
 	}
 
-	private static int executeChange(
-		ServerCommandSource serverCommandSource, ColumnPosArgumentType.ColumnPos columnPos, ColumnPosArgumentType.ColumnPos columnPos2, boolean bl
-	) throws CommandSyntaxException {
+	private static int executeChange(ServerCommandSource serverCommandSource, ColumnPos columnPos, ColumnPos columnPos2, boolean bl) throws CommandSyntaxException {
 		int i = Math.min(columnPos.x, columnPos2.x);
 		int j = Math.min(columnPos.z, columnPos2.z);
 		int k = Math.max(columnPos.x, columnPos2.x);

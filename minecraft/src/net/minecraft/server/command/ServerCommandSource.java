@@ -340,7 +340,7 @@ public class ServerCommandSource implements CommandSource {
 
 	public void sendFeedback(TextComponent textComponent, boolean bl) {
 		if (this.output.sendCommandFeedback() && !this.silent) {
-			this.output.appendCommandFeedback(textComponent);
+			this.output.sendMessage(textComponent);
 		}
 
 		if (bl && this.output.shouldBroadcastConsoleToOps() && !this.silent) {
@@ -354,19 +354,19 @@ public class ServerCommandSource implements CommandSource {
 		if (this.minecraftServer.getGameRules().getBoolean("sendCommandFeedback")) {
 			for (ServerPlayerEntity serverPlayerEntity : this.minecraftServer.getPlayerManager().getPlayerList()) {
 				if (serverPlayerEntity != this.output && this.minecraftServer.getPlayerManager().isOperator(serverPlayerEntity.getGameProfile())) {
-					serverPlayerEntity.appendCommandFeedback(textComponent2);
+					serverPlayerEntity.sendMessage(textComponent2);
 				}
 			}
 		}
 
 		if (this.output != this.minecraftServer && this.minecraftServer.getGameRules().getBoolean("logAdminCommands")) {
-			this.minecraftServer.appendCommandFeedback(textComponent2);
+			this.minecraftServer.sendMessage(textComponent2);
 		}
 	}
 
 	public void sendError(TextComponent textComponent) {
 		if (this.output.shouldTrackOutput() && !this.silent) {
-			this.output.appendCommandFeedback(new StringTextComponent("").append(textComponent).applyFormat(TextFormat.field_1061));
+			this.output.sendMessage(new StringTextComponent("").append(textComponent).applyFormat(TextFormat.field_1061));
 		}
 	}
 

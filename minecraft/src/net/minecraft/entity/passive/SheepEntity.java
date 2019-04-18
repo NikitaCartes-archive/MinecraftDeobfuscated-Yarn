@@ -120,12 +120,12 @@ public class SheepEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (this.world.isClient) {
 			this.field_6865 = Math.max(0, this.field_6865 - 1);
 		}
 
-		super.updateMovement();
+		super.updateState();
 	}
 
 	@Override

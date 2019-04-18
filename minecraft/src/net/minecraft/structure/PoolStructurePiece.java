@@ -9,8 +9,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.DynamicDeserializer;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
@@ -21,7 +21,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 	protected final StructurePoolElement poolElement;
 	protected BlockPos pos;
 	private final int groundLevelDelta;
-	protected final Rotation rotation;
+	protected final BlockRotation rotation;
 	private final List<JigsawJunction> junctions = Lists.<JigsawJunction>newArrayList();
 	private final StructureManager structureManager;
 
@@ -31,7 +31,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 		StructurePoolElement structurePoolElement,
 		BlockPos blockPos,
 		int i,
-		Rotation rotation,
+		BlockRotation blockRotation,
 		MutableIntBoundingBox mutableIntBoundingBox
 	) {
 		super(structurePieceType, 0);
@@ -39,7 +39,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 		this.poolElement = structurePoolElement;
 		this.pos = blockPos;
 		this.groundLevelDelta = i;
-		this.rotation = rotation;
+		this.rotation = blockRotation;
 		this.boundingBox = mutableIntBoundingBox;
 	}
 
@@ -51,7 +51,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 		this.poolElement = DynamicDeserializer.deserialize(
 			new Dynamic<>(NbtOps.INSTANCE, compoundTag.getCompound("pool_element")), Registry.STRUCTURE_POOL_ELEMENT, "element_type", EmptyPoolElement.INSTANCE
 		);
-		this.rotation = Rotation.valueOf(compoundTag.getString("rotation"));
+		this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
 		this.boundingBox = this.poolElement.getBoundingBox(structureManager, this.pos, this.rotation);
 		ListTag listTag = compoundTag.getList("junctions", 10);
 		this.junctions.clear();
@@ -87,7 +87,7 @@ public abstract class PoolStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	public Rotation getRotation() {
+	public BlockRotation getRotation() {
 		return this.rotation;
 	}
 

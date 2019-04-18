@@ -13,7 +13,7 @@ import net.fabricmc.api.Environment;
 public interface ParentElement extends Element {
 	List<? extends Element> children();
 
-	default Optional<Element> method_19355(double d, double e) {
+	default Optional<Element> hoveredElement(double d, double e) {
 		for (Element element : this.children()) {
 			if (element.isMouseOver(d, e)) {
 				return Optional.of(element);
@@ -42,7 +42,7 @@ public interface ParentElement extends Element {
 	@Override
 	default boolean mouseReleased(double d, double e, int i) {
 		this.setDragging(false);
-		return this.method_19355(d, e).filter(element -> element.mouseReleased(d, e, i)).isPresent();
+		return this.hoveredElement(d, e).filter(element -> element.mouseReleased(d, e, i)).isPresent();
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public interface ParentElement extends Element {
 
 	@Override
 	default boolean mouseScrolled(double d, double e, double f) {
-		return this.method_19355(d, e).filter(element -> element.mouseScrolled(d, e, f)).isPresent();
+		return this.hoveredElement(d, e).filter(element -> element.mouseScrolled(d, e, f)).isPresent();
 	}
 
 	@Override
@@ -79,11 +79,11 @@ public interface ParentElement extends Element {
 
 	void setFocused(@Nullable Element element);
 
-	default void method_20085(@Nullable Element element) {
+	default void setInitialFocus(@Nullable Element element) {
 		this.setFocused(element);
 	}
 
-	default void method_20086(@Nullable Element element) {
+	default void focusOn(@Nullable Element element) {
 		this.setFocused(element);
 	}
 

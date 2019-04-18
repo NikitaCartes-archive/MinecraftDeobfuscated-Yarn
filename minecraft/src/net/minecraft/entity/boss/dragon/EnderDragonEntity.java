@@ -134,7 +134,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (this.world.isClient) {
 			this.setHealth(this.getHealth());
 			if (!this.isSilent()) {

@@ -296,7 +296,7 @@ public class ClientPlayerInteractionManager {
 					return ActionResult.field_5812;
 				} else {
 					this.networkHandler.sendPacket(new PlayerInteractBlockC2SPacket(hand, blockHitResult));
-					if (!itemStack.isEmpty() && !clientPlayerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
+					if (!itemStack.isEmpty() && !clientPlayerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 						ItemUsageContext itemUsageContext = new ItemUsageContext(clientPlayerEntity, hand, blockHitResult);
 						ActionResult actionResult;
 						if (this.gameMode.isCreative()) {
@@ -323,7 +323,7 @@ public class ClientPlayerInteractionManager {
 			this.syncSelectedSlot();
 			this.networkHandler.sendPacket(new PlayerInteractItemC2SPacket(hand));
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
-			if (playerEntity.getItemCooldownManager().isCooldown(itemStack.getItem())) {
+			if (playerEntity.getItemCooldownManager().isCoolingDown(itemStack.getItem())) {
 				return ActionResult.PASS;
 			} else {
 				int i = itemStack.getAmount();
@@ -414,7 +414,7 @@ public class ClientPlayerInteractionManager {
 	}
 
 	public boolean hasRidingInventory() {
-		return this.client.player.hasVehicle() && this.client.player.getRiddenEntity() instanceof HorseBaseEntity;
+		return this.client.player.hasVehicle() && this.client.player.getVehicle() instanceof HorseBaseEntity;
 	}
 
 	public boolean isFlyingLocked() {

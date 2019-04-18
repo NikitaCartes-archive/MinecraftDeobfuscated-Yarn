@@ -52,7 +52,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 		RANDOM.nextBytes(this.nonce);
 	}
 
-	public void method_18785() {
+	public void tick() {
 		if (this.state == ServerLoginNetworkHandler.State.field_14168) {
 			this.method_14384();
 		} else if (this.state == ServerLoginNetworkHandler.State.field_14171) {
@@ -133,7 +133,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	public void onKey(LoginKeyC2SPacket loginKeyC2SPacket) {
 		Validate.validState(this.state == ServerLoginNetworkHandler.State.field_14175, "Unexpected key packet");
 		PrivateKey privateKey = this.server.getKeyPair().getPrivate();
-		if (!Arrays.equals(this.nonce, loginKeyC2SPacket.method_12655(privateKey))) {
+		if (!Arrays.equals(this.nonce, loginKeyC2SPacket.decryptNonce(privateKey))) {
 			throw new IllegalStateException("Invalid nonce!");
 		} else {
 			this.secretKey = loginKeyC2SPacket.decryptSecretKey(privateKey);

@@ -9,57 +9,57 @@ import net.minecraft.client.render.VertexFormatElement;
 
 @Environment(EnvType.CLIENT)
 public class RealmsVertexFormat {
-	private VertexFormat field_5663;
+	private VertexFormat v;
 
 	public RealmsVertexFormat(VertexFormat vertexFormat) {
-		this.field_5663 = vertexFormat;
+		this.v = vertexFormat;
 	}
 
 	public RealmsVertexFormat from(VertexFormat vertexFormat) {
-		this.field_5663 = vertexFormat;
+		this.v = vertexFormat;
 		return this;
 	}
 
 	public VertexFormat getVertexFormat() {
-		return this.field_5663;
+		return this.v;
 	}
 
 	public void clear() {
-		this.field_5663.clear();
+		this.v.clear();
 	}
 
 	public int getUvOffset(int i) {
-		return this.field_5663.getUvOffset(i);
+		return this.v.getUvOffset(i);
 	}
 
 	public int getElementCount() {
-		return this.field_5663.getElementCount();
+		return this.v.getElementCount();
 	}
 
 	public boolean hasColor() {
-		return this.field_5663.hasColorElement();
+		return this.v.hasColorElement();
 	}
 
 	public boolean hasUv(int i) {
-		return this.field_5663.hasUvElement(i);
+		return this.v.hasUvElement(i);
 	}
 
 	public RealmsVertexFormatElement getElement(int i) {
-		return new RealmsVertexFormatElement(this.field_5663.getElement(i));
+		return new RealmsVertexFormatElement(this.v.getElement(i));
 	}
 
 	public RealmsVertexFormat addElement(RealmsVertexFormatElement realmsVertexFormatElement) {
-		return this.from(this.field_5663.add(realmsVertexFormatElement.getVertexFormatElement()));
+		return this.from(this.v.add(realmsVertexFormatElement.getVertexFormatElement()));
 	}
 
 	public int getColorOffset() {
-		return this.field_5663.getColorOffset();
+		return this.v.getColorOffset();
 	}
 
 	public List<RealmsVertexFormatElement> getElements() {
 		List<RealmsVertexFormatElement> list = Lists.<RealmsVertexFormatElement>newArrayList();
 
-		for (VertexFormatElement vertexFormatElement : this.field_5663.getElements()) {
+		for (VertexFormatElement vertexFormatElement : this.v.getElements()) {
 			list.add(new RealmsVertexFormatElement(vertexFormatElement));
 		}
 
@@ -67,34 +67,34 @@ public class RealmsVertexFormat {
 	}
 
 	public boolean hasNormal() {
-		return this.field_5663.hasNormalElement();
+		return this.v.hasNormalElement();
 	}
 
 	public int getVertexSize() {
-		return this.field_5663.getVertexSize();
+		return this.v.getVertexSize();
 	}
 
 	public int getOffset(int i) {
-		return this.field_5663.getElementOffset(i);
+		return this.v.getElementOffset(i);
 	}
 
 	public int getNormalOffset() {
-		return this.field_5663.getNormalOffset();
+		return this.v.getNormalOffset();
 	}
 
 	public int getIntegerSize() {
-		return this.field_5663.getVertexSizeInteger();
+		return this.v.getVertexSizeInteger();
 	}
 
 	public boolean equals(Object object) {
-		return this.field_5663.equals(object);
+		return this.v.equals(object);
 	}
 
 	public int hashCode() {
-		return this.field_5663.hashCode();
+		return this.v.hashCode();
 	}
 
 	public String toString() {
-		return this.field_5663.toString();
+		return this.v.toString();
 	}
 }

@@ -19,8 +19,8 @@ public class CarrotOnAStickItem extends Item {
 		if (world.isClient) {
 			return new TypedActionResult<>(ActionResult.PASS, itemStack);
 		} else {
-			if (playerEntity.hasVehicle() && playerEntity.getRiddenEntity() instanceof PigEntity) {
-				PigEntity pigEntity = (PigEntity)playerEntity.getRiddenEntity();
+			if (playerEntity.hasVehicle() && playerEntity.getVehicle() instanceof PigEntity) {
+				PigEntity pigEntity = (PigEntity)playerEntity.getVehicle();
 				if (itemStack.getDurability() - itemStack.getDamage() >= 7 && pigEntity.method_6577()) {
 					itemStack.applyDamage(7, playerEntity, playerEntityx -> playerEntityx.sendToolBreakStatus(hand));
 					if (itemStack.isEmpty()) {

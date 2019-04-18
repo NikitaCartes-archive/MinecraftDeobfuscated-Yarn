@@ -6,9 +6,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.network.packet.BlockEntityUpdateS2CPacket;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.crash.ICrashCallable;
 import net.minecraft.util.math.BlockPos;
@@ -169,10 +169,10 @@ public abstract class BlockEntity {
 		return false;
 	}
 
-	public void applyRotation(Rotation rotation) {
+	public void applyRotation(BlockRotation blockRotation) {
 	}
 
-	public void applyMirror(Mirror mirror) {
+	public void applyMirror(BlockMirror blockMirror) {
 	}
 
 	public BlockEntityType<?> getType() {

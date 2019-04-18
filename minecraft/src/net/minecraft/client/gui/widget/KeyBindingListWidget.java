@@ -30,7 +30,7 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 			String string2 = keyBinding.getCategory();
 			if (!string2.equals(string)) {
 				string = string2;
-				this.addItem(new KeyBindingListWidget.CategoryEntry(string2));
+				this.addEntry(new KeyBindingListWidget.CategoryEntry(string2));
 			}
 
 			int i = minecraftClient.textRenderer.getStringWidth(I18n.translate(keyBinding.getId()));
@@ -38,7 +38,7 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 				this.field_2733 = i;
 			}
 
-			this.addItem(new KeyBindingListWidget.KeyBindingEntry(keyBinding));
+			this.addEntry(new KeyBindingListWidget.KeyBindingEntry(keyBinding));
 		}
 	}
 
@@ -48,8 +48,8 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 	}
 
 	@Override
-	public int getItemWidth() {
-		return super.getItemWidth() + 32;
+	public int getRowWidth() {
+		return super.getRowWidth() + 32;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -59,14 +59,14 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 
 		public CategoryEntry(String string) {
 			this.name = I18n.translate(string);
-			this.nameWidth = KeyBindingListWidget.this.client.textRenderer.getStringWidth(this.name);
+			this.nameWidth = KeyBindingListWidget.this.minecraft.textRenderer.getStringWidth(this.name);
 		}
 
 		@Override
 		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
-			KeyBindingListWidget.this.client
+			KeyBindingListWidget.this.minecraft
 				.textRenderer
-				.draw(this.name, (float)(KeyBindingListWidget.this.client.currentScreen.width / 2 - this.nameWidth / 2), (float)(j + m - 9 - 1), 16777215);
+				.draw(this.name, (float)(KeyBindingListWidget.this.minecraft.currentScreen.width / 2 - this.nameWidth / 2), (float)(j + m - 9 - 1), 16777215);
 		}
 
 		@Override
@@ -81,7 +81,7 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class Entry extends ElementListWidget.ElementItem<KeyBindingListWidget.Entry> {
+	public abstract static class Entry extends ElementListWidget.Entry<KeyBindingListWidget.Entry> {
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -103,7 +103,7 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 				}
 			};
 			this.resetButton = new ButtonWidget(0, 0, 50, 20, I18n.translate("controls.reset"), buttonWidget -> {
-				KeyBindingListWidget.this.client.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
+				KeyBindingListWidget.this.minecraft.options.setKeyCode(keyBinding, keyBinding.getDefaultKeyCode());
 				KeyBinding.updateKeysByCode();
 			}) {
 				@Override
@@ -116,7 +116,7 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 		@Override
 		public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 			boolean bl2 = KeyBindingListWidget.this.gui.focusedBinding == this.binding;
-			KeyBindingListWidget.this.client
+			KeyBindingListWidget.this.minecraft
 				.textRenderer
 				.draw(this.bindingName, (float)(k + 90 - KeyBindingListWidget.this.field_2733), (float)(j + m / 2 - 9 / 2), 16777215);
 			this.resetButton.x = k + 190;
@@ -128,7 +128,7 @@ public class KeyBindingListWidget extends ElementListWidget<KeyBindingListWidget
 			this.editButton.setMessage(this.binding.getLocalizedName());
 			boolean bl3 = false;
 			if (!this.binding.isNotBound()) {
-				for (KeyBinding keyBinding : KeyBindingListWidget.this.client.options.keysAll) {
+				for (KeyBinding keyBinding : KeyBindingListWidget.this.minecraft.options.keysAll) {
 					if (keyBinding != this.binding && this.binding.equals(keyBinding)) {
 						bl3 = true;
 						break;

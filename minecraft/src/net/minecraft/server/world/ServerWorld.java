@@ -315,7 +315,7 @@ public class ServerWorld extends World {
 		profiler.swap("village");
 		this.siegeManager.tick();
 		profiler.swap("portalForcer");
-		this.portalForcer.tick(this.getTime());
+		this.portalForcer.method_20464(this.getTime());
 		profiler.swap("raid");
 		this.raidManager.tick();
 		if (this.wanderingTraderManager != null) {
@@ -353,7 +353,7 @@ public class ServerWorld extends World {
 			while (objectIterator.hasNext()) {
 				Entry<Entity> entry = (Entry<Entity>)objectIterator.next();
 				Entity entity2 = (Entity)entry.getValue();
-				Entity entity3 = entity2.getRiddenEntity();
+				Entity entity3 = entity2.getVehicle();
 				if (!this.server.shouldSpawnAnimals() && (entity2 instanceof AnimalEntity || entity2 instanceof WaterCreatureEntity)) {
 					entity2.remove();
 				}
@@ -585,7 +585,7 @@ public class ServerWorld extends World {
 	}
 
 	public void method_18763(Entity entity, Entity entity2) {
-		if (entity2.removed || entity2.getRiddenEntity() != entity) {
+		if (entity2.removed || entity2.getVehicle() != entity) {
 			entity2.stopRiding();
 		} else if (entity2 instanceof PlayerEntity || this.method_14178().shouldTickEntity(entity2)) {
 			entity2.prevRenderX = entity2.x;

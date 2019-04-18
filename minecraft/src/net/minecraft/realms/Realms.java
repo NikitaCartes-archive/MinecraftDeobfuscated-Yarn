@@ -180,7 +180,11 @@ public class Realms {
 	}
 
 	public static void narrateNow(Iterable<String> iterable) {
-		narrateNow(String.join(System.lineSeparator(), iterable));
+		narrateNow(joinNarrations(iterable));
+	}
+
+	public static String joinNarrations(Iterable<String> iterable) {
+		return String.join(System.lineSeparator(), iterable);
 	}
 
 	public static void narrateRepeatedly(String string) {

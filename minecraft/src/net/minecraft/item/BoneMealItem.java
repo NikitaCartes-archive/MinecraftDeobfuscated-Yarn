@@ -28,7 +28,7 @@ public class BoneMealItem extends Item {
 		World world = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockPos blockPos2 = blockPos.offset(itemUsageContext.getFacing());
-		if (method_7720(itemUsageContext.getItemStack(), world, blockPos)) {
+		if (useOnFertilizable(itemUsageContext.getItemStack(), world, blockPos)) {
 			if (!world.isClient) {
 				world.playLevelEvent(2005, blockPos, 0);
 			}
@@ -37,7 +37,7 @@ public class BoneMealItem extends Item {
 		} else {
 			BlockState blockState = world.getBlockState(blockPos);
 			boolean bl = Block.isSolidFullSquare(blockState, world, blockPos, itemUsageContext.getFacing());
-			if (bl && method_7719(itemUsageContext.getItemStack(), world, blockPos2, itemUsageContext.getFacing())) {
+			if (bl && useOnGround(itemUsageContext.getItemStack(), world, blockPos2, itemUsageContext.getFacing())) {
 				if (!world.isClient) {
 					world.playLevelEvent(2005, blockPos2, 0);
 				}
@@ -49,7 +49,7 @@ public class BoneMealItem extends Item {
 		}
 	}
 
-	public static boolean method_7720(ItemStack itemStack, World world, BlockPos blockPos) {
+	public static boolean useOnFertilizable(ItemStack itemStack, World world, BlockPos blockPos) {
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.getBlock() instanceof Fertilizable) {
 			Fertilizable fertilizable = (Fertilizable)blockState.getBlock();
@@ -69,7 +69,7 @@ public class BoneMealItem extends Item {
 		return false;
 	}
 
-	public static boolean method_7719(ItemStack itemStack, World world, BlockPos blockPos, @Nullable Direction direction) {
+	public static boolean useOnGround(ItemStack itemStack, World world, BlockPos blockPos, @Nullable Direction direction) {
 		if (world.getBlockState(blockPos).getBlock() == Blocks.field_10382 && world.getFluidState(blockPos).getLevel() == 8) {
 			if (!world.isClient) {
 				label79:
@@ -120,7 +120,7 @@ public class BoneMealItem extends Item {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_7721(IWorld iWorld, BlockPos blockPos, int i) {
+	public static void playEffects(IWorld iWorld, BlockPos blockPos, int i) {
 		if (i == 0) {
 			i = 15;
 		}

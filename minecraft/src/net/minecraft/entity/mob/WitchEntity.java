@@ -112,7 +112,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (!this.world.isClient && this.isAlive()) {
 			this.raidGoal.decreaseCooldown();
 			if (this.raidGoal.getCooldown() <= 0) {
@@ -170,7 +170,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttacker {
 			}
 		}
 
-		super.updateMovement();
+		super.updateState();
 	}
 
 	@Override

@@ -9,9 +9,9 @@ import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
@@ -50,8 +50,8 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		IWorld iWorld, ChunkGenerator<? extends ChunkGeneratorConfig> chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		Random random2 = iWorld.getRandom();
-		Rotation[] rotations = Rotation.values();
-		Rotation rotation = rotations[random2.nextInt(rotations.length)];
+		BlockRotation[] blockRotations = BlockRotation.values();
+		BlockRotation blockRotation = blockRotations[random2.nextInt(blockRotations.length)];
 		int i = random2.nextInt(FOSSILS.length);
 		StructureManager structureManager = ((ServerWorld)iWorld.getWorld()).getSaveHandler().getStructureManager();
 		Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
@@ -61,11 +61,11 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 			chunkPos.getStartX(), 0, chunkPos.getStartZ(), chunkPos.getEndX(), 256, chunkPos.getEndZ()
 		);
 		StructurePlacementData structurePlacementData = new StructurePlacementData()
-			.setRotation(rotation)
+			.setRotation(blockRotation)
 			.setBoundingBox(mutableIntBoundingBox)
 			.setRandom(random2)
 			.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
-		BlockPos blockPos2 = structure.method_15166(rotation);
+		BlockPos blockPos2 = structure.method_15166(blockRotation);
 		int j = random2.nextInt(16 - blockPos2.getX());
 		int k = random2.nextInt(16 - blockPos2.getZ());
 		int l = 256;
@@ -77,7 +77,7 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		}
 
 		int m = Math.max(l - 15 - random2.nextInt(10), 10);
-		BlockPos blockPos3 = structure.method_15167(blockPos.add(j, m, k), Mirror.NONE, rotation);
+		BlockPos blockPos3 = structure.method_15167(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
 		BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9F);
 		structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);
 		structure.method_15172(iWorld, blockPos3, structurePlacementData, 4);

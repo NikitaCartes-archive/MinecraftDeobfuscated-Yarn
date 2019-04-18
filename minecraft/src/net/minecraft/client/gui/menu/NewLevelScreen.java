@@ -172,7 +172,7 @@ public class NewLevelScreen extends Screen {
 			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
 		this.method_2710(this.field_3202);
-		this.method_20085(this.textFieldLevelName);
+		this.setInitialFocus(this.textFieldLevelName);
 		this.method_2727();
 		this.method_2722();
 	}
@@ -184,12 +184,12 @@ public class NewLevelScreen extends Screen {
 		}
 
 		try {
-			this.field_3196 = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().method_19636(), this.field_3196, "");
+			this.field_3196 = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().getSavesDirectory(), this.field_3196, "");
 		} catch (Exception var4) {
 			this.field_3196 = "World";
 
 			try {
-				this.field_3196 = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().method_19636(), this.field_3196, "");
+				this.field_3196 = FileNameUtil.getNextUniqueName(this.minecraft.getLevelStorage().getSavesDirectory(), this.field_3196, "");
 			} catch (Exception var3) {
 				throw new RuntimeException("Could not create save folder", var3);
 			}

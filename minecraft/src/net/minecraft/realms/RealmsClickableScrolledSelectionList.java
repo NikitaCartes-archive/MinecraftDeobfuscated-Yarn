@@ -76,20 +76,20 @@ public abstract class RealmsClickableScrolledSelectionList extends RealmsGuiEven
 		this.proxy.setLeftPos(i);
 	}
 
-	public int method_1915() {
-		return this.proxy.method_2089();
+	public int y0() {
+		return this.proxy.y0();
 	}
 
-	public int method_1916() {
-		return this.proxy.method_2090();
+	public int y1() {
+		return this.proxy.y1();
 	}
 
 	public int headerHeight() {
 		return this.proxy.headerHeight();
 	}
 
-	public double method_1917() {
-		return this.proxy.method_2086();
+	public double yo() {
+		return this.proxy.yo();
 	}
 
 	public int itemHeight() {

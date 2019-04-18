@@ -635,7 +635,7 @@ public class Items {
 	public static final Item field_8825 = register(
 		"golden_axe", new AxeItem(ToolMaterials.field_8929, 6.0F, -3.0F, new Item.Settings().itemGroup(ItemGroup.TOOLS))
 	);
-	public static final Item field_8276 = register("string", new StringItem(Blocks.field_10589, new Item.Settings().itemGroup(ItemGroup.MISC)));
+	public static final Item field_8276 = register("string", new AliasedBlockItem(Blocks.field_10589, new Item.Settings().itemGroup(ItemGroup.MISC)));
 	public static final Item field_8153 = register("feather", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8054 = register("gunpowder", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8167 = register("wooden_hoe", new HoeItem(ToolMaterials.field_8922, -3.0F, new Item.Settings().itemGroup(ItemGroup.TOOLS)));
@@ -643,7 +643,7 @@ public class Items {
 	public static final Item field_8609 = register("iron_hoe", new HoeItem(ToolMaterials.field_8923, -1.0F, new Item.Settings().itemGroup(ItemGroup.TOOLS)));
 	public static final Item field_8527 = register("diamond_hoe", new HoeItem(ToolMaterials.field_8930, 0.0F, new Item.Settings().itemGroup(ItemGroup.TOOLS)));
 	public static final Item field_8303 = register("golden_hoe", new HoeItem(ToolMaterials.field_8929, -3.0F, new Item.Settings().itemGroup(ItemGroup.TOOLS)));
-	public static final Item field_8317 = register("wheat_seeds", new StringItem(Blocks.field_10293, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8317 = register("wheat_seeds", new AliasedBlockItem(Blocks.field_10293, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8861 = register("wheat", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8229 = register("bread", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.BREAD)));
 	public static final Item field_8267 = register(
@@ -748,7 +748,7 @@ public class Items {
 		"minecart", new MinecartItem(AbstractMinecartEntity.Type.field_7674, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
 	);
 	public static final Item field_8175 = register("saddle", new SaddleItem(new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION)));
-	public static final Item field_8725 = register("redstone", new StringItem(Blocks.field_10091, new Item.Settings().itemGroup(ItemGroup.REDSTONE)));
+	public static final Item field_8725 = register("redstone", new AliasedBlockItem(Blocks.field_10091, new Item.Settings().itemGroup(ItemGroup.REDSTONE)));
 	public static final Item field_8543 = register("snowball", new SnowballItem(new Item.Settings().stackSize(16).itemGroup(ItemGroup.MISC)));
 	public static final Item field_8533 = register(
 		"oak_boat", new BoatItem(BoatEntity.Type.OAK, new Item.Settings().stackSize(1).itemGroup(ItemGroup.TRANSPORTATION))
@@ -798,7 +798,7 @@ public class Items {
 	public static final Item field_8794 = register("ink_sac", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8264 = register("red_dye", new DyeItem(DyeColor.field_7964, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8408 = register("green_dye", new DyeItem(DyeColor.field_7942, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8116 = register("cocoa_beans", new StringItem(Blocks.field_10302, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8116 = register("cocoa_beans", new AliasedBlockItem(Blocks.field_10302, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8759 = register("lapis_lazuli", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8296 = register("purple_dye", new DyeItem(DyeColor.field_7945, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8632 = register("cyan_dye", new DyeItem(DyeColor.field_7955, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
@@ -839,8 +839,8 @@ public class Items {
 	public static final Item field_8868 = register("shears", new ShearsItem(new Item.Settings().durability(238).itemGroup(ItemGroup.TOOLS)));
 	public static final Item field_8497 = register("melon_slice", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.MELON_SLICE)));
 	public static final Item field_8551 = register("dried_kelp", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.DRIED_KELP)));
-	public static final Item field_8706 = register("pumpkin_seeds", new StringItem(Blocks.field_9984, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8188 = register("melon_seeds", new StringItem(Blocks.field_10168, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8706 = register("pumpkin_seeds", new AliasedBlockItem(Blocks.field_9984, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8188 = register("melon_seeds", new AliasedBlockItem(Blocks.field_10168, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8046 = register("beef", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.BEEF)));
 	public static final Item field_8176 = register("cooked_beef", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.COOKED_BEEF)));
 	public static final Item field_8726 = register("chicken", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.CHICKEN)));
@@ -850,7 +850,7 @@ public class Items {
 	public static final Item field_8894 = register("blaze_rod", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8070 = register("ghast_tear", new Item(new Item.Settings().itemGroup(ItemGroup.BREWING)));
 	public static final Item field_8397 = register("gold_nugget", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
-	public static final Item field_8790 = register("nether_wart", new StringItem(Blocks.field_9974, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8790 = register("nether_wart", new AliasedBlockItem(Blocks.field_9974, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8574 = register("potion", new PotionItem(new Item.Settings().stackSize(1).itemGroup(ItemGroup.BREWING)));
 	public static final Item field_8469 = register("glass_bottle", new GlassBottleItem(new Item.Settings().itemGroup(ItemGroup.BREWING)));
 	public static final Item field_8680 = register("spider_eye", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.SPIDER_EYE)));
@@ -1045,10 +1045,10 @@ public class Items {
 	public static final Item field_8143 = register("item_frame", new ItemFrameItem(new Item.Settings().itemGroup(ItemGroup.DECORATIONS)));
 	public static final Item FLOWER_POT = registerBlock(Blocks.field_10495, ItemGroup.DECORATIONS);
 	public static final Item field_8179 = register(
-		"carrot", new StringItem(Blocks.field_10609, new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.CARROT))
+		"carrot", new AliasedBlockItem(Blocks.field_10609, new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.CARROT))
 	);
 	public static final Item field_8567 = register(
-		"potato", new StringItem(Blocks.field_10247, new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.POTATO))
+		"potato", new AliasedBlockItem(Blocks.field_10247, new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.POTATO))
 	);
 	public static final Item field_8512 = register("baked_potato", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.BAKED_POTATO)));
 	public static final Item field_8635 = register(
@@ -1173,7 +1173,7 @@ public class Items {
 	);
 	public static final Item field_8882 = register("popped_chorus_fruit", new Item(new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8186 = register("beetroot", new Item(new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.BEETROOT)));
-	public static final Item field_8309 = register("beetroot_seeds", new StringItem(Blocks.field_10341, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
+	public static final Item field_8309 = register("beetroot_seeds", new AliasedBlockItem(Blocks.field_10341, new Item.Settings().itemGroup(ItemGroup.MATERIALS)));
 	public static final Item field_8515 = register(
 		"beetroot_soup", new MushroomStewItem(new Item.Settings().stackSize(1).itemGroup(ItemGroup.FOOD).food(FoodItemSettings.BEETROOT_SOUP))
 	);
@@ -1282,7 +1282,7 @@ public class Items {
 	public static final Item BELL = registerBlock(Blocks.field_16332, ItemGroup.DECORATIONS);
 	public static final Item LANTERN = registerBlock(Blocks.field_16541, ItemGroup.DECORATIONS);
 	public static final Item field_16998 = register(
-		"sweet_berries", new StringItem(Blocks.field_16999, new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.SWEET_BERRIES))
+		"sweet_berries", new AliasedBlockItem(Blocks.field_16999, new Item.Settings().itemGroup(ItemGroup.FOOD).food(FoodItemSettings.SWEET_BERRIES))
 	);
 	public static final Item CAMPFIRE = registerBlock(Blocks.field_17350, ItemGroup.DECORATIONS);
 

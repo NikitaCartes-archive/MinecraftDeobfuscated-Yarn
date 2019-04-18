@@ -168,7 +168,7 @@ public class ClientWorld extends World {
 	}
 
 	public void tickPassenger(Entity entity, Entity entity2) {
-		if (entity2.removed || entity2.getRiddenEntity() != entity) {
+		if (entity2.removed || entity2.getVehicle() != entity) {
 			entity2.stopRiding();
 		} else if (entity2 instanceof PlayerEntity || this.method_2935().shouldTickEntity(entity2)) {
 			entity2.prevRenderX = entity2.x;

@@ -123,10 +123,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	public CompletableFuture<Chunk> light(Chunk chunk, boolean bl) {
 		ChunkPos chunkPos = chunk.getPos();
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.class_3901.field_17261, SystemUtil.debugRunnable(() -> {
-			if (!bl) {
-				super.suppressLight(chunkPos, true);
-			}
-
+			super.suppressLight(chunkPos, true);
 			ChunkSection[] chunkSections = chunk.getSectionArray();
 
 			for (int i = 0; i < 16; i++) {

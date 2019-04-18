@@ -6,7 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.gui.menu.AlwaysSelectedItemListWidget;
+import net.minecraft.client.gui.menu.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.menu.YesNoScreen;
 import net.minecraft.client.gui.menu.options.ResourcePackOptionsScreen;
 import net.minecraft.client.render.Tessellator;
@@ -19,7 +19,7 @@ import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
-public abstract class ResourcePackListWidget extends AlwaysSelectedItemListWidget<ResourcePackListWidget.ResourcePackItem> {
+public abstract class ResourcePackListWidget extends AlwaysSelectedEntryListWidget<ResourcePackListWidget.ResourcePackItem> {
 	private static final Identifier RESOURCE_PACKS_LOCATION = new Identifier("textures/gui/resource_packs.png");
 	private static final TextComponent INCOMPATIBLE = new TranslatableTextComponent("resourcePack.incompatible");
 	private static final TextComponent INCOMPATIBLE_CONFIRM = new TranslatableTextComponent("resourcePack.incompatible.confirm.title");
@@ -29,7 +29,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedItemListWidge
 	public ResourcePackListWidget(MinecraftClient minecraftClient, int i, int j, TextComponent textComponent) {
 		super(minecraftClient, i, j, 32, j - 55 + 4, 36);
 		this.field_3166 = minecraftClient;
-		this.verticallyCenter = false;
+		this.centerListVertically = false;
 		this.setRenderHeader(true, (int)(9.0F * 1.5F));
 		this.field_18978 = textComponent;
 	}
@@ -48,7 +48,7 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedItemListWidge
 	}
 
 	@Override
-	public int getItemWidth() {
+	public int getRowWidth() {
 		return this.width;
 	}
 
@@ -58,12 +58,12 @@ public abstract class ResourcePackListWidget extends AlwaysSelectedItemListWidge
 	}
 
 	public void addEntry(ResourcePackListWidget.ResourcePackItem resourcePackItem) {
-		this.addItem(resourcePackItem);
+		this.addEntry(resourcePackItem);
 		resourcePackItem.field_19130 = this;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class ResourcePackItem extends AlwaysSelectedItemListWidget.Item<ResourcePackListWidget.ResourcePackItem> {
+	public static class ResourcePackItem extends AlwaysSelectedEntryListWidget.Entry<ResourcePackListWidget.ResourcePackItem> {
 		private ResourcePackListWidget field_19130;
 		protected final MinecraftClient field_19128;
 		protected final ResourcePackOptionsScreen field_19129;

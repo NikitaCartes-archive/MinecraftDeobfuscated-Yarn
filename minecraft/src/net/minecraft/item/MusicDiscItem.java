@@ -22,12 +22,12 @@ import net.minecraft.world.World;
 
 public class MusicDiscItem extends Item {
 	private static final Map<SoundEvent, MusicDiscItem> SOUND_ITEM_MAP = Maps.<SoundEvent, MusicDiscItem>newHashMap();
-	private final int field_8902;
+	private final int comparatorOutput;
 	private final SoundEvent sound;
 
 	protected MusicDiscItem(int i, SoundEvent soundEvent, Item.Settings settings) {
 		super(settings);
-		this.field_8902 = i;
+		this.comparatorOutput = i;
 		this.sound = soundEvent;
 		SOUND_ITEM_MAP.put(this.sound, this);
 	}
@@ -55,8 +55,8 @@ public class MusicDiscItem extends Item {
 		}
 	}
 
-	public int method_8010() {
-		return this.field_8902;
+	public int getComparatorOutput() {
+		return this.comparatorOutput;
 	}
 
 	@Environment(EnvType.CLIENT)

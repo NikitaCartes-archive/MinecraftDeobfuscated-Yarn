@@ -100,11 +100,11 @@ public class RealmsClickableScrolledSelectionListProxy extends ListWidget {
 		}
 	}
 
-	public int method_2089() {
+	public int y0() {
 		return this.field_2166;
 	}
 
-	public int method_2090() {
+	public int y1() {
 		return this.field_2165;
 	}
 
@@ -112,7 +112,7 @@ public class RealmsClickableScrolledSelectionListProxy extends ListWidget {
 		return this.headerHeight;
 	}
 
-	public double method_2086() {
+	public double yo() {
 		return this.field_2175;
 	}
 

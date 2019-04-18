@@ -876,13 +876,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	public void method_20459(WorldChunk worldChunk) {
-		this.mainThreadExecutor.method_18858(() -> {
-			worldChunk.setShouldSave(true);
-			this.save(worldChunk);
-			ChunkPos chunkPos = worldChunk.getPos();
-			this.world.method_14196().getScheduledTicksInChunk(true, chunkPos);
-			this.world.method_14179().getScheduledTicksInChunk(true, chunkPos);
-		});
+		this.mainThreadExecutor.method_18858(() -> worldChunk.method_20471(this.world));
 	}
 
 	class EntityTracker {

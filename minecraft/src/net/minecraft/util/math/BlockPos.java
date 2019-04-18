@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.concurrent.Immutable;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.CuboidBlockIterator;
 import net.minecraft.util.DynamicSerializable;
 import org.apache.logging.log4j.LogManager;
@@ -183,8 +184,8 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 			: new BlockPos(this.getX() + direction.getOffsetX() * i, this.getY() + direction.getOffsetY() * i, this.getZ() + direction.getOffsetZ() * i);
 	}
 
-	public BlockPos rotate(net.minecraft.util.Rotation rotation) {
-		switch (rotation) {
+	public BlockPos rotate(BlockRotation blockRotation) {
+		switch (blockRotation) {
 			case ROT_0:
 			default:
 				return this;
@@ -298,8 +299,8 @@ public class BlockPos extends Vec3i implements DynamicSerializable {
 		}
 
 		@Override
-		public BlockPos rotate(net.minecraft.util.Rotation rotation) {
-			return super.rotate(rotation).toImmutable();
+		public BlockPos rotate(BlockRotation blockRotation) {
+			return super.rotate(blockRotation).toImmutable();
 		}
 
 		@Override

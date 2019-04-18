@@ -253,7 +253,7 @@ import net.minecraft.server.network.packet.ClientStatusC2SPacket;
 import net.minecraft.server.network.packet.CustomPayloadC2SPacket;
 import net.minecraft.server.network.packet.GuiActionConfirmC2SPacket;
 import net.minecraft.server.network.packet.KeepAliveC2SPacket;
-import net.minecraft.server.network.packet.PlayerMoveServerMessage;
+import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
 import net.minecraft.server.network.packet.ResourcePackStatusC2SPacket;
 import net.minecraft.server.network.packet.TeleportConfirmC2SPacket;
 import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
@@ -283,7 +283,6 @@ import net.minecraft.village.TraderOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.LightType;
 import net.minecraft.world.chunk.ChunkNibbleArray;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
@@ -705,7 +704,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		playerEntity.setPositionAnglesAndUpdate(d, e, f, g, h);
 		this.connection.send(new TeleportConfirmC2SPacket(playerPositionLookS2CPacket.getTeleportId()));
 		this.connection
-			.send(new PlayerMoveServerMessage.Both(playerEntity.x, playerEntity.getBoundingBox().minY, playerEntity.z, playerEntity.yaw, playerEntity.pitch, false));
+			.send(new PlayerMoveC2SPacket.Both(playerEntity.x, playerEntity.getBoundingBox().minY, playerEntity.z, playerEntity.yaw, playerEntity.pitch, false));
 		if (!this.field_3698) {
 			this.client.player.prevX = this.client.player.x;
 			this.client.player.prevY = this.client.player.y;
@@ -743,8 +742,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (worldChunk != null) {
 			this.world.addEntitiesToChunk(worldChunk);
 		}
-
-		this.world.method_2935().getLightingProvider().suppressLight(new ChunkPos(i, j), true);
 
 		for (int k = 0; k < 16; k++) {
 			this.world.scheduleBlockRenders(i, k, j);
@@ -1804,7 +1801,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onVehicleMove(VehicleMoveS2CPacket vehicleMoveS2CPacket) {
 		NetworkThreadUtils.forceMainThread(vehicleMoveS2CPacket, this, this.client);
-		Entity entity = this.client.player.getTopmostRiddenEntity();
+		Entity entity = this.client.player.getTopmostVehicle();
 		if (entity != this.client.player && entity.isLogicalSideForUpdatingMovement()) {
 			entity.setPositionAnglesAndUpdate(
 				vehicleMoveS2CPacket.getX(), vehicleMoveS2CPacket.getY(), vehicleMoveS2CPacket.getZ(), vehicleMoveS2CPacket.getYaw(), vehicleMoveS2CPacket.getPitch()

@@ -152,7 +152,7 @@ public abstract class PlayerManager {
 		serverPlayerEntity.getStatHandler().updateStatSet();
 		serverPlayerEntity.getRecipeBook().sendInitRecipesPacket(serverPlayerEntity);
 		this.sendScoreboard(serverWorld.method_14170(), serverPlayerEntity);
-		this.server.method_3856();
+		this.server.forcePlayerSampleUpdate();
 		TextComponent textComponent;
 		if (serverPlayerEntity.getGameProfile().getName().equalsIgnoreCase(string)) {
 			textComponent = new TranslatableTextComponent("multiplayer.player.joined", serverPlayerEntity.getDisplayName());
@@ -303,7 +303,7 @@ public abstract class PlayerManager {
 		serverPlayerEntity.incrementStat(Stats.field_15389);
 		this.savePlayerData(serverPlayerEntity);
 		if (serverPlayerEntity.hasVehicle()) {
-			Entity entity = serverPlayerEntity.getTopmostRiddenEntity();
+			Entity entity = serverPlayerEntity.getTopmostVehicle();
 			if (entity.method_5817()) {
 				LOGGER.debug("Removing player mount");
 				serverPlayerEntity.stopRiding();
@@ -491,7 +491,7 @@ public abstract class PlayerManager {
 			for (String string : abstractTeam.getPlayerList()) {
 				ServerPlayerEntity serverPlayerEntity = this.getPlayer(string);
 				if (serverPlayerEntity != null && serverPlayerEntity != playerEntity) {
-					serverPlayerEntity.appendCommandFeedback(textComponent);
+					serverPlayerEntity.sendMessage(textComponent);
 				}
 			}
 		}
@@ -505,7 +505,7 @@ public abstract class PlayerManager {
 			for (int i = 0; i < this.players.size(); i++) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)this.players.get(i);
 				if (serverPlayerEntity.getScoreboardTeam() != abstractTeam) {
-					serverPlayerEntity.appendCommandFeedback(textComponent);
+					serverPlayerEntity.sendMessage(textComponent);
 				}
 			}
 		}
@@ -709,7 +709,7 @@ public abstract class PlayerManager {
 	}
 
 	public void broadcastChatMessage(TextComponent textComponent, boolean bl) {
-		this.server.appendCommandFeedback(textComponent);
+		this.server.sendMessage(textComponent);
 		ChatMessageType chatMessageType = bl ? ChatMessageType.field_11735 : ChatMessageType.field_11737;
 		this.sendToAll(new ChatMessageS2CPacket(textComponent, chatMessageType));
 	}

@@ -57,7 +57,7 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 		this.field_6576.setAttacking(false);
 		this.field_6572 = 0;
 		this.field_6574 = -1;
-		this.field_6576.method_6021();
+		this.field_6576.clearActiveItem();
 	}
 
 	@Override
@@ -112,11 +112,11 @@ public class BowAttackGoal<T extends HostileEntity & RangedAttacker> extends Goa
 
 			if (this.field_6576.isUsingItem()) {
 				if (!bl && this.field_6572 < -60) {
-					this.field_6576.method_6021();
+					this.field_6576.clearActiveItem();
 				} else if (bl) {
-					int i = this.field_6576.method_6048();
+					int i = this.field_6576.getItemUseTime();
 					if (i >= 20) {
-						this.field_6576.method_6021();
+						this.field_6576.clearActiveItem();
 						this.field_6576.attack(livingEntity, BowItem.method_7722(i));
 						this.field_6574 = this.field_6575;
 					}

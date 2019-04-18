@@ -75,7 +75,7 @@ public class MultiplayerScreen extends Screen {
 			this.minecraft.openScreen(new AddServerScreen(this::addEntry, this.selectedEntry));
 		}));
 		this.buttonEdit = this.addButton(new ButtonWidget(this.width / 2 - 154, this.height - 28, 70, 20, I18n.translate("selectServer.edit"), buttonWidget -> {
-			MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedItem();
+			MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
 			if (entry instanceof MultiplayerServerListWidget.ServerItem) {
 				ServerEntry serverEntry = ((MultiplayerServerListWidget.ServerItem)entry).getServer();
 				this.selectedEntry = new ServerEntry(serverEntry.name, serverEntry.address, false);
@@ -84,7 +84,7 @@ public class MultiplayerScreen extends Screen {
 			}
 		}));
 		this.buttonDelete = this.addButton(new ButtonWidget(this.width / 2 - 74, this.height - 28, 70, 20, I18n.translate("selectServer.delete"), buttonWidget -> {
-			MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedItem();
+			MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
 			if (entry instanceof MultiplayerServerListWidget.ServerItem) {
 				String string = ((MultiplayerServerListWidget.ServerItem)entry).getServer().name;
 				if (string != null) {
@@ -131,7 +131,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	private void removeEntry(boolean bl) {
-		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedItem();
+		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
 		if (bl && entry instanceof MultiplayerServerListWidget.ServerItem) {
 			this.serverList.remove(((MultiplayerServerListWidget.ServerItem)entry).getServer());
 			this.serverList.saveFile();
@@ -143,7 +143,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	private void editEntry(boolean bl) {
-		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedItem();
+		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
 		if (bl && entry instanceof MultiplayerServerListWidget.ServerItem) {
 			ServerEntry serverEntry = ((MultiplayerServerListWidget.ServerItem)entry).getServer();
 			serverEntry.name = this.selectedEntry.name;
@@ -182,7 +182,7 @@ public class MultiplayerScreen extends Screen {
 		} else if (i == 294) {
 			this.refresh();
 			return true;
-		} else if (this.serverListWidget.getSelectedItem() == null || i != 257 && i != 335) {
+		} else if (this.serverListWidget.getSelected() == null || i != 257 && i != 335) {
 			return false;
 		} else {
 			this.connect();
@@ -203,7 +203,7 @@ public class MultiplayerScreen extends Screen {
 	}
 
 	public void connect() {
-		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedItem();
+		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
 		if (entry instanceof MultiplayerServerListWidget.ServerItem) {
 			this.connect(((MultiplayerServerListWidget.ServerItem)entry).getServer());
 		} else if (entry instanceof MultiplayerServerListWidget.LanServerListEntry) {
@@ -225,7 +225,7 @@ public class MultiplayerScreen extends Screen {
 		this.buttonJoin.active = false;
 		this.buttonEdit.active = false;
 		this.buttonDelete.active = false;
-		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelectedItem();
+		MultiplayerServerListWidget.Entry entry = this.serverListWidget.getSelected();
 		if (entry != null && !(entry instanceof MultiplayerServerListWidget.class_4268)) {
 			this.buttonJoin.active = true;
 			if (entry instanceof MultiplayerServerListWidget.ServerItem) {

@@ -52,7 +52,7 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 			this.isOpen = true;
 			this.left = this.recipeBook.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
 			this.children.add(this.recipeBook);
-			this.method_20085(this.recipeBook);
+			this.setInitialFocus(this.recipeBook);
 			this.addButton(new RecipeBookButtonWidget(this.left + 104, this.height / 2 - 22, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
 				this.recipeBook.reset(this.isNarrow);
 				this.recipeBook.toggleOpen();
@@ -85,7 +85,7 @@ public class PlayerInventoryScreen extends AbstractPlayerInventoryScreen<PlayerC
 		this.recipeBook.drawTooltip(this.left, this.top, i, j);
 		this.mouseX = (float)i;
 		this.mouseY = (float)j;
-		this.method_20086(this.recipeBook);
+		this.focusOn(this.recipeBook);
 	}
 
 	@Override

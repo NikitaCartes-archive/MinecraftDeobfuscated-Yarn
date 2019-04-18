@@ -163,7 +163,7 @@ public class PolarBearEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		boolean bl = entity.damage(DamageSource.mob(this), (float)((int)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue()));
 		if (bl) {
 			this.dealDamage(this, entity);
@@ -213,7 +213,7 @@ public class PolarBearEntity extends AnimalEntity {
 			double e = this.getSquaredMaxAttackDistance(livingEntity);
 			if (d <= e && this.ticksUntilAttack <= 0) {
 				this.ticksUntilAttack = 20;
-				this.entity.attack(livingEntity);
+				this.entity.tryAttack(livingEntity);
 				PolarBearEntity.this.setWarning(false);
 			} else if (d <= e * 2.0) {
 				if (this.ticksUntilAttack <= 0) {

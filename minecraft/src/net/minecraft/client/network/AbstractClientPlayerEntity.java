@@ -122,7 +122,7 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		}
 
 		if (this.isUsingItem() && this.getActiveItem().getItem() == Items.field_8102) {
-			int i = this.method_6048();
+			int i = this.getItemUseTime();
 			float g = (float)i / 20.0F;
 			if (g > 1.0F) {
 				g = 1.0F;

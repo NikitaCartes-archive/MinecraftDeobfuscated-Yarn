@@ -44,7 +44,7 @@ public class RealmsButtonProxy extends ButtonWidget implements RealmsAbstractBut
 		return super.getWidth();
 	}
 
-	public int method_2066() {
+	public int y() {
 		return this.y;
 	}
 

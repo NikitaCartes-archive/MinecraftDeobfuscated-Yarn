@@ -26,7 +26,7 @@ public class FlintAndSteelItem extends Item {
 		IWorld iWorld = itemUsageContext.getWorld();
 		BlockPos blockPos = itemUsageContext.getBlockPos();
 		BlockPos blockPos2 = blockPos.offset(itemUsageContext.getFacing());
-		if (method_7825(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
+		if (canSetOnFire(iWorld.getBlockState(blockPos2), iWorld, blockPos2)) {
 			iWorld.playSound(playerEntity, blockPos2, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, random.nextFloat() * 0.4F + 0.8F);
 			BlockState blockState = ((FireBlock)Blocks.field_10036).getStateForPosition(iWorld, blockPos2);
 			iWorld.setBlockState(blockPos2, blockState, 11);
@@ -39,7 +39,7 @@ public class FlintAndSteelItem extends Item {
 			return ActionResult.field_5812;
 		} else {
 			BlockState blockState = iWorld.getBlockState(blockPos);
-			if (method_17439(blockState)) {
+			if (canBeLit(blockState)) {
 				iWorld.playSound(playerEntity, blockPos, SoundEvents.field_15145, SoundCategory.field_15245, 1.0F, random.nextFloat() * 0.4F + 0.8F);
 				iWorld.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
 				if (playerEntity != null) {
@@ -53,11 +53,11 @@ public class FlintAndSteelItem extends Item {
 		}
 	}
 
-	public static boolean method_17439(BlockState blockState) {
+	public static boolean canBeLit(BlockState blockState) {
 		return blockState.getBlock() == Blocks.field_17350 && !(Boolean)blockState.get(Properties.WATERLOGGED) && !(Boolean)blockState.get(Properties.LIT);
 	}
 
-	public static boolean method_7825(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
+	public static boolean canSetOnFire(BlockState blockState, IWorld iWorld, BlockPos blockPos) {
 		BlockState blockState2 = ((FireBlock)Blocks.field_10036).getStateForPosition(iWorld, blockPos);
 		boolean bl = false;
 

@@ -64,7 +64,7 @@ public class NewLevelPresetsScreen extends Screen {
 		this.addButton(
 			new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, I18n.translate("gui.cancel"), buttonWidget -> this.minecraft.openScreen(this.parent))
 		);
-		this.method_20102(this.field_2521.getSelectedItem() != null);
+		this.method_20102(this.field_2521.getSelected() != null);
 	}
 
 	@Override
@@ -225,19 +225,19 @@ public class NewLevelPresetsScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class SuperflatPresetsListWidget extends AlwaysSelectedItemListWidget<NewLevelPresetsScreen.SuperflatPresetsListWidget.SuperflatPresetItem> {
+	class SuperflatPresetsListWidget extends AlwaysSelectedEntryListWidget<NewLevelPresetsScreen.SuperflatPresetsListWidget.SuperflatPresetItem> {
 		public SuperflatPresetsListWidget() {
 			super(
 				NewLevelPresetsScreen.this.minecraft, NewLevelPresetsScreen.this.width, NewLevelPresetsScreen.this.height, 80, NewLevelPresetsScreen.this.height - 37, 24
 			);
 
 			for (int i = 0; i < NewLevelPresetsScreen.presets.size(); i++) {
-				this.addItem(new NewLevelPresetsScreen.SuperflatPresetsListWidget.SuperflatPresetItem());
+				this.addEntry(new NewLevelPresetsScreen.SuperflatPresetsListWidget.SuperflatPresetItem());
 			}
 		}
 
 		public void method_20103(@Nullable NewLevelPresetsScreen.SuperflatPresetsListWidget.SuperflatPresetItem superflatPresetItem) {
-			super.selectItem(superflatPresetItem);
+			super.setSelected(superflatPresetItem);
 			if (superflatPresetItem != null) {
 				NarratorManager.INSTANCE
 					.method_19788(
@@ -265,8 +265,8 @@ public class NewLevelPresetsScreen extends Screen {
 			if (super.keyPressed(i, j, k)) {
 				return true;
 			} else {
-				if ((i == 257 || i == 335) && this.getSelectedItem() != null) {
-					this.getSelectedItem().method_19389();
+				if ((i == 257 || i == 335) && this.getSelected() != null) {
+					this.getSelected().method_19389();
 				}
 
 				return false;
@@ -274,7 +274,7 @@ public class NewLevelPresetsScreen extends Screen {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public class SuperflatPresetItem extends AlwaysSelectedItemListWidget.Item<NewLevelPresetsScreen.SuperflatPresetsListWidget.SuperflatPresetItem> {
+		public class SuperflatPresetItem extends AlwaysSelectedEntryListWidget.Entry<NewLevelPresetsScreen.SuperflatPresetsListWidget.SuperflatPresetItem> {
 			@Override
 			public void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f) {
 				NewLevelPresetsScreen.SuperflatPreset superflatPreset = (NewLevelPresetsScreen.SuperflatPreset)NewLevelPresetsScreen.presets.get(i);
@@ -299,7 +299,7 @@ public class NewLevelPresetsScreen extends Screen {
 				NewLevelPresetsScreen.this.customPresetField.method_1870();
 			}
 
-			private void method_2200(int i, int j, net.minecraft.item.Item item) {
+			private void method_2200(int i, int j, Item item) {
 				this.method_2198(i + 1, j + 1);
 				GlStateManager.enableRescaleNormal();
 				GuiLighting.enableForItems();
@@ -310,7 +310,7 @@ public class NewLevelPresetsScreen extends Screen {
 
 			private void method_2198(int i, int j) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				SuperflatPresetsListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
+				SuperflatPresetsListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
 				DrawableHelper.blit(i, j, NewLevelPresetsScreen.this.blitOffset, 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}

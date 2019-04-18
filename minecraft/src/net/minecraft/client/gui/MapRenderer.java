@@ -85,7 +85,7 @@ public class MapRenderer implements AutoCloseable {
 			for (int i = 0; i < 128; i++) {
 				for (int j = 0; j < 128; j++) {
 					int k = j + i * 128;
-					int l = this.mapState.colorArray[k] & 255;
+					int l = this.mapState.colors[k] & 255;
 					if (l / 4 == 0) {
 						this.texture.getImage().setPixelRGBA(j, i, (k + k / 128 & 1) * 8 + 16 << 24);
 					} else {

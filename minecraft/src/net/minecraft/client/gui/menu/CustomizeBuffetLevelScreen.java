@@ -117,7 +117,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		compoundTag2.putString("type", Registry.BIOME_SOURCE_TYPE.getId(BiomeSourceType.FIXED).toString());
 		CompoundTag compoundTag3 = new CompoundTag();
 		ListTag listTag = new ListTag();
-		listTag.add(new StringTag(this.biomSelectionList.getSelectedItem().biome.toString()));
+		listTag.add(new StringTag(this.biomSelectionList.getSelected().biome.toString()));
 		compoundTag3.put("biomes", listTag);
 		compoundTag2.put("options", compoundTag3);
 		CompoundTag compoundTag4 = new CompoundTag();
@@ -132,7 +132,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	}
 
 	public void refreshConfirmButton() {
-		this.confirmButton.active = this.biomSelectionList.getSelectedItem() != null;
+		this.confirmButton.active = this.biomSelectionList.getSelected() != null;
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class BuffetBiomesListWidget extends AlwaysSelectedItemListWidget<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
+	class BuffetBiomesListWidget extends AlwaysSelectedEntryListWidget<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
 		private BuffetBiomesListWidget() {
 			super(
 				CustomizeBuffetLevelScreen.this.minecraft,
@@ -160,7 +160,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 				.getIds()
 				.stream()
 				.sorted(Comparator.comparing(identifier -> Registry.BIOME.get(identifier).getTextComponent().getString()))
-				.forEach(identifier -> this.addItem(new CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem(identifier)));
+				.forEach(identifier -> this.addEntry(new CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem(identifier)));
 		}
 
 		@Override
@@ -169,7 +169,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		}
 
 		public void method_20089(@Nullable CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem buffetBiomeItem) {
-			super.selectItem(buffetBiomeItem);
+			super.setSelected(buffetBiomeItem);
 			if (buffetBiomeItem != null) {
 				NarratorManager.INSTANCE
 					.method_19788(new TranslatableTextComponent("narrator.select", Registry.BIOME.get(buffetBiomeItem.biome).getTextComponent().getString()).getString());
@@ -183,7 +183,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		}
 
 		@Environment(EnvType.CLIENT)
-		class BuffetBiomeItem extends AlwaysSelectedItemListWidget.Item<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
+		class BuffetBiomeItem extends AlwaysSelectedEntryListWidget.Entry<CustomizeBuffetLevelScreen.BuffetBiomesListWidget.BuffetBiomeItem> {
 			private final Identifier biome;
 
 			public BuffetBiomeItem(Identifier identifier) {

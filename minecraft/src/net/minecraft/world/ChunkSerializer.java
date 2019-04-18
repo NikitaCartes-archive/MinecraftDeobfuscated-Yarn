@@ -23,6 +23,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.server.world.ServerTickScheduler;
+import net.minecraft.server.world.SimpleTickScheduler;
 import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
@@ -358,12 +359,20 @@ public class ChunkSerializer {
 			compoundTag2.put("ToBeTicked", ((ChunkTickScheduler)chunk.getBlockTickScheduler()).toNbt());
 		}
 
+		if (chunk.getBlockTickScheduler() instanceof SimpleTickScheduler) {
+			compoundTag2.put("TileTicks", ((SimpleTickScheduler)chunk.getBlockTickScheduler()).toTag(world.getTime()));
+		}
+
 		if (world.getFluidTickScheduler() instanceof ServerTickScheduler) {
 			compoundTag2.put("LiquidTicks", ((ServerTickScheduler)world.getFluidTickScheduler()).toTag(chunkPos));
 		}
 
 		if (chunk.getFluidTickScheduler() instanceof ChunkTickScheduler) {
 			compoundTag2.put("LiquidsToBeTicked", ((ChunkTickScheduler)chunk.getFluidTickScheduler()).toNbt());
+		}
+
+		if (chunk.getFluidTickScheduler() instanceof SimpleTickScheduler) {
+			compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)chunk.getFluidTickScheduler()).toTag(world.getTime()));
 		}
 
 		compoundTag2.put("PostProcessing", toNbt(chunk.getPostProcessingLists()));

@@ -102,8 +102,8 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.world.isClient && this.isInvisible()) {
 			this.field_7296--;
 			if (this.field_7296 < 0) {

@@ -34,6 +34,8 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.world.SimpleTickScheduler;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.PacketByteBuf;
 import net.minecraft.util.TypeFilterableList;
@@ -71,8 +73,8 @@ public class WorldChunk implements Chunk {
 	private final Map<String, StructureStart> structureStarts = Maps.<String, StructureStart>newHashMap();
 	private final Map<String, LongSet> structureReferences = Maps.<String, LongSet>newHashMap();
 	private final ShortList[] postProcessingLists = new ShortList[16];
-	private final TickScheduler<Block> blockTickScheduler;
-	private final TickScheduler<Fluid> fluidTickScheduler;
+	private TickScheduler<Block> blockTickScheduler;
+	private TickScheduler<Fluid> fluidTickScheduler;
 	private boolean field_12837;
 	private long lastSaveTime;
 	private boolean shouldSave;
@@ -704,10 +706,16 @@ public class WorldChunk implements Chunk {
 
 		if (this.blockTickScheduler instanceof ChunkTickScheduler) {
 			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPosx -> this.getBlockState(blockPosx).getBlock());
+		} else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
+			this.world.getBlockTickScheduler().method_20470(((SimpleTickScheduler)this.blockTickScheduler).stream());
+			this.blockTickScheduler = DummyClientTickScheduler.get();
 		}
 
 		if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
 			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPosx -> this.getFluidState(blockPosx).getFluid());
+		} else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
+			this.world.getFluidTickScheduler().method_20470(((SimpleTickScheduler)this.fluidTickScheduler).stream());
+			this.fluidTickScheduler = DummyClientTickScheduler.get();
 		}
 
 		for (BlockPos blockPos2 : Sets.newHashSet(this.pendingBlockEntityTags.keySet())) {
@@ -751,6 +759,12 @@ public class WorldChunk implements Chunk {
 	@Override
 	public ShortList[] getPostProcessingLists() {
 		return this.postProcessingLists;
+	}
+
+	public void method_20471(ServerWorld serverWorld) {
+		this.blockTickScheduler = new SimpleTickScheduler<>(Registry.BLOCK::getId, serverWorld.method_14196().getScheduledTicksInChunk(true, this.pos));
+		this.fluidTickScheduler = new SimpleTickScheduler<>(Registry.FLUID::getId, serverWorld.method_14179().getScheduledTicksInChunk(true, this.pos));
+		this.setShouldSave(true);
 	}
 
 	@Override

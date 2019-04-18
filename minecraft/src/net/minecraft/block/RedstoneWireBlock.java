@@ -21,8 +21,8 @@ import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.IntegerProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -450,8 +450,8 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		switch (rotation) {
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		switch (blockRotation) {
 			case ROT_180:
 				return blockState.with(WIRE_CONNECTION_NORTH, blockState.get(WIRE_CONNECTION_SOUTH))
 					.with(WIRE_CONNECTION_EAST, blockState.get(WIRE_CONNECTION_WEST))
@@ -473,14 +473,14 @@ public class RedstoneWireBlock extends Block {
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		switch (mirror) {
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		switch (blockMirror) {
 			case LEFT_RIGHT:
 				return blockState.with(WIRE_CONNECTION_NORTH, blockState.get(WIRE_CONNECTION_SOUTH)).with(WIRE_CONNECTION_SOUTH, blockState.get(WIRE_CONNECTION_NORTH));
 			case FRONT_BACK:
 				return blockState.with(WIRE_CONNECTION_EAST, blockState.get(WIRE_CONNECTION_WEST)).with(WIRE_CONNECTION_WEST, blockState.get(WIRE_CONNECTION_EAST));
 			default:
-				return super.mirror(blockState, mirror);
+				return super.mirror(blockState, blockMirror);
 		}
 	}
 

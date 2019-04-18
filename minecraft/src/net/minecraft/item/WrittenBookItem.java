@@ -32,7 +32,7 @@ public class WrittenBookItem extends Item {
 	}
 
 	public static boolean isValidBook(@Nullable CompoundTag compoundTag) {
-		if (!WritableBookItem.method_8047(compoundTag)) {
+		if (!WritableBookItem.isValidBook(compoundTag)) {
 			return false;
 		} else if (!compoundTag.containsKey("title", 8)) {
 			return false;

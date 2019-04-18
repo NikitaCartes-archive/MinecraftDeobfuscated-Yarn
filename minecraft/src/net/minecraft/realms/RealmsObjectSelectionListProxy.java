@@ -5,10 +5,10 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.menu.AlwaysSelectedItemListWidget;
+import net.minecraft.client.gui.menu.AlwaysSelectedEntryListWidget;
 
 @Environment(EnvType.CLIENT)
-public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidget.Item<E>> extends AlwaysSelectedItemListWidget<E> {
+public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedEntryListWidget.Entry<E>> extends AlwaysSelectedEntryListWidget<E> {
 	private final RealmsObjectSelectionList realmsObjectSelectionList;
 
 	public RealmsObjectSelectionListProxy(RealmsObjectSelectionList realmsObjectSelectionList, int i, int j, int k, int l, int m) {
@@ -22,7 +22,7 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 	}
 
 	public void clear() {
-		super.clearItems();
+		super.clearEntries();
 	}
 
 	@Override
@@ -32,20 +32,20 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 
 	protected void setSelectedItem(int i) {
 		if (i == -1) {
-			super.selectItem(null);
+			super.setSelected(null);
 		} else if (super.getItemCount() != 0) {
-			E item = super.getItem(i);
-			super.selectItem(item);
+			E entry = super.getEntry(i);
+			super.setSelected(entry);
 		}
 	}
 
-	public void setSelected(@Nullable E item) {
-		super.selectItem(item);
-		this.realmsObjectSelectionList.selectItem(super.children().indexOf(item));
+	public void setSelected(@Nullable E entry) {
+		super.setSelected(entry);
+		this.realmsObjectSelectionList.selectItem(super.children().indexOf(entry));
 	}
 
 	@Override
-	public void drawBackground() {
+	public void renderBackground() {
 		this.realmsObjectSelectionList.renderBackground();
 	}
 
@@ -54,7 +54,7 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 	}
 
 	@Override
-	public int getMaxScrollPosition() {
+	public int getMaxPosition() {
 		return this.realmsObjectSelectionList.getMaxPosition();
 	}
 
@@ -69,7 +69,7 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 	}
 
 	@Override
-	public int getItemWidth() {
+	public int getRowWidth() {
 		return this.realmsObjectSelectionList.getRowWidth();
 	}
 
@@ -88,28 +88,28 @@ public class RealmsObjectSelectionListProxy<E extends AlwaysSelectedItemListWidg
 		return this.realmsObjectSelectionList.mouseDragged(d, e, i, f, g) ? true : super.mouseDragged(d, e, i, f, g);
 	}
 
-	protected final int addEntry(E item) {
-		return super.addItem(item);
+	protected final int addEntry(E entry) {
+		return super.addEntry(entry);
 	}
 
 	public E remove(int i) {
 		return super.remove(i);
 	}
 
-	public boolean removeEntry(E item) {
-		return super.removeEntry(item);
+	public boolean removeEntry(E entry) {
+		return super.removeEntry(entry);
 	}
 
 	@Override
-	public void capYPosition(double d) {
-		super.capYPosition(d);
+	public void setScrollAmount(double d) {
+		super.setScrollAmount(d);
 	}
 
-	public int method_20327() {
+	public int y0() {
 		return this.top;
 	}
 
-	public int method_20328() {
+	public int y1() {
 		return this.bottom;
 	}
 

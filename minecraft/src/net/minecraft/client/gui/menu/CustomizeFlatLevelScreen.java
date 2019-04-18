@@ -16,7 +16,9 @@ import net.minecraft.client.render.GuiLighting;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.datafixers.NbtOps;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.text.TranslatableTextComponent;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
@@ -69,7 +71,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				buttonWidget -> {
 					if (this.method_2147()) {
 						List<FlatChunkGeneratorLayer> list = this.config.getLayers();
-						int i = this.layers.children().indexOf(this.layers.getSelectedItem());
+						int i = this.layers.children().indexOf(this.layers.getSelected());
 						int j = list.size() - i - 1;
 						list.remove(j);
 						this.layers
@@ -108,7 +110,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	private boolean method_2147() {
-		return this.layers.getSelectedItem() != null;
+		return this.layers.getSelected() != null;
 	}
 
 	@Override
@@ -123,7 +125,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 	}
 
 	@Environment(EnvType.CLIENT)
-	class SuperflatLayersListWidget extends AlwaysSelectedItemListWidget<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem> {
+	class SuperflatLayersListWidget extends AlwaysSelectedEntryListWidget<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem> {
 		public SuperflatLayersListWidget() {
 			super(
 				CustomizeFlatLevelScreen.this.minecraft,
@@ -135,18 +137,18 @@ public class CustomizeFlatLevelScreen extends Screen {
 			);
 
 			for (int i = 0; i < CustomizeFlatLevelScreen.this.config.getLayers().size(); i++) {
-				this.addItem(new CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem());
+				this.addEntry(new CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem());
 			}
 		}
 
 		public void method_20094(@Nullable CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem superflatLayerItem) {
-			super.selectItem(superflatLayerItem);
+			super.setSelected(superflatLayerItem);
 			if (superflatLayerItem != null) {
 				FlatChunkGeneratorLayer flatChunkGeneratorLayer = (FlatChunkGeneratorLayer)CustomizeFlatLevelScreen.this.config
 					.getLayers()
 					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - this.children().indexOf(superflatLayerItem) - 1);
-				net.minecraft.item.Item item = flatChunkGeneratorLayer.getBlockState().getBlock().getItem();
-				if (item != net.minecraft.item.Items.AIR) {
+				Item item = flatChunkGeneratorLayer.getBlockState().getBlock().getItem();
+				if (item != Items.AIR) {
 					NarratorManager.INSTANCE.method_19788(new TranslatableTextComponent("narrator.select", item.getTranslatedNameTrimmed(new ItemStack(item))).getString());
 				}
 			}
@@ -169,11 +171,11 @@ public class CustomizeFlatLevelScreen extends Screen {
 		}
 
 		public void method_19372() {
-			int i = this.children().indexOf(this.getSelectedItem());
-			this.clearItems();
+			int i = this.children().indexOf(this.getSelected());
+			this.clearEntries();
 
 			for (int j = 0; j < CustomizeFlatLevelScreen.this.config.getLayers().size(); j++) {
-				this.addItem(new CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem());
+				this.addEntry(new CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem());
 			}
 
 			List<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem> list = this.children();
@@ -183,7 +185,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 		}
 
 		@Environment(EnvType.CLIENT)
-		class SuperflatLayerItem extends AlwaysSelectedItemListWidget.Item<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem> {
+		class SuperflatLayerItem extends AlwaysSelectedEntryListWidget.Entry<CustomizeFlatLevelScreen.SuperflatLayersListWidget.SuperflatLayerItem> {
 			private SuperflatLayerItem() {
 			}
 
@@ -194,12 +196,12 @@ public class CustomizeFlatLevelScreen extends Screen {
 					.get(CustomizeFlatLevelScreen.this.config.getLayers().size() - i - 1);
 				BlockState blockState = flatChunkGeneratorLayer.getBlockState();
 				Block block = blockState.getBlock();
-				net.minecraft.item.Item item = block.getItem();
-				if (item == net.minecraft.item.Items.AIR) {
+				Item item = block.getItem();
+				if (item == Items.AIR) {
 					if (block == Blocks.field_10382) {
-						item = net.minecraft.item.Items.field_8705;
+						item = Items.field_8705;
 					} else if (block == Blocks.field_10164) {
-						item = net.minecraft.item.Items.field_8187;
+						item = Items.field_8187;
 					}
 				}
 
@@ -245,7 +247,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 			private void method_19373(int i, int j) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				SuperflatLayersListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
+				SuperflatLayersListWidget.this.minecraft.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_LOCATION);
 				DrawableHelper.blit(i, j, CustomizeFlatLevelScreen.this.blitOffset, 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}

@@ -42,7 +42,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class LevelListWidget extends AlwaysSelectedItemListWidget<LevelListWidget.LevelItem> {
+public class LevelListWidget extends AlwaysSelectedEntryListWidget<LevelListWidget.LevelItem> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
@@ -72,14 +72,14 @@ public class LevelListWidget extends AlwaysSelectedItemListWidget<LevelListWidge
 	}
 
 	public void filter(Supplier<String> supplier, boolean bl) {
-		this.clearItems();
-		LevelStorage levelStorage = this.client.getLevelStorage();
+		this.clearEntries();
+		LevelStorage levelStorage = this.minecraft.getLevelStorage();
 		if (this.levels == null || bl) {
 			try {
 				this.levels = levelStorage.getLevelList();
 			} catch (LevelStorageException var7) {
 				LOGGER.error("Couldn't load level list", (Throwable)var7);
-				this.client.openScreen(new SevereErrorScreen(new TranslatableTextComponent("selectWorld.unable_to_load"), var7.getMessage()));
+				this.minecraft.openScreen(new SevereErrorScreen(new TranslatableTextComponent("selectWorld.unable_to_load"), var7.getMessage()));
 				return;
 			}
 
@@ -90,7 +90,7 @@ public class LevelListWidget extends AlwaysSelectedItemListWidget<LevelListWidge
 
 		for (LevelSummary levelSummary : this.levels) {
 			if (levelSummary.getDisplayName().toLowerCase(Locale.ROOT).contains(string) || levelSummary.getName().toLowerCase(Locale.ROOT).contains(string)) {
-				this.addItem(new LevelListWidget.LevelItem(this, levelSummary, this.client.getLevelStorage()));
+				this.addEntry(new LevelListWidget.LevelItem(this, levelSummary, this.minecraft.getLevelStorage()));
 			}
 		}
 	}
@@ -101,8 +101,8 @@ public class LevelListWidget extends AlwaysSelectedItemListWidget<LevelListWidge
 	}
 
 	@Override
-	public int getItemWidth() {
-		return super.getItemWidth() + 50;
+	public int getRowWidth() {
+		return super.getRowWidth() + 50;
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class LevelListWidget extends AlwaysSelectedItemListWidget<LevelListWidge
 	}
 
 	public void method_20157(@Nullable LevelListWidget.LevelItem levelItem) {
-		super.selectItem(levelItem);
+		super.setSelected(levelItem);
 		if (levelItem != null) {
 			LevelSummary levelSummary = levelItem.level;
 			NarratorManager.INSTANCE
@@ -139,7 +139,7 @@ public class LevelListWidget extends AlwaysSelectedItemListWidget<LevelListWidge
 	}
 
 	public Optional<LevelListWidget.LevelItem> method_20159() {
-		return Optional.ofNullable(this.getSelectedItem());
+		return Optional.ofNullable(this.getSelected());
 	}
 
 	public LevelSelectScreen getParent() {
@@ -147,7 +147,7 @@ public class LevelListWidget extends AlwaysSelectedItemListWidget<LevelListWidge
 	}
 
 	@Environment(EnvType.CLIENT)
-	public final class LevelItem extends AlwaysSelectedItemListWidget.Item<LevelListWidget.LevelItem> implements AutoCloseable {
+	public final class LevelItem extends AlwaysSelectedEntryListWidget.Entry<LevelListWidget.LevelItem> implements AutoCloseable {
 		private final MinecraftClient client;
 		private final LevelSelectScreen screen;
 		private final LevelSummary level;
@@ -362,7 +362,7 @@ public class LevelListWidget extends AlwaysSelectedItemListWidget<LevelListWidge
 			try {
 				this.client.openScreen(new WorkingScreen());
 				NewLevelScreen newLevelScreen = new NewLevelScreen(this.screen);
-				WorldSaveHandler worldSaveHandler = this.client.getLevelStorage().method_242(this.level.getName(), null);
+				WorldSaveHandler worldSaveHandler = this.client.getLevelStorage().createSaveHandler(this.level.getName(), null);
 				LevelProperties levelProperties = worldSaveHandler.readProperties();
 				if (levelProperties != null) {
 					newLevelScreen.recreateLevel(levelProperties);

@@ -125,7 +125,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private final LevelStorage levelStorage;
 	private final Snooper snooper = new Snooper("server", this, SystemUtil.getMeasuringTimeMs());
 	private final File gameDir;
-	private final List<Runnable> tickables = Lists.<Runnable>newArrayList();
+	private final List<Runnable> serverGuiTickables = Lists.<Runnable>newArrayList();
 	private final DisableableProfiler profiler = new DisableableProfiler(this::getTicks);
 	private final ServerNetworkIo networkIo;
 	protected final WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory;
@@ -164,18 +164,18 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private boolean bonusChest;
 	private String resourcePackUrl = "";
 	private String resourcePackHash = "";
-	private volatile boolean field_4547;
+	private volatile boolean loading;
 	private long field_4557;
 	@Nullable
-	private TextComponent field_4601;
-	private boolean field_4597;
+	private TextComponent loadingStage;
+	private boolean profilerStartQueued;
 	private boolean forceGameMode;
 	@Nullable
 	private final YggdrasilAuthenticationService authService;
 	private final MinecraftSessionService sessionService;
 	private final GameProfileRepository gameProfileRepo;
 	private final UserCache userCache;
-	private long field_4551;
+	private long lastPlayerSampleUpdate;
 	protected final Thread serverThread = SystemUtil.consume(
 		new Thread(this, "Server thread"), thread -> thread.setUncaughtExceptionHandler((threadx, throwable) -> LOGGER.error(throwable))
 	);
@@ -187,7 +187,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private final ReloadableResourceManager dataManager = new ReloadableResourceManagerImpl(ResourceType.DATA, this.serverThread);
 	private final ResourcePackContainerManager<ResourcePackContainer> resourcePackContainerManager = new ResourcePackContainerManager<>(ResourcePackContainer::new);
 	@Nullable
-	private FileResourcePackCreator field_4553;
+	private FileResourcePackCreator dataPackCreator;
 	private final CommandManager commandManager;
 	private final RecipeManager recipeManager = new RecipeManager();
 	private final TagManager tagManager = new TagManager();
@@ -197,13 +197,13 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	private final ServerAdvancementLoader advancementManager = new ServerAdvancementLoader();
 	private final CommandFunctionManager commandFunctionManager = new CommandFunctionManager(this);
 	private final MetricsData metricsData = new MetricsData();
-	private boolean field_4570;
+	private boolean whitelistEnabled;
 	private boolean forceWorldUpgrade;
-	private boolean field_19237;
+	private boolean eraseCache;
 	private float tickTime;
 	private final Executor workerExecutor;
 	@Nullable
-	private String field_17601;
+	private String serverId;
 
 	public MinecraftServer(
 		File file,
@@ -238,7 +238,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.levelName = string;
 	}
 
-	private void method_17976(PersistentStateManager persistentStateManager) {
+	private void initScoreboard(PersistentStateManager persistentStateManager) {
 		ScoreboardState scoreboardState = persistentStateManager.getOrCreate(ScoreboardState::new, "scoreboard");
 		scoreboardState.setScoreboard(this.getScoreboard());
 		this.getScoreboard().addUpdateListener(new ScoreboardSynchronizer(scoreboardState));
@@ -249,7 +249,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	protected void upgradeWorld(String string) {
 		if (this.getLevelStorage().requiresConversion(string)) {
 			LOGGER.info("Converting map!");
-			this.method_3768(new TranslatableTextComponent("menu.convertingLevel"));
+			this.setLoadingStage(new TranslatableTextComponent("menu.convertingLevel"));
 			this.getLevelStorage().convertLevel(string, new ProgressListener() {
 				private long lastProgressUpdate = SystemUtil.getMeasuringTimeMs();
 
@@ -285,7 +285,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			LOGGER.info("Forcing world upgrade!");
 			LevelProperties levelProperties = this.getLevelStorage().getLevelProperties(this.getLevelName());
 			if (levelProperties != null) {
-				WorldUpdater worldUpdater = new WorldUpdater(this.getLevelName(), this.getLevelStorage(), levelProperties, this.field_19237);
+				WorldUpdater worldUpdater = new WorldUpdater(this.getLevelName(), this.getLevelStorage(), levelProperties, this.eraseCache);
 				TextComponent textComponent = null;
 
 				while (!worldUpdater.isDone()) {
@@ -314,15 +314,15 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		}
 	}
 
-	protected synchronized void method_3768(TextComponent textComponent) {
-		this.field_4601 = textComponent;
+	protected synchronized void setLoadingStage(TextComponent textComponent) {
+		this.loadingStage = textComponent;
 	}
 
-	protected void method_3735(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
+	protected void loadWorld(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
 		this.upgradeWorld(string);
-		this.method_3768(new TranslatableTextComponent("menu.loadingLevel"));
-		WorldSaveHandler worldSaveHandler = this.getLevelStorage().method_242(string, this);
-		this.method_3861(this.getLevelName(), worldSaveHandler);
+		this.setLoadingStage(new TranslatableTextComponent("menu.loadingLevel"));
+		WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(string, this);
+		this.loadWorldResourcePack(this.getLevelName(), worldSaveHandler);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
 		LevelInfo levelInfo;
 		if (levelProperties == null) {
@@ -342,7 +342,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			levelInfo = new LevelInfo(levelProperties);
 		}
 
-		this.method_3800(worldSaveHandler.getWorldDir(), levelProperties);
+		this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldSaveHandler, levelProperties, levelInfo, worldGenerationProgressListener);
 		this.setDifficulty(this.getDefaultDifficulty(), true);
@@ -360,14 +360,14 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			this, this.workerExecutor, worldSaveHandler, levelProperties, DimensionType.field_13072, this.profiler, worldGenerationProgressListener
 		);
 		this.worlds.put(DimensionType.field_13072, serverWorld);
-		this.method_17976(serverWorld.getPersistentStateManager());
+		this.initScoreboard(serverWorld.getPersistentStateManager());
 		serverWorld.getWorldBorder().load(levelProperties);
 		ServerWorld serverWorld2 = this.getWorld(DimensionType.field_13072);
 		if (!levelProperties.isInitialized()) {
 			try {
 				serverWorld2.init(levelInfo);
 				if (levelProperties.getGeneratorType() == LevelGeneratorType.DEBUG_ALL_BLOCK_STATES) {
-					this.method_17977(levelProperties);
+					this.setToDebugWorldProperties(levelProperties);
 				}
 
 				levelProperties.setInitialized(true);
@@ -401,7 +401,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		}
 	}
 
-	private void method_17977(LevelProperties levelProperties) {
+	private void setToDebugWorldProperties(LevelProperties levelProperties) {
 		levelProperties.setStructures(false);
 		levelProperties.setCommandsAllowed(true);
 		levelProperties.setRaining(false);
@@ -415,10 +415,10 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		levelProperties.getGameRules().put("doDaylightCycle", "false", this);
 	}
 
-	protected void method_3800(File file, LevelProperties levelProperties) {
+	protected void loadWorldDataPacks(File file, LevelProperties levelProperties) {
 		this.resourcePackContainerManager.addCreator(new DefaultResourcePackCreator());
-		this.field_4553 = new FileResourcePackCreator(new File(file, "datapacks"));
-		this.resourcePackContainerManager.addCreator(this.field_4553);
+		this.dataPackCreator = new FileResourcePackCreator(new File(file, "datapacks"));
+		this.resourcePackContainerManager.addCreator(this.dataPackCreator);
 		this.resourcePackContainerManager.callCreators();
 		List<ResourcePackContainer> list = Lists.<ResourcePackContainer>newArrayList();
 
@@ -436,7 +436,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	protected void prepareStartRegion(WorldGenerationProgressListener worldGenerationProgressListener) {
-		this.method_3768(new TranslatableTextComponent("menu.generatingTerrain"));
+		this.setLoadingStage(new TranslatableTextComponent("menu.generatingTerrain"));
 		ServerWorld serverWorld = this.getWorld(DimensionType.field_13072);
 		LOGGER.info("Preparing start region for dimension " + DimensionType.getId(serverWorld.dimension.getType()));
 		BlockPos blockPos = serverWorld.getSpawnPos();
@@ -474,7 +474,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		serverChunkManager.method_17293().setTaskBatchSize(5);
 	}
 
-	protected void method_3861(String string, WorldSaveHandler worldSaveHandler) {
+	protected void loadWorldResourcePack(String string, WorldSaveHandler worldSaveHandler) {
 		File file = new File(worldSaveHandler.getWorldDir(), "resources.zip");
 		if (file.isFile()) {
 			try {
@@ -605,21 +605,21 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 					}
 
 					this.timeReference += 50L;
-					if (this.field_4597) {
-						this.field_4597 = false;
+					if (this.profilerStartQueued) {
+						this.profilerStartQueued = false;
 						this.profiler.getController().enable();
 					}
 
 					this.profiler.startTick();
 					this.profiler.push("tick");
-					this.method_3748(this::shouldKeepTicking);
+					this.tick(this::shouldKeepTicking);
 					this.profiler.swap("nextTickWait");
 					this.field_19249 = true;
 					this.field_19248 = Math.max(SystemUtil.getMeasuringTimeMs() + 50L, this.timeReference);
 					this.method_16208();
 					this.profiler.pop();
 					this.profiler.endTick();
-					this.field_4547 = true;
+					this.loading = true;
 				}
 			} else {
 				this.setCrashReport(null);
@@ -740,12 +740,12 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	protected void exit() {
 	}
 
-	protected void method_3748(BooleanSupplier booleanSupplier) {
+	protected void tick(BooleanSupplier booleanSupplier) {
 		long l = SystemUtil.getMeasuringTimeNano();
 		this.ticks++;
-		this.tick(booleanSupplier);
-		if (l - this.field_4551 >= 5000000000L) {
-			this.field_4551 = l;
+		this.tickWorlds(booleanSupplier);
+		if (l - this.lastPlayerSampleUpdate >= 5000000000L) {
+			this.lastPlayerSampleUpdate = l;
 			this.metadata.setPlayers(new ServerMetadata.Players(this.getMaxPlayerCount(), this.getCurrentPlayerCount()));
 			GameProfile[] gameProfiles = new GameProfile[Math.min(this.getCurrentPlayerCount(), 12)];
 			int i = MathHelper.nextInt(this.random, 0, this.getCurrentPlayerCount() - gameProfiles.length);
@@ -785,7 +785,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.profiler.pop();
 	}
 
-	protected void tick(BooleanSupplier booleanSupplier) {
+	protected void tickWorlds(BooleanSupplier booleanSupplier) {
 		this.profiler.push("commandFunctions");
 		this.getCommandFunctionManager().tick();
 		this.profiler.swap("levels");
@@ -829,8 +829,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		this.playerManager.updatePlayerLatency();
 		this.profiler.swap("server gui refresh");
 
-		for (int i = 0; i < this.tickables.size(); i++) {
-			((Runnable)this.tickables.get(i)).run();
+		for (int i = 0; i < this.serverGuiTickables.size(); i++) {
+			((Runnable)this.serverGuiTickables.get(i)).run();
 		}
 
 		this.profiler.pop();
@@ -840,8 +840,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		return true;
 	}
 
-	public void registerTickable(Runnable runnable) {
-		this.tickables.add(runnable);
+	public void addServerGuiTickable(Runnable runnable) {
+		this.serverGuiTickables.add(runnable);
 	}
 
 	public static void main(String[] strings) {
@@ -906,8 +906,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			minecraftDedicatedServer.setDemo(optionSet.has(optionSpec3));
 			minecraftDedicatedServer.setBonusChest(optionSet.has(optionSpec4));
 			minecraftDedicatedServer.setForceWorldUpgrade(optionSet.has(optionSpec5));
-			minecraftDedicatedServer.method_20383(optionSet.has(optionSpec6));
-			minecraftDedicatedServer.method_17819(optionSet.valueOf(optionSpec12));
+			minecraftDedicatedServer.setEraseCache(optionSet.has(optionSpec6));
+			minecraftDedicatedServer.setServerId(optionSet.valueOf(optionSpec12));
 			boolean bl = !optionSet.has(optionSpec) && !optionSet.valuesOf(optionSpec13).contains("nogui");
 			if (bl && !GraphicsEnvironment.isHeadless()) {
 				minecraftDedicatedServer.createGui();
@@ -926,16 +926,16 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		}
 	}
 
-	protected void method_17819(String string) {
-		this.field_17601 = string;
+	protected void setServerId(String string) {
+		this.serverId = string;
 	}
 
 	protected void setForceWorldUpgrade(boolean bl) {
 		this.forceWorldUpgrade = bl;
 	}
 
-	protected void method_20383(boolean bl) {
-		this.field_19237 = bl;
+	protected void setEraseCache(boolean bl) {
+		this.eraseCache = bl;
 	}
 
 	public void start() {
@@ -1030,8 +1030,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 
 			return stringBuilder.toString();
 		}));
-		if (this.field_17601 != null) {
-			crashReport.getSystemDetailsSection().add("Server Id", (ICrashCallable<String>)(() -> this.field_17601));
+		if (this.serverId != null) {
+			crashReport.getSystemDetailsSection().add("Server Id", (ICrashCallable<String>)(() -> this.serverId));
 		}
 
 		return crashReport;
@@ -1042,7 +1042,7 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	@Override
-	public void appendCommandFeedback(TextComponent textComponent) {
+	public void sendMessage(TextComponent textComponent) {
 		LOGGER.info(textComponent.getString());
 	}
 
@@ -1105,19 +1105,19 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 			}
 		}
 
-		this.getPlayerManager().getPlayerList().forEach(this::method_19465);
+		this.getPlayerManager().getPlayerList().forEach(this::sendDifficulty);
 	}
 
-	public void method_19467(boolean bl) {
+	public void setDifficultyLocked(boolean bl) {
 		for (ServerWorld serverWorld : this.getWorlds()) {
 			LevelProperties levelProperties = serverWorld.getLevelProperties();
 			levelProperties.setDifficultyLocked(bl);
 		}
 
-		this.getPlayerManager().getPlayerList().forEach(this::method_19465);
+		this.getPlayerManager().getPlayerList().forEach(this::sendDifficulty);
 	}
 
-	private void method_19465(ServerPlayerEntity serverPlayerEntity) {
+	private void sendDifficulty(ServerPlayerEntity serverPlayerEntity) {
 		LevelProperties levelProperties = serverPlayerEntity.getServerWorld().getLevelProperties();
 		serverPlayerEntity.networkHandler.sendPacket(new DifficultyS2CPacket(levelProperties.getDifficulty(), levelProperties.isDifficultyLocked()));
 	}
@@ -1285,8 +1285,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_3820() {
-		return this.field_4547;
+	public boolean isLoading() {
+		return this.loading;
 	}
 
 	public boolean hasGui() {
@@ -1299,8 +1299,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		return this.ticks;
 	}
 
-	public void method_3832() {
-		this.field_4597 = true;
+	public void enableProfiler() {
+		this.profilerStartQueued = true;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -1348,8 +1348,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		return this.metadata;
 	}
 
-	public void method_3856() {
-		this.field_4551 = 0L;
+	public void forcePlayerSampleUpdate() {
+		this.lastPlayerSampleUpdate = 0L;
 	}
 
 	public int getMaxWorldBorderRadius() {
@@ -1429,8 +1429,8 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		});
 	}
 
-	public void method_3728(ServerCommandSource serverCommandSource) {
-		if (this.method_3729()) {
+	public void kickNonWhitelistedPlayers(ServerCommandSource serverCommandSource) {
+		if (this.isWhitelistEnabled()) {
 			PlayerManager playerManager = serverCommandSource.getMinecraftServer().getPlayerManager();
 			Whitelist whitelist = playerManager.getWhitelist();
 			if (whitelist.isEnabled()) {
@@ -1503,12 +1503,12 @@ public abstract class MinecraftServer extends NonBlockingThreadExecutor<ServerTa
 		return this.bossBarManager;
 	}
 
-	public boolean method_3729() {
-		return this.field_4570;
+	public boolean isWhitelistEnabled() {
+		return this.whitelistEnabled;
 	}
 
-	public void method_3731(boolean bl) {
-		this.field_4570 = bl;
+	public void setWhitelistEnabled(boolean bl) {
+		this.whitelistEnabled = bl;
 	}
 
 	@Environment(EnvType.CLIENT)

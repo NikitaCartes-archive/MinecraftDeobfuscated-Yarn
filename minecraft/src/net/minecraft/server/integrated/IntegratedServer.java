@@ -81,10 +81,10 @@ public class IntegratedServer extends MinecraftServer {
 	}
 
 	@Override
-	public void method_3735(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
+	public void loadWorld(String string, String string2, long l, LevelGeneratorType levelGeneratorType, JsonElement jsonElement) {
 		this.upgradeWorld(string);
-		WorldSaveHandler worldSaveHandler = this.getLevelStorage().method_242(string, this);
-		this.method_3861(this.getLevelName(), worldSaveHandler);
+		WorldSaveHandler worldSaveHandler = this.getLevelStorage().createSaveHandler(string, this);
+		this.loadWorldResourcePack(this.getLevelName(), worldSaveHandler);
 		LevelProperties levelProperties = worldSaveHandler.readProperties();
 		if (levelProperties == null) {
 			levelProperties = new LevelProperties(this.levelInfo, string2);
@@ -92,7 +92,7 @@ public class IntegratedServer extends MinecraftServer {
 			levelProperties.setLevelName(string2);
 		}
 
-		this.method_3800(worldSaveHandler.getWorldDir(), levelProperties);
+		this.loadWorldDataPacks(worldSaveHandler.getWorldDir(), levelProperties);
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldSaveHandler, levelProperties, this.levelInfo, worldGenerationProgressListener);
 		if (this.getWorld(DimensionType.field_13072).getLevelProperties().getDifficulty() == null) {
@@ -112,13 +112,13 @@ public class IntegratedServer extends MinecraftServer {
 		this.setFlightEnabled(true);
 		LOGGER.info("Generating keypair");
 		this.setKeyPair(NetworkEncryptionUtils.generateServerKeyPair());
-		this.method_3735(this.getLevelName(), this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.getGeneratorType(), this.levelInfo.getGeneratorOptions());
+		this.loadWorld(this.getLevelName(), this.getServerName(), this.levelInfo.getSeed(), this.levelInfo.getGeneratorType(), this.levelInfo.getGeneratorOptions());
 		this.setMotd(this.getUserName() + " - " + this.getWorld(DimensionType.field_13072).getLevelProperties().getLevelName());
 		return true;
 	}
 
 	@Override
-	public void method_3748(BooleanSupplier booleanSupplier) {
+	public void tick(BooleanSupplier booleanSupplier) {
 		boolean bl = this.field_5524;
 		this.field_5524 = MinecraftClient.getInstance().getNetworkHandler() != null && MinecraftClient.getInstance().isPaused();
 		DisableableProfiler disableableProfiler = this.getProfiler();
@@ -131,7 +131,7 @@ public class IntegratedServer extends MinecraftServer {
 		}
 
 		if (!this.field_5524) {
-			super.method_3748(booleanSupplier);
+			super.tick(booleanSupplier);
 			int i = Math.max(2, this.client.options.viewDistance + -2);
 			if (i != this.getPlayerManager().getViewDistance()) {
 				LOGGER.info("Changing view distance to {}, from {}", i, this.getPlayerManager().getViewDistance());

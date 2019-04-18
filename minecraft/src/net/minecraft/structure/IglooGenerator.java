@@ -10,9 +10,9 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.Heightmap;
@@ -32,46 +32,51 @@ public class IglooGenerator {
 		TOP_TEMPLATE, BlockPos.ORIGIN, MIDDLE_TEMPLATE, new BlockPos(2, -3, 4), BOTTOM_TEMPLATE, new BlockPos(0, -3, -2)
 	);
 
-	public static void method_14705(
-		StructureManager structureManager, BlockPos blockPos, Rotation rotation, List<StructurePiece> list, Random random, DefaultFeatureConfig defaultFeatureConfig
+	public static void addPieces(
+		StructureManager structureManager,
+		BlockPos blockPos,
+		BlockRotation blockRotation,
+		List<StructurePiece> list,
+		Random random,
+		DefaultFeatureConfig defaultFeatureConfig
 	) {
 		if (random.nextDouble() < 0.5) {
 			int i = random.nextInt(8) + 4;
-			list.add(new IglooGenerator.Piece(structureManager, BOTTOM_TEMPLATE, blockPos, rotation, i * 3));
+			list.add(new IglooGenerator.Piece(structureManager, BOTTOM_TEMPLATE, blockPos, blockRotation, i * 3));
 
 			for (int j = 0; j < i - 1; j++) {
-				list.add(new IglooGenerator.Piece(structureManager, MIDDLE_TEMPLATE, blockPos, rotation, j * 3));
+				list.add(new IglooGenerator.Piece(structureManager, MIDDLE_TEMPLATE, blockPos, blockRotation, j * 3));
 			}
 		}
 
-		list.add(new IglooGenerator.Piece(structureManager, TOP_TEMPLATE, blockPos, rotation, 0));
+		list.add(new IglooGenerator.Piece(structureManager, TOP_TEMPLATE, blockPos, blockRotation, 0));
 	}
 
 	public static class Piece extends SimpleStructurePiece {
 		private final Identifier template;
-		private final Rotation rotation;
+		private final BlockRotation rotation;
 
-		public Piece(StructureManager structureManager, Identifier identifier, BlockPos blockPos, Rotation rotation, int i) {
+		public Piece(StructureManager structureManager, Identifier identifier, BlockPos blockPos, BlockRotation blockRotation, int i) {
 			super(StructurePieceType.IGLOO, 0);
 			this.template = identifier;
 			BlockPos blockPos2 = (BlockPos)IglooGenerator.field_14406.get(identifier);
 			this.pos = blockPos.add(blockPos2.getX(), blockPos2.getY() - i, blockPos2.getZ());
-			this.rotation = rotation;
-			this.method_14708(structureManager);
+			this.rotation = blockRotation;
+			this.initializeStructureData(structureManager);
 		}
 
 		public Piece(StructureManager structureManager, CompoundTag compoundTag) {
 			super(StructurePieceType.IGLOO, compoundTag);
 			this.template = new Identifier(compoundTag.getString("Template"));
-			this.rotation = Rotation.valueOf(compoundTag.getString("Rot"));
-			this.method_14708(structureManager);
+			this.rotation = BlockRotation.valueOf(compoundTag.getString("Rot"));
+			this.initializeStructureData(structureManager);
 		}
 
-		private void method_14708(StructureManager structureManager) {
+		private void initializeStructureData(StructureManager structureManager) {
 			Structure structure = structureManager.getStructureOrBlank(this.template);
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(Mirror.NONE)
+				.setMirrored(BlockMirror.NONE)
 				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.template))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);
@@ -99,7 +104,7 @@ public class IglooGenerator {
 		public boolean generate(IWorld iWorld, Random random, MutableIntBoundingBox mutableIntBoundingBox, ChunkPos chunkPos) {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
-				.setMirrored(Mirror.NONE)
+				.setMirrored(BlockMirror.NONE)
 				.setPosition((BlockPos)IglooGenerator.field_14408.get(this.template))
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
 			BlockPos blockPos = (BlockPos)IglooGenerator.field_14406.get(this.template);

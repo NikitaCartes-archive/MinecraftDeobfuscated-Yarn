@@ -32,7 +32,7 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 		this.recipeBookGui.initialize(this.width, this.height, this.minecraft, this.isNarrow, this.container);
 		this.left = this.recipeBookGui.findLeftEdge(this.isNarrow, this.width, this.containerWidth);
 		this.children.add(this.recipeBookGui);
-		this.method_20085(this.recipeBookGui);
+		this.setInitialFocus(this.recipeBookGui);
 		this.addButton(new RecipeBookButtonWidget(this.left + 5, this.height / 2 - 49, 20, 18, 0, 0, 19, RECIPE_BUTTON_TEX, buttonWidget -> {
 			this.recipeBookGui.reset(this.isNarrow);
 			this.recipeBookGui.toggleOpen();
@@ -61,7 +61,7 @@ public class CraftingTableScreen extends ContainerScreen<CraftingTableContainer>
 
 		this.drawMouseoverTooltip(i, j);
 		this.recipeBookGui.drawTooltip(this.left, this.top, i, j);
-		this.method_20086(this.recipeBookGui);
+		this.focusOn(this.recipeBookGui);
 	}
 
 	@Override

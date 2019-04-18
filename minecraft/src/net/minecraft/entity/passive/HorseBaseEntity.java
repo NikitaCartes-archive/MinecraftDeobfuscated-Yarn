@@ -516,12 +516,12 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryL
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (this.random.nextInt(200) == 0) {
 			this.method_6759();
 		}
 
-		super.updateMovement();
+		super.updateState();
 		if (!this.world.isClient && this.isAlive()) {
 			if (this.random.nextInt(900) == 0 && this.deathTime == 0) {
 				this.heal(1.0F);

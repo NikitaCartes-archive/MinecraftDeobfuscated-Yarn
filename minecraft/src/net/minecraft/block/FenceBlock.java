@@ -56,7 +56,7 @@ public class FenceBlock extends HorizontalConnectedBlock {
 	@Override
 	public boolean activate(BlockState blockState, World world, BlockPos blockPos, PlayerEntity playerEntity, Hand hand, BlockHitResult blockHitResult) {
 		if (!world.isClient) {
-			return LeadItem.method_7994(playerEntity, world, blockPos);
+			return LeadItem.attachNearbyEntities(playerEntity, world, blockPos);
 		} else {
 			ItemStack itemStack = playerEntity.getStackInHand(hand);
 			return itemStack.getItem() == Items.field_8719 || itemStack.isEmpty();

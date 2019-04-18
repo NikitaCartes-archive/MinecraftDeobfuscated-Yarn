@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.util.Identifier;
@@ -96,6 +97,11 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 		return this.ticksCurrent.contains(new ScheduledTick(blockPos, object));
 	}
 
+	@Override
+	public void method_20470(Stream<ScheduledTick<T>> stream) {
+		stream.forEach(this::method_20468);
+	}
+
 	public List<ScheduledTick<T>> getScheduledTicksInChunk(boolean bl, ChunkPos chunkPos) {
 		int i = (chunkPos.x << 4) - 2;
 		int j = i + 16 + 2;
@@ -153,12 +159,15 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 
 	public ListTag toTag(ChunkPos chunkPos) {
 		List<ScheduledTick<T>> list = this.getScheduledTicksInChunk(false, chunkPos);
-		long l = this.world.getTime();
+		return serializeScheduledTicks(this.idToName, list, this.world.getTime());
+	}
+
+	public static <T> ListTag serializeScheduledTicks(Function<T, Identifier> function, Iterable<ScheduledTick<T>> iterable, long l) {
 		ListTag listTag = new ListTag();
 
-		for (ScheduledTick<T> scheduledTick : list) {
+		for (ScheduledTick<T> scheduledTick : iterable) {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putString("i", ((Identifier)this.idToName.apply(scheduledTick.getObject())).toString());
+			compoundTag.putString("i", ((Identifier)function.apply(scheduledTick.getObject())).toString());
 			compoundTag.putInt("x", scheduledTick.pos.getX());
 			compoundTag.putInt("y", scheduledTick.pos.getY());
 			compoundTag.putInt("z", scheduledTick.pos.getZ());
@@ -205,6 +214,10 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 
 	private void scheduleTickUnchecked(BlockPos blockPos, T object, int i, TaskPriority taskPriority) {
 		ScheduledTick<T> scheduledTick = new ScheduledTick<>(blockPos, object, (long)i + this.world.getTime(), taskPriority);
+		this.method_20468(scheduledTick);
+	}
+
+	private void method_20468(ScheduledTick<T> scheduledTick) {
 		if (!this.ticksScheduled.contains(scheduledTick)) {
 			this.ticksScheduled.add(scheduledTick);
 			this.ticksScheduledOrdered.add(scheduledTick);

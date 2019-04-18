@@ -5,7 +5,7 @@ import java.util.function.Function;
 import net.minecraft.structure.ShipwreckGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
@@ -54,9 +54,9 @@ public class ShipwreckFeature extends AbstractTempleFeature<ShipwreckFeatureConf
 		@Override
 		public void initialize(ChunkGenerator<?> chunkGenerator, StructureManager structureManager, int i, int j, Biome biome) {
 			ShipwreckFeatureConfig shipwreckFeatureConfig = chunkGenerator.getStructureConfig(biome, Feature.SHIPWRECK);
-			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
+			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
 			BlockPos blockPos = new BlockPos(i * 16, 90, j * 16);
-			ShipwreckGenerator.addParts(structureManager, blockPos, rotation, this.children, this.random, shipwreckFeatureConfig);
+			ShipwreckGenerator.addParts(structureManager, blockPos, blockRotation, this.children, this.random, shipwreckFeatureConfig);
 			this.setBoundingBoxFromChildren();
 		}
 	}

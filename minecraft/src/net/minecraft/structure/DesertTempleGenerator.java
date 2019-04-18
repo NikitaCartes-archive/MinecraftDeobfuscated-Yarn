@@ -276,9 +276,7 @@ public class DesertTempleGenerator extends StructurePieceWithDimensions {
 			if (!this.hasPlacedChest[direction.getHorizontal()]) {
 				int m = direction.getOffsetX() * 2;
 				int n = direction.getOffsetZ() * 2;
-				this.hasPlacedChest[direction.getHorizontal()] = this.method_14915(
-					iWorld, mutableIntBoundingBox, random, 10 + m, -11, 10 + n, LootTables.CHEST_DESERT_PYRAMID
-				);
+				this.hasPlacedChest[direction.getHorizontal()] = this.addChest(iWorld, mutableIntBoundingBox, random, 10 + m, -11, 10 + n, LootTables.CHEST_DESERT_PYRAMID);
 			}
 		}
 

@@ -22,11 +22,11 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlockRotStructureProcessor;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.ChatUtil;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.InvalidIdentifierException;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -38,8 +38,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private String metadata = "";
 	private BlockPos offset = new BlockPos(0, 1, 0);
 	private BlockPos size = BlockPos.ORIGIN;
-	private Mirror mirror = Mirror.NONE;
-	private Rotation rotation = Rotation.ROT_0;
+	private BlockMirror mirror = BlockMirror.NONE;
+	private BlockRotation rotation = BlockRotation.ROT_0;
 	private StructureBlockMode mode = StructureBlockMode.field_12696;
 	private boolean ignoreEntities = true;
 	private boolean powered;
@@ -92,15 +92,15 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.size = new BlockPos(l, m, n);
 
 		try {
-			this.rotation = Rotation.valueOf(compoundTag.getString("rotation"));
+			this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
 		} catch (IllegalArgumentException var11) {
-			this.rotation = Rotation.ROT_0;
+			this.rotation = BlockRotation.ROT_0;
 		}
 
 		try {
-			this.mirror = Mirror.valueOf(compoundTag.getString("mirror"));
+			this.mirror = BlockMirror.valueOf(compoundTag.getString("mirror"));
 		} catch (IllegalArgumentException var10) {
-			this.mirror = Mirror.NONE;
+			this.mirror = BlockMirror.NONE;
 		}
 
 		try {
@@ -195,21 +195,21 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Mirror getMirror() {
+	public BlockMirror getMirror() {
 		return this.mirror;
 	}
 
-	public void setMirror(Mirror mirror) {
-		this.mirror = mirror;
+	public void setMirror(BlockMirror blockMirror) {
+		this.mirror = blockMirror;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Rotation getRotation() {
+	public BlockRotation getRotation() {
 		return this.rotation;
 	}
 
-	public void setRotation(Rotation rotation) {
-		this.rotation = rotation;
+	public void setRotation(BlockRotation blockRotation) {
+		this.rotation = blockRotation;
 	}
 
 	@Environment(EnvType.CLIENT)

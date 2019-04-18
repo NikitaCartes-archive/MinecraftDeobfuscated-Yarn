@@ -13,11 +13,11 @@ public abstract class BaseBowItem extends Item {
 		super(settings);
 	}
 
-	public Predicate<ItemStack> method_20310() {
-		return this.getProjectilePredicate();
+	public Predicate<ItemStack> getHeldProjectilePredicate() {
+		return this.getInventoryProjectilePredicate();
 	}
 
-	public abstract Predicate<ItemStack> getProjectilePredicate();
+	public abstract Predicate<ItemStack> getInventoryProjectilePredicate();
 
 	public static ItemStack getItemHeld(LivingEntity livingEntity, Predicate<ItemStack> predicate) {
 		if (predicate.test(livingEntity.getStackInHand(Hand.OFF))) {

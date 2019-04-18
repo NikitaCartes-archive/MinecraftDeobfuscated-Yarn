@@ -106,7 +106,7 @@ public final class ProjectileUtil {
 				Vec3d vec3d4 = (Vec3d)optional.get();
 				double f = vec3d.squaredDistanceTo(vec3d4);
 				if (f < e || e == 0.0) {
-					if (entity3.getTopmostRiddenEntity() == entity.getTopmostRiddenEntity()) {
+					if (entity3.getTopmostVehicle() == entity.getTopmostVehicle()) {
 						if (e == 0.0) {
 							entity2 = entity3;
 							vec3d3 = vec3d4;
@@ -146,7 +146,7 @@ public final class ProjectileUtil {
 	}
 
 	private static Set<Entity> getEntityAndRidingEntity(Entity entity) {
-		Entity entity2 = entity.getRiddenEntity();
+		Entity entity2 = entity.getVehicle();
 		return entity2 != null ? ImmutableSet.of(entity, entity2) : ImmutableSet.of(entity);
 	}
 

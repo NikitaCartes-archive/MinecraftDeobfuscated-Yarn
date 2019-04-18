@@ -28,10 +28,10 @@ import net.minecraft.state.PropertyContainer;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.Property;
 import net.minecraft.tag.Tag;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -112,12 +112,12 @@ public class BlockState extends AbstractPropertyContainer<Block, BlockState> imp
 		return this.getBlock().getMapColor(this, blockView, blockPos);
 	}
 
-	public BlockState rotate(Rotation rotation) {
-		return this.getBlock().rotate(this, rotation);
+	public BlockState rotate(BlockRotation blockRotation) {
+		return this.getBlock().rotate(this, blockRotation);
 	}
 
-	public BlockState mirror(Mirror mirror) {
-		return this.getBlock().mirror(this, mirror);
+	public BlockState mirror(BlockMirror blockMirror) {
+		return this.getBlock().mirror(this, blockMirror);
 	}
 
 	@Environment(EnvType.CLIENT)

@@ -76,8 +76,8 @@ public class SnowmanEntity extends GolemEntity implements RangedAttacker {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (!this.world.isClient) {
 			int i = MathHelper.floor(this.x);
 			int j = MathHelper.floor(this.y);

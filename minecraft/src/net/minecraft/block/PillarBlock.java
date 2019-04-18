@@ -4,7 +4,7 @@ import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.Direction;
 
 public class PillarBlock extends Block {
@@ -16,8 +16,8 @@ public class PillarBlock extends Block {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		switch (rotation) {
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		switch (blockRotation) {
 			case ROT_270:
 			case ROT_90:
 				switch ((Direction.Axis)blockState.get(AXIS)) {

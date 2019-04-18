@@ -23,7 +23,7 @@ public class BowItem extends BaseBowItem {
 			if (livingEntity == null) {
 				return 0.0F;
 			} else {
-				return livingEntity.getActiveItem().getItem() != Items.field_8102 ? 0.0F : (float)(itemStack.getMaxUseTime() - livingEntity.method_6014()) / 20.0F;
+				return livingEntity.getActiveItem().getItem() != Items.field_8102 ? 0.0F : (float)(itemStack.getMaxUseTime() - livingEntity.getItemUseTimeLeft()) / 20.0F;
 			}
 		});
 		this.addProperty(
@@ -133,7 +133,7 @@ public class BowItem extends BaseBowItem {
 	}
 
 	@Override
-	public Predicate<ItemStack> getProjectilePredicate() {
+	public Predicate<ItemStack> getInventoryProjectilePredicate() {
 		return IS_BOW_PROJECTILE;
 	}
 }

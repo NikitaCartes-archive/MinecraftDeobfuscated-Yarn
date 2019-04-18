@@ -2,12 +2,12 @@ package net.minecraft.util;
 
 import net.minecraft.util.math.Direction;
 
-public enum Mirror {
+public enum BlockMirror {
 	NONE,
 	LEFT_RIGHT,
 	FRONT_BACK;
 
-	public int method_10344(int i, int j) {
+	public int mirror(int i, int j) {
 		int k = j / 2;
 		int l = i > k ? i - j : i;
 		switch (this) {
@@ -20,9 +20,9 @@ public enum Mirror {
 		}
 	}
 
-	public Rotation getRotation(Direction direction) {
+	public BlockRotation getRotation(Direction direction) {
 		Direction.Axis axis = direction.getAxis();
-		return (this != LEFT_RIGHT || axis != Direction.Axis.Z) && (this != FRONT_BACK || axis != Direction.Axis.X) ? Rotation.ROT_0 : Rotation.ROT_180;
+		return (this != LEFT_RIGHT || axis != Direction.Axis.Z) && (this != FRONT_BACK || axis != Direction.Axis.X) ? BlockRotation.ROT_0 : BlockRotation.ROT_180;
 	}
 
 	public Direction apply(Direction direction) {

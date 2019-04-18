@@ -3,13 +3,13 @@ package net.minecraft.client.gui.menu;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.ItemListWidget;
+import net.minecraft.client.gui.widget.EntryListWidget;
 
 @Environment(EnvType.CLIENT)
-public abstract class AlwaysSelectedItemListWidget<E extends ItemListWidget.Item<E>> extends ItemListWidget<E> {
+public abstract class AlwaysSelectedEntryListWidget<E extends EntryListWidget.Entry<E>> extends EntryListWidget<E> {
 	private boolean inFocus;
 
-	public AlwaysSelectedItemListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
+	public AlwaysSelectedEntryListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
 		super(minecraftClient, i, j, k, l, m);
 	}
 
@@ -19,9 +19,9 @@ public abstract class AlwaysSelectedItemListWidget<E extends ItemListWidget.Item
 			return false;
 		} else {
 			this.inFocus = !this.inFocus;
-			if (this.inFocus && this.getSelectedItem() == null && this.getItemCount() > 0) {
+			if (this.inFocus && this.getSelected() == null && this.getItemCount() > 0) {
 				this.moveSelection(1);
-			} else if (this.inFocus && this.getSelectedItem() != null) {
+			} else if (this.inFocus && this.getSelected() != null) {
 				this.moveSelection(0);
 			}
 
@@ -30,7 +30,7 @@ public abstract class AlwaysSelectedItemListWidget<E extends ItemListWidget.Item
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class Item<E extends AlwaysSelectedItemListWidget.Item<E>> extends ItemListWidget.Item<E> {
+	public abstract static class Entry<E extends AlwaysSelectedEntryListWidget.Entry<E>> extends EntryListWidget.Entry<E> {
 		@Override
 		public boolean changeFocus(boolean bl) {
 			return false;

@@ -121,7 +121,7 @@ public class MeleeAttackGoal extends Goal {
 		if (d <= e && this.ticksUntilAttack <= 0) {
 			this.ticksUntilAttack = 20;
 			this.entity.swingHand(Hand.MAIN);
-			this.entity.attack(livingEntity);
+			this.entity.tryAttack(livingEntity);
 		}
 	}
 

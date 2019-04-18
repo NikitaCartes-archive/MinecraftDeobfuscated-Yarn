@@ -17,9 +17,9 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -244,28 +244,28 @@ public class StairsBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		return blockState.with(FACING, rotation.rotate(blockState.get(FACING)));
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		return blockState.with(FACING, blockRotation.rotate(blockState.get(FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
 		Direction direction = blockState.get(FACING);
 		StairShape stairShape = blockState.get(SHAPE);
-		switch (mirror) {
+		switch (blockMirror) {
 			case LEFT_RIGHT:
 				if (direction.getAxis() == Direction.Axis.Z) {
 					switch (stairShape) {
 						case field_12712:
-							return blockState.rotate(Rotation.ROT_180).with(SHAPE, StairShape.field_12713);
+							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12713);
 						case field_12713:
-							return blockState.rotate(Rotation.ROT_180).with(SHAPE, StairShape.field_12712);
+							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12712);
 						case field_12708:
-							return blockState.rotate(Rotation.ROT_180).with(SHAPE, StairShape.field_12709);
+							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12709);
 						case field_12709:
-							return blockState.rotate(Rotation.ROT_180).with(SHAPE, StairShape.field_12708);
+							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12708);
 						default:
-							return blockState.rotate(Rotation.ROT_180);
+							return blockState.rotate(BlockRotation.ROT_180);
 					}
 				}
 				break;
@@ -273,20 +273,20 @@ public class StairsBlock extends Block implements Waterloggable {
 				if (direction.getAxis() == Direction.Axis.X) {
 					switch (stairShape) {
 						case field_12712:
-							return blockState.rotate(Rotation.ROT_180).with(SHAPE, StairShape.field_12712);
+							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12712);
 						case field_12713:
-							return blockState.rotate(Rotation.ROT_180).with(SHAPE, StairShape.field_12713);
+							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12713);
 						case field_12708:
-							return blockState.rotate(Rotation.ROT_180).with(SHAPE, StairShape.field_12709);
+							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12709);
 						case field_12709:
-							return blockState.rotate(Rotation.ROT_180).with(SHAPE, StairShape.field_12708);
+							return blockState.rotate(BlockRotation.ROT_180).with(SHAPE, StairShape.field_12708);
 						case field_12710:
-							return blockState.rotate(Rotation.ROT_180);
+							return blockState.rotate(BlockRotation.ROT_180);
 					}
 				}
 		}
 
-		return super.mirror(blockState, mirror);
+		return super.mirror(blockState, blockMirror);
 	}
 
 	@Override

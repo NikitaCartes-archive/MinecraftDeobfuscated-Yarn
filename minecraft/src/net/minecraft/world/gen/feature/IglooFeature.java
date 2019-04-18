@@ -5,7 +5,7 @@ import java.util.function.Function;
 import net.minecraft.structure.IglooGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.world.biome.Biome;
@@ -47,8 +47,8 @@ public class IglooFeature extends AbstractTempleFeature<DefaultFeatureConfig> {
 			int k = i * 16;
 			int l = j * 16;
 			BlockPos blockPos = new BlockPos(k, 90, l);
-			Rotation rotation = Rotation.values()[this.random.nextInt(Rotation.values().length)];
-			IglooGenerator.method_14705(structureManager, blockPos, rotation, this.children, this.random, defaultFeatureConfig);
+			BlockRotation blockRotation = BlockRotation.values()[this.random.nextInt(BlockRotation.values().length)];
+			IglooGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random, defaultFeatureConfig);
 			this.setBoundingBoxFromChildren();
 		}
 	}

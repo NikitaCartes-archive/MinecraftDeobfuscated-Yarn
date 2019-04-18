@@ -13,9 +13,9 @@ import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureFeatures;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -55,7 +55,7 @@ public class StructurePoolBasedGenerator {
 			StructurePoolElement structurePoolElement,
 			BlockPos blockPos,
 			int i,
-			Rotation rotation,
+			BlockRotation blockRotation,
 			MutableIntBoundingBox mutableIntBoundingBox
 		);
 	}
@@ -99,7 +99,7 @@ public class StructurePoolBasedGenerator {
 			this.field_18703 = structureManager;
 			this.field_18704 = list;
 			this.field_18705 = random;
-			Rotation rotation = Rotation.random(random);
+			BlockRotation blockRotation = BlockRotation.random(random);
 			StructurePool structurePool = StructurePoolBasedGenerator.REGISTRY.get(identifier);
 			StructurePoolElement structurePoolElement = structurePool.getRandomElement(random);
 			PoolStructurePiece poolStructurePiece = pieceFactory.create(
@@ -107,8 +107,8 @@ public class StructurePoolBasedGenerator {
 				structurePoolElement,
 				blockPos,
 				structurePoolElement.method_19308(),
-				rotation,
-				structurePoolElement.getBoundingBox(structureManager, blockPos, rotation)
+				blockRotation,
+				structurePoolElement.getBoundingBox(structureManager, blockPos, blockRotation)
 			);
 			MutableIntBoundingBox mutableIntBoundingBox = poolStructurePiece.getBoundingBox();
 			int j = (mutableIntBoundingBox.maxX + mutableIntBoundingBox.minX) / 2;
@@ -145,7 +145,7 @@ public class StructurePoolBasedGenerator {
 		private void method_19306(PoolStructurePiece poolStructurePiece, AtomicReference<VoxelShape> atomicReference, int i, int j) {
 			StructurePoolElement structurePoolElement = poolStructurePiece.getPoolElement();
 			BlockPos blockPos = poolStructurePiece.getPos();
-			Rotation rotation = poolStructurePiece.getRotation();
+			BlockRotation blockRotation = poolStructurePiece.getRotation();
 			StructurePool.Projection projection = structurePoolElement.getProjection();
 			boolean bl = projection == StructurePool.Projection.RIGID;
 			AtomicReference<VoxelShape> atomicReference2 = new AtomicReference();
@@ -153,7 +153,9 @@ public class StructurePoolBasedGenerator {
 			int k = mutableIntBoundingBox.minY;
 
 			label121:
-			for (Structure.StructureBlockInfo structureBlockInfo : structurePoolElement.getStructureBlockInfos(this.field_18703, blockPos, rotation, this.field_18705)) {
+			for (Structure.StructureBlockInfo structureBlockInfo : structurePoolElement.getStructureBlockInfos(
+				this.field_18703, blockPos, blockRotation, this.field_18705
+			)) {
 				Direction direction = structureBlockInfo.state.get(JigsawBlock.FACING);
 				BlockPos blockPos2 = structureBlockInfo.pos;
 				BlockPos blockPos3 = blockPos2.offset(direction);
@@ -188,9 +190,11 @@ public class StructurePoolBasedGenerator {
 							break;
 						}
 
-						for (Rotation rotation2 : Rotation.randomRotationOrder(this.field_18705)) {
-							List<Structure.StructureBlockInfo> list2 = structurePoolElement2.getStructureBlockInfos(this.field_18703, BlockPos.ORIGIN, rotation2, this.field_18705);
-							MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement2.getBoundingBox(this.field_18703, BlockPos.ORIGIN, rotation2);
+						for (BlockRotation blockRotation2 : BlockRotation.randomRotationOrder(this.field_18705)) {
+							List<Structure.StructureBlockInfo> list2 = structurePoolElement2.getStructureBlockInfos(
+								this.field_18703, BlockPos.ORIGIN, blockRotation2, this.field_18705
+							);
+							MutableIntBoundingBox mutableIntBoundingBox2 = structurePoolElement2.getBoundingBox(this.field_18703, BlockPos.ORIGIN, blockRotation2);
 							int o;
 							if (mutableIntBoundingBox2.getBlockCountY() > 16) {
 								o = 0;
@@ -211,7 +215,7 @@ public class StructurePoolBasedGenerator {
 								if (JigsawBlock.attachmentMatches(structureBlockInfo, structureBlockInfo2)) {
 									BlockPos blockPos4 = structureBlockInfo2.pos;
 									BlockPos blockPos5 = new BlockPos(blockPos3.getX() - blockPos4.getX(), blockPos3.getY() - blockPos4.getY(), blockPos3.getZ() - blockPos4.getZ());
-									MutableIntBoundingBox mutableIntBoundingBox3 = structurePoolElement2.getBoundingBox(this.field_18703, blockPos5, rotation2);
+									MutableIntBoundingBox mutableIntBoundingBox3 = structurePoolElement2.getBoundingBox(this.field_18703, blockPos5, blockRotation2);
 									int p = mutableIntBoundingBox3.minY;
 									StructurePool.Projection projection2 = structurePoolElement2.getProjection();
 									boolean bl3 = projection2 == StructurePool.Projection.RIGID;
@@ -251,7 +255,7 @@ public class StructurePoolBasedGenerator {
 										}
 
 										PoolStructurePiece poolStructurePiece2 = this.field_18701
-											.create(this.field_18703, structurePoolElement2, blockPos6, v, rotation2, mutableIntBoundingBox4);
+											.create(this.field_18703, structurePoolElement2, blockPos6, v, blockRotation2, mutableIntBoundingBox4);
 										int w;
 										if (bl) {
 											w = k + l;

@@ -68,13 +68,13 @@ import net.minecraft.text.StringTextComponent;
 import net.minecraft.text.TextComponent;
 import net.minecraft.text.event.HoverEvent;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.BooleanBiFunction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.LoopingStream;
-import net.minecraft.util.Mirror;
 import net.minecraft.util.Nameable;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -93,7 +93,6 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.RayTraceContext;
 import net.minecraft.world.ViewableWorld;
 import net.minecraft.world.World;
-import net.minecraft.world.chunk.ChunkPos;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
@@ -110,7 +109,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public boolean field_6033;
 	private final List<Entity> passengerList = Lists.<Entity>newArrayList();
 	protected int ridingCooldown;
-	private Entity riddenEntity;
+	private Entity vehicle;
 	public boolean teleporting;
 	public World world;
 	public double prevX;
@@ -330,8 +329,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.prevPitch = (float)((double)this.prevPitch + f);
 		this.prevYaw = (float)((double)this.prevYaw + g);
 		this.prevPitch = MathHelper.clamp(this.prevPitch, -90.0F, 90.0F);
-		if (this.riddenEntity != null) {
-			this.riddenEntity.onPassengerLookAround(this);
+		if (this.vehicle != null) {
+			this.vehicle.onPassengerLookAround(this);
 		}
 	}
 
@@ -345,7 +344,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 
 	public void baseTick() {
 		this.world.getProfiler().push("entityBaseTick");
-		if (this.hasVehicle() && this.getRiddenEntity().removed) {
+		if (this.hasVehicle() && this.getVehicle().removed) {
 			this.stopRiding();
 		}
 
@@ -922,7 +921,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public boolean method_5713() {
-		if (this.getRiddenEntity() instanceof BoatEntity) {
+		if (this.getVehicle() instanceof BoatEntity) {
 			this.insideWater = false;
 		} else if (this.updateMovementInFluid(FluidTags.field_15517)) {
 			if (!this.insideWater && !this.field_5953) {
@@ -1014,7 +1013,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public boolean isInFluid(Tag<Fluid> tag, boolean bl) {
-		if (this.getRiddenEntity() instanceof BoatEntity) {
+		if (this.getVehicle() instanceof BoatEntity) {
 			return false;
 		} else {
 			double d = this.y + (double)this.getStandingEyeHeight();
@@ -1549,7 +1548,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		this.setVelocity(Vec3d.ZERO);
 		this.tick();
 		if (this.hasVehicle()) {
-			this.getRiddenEntity().updatePassengerPosition(this);
+			this.getVehicle().updatePassengerPosition(this);
 		}
 	}
 
@@ -1581,8 +1580,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public boolean startRiding(Entity entity, boolean bl) {
-		for (Entity entity2 = entity; entity2.riddenEntity != null; entity2 = entity2.riddenEntity) {
-			if (entity2.riddenEntity == this) {
+		for (Entity entity2 = entity; entity2.vehicle != null; entity2 = entity2.vehicle) {
+			if (entity2.vehicle == this) {
 				return false;
 			}
 		}
@@ -1592,8 +1591,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 				this.stopRiding();
 			}
 
-			this.riddenEntity = entity;
-			this.riddenEntity.addPassenger(this);
+			this.vehicle = entity;
+			this.vehicle.addPassenger(this);
 			return true;
 		} else {
 			return false;
@@ -1615,15 +1614,15 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public void stopRiding() {
-		if (this.riddenEntity != null) {
-			Entity entity = this.riddenEntity;
-			this.riddenEntity = null;
+		if (this.vehicle != null) {
+			Entity entity = this.vehicle;
+			this.vehicle = null;
 			entity.removePassenger(this);
 		}
 	}
 
 	protected void addPassenger(Entity entity) {
-		if (entity.getRiddenEntity() != this) {
+		if (entity.getVehicle() != this) {
 			throw new IllegalStateException("Use x.startRiding(y), not y.addPassenger(x)");
 		} else {
 			if (!this.world.isClient && entity instanceof PlayerEntity && !(this.getPrimaryPassenger() instanceof PlayerEntity)) {
@@ -1635,7 +1634,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	protected void removePassenger(Entity entity) {
-		if (entity.getRiddenEntity() == this) {
+		if (entity.getVehicle() == this) {
 			throw new IllegalStateException("Use x.stopRiding(y), not y.removePassenger(x)");
 		} else {
 			this.passengerList.remove(entity);
@@ -1765,7 +1764,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	public boolean hasVehicle() {
-		return this.getRiddenEntity() != null;
+		return this.getVehicle() != null;
 	}
 
 	public boolean hasPassengers() {
@@ -2071,14 +2070,16 @@ public abstract class Entity implements Nameable, CommandOutput {
 				d = MathHelper.clamp(d, h, j);
 				e = MathHelper.clamp(e, i, k);
 				Vec3d vec3d2 = this.method_5656();
-				long l = ChunkPos.toLong(MathHelper.floor(d), MathHelper.floor(e));
 				blockPos = new BlockPos(d, this.y, e);
-				Pair<Vec3d, Pair<Vec3d, Integer>> pair = serverWorld2.getPortalForcer().method_18475(blockPos, vec3d, l, this.method_5843(), vec3d2.x, vec3d2.y);
-				if (pair != null) {
-					blockPos = new BlockPos(pair.getFirst());
-					vec3d = pair.getSecond().getFirst();
-					f = (float)pair.getSecond().getSecond().intValue();
+				Pair<Vec3d, Pair<Vec3d, Integer>> pair = serverWorld2.getPortalForcer()
+					.method_18475(blockPos, vec3d, this.method_5843(), vec3d2.x, vec3d2.y, this instanceof PlayerEntity);
+				if (pair == null) {
+					return null;
 				}
+
+				blockPos = new BlockPos(pair.getFirst());
+				vec3d = pair.getSecond().getFirst();
+				f = (float)pair.getSecond().getSecond().intValue();
 			}
 
 			this.world.getProfiler().swap("reloading");
@@ -2142,7 +2143,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 		Vec3d vec3d = this.getVelocity();
 		crashReportSection.add("Entity's Momentum", String.format(Locale.ROOT, "%.2f, %.2f, %.2f", vec3d.x, vec3d.y, vec3d.z));
 		crashReportSection.add("Entity's Passengers", (ICrashCallable<String>)(() -> this.getPassengerList().toString()));
-		crashReportSection.add("Entity's Vehicle", (ICrashCallable<String>)(() -> this.getRiddenEntity().toString()));
+		crashReportSection.add("Entity's Vehicle", (ICrashCallable<String>)(() -> this.getVehicle().toString()));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -2320,7 +2321,7 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Override
-	public void appendCommandFeedback(TextComponent textComponent) {
+	public void sendMessage(TextComponent textComponent) {
 	}
 
 	public BlockPos getBlockPos() {
@@ -2362,9 +2363,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 	public void onStoppedTrackingBy(ServerPlayerEntity serverPlayerEntity) {
 	}
 
-	public float applyRotation(Rotation rotation) {
+	public float applyRotation(BlockRotation blockRotation) {
 		float f = MathHelper.wrapDegrees(this.yaw);
-		switch (rotation) {
+		switch (blockRotation) {
 			case ROT_180:
 				return f + 180.0F;
 			case ROT_270:
@@ -2376,9 +2377,9 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	public float applyMirror(Mirror mirror) {
+	public float applyMirror(BlockMirror blockMirror) {
 		float f = MathHelper.wrapDegrees(this.yaw);
-		switch (mirror) {
+		switch (blockMirror) {
 			case LEFT_RIGHT:
 				return -f;
 			case FRONT_BACK:
@@ -2454,18 +2455,18 @@ public abstract class Entity implements Nameable, CommandOutput {
 		}
 	}
 
-	public Entity getTopmostRiddenEntity() {
+	public Entity getTopmostVehicle() {
 		Entity entity = this;
 
 		while (entity.hasVehicle()) {
-			entity = entity.getRiddenEntity();
+			entity = entity.getVehicle();
 		}
 
 		return entity;
 	}
 
 	public boolean isConnectedThroughVehicle(Entity entity) {
-		return this.getTopmostRiddenEntity() == entity.getTopmostRiddenEntity();
+		return this.getTopmostVehicle() == entity.getTopmostVehicle();
 	}
 
 	public boolean method_5821(Entity entity) {
@@ -2488,8 +2489,8 @@ public abstract class Entity implements Nameable, CommandOutput {
 	}
 
 	@Nullable
-	public Entity getRiddenEntity() {
-		return this.riddenEntity;
+	public Entity getVehicle() {
+		return this.vehicle;
 	}
 
 	public PistonBehavior getPistonBehavior() {

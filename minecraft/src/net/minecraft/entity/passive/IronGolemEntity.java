@@ -96,8 +96,8 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.field_6762 > 0) {
 			this.field_6762--;
 		}
@@ -148,7 +148,7 @@ public class IronGolemEntity extends GolemEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		this.field_6762 = 10;
 		this.world.sendEntityStatus(this, (byte)4);
 		boolean bl = entity.damage(DamageSource.mob(this), (float)(7 + this.random.nextInt(15)));

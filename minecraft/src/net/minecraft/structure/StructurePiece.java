@@ -15,9 +15,9 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -33,8 +33,8 @@ public abstract class StructurePiece {
 	protected MutableIntBoundingBox boundingBox;
 	@Nullable
 	private Direction facing;
-	private Mirror mirror;
-	private Rotation rotation;
+	private BlockMirror mirror;
+	private BlockRotation rotation;
 	protected int field_15316;
 	private final StructurePieceType type;
 	private static final Set<Block> BLOCKS_NEEDING_POST_PROCESSING = ImmutableSet.<Block>builder()
@@ -201,11 +201,11 @@ public abstract class StructurePiece {
 	protected void addBlock(IWorld iWorld, BlockState blockState, int i, int j, int k, MutableIntBoundingBox mutableIntBoundingBox) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
 		if (mutableIntBoundingBox.contains(blockPos)) {
-			if (this.mirror != Mirror.NONE) {
+			if (this.mirror != BlockMirror.NONE) {
 				blockState = blockState.mirror(this.mirror);
 			}
 
-			if (this.rotation != Rotation.ROT_0) {
+			if (this.rotation != BlockRotation.ROT_0) {
 				blockState = blockState.rotate(this.rotation);
 			}
 
@@ -286,14 +286,14 @@ public abstract class StructurePiece {
 		int n,
 		boolean bl,
 		Random random,
-		StructurePiece.class_3444 arg
+		StructurePiece.BlockRandomizer blockRandomizer
 	) {
 		for (int o = j; o <= m; o++) {
 			for (int p = i; p <= l; p++) {
 				for (int q = k; q <= n; q++) {
 					if (!bl || !this.getBlockAt(iWorld, p, o, q, mutableIntBoundingBox).isAir()) {
-						arg.method_14948(random, p, o, q, o == j || o == m || p == i || p == l || q == k || q == n);
-						this.addBlock(iWorld, arg.getBlock(), p, o, q, mutableIntBoundingBox);
+						blockRandomizer.setBlock(random, p, o, q, o == j || o == m || p == i || p == l || q == k || q == n);
+						this.addBlock(iWorld, blockRandomizer.getBlock(), p, o, q, mutableIntBoundingBox);
 					}
 				}
 			}
@@ -381,7 +381,7 @@ public abstract class StructurePiece {
 		}
 	}
 
-	protected boolean method_14915(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Identifier identifier) {
+	protected boolean addChest(IWorld iWorld, MutableIntBoundingBox mutableIntBoundingBox, Random random, int i, int j, int k, Identifier identifier) {
 		BlockPos blockPos = new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
 		return this.addChest(iWorld, mutableIntBoundingBox, random, blockPos, identifier, null);
 	}
@@ -479,30 +479,30 @@ public abstract class StructurePiece {
 	public void setOrientation(@Nullable Direction direction) {
 		this.facing = direction;
 		if (direction == null) {
-			this.rotation = Rotation.ROT_0;
-			this.mirror = Mirror.NONE;
+			this.rotation = BlockRotation.ROT_0;
+			this.mirror = BlockMirror.NONE;
 		} else {
 			switch (direction) {
 				case SOUTH:
-					this.mirror = Mirror.LEFT_RIGHT;
-					this.rotation = Rotation.ROT_0;
+					this.mirror = BlockMirror.LEFT_RIGHT;
+					this.rotation = BlockRotation.ROT_0;
 					break;
 				case WEST:
-					this.mirror = Mirror.LEFT_RIGHT;
-					this.rotation = Rotation.ROT_90;
+					this.mirror = BlockMirror.LEFT_RIGHT;
+					this.rotation = BlockRotation.ROT_90;
 					break;
 				case EAST:
-					this.mirror = Mirror.NONE;
-					this.rotation = Rotation.ROT_90;
+					this.mirror = BlockMirror.NONE;
+					this.rotation = BlockRotation.ROT_90;
 					break;
 				default:
-					this.mirror = Mirror.NONE;
-					this.rotation = Rotation.ROT_0;
+					this.mirror = BlockMirror.NONE;
+					this.rotation = BlockRotation.ROT_0;
 			}
 		}
 	}
 
-	public Rotation getRotation() {
+	public BlockRotation getRotation() {
 		return this.rotation;
 	}
 
@@ -510,13 +510,13 @@ public abstract class StructurePiece {
 		return this.type;
 	}
 
-	public abstract static class class_3444 {
+	public abstract static class BlockRandomizer {
 		protected BlockState block = Blocks.AIR.getDefaultState();
 
-		protected class_3444() {
+		protected BlockRandomizer() {
 		}
 
-		public abstract void method_14948(Random random, int i, int j, int k, boolean bl);
+		public abstract void setBlock(Random random, int i, int j, int k, boolean bl);
 
 		public BlockState getBlock() {
 			return this.block;

@@ -34,7 +34,7 @@ public class ServerCommandOutput implements CommandOutput {
 	}
 
 	@Override
-	public void appendCommandFeedback(TextComponent textComponent) {
+	public void sendMessage(TextComponent textComponent) {
 		this.buffer.append(textComponent.getString());
 	}
 

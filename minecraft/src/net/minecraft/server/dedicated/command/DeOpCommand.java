@@ -48,7 +48,7 @@ public class DeOpCommand {
 		if (i == 0) {
 			throw ALREADY_DEOPPED_EXCEPTION.create();
 		} else {
-			serverCommandSource.getMinecraftServer().method_3728(serverCommandSource);
+			serverCommandSource.getMinecraftServer().kickNonWhitelistedPlayers(serverCommandSource);
 			return i;
 		}
 	}

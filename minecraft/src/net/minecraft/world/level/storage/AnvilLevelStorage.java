@@ -83,7 +83,7 @@ public class AnvilLevelStorage {
 		}
 
 		makeMcrLevelDatBackup(path, string);
-		WorldSaveHandler worldSaveHandler = LevelStorage.method_17929(path, dataFixer, string, null);
+		WorldSaveHandler worldSaveHandler = LevelStorage.createSaveHandler(path, dataFixer, string, null);
 		worldSaveHandler.saveWorld(levelProperties);
 		return true;
 	}

@@ -166,7 +166,7 @@ public abstract class RealmsScreen extends RealmsGuiEventListener implements Rea
 	}
 
 	protected void focusOn(RealmsGuiEventListener realmsGuiEventListener) {
-		this.proxy.method_20086(realmsGuiEventListener.getProxy());
+		this.proxy.focusOn(realmsGuiEventListener.getProxy());
 	}
 
 	public RealmsEditBox newEditBox(int i, int j, int k, int l, int m) {

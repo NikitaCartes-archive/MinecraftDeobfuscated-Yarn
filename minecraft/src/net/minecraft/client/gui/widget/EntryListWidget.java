@@ -20,28 +20,28 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends AbstractParentElement implements Drawable {
+public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extends AbstractParentElement implements Drawable {
 	protected static final int DRAG_OUTSIDE = -2;
-	protected final MinecraftClient client;
+	protected final MinecraftClient minecraft;
 	protected final int itemHeight;
-	private final List<E> items = new ItemListWidget.Items();
+	private final List<E> children = new EntryListWidget.Entries();
 	protected int width;
 	protected int height;
 	protected int top;
 	protected int bottom;
 	protected int right;
 	protected int left;
-	protected boolean verticallyCenter = true;
+	protected boolean centerListVertically = true;
 	protected int yDrag = -2;
-	private double scroll;
-	protected boolean visible = true;
-	protected boolean renderSelection;
+	private double scrollAmount;
+	protected boolean renderSelection = true;
+	protected boolean renderHeader;
 	protected int headerHeight;
 	private boolean scrolling;
-	private E selectedItem;
+	private E selected;
 
-	public ItemListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
-		this.client = minecraftClient;
+	public EntryListWidget(MinecraftClient minecraftClient, int i, int j, int k, int l, int m) {
+		this.minecraft = minecraftClient;
 		this.width = i;
 		this.height = j;
 		this.top = k;
@@ -52,28 +52,28 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 	}
 
 	public void setRenderSelection(boolean bl) {
-		this.visible = bl;
+		this.renderSelection = bl;
 	}
 
 	protected void setRenderHeader(boolean bl, int i) {
-		this.renderSelection = bl;
+		this.renderHeader = bl;
 		this.headerHeight = i;
 		if (!bl) {
 			this.headerHeight = 0;
 		}
 	}
 
-	public int getItemWidth() {
+	public int getRowWidth() {
 		return 220;
 	}
 
 	@Nullable
-	public E getSelectedItem() {
-		return this.selectedItem;
+	public E getSelected() {
+		return this.selected;
 	}
 
-	public void selectItem(@Nullable E item) {
-		this.selectedItem = item;
+	public void setSelected(@Nullable E entry) {
+		this.selected = entry;
 	}
 
 	@Nullable
@@ -83,42 +83,42 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 
 	@Override
 	public final List<E> children() {
-		return this.items;
+		return this.children;
 	}
 
-	protected final void clearItems() {
-		this.items.clear();
+	protected final void clearEntries() {
+		this.children.clear();
 	}
 
 	protected void replaceEntries(Collection<E> collection) {
-		this.items.clear();
-		this.items.addAll(collection);
+		this.children.clear();
+		this.children.addAll(collection);
 	}
 
-	protected E getItem(int i) {
+	protected E getEntry(int i) {
 		return (E)this.children().get(i);
 	}
 
-	protected int addItem(E item) {
-		this.items.add(item);
-		return this.items.size() - 1;
+	protected int addEntry(E entry) {
+		this.children.add(entry);
+		return this.children.size() - 1;
 	}
 
 	protected int getItemCount() {
 		return this.children().size();
 	}
 
-	protected boolean isSelected(int i) {
-		return Objects.equals(this.getSelectedItem(), this.children().get(i));
+	protected boolean isSelectedItem(int i) {
+		return Objects.equals(this.getSelected(), this.children().get(i));
 	}
 
 	@Nullable
-	protected final E getItemAtPosition(double d, double e) {
-		int i = this.getItemWidth() / 2;
+	protected final E getEntryAtPosition(double d, double e) {
+		int i = this.getRowWidth() / 2;
 		int j = this.left + this.width / 2;
 		int k = j - i;
 		int l = j + i;
-		int m = MathHelper.floor(e - (double)this.top) - this.headerHeight + (int)this.getScroll() - 4;
+		int m = MathHelper.floor(e - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
 		int n = m / this.itemHeight;
 		return (E)(d < (double)this.getScrollbarPosition() && d >= (double)k && d <= (double)l && n >= 0 && m >= 0 && n < this.getItemCount()
 			? this.children().get(n)
@@ -139,7 +139,7 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 		this.right = i + this.width;
 	}
 
-	protected int getMaxScrollPosition() {
+	protected int getMaxPosition() {
 		return this.getItemCount() * this.itemHeight + this.headerHeight;
 	}
 
@@ -149,7 +149,7 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 	protected void renderHeader(int i, int j, Tessellator tessellator) {
 	}
 
-	protected void drawBackground() {
+	protected void renderBackground() {
 	}
 
 	protected void renderDecorations(int i, int j) {
@@ -157,37 +157,37 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 
 	@Override
 	public void render(int i, int j, float f) {
-		this.drawBackground();
+		this.renderBackground();
 		int k = this.getScrollbarPosition();
 		int l = k + 6;
 		GlStateManager.disableLighting();
 		GlStateManager.disableFog();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float g = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
 		bufferBuilder.vertex((double)this.left, (double)this.bottom, 0.0)
-			.texture((double)((float)this.left / 32.0F), (double)((float)(this.bottom + (int)this.getScroll()) / 32.0F))
+			.texture((double)((float)this.left / 32.0F), (double)((float)(this.bottom + (int)this.getScrollAmount()) / 32.0F))
 			.color(32, 32, 32, 255)
 			.next();
 		bufferBuilder.vertex((double)this.right, (double)this.bottom, 0.0)
-			.texture((double)((float)this.right / 32.0F), (double)((float)(this.bottom + (int)this.getScroll()) / 32.0F))
+			.texture((double)((float)this.right / 32.0F), (double)((float)(this.bottom + (int)this.getScrollAmount()) / 32.0F))
 			.color(32, 32, 32, 255)
 			.next();
 		bufferBuilder.vertex((double)this.right, (double)this.top, 0.0)
-			.texture((double)((float)this.right / 32.0F), (double)((float)(this.top + (int)this.getScroll()) / 32.0F))
+			.texture((double)((float)this.right / 32.0F), (double)((float)(this.top + (int)this.getScrollAmount()) / 32.0F))
 			.color(32, 32, 32, 255)
 			.next();
 		bufferBuilder.vertex((double)this.left, (double)this.top, 0.0)
-			.texture((double)((float)this.left / 32.0F), (double)((float)(this.top + (int)this.getScroll()) / 32.0F))
+			.texture((double)((float)this.left / 32.0F), (double)((float)(this.top + (int)this.getScrollAmount()) / 32.0F))
 			.color(32, 32, 32, 255)
 			.next();
 		tessellator.draw();
 		int m = this.getRowLeft();
-		int n = this.top + 4 - (int)this.getScroll();
-		if (this.renderSelection) {
+		int n = this.top + 4 - (int)this.getScrollAmount();
+		if (this.renderHeader) {
 			this.renderHeader(m, n, tessellator);
 		}
 
@@ -217,9 +217,9 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 		tessellator.draw();
 		int p = this.getMaxScroll();
 		if (p > 0) {
-			int q = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxScrollPosition());
+			int q = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
 			q = MathHelper.clamp(q, 32, this.bottom - this.top - 8);
-			int r = (int)this.getScroll() * (this.bottom - this.top - q) / p + this.top;
+			int r = (int)this.getScrollAmount() * (this.bottom - this.top - q) / p + this.top;
 			if (r < this.top) {
 				r = this.top;
 			}
@@ -251,12 +251,12 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 		GlStateManager.disableBlend();
 	}
 
-	protected void centerScrollOn(E item) {
-		this.capYPosition((double)(this.children().indexOf(item) * this.itemHeight + this.itemHeight / 2 - (this.bottom - this.top) / 2));
+	protected void centerScrollOn(E entry) {
+		this.setScrollAmount((double)(this.children().indexOf(entry) * this.itemHeight + this.itemHeight / 2 - (this.bottom - this.top) / 2));
 	}
 
-	protected void ensureVisible(E item) {
-		int i = this.getRowTop(this.children().indexOf(item));
+	protected void ensureVisible(E entry) {
+		int i = this.getRowTop(this.children().indexOf(entry));
 		int j = i - this.top - 4 - this.itemHeight;
 		if (j < 0) {
 			this.scroll(j);
@@ -269,24 +269,24 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 	}
 
 	private void scroll(int i) {
-		this.capYPosition(this.getScroll() + (double)i);
+		this.setScrollAmount(this.getScrollAmount() + (double)i);
 		this.yDrag = -2;
 	}
 
-	public double getScroll() {
-		return this.scroll;
+	public double getScrollAmount() {
+		return this.scrollAmount;
 	}
 
-	public void capYPosition(double d) {
-		this.scroll = MathHelper.clamp(d, 0.0, (double)this.getMaxScroll());
+	public void setScrollAmount(double d) {
+		this.scrollAmount = MathHelper.clamp(d, 0.0, (double)this.getMaxScroll());
 	}
 
 	private int getMaxScroll() {
-		return Math.max(0, this.getMaxScrollPosition() - (this.bottom - this.top - 4));
+		return Math.max(0, this.getMaxPosition() - (this.bottom - this.top - 4));
 	}
 
 	public int getScrollBottom() {
-		return (int)this.getScroll() - this.height - this.headerHeight;
+		return (int)this.getScrollAmount() - this.height - this.headerHeight;
 	}
 
 	protected void updateScrollingState(double d, double e, int i) {
@@ -303,15 +303,15 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 		if (!this.isMouseOver(d, e)) {
 			return false;
 		} else {
-			E item = this.getItemAtPosition(d, e);
-			if (item != null) {
-				if (item.mouseClicked(d, e, i)) {
-					this.setFocused(item);
+			E entry = this.getEntryAtPosition(d, e);
+			if (entry != null) {
+				if (entry.mouseClicked(d, e, i)) {
+					this.setFocused(entry);
 					this.setDragging(true);
 					return true;
 				}
 			} else if (i == 0) {
-				this.clickedHeader((int)(d - (double)(this.left + this.width / 2 - this.getItemWidth() / 2)), (int)(e - (double)this.top) + (int)this.getScroll() - 4);
+				this.clickedHeader((int)(d - (double)(this.left + this.width / 2 - this.getRowWidth() / 2)), (int)(e - (double)this.top) + (int)this.getScrollAmount() - 4);
 				return true;
 			}
 
@@ -334,15 +334,15 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 			return true;
 		} else if (i == 0 && this.scrolling) {
 			if (e < (double)this.top) {
-				this.capYPosition(0.0);
+				this.setScrollAmount(0.0);
 			} else if (e > (double)this.bottom) {
-				this.capYPosition((double)this.getMaxScroll());
+				this.setScrollAmount((double)this.getMaxScroll());
 			} else {
 				double h = (double)Math.max(1, this.getMaxScroll());
 				int j = this.bottom - this.top;
-				int k = MathHelper.clamp((int)((float)(j * j) / (float)this.getMaxScrollPosition()), 32, j - 8);
+				int k = MathHelper.clamp((int)((float)(j * j) / (float)this.getMaxPosition()), 32, j - 8);
 				double l = Math.max(1.0, h / (double)(j - k));
-				this.capYPosition(this.getScroll() + g * l);
+				this.setScrollAmount(this.getScrollAmount() + g * l);
 			}
 
 			return true;
@@ -353,7 +353,7 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 
 	@Override
 	public boolean mouseScrolled(double d, double e, double f) {
-		this.capYPosition(this.getScroll() - f * (double)this.itemHeight / 2.0);
+		this.setScrollAmount(this.getScrollAmount() - f * (double)this.itemHeight / 2.0);
 		return true;
 	}
 
@@ -374,11 +374,11 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 
 	protected void moveSelection(int i) {
 		if (!this.children().isEmpty()) {
-			int j = this.children().indexOf(this.getSelectedItem());
+			int j = this.children().indexOf(this.getSelected());
 			int k = MathHelper.clamp(j + i, 0, this.getItemCount() - 1);
-			E item = (E)this.children().get(k);
-			this.selectItem(item);
-			this.ensureVisible(item);
+			E entry = (E)this.children().get(k);
+			this.setSelected(entry);
+			this.ensureVisible(entry);
 		}
 	}
 
@@ -395,9 +395,9 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 		for (int n = 0; n < m; n++) {
 			int o = j + n * this.itemHeight + this.headerHeight;
 			int p = this.itemHeight - 4;
-			E item = this.getItem(n);
-			int q = this.getItemWidth();
-			if (this.visible && this.isSelected(n)) {
+			E entry = this.getEntry(n);
+			int q = this.getRowWidth();
+			if (this.renderSelection && this.isSelectedItem(n)) {
 				int r = this.left + this.width / 2 - q / 2;
 				int s = this.left + this.width / 2 + q / 2;
 				GlStateManager.disableTexture();
@@ -421,16 +421,16 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 
 			int r = this.getRowTop(n);
 			int s = this.getRowLeft();
-			item.render(n, r, s, q, p, k, l, this.isMouseOver((double)k, (double)l) && Objects.equals(this.getItemAtPosition((double)k, (double)l), item), f);
+			entry.render(n, r, s, q, p, k, l, this.isMouseOver((double)k, (double)l) && Objects.equals(this.getEntryAtPosition((double)k, (double)l), entry), f);
 		}
 	}
 
 	protected int getRowLeft() {
-		return this.left + this.width / 2 - this.getItemWidth() / 2 + 2;
+		return this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
 	}
 
 	protected int getRowTop(int i) {
-		return this.top + 4 - (int)this.getScroll() + i * this.itemHeight + this.headerHeight;
+		return this.top + 4 - (int)this.getScrollAmount() + i * this.itemHeight + this.headerHeight;
 	}
 
 	protected boolean isFocused() {
@@ -440,7 +440,7 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 	protected void renderHoleBackground(int i, int j, int k, int l) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBufferBuilder();
-		this.client.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
+		this.minecraft.getTextureManager().bindTexture(DrawableHelper.BACKGROUND_LOCATION);
 		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(7, VertexFormats.POSITION_UV_COLOR);
@@ -458,60 +458,60 @@ public abstract class ItemListWidget<E extends ItemListWidget.Item<E>> extends A
 	}
 
 	protected E remove(int i) {
-		E item = (E)this.items.get(i);
-		return this.removeEntry((E)this.items.get(i)) ? item : null;
+		E entry = (E)this.children.get(i);
+		return this.removeEntry((E)this.children.get(i)) ? entry : null;
 	}
 
-	protected boolean removeEntry(E item) {
-		boolean bl = this.items.remove(item);
-		if (bl && item == this.getSelectedItem()) {
-			this.selectItem(null);
+	protected boolean removeEntry(E entry) {
+		boolean bl = this.children.remove(entry);
+		if (bl && entry == this.getSelected()) {
+			this.setSelected(null);
 		}
 
 		return bl;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public abstract static class Item<E extends ItemListWidget.Item<E>> implements Element {
+	class Entries extends AbstractList<E> {
+		private final List<E> entries = Lists.<E>newArrayList();
+
+		private Entries() {
+		}
+
+		public E method_1912(int i) {
+			return (E)this.entries.get(i);
+		}
+
+		public int size() {
+			return this.entries.size();
+		}
+
+		public E method_1909(int i, E entry) {
+			E entry2 = (E)this.entries.set(i, entry);
+			entry.list = EntryListWidget.this;
+			return entry2;
+		}
+
+		public void method_1910(int i, E entry) {
+			this.entries.add(i, entry);
+			entry.list = EntryListWidget.this;
+		}
+
+		public E method_1911(int i) {
+			return (E)this.entries.remove(i);
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public abstract static class Entry<E extends EntryListWidget.Entry<E>> implements Element {
 		@Deprecated
-		ItemListWidget<E> parent;
+		EntryListWidget<E> list;
 
 		public abstract void render(int i, int j, int k, int l, int m, int n, int o, boolean bl, float f);
 
 		@Override
 		public boolean isMouseOver(double d, double e) {
-			return Objects.equals(this.parent.getItemAtPosition(d, e), this);
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	class Items extends AbstractList<E> {
-		private final List<E> items = Lists.<E>newArrayList();
-
-		private Items() {
-		}
-
-		public E method_1912(int i) {
-			return (E)this.items.get(i);
-		}
-
-		public int size() {
-			return this.items.size();
-		}
-
-		public E method_1909(int i, E item) {
-			E item2 = (E)this.items.set(i, item);
-			item.parent = ItemListWidget.this;
-			return item2;
-		}
-
-		public void method_1910(int i, E item) {
-			this.items.add(i, item);
-			item.parent = ItemListWidget.this;
-		}
-
-		public E method_1911(int i) {
-			return (E)this.items.remove(i);
+			return Objects.equals(this.list.getEntryAtPosition(d, e), this);
 		}
 	}
 }

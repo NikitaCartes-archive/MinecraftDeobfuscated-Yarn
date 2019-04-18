@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public abstract class RealmsButton extends AbstractRealmsButton<RealmsButtonProxy> {
 	protected static final Identifier WIDGETS_LOCATION = new Identifier("textures/gui/widgets.png");
-	private final int field_18237;
+	private final int id;
 	private final RealmsButtonProxy proxy;
 
 	public RealmsButton(int i, int j, int k, String string) {
@@ -16,7 +16,7 @@ public abstract class RealmsButton extends AbstractRealmsButton<RealmsButtonProx
 	}
 
 	public RealmsButton(int i, int j, int k, int l, int m, String string) {
-		this.field_18237 = i;
+		this.id = i;
 		this.proxy = new RealmsButtonProxy(this, j, k, string, l, m, buttonWidget -> this.onPress());
 	}
 
@@ -24,8 +24,8 @@ public abstract class RealmsButton extends AbstractRealmsButton<RealmsButtonProx
 		return this.proxy;
 	}
 
-	public int method_10253() {
-		return this.field_18237;
+	public int id() {
+		return this.id;
 	}
 
 	public void setMessage(String string) {
@@ -40,11 +40,11 @@ public abstract class RealmsButton extends AbstractRealmsButton<RealmsButtonProx
 		return this.proxy.getHeight();
 	}
 
-	public int method_19461() {
-		return this.proxy.method_2066();
+	public int y() {
+		return this.proxy.y();
 	}
 
-	public int method_20324() {
+	public int x() {
 		return this.proxy.x;
 	}
 

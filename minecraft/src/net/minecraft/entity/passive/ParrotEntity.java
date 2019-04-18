@@ -163,7 +163,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		imitateNearbyMob(this.world, this);
 		if (this.songSource == null
 			|| !this.songSource.isWithinDistance(this.getPos(), 3.46)
@@ -172,7 +172,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 			this.songSource = null;
 		}
 
-		super.updateMovement();
+		super.updateState();
 		this.method_6578();
 	}
 
@@ -315,7 +315,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Bird {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		return entity.damage(DamageSource.mob(this), 3.0F);
 	}
 

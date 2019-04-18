@@ -184,7 +184,7 @@ public class EndermanEntity extends HostileEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (this.world.isClient) {
 			for (int i = 0; i < 2; i++) {
 				this.world
@@ -201,7 +201,7 @@ public class EndermanEntity extends HostileEntity {
 		}
 
 		this.jumping = false;
-		super.updateMovement();
+		super.updateState();
 	}
 
 	@Override

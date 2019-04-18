@@ -71,7 +71,7 @@ public class RavagerEntity extends RaiderEntity {
 	@Override
 	protected void method_20417() {
 		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity) || this.getPrimaryPassenger().getType().isTaggedWith(EntityTags.field_19168);
-		boolean bl2 = !(this.getRiddenEntity() instanceof BoatEntity);
+		boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
 		this.goalSelector.setControlEnabled(Goal.Control.field_18405, bl);
 		this.goalSelector.setControlEnabled(Goal.Control.field_18407, bl && bl2);
 		this.goalSelector.setControlEnabled(Goal.Control.field_18406, bl);
@@ -137,8 +137,8 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.isAlive()) {
 			if (this.cannotMove()) {
 				this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED).setBaseValue(0.0);
@@ -286,11 +286,11 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		this.attackTick = 10;
 		this.world.sendEntityStatus(this, (byte)4);
 		this.playSound(SoundEvents.field_15240, 1.0F, 1.0F);
-		return super.attack(entity);
+		return super.tryAttack(entity);
 	}
 
 	@Nullable

@@ -37,7 +37,7 @@ public class WorldUpdater {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final ThreadFactory UPDATE_THREAD_FACTORY = new ThreadFactoryBuilder().setDaemon(true).build();
 	private final String levelName;
-	private final boolean field_19225;
+	private final boolean eraseCache;
 	private final WorldSaveHandler worldSaveHandler;
 	private final Thread updateThread;
 	private final File worldDirectory;
@@ -56,8 +56,8 @@ public class WorldUpdater {
 
 	public WorldUpdater(String string, LevelStorage levelStorage, LevelProperties levelProperties, boolean bl) {
 		this.levelName = levelProperties.getLevelName();
-		this.field_19225 = bl;
-		this.worldSaveHandler = levelStorage.method_242(string, null);
+		this.eraseCache = bl;
+		this.worldSaveHandler = levelStorage.createSaveHandler(string, null);
 		this.worldSaveHandler.saveWorld(levelProperties);
 		this.persistentStateManager = new PersistentStateManager(
 			new File(DimensionType.field_13072.getFile(this.worldSaveHandler.getWorldDir()), "data"), this.worldSaveHandler.getDataFixer()
@@ -124,7 +124,7 @@ public class WorldUpdater {
 								int i = VersionedChunkStorage.getDataVersion(compoundTag);
 								CompoundTag compoundTag2 = versionedChunkStorage.updateChunkTag(dimensionType3, () -> this.persistentStateManager, compoundTag);
 								boolean bl3 = i < SharedConstants.getGameVersion().getWorldVersion();
-								if (this.field_19225) {
+								if (this.eraseCache) {
 									CompoundTag compoundTag3 = compoundTag2.getCompound("Level");
 									bl3 = bl3 || compoundTag3.containsKey("Heightmaps");
 									compoundTag3.remove("Heightmaps");

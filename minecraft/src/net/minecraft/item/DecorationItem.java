@@ -26,7 +26,7 @@ public class DecorationItem extends Item {
 		BlockPos blockPos2 = blockPos.offset(direction);
 		PlayerEntity playerEntity = itemUsageContext.getPlayer();
 		ItemStack itemStack = itemUsageContext.getItemStack();
-		if (playerEntity != null && !this.method_7834(playerEntity, direction, itemStack, blockPos2)) {
+		if (playerEntity != null && !this.canPlaceOn(playerEntity, direction, itemStack, blockPos2)) {
 			return ActionResult.field_5814;
 		} else {
 			World world = itemUsageContext.getWorld();
@@ -59,7 +59,7 @@ public class DecorationItem extends Item {
 		}
 	}
 
-	protected boolean method_7834(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {
-		return !direction.getAxis().isVertical() && playerEntity.canPlaceBlock(blockPos, direction, itemStack);
+	protected boolean canPlaceOn(PlayerEntity playerEntity, Direction direction, ItemStack itemStack, BlockPos blockPos) {
+		return !direction.getAxis().isVertical() && playerEntity.canPlaceOn(blockPos, direction, itemStack);
 	}
 }

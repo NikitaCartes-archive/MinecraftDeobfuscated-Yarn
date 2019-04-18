@@ -225,8 +225,8 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.jumpTicks != this.jumpDuration) {
 			this.jumpTicks++;
 		} else if (this.jumpDuration != 0) {
@@ -277,7 +277,7 @@ public class RabbitEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		if (this.getRabbitType() == 99) {
 			this.playSound(SoundEvents.field_15147, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 			return entity.damage(DamageSource.mob(this), 8.0F);

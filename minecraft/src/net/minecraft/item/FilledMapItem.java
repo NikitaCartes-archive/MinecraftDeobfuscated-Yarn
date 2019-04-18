@@ -80,7 +80,7 @@ public class FilledMapItem extends MapItem {
 		return "map_" + i;
 	}
 
-	public void method_7998(World world, Entity entity, MapState mapState) {
+	public void updateColors(World world, Entity entity, MapState mapState) {
 		if (world.dimension.getType() == mapState.dimension && entity instanceof PlayerEntity) {
 			int i = 1 << mapState.scale;
 			int j = mapState.xCenter;
@@ -92,12 +92,12 @@ public class FilledMapItem extends MapItem {
 				n /= 2;
 			}
 
-			MapState.class_23 lv = mapState.method_101((PlayerEntity)entity);
-			lv.field_131++;
+			MapState.PlayerUpdateTracker playerUpdateTracker = mapState.getPlayerSyncData((PlayerEntity)entity);
+			playerUpdateTracker.field_131++;
 			boolean bl = false;
 
 			for (int o = l - n + 1; o < l + n; o++) {
-				if ((o & 15) == (lv.field_131 & 15) || bl) {
+				if ((o & 15) == (playerUpdateTracker.field_131 & 15) || bl) {
 					bl = false;
 					double d = 0.0;
 
@@ -153,11 +153,11 @@ public class FilledMapItem extends MapItem {
 														w++;
 													} while (ab > 0 && !blockState2.getFluidState().isEmpty());
 
-													blockState = this.method_7995(world, blockState, mutable);
+													blockState = this.getTopFaceBlockState(world, blockState, mutable);
 												}
 											}
 
-											mapState.method_109(world, chunkPos.getStartX() + y + u, chunkPos.getStartZ() + z + v);
+											mapState.removeBanner(world, chunkPos.getStartX() + y + u, chunkPos.getStartZ() + z + v);
 											e += (double)aa / (double)(i * i);
 											multiset.add(blockState.getTopMaterialColor(world, mutable));
 										}
@@ -190,11 +190,11 @@ public class FilledMapItem extends MapItem {
 
 								d = e;
 								if (p >= 0 && q * q + r * r < n * n && (!bl2 || (o + p & 1) != 0)) {
-									byte b = mapState.colorArray[o + p * 128];
+									byte b = mapState.colors[o + p * 128];
 									byte c = (byte)(materialColor.id * 4 + y);
 									if (b != c) {
-										mapState.colorArray[o + p * 128] = c;
-										mapState.method_103(o, p);
+										mapState.colors[o + p * 128] = c;
+										mapState.markDirty(o, p);
 										bl = true;
 									}
 								}
@@ -206,16 +206,16 @@ public class FilledMapItem extends MapItem {
 		}
 	}
 
-	private BlockState method_7995(World world, BlockState blockState, BlockPos blockPos) {
+	private BlockState getTopFaceBlockState(World world, BlockState blockState, BlockPos blockPos) {
 		FluidState fluidState = blockState.getFluidState();
 		return !fluidState.isEmpty() && !Block.isSolidFullSquare(blockState, world, blockPos, Direction.UP) ? fluidState.getBlockState() : blockState;
 	}
 
-	private static boolean method_8004(Biome[] biomes, int i, int j, int k) {
+	private static boolean hasPositiveDepth(Biome[] biomes, int i, int j, int k) {
 		return biomes[j * i + k * i * 128 * i].getDepth() >= 0.0F;
 	}
 
-	public static void method_8002(World world, ItemStack itemStack) {
+	public static void fillExplorationMap(World world, ItemStack itemStack) {
 		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
 			if (world.dimension.getType() == mapState.dimension) {
@@ -229,35 +229,35 @@ public class FilledMapItem extends MapItem {
 						if (l > 0 && m > 0 && l < 127 && m < 127) {
 							Biome biome = biomes[l * i + m * i * 128 * i];
 							int n = 8;
-							if (method_8004(biomes, i, l - 1, m - 1)) {
+							if (hasPositiveDepth(biomes, i, l - 1, m - 1)) {
 								n--;
 							}
 
-							if (method_8004(biomes, i, l - 1, m + 1)) {
+							if (hasPositiveDepth(biomes, i, l - 1, m + 1)) {
 								n--;
 							}
 
-							if (method_8004(biomes, i, l - 1, m)) {
+							if (hasPositiveDepth(biomes, i, l - 1, m)) {
 								n--;
 							}
 
-							if (method_8004(biomes, i, l + 1, m - 1)) {
+							if (hasPositiveDepth(biomes, i, l + 1, m - 1)) {
 								n--;
 							}
 
-							if (method_8004(biomes, i, l + 1, m + 1)) {
+							if (hasPositiveDepth(biomes, i, l + 1, m + 1)) {
 								n--;
 							}
 
-							if (method_8004(biomes, i, l + 1, m)) {
+							if (hasPositiveDepth(biomes, i, l + 1, m)) {
 								n--;
 							}
 
-							if (method_8004(biomes, i, l, m - 1)) {
+							if (hasPositiveDepth(biomes, i, l, m - 1)) {
 								n--;
 							}
 
-							if (method_8004(biomes, i, l, m + 1)) {
+							if (hasPositiveDepth(biomes, i, l, m + 1)) {
 								n--;
 							}
 
@@ -291,8 +291,8 @@ public class FilledMapItem extends MapItem {
 							}
 
 							if (materialColor != MaterialColor.AIR) {
-								mapState.colorArray[l + m * 128] = (byte)(materialColor.id * 4 + o);
-								mapState.method_103(l, m);
+								mapState.colors[l + m * 128] = (byte)(materialColor.id * 4 + o);
+								mapState.markDirty(l, m);
 							}
 						}
 					}
@@ -308,11 +308,11 @@ public class FilledMapItem extends MapItem {
 			if (mapState != null) {
 				if (entity instanceof PlayerEntity) {
 					PlayerEntity playerEntity = (PlayerEntity)entity;
-					mapState.method_102(playerEntity, itemStack);
+					mapState.update(playerEntity, itemStack);
 				}
 
 				if (!mapState.locked && (bl || entity instanceof PlayerEntity && ((PlayerEntity)entity).getOffHandStack() == itemStack)) {
-					this.method_7998(world, entity, mapState);
+					this.updateColors(world, entity, mapState);
 				}
 			}
 		}
@@ -321,19 +321,19 @@ public class FilledMapItem extends MapItem {
 	@Nullable
 	@Override
 	public Packet<?> createMapPacket(ItemStack itemStack, World world, PlayerEntity playerEntity) {
-		return getOrCreateMapState(itemStack, world).method_100(itemStack, world, playerEntity);
+		return getOrCreateMapState(itemStack, world).getPlayerMarkerPacket(itemStack, world, playerEntity);
 	}
 
 	@Override
 	public void onCrafted(ItemStack itemStack, World world, PlayerEntity playerEntity) {
 		CompoundTag compoundTag = itemStack.getTag();
 		if (compoundTag != null && compoundTag.containsKey("map_scale_direction", 99)) {
-			method_7996(itemStack, world, compoundTag.getInt("map_scale_direction"));
+			scale(itemStack, world, compoundTag.getInt("map_scale_direction"));
 			compoundTag.remove("map_scale_direction");
 		}
 	}
 
-	protected static void method_7996(ItemStack itemStack, World world, int i) {
+	protected static void scale(ItemStack itemStack, World world, int i) {
 		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
 			createMapState(
@@ -350,12 +350,12 @@ public class FilledMapItem extends MapItem {
 	}
 
 	@Nullable
-	public static ItemStack method_17442(World world, ItemStack itemStack) {
+	public static ItemStack createCopy(World world, ItemStack itemStack) {
 		MapState mapState = getOrCreateMapState(itemStack, world);
 		if (mapState != null) {
 			ItemStack itemStack2 = itemStack.copy();
 			MapState mapState2 = createMapState(itemStack2, world, 0, 0, mapState.scale, mapState.showIcons, mapState.unlimitedTracking, mapState.dimension);
-			mapState2.method_18818(mapState);
+			mapState2.copyFrom(mapState);
 			return itemStack2;
 		} else {
 			return null;
@@ -398,7 +398,7 @@ public class FilledMapItem extends MapItem {
 		if (blockState.matches(BlockTags.field_15501)) {
 			if (!itemUsageContext.world.isClient) {
 				MapState mapState = getOrCreateMapState(itemUsageContext.getItemStack(), itemUsageContext.getWorld());
-				mapState.method_108(itemUsageContext.getWorld(), itemUsageContext.getBlockPos());
+				mapState.addBanner(itemUsageContext.getWorld(), itemUsageContext.getBlockPos());
 			}
 
 			return ActionResult.field_5812;

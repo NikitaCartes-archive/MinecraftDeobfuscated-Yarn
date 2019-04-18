@@ -169,6 +169,31 @@ public class ChunkHolder {
 	public void flushUpdates(WorldChunk worldChunk) {
 		if (this.blockUpdateCount != 0 || this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
 			World world = worldChunk.getWorld();
+			if (this.blockUpdateCount == 64) {
+				this.lightSentWithBlocksBits = -1;
+			}
+
+			if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
+				this.sendPacketToPlayersWatching(
+					new LightUpdateS2CPacket(
+						worldChunk.getPos(),
+						this.lightingProvider,
+						this.skyLightUpdateBits & ~this.lightSentWithBlocksBits,
+						this.blockLightUpdateBits & ~this.lightSentWithBlocksBits
+					),
+					true
+				);
+				int i = this.skyLightUpdateBits & this.lightSentWithBlocksBits;
+				int j = this.blockLightUpdateBits & this.lightSentWithBlocksBits;
+				if (i != 0 || j != 0) {
+					this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, i, j), false);
+				}
+
+				this.skyLightUpdateBits = 0;
+				this.blockLightUpdateBits = 0;
+				this.lightSentWithBlocksBits = this.lightSentWithBlocksBits & ~(this.skyLightUpdateBits & this.blockLightUpdateBits);
+			}
+
 			if (this.blockUpdateCount == 1) {
 				int i = (this.blockUpdatePositions[0] >> 12 & 15) + this.pos.x * 16;
 				int j = this.blockUpdatePositions[0] & 255;
@@ -180,7 +205,6 @@ public class ChunkHolder {
 				}
 			} else if (this.blockUpdateCount == 64) {
 				this.sendPacketToPlayersWatching(new ChunkDataS2CPacket(worldChunk, this.sectionsNeedingUpdateMask), false);
-				this.lightSentWithBlocksBits = this.sectionsNeedingUpdateMask << 1;
 			} else if (this.blockUpdateCount != 0) {
 				this.sendPacketToPlayersWatching(new ChunkDeltaUpdateS2CPacket(this.blockUpdateCount, this.blockUpdatePositions, worldChunk), false);
 
@@ -197,26 +221,6 @@ public class ChunkHolder {
 
 			this.blockUpdateCount = 0;
 			this.sectionsNeedingUpdateMask = 0;
-			if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
-				this.sendPacketToPlayersWatching(
-					new LightUpdateS2CPacket(
-						worldChunk.getPos(),
-						this.lightingProvider,
-						this.skyLightUpdateBits & ~this.lightSentWithBlocksBits,
-						this.blockLightUpdateBits & ~this.lightSentWithBlocksBits
-					),
-					true
-				);
-				int ix = this.skyLightUpdateBits & this.lightSentWithBlocksBits;
-				int j = this.blockLightUpdateBits & this.lightSentWithBlocksBits;
-				if (ix != 0 || j != 0) {
-					this.sendPacketToPlayersWatching(new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, ix, j), false);
-				}
-
-				this.skyLightUpdateBits = 0;
-				this.blockLightUpdateBits = 0;
-				this.lightSentWithBlocksBits = this.lightSentWithBlocksBits & ~(this.skyLightUpdateBits & this.blockLightUpdateBits);
-			}
 		}
 	}
 

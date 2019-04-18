@@ -176,7 +176,7 @@ public class EvilVillagerEntityModel<T extends IllagerEntity> extends EntityMode
 	}
 
 	public void method_17092(T illagerEntity, float f, float g, float h) {
-		this.field_3424 = (float)illagerEntity.method_6048();
+		this.field_3424 = (float)illagerEntity.getItemUseTime();
 		super.animateModel(illagerEntity, f, g, h);
 	}
 

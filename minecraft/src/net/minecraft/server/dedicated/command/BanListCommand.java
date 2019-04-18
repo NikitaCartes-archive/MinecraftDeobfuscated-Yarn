@@ -24,7 +24,7 @@ public class BanListCommand {
 				.executes(
 					commandContext -> {
 						PlayerManager playerManager = commandContext.getSource().getMinecraftServer().getPlayerManager();
-						return method_13015(
+						return execute(
 							commandContext.getSource(), Lists.newArrayList(Iterables.concat(playerManager.getUserBanList().values(), playerManager.getIpBanList().values()))
 						);
 					}
@@ -32,19 +32,19 @@ public class BanListCommand {
 				.then(
 					CommandManager.literal("ips")
 						.executes(
-							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getIpBanList().values())
+							commandContext -> execute(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getIpBanList().values())
 						)
 				)
 				.then(
 					CommandManager.literal("players")
 						.executes(
-							commandContext -> method_13015(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().values())
+							commandContext -> execute(commandContext.getSource(), commandContext.getSource().getMinecraftServer().getPlayerManager().getUserBanList().values())
 						)
 				)
 		);
 	}
 
-	private static int method_13015(ServerCommandSource serverCommandSource, Collection<? extends BanEntry<?>> collection) {
+	private static int execute(ServerCommandSource serverCommandSource, Collection<? extends BanEntry<?>> collection) {
 		if (collection.isEmpty()) {
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.banlist.none"), false);
 		} else {

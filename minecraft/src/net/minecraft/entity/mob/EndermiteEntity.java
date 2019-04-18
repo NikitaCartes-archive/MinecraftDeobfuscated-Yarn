@@ -124,8 +124,8 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.world.isClient) {
 			for (int i = 0; i < 2; i++) {
 				this.world

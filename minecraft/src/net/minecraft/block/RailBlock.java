@@ -5,8 +5,8 @@ import net.minecraft.state.StateFactory;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -31,8 +31,8 @@ public class RailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		switch (rotation) {
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		switch (blockRotation) {
 			case ROT_180:
 				switch ((RailShape)blockState.get(SHAPE)) {
 					case field_12667:
@@ -104,9 +104,9 @@ public class RailBlock extends AbstractRailBlock {
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
 		RailShape railShape = blockState.get(SHAPE);
-		switch (mirror) {
+		switch (blockMirror) {
 			case LEFT_RIGHT:
 				switch (railShape) {
 					case field_12670:
@@ -122,7 +122,7 @@ public class RailBlock extends AbstractRailBlock {
 					case field_12663:
 						return blockState.with(SHAPE, RailShape.field_12664);
 					default:
-						return super.mirror(blockState, mirror);
+						return super.mirror(blockState, blockMirror);
 				}
 			case FRONT_BACK:
 				switch (railShape) {
@@ -145,7 +145,7 @@ public class RailBlock extends AbstractRailBlock {
 				}
 		}
 
-		return super.mirror(blockState, mirror);
+		return super.mirror(blockState, blockMirror);
 	}
 
 	@Override

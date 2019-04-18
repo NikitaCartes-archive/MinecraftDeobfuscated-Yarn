@@ -6,8 +6,8 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -124,8 +124,8 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState rotate(BlockState blockState, Rotation rotation) {
-		switch (rotation) {
+	public BlockState rotate(BlockState blockState, BlockRotation blockRotation) {
+		switch (blockRotation) {
 			case ROT_180:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(EAST, blockState.get(WEST)).with(SOUTH, blockState.get(NORTH)).with(WEST, blockState.get(EAST));
 			case ROT_270:
@@ -138,14 +138,14 @@ public class HorizontalConnectedBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState mirror(BlockState blockState, Mirror mirror) {
-		switch (mirror) {
+	public BlockState mirror(BlockState blockState, BlockMirror blockMirror) {
+		switch (blockMirror) {
 			case LEFT_RIGHT:
 				return blockState.with(NORTH, blockState.get(SOUTH)).with(SOUTH, blockState.get(NORTH));
 			case FRONT_BACK:
 				return blockState.with(EAST, blockState.get(WEST)).with(WEST, blockState.get(EAST));
 			default:
-				return super.mirror(blockState, mirror);
+				return super.mirror(blockState, blockMirror);
 		}
 	}
 }

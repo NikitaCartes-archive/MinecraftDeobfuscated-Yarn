@@ -227,11 +227,11 @@ public class ClientConnection extends SimpleChannelInboundHandler<Packet<?>> {
 	public void tick() {
 		this.sendQueuedPackets();
 		if (this.packetListener instanceof ServerLoginNetworkHandler) {
-			((ServerLoginNetworkHandler)this.packetListener).method_18785();
+			((ServerLoginNetworkHandler)this.packetListener).tick();
 		}
 
 		if (this.packetListener instanceof ServerPlayNetworkHandler) {
-			((ServerPlayNetworkHandler)this.packetListener).method_18784();
+			((ServerPlayNetworkHandler)this.packetListener).tick();
 		}
 
 		if (this.channel != null) {

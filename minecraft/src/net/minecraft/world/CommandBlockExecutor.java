@@ -147,7 +147,7 @@ public abstract class CommandBlockExecutor implements CommandOutput {
 	}
 
 	@Override
-	public void appendCommandFeedback(TextComponent textComponent) {
+	public void sendMessage(TextComponent textComponent) {
 		if (this.trackOutput) {
 			this.lastOutput = new StringTextComponent("[" + DATE_FORMAT.format(new Date()) + "] ").append(textComponent);
 			this.markDirty();

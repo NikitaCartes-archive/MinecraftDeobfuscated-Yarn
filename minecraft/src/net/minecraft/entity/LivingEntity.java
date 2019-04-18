@@ -176,7 +176,7 @@ public abstract class LivingEntity extends Entity {
 	private int field_6228;
 	private float absorptionAmount;
 	protected ItemStack activeItemStack = ItemStack.EMPTY;
-	protected int field_6222;
+	protected int itemUseTimeLeft;
 	protected int field_6239;
 	private BlockPos lastBlockPos;
 	private DamageSource field_6276;
@@ -308,7 +308,7 @@ public abstract class LivingEntity extends Entity {
 					}
 				}
 
-				if (!this.world.isClient && this.hasVehicle() && this.getRiddenEntity() != null && !this.getRiddenEntity().canBeRiddenInWater()) {
+				if (!this.world.isClient && this.hasVehicle() && this.getVehicle() != null && !this.getVehicle().canBeRiddenInWater()) {
 					this.stopRiding();
 				}
 			} else if (this.getBreath() < this.getMaxBreath()) {
@@ -1943,7 +1943,7 @@ public abstract class LivingEntity extends Entity {
 		this.movementSpeed = f;
 	}
 
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		this.onAttacking(entity);
 		return false;
 	}
@@ -2016,7 +2016,7 @@ public abstract class LivingEntity extends Entity {
 			}
 		}
 
-		this.updateMovement();
+		this.updateState();
 		double d = this.x - this.prevX;
 		double e = this.z - this.prevZ;
 		float f = (float)(d * d + e * e);
@@ -2120,7 +2120,7 @@ public abstract class LivingEntity extends Entity {
 		return g;
 	}
 
-	public void updateMovement() {
+	public void updateState() {
 		if (this.field_6228 > 0) {
 			this.field_6228--;
 		}
@@ -2300,9 +2300,9 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	public void stopRiding() {
-		Entity entity = this.getRiddenEntity();
+		Entity entity = this.getVehicle();
 		super.stopRiding();
-		if (entity != null && entity != this.getRiddenEntity() && !this.world.isClient) {
+		if (entity != null && entity != this.getVehicle() && !this.world.isClient) {
 			this.method_6038(entity);
 		}
 	}
@@ -2434,16 +2434,16 @@ public abstract class LivingEntity extends Entity {
 	protected void method_6076() {
 		if (this.isUsingItem()) {
 			if (this.getStackInHand(this.getActiveHand()) == this.activeItemStack) {
-				this.activeItemStack.method_7949(this.world, this, this.method_6014());
-				if (this.method_6014() <= 25 && this.method_6014() % 4 == 0) {
+				this.activeItemStack.method_7949(this.world, this, this.getItemUseTimeLeft());
+				if (this.getItemUseTimeLeft() <= 25 && this.getItemUseTimeLeft() % 4 == 0) {
 					this.spawnConsumptionEffects(this.activeItemStack, 5);
 				}
 
-				if (--this.field_6222 == 0 && !this.world.isClient && !this.activeItemStack.method_7967()) {
+				if (--this.itemUseTimeLeft == 0 && !this.world.isClient && !this.activeItemStack.method_7967()) {
 					this.method_6040();
 				}
 			} else {
-				this.method_6021();
+				this.clearActiveItem();
 			}
 		}
 	}
@@ -2472,7 +2472,7 @@ public abstract class LivingEntity extends Entity {
 		ItemStack itemStack = this.getStackInHand(hand);
 		if (!itemStack.isEmpty() && !this.isUsingItem()) {
 			this.activeItemStack = itemStack;
-			this.field_6222 = itemStack.getMaxUseTime();
+			this.itemUseTimeLeft = itemStack.getMaxUseTime();
 			if (!this.world.isClient) {
 				this.setLivingFlag(1, true);
 				this.setLivingFlag(2, hand == Hand.OFF);
@@ -2491,11 +2491,11 @@ public abstract class LivingEntity extends Entity {
 			if (this.isUsingItem() && this.activeItemStack.isEmpty()) {
 				this.activeItemStack = this.getStackInHand(this.getActiveHand());
 				if (!this.activeItemStack.isEmpty()) {
-					this.field_6222 = this.activeItemStack.getMaxUseTime();
+					this.itemUseTimeLeft = this.activeItemStack.getMaxUseTime();
 				}
 			} else if (!this.isUsingItem() && !this.activeItemStack.isEmpty()) {
 				this.activeItemStack = ItemStack.EMPTY;
-				this.field_6222 = 0;
+				this.itemUseTimeLeft = 0;
 			}
 		}
 	}
@@ -2540,7 +2540,7 @@ public abstract class LivingEntity extends Entity {
 		if (!this.activeItemStack.isEmpty() && this.isUsingItem()) {
 			this.spawnConsumptionEffects(this.activeItemStack, 16);
 			this.setStackInHand(this.getActiveHand(), this.activeItemStack.onItemFinishedUsing(this.world, this));
-			this.method_6021();
+			this.clearActiveItem();
 		}
 	}
 
@@ -2548,38 +2548,38 @@ public abstract class LivingEntity extends Entity {
 		return this.activeItemStack;
 	}
 
-	public int method_6014() {
-		return this.field_6222;
+	public int getItemUseTimeLeft() {
+		return this.itemUseTimeLeft;
 	}
 
-	public int method_6048() {
-		return this.isUsingItem() ? this.activeItemStack.getMaxUseTime() - this.method_6014() : 0;
+	public int getItemUseTime() {
+		return this.isUsingItem() ? this.activeItemStack.getMaxUseTime() - this.getItemUseTimeLeft() : 0;
 	}
 
 	public void stopUsingItem() {
 		if (!this.activeItemStack.isEmpty()) {
-			this.activeItemStack.onItemStopUsing(this.world, this, this.method_6014());
+			this.activeItemStack.onItemStopUsing(this.world, this, this.getItemUseTimeLeft());
 			if (this.activeItemStack.method_7967()) {
 				this.method_6076();
 			}
 		}
 
-		this.method_6021();
+		this.clearActiveItem();
 	}
 
-	public void method_6021() {
+	public void clearActiveItem() {
 		if (!this.world.isClient) {
 			this.setLivingFlag(1, false);
 		}
 
 		this.activeItemStack = ItemStack.EMPTY;
-		this.field_6222 = 0;
+		this.itemUseTimeLeft = 0;
 	}
 
 	public boolean method_6039() {
 		if (this.isUsingItem() && !this.activeItemStack.isEmpty()) {
 			Item item = this.activeItemStack.getItem();
-			return item.getUseAction(this.activeItemStack) != UseAction.field_8949 ? false : item.getMaxUseTime(this.activeItemStack) - this.field_6222 >= 5;
+			return item.getUseAction(this.activeItemStack) != UseAction.field_8949 ? false : item.getMaxUseTime(this.activeItemStack) - this.itemUseTimeLeft >= 5;
 		} else {
 			return false;
 		}

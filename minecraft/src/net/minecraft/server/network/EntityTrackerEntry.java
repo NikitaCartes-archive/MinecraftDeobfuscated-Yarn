@@ -81,7 +81,7 @@ public class EntityTrackerEntry {
 				MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, this.field_18258);
 
 				for (ServerPlayerEntity serverPlayerEntity : this.field_18258.getPlayers()) {
-					mapState.method_102(serverPlayerEntity, itemStack);
+					mapState.update(serverPlayerEntity, itemStack);
 					Packet<?> packet = ((FilledMapItem)itemStack.getItem()).createMapPacket(itemStack, this.field_18258, serverPlayerEntity);
 					if (packet != null) {
 						serverPlayerEntity.networkHandler.sendPacket(packet);
@@ -245,7 +245,7 @@ public class EntityTrackerEntry {
 		}
 
 		if (this.entity.hasVehicle()) {
-			consumer.accept(new EntityPassengersSetS2CPacket(this.entity.getRiddenEntity()));
+			consumer.accept(new EntityPassengersSetS2CPacket(this.entity.getVehicle()));
 		}
 	}
 

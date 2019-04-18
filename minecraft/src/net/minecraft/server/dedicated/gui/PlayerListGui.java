@@ -11,7 +11,7 @@ public class PlayerListGui extends JList<String> {
 
 	public PlayerListGui(MinecraftServer minecraftServer) {
 		this.server = minecraftServer;
-		minecraftServer.registerTickable(this::tick);
+		minecraftServer.addServerGuiTickable(this::tick);
 	}
 
 	public void tick() {

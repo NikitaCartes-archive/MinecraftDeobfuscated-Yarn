@@ -49,7 +49,7 @@ public class CrossbowItem extends BaseBowItem {
 			if (livingEntity == null || itemStack.getItem() != this) {
 				return 0.0F;
 			} else {
-				return isCharged(itemStack) ? 0.0F : (float)(itemStack.getMaxUseTime() - livingEntity.method_6014()) / (float)getPullTime(itemStack);
+				return isCharged(itemStack) ? 0.0F : (float)(itemStack.getMaxUseTime() - livingEntity.getItemUseTimeLeft()) / (float)getPullTime(itemStack);
 			}
 		});
 		this.addProperty(
@@ -66,12 +66,12 @@ public class CrossbowItem extends BaseBowItem {
 	}
 
 	@Override
-	public Predicate<ItemStack> method_20310() {
+	public Predicate<ItemStack> getHeldProjectilePredicate() {
 		return IS_CROSSBOW_PROJECTILE;
 	}
 
 	@Override
-	public Predicate<ItemStack> getProjectilePredicate() {
+	public Predicate<ItemStack> getInventoryProjectilePredicate() {
 		return IS_BOW_PROJECTILE;
 	}
 

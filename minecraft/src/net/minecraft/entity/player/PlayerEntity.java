@@ -451,10 +451,10 @@ public abstract class PlayerEntity extends LivingEntity {
 			this.field_7505 = this.field_7483;
 			this.field_7483 = 0.0F;
 			this.method_7260(this.x - d, this.y - e, this.z - f);
-			if (this.getRiddenEntity() instanceof PigEntity) {
+			if (this.getVehicle() instanceof PigEntity) {
 				this.pitch = h;
 				this.yaw = g;
-				this.field_6283 = ((PigEntity)this.getRiddenEntity()).field_6283;
+				this.field_6283 = ((PigEntity)this.getVehicle()).field_6283;
 			}
 		}
 	}
@@ -476,7 +476,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		if (this.field_7489 > 0) {
 			this.field_7489--;
 		}
@@ -493,7 +493,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		this.inventory.updateItems();
 		this.field_7505 = this.field_7483;
-		super.updateMovement();
+		super.updateState();
 		EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.MOVEMENT_SPEED);
 		if (!this.world.isClient) {
 			entityAttributeInstance.setBaseValue((double)this.abilities.getWalkSpeed());
@@ -515,8 +515,8 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.field_7483 = this.field_7483 + (f - this.field_7483) * 0.4F;
 		if (this.getHealth() > 0.0F && !this.isSpectator()) {
 			BoundingBox boundingBox;
-			if (this.hasVehicle() && !this.getRiddenEntity().removed) {
-				boundingBox = this.getBoundingBox().union(this.getRiddenEntity().getBoundingBox()).expand(1.0, 0.0, 1.0);
+			if (this.hasVehicle() && !this.getVehicle().removed) {
+				boundingBox = this.getBoundingBox().union(this.getVehicle().getBoundingBox()).expand(1.0, 0.0, 1.0);
 			} else {
 				boundingBox = this.getBoundingBox().expand(1.0, 0.5, 1.0);
 			}
@@ -1147,7 +1147,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 		if (this.random.nextFloat() < f) {
 			this.getItemCooldownManager().set(Items.field_8255, 100);
-			this.method_6021();
+			this.clearActiveItem();
 			this.world.sendEntityStatus(this, (byte)30);
 		}
 	}
@@ -1472,13 +1472,13 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (this.hasVehicle()) {
 			int i = Math.round(MathHelper.sqrt(d * d + e * e + f * f) * 100.0F);
 			if (i > 0) {
-				if (this.getRiddenEntity() instanceof AbstractMinecartEntity) {
+				if (this.getVehicle() instanceof AbstractMinecartEntity) {
 					this.increaseStat(Stats.field_15409, i);
-				} else if (this.getRiddenEntity() instanceof BoatEntity) {
+				} else if (this.getVehicle() instanceof BoatEntity) {
 					this.increaseStat(Stats.field_15415, i);
-				} else if (this.getRiddenEntity() instanceof PigEntity) {
+				} else if (this.getVehicle() instanceof PigEntity) {
 					this.increaseStat(Stats.field_15387, i);
-				} else if (this.getRiddenEntity() instanceof HorseBaseEntity) {
+				} else if (this.getVehicle() instanceof HorseBaseEntity) {
 					this.increaseStat(Stats.field_15396, i);
 				}
 			}
@@ -1605,7 +1605,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.abilities.allowModifyWorld;
 	}
 
-	public boolean canPlaceBlock(BlockPos blockPos, Direction direction, ItemStack itemStack) {
+	public boolean canPlaceOn(BlockPos blockPos, Direction direction, ItemStack itemStack) {
 		if (this.abilities.allowModifyWorld) {
 			return true;
 		} else {
@@ -1957,12 +1957,12 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (!(itemStack.getItem() instanceof BaseBowItem)) {
 			return ItemStack.EMPTY;
 		} else {
-			Predicate<ItemStack> predicate = ((BaseBowItem)itemStack.getItem()).method_20310();
+			Predicate<ItemStack> predicate = ((BaseBowItem)itemStack.getItem()).getHeldProjectilePredicate();
 			ItemStack itemStack2 = BaseBowItem.getItemHeld(this, predicate);
 			if (!itemStack2.isEmpty()) {
 				return itemStack2;
 			} else {
-				predicate = ((BaseBowItem)itemStack.getItem()).getProjectilePredicate();
+				predicate = ((BaseBowItem)itemStack.getItem()).getInventoryProjectilePredicate();
 
 				for (int i = 0; i < this.inventory.getInvSize(); i++) {
 					ItemStack itemStack3 = this.inventory.getInvStack(i);

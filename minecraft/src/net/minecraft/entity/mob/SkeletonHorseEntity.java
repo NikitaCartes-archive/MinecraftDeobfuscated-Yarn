@@ -107,8 +107,8 @@ public class SkeletonHorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.method_6812() && this.field_7004++ >= 18000) {
 			this.remove();
 		}

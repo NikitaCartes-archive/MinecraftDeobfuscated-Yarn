@@ -11,7 +11,7 @@ import net.minecraft.block.JigsawBlock;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -50,20 +50,22 @@ public class FeaturePoolElement extends StructurePoolElement {
 		return compoundTag;
 	}
 
-	public BlockPos method_16601(StructureManager structureManager, Rotation rotation) {
+	public BlockPos method_16601(StructureManager structureManager, BlockRotation blockRotation) {
 		return BlockPos.ORIGIN;
 	}
 
 	@Override
-	public List<Structure.StructureBlockInfo> getStructureBlockInfos(StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random) {
+	public List<Structure.StructureBlockInfo> getStructureBlockInfos(
+		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
+	) {
 		List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 		list.add(new Structure.StructureBlockInfo(blockPos, Blocks.field_16540.getDefaultState().with(JigsawBlock.FACING, Direction.DOWN), this.tag));
 		return list;
 	}
 
 	@Override
-	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, Rotation rotation) {
-		BlockPos blockPos2 = this.method_16601(structureManager, rotation);
+	public MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation) {
+		BlockPos blockPos2 = this.method_16601(structureManager, blockRotation);
 		return new MutableIntBoundingBox(
 			blockPos.getX(),
 			blockPos.getY(),
@@ -76,7 +78,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 
 	@Override
 	public boolean generate(
-		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
+		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	) {
 		ChunkGenerator<?> chunkGenerator = iWorld.getChunkManager().getChunkGenerator();
 		return this.feature.generate(iWorld, (ChunkGenerator<? extends ChunkGeneratorConfig>)chunkGenerator, random, blockPos);

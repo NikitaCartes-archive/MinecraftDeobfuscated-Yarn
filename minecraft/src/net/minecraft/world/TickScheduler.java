@@ -1,5 +1,6 @@
 package net.minecraft.world;
 
+import java.util.stream.Stream;
 import net.minecraft.util.TaskPriority;
 import net.minecraft.util.math.BlockPos;
 
@@ -13,4 +14,6 @@ public interface TickScheduler<T> {
 	void schedule(BlockPos blockPos, T object, int i, TaskPriority taskPriority);
 
 	boolean isTicking(BlockPos blockPos, T object);
+
+	void method_20470(Stream<ScheduledTick<T>> stream);
 }

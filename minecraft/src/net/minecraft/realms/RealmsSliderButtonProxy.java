@@ -44,7 +44,7 @@ public class RealmsSliderButtonProxy extends SliderWidget implements RealmsAbstr
 		return super.getWidth();
 	}
 
-	public int method_19362() {
+	public int y() {
 		return this.y;
 	}
 

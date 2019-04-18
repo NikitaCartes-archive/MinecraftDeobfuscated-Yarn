@@ -31,7 +31,7 @@ public class MinecartSoundInstance extends MovingSoundInstance {
 
 	@Override
 	public void tick() {
-		if (!this.minecart.removed && this.player.hasVehicle() && this.player.getRiddenEntity() == this.minecart) {
+		if (!this.minecart.removed && this.player.hasVehicle() && this.player.getVehicle() == this.minecart) {
 			float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.minecart.getVelocity()));
 			if ((double)f >= 0.01) {
 				this.volume = 0.0F + MathHelper.clamp(f, 0.0F, 1.0F) * 0.75F;

@@ -13,8 +13,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BoundingBox;
 import net.minecraft.util.math.Direction;
@@ -229,9 +229,9 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public float applyRotation(Rotation rotation) {
+	public float applyRotation(BlockRotation blockRotation) {
 		if (this.facing != null && this.facing.getAxis() != Direction.Axis.Y) {
-			switch (rotation) {
+			switch (blockRotation) {
 				case ROT_180:
 					this.facing = this.facing.getOpposite();
 					break;
@@ -244,7 +244,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 		}
 
 		float f = MathHelper.wrapDegrees(this.yaw);
-		switch (rotation) {
+		switch (blockRotation) {
 			case ROT_180:
 				return f + 180.0F;
 			case ROT_270:
@@ -257,8 +257,8 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public float applyMirror(Mirror mirror) {
-		return this.applyRotation(mirror.getRotation(this.facing));
+	public float applyMirror(BlockMirror blockMirror) {
+		return this.applyRotation(blockMirror.getRotation(this.facing));
 	}
 
 	@Override

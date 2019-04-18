@@ -36,7 +36,7 @@ public class DebugCommand {
 		if (disableableProfiler.getController().isEnabled()) {
 			throw ALREADYRUNNING_EXCEPTION.create();
 		} else {
-			minecraftServer.method_3832();
+			minecraftServer.enableProfiler();
 			serverCommandSource.sendFeedback(new TranslatableTextComponent("commands.debug.started", "Started the debug profiler. Type '/debug stop' to stop it."), true);
 			return 0;
 		}

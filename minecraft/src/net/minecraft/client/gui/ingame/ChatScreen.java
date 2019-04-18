@@ -72,7 +72,7 @@ public class ChatScreen extends Screen {
 		this.chatField.setChangedListener(this::onChatFieldChanged);
 		this.children.add(this.chatField);
 		this.updateCommand();
-		this.method_20085(this.chatField);
+		this.setInitialFocus(this.chatField);
 	}
 
 	@Override

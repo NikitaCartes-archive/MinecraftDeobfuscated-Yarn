@@ -131,7 +131,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		Vec3d vec3d = this.getVelocity().multiply(1.0, 0.6, 1.0);
 		if (!this.world.isClient && this.getTrackedEntityId(0) > 0) {
 			Entity entity = this.world.getEntityById(this.getTrackedEntityId(0));
@@ -156,7 +156,7 @@ public class WitherEntity extends HostileEntity implements RangedAttacker {
 			this.yaw = (float)MathHelper.atan2(vec3d.z, vec3d.x) * (180.0F / (float)Math.PI) - 90.0F;
 		}
 
-		super.updateMovement();
+		super.updateState();
 
 		for (int i = 0; i < 2; i++) {
 			this.field_7094[i] = this.field_7083[i];

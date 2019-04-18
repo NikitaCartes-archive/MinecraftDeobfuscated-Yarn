@@ -50,11 +50,11 @@ public class TeammsgCommand {
 
 			for (ServerPlayerEntity serverPlayerEntity : list) {
 				if (serverPlayerEntity == entity) {
-					serverPlayerEntity.appendCommandFeedback(
+					serverPlayerEntity.sendMessage(
 						new TranslatableTextComponent("chat.type.team.sent", textComponent2, serverCommandSource.getDisplayName(), textComponent.copy())
 					);
 				} else if (serverPlayerEntity.getScoreboardTeam() == team) {
-					serverPlayerEntity.appendCommandFeedback(
+					serverPlayerEntity.sendMessage(
 						new TranslatableTextComponent("chat.type.team.text", textComponent2, serverCommandSource.getDisplayName(), textComponent.copy())
 					);
 				}

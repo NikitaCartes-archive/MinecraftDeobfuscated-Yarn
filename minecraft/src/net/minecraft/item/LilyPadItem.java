@@ -43,7 +43,7 @@ public class LilyPadItem extends BlockItem {
 				BlockHitResult blockHitResult = (BlockHitResult)hitResult;
 				BlockPos blockPos = blockHitResult.getBlockPos();
 				Direction direction = blockHitResult.getSide();
-				if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceBlock(blockPos.offset(direction), direction, itemStack)) {
+				if (!world.canPlayerModifyAt(playerEntity, blockPos) || !playerEntity.canPlaceOn(blockPos.offset(direction), direction, itemStack)) {
 					return new TypedActionResult<>(ActionResult.field_5814, itemStack);
 				}
 

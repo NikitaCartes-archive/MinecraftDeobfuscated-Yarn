@@ -15,15 +15,15 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.server.network.packet.UpdateStructureBlockC2SPacket;
 import net.minecraft.text.TranslatableTextComponent;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class StructureBlockScreen extends Screen {
 	private final StructureBlockBlockEntity structureBlock;
-	private Mirror mirror = Mirror.NONE;
-	private Rotation rotation = Rotation.ROT_0;
+	private BlockMirror mirror = BlockMirror.NONE;
+	private BlockRotation rotation = BlockRotation.ROT_0;
 	private StructureBlockMode mode = StructureBlockMode.field_12696;
 	private boolean ignoreEntities;
 	private boolean showAir;
@@ -126,13 +126,13 @@ public class StructureBlockScreen extends Screen {
 		this.buttonMirror = this.addButton(new ButtonWidget(this.width / 2 - 20, 185, 40, 20, "MIRROR", buttonWidget -> {
 			switch (this.structureBlock.getMirror()) {
 				case NONE:
-					this.structureBlock.setMirror(Mirror.LEFT_RIGHT);
+					this.structureBlock.setMirror(BlockMirror.LEFT_RIGHT);
 					break;
 				case LEFT_RIGHT:
-					this.structureBlock.setMirror(Mirror.FRONT_BACK);
+					this.structureBlock.setMirror(BlockMirror.FRONT_BACK);
 					break;
 				case FRONT_BACK:
-					this.structureBlock.setMirror(Mirror.NONE);
+					this.structureBlock.setMirror(BlockMirror.NONE);
 			}
 
 			this.updateMirrorButton();
@@ -146,19 +146,19 @@ public class StructureBlockScreen extends Screen {
 			this.updateShowBoundingBoxButton();
 		}));
 		this.buttonRotate0 = this.addButton(new ButtonWidget(this.width / 2 - 1 - 40 - 1 - 40 - 20, 185, 40, 20, "0", buttonWidget -> {
-			this.structureBlock.setRotation(Rotation.ROT_0);
+			this.structureBlock.setRotation(BlockRotation.ROT_0);
 			this.updateRotationButton();
 		}));
 		this.buttonRotate90 = this.addButton(new ButtonWidget(this.width / 2 - 1 - 40 - 20, 185, 40, 20, "90", buttonWidget -> {
-			this.structureBlock.setRotation(Rotation.ROT_90);
+			this.structureBlock.setRotation(BlockRotation.ROT_90);
 			this.updateRotationButton();
 		}));
 		this.buttonRotate180 = this.addButton(new ButtonWidget(this.width / 2 + 1 + 20, 185, 40, 20, "180", buttonWidget -> {
-			this.structureBlock.setRotation(Rotation.ROT_180);
+			this.structureBlock.setRotation(BlockRotation.ROT_180);
 			this.updateRotationButton();
 		}));
 		this.buttonRotate270 = this.addButton(new ButtonWidget(this.width / 2 + 1 + 40 + 1 + 20, 185, 40, 20, "270", buttonWidget -> {
-			this.structureBlock.setRotation(Rotation.ROT_270);
+			this.structureBlock.setRotation(BlockRotation.ROT_270);
 			this.updateRotationButton();
 		}));
 		this.inputName = new TextFieldWidget(this.font, this.width / 2 - 152, 40, 300, 20, I18n.translate("structure_block.structure_name")) {
@@ -220,7 +220,7 @@ public class StructureBlockScreen extends Screen {
 		this.updateShowAirButton();
 		this.showBoundingBox = this.structureBlock.shouldShowBoundingBox();
 		this.updateShowBoundingBoxButton();
-		this.method_20085(this.inputName);
+		this.setInitialFocus(this.inputName);
 	}
 
 	@Override
@@ -281,8 +281,8 @@ public class StructureBlockScreen extends Screen {
 	}
 
 	private void updateMirrorButton() {
-		Mirror mirror = this.structureBlock.getMirror();
-		switch (mirror) {
+		BlockMirror blockMirror = this.structureBlock.getMirror();
+		switch (blockMirror) {
 			case NONE:
 				this.buttonMirror.setMessage("|");
 				break;

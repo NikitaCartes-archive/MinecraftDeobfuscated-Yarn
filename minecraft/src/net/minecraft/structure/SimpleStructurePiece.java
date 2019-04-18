@@ -8,7 +8,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.arguments.BlockArgumentParser;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MutableIntBoundingBox;
@@ -95,7 +95,7 @@ public abstract class SimpleStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	public Rotation getRotation() {
+	public BlockRotation getRotation() {
 		return this.placementData.getRotation();
 	}
 }

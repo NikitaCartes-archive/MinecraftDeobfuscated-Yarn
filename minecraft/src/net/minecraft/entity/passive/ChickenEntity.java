@@ -69,8 +69,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		this.field_6736 = this.field_6741;
 		this.field_6738 = this.field_6743;
 		this.field_6743 = (float)((double)this.field_6743 + (double)(this.onGround ? -1 : 4) * 0.3);

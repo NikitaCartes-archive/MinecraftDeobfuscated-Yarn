@@ -144,6 +144,19 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 	}
 
 	@Override
+	protected ChunkNibbleArray getDataForChunk(long l) {
+		ChunkNibbleArray chunkNibbleArray = this.toUpdate.get(l);
+		if (chunkNibbleArray != null) {
+			return chunkNibbleArray;
+		} else {
+			if (this.method_15566(l)) {
+			}
+
+			return new ChunkNibbleArray();
+		}
+	}
+
+	@Override
 	protected void processUpdates(ChunkLightProvider<SkyLightStorage.Data, ?> chunkLightProvider, boolean bl, boolean bl2) {
 		super.processUpdates(chunkLightProvider, bl, bl2);
 		if (bl) {

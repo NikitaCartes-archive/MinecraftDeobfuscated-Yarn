@@ -483,7 +483,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttacker {
 		@Override
 		public void stop() {
 			super.stop();
-			this.field_7249.method_6021();
+			this.field_7249.clearActiveItem();
 			this.field_7249.setAttacking(false);
 		}
 	}

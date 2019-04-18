@@ -97,7 +97,7 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		boolean bl = this.isInDaylight();
 		if (bl) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.HEAD);
@@ -118,14 +118,14 @@ public abstract class AbstractSkeletonEntity extends HostileEntity implements Ra
 			}
 		}
 
-		super.updateMovement();
+		super.updateState();
 	}
 
 	@Override
 	public void tickRiding() {
 		super.tickRiding();
-		if (this.getRiddenEntity() instanceof MobEntityWithAi) {
-			MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)this.getRiddenEntity();
+		if (this.getVehicle() instanceof MobEntityWithAi) {
+			MobEntityWithAi mobEntityWithAi = (MobEntityWithAi)this.getVehicle();
 			this.field_6283 = mobEntityWithAi.field_6283;
 		}
 	}

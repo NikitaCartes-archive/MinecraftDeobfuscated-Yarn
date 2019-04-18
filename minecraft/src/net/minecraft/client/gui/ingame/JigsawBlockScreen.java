@@ -75,7 +75,7 @@ public class JigsawBlockScreen extends Screen {
 		this.finalStateField.setMaxLength(256);
 		this.finalStateField.setText(this.jigsaw.getFinalState());
 		this.children.add(this.finalStateField);
-		this.method_20085(this.targetPoolField);
+		this.setInitialFocus(this.targetPoolField);
 		this.method_20118();
 	}
 

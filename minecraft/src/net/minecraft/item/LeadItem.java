@@ -23,7 +23,7 @@ public class LeadItem extends Item {
 		if (block.matches(BlockTags.field_16584)) {
 			PlayerEntity playerEntity = itemUsageContext.getPlayer();
 			if (!world.isClient && playerEntity != null) {
-				method_7994(playerEntity, world, blockPos);
+				attachNearbyEntities(playerEntity, world, blockPos);
 			}
 
 			return ActionResult.field_5812;
@@ -32,7 +32,7 @@ public class LeadItem extends Item {
 		}
 	}
 
-	public static boolean method_7994(PlayerEntity playerEntity, World world, BlockPos blockPos) {
+	public static boolean attachNearbyEntities(PlayerEntity playerEntity, World world, BlockPos blockPos) {
 		LeadKnotEntity leadKnotEntity = null;
 		boolean bl = false;
 		double d = 7.0;
@@ -45,7 +45,7 @@ public class LeadItem extends Item {
 		)) {
 			if (mobEntity.getHoldingEntity() == playerEntity) {
 				if (leadKnotEntity == null) {
-					leadKnotEntity = LeadKnotEntity.method_6932(world, blockPos);
+					leadKnotEntity = LeadKnotEntity.getOrCreate(world, blockPos);
 				}
 
 				mobEntity.attachLeash(leadKnotEntity, true);

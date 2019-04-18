@@ -60,15 +60,15 @@ public class ServerEntryNetworkPart {
 		clientConnection.setPacketListener(
 			new ClientQueryPacketListener() {
 				private boolean field_3775;
-				private boolean completed;
+				private boolean field_3773;
 				private long field_3772;
 
 				@Override
 				public void onResponse(QueryResponseS2CPacket queryResponseS2CPacket) {
-					if (this.completed) {
+					if (this.field_3773) {
 						clientConnection.disconnect(new TranslatableTextComponent("multiplayer.status.unrequested"));
 					} else {
-						this.completed = true;
+						this.field_3773 = true;
 						ServerMetadata serverMetadata = queryResponseS2CPacket.getServerMetadata();
 						if (serverMetadata.getDescription() != null) {
 							serverEntry.label = serverMetadata.getDescription().getFormattedText();

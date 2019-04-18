@@ -37,24 +37,32 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.DefaultedList;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Rotation;
+import net.minecraft.util.math.EulerRotation;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class ArmorStandEntity extends LivingEntity {
-	private static final Rotation DEFAULT_HEAD_ROTATION = new Rotation(0.0F, 0.0F, 0.0F);
-	private static final Rotation DEFAULT_BODY_ROTATION = new Rotation(0.0F, 0.0F, 0.0F);
-	private static final Rotation DEFAULT_LEFT_ARM_ROTATION = new Rotation(-10.0F, 0.0F, -10.0F);
-	private static final Rotation DEFAULT_RIGHT_ARM_ROTATION = new Rotation(-15.0F, 0.0F, 10.0F);
-	private static final Rotation DEFAULT_LEFT_LEG_ROTATION = new Rotation(-1.0F, 0.0F, -1.0F);
-	private static final Rotation DEFAULT_RIGHT_LEG_ROTATION = new Rotation(1.0F, 0.0F, 1.0F);
+	private static final EulerRotation DEFAULT_HEAD_ROTATION = new EulerRotation(0.0F, 0.0F, 0.0F);
+	private static final EulerRotation DEFAULT_BODY_ROTATION = new EulerRotation(0.0F, 0.0F, 0.0F);
+	private static final EulerRotation DEFAULT_LEFT_ARM_ROTATION = new EulerRotation(-10.0F, 0.0F, -10.0F);
+	private static final EulerRotation DEFAULT_RIGHT_ARM_ROTATION = new EulerRotation(-15.0F, 0.0F, 10.0F);
+	private static final EulerRotation DEFAULT_LEFT_LEG_ROTATION = new EulerRotation(-1.0F, 0.0F, -1.0F);
+	private static final EulerRotation DEFAULT_RIGHT_LEG_ROTATION = new EulerRotation(1.0F, 0.0F, 1.0F);
 	public static final TrackedData<Byte> ARMOR_STAND_FLAGS = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.BYTE);
-	public static final TrackedData<Rotation> TRACKER_HEAD_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> TRACKER_BODY_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> TRACKER_LEFT_ARM_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> TRACKER_RIGHT_ARM_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> TRACKER_LEFT_LEG_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
-	public static final TrackedData<Rotation> TRACKER_RIGHT_LEG_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<EulerRotation> TRACKER_HEAD_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<EulerRotation> TRACKER_BODY_ROTATION = DataTracker.registerData(ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION);
+	public static final TrackedData<EulerRotation> TRACKER_LEFT_ARM_ROTATION = DataTracker.registerData(
+		ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION
+	);
+	public static final TrackedData<EulerRotation> TRACKER_RIGHT_ARM_ROTATION = DataTracker.registerData(
+		ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION
+	);
+	public static final TrackedData<EulerRotation> TRACKER_LEFT_LEG_ROTATION = DataTracker.registerData(
+		ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION
+	);
+	public static final TrackedData<EulerRotation> TRACKER_RIGHT_LEG_ROTATION = DataTracker.registerData(
+		ArmorStandEntity.class, TrackedDataHandlerRegistry.ROTATION
+	);
 	private static final Predicate<Entity> RIDEABLE_MINECART_PREDICATE = entity -> entity instanceof AbstractMinecartEntity
 			&& ((AbstractMinecartEntity)entity).getMinecartType() == AbstractMinecartEntity.Type.field_7674;
 	private final DefaultedList<ItemStack> heldItems = DefaultedList.create(2, ItemStack.EMPTY);
@@ -62,12 +70,12 @@ public class ArmorStandEntity extends LivingEntity {
 	private boolean field_7111;
 	public long field_7112;
 	private int disabledSlots;
-	private Rotation headRotation = DEFAULT_HEAD_ROTATION;
-	private Rotation bodyRotation = DEFAULT_BODY_ROTATION;
-	private Rotation leftArmRotation = DEFAULT_LEFT_ARM_ROTATION;
-	private Rotation rightArmRotation = DEFAULT_RIGHT_ARM_ROTATION;
-	private Rotation leftLegRotation = DEFAULT_LEFT_LEG_ROTATION;
-	private Rotation rightLegRotation = DEFAULT_RIGHT_LEG_ROTATION;
+	private EulerRotation headRotation = DEFAULT_HEAD_ROTATION;
+	private EulerRotation bodyRotation = DEFAULT_BODY_ROTATION;
+	private EulerRotation leftArmRotation = DEFAULT_LEFT_ARM_ROTATION;
+	private EulerRotation rightArmRotation = DEFAULT_RIGHT_ARM_ROTATION;
+	private EulerRotation leftLegRotation = DEFAULT_LEFT_LEG_ROTATION;
+	private EulerRotation rightLegRotation = DEFAULT_RIGHT_LEG_ROTATION;
 
 	public ArmorStandEntity(EntityType<? extends ArmorStandEntity> entityType, World world) {
 		super(entityType, world);
@@ -250,17 +258,17 @@ public class ArmorStandEntity extends LivingEntity {
 
 	private void deserializePose(CompoundTag compoundTag) {
 		ListTag listTag = compoundTag.getList("Head", 5);
-		this.setHeadRotation(listTag.isEmpty() ? DEFAULT_HEAD_ROTATION : new Rotation(listTag));
+		this.setHeadRotation(listTag.isEmpty() ? DEFAULT_HEAD_ROTATION : new EulerRotation(listTag));
 		ListTag listTag2 = compoundTag.getList("Body", 5);
-		this.setBodyRotation(listTag2.isEmpty() ? DEFAULT_BODY_ROTATION : new Rotation(listTag2));
+		this.setBodyRotation(listTag2.isEmpty() ? DEFAULT_BODY_ROTATION : new EulerRotation(listTag2));
 		ListTag listTag3 = compoundTag.getList("LeftArm", 5);
-		this.setLeftArmRotation(listTag3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new Rotation(listTag3));
+		this.setLeftArmRotation(listTag3.isEmpty() ? DEFAULT_LEFT_ARM_ROTATION : new EulerRotation(listTag3));
 		ListTag listTag4 = compoundTag.getList("RightArm", 5);
-		this.setRightArmRotation(listTag4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new Rotation(listTag4));
+		this.setRightArmRotation(listTag4.isEmpty() ? DEFAULT_RIGHT_ARM_ROTATION : new EulerRotation(listTag4));
 		ListTag listTag5 = compoundTag.getList("LeftLeg", 5);
-		this.setLeftLegRotation(listTag5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new Rotation(listTag5));
+		this.setLeftLegRotation(listTag5.isEmpty() ? DEFAULT_LEFT_LEG_ROTATION : new EulerRotation(listTag5));
 		ListTag listTag6 = compoundTag.getList("RightLeg", 5);
-		this.setRightLegRotation(listTag6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new Rotation(listTag6));
+		this.setRightLegRotation(listTag6.isEmpty() ? DEFAULT_RIGHT_LEG_ROTATION : new EulerRotation(listTag6));
 	}
 
 	private CompoundTag serializePose() {
@@ -564,34 +572,34 @@ public class ArmorStandEntity extends LivingEntity {
 	@Override
 	public void tick() {
 		super.tick();
-		Rotation rotation = this.dataTracker.get(TRACKER_HEAD_ROTATION);
-		if (!this.headRotation.equals(rotation)) {
-			this.setHeadRotation(rotation);
+		EulerRotation eulerRotation = this.dataTracker.get(TRACKER_HEAD_ROTATION);
+		if (!this.headRotation.equals(eulerRotation)) {
+			this.setHeadRotation(eulerRotation);
 		}
 
-		Rotation rotation2 = this.dataTracker.get(TRACKER_BODY_ROTATION);
-		if (!this.bodyRotation.equals(rotation2)) {
-			this.setBodyRotation(rotation2);
+		EulerRotation eulerRotation2 = this.dataTracker.get(TRACKER_BODY_ROTATION);
+		if (!this.bodyRotation.equals(eulerRotation2)) {
+			this.setBodyRotation(eulerRotation2);
 		}
 
-		Rotation rotation3 = this.dataTracker.get(TRACKER_LEFT_ARM_ROTATION);
-		if (!this.leftArmRotation.equals(rotation3)) {
-			this.setLeftArmRotation(rotation3);
+		EulerRotation eulerRotation3 = this.dataTracker.get(TRACKER_LEFT_ARM_ROTATION);
+		if (!this.leftArmRotation.equals(eulerRotation3)) {
+			this.setLeftArmRotation(eulerRotation3);
 		}
 
-		Rotation rotation4 = this.dataTracker.get(TRACKER_RIGHT_ARM_ROTATION);
-		if (!this.rightArmRotation.equals(rotation4)) {
-			this.setRightArmRotation(rotation4);
+		EulerRotation eulerRotation4 = this.dataTracker.get(TRACKER_RIGHT_ARM_ROTATION);
+		if (!this.rightArmRotation.equals(eulerRotation4)) {
+			this.setRightArmRotation(eulerRotation4);
 		}
 
-		Rotation rotation5 = this.dataTracker.get(TRACKER_LEFT_LEG_ROTATION);
-		if (!this.leftLegRotation.equals(rotation5)) {
-			this.setLeftLegRotation(rotation5);
+		EulerRotation eulerRotation5 = this.dataTracker.get(TRACKER_LEFT_LEG_ROTATION);
+		if (!this.leftLegRotation.equals(eulerRotation5)) {
+			this.setLeftLegRotation(eulerRotation5);
 		}
 
-		Rotation rotation6 = this.dataTracker.get(TRACKER_RIGHT_LEG_ROTATION);
-		if (!this.rightLegRotation.equals(rotation6)) {
-			this.setRightLegRotation(rotation6);
+		EulerRotation eulerRotation6 = this.dataTracker.get(TRACKER_RIGHT_LEG_ROTATION);
+		if (!this.rightLegRotation.equals(eulerRotation6)) {
+			this.setRightLegRotation(eulerRotation6);
 		}
 	}
 
@@ -668,61 +676,61 @@ public class ArmorStandEntity extends LivingEntity {
 		return b;
 	}
 
-	public void setHeadRotation(Rotation rotation) {
-		this.headRotation = rotation;
-		this.dataTracker.set(TRACKER_HEAD_ROTATION, rotation);
+	public void setHeadRotation(EulerRotation eulerRotation) {
+		this.headRotation = eulerRotation;
+		this.dataTracker.set(TRACKER_HEAD_ROTATION, eulerRotation);
 	}
 
-	public void setBodyRotation(Rotation rotation) {
-		this.bodyRotation = rotation;
-		this.dataTracker.set(TRACKER_BODY_ROTATION, rotation);
+	public void setBodyRotation(EulerRotation eulerRotation) {
+		this.bodyRotation = eulerRotation;
+		this.dataTracker.set(TRACKER_BODY_ROTATION, eulerRotation);
 	}
 
-	public void setLeftArmRotation(Rotation rotation) {
-		this.leftArmRotation = rotation;
-		this.dataTracker.set(TRACKER_LEFT_ARM_ROTATION, rotation);
+	public void setLeftArmRotation(EulerRotation eulerRotation) {
+		this.leftArmRotation = eulerRotation;
+		this.dataTracker.set(TRACKER_LEFT_ARM_ROTATION, eulerRotation);
 	}
 
-	public void setRightArmRotation(Rotation rotation) {
-		this.rightArmRotation = rotation;
-		this.dataTracker.set(TRACKER_RIGHT_ARM_ROTATION, rotation);
+	public void setRightArmRotation(EulerRotation eulerRotation) {
+		this.rightArmRotation = eulerRotation;
+		this.dataTracker.set(TRACKER_RIGHT_ARM_ROTATION, eulerRotation);
 	}
 
-	public void setLeftLegRotation(Rotation rotation) {
-		this.leftLegRotation = rotation;
-		this.dataTracker.set(TRACKER_LEFT_LEG_ROTATION, rotation);
+	public void setLeftLegRotation(EulerRotation eulerRotation) {
+		this.leftLegRotation = eulerRotation;
+		this.dataTracker.set(TRACKER_LEFT_LEG_ROTATION, eulerRotation);
 	}
 
-	public void setRightLegRotation(Rotation rotation) {
-		this.rightLegRotation = rotation;
-		this.dataTracker.set(TRACKER_RIGHT_LEG_ROTATION, rotation);
+	public void setRightLegRotation(EulerRotation eulerRotation) {
+		this.rightLegRotation = eulerRotation;
+		this.dataTracker.set(TRACKER_RIGHT_LEG_ROTATION, eulerRotation);
 	}
 
-	public Rotation getHeadRotation() {
+	public EulerRotation getHeadRotation() {
 		return this.headRotation;
 	}
 
-	public Rotation getBodyRotation() {
+	public EulerRotation getBodyRotation() {
 		return this.bodyRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Rotation getLeftArmRotation() {
+	public EulerRotation getLeftArmRotation() {
 		return this.leftArmRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Rotation getRightArmRotation() {
+	public EulerRotation getRightArmRotation() {
 		return this.rightArmRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Rotation getLeftLegRotation() {
+	public EulerRotation getLeftLegRotation() {
 		return this.leftLegRotation;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Rotation getRightLegRotation() {
+	public EulerRotation getRightLegRotation() {
 		return this.rightLegRotation;
 	}
 

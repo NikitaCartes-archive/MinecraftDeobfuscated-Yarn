@@ -7,9 +7,9 @@ import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.network.Packet;
 import net.minecraft.network.listener.ServerPlayPacketListener;
-import net.minecraft.util.Mirror;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.PacketByteBuf;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
@@ -20,8 +20,8 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 	private String structureName;
 	private BlockPos offset;
 	private BlockPos size;
-	private Mirror mirror;
-	private Rotation rotation;
+	private BlockMirror mirror;
+	private BlockRotation rotation;
 	private String metadata;
 	private boolean ignoreEntities;
 	private boolean showAir;
@@ -40,8 +40,8 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		String string,
 		BlockPos blockPos2,
 		BlockPos blockPos3,
-		Mirror mirror,
-		Rotation rotation,
+		BlockMirror blockMirror,
+		BlockRotation blockRotation,
 		String string2,
 		boolean bl,
 		boolean bl2,
@@ -55,8 +55,8 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		this.structureName = string;
 		this.offset = blockPos2;
 		this.size = blockPos3;
-		this.mirror = mirror;
-		this.rotation = rotation;
+		this.mirror = blockMirror;
+		this.rotation = blockRotation;
 		this.metadata = string2;
 		this.ignoreEntities = bl;
 		this.showAir = bl2;
@@ -79,8 +79,8 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		this.size = new BlockPos(
 			MathHelper.clamp(packetByteBuf.readByte(), 0, 32), MathHelper.clamp(packetByteBuf.readByte(), 0, 32), MathHelper.clamp(packetByteBuf.readByte(), 0, 32)
 		);
-		this.mirror = packetByteBuf.readEnumConstant(Mirror.class);
-		this.rotation = packetByteBuf.readEnumConstant(Rotation.class);
+		this.mirror = packetByteBuf.readEnumConstant(BlockMirror.class);
+		this.rotation = packetByteBuf.readEnumConstant(BlockRotation.class);
 		this.metadata = packetByteBuf.readString(12);
 		this.integrity = MathHelper.clamp(packetByteBuf.readFloat(), 0.0F, 1.0F);
 		this.seed = packetByteBuf.readVarLong();
@@ -151,11 +151,11 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		return this.size;
 	}
 
-	public Mirror getMirror() {
+	public BlockMirror getMirror() {
 		return this.mirror;
 	}
 
-	public Rotation getRotation() {
+	public BlockRotation getRotation() {
 		return this.rotation;
 	}
 

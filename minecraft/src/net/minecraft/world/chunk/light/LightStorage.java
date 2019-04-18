@@ -149,7 +149,7 @@ public abstract class LightStorage<M extends WorldNibbleStorage<M>> extends Sect
 		this.hasLightUpdates = !this.toRemove.isEmpty();
 	}
 
-	private ChunkNibbleArray getDataForChunk(long l) {
+	protected ChunkNibbleArray getDataForChunk(long l) {
 		ChunkNibbleArray chunkNibbleArray = this.toUpdate.get(l);
 		return chunkNibbleArray != null ? chunkNibbleArray : new ChunkNibbleArray();
 	}

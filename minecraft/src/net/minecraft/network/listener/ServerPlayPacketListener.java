@@ -22,7 +22,7 @@ import net.minecraft.server.network.packet.PlayerInputC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractBlockC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractEntityC2SPacket;
 import net.minecraft.server.network.packet.PlayerInteractItemC2SPacket;
-import net.minecraft.server.network.packet.PlayerMoveServerMessage;
+import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
 import net.minecraft.server.network.packet.QueryBlockNbtC2SPacket;
 import net.minecraft.server.network.packet.QueryEntityNbtC2SPacket;
 import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
@@ -69,7 +69,7 @@ public interface ServerPlayPacketListener extends PacketListener {
 
 	void onKeepAlive(KeepAliveC2SPacket keepAliveC2SPacket);
 
-	void onPlayerMove(PlayerMoveServerMessage playerMoveServerMessage);
+	void onPlayerMove(PlayerMoveC2SPacket playerMoveC2SPacket);
 
 	void onPlayerAbilities(UpdatePlayerAbilitiesC2SPacket updatePlayerAbilitiesC2SPacket);
 

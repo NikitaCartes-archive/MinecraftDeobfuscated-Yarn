@@ -50,7 +50,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 		this.entity.setTarget(null);
 		this.field_6592 = 0;
 		if (this.entity.isUsingItem()) {
-			this.entity.method_6021();
+			this.entity.clearActiveItem();
 			this.entity.setCharging(false);
 			CrossbowItem.setCharged(this.entity.getActiveItem(), false);
 		}
@@ -92,7 +92,7 @@ public class CrossbowAttackGoal<T extends HostileEntity & RangedAttacker & Cross
 					this.stage = CrossbowAttackGoal.Stage.field_16534;
 				}
 
-				int i = this.entity.method_6048();
+				int i = this.entity.getItemUseTime();
 				ItemStack itemStack = this.entity.getActiveItem();
 				if (i >= CrossbowItem.getPullTime(itemStack)) {
 					this.entity.stopUsingItem();

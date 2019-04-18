@@ -250,8 +250,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 			compoundTag.put("enteredNetherPosition", compoundTag2);
 		}
 
-		Entity entity = this.getTopmostRiddenEntity();
-		Entity entity2 = this.getRiddenEntity();
+		Entity entity = this.getTopmostVehicle();
+		Entity entity2 = this.getVehicle();
 		if (entity2 != null && entity != this && entity.method_5817()) {
 			CompoundTag compoundTag3 = new CompoundTag();
 			CompoundTag compoundTag4 = new CompoundTag();
@@ -743,11 +743,11 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public boolean startRiding(Entity entity, boolean bl) {
-		Entity entity2 = this.getRiddenEntity();
+		Entity entity2 = this.getVehicle();
 		if (!super.startRiding(entity, bl)) {
 			return false;
 		} else {
-			Entity entity3 = this.getRiddenEntity();
+			Entity entity3 = this.getVehicle();
 			if (entity3 != entity2 && this.networkHandler != null) {
 				this.networkHandler.requestTeleport(this.x, this.y, this.z, this.yaw, this.pitch);
 			}
@@ -758,9 +758,9 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 
 	@Override
 	public void stopRiding() {
-		Entity entity = this.getRiddenEntity();
+		Entity entity = this.getVehicle();
 		super.stopRiding();
-		Entity entity2 = this.getRiddenEntity();
+		Entity entity2 = this.getVehicle();
 		if (entity2 != entity && this.networkHandler != null) {
 			this.networkHandler.requestTeleport(this.x, this.y, this.z, this.yaw, this.pitch);
 		}
@@ -1131,7 +1131,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	@Override
-	public void appendCommandFeedback(TextComponent textComponent) {
+	public void sendMessage(TextComponent textComponent) {
 		this.sendChatMessage(textComponent, ChatMessageType.field_11735);
 	}
 
@@ -1307,8 +1307,8 @@ public class ServerPlayerEntity extends PlayerEntity implements ContainerListene
 	}
 
 	public void sendInitialChunkPackets(ChunkPos chunkPos, Packet<?> packet, Packet<?> packet2) {
-		this.networkHandler.sendPacket(packet);
 		this.networkHandler.sendPacket(packet2);
+		this.networkHandler.sendPacket(packet);
 	}
 
 	public void sendUnloadChunkPacket(ChunkPos chunkPos) {

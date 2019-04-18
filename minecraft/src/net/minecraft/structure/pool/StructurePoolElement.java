@@ -7,7 +7,7 @@ import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
-import net.minecraft.util.Rotation;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MutableIntBoundingBox;
 import net.minecraft.util.registry.Registry;
@@ -26,13 +26,13 @@ public abstract class StructurePoolElement {
 	}
 
 	public abstract List<Structure.StructureBlockInfo> getStructureBlockInfos(
-		StructureManager structureManager, BlockPos blockPos, Rotation rotation, Random random
+		StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation, Random random
 	);
 
-	public abstract MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, Rotation rotation);
+	public abstract MutableIntBoundingBox getBoundingBox(StructureManager structureManager, BlockPos blockPos, BlockRotation blockRotation);
 
 	public abstract boolean generate(
-		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, Rotation rotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
+		StructureManager structureManager, IWorld iWorld, BlockPos blockPos, BlockRotation blockRotation, MutableIntBoundingBox mutableIntBoundingBox, Random random
 	);
 
 	public abstract StructurePoolElementType getType();
@@ -41,7 +41,7 @@ public abstract class StructurePoolElement {
 		IWorld iWorld,
 		Structure.StructureBlockInfo structureBlockInfo,
 		BlockPos blockPos,
-		Rotation rotation,
+		BlockRotation blockRotation,
 		Random random,
 		MutableIntBoundingBox mutableIntBoundingBox
 	) {

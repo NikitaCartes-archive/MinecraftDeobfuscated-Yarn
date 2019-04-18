@@ -19,6 +19,7 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.util.SystemUtil;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
@@ -68,7 +69,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 	@Override
 	protected String getNarrationMessage() {
 		String string = this.getMessage();
-		return string.isEmpty() ? "" : I18n.translate("gui.narrate.editBox", string);
+		return string.isEmpty() ? "" : I18n.translate("gui.narrate.editBox", string, this.text);
 	}
 
 	public void setText(String string) {
@@ -134,6 +135,8 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 		if (this.changedListener != null) {
 			this.changedListener.accept(string);
 		}
+
+		this.nextNarration = SystemUtil.getMeasuringTimeMs() + 500L;
 	}
 
 	private void method_16873(int i) {

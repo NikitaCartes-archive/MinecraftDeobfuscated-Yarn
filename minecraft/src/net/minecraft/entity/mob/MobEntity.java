@@ -146,8 +146,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public MoveControl getMoveControl() {
-		if (this.hasVehicle() && this.getRiddenEntity() instanceof MobEntity) {
-			MobEntity mobEntity = (MobEntity)this.getRiddenEntity();
+		if (this.hasVehicle() && this.getVehicle() instanceof MobEntity) {
+			MobEntity mobEntity = (MobEntity)this.getVehicle();
 			return mobEntity.getMoveControl();
 		} else {
 			return this.moveControl;
@@ -159,8 +159,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public EntityNavigation getNavigation() {
-		if (this.hasVehicle() && this.getRiddenEntity() instanceof MobEntity) {
-			MobEntity mobEntity = (MobEntity)this.getRiddenEntity();
+		if (this.hasVehicle() && this.getVehicle() instanceof MobEntity) {
+			MobEntity mobEntity = (MobEntity)this.getVehicle();
 			return mobEntity.getNavigation();
 		} else {
 			return this.navigation;
@@ -296,7 +296,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	protected void method_20417() {
 		boolean bl = !(this.getPrimaryPassenger() instanceof MobEntity);
-		boolean bl2 = !(this.getRiddenEntity() instanceof BoatEntity);
+		boolean bl2 = !(this.getVehicle() instanceof BoatEntity);
 		this.goalSelector.setControlEnabled(Goal.Control.field_18405, bl);
 		this.goalSelector.setControlEnabled(Goal.Control.field_18407, bl && bl2);
 		this.goalSelector.setControlEnabled(Goal.Control.field_18406, bl);
@@ -476,8 +476,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		this.world.getProfiler().push("looting");
 		if (!this.world.isClient && this.canPickUpLoot() && this.isAlive() && !this.dead && this.world.getGameRules().getBoolean("mobGriefing")) {
 			for (ItemEntity itemEntity : this.world.getEntities(ItemEntity.class, this.getBoundingBox().expand(1.0, 0.0, 1.0))) {
@@ -1085,7 +1085,7 @@ public abstract class MobEntity extends LivingEntity {
 				}
 			} else if (this.leashTag.containsKey("X", 99) && this.leashTag.containsKey("Y", 99) && this.leashTag.containsKey("Z", 99)) {
 				BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
-				this.attachLeash(LeadKnotEntity.method_6932(this.world, blockPos), true);
+				this.attachLeash(LeadKnotEntity.getOrCreate(this.world, blockPos), true);
 			} else {
 				this.detachLeash(false, true);
 			}
@@ -1178,7 +1178,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean attack(Entity entity) {
+	public boolean tryAttack(Entity entity) {
 		float f = (float)this.getAttributeInstance(EntityAttributes.ATTACK_DAMAGE).getValue();
 		float g = (float)this.getAttributeInstance(EntityAttributes.ATTACK_KNOCKBACK).getValue();
 		if (entity instanceof LivingEntity) {
@@ -1223,7 +1223,7 @@ public abstract class MobEntity extends LivingEntity {
 	protected boolean isInDaylight() {
 		if (this.world.isDaylight() && !this.world.isClient) {
 			float f = this.getBrightnessAtEyes();
-			BlockPos blockPos = this.getRiddenEntity() instanceof BoatEntity
+			BlockPos blockPos = this.getVehicle() instanceof BoatEntity
 				? new BlockPos(this.x, (double)Math.round(this.y), this.z).up()
 				: new BlockPos(this.x, (double)Math.round(this.y), this.z);
 			if (f > 0.5F && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && this.world.isSkyVisible(blockPos)) {

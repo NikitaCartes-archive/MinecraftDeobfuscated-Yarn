@@ -57,7 +57,7 @@ import net.minecraft.server.network.packet.GuiCloseC2SPacket;
 import net.minecraft.server.network.packet.HandSwingC2SPacket;
 import net.minecraft.server.network.packet.PlayerActionC2SPacket;
 import net.minecraft.server.network.packet.PlayerInputC2SPacket;
-import net.minecraft.server.network.packet.PlayerMoveServerMessage;
+import net.minecraft.server.network.packet.PlayerMoveC2SPacket;
 import net.minecraft.server.network.packet.RecipeBookDataC2SPacket;
 import net.minecraft.server.network.packet.UpdatePlayerAbilitiesC2SPacket;
 import net.minecraft.server.network.packet.VehicleMoveC2SPacket;
@@ -182,9 +182,9 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		if (this.world.isBlockLoaded(new BlockPos(this.x, 0.0, this.z))) {
 			super.tick();
 			if (this.hasVehicle()) {
-				this.networkHandler.sendPacket(new PlayerMoveServerMessage.LookOnly(this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
 				this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
-				Entity entity = this.getTopmostRiddenEntity();
+				Entity entity = this.getTopmostVehicle();
 				if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
 					this.networkHandler.sendPacket(new VehicleMoveC2SPacket(entity));
 				}
@@ -225,16 +225,16 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			boolean bl4 = g != 0.0 || h != 0.0;
 			if (this.hasVehicle()) {
 				Vec3d vec3d = this.getVelocity();
-				this.networkHandler.sendPacket(new PlayerMoveServerMessage.Both(vec3d.x, -999.0, vec3d.z, this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(vec3d.x, -999.0, vec3d.z, this.yaw, this.pitch, this.onGround));
 				bl3 = false;
 			} else if (bl3 && bl4) {
-				this.networkHandler.sendPacket(new PlayerMoveServerMessage.Both(this.x, boundingBox.minY, this.z, this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(this.x, boundingBox.minY, this.z, this.yaw, this.pitch, this.onGround));
 			} else if (bl3) {
-				this.networkHandler.sendPacket(new PlayerMoveServerMessage.PositionOnly(this.x, boundingBox.minY, this.z, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionOnly(this.x, boundingBox.minY, this.z, this.onGround));
 			} else if (bl4) {
-				this.networkHandler.sendPacket(new PlayerMoveServerMessage.LookOnly(this.yaw, this.pitch, this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
 			} else if (this.lastOnGround != this.onGround) {
-				this.networkHandler.sendPacket(new PlayerMoveServerMessage(this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket(this.onGround));
 			}
 
 			if (bl3) {
@@ -453,7 +453,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void appendCommandFeedback(TextComponent textComponent) {
+	public void sendMessage(TextComponent textComponent) {
 		this.client.inGameHud.getChatHud().addMessage(textComponent);
 	}
 
@@ -497,8 +497,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void method_6021() {
-		super.method_6021();
+	public void clearActiveItem() {
+		super.clearActiveItem();
 		this.field_3915 = false;
 	}
 
@@ -516,7 +516,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			if (bl && !this.field_3915) {
 				this.setCurrentHand(hand);
 			} else if (!bl && this.field_3915) {
-				this.method_6021();
+				this.clearActiveItem();
 			}
 		}
 
@@ -526,7 +526,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	public boolean hasJumpingMount() {
-		Entity entity = this.getRiddenEntity();
+		Entity entity = this.getVehicle();
 		return this.hasVehicle() && entity instanceof JumpingMount && ((JumpingMount)entity).canJump();
 	}
 
@@ -612,7 +612,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void updateMovement() {
+	public void updateState() {
 		this.field_3921++;
 		if (this.field_3935 > 0) {
 			this.field_3935--;
@@ -740,7 +740,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 
 		if (this.hasJumpingMount()) {
-			JumpingMount jumpingMount = (JumpingMount)this.getRiddenEntity();
+			JumpingMount jumpingMount = (JumpingMount)this.getVehicle();
 			if (this.field_3938 < 0) {
 				this.field_3938++;
 				if (this.field_3938 == 0) {
@@ -767,7 +767,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.field_3922 = 0.0F;
 		}
 
-		super.updateMovement();
+		super.updateState();
 		if (this.onGround && this.abilities.flying && !this.client.interactionManager.isFlyingLocked()) {
 			this.abilities.flying = false;
 			this.sendAbilitiesUpdate();
@@ -817,8 +817,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void tickRiding() {
 		super.tickRiding();
 		this.riding = false;
-		if (this.getRiddenEntity() instanceof BoatEntity) {
-			BoatEntity boatEntity = (BoatEntity)this.getRiddenEntity();
+		if (this.getVehicle() instanceof BoatEntity) {
+			BoatEntity boatEntity = (BoatEntity)this.getVehicle();
 			boatEntity.method_7535(this.input.pressingLeft, this.input.pressingRight, this.input.pressingForward, this.input.pressingBack);
 			this.riding = this.riding | (this.input.pressingLeft || this.input.pressingRight || this.input.pressingForward || this.input.pressingBack);
 		}

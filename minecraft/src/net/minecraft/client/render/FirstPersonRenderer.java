@@ -242,7 +242,7 @@ public class FirstPersonRenderer {
 	}
 
 	private void applyEatOrDrinkTransformation(float f, AbsoluteHand absoluteHand, ItemStack itemStack) {
-		float g = (float)this.client.player.method_6014() - f + 1.0F;
+		float g = (float)this.client.player.getItemUseTimeLeft() - f + 1.0F;
 		float h = g / (float)itemStack.getMaxUseTime();
 		if (h < 0.8F) {
 			float i = MathHelper.abs(MathHelper.cos(g / 4.0F * (float) Math.PI) * 0.1F);
@@ -345,13 +345,13 @@ public class FirstPersonRenderer {
 			boolean bl2 = CrossbowItem.isCharged(itemStack);
 			boolean bl3 = absoluteHand == AbsoluteHand.field_6183;
 			int j = bl3 ? 1 : -1;
-			if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.method_6014() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
+			if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.getItemUseTimeLeft() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
 				this.applyHandOffset(absoluteHand, i);
 				GlStateManager.translatef((float)j * -0.4785682F, -0.094387F, 0.05731531F);
 				GlStateManager.rotatef(-11.935F, 1.0F, 0.0F, 0.0F);
 				GlStateManager.rotatef((float)j * 65.3F, 0.0F, 1.0F, 0.0F);
 				GlStateManager.rotatef((float)j * -9.785F, 0.0F, 0.0F, 1.0F);
-				float k = (float)itemStack.getMaxUseTime() - ((float)this.client.player.method_6014() - f + 1.0F);
+				float k = (float)itemStack.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - f + 1.0F);
 				float l = k / (float)CrossbowItem.getPullTime(itemStack);
 				if (l > 1.0F) {
 					l = 1.0F;
@@ -383,7 +383,7 @@ public class FirstPersonRenderer {
 			this.renderItemFromSide(abstractClientPlayerEntity, itemStack, bl3 ? ModelTransformation.Type.field_4322 : ModelTransformation.Type.field_4321, !bl3);
 		} else {
 			boolean bl2 = absoluteHand == AbsoluteHand.field_6183;
-			if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.method_6014() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
+			if (abstractClientPlayerEntity.isUsingItem() && abstractClientPlayerEntity.getItemUseTimeLeft() > 0 && abstractClientPlayerEntity.getActiveHand() == hand) {
 				int p = bl2 ? 1 : -1;
 				switch (itemStack.getUseAction()) {
 					case field_8952:
@@ -403,7 +403,7 @@ public class FirstPersonRenderer {
 						GlStateManager.rotatef(-13.935F, 1.0F, 0.0F, 0.0F);
 						GlStateManager.rotatef((float)p * 35.3F, 0.0F, 1.0F, 0.0F);
 						GlStateManager.rotatef((float)p * -9.785F, 0.0F, 0.0F, 1.0F);
-						float qx = (float)itemStack.getMaxUseTime() - ((float)this.client.player.method_6014() - f + 1.0F);
+						float qx = (float)itemStack.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - f + 1.0F);
 						float kxx = qx / 20.0F;
 						kxx = (kxx * kxx + kxx * 2.0F) / 3.0F;
 						if (kxx > 1.0F) {
@@ -427,7 +427,7 @@ public class FirstPersonRenderer {
 						GlStateManager.rotatef(-55.0F, 1.0F, 0.0F, 0.0F);
 						GlStateManager.rotatef((float)p * 35.3F, 0.0F, 1.0F, 0.0F);
 						GlStateManager.rotatef((float)p * -9.785F, 0.0F, 0.0F, 1.0F);
-						float q = (float)itemStack.getMaxUseTime() - ((float)this.client.player.method_6014() - f + 1.0F);
+						float q = (float)itemStack.getMaxUseTime() - ((float)this.client.player.getItemUseTimeLeft() - f + 1.0F);
 						float kx = q / 10.0F;
 						if (kx > 1.0F) {
 							kx = 1.0F;

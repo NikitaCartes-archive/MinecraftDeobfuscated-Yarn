@@ -44,7 +44,7 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 		return NetworkEncryptionUtils.decryptSecretKey(privateKey, this.encryptedSecretKey);
 	}
 
-	public byte[] method_12655(PrivateKey privateKey) {
+	public byte[] decryptNonce(PrivateKey privateKey) {
 		return privateKey == null ? this.encryptedNonce : NetworkEncryptionUtils.decrypt(privateKey, this.encryptedNonce);
 	}
 }

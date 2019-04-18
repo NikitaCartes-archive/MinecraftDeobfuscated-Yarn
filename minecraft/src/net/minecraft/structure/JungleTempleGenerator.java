@@ -25,7 +25,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 	private boolean placedHiddenChest;
 	private boolean placedTrap1;
 	private boolean placedTrap2;
-	private static final JungleTempleGenerator.class_3349 field_14403 = new JungleTempleGenerator.class_3349();
+	private static final JungleTempleGenerator.CobblestoneRandomizer COBBLESTONE_RANDOMIZER = new JungleTempleGenerator.CobblestoneRandomizer();
 
 	public JungleTempleGenerator(Random random, int i, int j) {
 		super(StructurePieceType.JUNGLE_TEMPLE, random, i, 64, j, 12, 10, 15);
@@ -53,19 +53,19 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 		if (!this.method_14839(iWorld, mutableIntBoundingBox, 0)) {
 			return false;
 		} else {
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 1, 2, 9, 2, 2, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 1, 12, 9, 2, 12, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 1, 3, 2, 2, 11, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 1, 3, 9, 2, 11, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 3, 1, 10, 6, 1, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 3, 13, 10, 6, 13, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 3, 2, 1, 6, 12, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, 3, 2, 10, 6, 12, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 3, 2, 9, 3, 12, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 6, 2, 9, 6, 12, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 3, 7, 3, 8, 7, 11, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 8, 4, 7, 8, 10, false, random, field_14403);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 0, -4, 0, this.width - 1, 0, this.depth - 1, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 1, 2, 9, 2, 2, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 1, 12, 9, 2, 12, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 1, 3, 2, 2, 11, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 1, 3, 9, 2, 11, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 3, 1, 10, 6, 1, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 3, 13, 10, 6, 13, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, 3, 2, 1, 6, 12, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, 3, 2, 10, 6, 12, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 3, 2, 9, 3, 12, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 6, 2, 9, 6, 12, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 3, 7, 3, 8, 7, 11, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 8, 4, 7, 8, 10, false, random, COBBLESTONE_RANDOMIZER);
 			this.fill(iWorld, mutableIntBoundingBox, 3, 1, 3, 8, 2, 11);
 			this.fill(iWorld, mutableIntBoundingBox, 4, 3, 6, 7, 3, 9);
 			this.fill(iWorld, mutableIntBoundingBox, 2, 4, 2, 9, 5, 12);
@@ -81,32 +81,32 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, Blocks.AIR.getDefaultState(), 10, 5, 9, mutableIntBoundingBox);
 
 			for (int i = 0; i <= 14; i += 14) {
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 4, i, 2, 5, i, false, random, field_14403);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 4, i, 4, 5, i, false, random, field_14403);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 4, i, 7, 5, i, false, random, field_14403);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 4, i, 9, 5, i, false, random, field_14403);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 4, i, 2, 5, i, false, random, COBBLESTONE_RANDOMIZER);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 4, i, 4, 5, i, false, random, COBBLESTONE_RANDOMIZER);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 4, i, 7, 5, i, false, random, COBBLESTONE_RANDOMIZER);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 4, i, 9, 5, i, false, random, COBBLESTONE_RANDOMIZER);
 			}
 
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 6, 0, 6, 6, 0, false, random, field_14403);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 6, 0, 6, 6, 0, false, random, COBBLESTONE_RANDOMIZER);
 
 			for (int i = 0; i <= 11; i += 11) {
 				for (int j = 2; j <= 12; j += 2) {
-					this.fillWithOutline(iWorld, mutableIntBoundingBox, i, 4, j, i, 5, j, false, random, field_14403);
+					this.fillWithOutline(iWorld, mutableIntBoundingBox, i, 4, j, i, 5, j, false, random, COBBLESTONE_RANDOMIZER);
 				}
 
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, i, 6, 5, i, 6, 5, false, random, field_14403);
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, i, 6, 9, i, 6, 9, false, random, field_14403);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, i, 6, 5, i, 6, 5, false, random, COBBLESTONE_RANDOMIZER);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, i, 6, 9, i, 6, 9, false, random, COBBLESTONE_RANDOMIZER);
 			}
 
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 7, 2, 2, 9, 2, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 7, 2, 9, 9, 2, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 7, 12, 2, 9, 12, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 7, 12, 9, 9, 12, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 9, 4, 4, 9, 4, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 9, 4, 7, 9, 4, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 9, 10, 4, 9, 10, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 9, 10, 7, 9, 10, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 9, 7, 6, 9, 7, false, random, field_14403);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 7, 2, 2, 9, 2, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 7, 2, 9, 9, 2, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, 7, 12, 2, 9, 12, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, 7, 12, 9, 9, 12, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 9, 4, 4, 9, 4, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 9, 4, 7, 9, 4, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 9, 10, 4, 9, 10, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 9, 10, 7, 9, 10, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 9, 7, 6, 9, 7, false, random, COBBLESTONE_RANDOMIZER);
 			BlockState blockState = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.EAST);
 			BlockState blockState2 = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.WEST);
 			BlockState blockState3 = Blocks.field_10596.getDefaultState().with(StairsBlock.FACING, Direction.SOUTH);
@@ -125,10 +125,10 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, blockState4, 7, 1, 8, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState4, 7, 2, 9, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState4, 7, 3, 10, mutableIntBoundingBox);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 9, 4, 1, 9, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 1, 9, 7, 1, 9, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 10, 7, 2, 10, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 4, 5, 6, 4, 5, false, random, field_14403);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 9, 4, 1, 9, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, 1, 9, 7, 1, 9, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 4, 1, 10, 7, 2, 10, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 5, 4, 5, 6, 4, 5, false, random, COBBLESTONE_RANDOMIZER);
 			this.addBlock(iWorld, blockState, 4, 4, 5, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState2, 7, 4, 5, mutableIntBoundingBox);
 
@@ -143,17 +143,17 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.fill(iWorld, mutableIntBoundingBox, 1, -3, 1, 9, -1, 5);
 
 			for (int k = 1; k <= 13; k += 2) {
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, -3, k, 1, -2, k, false, random, field_14403);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, -3, k, 1, -2, k, false, random, COBBLESTONE_RANDOMIZER);
 			}
 
 			for (int k = 2; k <= 12; k += 2) {
-				this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, -1, k, 3, -1, k, false, random, field_14403);
+				this.fillWithOutline(iWorld, mutableIntBoundingBox, 1, -1, k, 3, -1, k, false, random, COBBLESTONE_RANDOMIZER);
 			}
 
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, -2, 1, 5, -2, 1, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, -2, 1, 9, -2, 1, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, -3, 1, 6, -3, 1, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, -1, 1, 6, -1, 1, false, random, field_14403);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 2, -2, 1, 5, -2, 1, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 7, -2, 1, 9, -2, 1, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, -3, 1, 6, -3, 1, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 6, -1, 1, 6, -1, 1, false, random, COBBLESTONE_RANDOMIZER);
 			this.addBlock(
 				iWorld,
 				Blocks.field_10348.getDefaultState().with(TripwireHookBlock.FACING, Direction.EAST).with(TripwireHookBlock.ATTACHED, Boolean.valueOf(true)),
@@ -314,7 +314,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.EAST, Boolean.valueOf(true)), 8, -1, 3, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10597.getDefaultState().with(VineBlock.EAST, Boolean.valueOf(true)), 8, -2, 3, mutableIntBoundingBox);
 			if (!this.placedMainChest) {
-				this.placedMainChest = this.method_14915(iWorld, mutableIntBoundingBox, random, 8, -3, 3, LootTables.CHEST_JUNGLE_TEMPLE);
+				this.placedMainChest = this.addChest(iWorld, mutableIntBoundingBox, random, 8, -3, 3, LootTables.CHEST_JUNGLE_TEMPLE);
 			}
 
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 9, -3, 2, mutableIntBoundingBox);
@@ -326,7 +326,7 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 7, -2, 5, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 7, -1, 5, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 8, -3, 5, mutableIntBoundingBox);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, -1, 1, 9, -1, 5, false, random, field_14403);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 9, -1, 1, 9, -1, 5, false, random, COBBLESTONE_RANDOMIZER);
 			this.fill(iWorld, mutableIntBoundingBox, 8, -3, 8, 10, -1, 10);
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 8, -2, 11, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10552.getDefaultState(), 9, -2, 11, mutableIntBoundingBox);
@@ -335,8 +335,8 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, blockState6, 8, -2, 12, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState6, 9, -2, 12, mutableIntBoundingBox);
 			this.addBlock(iWorld, blockState6, 10, -2, 12, mutableIntBoundingBox);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 8, -3, 8, 8, -3, 10, false, random, field_14403);
-			this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, -3, 8, 10, -3, 10, false, random, field_14403);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 8, -3, 8, 8, -3, 10, false, random, COBBLESTONE_RANDOMIZER);
+			this.fillWithOutline(iWorld, mutableIntBoundingBox, 10, -3, 8, 10, -3, 10, false, random, COBBLESTONE_RANDOMIZER);
 			this.addBlock(iWorld, Blocks.field_9989.getDefaultState(), 10, -2, 9, mutableIntBoundingBox);
 			this.addBlock(
 				iWorld, Blocks.field_10091.getDefaultState().with(RedstoneWireBlock.WIRE_CONNECTION_NORTH, WireConnection.field_12689), 8, -2, 9, mutableIntBoundingBox
@@ -350,19 +350,19 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 			this.addBlock(iWorld, Blocks.field_10615.getDefaultState().with(PistonBlock.FACING, Direction.WEST), 10, -1, 8, mutableIntBoundingBox);
 			this.addBlock(iWorld, Blocks.field_10450.getDefaultState().with(RepeaterBlock.FACING, Direction.NORTH), 10, -2, 10, mutableIntBoundingBox);
 			if (!this.placedHiddenChest) {
-				this.placedHiddenChest = this.method_14915(iWorld, mutableIntBoundingBox, random, 9, -3, 10, LootTables.CHEST_JUNGLE_TEMPLE);
+				this.placedHiddenChest = this.addChest(iWorld, mutableIntBoundingBox, random, 9, -3, 10, LootTables.CHEST_JUNGLE_TEMPLE);
 			}
 
 			return true;
 		}
 	}
 
-	static class class_3349 extends StructurePiece.class_3444 {
-		private class_3349() {
+	static class CobblestoneRandomizer extends StructurePiece.BlockRandomizer {
+		private CobblestoneRandomizer() {
 		}
 
 		@Override
-		public void method_14948(Random random, int i, int j, int k, boolean bl) {
+		public void setBlock(Random random, int i, int j, int k, boolean bl) {
 			if (random.nextFloat() < 0.4F) {
 				this.block = Blocks.field_10445.getDefaultState();
 			} else {

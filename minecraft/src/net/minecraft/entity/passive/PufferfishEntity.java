@@ -119,8 +119,8 @@ public class PufferfishEntity extends FishEntity {
 	}
 
 	@Override
-	public void updateMovement() {
-		super.updateMovement();
+	public void updateState() {
+		super.updateState();
 		if (this.isAlive() && this.getPuffState() > 0) {
 			for (MobEntity mobEntity : this.world.getEntities(MobEntity.class, this.getBoundingBox().expand(0.3), field_6834)) {
 				if (mobEntity.isAlive()) {

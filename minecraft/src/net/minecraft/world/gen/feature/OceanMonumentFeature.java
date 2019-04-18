@@ -100,7 +100,7 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 			int k = i * 16 - 29;
 			int l = j * 16 - 29;
 			Direction direction = Direction.Type.HORIZONTAL.random(this.random);
-			this.children.add(new OceanMonumentGenerator.class_3374(this.random, k, l, direction));
+			this.children.add(new OceanMonumentGenerator.Base(this.random, k, l, direction));
 			this.setBoundingBoxFromChildren();
 			this.field_13717 = true;
 		}

@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 
 public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionManager {
 	private boolean field_13890;
-	private boolean field_13889;
+	private boolean demoEnded;
 	private int field_13888;
 	private int field_13887;
 
@@ -33,8 +33,8 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 			this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 0.0F));
 		}
 
-		this.field_13889 = l > 120500L;
-		if (this.field_13889) {
+		this.demoEnded = l > 120500L;
+		if (this.demoEnded) {
 			this.field_13888++;
 		}
 
@@ -43,7 +43,7 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 				if (m == 6L) {
 					this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 104.0F));
 				} else {
-					this.player.appendCommandFeedback(new TranslatableTextComponent("demo.day." + m));
+					this.player.sendMessage(new TranslatableTextComponent("demo.day." + m));
 				}
 			}
 		} else if (m == 1L) {
@@ -55,21 +55,21 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 				this.player.networkHandler.sendPacket(new GameStateChangeS2CPacket(5, 103.0F));
 			}
 		} else if (m == 5L && l % 24000L == 22000L) {
-			this.player.appendCommandFeedback(new TranslatableTextComponent("demo.day.warning"));
+			this.player.sendMessage(new TranslatableTextComponent("demo.day.warning"));
 		}
 	}
 
-	private void method_14031() {
+	private void sendDemoReminder() {
 		if (this.field_13888 > 100) {
-			this.player.appendCommandFeedback(new TranslatableTextComponent("demo.reminder"));
+			this.player.sendMessage(new TranslatableTextComponent("demo.reminder"));
 			this.field_13888 = 0;
 		}
 	}
 
 	@Override
 	public void method_14263(BlockPos blockPos, Direction direction) {
-		if (this.field_13889) {
-			this.method_14031();
+		if (this.demoEnded) {
+			this.sendDemoReminder();
 		} else {
 			super.method_14263(blockPos, direction);
 		}
@@ -77,20 +77,20 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 
 	@Override
 	public void method_14258(BlockPos blockPos) {
-		if (!this.field_13889) {
+		if (!this.demoEnded) {
 			super.method_14258(blockPos);
 		}
 	}
 
 	@Override
 	public boolean tryBreakBlock(BlockPos blockPos) {
-		return this.field_13889 ? false : super.tryBreakBlock(blockPos);
+		return this.demoEnded ? false : super.tryBreakBlock(blockPos);
 	}
 
 	@Override
 	public ActionResult interactItem(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand) {
-		if (this.field_13889) {
-			this.method_14031();
+		if (this.demoEnded) {
+			this.sendDemoReminder();
 			return ActionResult.PASS;
 		} else {
 			return super.interactItem(playerEntity, world, itemStack, hand);
@@ -99,8 +99,8 @@ public class DemoServerPlayerInteractionManager extends ServerPlayerInteractionM
 
 	@Override
 	public ActionResult interactBlock(PlayerEntity playerEntity, World world, ItemStack itemStack, Hand hand, BlockHitResult blockHitResult) {
-		if (this.field_13889) {
-			this.method_14031();
+		if (this.demoEnded) {
+			this.sendDemoReminder();
 			return ActionResult.PASS;
 		} else {
 			return super.interactBlock(playerEntity, world, itemStack, hand, blockHitResult);
